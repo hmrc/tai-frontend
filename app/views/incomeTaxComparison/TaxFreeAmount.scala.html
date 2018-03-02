@@ -1,0 +1,177 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.tai.viewModels.TaxFreeAmountComparisonViewModel
+@import uk.gov.hmrc.play.views.formatting.Money._
+
+@(model: TaxFreeAmountComparisonViewModel)(implicit messages: Messages)
+
+<h2 class="heading-large text" id="taxFreeAmountHeading">@messages("tai.incomeTaxComparison.taxFreeAmount.subHeading")</h2>
+
+<p class="text">@messages("tai.incomeTaxComparison.taxFreeAmount.description")</p>
+<p class="notice text">
+    <i class="icon icon-information"><span class="visuallyhidden">Information</span></i>
+    <strong class="bold-small">@messages("tai.incomeTaxComparison.taxFreeAmount.PA.information1")</strong>
+</p>
+<p class="text">@messages("tai.incomeTaxComparison.taxFreeAmount.PA.information2")</p>
+
+
+<table class="table--font-reset flush--bottom">
+    <thead id="taxFreeAmountComparisonTableHeader">
+        <tr class=" text--right">
+            <td></td>
+            <th id="taxFreeAmountComparisonTableHeaderCol1" scope="col" class=" text--right">
+                <div>@messages("tai.CurrentTaxYear")</div>
+                <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader))</div>
+            </th>
+            <th id="taxFreeComparisonTableTableHeaderCol2" scope="col" class=" text--right">
+                <div>@messages("tai.NextTaxYear")</div>
+                <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader))</div>
+            </th>
+        </tr>
+    </thead>
+
+    <caption class="visuallyhidden">@messages("tai.income.personalAllowance")</caption>
+
+    <tbody>
+        <tr>
+            <th class="font-small">@messages("tai.income.personalAllowance")</th>
+
+            @for((personalAllowance, itemIndex) <- model.personalAllowance.values zip (Stream from 1)) {
+                <td class="@{if(itemIndex == model.personalAllowance.values.size) "table__cell--fixed-width" } text--right">@pounds(personalAllowance)</td>
+            }
+
+        </tr>
+    </tbody>
+
+</table>
+
+
+<table class="table--font-reset flush--bottom">
+    <thead class="visuallyhidden">
+    <tr class="text--right">
+        <td></td>
+        <th scope="col" class="text--right">
+            <div>@messages("tai.CurrentTaxYear")</div>
+            <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader))</div>
+        </th>
+        <th scope="col" class="text--right">
+            <div>@messages("tai.NextTaxYear")</div>
+            <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader))</div>
+        </th>
+    </tr>
+    </thead>
+    <caption class="text--left table__caption table__caption--bottom-border">@messages("tai.incomeTaxComparison.taxFreeAmount.additions.caption")</caption>
+
+    <tbody>
+        @for(row <- model.additions.additions) {
+            <tr>
+                <th class="font-small">@messages("tai.taxFreeAmount.table.taxComponent." + row.label)</th>
+                @for((addition, itemIndex) <- row.values zip (Stream from 1)) {
+                    <td class="@{if(itemIndex == row.values.size) "table__cell--fixed-width" } text--right">@addition.map(value => pounds(value)).getOrElse(messages("tai.incomeTaxComparison.taxFreeAmount.NA"))</td>
+                }
+            </tr>
+        }
+
+        @if(!model.hasAdditions) {
+            <tr>
+                <th class="font-small">@messages("tai.incomeTaxComparison.taxFreeAmount.noAdditions")</th>
+                <td class="text--right">@pounds(0)</td>
+                <td class="text--right table__cell--fixed-width">@pounds(0)</td>
+            </tr>
+        }
+
+        <tr>
+            <th class="font-small">@messages("tai.incomeTaxComparison.taxFreeAmount.totalAdditions")</th>
+
+            @for((total, itemIndex) <- model.additions.totalRow.totals zip (Stream from 1)) {
+                <td class="@{if(itemIndex == model.additions.totalRow.totals.size) "table__cell--fixed-width" } text--right">@pounds(total)</td>
+            }
+        </tr>
+
+    </tbody>
+
+</table>
+
+<table class="table--font-reset">
+    <thead class="visuallyhidden">
+    <tr class="text--right">
+        <td></td>
+        <th scope="col" class="text--right">
+            <div>@messages("tai.CurrentTaxYear")</div>
+            <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader))</div>
+        </th>
+        <th scope="col" class="text--right">
+            <div>@messages("tai.NextTaxYear")</div>
+            <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader))</div>
+        </th>
+    </tr>
+    </thead>
+    <caption class="text--left table__caption table__caption--bottom-border">@messages("tai.incomeTaxComparison.taxFreeAmount.deductions.caption")</caption>
+
+    <tbody>
+        @for(row <- model.deductions.deductions) {
+            <tr>
+                <th class="font-small">@messages("tai.taxFreeAmount.table.taxComponent." + row.label)</th>
+                @for((deduction, itemIndex) <- row.values zip (Stream from 1)) {
+                    <td class="@{if(itemIndex == row.values.size) "table__cell--fixed-width" } text--right">@deduction.map(value => pounds(value)).getOrElse(messages("tai.incomeTaxComparison.taxFreeAmount.NA"))</td>
+                }
+            </tr>
+        }
+
+        @if(!model.hasDeductions) {
+            <tr>
+                <th class="font-small">@messages("tai.incomeTaxComparison.taxFreeAmount.noDeductions")</th>
+                <td class="text--right">@pounds(0)</td>
+                <td class="text--right table__cell--fixed-width">@pounds(0)</td>
+            </tr>
+        }
+
+        <tr>
+            <th class="font-small">@messages("tai.incomeTaxComparison.taxFreeAmount.totalDeductions")</th>
+
+            @for((total, itemIndex) <- model.deductions.totalRow.totals zip (Stream from 1)) {
+                <td class="@{if(itemIndex == model.deductions.totalRow.totals.size) "table__cell--fixed-width" } text--right">@pounds(total)</td>
+            }
+        </tr>
+
+    </tbody>
+
+</table>
+
+<table class="table--font-reset table--spaced-top"">
+    <thead class="visuallyhidden">
+    <tr class="text--right">
+        <td></td>
+        <th scope="col">
+            <div>@messages("tai.CurrentTaxYear")</div>
+            <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader))</div>
+        </th>
+        <th scope="col">
+            <div>@messages("tai.NextTaxYear")</div>
+            <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader))</div>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr class="table__row--top-border table__footer--highlight highlight">
+            <th>@messages("tai.incomeTaxComparison.taxFreeAmount.totalTFA")</th>
+            @for((total, itemIndex) <- model.footer.values zip (Stream from 1)) {
+                <td class="@{if(itemIndex == model.footer.values.size) "table__cell--fixed-width" } text--right">@pounds(total)</td>
+            }
+        </tr>
+    </tbody>
+</table>

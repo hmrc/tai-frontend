@@ -1,0 +1,79 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(title: String, header: String)(back: Html)(content: Html)(implicit request: Request[_], messages: Messages)
+
+@import uk.gov.hmrc.play.views.html.layouts
+@import uk.gov.hmrc.play.config.RunMode._
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+@import play.api.Play.current
+@import play.api.Play
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>@title</title>
+        <link rel="stylesheet" href='@controllers.routes.AssetsController.versioned("stylesheets/tai.min.css")' />
+        <link rel="shortcut icon" href="/template/images/favicon.ico" type="image/x-icon" />
+        <script type="text/javascript">
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            
+                ga('create', '@ApplicationConfig.analyticsToken', 'auto');
+                
+                ga('send', 'pageview', { 'anonymizeIp': true });
+            
+        </script>
+    </head>
+    <body class="print-page">
+
+        <noscript>
+            <style> .print-button {display: none;} </style>
+        </noscript>
+
+        <div class="print-wrapper">
+            <div class="nav">
+                <div class="nav-container print-grid-row">
+                    <div class="print-grid-row">
+                        <div class="column-half back-link">
+                            @back
+                        </div>
+                        <div class="column-half print-button">
+                            <a href="javascript:window.print();">@Messages("tai.label.print")</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box">
+                <div class="print-grid-row header">
+                    <div class="column-third logo">
+                        <img src="/check-income-tax/assets/images/HMRC-logo.png" alt='@Messages("tai.label.hm_revenue_and_customs")'>
+                    </div>
+                    <div class="column-two-thirds title">
+                        <h1>@Messages("tai.label.paye")</h1>
+                    </div>
+                </div>
+                <hr>
+                @content
+            </div>
+        </div>
+    </body>
+</html>

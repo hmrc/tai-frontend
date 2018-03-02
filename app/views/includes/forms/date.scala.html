@@ -1,0 +1,102 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.forms.input
+@import views.html.helper._
+
+@(
+        form: Form[_],
+        fieldPrefix: String = "",
+        labelText: String = "",
+        hintText: String = "",
+        example: Boolean = true,
+        hintId: String = "",
+        jsHidden: Boolean = false,
+        legendHidden: Boolean = false,
+        legendBold: Boolean = false,
+        gaEventAction: Option[String] = None
+)(implicit m: Messages)
+
+@stagePromptAttributeMap = @{
+    gaEventAction match {
+        case Some(actionString) => Map[Symbol, Any](Symbol("data-journey")->s"error - field:${actionString}:${form.errors.map(_.message).head}")
+        case _ => Map.empty[Symbol, Any]
+    }
+}
+
+<fieldset class="form-field-group form-date @if(form.hasErrors){form-field-group--error}" id="@{fieldPrefix}_fieldset">
+    @legend(
+        legend = labelText,
+        bold =  legendBold,
+        legendHidden = legendHidden
+    )
+
+    @if(hintText.nonEmpty) {
+        <span class="form-field--hint">@Messages(hintText)</span>
+    }
+
+    @if(example) {
+        <span class="form-field--hint" @if(hintId.nonEmpty) {
+            id="@hintId-hint"}>@Messages("tai.label.date.example")</span>
+    }
+
+    @if(form.hasErrors) {
+        <span class="error-notification" @toHtmlArgs(stagePromptAttributeMap)>@form.errors.map(_.message)</span>
+    }
+
+    @input(
+        labelText = "tai.label.day",
+        field = form(s"${fieldPrefix}_day"),
+        bold = false,
+        classes = Seq("input--no-spinner"),
+        parentDateAttr = "day",
+        attrType = "number",
+        attrMin = "1",
+        attrMax = "31",
+        attrPattern = "[0-9]{2}",
+        attrStep = "1",
+        attrDescribedBy = s"$hintId",
+        fieldErrorsEnabled = false
+    )
+
+    @input(
+        labelText = "tai.label.month",
+        field = form(s"${fieldPrefix}_month"),
+        bold = false,
+        classes = Seq("input--no-spinner"),
+        parentDateAttr = "month",
+        attrType = "number",
+        attrMin = "1",
+        attrMax = "12",
+        attrStep = "1",
+        attrPattern = "[0-9]{2}",
+        fieldErrorsEnabled = false
+    )
+
+    @input(
+        labelText = "tai.label.year",
+        field = form(s"${fieldPrefix}_year"),
+        bold = false,
+        classes = Seq("input--no-spinner"),
+        parentDateAttr = "year",
+        attrType = "number",
+        attrMin = "1900",
+        attrStep = "1",
+        attrPattern = "[1-9][0-9]{3}",
+        fieldErrorsEnabled = false
+    )
+
+</fieldset>

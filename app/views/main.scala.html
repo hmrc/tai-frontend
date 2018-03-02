@@ -1,0 +1,206 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import play.api.Play
+@import play.api.Play.current
+@import uk.gov.hmrc.http.SessionKeys
+@import uk.gov.hmrc.play.views.helpers.AttorneyRegime.standAlone
+@import uk.gov.hmrc.play.views.html.layouts
+@import uk.gov.hmrc.tai.util.TaiConstants
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+
+@(title: String,
+        sidebarLinks: Option[Html] = None,
+        sidebarClass: Option[String] = None,
+        articleClasses: Option[String] = Some("full-width"),
+        user: Option[controllers.auth.TaiUser] = None,
+        employerName: Option[String] = None,
+        includeGridWrapper: Boolean = false,
+        webChat: Boolean = false,
+        clickWebChat: Boolean = false,
+        gaCallsAdditionalJs: Option[Html] = None,
+        gaDimensions: Option[Map[String, String]] = None,
+        gaCustomTitle: Option[String],
+        pageHeader: Option[Html] = None)(mainContent: Html)(
+            implicit request: Request[_],
+            messages: Messages,
+            templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+            partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever
+)
+
+@mustacheCheck(str: String) = @{
+    if(str.trim == "") false else str
+}
+
+@authProvider = @{
+    request.session.get(SessionKeys.authProvider)
+}
+
+@isGG = @{
+    authProvider.contains("GGW")
+}
+
+@isSa = @{
+    user.fold(false) {
+        user =>
+            user.authContext.principal.accounts.sa.map(_.utr).isDefined
+    }
+}
+
+@isVerify = @{
+    authProvider.contains("IDA")
+}
+
+@signOutUrl = @{
+    mustacheCheck{
+        user.fold("") {
+            user =>
+                routes.ServiceController.serviceSignout().url
+        }
+    }
+}
+
+@actingAttorneyBanner = @{
+    user.fold(HtmlFormat.empty) {
+        authContext =>
+            authContext.authContext.attorney.fold(HtmlFormat.empty) {
+                _ => layouts.attorney_banner(
+                    authContext.authContext.principal.name,
+                    authContext.authContext.attorney.get.returnLink.url,
+                    standAlone,
+                    Some(Messages("attorney.banner.link"))
+                )
+            }
+    }
+}
+
+@mainContentHeader = {
+    @pageHeader.getOrElse(Html(""))
+}
+
+@sidebar = @{
+    sidebarLinks.map { sidebarLinksValue =>
+        layouts.sidebar(sidebarLinksValue, sidebarClass)
+    }
+}
+
+@helpForm = @{partialRetriever.getPartialContent(ApplicationConfig.reportAProblemPartialUrl)}
+
+
+@googleAnalytics = @{
+    Map[String, Any](
+        "trackingId" -> ApplicationConfig.analyticsToken,
+        "cookieDomain" -> ApplicationConfig.analyticsHost,
+        "confidenceLevel" -> user.map(_.authContext.user.confidenceLevel.toString).getOrElse(false),
+        "authProvider" -> authProvider
+    ) ++ gaDimensions.getOrElse(Map.empty)
+}
+
+@gaCustomEvent = @{
+    gaCustomTitle.map(gaTitle => s"ga('set', 'title', '${gaTitle}')").getOrElse(false)
+}
+
+@inlineScript = {
+    @if(webChat){
+        <script type="text/javascript">
+            var EG_ACT_ID = "@Play.configuration.getString("webchat.id ")";
+            (function(e, f) {
+                var d, c, b, a = e.createElement("iframe");
+                a.src = "about:blank";
+                a.title = "";
+                a.id = "egot_iframe";
+                (a.frameElement || a).style.cssText = "width:0;height:0;border:0;display:block;";
+                b = e.getElementsByTagName("script");
+                b = b[b.length - 1];
+                b.parentNode.insertBefore(a, b);
+                try {
+                    c = a.contentWindow.document
+                } catch (g) {
+                    d = e.domain, a.src = "javascript:var d=document.open();d.domain='" + d + "';void(0);", c = a.contentWindow.document
+                }
+                c.open()._d = function() {
+                    var a = this.createElement("script");
+                    d && (this.domain = d);
+                    a.src = f;
+                    this.isEGFIF = !0;
+                    this.body.appendChild(a)
+                };
+                c.write('<body onload="document._d();">');
+                c.close()
+            })(document, "//analytics.analytics-egain.com/onetag/" + EG_ACT_ID);
+        </script>
+    }
+
+    @if(clickWebChat){
+        @uk.gov.hmrc.csp.WebchatClient.webchatClickToChatScriptPartial(ApplicationConfig.webchatEntryPoint, ApplicationConfig.webchatTemplate)
+    }
+
+    @if(gaCallsAdditionalJs.isDefined && gaCallsAdditionalJs.get.toString.trim != ""){
+        <script type="text/javascript">@gaCallsAdditionalJs.get</script>
+    }
+
+    <script>
+        /* Temp - pending AF update to > 3.0.2 */
+        document.addEventListener("DOMContentLoaded", function(event) {
+            window.GOVUK.performance.sendGoogleAnalyticsEvent = function (category, event, label) {
+              if (window.ga && typeof(window.ga) === 'function') {
+                ga('send', 'event', category, event, label);
+              } else {
+                _gaq.push(['_trackEvent', category, event, label, undefined, true]);
+              }
+            };
+            window.GOVUK.performance.stageprompt.setupForGoogleAnalytics();
+        });
+    </script>
+}
+
+@mustacheMap = @{
+    Map[String, Any](
+        "pageTitle" -> title,
+        "linkElems" -> Map(
+            "url" -> controllers.routes.AssetsController.versioned("stylesheets/tai.min.css")
+        ),
+        "navTitle" -> Messages("tai.service.navTitle"),
+        "hasNavLinks" -> true,
+        "navLinks" -> Map(
+            "url" -> signOutUrl,
+            "text" -> "Sign out"
+        ),
+        "isGovernmentGateway" -> isGG,
+        "isSa" -> isSa,
+        "isVerify" -> isVerify,
+        "signOutUrl" -> signOutUrl,
+        "actingAttorneyBanner" -> actingAttorneyBanner,
+        "mainContentHeader" -> mainContentHeader,
+        "sidebar" -> sidebar,
+        "getHelpForm" -> helpForm,
+        "betaBanner" -> true,
+        "feedbackIdentifier" -> TaiConstants.SERVICE_IDENTIFIER,
+        "googleAnalytics" -> googleAnalytics,
+        "gaCustomEvent" -> gaCustomEvent,
+        "scriptElems" -> Seq(
+            Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai.js"))
+        ),
+        "inlineScript" -> inlineScript,
+        "assetsPath" -> ApplicationConfig.assetsPath
+    )
+}
+
+@{
+    templateRenderer.renderDefaultTemplate(
+        layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), mustacheMap
+    )
+}

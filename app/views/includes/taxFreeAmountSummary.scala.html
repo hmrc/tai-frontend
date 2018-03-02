@@ -1,0 +1,67 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.urls.Link
+
+@(items: Seq[uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryCategoryViewModel], gaEventActionString: String)(implicit m: Messages)
+
+@for((item, itemIdx) <- items zip (Stream from 1)) {
+
+    @if(item.rows.nonEmpty) {
+    <table id="summaryTable@{itemIdx.toString}" class="table--font-reset @if(itemIdx==items.length && item.rows.length==1){table--spaced-top}">
+
+        <caption id="summaryTable@{itemIdx.toString}Caption" class="text--left table__caption @if(item.hideHeaders){table__caption--bottom-border} @if(item.hideCaption){visuallyhidden}">@item.caption</caption>
+
+        <thead id="summaryTable@{itemIdx.toString}Head" @if(item.hideHeaders) {class="visuallyhidden"}>
+            <tr>
+                <th id="summaryTable@{itemIdx.toString}Col1Header" scope="col" colspan="2">@item.headerCol1</th>
+                <th id="summaryTable@{itemIdx.toString}Col2Header" scope="col" class="text--right">@item.headerCol2</th>
+            </tr>
+        </thead>
+
+        <tbody id="summaryTable@{itemIdx.toString}Body">
+            @for((row, rowIdx) <- item.rows zip (Stream from 1)) {
+                <tr id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}" @if(itemIdx==items.length && item.rows.length==1) {class="table__row--top-border table__footer--highlight highlight"}>
+                    <td id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" scope="row" class="break-word" @if(!row.link.isDisplayed) {colspan="2"}>
+                        @row.label
+                        @if(row.label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
+                            @Link.toInternalPage(
+                                id=Some("estimatedTaxOwedLink"),
+                                url=controllers.routes.CurrentYearPageController.potentialUnderpaymentPage.url,
+                                value=Some(Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")),
+                                cssClasses=Some("link-list__item"),
+                                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}"))).toHtml
+                        }
+                    </td>
+
+                    @if(row.link.isDisplayed) {
+                    <td id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ChangeLinkCell">
+                        @Link.toInternalPage(id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
+                                             url = row.link.href,
+                                             cssClasses = Some("float--right button--secondary"),
+                                             value = Some(Messages("tai.change", row.link.value)),
+                                             dataAttributes = Some(Map("journey-click" -> s"button - click:$gaEventActionString:${row.link.value}"))).toHtml
+                    </td>
+                    }
+                    <td id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ValueCell" class="text--right">@row.value</td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+    }
+
+}

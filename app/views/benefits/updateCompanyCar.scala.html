@@ -1,0 +1,60 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(wdywtdForm: Form[uk.gov.hmrc.tai.forms.UpdateOrRemoveCarForm], viewModel: uk.gov.hmrc.tai.viewModels.benefit.CompanyCarChoiceViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+
+@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.urls.Link
+@import includes.forms._
+@import includes.cancelLink
+@import includes.ptaHeader
+
+@gaEventActionString = @{Messages("tai.changeCompanyCar.title")}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(wdywtdForm),
+        backLocation =Some(routes.TaxFreeAmountControllerNew.taxFreeAmount()),
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.changeCompanyCar.heading", viewModel.carModel, viewModel.carProvider),
+        preHeadingText = Messages("tai.changeCompanyCar.sub.heading")) }
+
+@main(
+    title = Messages("tai.changeCompanyCar.title"),
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = None) {
+
+    @form( action=controllers.routes.CompanyCarController.handleUserJourneyChoice, args=(Symbol("class"), "subsection"),(Symbol("data-journey-dynamic-radios"), "") ){
+
+        @{inputRadioGroupNewStyling(
+            field=wdywtdForm("userChoice"),
+            radioOptions=Seq(("changeCarDetails" -> Messages("tai.changeCompanyCar.radioLabel1")), ("removeCar" -> Messages("tai.changeCompanyCar.radioLabel2")) ),
+            legend=Messages("tai.changeCompanyCar.legend"),
+            legendHint=None,
+            ('_groupDivClass, "form-group" ),
+            ('_fieldsetAttributes, "id=userChoice" ),
+            ('_legendSpanClass, "heading-medium display-block flush--top"),
+            ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Change or remove your company car:Change the details of this company car" data-journey-val="Change the details of this company car"""") ),
+            ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Change or remove your company car:Inform no longer have car" data-journey-val="Inform no longer have car"""") )
+        )}
+
+        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(""))
+    }
+
+    @cancelLink(url = routes.TaxFreeAmountControllerNew.taxFreeAmount(), gaEventAction = Some(gaEventActionString))
+}

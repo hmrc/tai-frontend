@@ -1,0 +1,75 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(viewModel: uk.gov.hmrc.tai.viewModels.benefit.CompanyCarCheckAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+
+@import includes.forms._
+@import includes.{cancelLink, checkYourAnswers, ptaHeader}
+@import uk.gov.hmrc.play.views.html.helpers._
+
+@gaEventActionString = @{"Check your company car answers"}
+
+@header = @{
+    ptaHeader(
+        backLocation =if(viewModel.showFuelBenefits) Some(routes.CompanyCarController.getFuelBenefitEndDate) else Some(routes.CompanyCarController.getCompanyCarEndDate),
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.companyCar.checkAnswers.heading"),
+        preHeadingText = Messages("tai.companyCar.checkAnswers.sub.heading")) }
+
+@main(
+    title = Messages("tai.companyCar.checkAnswers.title"),
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = None) {
+
+    @form(action=controllers.routes.CompanyCarController.handleCheckYourAnswers, args=(Symbol("class"), "subsection")) {
+
+        <div class="subsection flush--top">
+            @checkYourAnswers(
+                title = Some(messages("tai.companyCar.checkAnswers.table.heading", viewModel.carModel, viewModel.carProvider)),
+                gaEventAction = Some(gaEventActionString),
+                longQuestions = true,
+                confirmationLines = viewModel.journeyConfirmationLines
+            )
+        </div>
+
+        <div class="panel-indent">
+            <p>
+                @if(viewModel.showFuelBenefits){
+                    @messages("tai.companyCar.checkAnswers.panel",
+                        viewModel.dateGivenBack,
+                        viewModel.dateFuelBenefitStopped,
+                        viewModel.taxYearStart,
+                        viewModel.taxYearEnd)
+                }else{
+                    @messages("tai.companyCar.checkAnswers.panel.withoutFuel",
+                        viewModel.dateGivenBack,
+                        viewModel.taxYearStart,
+                        viewModel.taxYearEnd)
+                }
+            </p>
+        </div>
+
+        @submit(
+            buttonMessageKey = Some(messages("tai.confirmAndSend")),
+            gaEventAction = Some(gaEventActionString),
+            gaEventLabel = Some("Change the details of this company car"))
+    }
+
+    @cancelLink(url = routes.TaxFreeAmountControllerNew.taxFreeAmount(), gaEventAction = Some(gaEventActionString))
+
+}

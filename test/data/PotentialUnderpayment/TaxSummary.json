@@ -1,0 +1,182 @@
+{
+  "nino": "$NINO",
+  "version": 1,
+  "accounts":[],
+  "increasesTax": {
+    "incomes": {
+      "taxCodeIncomes": {
+        "employments": {
+          "taxCodeIncomes": [
+            {
+              "name": "",
+              "taxCode": "K1149",
+              "employmentId": 5,
+              "employmentPayeRef": "",
+              "employmentType": 1,
+              "incomeType": 0,
+              "employmentStatus": 1,
+              "tax": {
+                "totalIncome": 15375,
+                "totalTaxableIncome": 26875,
+                "totalTax": 5375,
+                "potentialUnderpayment": 4123.29,
+                "taxBands": [
+                  {
+                    "income": 26875,
+                    "tax": 5375,
+                    "lowerBand": 0,
+                    "upperBand": 31865,
+                    "rate": 20
+                  },
+                  {
+                    "income": 0,
+                    "tax": 0,
+                    "lowerBand": 31865,
+                    "upperBand": 150000,
+                    "rate": 40
+                  },
+                  {
+                    "income": 0,
+                    "tax": 0,
+                    "lowerBand": 150000,
+                    "upperBand": 0,
+                    "rate": 45
+                  }
+                ],
+                "allowReliefDeducts": -11500
+              },
+              "worksNumber": "",
+              "startDate": "2013-09-02",
+              "income": 15375,
+              "isEditable": true,
+              "isLive":true,
+              "isOccupationalPension" : true,
+              "isPrimary": true
+            }
+          ],
+          "totalIncome": 15375,
+          "totalTax": 5375,
+          "totalTaxableIncome": 26875
+        },
+        "hasDuplicateEmploymentNames": false,
+        "totalIncome": 15375,
+        "totalTaxableIncome": 26875,
+        "totalTax": 5375
+      },
+      "noneTaxCodeIncomes": {
+        "otherIncome": {
+          "amount": 5000,
+          "componentType": 0,
+          "description": "",
+          "iabdSummaries": [
+            {
+              "iabdType": 72,
+              "description": "Profit",
+              "amount": 5000
+            }
+          ]
+        },
+        "totalIncome": 5000
+      },
+      "total": 20375
+    },
+    "benefitsFromEmployment": {
+      "amount": 16500,
+      "componentType": 0,
+      "description": "",
+      "iabdSummaries": [
+        {
+          "iabdType": 32,
+          "description": "Telephone",
+          "amount": 6500,
+          "employmentId": 5,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 53,
+          "description": "Travel and Subsistence",
+          "amount": 5000,
+          "employmentId": 5,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 39,
+          "description": "Assets",
+          "amount": 5000,
+          "employmentId": 5,
+          "employmentName": ""
+        }
+      ]
+    },
+    "total": 36875
+  },
+  "decreasesTax": {
+    "personalAllowance": 10000,
+    "personalAllowanceSourceAmount": 10000,
+    "paTransferredAmount" : 0,
+    "paReceivedAmount" : 0,
+    "paTapered": false,
+    "total": 10000
+  },
+  "totalLiability": {
+    "nonSavings": {
+      "totalIncome": 36875,
+      "totalTaxableIncome": 26875,
+      "totalTax": 5375,
+      "taxBands": [
+        {
+          "income": 26875,
+          "tax": 5375,
+          "lowerBand": 0,
+          "upperBand": 31865,
+          "rate": 20
+        },
+        {
+          "lowerBand": 31865,
+          "upperBand": 150000,
+          "rate": 40
+        },
+        {
+          "lowerBand": 150000,
+          "upperBand": 0,
+          "rate": 45
+        }
+      ],
+      "allowReliefDeducts": 10000
+    },
+    "mergedIncomes": {
+      "totalIncome": 36875,
+      "totalTaxableIncome": 26875,
+      "totalTax": 5375,
+      "taxBands": [
+        {
+          "income": 26875,
+          "tax": 5375,
+          "lowerBand": 0,
+          "upperBand": 31865,
+          "rate": 20
+        },
+        {
+          "lowerBand": 31865,
+          "upperBand": 150000,
+          "rate": 40
+        },
+        {
+          "lowerBand": 150000,
+          "upperBand": 0,
+          "rate": 45
+        }
+      ],
+      "allowReliefDeducts": 10000
+    },
+    "totalLiability": 5375,
+    "totalTax": 5375,
+    "totalTaxOnIncome":5375,
+    "underpaymentPreviousYear":0,
+    "inYearAdjustment": 0,
+    "outstandingDebt":0,
+    "childBenefitAmount": 0,
+    "childBenefitTaxDue": 0
+  },
+  "adjustedNetIncome":36875
+}

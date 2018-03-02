@@ -1,0 +1,62 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.EstimatedIncomeTaxComparisonViewModel
+@import uk.gov.hmrc.tai.model.tai.TaxYear
+@import uk.gov.hmrc.play.views.formatting.Money._
+
+@(viewmodel: EstimatedIncomeTaxComparisonViewModel)(implicit messages: Messages)
+
+    <h2 id="incomeTaxHeading" class="heading-large">
+        @viewmodel.changeInTaxAmount match {
+            case gt if gt > 0 => {@Html(messages("tai.incomeTaxComparison.incomeTax.subHeading.more", pounds(gt)))}
+            case lt if lt < 0 => {@Html(messages("tai.incomeTaxComparison.incomeTax.subHeading.less", pounds(lt.abs)))}
+            case _ => {@messages("tai.incomeTaxComparison.incomeTax.subHeading.same")}
+        }
+    </h2>
+
+    <p>@messages("tai.incomeTaxComparison.incomeTax.description")</p>
+    
+    <table class="table--font-reset flush--bottom" id="estimatedIncomeTaxComparisonTable">
+
+        <thead id="estimatedIncomeTaxComparisonTableHeader">
+        <tr class="text--right">
+            <td></td>
+            <th id="estimatedIncomeTaxComparisonTableHeaderCol1" scope="col" class="text--right">
+                <div>@messages("tai.CurrentTaxYear")</div>
+                <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column1", viewmodel.currentTaxYearHeader))</div>
+            </th>
+            <th id="estimatedIncomeTaxComparisonTableHeaderCol2" scope="col" class="text--right">
+                <div>@messages("tai.NextTaxYear")</div>
+                <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column2", viewmodel.nextTaxYearHeader))</div>
+            </th>
+        </tr>
+        </thead>
+    
+        <tbody id="estimatedIncomeTaxComparisonTableBody">
+
+        <tr id="estimatedIncomeTaxComparisonTableRow">
+            <td id="estimatedIncomeTaxComparisonTableRowDescription">@messages("tai.incomeTaxComparison.incomeTax.estimate")</td>
+
+            @viewmodel.comparisonItemsByYear.map { comparisonItem =>
+                <td class="text--right">@pounds(comparisonItem.estimatedIncomeTax)</td>
+            }
+
+        </tr>
+        
+        </tbody>
+    
+    </table>

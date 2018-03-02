@@ -1,0 +1,85 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.ptaHeader
+@import incomeTaxComparison._
+@import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
+@import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{IncomeTaxComparisonViewModel, EstimatedIncomeTaxComparisonViewModel}
+
+@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever = TaiHtmlPartialRetriever)
+
+@header = @{
+    ptaHeader(backLocation = Some(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()),
+        backLinkGaEventAction = None,
+        mainHeadingText = messages("tai.incomeTaxComparison.heading"),
+        preHeadingText = incomeTaxComparisonViewModel.username,
+        preHeadingAccessibleAnnouncement = messages("tai.incomeTaxComparison.preHeading.screenReader"))
+}
+
+@main(title = incomeTaxComparisonViewModel.username + "-" + messages("tai.incomeTaxComparison.heading"),
+    gaCustomTitle = Some(messages("tai.incomeTaxComparison.heading")),
+    pageHeader = Some(header),
+    user = Some(user)) {
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <section class="section" id="incomeTax" aria-labelledby="incomeTaxHeading">
+                @IncomeTax(incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel)
+            </section>
+
+            <section class="section" id="taxCodes" aria-labelledby="taxCodesHeading">
+                @TaxCodes(incomeTaxComparisonViewModel.taxCodeComparisonViewModel)
+            </section>
+
+            <section class="section" id="taxFreeAmount" aria-labelledby="taxFreeAmountHeading">
+                @TaxFreeAmount(incomeTaxComparisonViewModel.taxFreeAmountComparisonViewModel)
+            </section>
+
+            <section class="section" id="tellAboutChange" aria-labelledby="tellAboutChangeHeading">
+                <h2 class="heading-medium" id="tellAboutChangeHeading">@messages("tai.incomeTaxComparison.tellAboutChange.subHeading")</h2>
+
+                <p class="text">@messages("tai.incomeTaxComparison.tellAboutChange.description")</p>
+
+                <ul class="bullets">
+                    <li>@Link.toInternalPage(url = ApplicationConfig.companyBenefitsLinkUrl,
+                        value = Some("tai.incomeTaxComparison.tellAboutChange.companyBenefitsText"),
+                        id = Some("companyBenefitsLink")
+                    ).toHtml</li>
+                    <li>@Link.toInternalPage(url = ApplicationConfig.investmentIncomeLinkUrl,
+                        value = Some("tai.incomeTaxComparison.tellAboutChange.investmentIncomeText"),
+                        id = Some("investmentIncomeLink")
+                    ).toHtml</li>
+                    <li>@Link.toInternalPage(url = ApplicationConfig.taxableStateBenefitLinkUrl,
+                        value = Some("tai.incomeTaxComparison.tellAboutChange.stateBenefitsText"),
+                        id = Some("taxableStateBenefitLink")
+                    ).toHtml</li>
+                    <li>@Link.toInternalPage(url = ApplicationConfig.otherIncomeLinkUrl,
+                        value = Some("tai.incomeTaxComparison.tellAboutChange.otherIncomeText"),
+                        id = Some("otherIncomeLink")
+                    ).toHtml</li>
+                </ul>
+            </section>
+        </div>
+
+        <aside class="column-one-third">
+            <h2 class="heading-medium heading-section flush--top">@messages("tai.incomeTaxComparison.sidebar.subHeading")</h2>
+
+            <p class="text">@Link.toInternalPage(url = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
+                value = Some("tai.incomeTaxSummary.link"), id = Some("taxAccountSummaryLink")).toHtml</p>
+        </aside>
+    </div>
+}

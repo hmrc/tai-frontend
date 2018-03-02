@@ -1,0 +1,167 @@
+/*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package controllers.income.bbsi
+
+
+import controllers.auth.WithAuthorisedForTaiLite
+import controllers.{ServiceCheckLite, TaiBaseController}
+import uk.gov.hmrc.tai.forms.DateForm
+import uk.gov.hmrc.tai.forms.income.bbsi.BankAccountClosingInterestForm
+import uk.gov.hmrc.tai.viewModels.income.BbsiClosedCheckYourAnswersViewModel
+import play.api.Play.current
+import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.tai.model.domain.BankAccount
+import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnector, TaiHtmlPartialRetriever}
+import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.model.CloseAccountRequest
+import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
+
+import scala.concurrent.Future
+
+
+trait BbsiCloseAccountController extends TaiBaseController
+  with DelegationAwareActions
+  with WithAuthorisedForTaiLite
+  with JourneyCacheConstants {
+
+  def taiService: TaiService
+
+  def bbsiService: BbsiService
+
+  def journeyCacheService: JourneyCacheService
+
+  def captureCloseDate(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+    implicit user =>
+      implicit taiRoot =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            bbsiService.bankAccount(Nino(user.getNino), id) map {
+              case Some(BankAccount(_, Some(_), Some(_), Some(bankName), _, _)) =>
+                Ok(views.html.incomes.bbsi.close.bank_building_society_close_date(
+                  DateForm(Nil, Messages("tai.closeBankAccount.closeDateForm.blankDate", bankName)).form, bankName, id))
+              case Some(_) => throw new RuntimeException(s"Bank account does not contain name, number or sortcode for nino: [${user.getNino}] and id: [$id]")
+              case None => throw new RuntimeException(s"Bank account not found for nino: [${user.getNino}] and id: [$id]")
+            }
+          }
+  }
+
+  def submitCloseDate(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+    implicit user =>
+      implicit taiRoot =>
+        implicit request =>
+          bbsiService.bankAccount(Nino(user.getNino), id) flatMap {
+            case Some(BankAccount(_, Some(_), Some(_), Some(bankName), _, _)) =>
+              DateForm(Nil, Messages("tai.closeBankAccount.closeDateForm.blankDate", bankName))
+                .form.bindFromRequest()
+                .fold(
+                  formWithErrors => {
+                    Future.successful(
+                      BadRequest(views.html.incomes.bbsi.close.bank_building_society_close_date(formWithErrors, bankName, id)))
+                  },
+                  date => {
+                    journeyCacheService.cache(Map(CloseBankAccountDateKey -> date.toString, CloseBankAccountNameKey -> bankName)).map(_ =>
+                      if (TaxYearResolver.fallsInThisTaxYear(date)) {
+                        Redirect(controllers.income.bbsi.routes.BbsiCloseAccountController.captureClosingInterest(id))
+                      } else {
+                        Redirect(controllers.income.bbsi.routes.BbsiCloseAccountController.checkYourAnswers(id))
+                      })
+                  }
+                )
+            case Some(_) => throw new RuntimeException(s"Bank account does not contain name, number or sortcode for nino: [${user.getNino}] and id: [$id]")
+            case None => throw new RuntimeException(s"Bank account not found for nino: [${user.getNino}] and id: [$id]")
+          }
+  }
+
+  def captureClosingInterest(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+    implicit user =>
+      implicit taiRoot =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            bbsiService.bankAccount(Nino(user.getNino), id) map {
+              case Some(BankAccount(_, Some(_), Some(_), Some(bankName), _, _)) =>
+                Ok(views.html.incomes.bbsi.close.bank_building_society_closing_interest(id, BankAccountClosingInterestForm.form))
+              case Some(_) => throw new RuntimeException(s"Bank account does not contain name, number or sortcode for nino: [${user.getNino}] and id: [$id]")
+              case None => throw new RuntimeException(s"Bank account not found for nino: [${user.getNino}] and id: [$id]")
+            }
+          }
+  }
+
+  def submitClosingInterest(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+    implicit user =>
+      implicit taiRoot =>
+        implicit request =>
+          BankAccountClosingInterestForm.form.bindFromRequest().fold(
+            formWithErrors => {
+              Future.successful(BadRequest(views.html.incomes.bbsi.close.bank_building_society_closing_interest(id, formWithErrors)))
+            },
+            form => {
+              journeyCacheService.cache(Map(CloseBankAccountInterestKey -> FormHelper.stripNumber(form.closingInterestEntry.getOrElse("")))) map { _ =>
+                Redirect(controllers.income.bbsi.routes.BbsiCloseAccountController.checkYourAnswers(id))
+              }
+            }
+          )
+  }
+
+  def submitYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+    implicit user =>
+      implicit taiRoot =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            for {
+              endDate <- journeyCacheService.mandatoryValueAsDate(CloseBankAccountDateKey)
+              closingInterest <- journeyCacheService.currentValueAs(CloseBankAccountInterestKey, string => BigDecimal(string))
+              _ <- bbsiService.closeBankAccount(Nino(user.getNino), id, CloseAccountRequest(endDate, closingInterest))
+            } yield {
+              journeyCacheService.flush()
+              Redirect(controllers.income.bbsi.routes.BbsiController.endConfirmation())
+            }
+          }
+  }
+
+  def checkYourAnswers(id:Int): Action[AnyContent] = authorisedForTai(taiService).async {
+    implicit user =>
+      implicit taiRoot =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            journeyCacheService.collectedValues(Seq(CloseBankAccountDateKey), Seq(CloseBankAccountNameKey, CloseBankAccountInterestKey)) map { seq =>
+              val model = BbsiClosedCheckYourAnswersViewModel(id, seq._1.head, seq._2.head, seq._2.tail.head)
+              Ok(views.html.incomes.bbsi.close.bank_building_society_check_your_answers(model))
+            }
+          }
+  }
+}
+
+object BbsiCloseAccountController extends BbsiCloseAccountController {
+
+  override val taiService = TaiService
+  override val bbsiService = BbsiService
+
+  override val journeyCacheService = JourneyCacheService(CloseBankAccountJourneyKey)
+
+  override protected val delegationConnector = FrontEndDelegationConnector
+  override protected val authConnector = FrontendAuthConnector
+
+  override implicit val templateRenderer = LocalTemplateRenderer
+  override implicit val partialRetriever = TaiHtmlPartialRetriever
+}
+

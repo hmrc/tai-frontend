@@ -1,0 +1,73 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.{ptaHeader, cancelLink}
+@import includes.forms.submit
+@import uk.gov.hmrc.play.views.html.helpers.{form, input}
+@import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+@import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.tai.forms.income.bbsi.BankAccountClosingInterestForm
+@import includes.forms.inputRadioGroupNewStyling
+
+@(id: Int, closingInterestForm: Form[BankAccountClosingInterestForm])(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever = TaiHtmlPartialRetriever)
+
+@gaEventActionString = @{"Do you know how much interest you earned?"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(closingInterestForm),
+        backLocation = Some(controllers.income.bbsi.routes.BbsiCloseAccountController.captureCloseDate(id)),
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.closeBankAccount.closingInterest.heading", TaxYearResolver.currentTaxYear.toString),
+        preHeadingText = Messages("tai.closeBankAccount.preHeadingText")
+    )
+}
+
+@main(
+    title = Messages("tai.closeBankAccount.closingInterest.title"),
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = None) {
+
+        @form(action = controllers.income.bbsi.routes.BbsiCloseAccountController.submitClosingInterest(id), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {
+
+            @{inputRadioGroupNewStyling(
+                field=closingInterestForm(BankAccountClosingInterestForm.ClosingInterestChoice),
+                radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),
+                legend=Messages("tai.closeBankAccount.closingInterest.legend"),
+                legendHint=None,
+                ('_groupDivClass, "form-group" ),
+                ('_groupClass, "inline"),
+                ('_fieldsetAttributes, "id=closingInterestChoice" ),
+                ('_legendClass, "visuallyhidden"),
+                ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Do you know how much interest you earned?:Yes" data-journey-val="Yes" data-dynamic-fields-hide="false" data-dynamic-fields="closingInterestEntry"""") ),
+                ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Do you know how much interest you earned?:No" data-journey-val="No" data-dynamic-fields-hide="true" data-dynamic-fields="closingInterestEntry"""") )
+            )}
+
+            <fieldset id="closingInterestEntry-container" class="@if(closingInterestForm(BankAccountClosingInterestForm.ClosingInterestChoice).value.getOrElse("") != BankAccountClosingInterestForm.YesValue){js-hidden} data-closingInterestEntry inline form-field-group panel-indent">
+                @input(field=closingInterestForm(BankAccountClosingInterestForm.ClosingInterestEntry),
+                '_label -> Messages("tai.closeBankAccount.closingInterest.label"),
+                '_inputClass -> "form-control input--cleared")
+            </fieldset>
+
+        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Yes"), buttonMessageKey = Some(messages("tai.submit")))
+    }
+
+    @cancelLink(controllers.income.bbsi.routes.BbsiController.accounts())
+}
+
+

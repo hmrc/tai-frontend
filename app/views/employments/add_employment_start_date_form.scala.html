@@ -1,0 +1,57 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.forms._
+@import includes.{cancelLink, ptaHeader}
+@import org.joda.time.LocalDate
+@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+
+@(dateForm: Form[LocalDate], employmentName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever = TaiHtmlPartialRetriever)
+
+@gaEventActionString = @{"When did you start working for this employer?"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(dateForm),
+        backLocation =Some(controllers.employments.routes.AddEmploymentController.addEmploymentName()),
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.addEmployment.startDateForm.title", employmentName),
+        preHeadingText = Messages("tai.addEmployment.addEmploymentJourneyLink")
+    )
+}
+
+@main(
+    title = Messages("tai.addEmployment.startDateForm.title", employmentName),
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = Some(Messages("tai.addEmployment.startDateForm.customGaTitle")))  {
+
+    @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentStartDate(), args=(Symbol("class"), "subsection")) {
+        @date(
+            form = dateForm,
+            fieldPrefix = "tellUsStartDateForm",
+            labelText = Messages("tai.addEmployment.startDateForm.label", employmentName),
+            legendBold = true
+        )
+
+        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing employment"))
+    }
+
+    @cancelLink(url = routes.TaxAccountSummaryController.onPageLoad(), gaEventAction = Some(gaEventActionString))
+
+}

@@ -1,0 +1,445 @@
+body.print-page {
+  background: #A9A9A9;
+  font-family: nta, Arial, sans-serif;
+  margin: 0;
+}
+
+body.print-page .grid .inner-block { margin: 0 15px; }
+
+body.print-page .column-whole {
+  padding: 0 15px;
+}
+body.print-page .column-third,
+body.print-page .column-two-thirds {
+  width: 100%;
+}
+body.print-page .nav {
+  background-color: #0B0C0C;
+  height: 50px;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+body.print-page .nav .nav-container {
+  margin: 0 auto;
+  width: auto;
+}
+body.print-page .nav .nav-container .column-half {
+  float: left;
+  width: 50%;
+}
+body.print-page .nav .nav-container .back-link a {
+  border-bottom: 1px solid #fff;
+  color: #fff;
+  display: inline-block;
+  font-size: 14px;
+  line-height: 1.1428571429;
+  margin-left: 5px;
+  margin-top: 15px;
+  padding-left: 14px;
+  position: relative;
+  text-decoration: none;
+}
+body.print-page .nav .nav-container .back-link a::before {
+  border-top: 5px solid transparent;
+  border-right: 6px solid #fff;
+  border-bottom: 5px solid transparent;
+  content: '';
+  display: block;
+  height: 0;
+  left: 0;
+  margin-top: -6px;
+  position: absolute;
+  top: 50%;
+  width: 0;
+}
+body.print-page .nav .nav-container .print-button {
+  margin-top: 5px;
+  text-align: right;
+}
+body.print-page .nav .nav-container .print-button a {
+  background: #2B8CC4 url("/check-income-tax/assets/images/print-icon.png") center left no-repeat;
+  border: none;
+  -moz-box-shadow: 0 2px 0 #005EA5;
+  -webkit-box-shadow: 0 2px 0 #005EA5;
+  box-shadow: 0 2px #005EA5;
+  color: #fff;
+  display: inline-block;
+  font-weight: bold;
+  line-height: 25px;
+  margin-right: 5px;
+  padding: 7px 10px 4px 34px;
+  position: relative;
+  text-decoration: none;
+  vertical-align: top;
+}
+body.print-page .print-wrapper .box {
+  background-color: #fff;
+  margin: 60px 5px 10px 5px;
+  min-height: 900px;
+  padding: 10px 20px;
+  width: auto;
+}
+body.print-page .print-wrapper .box p {
+  margin-top: 0.3125em;
+  margin-bottom: 1.25em;
+}
+body.print-page .print-wrapper .box .header {
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+body.print-page .print-wrapper .box .header .logo {
+  float: left;
+}
+body.print-page .print-wrapper .box .header .logo img {
+  height: 48px;
+  width: 180px;
+}
+body.print-page .print-wrapper .box .header .title {
+  float: left;
+  text-align: left;
+}
+body.print-page .print-wrapper .box .header .title h1 {
+  font-family: Arial,sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  float: left;
+  margin: 0;
+  padding-top: 22px;
+}
+body.print-page .print-wrapper .box hr {
+  border-top: 10px solid #0b0c0c;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+body.print-page .print-wrapper .box .addresses {
+  margin-top: 15px;
+}
+body.print-page .print-wrapper .box .addresses .recipient-wrapper {
+  font-size: 14px;
+  line-height: 22px;
+  margin-top: 10px;
+  text-transform: uppercase;
+}
+body.print-page .print-wrapper .box .addresses .sender-wrapper .sender,
+body.print-page .print-wrapper .box .addresses .sender-wrapper .url,
+body.print-page .print-wrapper .box .addresses .sender-wrapper .date {
+  color: #0b0c0c;
+  font-size: 14px;
+  line-height: 22px;
+  margin-left: 0;
+}
+body.print-page .print-wrapper .box .addresses .sender-wrapper .sender {
+  margin-top: 20px;
+}
+body.print-page .print-wrapper .box .addresses .sender-wrapper .url {
+  margin-bottom: 30px;
+  margin-top: 20px;
+}
+body.print-page .print-wrapper .box .main-content {
+  font-size: 14px;
+  margin-top: 15px;
+}
+body.print-page .print-wrapper .box .main-content .name {
+  text-transform: uppercase;
+}
+body.print-page .print-wrapper .box .main-content .your-nino {
+  border: 2px solid #000;
+  display: inline-block;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 5px 0 20px;
+  padding: 5px 10px;
+}
+body.print-page .print-wrapper .box .main-content .your-nino .nino {
+  color: #0b0c0c;
+  display: block;
+  font-size: 20px;
+  font-weight: bold;
+}
+body.print-page .print-wrapper .box .main-content ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+body.print-page .print-wrapper .box .main-content h2 {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+}
+
+@media (min-width: 641px) {
+  body.print-page .column-whole {
+    padding: 0 15px;
+  }
+  body.print-page .column-third {
+    padding: 0 15px;
+    box-sizing: border-box;
+  }
+}
+@media (min-width: 641px) and (min-width: 641px) {
+  body.print-page .column-third {
+    float: left;
+    width: 33.33333%;
+  }
+}
+@media (min-width: 641px) {
+  body.print-page .column-two-thirds {
+    padding: 0 15px;
+    box-sizing: border-box;
+  }
+}
+@media (min-width: 641px) and (min-width: 641px) {
+  body.print-page .column-two-thirds {
+    float: left;
+    width: 66.66667%;
+  }
+}
+@media (min-width: 641px) {
+  body.print-page .column-half {
+    padding: 0 15px;
+    box-sizing: border-box;
+  }
+}
+@media (min-width: 641px) and (min-width: 641px) {
+  body.print-page .column-half {
+    float: left;
+    width: 50%;
+  }
+}
+@media (min-width: 641px) {
+  body.print-page .nav .nav-container {
+    width: 600px;
+  }
+  body.print-page .nav .nav-container .back-link a {
+    margin-left: 0;
+  }
+  body.print-page .nav .nav-container .print-button a {
+    margin-right: 0;
+  }
+  body.print-page .print-wrapper .box {
+    margin: 60px auto 10px;
+    padding: 25px 40px;
+    width: 520px;
+  }
+  body.print-page .print-wrapper .box .header .title {
+    float: right;
+    text-align: right;
+  }
+  body.print-page .print-wrapper .box .header .title h1 {
+    font-size: 21px;
+    float: right;
+    padding-top: 22px;
+  }
+  body.print-page .print-wrapper .box .addresses .recipient-wrapper {
+    margin-top: 40px;
+  }
+  body.print-page .print-wrapper .box .addresses .sender-wrapper .sender,
+  body.print-page .print-wrapper .box .addresses .sender-wrapper .url,
+  body.print-page .print-wrapper .box .addresses .sender-wrapper .date {
+    margin-left: 50px;
+  }
+  body.print-page .print-wrapper .box .addresses .sender-wrapper .sender {
+    margin-top: 5px;
+  }
+  body.print-page .print-wrapper .box .main-content .your-nino .nino {
+    display: inline;
+  }
+}
+@media (min-width: 769px) {
+  body.print-page .nav .nav-container {
+    width: 700px;
+  }
+  body.print-page .print-wrapper .box {
+    padding: 25px 50px;
+    width: 600px;
+  }
+  body.print-page .print-wrapper .box .header .title h1 {
+    font-size: 22px;
+    padding-top: 22px;
+  }
+}
+
+.print-table__header--highlight {
+    border-bottom: 2px solid #005EA5;
+}
+.print-table__header--secondary {
+    color: #6f777b;
+}
+
+.print-table__link{
+    padding: 5px 0px 5px 0px;
+    font-size: 16px;
+}
+
+.print-table {
+    text-align: left;
+}
+
+.print-table th {
+    width: 30%;
+    padding-bottom: 6px;
+}
+
+#print-date-column th{
+    width: 20%;
+    padding-bottom: 6px;
+}
+
+.print-table {
+  border-collapse: collapse;
+}
+
+tr.print-pension-contributions-data td {
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #bfc1c3;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.print-table__row--bold td, th{
+  font-weight: bold;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: #bfc1c3;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+#print-date-column {
+  width: 18%;
+}
+
+#print-taxable-income-column {
+  width: 23%;
+}
+
+#print-income-tax-paid-column {
+  width: 22%;
+}
+
+.print-text--right {
+  text-align: right;
+}
+
+@-ms-viewport {
+  width: device-width;
+}
+@-o-viewport {
+  width: device-width;
+}
+@-ms-viewport {
+  width: device-width;
+}
+@-o-viewport {
+  width: device-width;
+}
+@-ms-viewport {
+  width: device-width;
+}
+@-o-viewport {
+  width: device-width;
+}
+.print-grid-row:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.print-grid-row {
+  margin: 0 -15px;
+}
+
+#print-icon-important-multi {
+    float: left;
+    padding-bottom: 12%;
+    padding-right: 2%;
+}
+
+@media print {
+  @page {
+    size: portrait;
+    margin: 0mm;
+    padding: 1cm .5cm;
+  }
+  html {
+    margin: 0px;
+  }
+  body.print-page {
+    background: #fff;
+  }
+  body.print-page .print-wrapper {
+    margin: 20px auto 0;
+    width: 90%;
+  }
+  body.print-page .print-wrapper .nav {
+    display: none;
+    visibility: hidden;
+  }
+  body.print-page .print-wrapper .box {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+  body.print-page .print-wrapper .box .column-third {
+    float: left;
+    width: 33.3%;
+  }
+  body.print-page .print-wrapper .box .column-two-thirds {
+    float: left;
+    width: 66.6%;
+  }
+  body.print-page .print-wrapper .box .column-half {
+    float: left;
+    width: 50%;
+  }
+  body.print-page .print-wrapper .box .header .logo {
+    float: left;
+  }
+  body.print-page .print-wrapper .box .header .title {
+    float: right;
+  }
+  body.print-page .print-wrapper .box .header .title h1 {
+    font-size: 22px;
+    float: right;
+    padding-top: 22px;
+  }
+  body.print-page .print-wrapper .box .addresses .recipient-wrapper {
+    margin-top: 50px;
+  }
+  body.print-page .print-wrapper .box .addresses .sender-wrapper .sender,
+  body.print-page .print-wrapper .box .addresses .sender-wrapper .date,
+  body.print-page .print-wrapper .box .addresses .sender-wrapper .url {
+    margin-left: 60px;
+  }
+  body.print-page .print-wrapper .box .main-content {
+    width: 90%;
+  }
+  body.print-page .print-wrapper .box .header .logo {
+    float: left;
+  }
+  body.print-page .print-wrapper .box .header .logo img {
+    height: 48px;
+    width: 180px;
+  }
+  body.print-page {
+    background: #A9A9A9;
+    font-family: "nta", Arial, sans-serif;
+    margin: 0;
+  }
+  body.print-page .column-whole {
+    padding: 0 15px;
+  }
+  body.print-page .column-third,
+  body.print-page .column-two-thirds {
+    width: 100%;
+  }
+
+  body.print-page .print-wrapper .box .main-content .your-nino .nino {
+    color: #0b0c0c;
+    display: inline;
+    font-size: 20px;
+    font-weight: bold;
+  }
+}

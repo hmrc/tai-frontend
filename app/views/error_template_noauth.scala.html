@@ -1,0 +1,37 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(pageTitle: String, heading: String, message1: String, message2: Option[String] = None)(implicit request: Request[_],
+messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+
+@main(
+    title=pageTitle,
+    gaCustomTitle = None
+){
+    <section class="section">
+        <h1 class="h1-heading">@heading</h1>
+        <div class="grid grid-2-3">
+            <p id="paraOne" class="text">@Html(message1)</p>
+            @message2 match {
+                case Some(message2) => {
+                    <p id="paraTwo" class="text">@Html(message2)</p>
+                }
+                case _ => {}
+            }
+        </div>
+    </section>
+}
+

@@ -1,0 +1,80 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.{backLink}
+@import includes.forms.submit
+@import includes.{cancelLink, ptaHeader}
+@import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary, input}
+@import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+@import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm
+@import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
+@import includes.forms.inputRadioGroupNewStyling
+
+@(payrollNumberForm: Form[AddEmploymentPayrollNumberForm], payrollNumberViewModel: PayrollNumberViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever = TaiHtmlPartialRetriever)
+
+@gaEventActionString = @{"Do you know your payroll number for this employer?"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(payrollNumberForm),
+        backLocation = if(payrollNumberViewModel.firstPayChoice) Some(controllers.employments.routes.AddEmploymentController.receivedFirstPay())
+                        else Some(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate()),
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName),
+        preHeadingText = Messages("tai.addEmployment.addEmploymentJourneyLink"))}
+
+@main(
+    title = Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName),
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = Some(Messages("tai.addEmployment.employmentPayrollNumber.customGaTitle"))
+) {
+
+    <p class="text">@Messages("tai.addEmployment.employmentPayrollNumber.info")</p>
+    <ul id="payroll-number-info" class="bullets">
+        <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet1")</li>
+        <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet2")</li>
+        <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet3")</li>
+        <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet4")</li>
+    </ul>
+
+    @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentPayrollNumber(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {
+
+        @{inputRadioGroupNewStyling(
+            field=payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberChoice),
+            radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),
+            legend=Messages("tai.addEmployment.employmentPayrollNumber.legend"),
+            legendHint=None,
+            ('_groupDivClass, "form-group" ),
+            ('_groupClass, "inline"),
+            ('_fieldsetAttributes, "id=payrollNumberChoice" ),
+            ('_legendClass, "visuallyhidden"),
+            ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Do you know your payroll number for this employer?:Yes" data-journey-val="Yes" data-dynamic-fields-hide="false" data-dynamic-fields="payrollNumberEntry"""") ),
+            ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Do you know your payroll number for this employer?:No" data-journey-val="No" data-dynamic-fields-hide="true" data-dynamic-fields="payrollNumberEntry"""") )
+        )}
+
+        <fieldset id="payrollNumberEntry-container" class="@if(payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberChoice).value.getOrElse("") != AddEmploymentPayrollNumberForm.YesValue){js-hidden} data-payrollNumberEntry inline form-field-group panel-indent">
+            @input(field=payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberEntry),
+                '_label -> Messages("tai.addEmployment.employmentPayrollNumber.label"),
+                '_inputClass -> "form-control input--cleared")
+        </fieldset>
+
+        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing employment"))
+    }
+
+    @cancelLink(routes.TaxAccountSummaryController.onPageLoad(), gaEventAction = Some(gaEventActionString))
+}

@@ -1,0 +1,45 @@
+a,
+.link-style,
+.button--link-style,
+.link-style:visited,
+.button--link-style:visited,
+.button--link-style:focus {
+  color: #005EA5;
+}
+a:hover,
+.link-style:hover,
+.button--link-style:hover {
+  color: #2e8aca;
+}
+.link-style--no-hover:hover {
+  color: #005EA5;
+}
+.button--link-style:focus {
+  background-color: #ffbf47;
+}
+.button--link-style:active {
+  top: 0;
+}
+.link-forward {
+  display: inline-block;
+  position: relative;
+  padding-right: 14px;
+  color: black;
+  text-decoration: none;
+
+  &::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+
+    border-top: 5px solid transparent;
+    border-left: 6px solid #0b0c0c;
+    border-bottom: 5px solid transparent;
+
+    position: absolute;
+    right: 0;
+    top: 50%;
+    margin-top: -6px;
+  }
+}

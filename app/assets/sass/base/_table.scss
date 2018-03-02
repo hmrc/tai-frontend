@@ -1,0 +1,32 @@
+// TODO remove once in AF
+.table__header--highlight {
+    border-bottom: 2px solid #005EA5;
+}
+.table__header--secondary {
+    color: #6f777b;
+}
+
+.table__link{
+    padding: 5px 0px 5px 0px;
+    font-size: 16px;
+}
+
+.table__footer--highlight {
+    background: #F8F8F8;
+}
+
+.table__caption {
+    padding: .73684em 1.05263em .52632em 0;
+}
+
+.table__caption--bottom-border {
+    border-bottom: 1px solid #bfc1c3
+}
+
+.table__row--top-border {
+    border-top: 1px solid #bfc1c3;
+}
+
+.table__cell--fixed-width {
+    width: 28%;
+}

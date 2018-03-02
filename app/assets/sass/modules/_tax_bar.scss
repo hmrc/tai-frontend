@@ -1,0 +1,84 @@
+.chart {
+    position:relative;
+    height:1.42105263157894736842em; /* 27 / 19 */
+    width:auto;
+    background-color:#bfc1c3;
+}
+.chart-bar {
+    height:100%;
+    width:0%;
+    background-color:#2b8cc4;
+    float:left;
+}
+.chart span {
+    position:absolute;
+    top:22%;
+    margin-left:0.26315789473684210526em;
+    font-weight:700;
+}
+.tax-bar {
+    position:relative;
+    height:0.52631578947368421053em; /* 10 / 19 */
+    border:0px solid #6F777B;
+    width:auto;
+}
+.tax-point {
+    height:0.52631578947368421053em; /* 10 / 19 */
+    width:2px;
+    background:#BFC1C3;
+    position:absolute;
+}
+
+.number-bar {
+    position:relative;
+    width:auto;
+    height:0.78947368421052631579em;
+    margin:0.263158em 0;
+}
+.number-bar span {
+    position:absolute;
+    text-align:center;
+    font-size:16px;
+}
+.number-bar .centred {
+    width:30%;
+    margin-left:-15%;
+}
+.number-bar .right {
+    width:30%;
+    margin-right:-30%;
+    text-align: left;
+}
+.number-bar .left {
+    width:30%;
+    margin-left:-30%;
+    text-align:right;
+}
+
+.key {
+    margin-left: 0px;
+    margin-bottom: 1em;
+    line-height:1.578947368421053em;
+}
+
+.key-icon {
+    display:block;
+    width:1.578947368421053em;
+    height:1.578947368421053em;
+    background-color:transparent;
+    float:left;
+    clear:both;
+    margin-right:0.5em;
+}
+.key-icon.Band-unused {
+    height:1.31578947368421052632em;
+    width:1.31578947368421052632em;
+}
+
+.TaxFree { background-color:#28A197; }
+
+.Band {
+    background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGklEQVQYlWP43KjwnxjMMIgUwgD1FA5CXwMAwSgHIKE1x7oAAAAASUVORK5CYII=) repeat;
+}
+.Band-unused { background-color:#BFC1C3; }
+

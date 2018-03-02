@@ -1,0 +1,940 @@
+{
+  "nino": "$NINO",
+  "version": 1,
+  "accounts":[],
+  "increasesTax": {
+    "incomes": {
+      "taxCodeIncomes": {
+        "employments": {
+          "taxCodeIncomes": [
+            {
+              "name": "",
+              "taxCode": "K5817",
+              "employmentId": 1,
+              "employmentPayeRef": "",
+              "employmentType": 1,
+              "incomeType": 0,
+              "employmentStatus": 1,
+              "tax": {
+                "totalIncome": 50000,
+                "totalTaxableIncome": 108167,
+                "totalTax": 36909.8,
+                "potentialUnderpayment": 234,
+                "taxBands": [
+                  {
+                    "income": 31785,
+                    "tax": 6357,
+                    "lowerBand": 0,
+                    "upperBand": 31785,
+                    "rate": 20
+                  },
+                  {
+                    "income": 76382,
+                    "tax": 30552.8,
+                    "lowerBand": 31785,
+                    "upperBand": 150000,
+                    "rate": 40
+                  },
+                  {
+                    "income": 0,
+                    "tax": 0,
+                    "lowerBand": 150000,
+                    "rate": 45
+                  }
+                ],
+                "allowReliefDeducts": -58167,
+                "actualTaxDueAssumingBasicRateAlreadyPaid": 26909.8
+              },
+              "worksNumber": "",
+              "jobTitle": "Job Title 1",
+              "startDate": "2010-01-01",
+              "income": 50000,
+              "isEditable": true,
+              "isLive": true,
+              "isOccupationalPension": false,
+              "isPrimary": true
+            }
+          ],
+          "totalIncome": 50000,
+          "totalTax": 36909.8,
+          "totalTaxableIncome": 108167
+        },
+        "occupationalPensions": {
+          "taxCodeIncomes": [
+            {
+              "name": "",
+              "taxCode": "D0",
+              "employmentId": 2,
+              "employmentPayeRef": "",
+              "employmentType": 2,
+              "incomeType": 1,
+              "employmentStatus": 1,
+              "tax": {
+                "totalIncome": 50000,
+                "totalTaxableIncome": 50000,
+                "totalTax": 11273.36,
+                "actualTaxDueAssumingBasicRateAlreadyPaid": 11273.36
+              },
+              "worksNumber": "WN 2",
+              "jobTitle": "Job Title 2",
+              "startDate": "2010-01-01",
+              "income": 50000,
+              "isEditable": true,
+              "isLive": true,
+              "isOccupationalPension": true,
+              "isPrimary": false
+            }
+          ],
+          "totalIncome": 50000,
+          "totalTax": 11273.36,
+          "totalTaxableIncome": 50000
+        },
+        "hasDuplicateEmploymentNames": false,
+        "totalIncome": 100000,
+        "totalTaxableIncome": 158167,
+        "totalTax": 48183.16
+      },
+      "noneTaxCodeIncomes": {
+        "statePension": 100,
+        "otherIncome": {
+          "amount": 200,
+          "componentType": 0,
+          "description": "",
+          "iabdSummaries": [
+            {
+              "iabdType": 72,
+              "description": "Profit",
+              "amount": 100,
+              "employmentId": 0
+            },
+            {
+              "iabdType": 19,
+              "description": "Non-Coded Income",
+              "amount": 100,
+              "employmentId": 0
+            }
+          ]
+        },
+        "taxableStateBenefit": {
+          "amount": 300,
+          "componentType": 0,
+          "description": "",
+          "iabdSummaries": [
+            {
+              "iabdType": 123,
+              "description": "Employment and Support Allowance",
+              "amount": 100,
+              "employmentId": 0
+            },
+            {
+              "iabdType": 84,
+              "description": "Job Seekers Allowance",
+              "amount": 100,
+              "employmentId": 0
+            },
+            {
+              "iabdType": 83,
+              "description": "Incapacity Benefit",
+              "amount": 100,
+              "employmentId": 0
+            }
+          ]
+        },
+        "untaxedInterest": {
+          "amount": 5000,
+          "componentType": 0,
+          "description": "",
+          "iabdSummaries": [
+            {
+              "iabdType": 82,
+              "description": "Untaxed Interest",
+              "amount": 5000,
+              "employmentId": 0
+            }
+          ]
+        },
+        "bankBsInterest": {
+          "amount": 5000,
+          "componentType": 0,
+          "description": "",
+          "iabdSummaries": [
+            {
+              "iabdType": 75,
+              "description": "Bank / Building Society Interest",
+              "amount": 5000,
+              "employmentId": 0
+            }
+          ]
+        },
+        "dividends": {
+          "amount": 20000,
+          "componentType": 0,
+          "description": "",
+          "iabdSummaries": [
+            {
+              "iabdType": 76,
+              "description": "UK Dividend",
+              "amount": 20000,
+              "employmentId": 0
+            }
+          ]
+        },
+        "totalIncome": 30600
+      },
+      "total": 130600
+    },
+    "benefitsFromEmployment": {
+      "amount": 14835,
+      "componentType": 0,
+      "description": "",
+      "iabdSummaries": [
+        {
+          "iabdType": 53,
+          "description": "Travel and Subsistence",
+          "amount": 12000,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 54,
+          "description": "Vouchers and Credit Cards",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 53,
+          "description": "Travel and Subsistence",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 50,
+          "description": "Qualfying Relocation Expenses",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 49,
+          "description": "Personal Incidental Expenses",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 48,
+          "description": "Payments on Employee's Behalf",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 47,
+          "description": "Other Items",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 46,
+          "description": "Nursery Places",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 45,
+          "description": "Non-qualifying Relocation Expenses",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 44,
+          "description": "Mileage",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 52,
+          "description": "Income Tax Paid but not deducted from Director's Remuneration",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 43,
+          "description": "Expenses",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 42,
+          "description": "Entertaining",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 8,
+          "description": "Employer Provided Services",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 51,
+          "description": "Employer Provided Professional Subscription",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 41,
+          "description": "Educational Services",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 40,
+          "description": "Asset Transfer",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 39,
+          "description": "Assets",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 38,
+          "description": "Accommodation",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 117,
+          "description": "Non-Cash Benefit",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 37,
+          "description": "Beneficial Loan",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 36,
+          "description": "Van Fuel Benefit",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 35,
+          "description": "Van Benefit",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 34,
+          "description": "Taxable Expenses Benefit",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 33,
+          "description": "Service Benefit",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 32,
+          "description": "Telephone",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 31,
+          "description": "Car Benefit",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 30,
+          "description": "Medical Insurance",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 29,
+          "description": "Car Fuel Benefit",
+          "amount": 100,
+          "employmentId": 1,
+          "employmentName": ""
+        },
+        {
+          "iabdType": 54,
+          "description": "Vouchers and Credit Cards",
+          "amount": 35,
+          "employmentId": 1,
+          "employmentName": ""
+        }
+      ]
+    },
+    "total": 145435
+  },
+  "decreasesTax": {
+    "personalAllowance": 1060,
+    "personalAllowanceSourceAmount": 10600,
+    "blindPerson": {
+      "amount": 200,
+      "componentType": 0,
+      "description": "",
+      "iabdSummaries": [
+        {
+          "iabdType": 15,
+          "description": "BPA Received from Spouse/Civil Partner",
+          "amount": 100,
+          "employmentId": 0
+        },
+        {
+          "iabdType": 14,
+          "description": "Blind Persons Allowance",
+          "amount": 100,
+          "employmentId": 0
+        }
+      ]
+    },
+    "expenses": {
+      "amount": 400,
+      "componentType": 0,
+      "description": "",
+      "iabdSummaries": [
+        {
+          "iabdType": 101,
+          "description": "Early Years Adjustment",
+          "amount": 100,
+          "employmentId": 0
+        },
+        {
+          "iabdType": 57,
+          "description": "Professional Subscriptions",
+          "amount": 100,
+          "employmentId": 0
+        },
+        {
+          "iabdType": 56,
+          "description": "Flat Rate Job Expenses",
+          "amount": 100,
+          "employmentId": 0
+        },
+        {
+          "iabdType": 56,
+          "description": "Flat Rate Job Expenses",
+          "amount": 100,
+          "employmentId": 0
+        }
+      ]
+    },
+    "giftRelated": {
+      "amount": 100,
+      "componentType": 0,
+      "description": "",
+      "iabdSummaries": [
+        {
+          "iabdType": 17,
+          "description": "Gifts of Shares to Charity",
+          "amount": 100,
+          "employmentId": 0
+        }
+      ]
+    },
+    "jobExpenses": {
+      "amount": 500,
+      "componentType": 0,
+      "description": "",
+      "iabdSummaries": [
+        {
+          "iabdType": 61,
+          "description": "Mileage Allowance Relief",
+          "amount": 100,
+          "employmentId": 0
+        },
+        {
+          "iabdType": 60,
+          "description": "Vehicle Expenses",
+          "amount": 100,
+          "employmentId": 0
+        },
+        {
+          "iabdType": 59,
+          "description": "Other Expenses",
+          "amount": 100,
+          "employmentId": 0
+        },
+        {
+          "iabdType": 58,
+          "description": "Hotel and Meal Expenses",
+          "amount": 100,
+          "employmentId": 0
+        },
+        {
+          "iabdType": 55,
+          "description": "Job Expenses",
+          "amount": 100,
+          "employmentId": 0
+        }
+      ]
+    },
+    "paTransferredAmount": 0,
+    "paReceivedAmount": 1060,
+    "paTapered": true,
+    "total": 2260
+  },
+  "other": {
+    "amount": 31060,
+    "componentType": 0,
+    "description": "",
+    "iabdSummaries": [
+      {
+        "iabdType": 76,
+        "description": "UK Dividend",
+        "amount": 20000,
+        "employmentId": 0
+      },
+      {
+        "iabdType": 75,
+        "description": "Bank / Building Society Interest",
+        "amount": 5000,
+        "employmentId": 0
+      },
+      {
+        "iabdType": 82,
+        "description": "Untaxed Interest",
+        "amount": 5000,
+        "employmentId": 0
+      },
+      {
+        "iabdType": 127,
+        "description": "Personal Allowance Received",
+        "amount": 1060,
+        "employmentId": 0
+      }
+    ]
+  },
+  "totalLiability": {
+    "nonSavings": {
+      "totalIncome": 115435,
+      "totalTaxableIncome": 113175,
+      "totalTax": 38868,
+      "taxBands": [
+        {
+          "income": 32010,
+          "tax": 6402,
+          "lowerBand": 0,
+          "upperBand": 32010,
+          "rate": 20
+        },
+        {
+          "income": 81165,
+          "tax": 32466,
+          "lowerBand": 32010,
+          "upperBand": 150225,
+          "rate": 40
+        },
+        {
+          "income": 0,
+          "tax": 0,
+          "lowerBand": 150225,
+          "rate": 45
+        }
+      ],
+      "allowReliefDeducts": 2260,
+      "actualTaxDueAssumingBasicRateAlreadyPaid": 15781
+    },
+    "nonCodedIncome": {
+      "totalIncome": 100,
+      "totalTaxableIncome": 100,
+      "totalTax": 40
+    },
+    "untaxedInterest": {
+      "totalIncome": 5000,
+      "totalTaxableIncome": 5000,
+      "totalTax": 2000,
+      "taxBands": [
+        {
+          "income": 0,
+          "tax": 0,
+          "lowerBand": 0,
+          "upperBand": 5000,
+          "rate": 0
+        },
+        {
+          "income": 0,
+          "tax": 0,
+          "lowerBand": 5000,
+          "upperBand": 32010,
+          "rate": 20
+        },
+        {
+          "income": 5000,
+          "tax": 2000,
+          "lowerBand": 32010,
+          "upperBand": 150225,
+          "rate": 40
+        },
+        {
+          "income": 0,
+          "tax": 0,
+          "lowerBand": 150225,
+          "rate": 45
+        }
+      ],
+      "allowReliefDeducts": 0,
+      "actualTaxDueAssumingBasicRateAlreadyPaid": 1000,
+      "actualTaxDueAssumingAllAtBasicRate": 1000
+    },
+    "bankInterest": {
+      "totalIncome": 5000,
+      "totalTaxableIncome": 5000,
+      "totalTax": 2000,
+      "taxBands": [
+        {
+          "income": 0,
+          "tax": 0,
+          "lowerBand": 0,
+          "upperBand": 5000,
+          "rate": 0
+        },
+        {
+          "income": 0,
+          "tax": 0,
+          "lowerBand": 5000,
+          "upperBand": 32010,
+          "rate": 20
+        },
+        {
+          "income": 5000,
+          "tax": 2000,
+          "lowerBand": 32010,
+          "upperBand": 150225,
+          "rate": 40
+        },
+        {
+          "income": 0,
+          "tax": 0,
+          "lowerBand": 150225,
+          "rate": 45
+        }
+      ],
+      "allowReliefDeducts": 0,
+      "actualTaxDueAssumingBasicRateAlreadyPaid": 1000,
+      "actualTaxDueAssumingAllAtBasicRate": 1000
+    },
+    "ukDividends": {
+      "totalIncome": 20000,
+      "totalTaxableIncome": 20000,
+      "totalTax": 6500,
+      "taxBands": [
+        {
+          "income": 0,
+          "tax": 0,
+          "lowerBand": 0,
+          "upperBand": 32010,
+          "rate": 10
+        },
+        {
+          "income": 20000,
+          "tax": 6500,
+          "lowerBand": 32010,
+          "upperBand": 150225,
+          "rate": 32.5
+        },
+        {
+          "income": 0,
+          "tax": 0,
+          "lowerBand": 150225,
+          "rate": 37.5
+        }
+      ],
+      "allowReliefDeducts": 0,
+      "actualTaxDueAssumingBasicRateAlreadyPaid": 4500,
+      "actualTaxDueAssumingAllAtBasicRate": 2000
+    },
+    "mergedIncomes": {
+      "totalIncome": 145435,
+      "totalTaxableIncome": 143175,
+      "totalTax": 49368,
+      "taxBands": [
+        {
+          "income": 0,
+          "tax": 0,
+          "lowerBand": 0,
+          "upperBand": 5000,
+          "rate": 0
+        },
+        {
+          "income": 0,
+          "tax": 0,
+          "lowerBand": 0,
+          "upperBand": 32010,
+          "rate": 10
+        },
+        {
+          "income": 32010,
+          "tax": 6402,
+          "lowerBand": 0,
+          "upperBand": 32010,
+          "rate": 20
+        },
+        {
+          "income": 20000,
+          "tax": 6500,
+          "lowerBand": 32010,
+          "upperBand": 150225,
+          "rate": 32.5
+        },
+        {
+          "income": 0,
+          "tax": 0,
+          "lowerBand": 150225,
+          "rate": 37.5
+        },
+        {
+          "income": 91165,
+          "tax": 36466,
+          "lowerBand": 32010,
+          "upperBand": 150225,
+          "rate": 40
+        },
+        {
+          "income": 0,
+          "tax": 0,
+          "lowerBand": 150225,
+          "rate": 45
+        }
+      ],
+      "allowReliefDeducts": 2260,
+      "actualTaxDueAssumingBasicRateAlreadyPaid": 15781
+    },
+    "totalLiability": 46368,
+    "totalTax": 51184,
+    "totalTaxOnIncome": 49368,
+    "underpaymentPreviousYear": 147,
+    "inYearAdjustment": 0,
+    "outstandingDebt": 169,
+    "childBenefitAmount": 1500,
+    "childBenefitTaxDue": 1500
+  },
+  "adjustedNetIncome": 144110,
+  "extensionReliefs": {
+    "giftAid": {
+      "sourceAmount": 100,
+      "reliefAmount": 25
+    },
+    "personalPension": {
+      "sourceAmount": 100,
+      "reliefAmount": 20
+    }
+  },
+  "incomeGateKeeper": {
+    "gateKeepered": true,
+    "gateKeeperResults": [
+      {
+        "gateKeeperType": 3,
+        "id": 7,
+        "description": "Gatekeeper Exception [IABD] :  User receives relief from 7"
+      },
+      {
+        "gateKeeperType": 3,
+        "id": 5,
+        "description": "Gatekeeper Exception [IABD] :  User receives relief from 5"
+      },
+      {
+        "gateKeeperType": 3,
+        "id": 124,
+        "description": "Gatekeeper Exception [IABD] :  User receives relief from 124"
+      },
+      {
+        "gateKeeperType": 3,
+        "id": 35,
+        "description": "Gatekeeper Exception [IABD] :  User receives relief from 35"
+      },
+      {
+        "gateKeeperType": 41,
+        "id": 41,
+        "description": "Gatekeeper Exception :  User has outsanding debt 41"
+      }
+    ]
+  },
+  "taxCodeDetails": {
+    "employment": [
+      {
+        "id": 1,
+        "name": "",
+        "taxCode": "K5817"
+      },
+      {
+        "id": 2,
+        "name": "",
+        "taxCode": "D0"
+      }
+    ],
+    "taxCode": [
+      {
+        "taxCode": "K"
+      },
+      {
+        "taxCode": "D0",
+        "rate": 40
+      }
+    ],
+    "deductions": [
+      {
+        "description": "Child Benefit",
+        "amount": 3750,
+        "componentType": 42
+      },
+      {
+        "description": "Underpayment Amount",
+        "amount": 367,
+        "componentType": 35
+      },
+      {
+        "description": "savings income taxable at higher rate",
+        "amount": 13750,
+        "componentType": 32
+      },
+      {
+        "description": "state pension state benefits",
+        "amount": 100,
+        "componentType": 1
+      },
+      {
+        "description": "property income",
+        "amount": 100,
+        "componentType": 27
+      },
+      {
+        "description": "IB taxable incapacity benefit",
+        "amount": 100,
+        "componentType": 5
+      },
+      {
+        "description": "interest without tax taken off (gross interest)",
+        "amount": 5000,
+        "componentType": 23
+      },
+      {
+        "description": "Employment Support Allowance",
+        "amount": 100,
+        "componentType": 38
+      },
+      {
+        "description": "Adjustment to Rate Band",
+        "amount": 21816,
+        "componentType": 40
+      },
+      {
+        "description": "Outstanding Debt Restriction",
+        "amount": 422,
+        "componentType": 41
+      },
+      {
+        "description": "Jobseeker 's allowance",
+        "amount": 100,
+        "componentType": 18
+      },
+      {
+        "amount": 14835,
+        "componentType": 7
+      }
+    ],
+    "allowances": [
+      {
+        "description": "Tax Free Amount",
+        "amount": 2260,
+        "componentType": 0
+      },
+      {
+        "description": "Gift Aid payments",
+        "amount": 63,
+        "componentType": 6
+      },
+      {
+        "description": "Personal Pension Relief",
+        "amount": 50,
+        "componentType": 5
+      }
+    ],
+    "splitAllowances": false,
+    "total": -58067
+  },
+  "incomeData": {
+    "incomeExplanations": [
+      {
+        "employerName": "",
+        "incomeId": 1,
+        "hasDuplicateEmploymentNames": false,
+        "worksNumber": "",
+        "notificationDate": "2016-05-05",
+        "updateActionDate": "2016-05-05",
+        "startDate": "2007-04-06",
+        "employmentStatus": 1,
+        "employmentType": 1,
+        "isPension": true,
+        "isJSA": false,
+        "iabdSource": 46,
+        "payToDate": 4020,
+        "calcAmount": 20904,
+        "grossAmount": 22573,
+        "payFrequency": "W1",
+        "editableDetails": {
+          "isEditable": true,
+          "payRollingBiks": false
+        }
+      },
+      {
+        "employerName": "",
+        "incomeId": 1,
+        "hasDuplicateEmploymentNames": false,
+        "worksNumber": "",
+        "notificationDate": "2016-05-05",
+        "updateActionDate": "2016-05-05",
+        "startDate": "2007-04-06",
+        "employmentStatus": 1,
+        "employmentType": 1,
+        "isPension": true,
+        "isJSA": false,
+        "iabdSource": 46,
+        "payToDate": 4020,
+        "calcAmount": 50000,
+        "grossAmount": 50000,
+        "payFrequency": "W1",
+        "editableDetails": {
+          "isEditable": true,
+          "payRollingBiks": false
+        }
+      }
+    ]
+  }
+}

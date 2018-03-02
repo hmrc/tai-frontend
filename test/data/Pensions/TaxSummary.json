@@ -1,0 +1,226 @@
+{
+  "nino": "$NINO",
+  "version": 1,
+  "accounts":[],
+  "increasesTax": {
+    "incomes": {
+      "taxCodeIncomes": {
+        "occupationalPensions": {
+          "taxCodeIncomes": [
+            {
+              "name": "",
+              "taxCode": "104Y",
+              "employmentId": 1,
+              "employmentPayeRef": "",
+              "employmentType": 1,
+              "incomeType": 1,
+              "employmentStatus": 1,
+              "tax": {
+                "totalIncome": 2304,
+                "totalTaxableIncome": 1258,
+                "totalTax": 251.6,
+                "taxBands": [
+                  {
+                    "income": 1258,
+                    "tax": 251.6,
+                    "lowerBand": 0,
+                    "upperBand": 31865,
+                    "rate": 20
+                  },
+                  {
+                    "income": 0,
+                    "tax": 0,
+                    "lowerBand": 31865,
+                    "upperBand": 150000,
+                    "rate": 40
+                  },
+                  {
+                    "income": 0,
+                    "tax": 0,
+                    "lowerBand": 150000,
+                    "upperBand": 0,
+                    "rate": 45
+                  }
+                ],
+                "allowReliefDeducts": 1046
+              },
+              "worksNumber": "",
+              "jobTitle": "",
+              "startDate": "2004-11-01",
+              "income": 2304,
+              "isEditable": true,
+              "isLive":true,
+              "isOccupationalPension" : true,
+              "isPrimary": true
+            },
+            {
+              "name": "",
+              "taxCode": "BR",
+              "employmentId": 8,
+              "employmentPayeRef": "",
+              "employmentType": 2,
+              "incomeType": 1,
+              "employmentStatus": 1,
+              "tax": {
+                "totalIncome": 3805,
+                "totalTaxableIncome": 3805,
+                "totalTax": 761,
+                "taxBands": [
+                  {
+                    "income": 3805,
+                    "tax": 761,
+                    "lowerBand": 0,
+                    "upperBand": 31865,
+                    "rate": 20
+                  },
+                  {
+                    "lowerBand": 31865,
+                    "upperBand": 150000,
+                    "rate": 40
+                  },
+                  {
+                    "lowerBand": 150000,
+                    "upperBand": 0,
+                    "rate": 45
+                  }
+                ],
+                "allowReliefDeducts": 0
+              },
+              "worksNumber": "",
+              "startDate": "2013-03-18",
+              "income": 3805,
+              "isEditable": true,
+              "isLive":true,
+              "isOccupationalPension" : true,
+              "isPrimary": false
+            },
+            {
+              "name": "",
+              "taxCode": "BR",
+              "employmentId": 3,
+              "employmentPayeRef": "",
+              "employmentType": 2,
+              "incomeType": 1,
+              "employmentStatus": 1,
+              "tax": {
+                "totalIncome": 1744,
+                "totalTaxableIncome": 1744,
+                "totalTax": 348.8,
+                "taxBands": [
+                  {
+                    "income": 1744,
+                    "tax": 348.8,
+                    "lowerBand": 0,
+                    "upperBand": 31865,
+                    "rate": 20
+                  },
+                  {
+                    "lowerBand": 31865,
+                    "upperBand": 150000,
+                    "rate": 40
+                  },
+                  {
+                    "lowerBand": 150000,
+                    "upperBand": 0,
+                    "rate": 45
+                  }
+                ],
+                "allowReliefDeducts": 0
+              },
+              "worksNumber": "",
+              "jobTitle": "",
+              "startDate": "2004-10-04",
+              "income": 1744,
+              "isEditable": true,
+              "isLive":true,
+              "isOccupationalPension" : true,
+              "isPrimary": false
+            }
+          ],
+          "totalIncome": 7853,
+          "totalTax": 1361.4,
+          "totalTaxableIncome": 6807
+        },
+        "hasDuplicateEmploymentNames": false,
+        "totalIncome": 7853,
+        "totalTaxableIncome": 6807,
+        "totalTax": 1361.4
+      },
+      "noneTaxCodeIncomes": {
+        "statePension": 9614,
+        "totalIncome": 9614
+      },
+      "total": 17467
+    },
+    "total": 17467
+  },
+  "decreasesTax": {
+    "personalAllowance": 10660,
+    "personalAllowanceSourceAmount": 10660,
+    "paTransferredAmount" : 0,
+    "paReceivedAmount" : 0,
+    "paTapered": false,
+    "total": 10660
+  },
+  "totalLiability": {
+    "nonSavings": {
+      "totalIncome": 17467,
+      "totalTaxableIncome": 6807,
+      "totalTax": 1361.4,
+      "taxBands": [
+        {
+          "income": 6807,
+          "tax": 1361.4,
+          "lowerBand": 0,
+          "upperBand": 31865,
+          "rate": 20
+        },
+        {
+          "lowerBand": 31865,
+          "upperBand": 150000,
+          "rate": 40
+        },
+        {
+          "lowerBand": 150000,
+          "upperBand": 0,
+          "rate": 45
+        }
+      ],
+      "allowReliefDeducts": 10660
+    },
+    "mergedIncomes": {
+      "totalIncome": 17467,
+      "totalTaxableIncome": 6807,
+      "totalTax": 1361.4,
+      "taxBands": [
+        {
+          "income": 6807,
+          "tax": 1361.4,
+          "lowerBand": 0,
+          "upperBand": 31865,
+          "rate": 20
+        },
+        {
+          "lowerBand": 31865,
+          "upperBand": 150000,
+          "rate": 40
+        },
+        {
+          "lowerBand": 150000,
+          "upperBand": 0,
+          "rate": 45
+        }
+      ],
+      "allowReliefDeducts": 10660
+    },
+    "totalLiability": 1361.4,
+    "totalTax": 1361.4,
+    "totalTaxOnIncome":1361.4,
+    "underpaymentPreviousYear":0,
+    "inYearAdjustment": 0,
+    "outstandingDebt":0,
+    "childBenefitAmount": 0,
+    "childBenefitTaxDue": 0
+  },
+  "adjustedNetIncome":17467
+}

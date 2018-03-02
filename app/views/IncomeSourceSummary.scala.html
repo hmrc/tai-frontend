@@ -1,0 +1,213 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.ptaHeader
+@import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
+@import uk.gov.hmrc.play.views.formatting.Money.pounds
+@import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
+@import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.tai.util.TaiConstants
+
+@(model: IncomeSourceSummaryViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever = TaiHtmlPartialRetriever)
+
+@gaEventActionString = @{"Your employment details for current tax year"}
+
+@mainHeading = @{
+    if(model.isPension){
+        messages("tai.pension.income.details.mainHeading", model.empOrPensionName, model.htmlNonBroken(model.startOfCurrentYear), model.htmlNonBroken(model.endOfCurrentYear))
+    } else {
+        messages("tai.employment.income.details.mainHeading", model.empOrPensionName, model.htmlNonBroken(model.startOfCurrentYear), model.htmlNonBroken(model.endOfCurrentYear))
+    }
+}
+
+@mainTitle = @{
+    if(model.isPension){
+        messages("tai.pension.income.details.mainHeading", model.empOrPensionName, model.startOfCurrentYear, model.endOfCurrentYear)
+    } else {
+        messages("tai.employment.income.details.mainHeading", model.empOrPensionName, model.startOfCurrentYear, model.endOfCurrentYear)
+    }
+}
+
+@gaTitle = @{
+    if(model.isPension){
+        messages("tai.pension.income.details.mainHeading.gaTitle", model.startOfCurrentYear, model.endOfCurrentYear)
+    } else {
+        messages("tai.employment.income.details.mainHeading.gaTitle", model.startOfCurrentYear, model.endOfCurrentYear)
+    }
+}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = None,
+        backLocation = Some(controllers.routes.TaxAccountSummaryController.onPageLoad()),
+        backLinkGaEventAction = None,
+        mainHeadingText = mainHeading,
+        preHeadingText = model.displayName)
+}
+
+@main(title = mainTitle, user = Some(user), pageHeader = Some(header), articleClasses = None, gaCustomTitle = Some(gaTitle)){
+
+    @if(model.isPension){
+        <p class="text" aria-hidden="true">
+            @Link.toInternalPage(
+                id=Some("updatePension"),
+                url=ApplicationConfig.incomeFromEmploymentPensionLinkUrl,
+                value=Some(messages("tai.pension.income.details.updateLinkText"))).toHtml
+        </p>
+        <p class="visuallyhidden">
+        @Link.toInternalPage(
+            id=Some("updatePensionScreenReader"),
+            url=ApplicationConfig.incomeFromEmploymentPensionLinkUrl,
+            value=Some(messages("tai.pension.income.details.updateLinkText.screenReader"))).toHtml
+        </p>
+    }else {
+        <p class="text" aria-hidden="true">
+            @Link.toInternalPage(
+                id=Some("updateEmployer"),
+                url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(model.empId).url,
+                value=Some(messages("tai.employment.income.details.updateLinkText"))).toHtml
+        </p>
+        <p class="visuallyhidden">
+        @Link.toInternalPage(
+            id=Some("updateEmployerScreenReader"),
+            url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(model.empId).url,
+            value=Some(messages("tai.employment.income.details.updateLinkText.screenReader", model.empOrPensionName))).toHtml
+        </p>
+    }
+
+    <div class="grid-row">
+        <div class="column-one-half subsection--wide">
+                <h2 class="flush">@messages("tai.income.details.estimatedTaxableIncome")</h2>
+                <p class="text break-word">@messages("tai.income.details.estimatedTaxableIncome.desc", model.empOrPensionName)</p>
+                <span class="heading-48 faded-text-dark" aria-hidden="true">@pounds(model.estimatedTaxableIncome)</span>
+                <span class="visuallyhidden">@Html(messages("tai.income.details.yourEstimatedTaxableIncome.screenReader", pounds(model.estimatedTaxableIncome)))</span>
+                <p class="text" aria-hidden="true">
+                    @Link.toInternalPage(
+                        id=Some("updateIncome"),
+                        url=controllers.routes.IncomeUpdateCalculatorController.howToUpdatePage(model.empId).url,
+                        value=Some(messages("tai.income.details.updateTaxableIncome.update"))).toHtml
+                </p>
+                <p class="visuallyhidden">
+                    @Link.toInternalPage(
+                        id=Some("updateIncomeScreenReader"),
+                        url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(model.empId)).url,
+                        value=Some(messages("tai.income.details.updateTaxableIncome.screenReader"))).toHtml
+                </p>
+        </div>
+
+        <div class="column-one-half subsection--wide">
+            <h2 class="flush">@messages("tai.income.details.incomeReceivedToDate")</h2>
+            <p class="text break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
+            <span class="heading-48 faded-text-dark" aria-hidden="true">@pounds(model.incomeReceivedToDate)</span>
+            <span class="visuallyhidden">@Html(messages("tai.income.details.incomeReceivedToDate.screenReader", pounds(model.incomeReceivedToDate)))</span>
+            <p class="text" aria-hidden="true">
+                @Link.toInternalPage(
+                    id=Some("viewIncomeReceivedToDate"),
+                    url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(model.empId)).url,
+                    value=Some(messages("tai.income.details.checkPaymentsReceived"))).toHtml
+            </p>
+            <p class="visuallyhidden">
+                @Link.toInternalPage(
+                    id=Some("viewIncomeReceivedToDateScreenReader"),
+                    url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(model.empId)).url,
+                    value=Some(messages("tai.income.details.checkPaymentsReceived.screenReader", model.empOrPensionName))).toHtml
+            </p>
+        </div>
+    </div>
+
+    <div class="grid-row">
+        <div class="column-one-half">
+            <h2 class="flush--top">@messages("tai.taxCode")</h2>
+            <span class="heading-48 faded-text-dark" aria-hidden="true">@model.taxCode</span>
+            <span class="visuallyhidden">@messages("tai.income.details.yourTaxCode", model.taxCode)</span>
+            <p class="text">
+                @Link.toInternalPage(
+                    id=Some("understandTaxCode"),
+                    url=routes.YourTaxCodeController.taxCodes.toString,
+                    value=Some(messages("tai.income.details.taxCode.linkText"))).toHtml
+            </p>
+        </div>
+
+        <div class="column-one-half">
+            @if(model.isPension){
+                <h2 class="flush--top">@messages("tai.pensionNumber")</h2>
+                <p class="text" aria-hidden="true">@model.pensionOrPayrollNumber</p>
+                <p class="visually-hidden">@messages("tai.pension.income.details.pensionNumber.screenReader", model.pensionOrPayrollNumber)</p>
+            } else {
+                <h2 class="flush--top">@messages("tai.payRollNumber")</h2>
+                <p class="text" aria-hidden="true">@model.pensionOrPayrollNumber</p>
+                <p class="visually-hidden">@messages("tai.employment.income.details.payrollNumber.screenReader", model.pensionOrPayrollNumber)</p>
+            }
+        </div>
+    </div>
+
+    @if(!model.isPension){
+    <section id="companyBenefitsSection" class="subsection--wide" aria-labelledby="companyBenefitsHeading">
+
+        <h2 id="companyBenefitsHeading" class="heading-small flush--bottom">@Messages("tai.income.details.companyuBenefitsHeading", model.empOrPensionName)</h2>
+
+        @if(model.benefits.size > 0) {
+        <dl id="companyBenefitDescriptionList" class="tai-description-list tai-description-list--dynamic-columns full-width section flush">
+
+            @for((benefit, idx) <- model.benefits zip (Stream from 1)) {
+            <div>
+                <dt id="companyBenefitDescriptionTerm@idx">
+                    @benefit.name
+                </dt>
+                <dd id="companyBenefitDescriptionText@idx">
+                    @pounds(benefit.amount)
+                </dd>
+                <dd class="tai-description-details--retain-column" id="companyBenefitChangeLinkDescriptionText@idx">
+                    <a id=@{s"changeCompanyBenefitLink${idx}"}
+                       href="@benefit.changeUrl"
+                       target="_self"
+                       data-sso="false"
+                       data-journey-click="link - click:@gaEventActionString:@{s"${Messages("tai.updateOrRemove")} ${benefit.name.toLowerCase}"}">
+                        @Messages("tai.updateOrRemove")
+                        <span class="visuallyhidden"> @benefit.name.toLowerCase</span></a>
+                </dd>
+            </div>
+            }
+
+        </dl>
+        } else {
+        <p id="noCompanyBenefitsMessage" class="text">@Messages("tai.income.details.noCompanyBenefitsMsg", model.empOrPensionName)</p>
+        }
+
+        <p class="icon icon-plus display-block">
+            @Link.toInternalPage(
+                id=Some("addMissingCompanyBenefitLink"),
+                url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url,
+                value=Some(Messages("tai.income.details.addMissingCompanyBenefit")),
+                cssClasses=Some(""),
+                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.income.details.addMissingCompanyBenefit")}"))).toHtml
+        </p>
+
+        @if(model.displayAddCompanyCarLink) {
+        <p class="icon icon-plus">
+            @Link.toInternalPage(
+                id=Some("addMissingCompanyCarLink"),
+                url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyCarsIform).url,
+                value=Some(Messages("tai.income.details.addMissingCompanyCar")),
+                cssClasses=Some(""),
+                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.income.details.addMissingCompanyCar")}"))).toHtml
+        </p>
+        }
+
+    </section>
+    }
+
+}

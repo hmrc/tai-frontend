@@ -1,0 +1,64 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(payslipForm: Form[uk.gov.hmrc.tai.forms.PayslipForm], payPeriod: String, id: Int, employerName : Option[String] = None)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages,
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+
+@import includes.ptaHeader
+@import uk.gov.hmrc.play.views.html.helpers._
+
+@gaEventActionString = @{"Update your annual taxable pay"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(payslipForm),
+        backLocation = Some(controllers.routes.IncomeUpdateCalculatorController.payPeriodPage()),
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.payslip.title"),
+        preHeadingText = Messages("tai.payslip.preHeading"))}
+
+
+@main(
+    title = Messages("tai.payslip.title"),
+    articleClasses = Some("full-width text"),
+    user = Some(user),
+    pageHeader = Some(header),
+    employerName = employerName,
+    gaCustomTitle = None
+){
+    <section class="section flush--bottom">
+        @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayslipAmount){
+            <div id="payslip" class="form-field-group @if(payslipForm.hasErrors){form-group-error}">
+                <label for="totalSalary">
+                    <span class="form-label-bold">
+                        @payPeriod match {
+                            case "monthly" => { @Messages("tai.payslip.month") }
+                            case "fortnightly" => { @Messages("tai.payslip.fortnight") }
+                            case "weekly" => { @Messages("tai.payslip.week") }
+                            case _ => { @Messages("tai.payslip.period") }
+                        }
+                    </span>
+                    <span class="form-hint">@Messages("tai.payslip.payBeforeTakenOff")</span>
+                    @payslipForm.errors.map{ error =>
+                        <span class="error-message">@Messages(error.message)</span>
+                    }
+                </label>
+                <input type="text" class="form-control flush--bottom @if(payslipForm.hasErrors){form-control-error}" id="totalSalary" name="totalSalary"/>
+            </div>
+            <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
+        }
+    </section>
+}

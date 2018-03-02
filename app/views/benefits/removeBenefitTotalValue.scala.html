@@ -1,0 +1,79 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.urls.Link
+@import includes.confirmation_summary
+@import uk.gov.hmrc.tai.model.tai.TaxYear
+@import includes.forms.submit
+@import includes.{cancelLink, ptaHeader}
+@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.play.views.html.helpers.{errorSummary, form}
+@import uk.gov.hmrc.tai.viewModels.benefit.BenefitViewModel
+@import uk.gov.hmrc.tai.forms.benefits.CompanyBenefitTotalValueForm
+
+@(vm: BenefitViewModel, companyBenefitTotalValueForm: Form[String])(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+
+@gaEventActionString = @{"What was the total value of the benefit"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(companyBenefitTotalValueForm),
+        backLocation = Some(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate()),
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.remove.company.benefit.total.value.heading", vm.benefitName, vm.employerName),
+        preHeadingText = Messages("tai.benefits.ended.journey.preHeader")
+    )
+}
+
+@totalValueField = @{companyBenefitTotalValueForm("totalValue")}
+
+@main(
+    title = Messages("tai.remove.company.benefit.total.value.title"),
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = None) {
+        <p>@Messages("tai.remove.company.benefit.total.value.dontKnow")</p>
+        <ul class="bullets">
+            <li id="totalValueAsk">@Messages("tai.remove.company.benefit.total.value.ask")</li>
+            <li id="totalValueEnter">@Messages("tai.remove.company.benefit.total.value.enter")</li>
+        </ul>
+
+        <summary>
+            @includes.details_summary(Messages("tai.remove.company.benefit.total.value.whatHappens.link")){
+            <span class="text">@Messages("tai.remove.company.benefit.total.value.whatHappens.desc", uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("yyyy"),uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("yyyy"), uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))</span>
+        }
+        </summary>
+
+    @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitBenefitValue()) {
+        <fieldset class = "form-group subsection @if(totalValueField.hasErrors) {form-field--error}">
+                <legend class = "form-label">
+                    @Messages("tai.remove.company.benefit.total.value.value")
+                    <span class = "form-hint">@Messages("tai.remove.company.benefit.total.value.hint")</span>
+                </legend>
+            @if(totalValueField.hasErrors) {<span class="error-notification">@totalValueField.error.map(_.message)</span>}
+                <div>
+                    <span id="poundSymbol">£</span>
+                    <input class="text--left input--small" type="text" id="totalValue" name="@totalValueField.name" value="@totalValueField.value" />
+                </div>
+        </fieldset>
+
+        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.remove.company.benefit.total.value.title")))
+    }
+
+    @cancelLink(controllers.routes.TaxFreeAmountControllerNew.taxFreeAmount(), gaEventAction = Some(gaEventActionString))
+
+}

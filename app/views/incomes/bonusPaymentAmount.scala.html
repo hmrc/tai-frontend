@@ -1,0 +1,77 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm], bonusPeriod: String, id: Int, employerName : Option[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+
+@import includes.ptaHeader
+@import uk.gov.hmrc.play.views.html.helpers._
+
+@pageTitle = @{bonusPeriod match {
+    case "year" => {Messages("tai.bonusPaymentsAmount.year.title")}
+    case "monthly" => {Messages("tai.bonusPaymentsAmount.month.title")}
+    case "fortnightly" => {Messages("tai.bonusPaymentsAmount.fortnightly.title")}
+    case "weekly" => {Messages("tai.bonusPaymentsAmount.week.title")}
+    case _ => {Messages("tai.bonusPaymentsAmount.period.title")}
+        }
+    }
+@pageDesc = @{bonusPeriod match {
+        case "year" => {Messages("tai.bonusPaymentsAmount.year.description")}
+        case "monthly" => {Messages("tai.bonusPaymentsAmount.month.description")}
+        case "fortnightly" => {Messages("tai.bonusPaymentsAmount.fortnightly.description")}
+        case "weekly" => {Messages("tai.bonusPaymentsAmount.week.description")}
+        case _ => {Messages("tai.bonusPaymentsAmount.period.description")}
+    }
+}
+@gaEventActionString = @{"Bonus or overtime payments"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(bonusOvertimeAmountForm),
+        backLocation = Some(controllers.routes.IncomeUpdateCalculatorController.bonusPaymentsPage()),
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = pageTitle,
+        preHeadingText = Messages("tai.bonusPaymentsAmount.preHeading"))}
+
+@main(
+    title = pageTitle,
+    articleClasses = Some("full-width text"),
+    user = Some(user),
+    pageHeader = Some(header),
+    employerName = employerName,
+    gaCustomTitle = None
+    ){
+
+    <section class="section flush--bottom soft--top">
+        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleBonusOvertimeAmount){
+            <fieldset id="bonusOvertimeAmount" class="form-field-group @if(bonusOvertimeAmountForm.hasErrors){error}">
+                <label for="amount" id="bonusOvertimeAmountDescription">
+                    <span class="heading-24">
+                        @pageDesc
+                    </span>
+                </label>
+                @if(bonusPeriod == "year"){
+                    <p id="yearMessage">@Messages("tai.bonusPaymentsAmount.year.message")</p>
+                }
+                @bonusOvertimeAmountForm.errors.map{ error =>
+                    <span class="error-notification">@Messages(error.message)</span>
+                }
+                <input type="text" class="form-control form-field-single" id="amount" name="amount"/>
+            </fieldset>
+            <p class="text"><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
+        }
+    </section>
+}

@@ -1,0 +1,59 @@
+// URL Helpers
+
+$path: false !default;
+
+// A function which can either output a image-url to be used with the Rails
+// Asset Pipeline or Compass or a plain url which is prefixed with a defined
+// path variable.
+@function file-url($file) {
+    $url: '';
+    @if $path {
+        $url: url($path + $file);
+    } @else {
+        $url: image-url($file);
+    }
+    @return $url;
+}
+
+@mixin device-pixel-ratio($ratio: 2) {
+    @media only screen and (-webkit-min-device-pixel-ratio: $ratio),
+    only screen and (min--moz-device-pixel-ratio: $ratio),
+    only screen and (  -o-min-device-pixel-ratio: #{($ratio*10)}/10),
+    only screen and (     min-device-pixel-ratio: $ratio),
+    only screen and (             min-resolution: #{($ratio*96)}dpi),
+    only screen and (             min-resolution: #{$ratio}dppx) {
+        @content;
+    }
+}
+
+@mixin contain-floats {
+    &:after {
+        content: "";
+        display: block;
+        clear: both;
+    }
+}
+
+.break-word{
+    -ms-word-break: break-all;
+/*        word-break: break-all; */
+
+        word-break: break-word;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+
+    -webkit-hyphens: auto;
+       -moz-hyphens: auto;
+            hyphens: auto;
+}
+
+.break-word-only {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+@media(max-width:641px){
+    .float--right-small{ float:right !important; }
+    .text--right-small{ text-align:right !important; }
+    .display--inline-small{ display: inline !important; }
+}

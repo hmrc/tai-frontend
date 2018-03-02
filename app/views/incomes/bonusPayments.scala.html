@@ -1,0 +1,80 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(bonusPaymentsForm: Form[uk.gov.hmrc.tai.forms.BonusPaymentsForm], id: Int, paySlipDeductions : Boolean = false, bonusPaymentSelected : Boolean = false,
+employerName : Option[String] = None)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+
+@import includes.ptaHeader
+@import uk.gov.hmrc.play.views.html.helpers._
+@import includes.forms.inputRadioGroupNewStyling
+
+@backLinkLocation=@{
+    if(paySlipDeductions){controllers.routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage()}
+    else{controllers.routes.IncomeUpdateCalculatorController.payslipDeductionsPage()}
+}
+
+@gaEventActionString = @{"Payslip deductions"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(bonusPaymentsForm),
+        backLocation = Some(backLinkLocation),
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.bonusPayments.title"),
+        preHeadingText = Messages("tai.bonusPayments.preHeading"))}
+
+@main(
+    title = Messages("tai.bonusPayments.title"),
+    articleClasses = Some("full-width text"),
+    user = Some(user),
+    pageHeader = Some(header),
+    employerName = employerName,
+    gaCustomTitle = None
+    ) {
+    <section class="section flush--bottom soft--top">
+    @form(action = controllers.routes.IncomeUpdateCalculatorController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
+
+        @{inputRadioGroupNewStyling(
+            field=bonusPaymentsForm("bonusPayments"),
+
+            radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no"))),
+            legend=Messages("tai.bonusPayments.question"),
+            legendHint=None,
+            ('_groupDivClass, "form-group" ),
+            ('_groupClass, "inline" ),
+            ('_legendClass, "section flush"),
+            ('_legendSpanClass, "heading-24"),
+            ('_fieldsetAttributes, "id=bonusPayments" ),
+            ('_radioOption1Attributes, Html("""data-dynamic-fields="moreThisYear" data-dynamic-fields-hide="false"""") ),
+            ('_radioOption2Attributes, Html("""data-dynamic-fields="moreThisYear" data-dynamic-fields-hide="true"""") )
+        )}
+
+        @{inputRadioGroupNewStyling(
+            field=bonusPaymentsForm("bonusPaymentsMoreThisYear"),
+            radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no"))),
+            legend=Messages("tai.bonusPayments.moreThisYear"),
+            legendHint=None,
+            ('_groupDivClass, "form-group data-moreThisYear" + (if(!bonusPaymentSelected) " js-hidden" else "") ),
+            ('_groupClass, "inline panel-indent" ),
+            ('_legendClass, "section flush"),
+            ('_fieldsetAttributes, "id=bonusPaymentsMoreThisYear" )
+        )}
+
+        <p class="text section flush--bottom"><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
+    }
+    </section>
+}

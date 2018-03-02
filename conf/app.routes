@@ -1,0 +1,7 @@
+->     /                                    health.Routes
+
+->     /check-income-tax                    tai.Routes
+
+
+#metrics
+GET /admin/metrics @com.kenshoo.play.metrics.MetricsController.metrics

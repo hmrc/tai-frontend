@@ -1,0 +1,44 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(title: Option[String],
+        confirmationLines : Seq[uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine],
+        gaEventAction: Option[String] = None,
+        longQuestions: Boolean = false)(implicit m: Messages)
+
+@if(title.isDefined) { <h2 class="heading-medium section flush soft--top">@title.get.replace("&nbsp;", "\u00A0")</h2> }
+
+<ul role="list" class="govuk-check-your-answers @if(longQuestions) {cya-questions-long} else {cya-questions-short}" id="check-answers-summary">
+    @for((line, idx) <- confirmationLines zip (Stream from 1)) {
+        <li>
+            <div class="cya-question" id="confirmation-line-@{idx.toString}-question">
+                @line.question
+            </div>
+            <div class="cya-answer" id="confirmation-line-@{idx.toString}-answer">
+                @line.answer
+            </div>
+            <div class="cya-change">
+                <a id="confirmation-line-@{idx.toString}-change-link"
+                    href="@line.changeUrl?edit=true"
+                    target="_self"
+                    data-sso="false"
+                    @if(gaEventAction.isDefined) { data-journey-click="link - click:@gaEventAction.get:Change @line.question.toLowerCase" }>
+                    @Messages("tai.checkYourAnswers.change.label")
+                <span class="visuallyhidden"> @line.question.toLowerCase</span></a>
+            </div>
+        </li>
+    }
+</ul>

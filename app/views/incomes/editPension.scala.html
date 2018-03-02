@@ -1,0 +1,85 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm], hasMultipleIncomes: Boolean, employmentId: Int, pensionToDate: String = "0", webChat: Boolean = false)(implicit request: Request[_],
+messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+
+@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.urls.Link
+@import includes.ptaHeader
+
+@gaEventActionString = @{"Update your annual taxable pay"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(income),
+        backLocation = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId)),
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.incomes.pension.heading"),
+        preHeadingText = Messages("tai.howToUpdate.preHeading"))}
+
+@main(
+    title = Messages("tai.incomes.pension.heading"),
+    articleClasses = Some("full-width"),
+    user = Some(user),
+    pageHeader = Some(header),
+    employerName = income("name").value,
+    webChat = webChat,
+    gaCustomTitle = None
+){
+    <section class="section--branded hmrc text">
+        <h2>@Messages("tai.incomes.edit.incomeTax.update.pension.heading")</h2>
+        <p>@Messages("tai.incomes.edit.pension.text")</p>
+        <p>@Messages("tai.enterWholeAndNumericalOnly")</p>
+
+        @form(action = controllers.routes.IncomeControllerNew.editPensionIncome) {
+        <input type="hidden" name="pensionToDate" value="@pensionToDate">
+        <div class="form-field-group @if(income.hasErrors) {error}">
+                <table id="income-table" class="table-section">
+                    <thead>
+                        <tr>
+                            <th>@Messages("tai.pensionSources")</th>
+                            <th class="text--right">@Messages("tai.incomes.amount.current")</th>
+                            <th class="text--right" id="amountLabel">@Messages("tai.incomes.amount.new")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="income-data">
+                            <td class="break-word">@income("description").value @income("name").value</td>
+                            @income.errors(income("newAmount").name).map{ error =>
+                                <span class="error-notification">@Messages(error.message)</span>
+                            }
+                            <td class="text--right"><input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' />@income("oldAmount").value</td>
+                            <td class="text--right"><input aria-labelledby="amountLabel" class="text--right input--small" type="text" id="newAmount" name='@income("newAmount").name' value='' /></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <input type="hidden" id="name" name='@income("name").name' value='@income("name").value' />
+                <input type="hidden" id="worksNumber" name='@income("worksNumber").name' value='@income("worksNumber").value' />
+                <input type="hidden" id="jobTitle" name='@income("jobTitle").name' value='@income("jobTitle").value' />
+                <input type="hidden" id="startDate" name='@income("startDate").name' value='@income("startDate").value' />
+                <input type="hidden" id="endDate" name='@income("endDate").name' value='@income("endDate").value' />
+                <input type="hidden" id="description" name='@income("description").name' value='@income("description").value' />
+                <input type="hidden" id="employmentId" name='@income("employmentId").name' value='@income("employmentId").value' />
+                <input type="hidden" id="hasMultipleIncomes" name='@income("hasMultipleIncomes").name' value='@income("hasMultipleIncomes").value' />
+            </div>
+
+            <div class="form-field-group">
+                <p><input type="submit" class="button" value='@Messages("tai.next")'/></p>
+            </div>
+        }
+    </section>
+}

@@ -1,0 +1,60 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@( payYTD: BigDecimal = 0, payDate: org.joda.time.LocalDate)(implicit request: Request[_], messages: Messages,
+user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+
+@import uk.gov.hmrc.play.views.formatting.Money._
+@import org.joda.time.{DateTime, LocalDate}
+@import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.tai.util.TaxSummaryHelper
+@import uk.gov.hmrc.play.views.html.layouts.loginStatus
+@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.play.views.helpers._
+
+@main(
+title = Messages("tai.currentYearSummary.heading",s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}"),
+articleClasses = Some("full-width text"),
+user = Some(user),
+gaCustomTitle = None
+){
+<header class="page-header">
+    <h1 class="heading-xlarge " id="currentYearTitle">@Messages("tai.estimatedPay.error.incorrectTaxableIncome.title")</h1>
+</header>
+
+<div class="flash error-summary error-summary--show">
+    <h1 class="heading-medium error-summary-heading flush--top" >
+        @Messages("tai.estimatedPay.error.incorrectTaxableIncome.errorTitle")
+    </h1>
+    <p>@Messages("tai.estimatedPay.error.incorrectTaxableIncome.description", MoneyPounds(payYTD, 0, true).quantity, payDate.monthOfYear.getAsText()) </p>
+</div>
+
+<div>
+    <h3>
+        @Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext")
+    </h3>
+    <p>@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line1")</p>
+    <ul>
+        <li class="list-bullet">@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line2")</li>
+        <li class="list-bullet">@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line3")</li>
+        <li class="list-bullet">@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line4")</li>
+    </ul>
+    <section class="text section flush--bottom">
+        <p>@Link.toInternalPage(url=routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage.toString,cssClasses=Some("button--secondary"),value=Some(Messages("tai.estimatedPay.error.incorrectTaxableIncome.button"))).toHtml</p>
+    </section>
+</div>
+
+}

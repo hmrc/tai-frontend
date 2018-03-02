@@ -1,0 +1,97 @@
+{
+  "nino": "$NINO",
+  "version": 1,
+  "accounts":[],
+  "increasesTax": {
+    "incomes": {
+      "taxCodeIncomes": {
+        "occupationalPensions": {
+          "taxCodeIncomes": [
+            {
+              "name": "",
+              "taxCode": "K554",
+              "employmentId": 1,
+              "employmentPayeRef": "",
+              "employmentType": 1,
+              "incomeType": 1,
+              "employmentStatus": 1,
+              "tax": {
+                "totalIncome": 33488,
+                "totalTaxableIncome": 39045,
+                "totalTax": 9245,
+                "taxBands": [
+                  {
+                    "income": 31865,
+                    "tax": 6373,
+                    "lowerBand": 0,
+                    "upperBand": 31865,
+                    "rate": 20
+                  },
+                  {
+                    "income": 7180,
+                    "tax": 2872,
+                    "lowerBand": 31865,
+                    "upperBand": 150000,
+                    "rate": 40
+                  },
+                  {
+                    "income": 0,
+                    "tax": 0,
+                    "lowerBand": 150000,
+                    "upperBand": 0,
+                    "rate": 45
+                  }
+                ],
+                "allowReliefDeducts": 0
+              },
+              "worksNumber": "",
+              "jobTitle": "",
+              "startDate": "2007-04-06",
+              "income": 33488,
+              "otherIncomeSourceIndicator": false,
+              "isEditable": true,
+              "isLive": true,
+              "isOccupationalPension": true,
+              "isPrimary": true
+            }
+          ],
+          "totalIncome": 33488,
+          "totalTax": 9245,
+          "totalTaxableIncome": 39045
+        },
+        "hasDuplicateEmploymentNames": false,
+        "totalIncome": 33488,
+        "totalTaxableIncome": 39045,
+        "totalTax": 9245
+      },
+      "noneTaxCodeIncomes": {
+        "statePension": 25557,
+        "otherPensions": {
+          "amount": 5000,
+          "componentType": 0,
+          "description": "",
+          "iabdSummaries": [
+            {
+              "iabdType": 68,
+              "description": "Public Services Pension",
+              "amount": 5000
+            }
+          ]
+        },
+        "totalIncome": 30557
+      },
+      "total": 64045
+    },
+    "total": 64045
+  },
+  "totalLiability": {
+    "totalTax": 9245,
+    "totalTaxOnIncome":9245,
+    "underpaymentPreviousYear": 0,
+    "inYearAdjustment": 0,
+    "outstandingDebt":0,
+    "childBenefitAmount": 0,
+    "childBenefitTaxDue": 0
+  },
+  "adjustedNetIncome": 0
+}

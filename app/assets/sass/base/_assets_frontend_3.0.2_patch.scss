@@ -1,0 +1,54 @@
+/* Problem :
+Within AF v3.0.2 - assets-frontend/assets/scss/base/form/_errors.scss
+
+The error summary display controls are now hanging within .js-form class
+
+        .js-form {
+          .error-summary {
+            display: none;
+          }
+
+          .error-summary--show {
+            display: block;
+          }
+        }
+
+Our error summary is displaying outside of the form for newer views (within our header section).
+Solution - introduce the non wrapped styling locally
+*/
+
+.error-summary {
+    display: none;
+}
+
+.error-summary--show {
+    display: block;
+}
+
+
+
+/* Problem :
+Default table cell font size has increased frm 16px to 19px on desktop view
+
+Generally we go with this, but for the visual illustration table of paye-income-tax-existimate view,
+we want to pin it back to 16px to give a bit more breathing space, consistent with illustration.
+Mobile view has also increased from 14px to 16px - just going with that.
+*/
+
+@media (min-width: 641px) {
+    #tax-on-your-income th, #tax-on-your-income td {
+        font-size: 16px;
+        line-height: 1.25;
+        padding: .73684em 1.05263em .52632em 0;
+    }
+}
+
+
+/* Problem :
+form-control--full-width isn't as specific as the latest AF styling - so we're losing it.
+redefine here, at an equal specificity as AF
+*/
+
+form-control--full-width, input[type="text"].form-control--full-width, #employmentDetails.form-control--full-width {
+    width: 100%;
+}

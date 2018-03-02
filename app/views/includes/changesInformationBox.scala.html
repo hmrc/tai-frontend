@@ -1,0 +1,29 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(title: String, description: String, link: Html = Html(""), id: String="Banner")(value: Html)(implicit request: Request[_])
+
+<section>
+    <div class="light-grey-change">
+        <h3 class="flush--top bold-small" id="title-@{id}">@title
+            @value
+        </h3>
+        <p id="description-@{id}">@Html(description)</p>
+        @if(link.toString.nonEmpty){
+            <p id="link-@{id}">@link</p>
+        }
+    </div>
+</section>

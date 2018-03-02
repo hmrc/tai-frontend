@@ -1,0 +1,70 @@
+/*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package uk.gov.hmrc.tai.viewModels.income.previousYears
+
+import controllers.FakeTaiPlayApplication
+import org.scalatestplus.play.PlaySpec
+import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
+
+class UpdateIncomeDetailsCheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
+
+  "Update income details check your answers view model" must {
+    "return journey lines without phone number line" when {
+      "contactByPhone is No" in {
+        val model = UpdateIncomeDetailsCheckYourAnswersViewModel("2016-2017","something","No",None)
+
+        model.journeyConfirmationLines.size mustBe 2
+        model.journeyConfirmationLines mustBe Seq(whatYouToldUsLine, contactByPhoneLine.copy(answer = "No"))
+      }
+    }
+
+    "return journey lines with phone number line" when {
+      "contactByPhone is Yes" in {
+        val model = UpdateIncomeDetailsCheckYourAnswersViewModel("2016-2017","something", "Yes", Some("1234567890"))
+
+        model.journeyConfirmationLines.size mustBe 3
+        model.journeyConfirmationLines mustBe Seq(whatYouToldUsLine, contactByPhoneLine, phoneNumberLine)
+      }
+    }
+    "return a view model with correct table header based on tax year" in {
+      val model = UpdateIncomeDetailsCheckYourAnswersViewModel(TaxYear(2016),"something", "Yes", Some("1234567890"))
+      model.tableHeader mustBe Messages("tai.income.previousYears.decision.header", "6 April 2016 to 5 April 2017")
+    }
+  }
+
+  private lazy val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
+    Messages("tai.checkYourAnswers.whatYouToldUs"),
+    "something",
+    controllers.income.previousYears.routes.UpdateIncomeDetailsController.details().url
+  )
+
+  private lazy val contactByPhoneLine = CheckYourAnswersConfirmationLine(
+    Messages("tai.checkYourAnswers.contactByPhone"),
+    "Yes",
+    controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber().url
+  )
+
+  private lazy val phoneNumberLine = CheckYourAnswersConfirmationLine(
+    Messages("tai.phoneNumber"),
+    "1234567890",
+    controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber().url
+  )
+
+}

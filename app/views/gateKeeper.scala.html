@@ -1,0 +1,54 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+
+@import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+
+@main(
+    title = Messages("tai.gatekeeper.heading", s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}", s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}"),
+    articleClasses = Some("full-width"),
+    user = Some(user),
+    gaCustomTitle = None
+){
+    <header class="page-header">
+        <h1 id="gatekeeper-title" class="flush--bottom">@Messages("tai.gatekeeper.heading")</h1>
+    </header>
+
+    <h2 class="heading--underlined">@Messages("tai.taxYear",s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</h2>
+    <div class="grid-row">
+        <div class="grid grid-2-3">
+            <div class="inner-block">
+                <section class="flush--bottom hard--bottom">
+                    <p class="text">@Messages("tai.gateKeeper.description.p1", s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}")</p>
+                    <p class="text">@Messages("tai.gateKeeper.description.p2")</p>
+                    <ul class="bullets">
+                        <li>@Messages("tai.gateKeeper.description.p2.1", s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</li>
+                    </ul>
+                    <p class="text">@Messages("tai.gatekeeper.contact")</p>
+                    <ul class="bullets">
+                        <li>@Messages("tai.gatekeeper.telephone")</li>
+                        <li>@Messages("tai.gatekeeper.textphone")</li>
+                        <li>@Messages("tai.gatekeeper.outsideUk")</li>
+                    </ul>
+                </section>
+                @Link.toInternalPage(id=Some("backLink"), url=ApplicationConfig.pertaxServiceUrl.toString,value=Some(Messages("tai.backToHome-link.upper")), dataAttributes = Some(Map("journey-click"->"check-income-tax:Service Link:personal-tax-account-footer-link"))).toHtml
+            </div>
+        </div>
+    </div>
+}
+

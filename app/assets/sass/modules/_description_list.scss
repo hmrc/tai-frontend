@@ -1,0 +1,78 @@
+@function em($px, $base: 19) {
+  @return ($px / $base) + em;
+}
+
+.tai-description-list {
+
+  display: table;
+
+  > * {
+    position: relative;
+    display: table-row;
+
+    > * {
+      display: table-cell;
+      vertical-align: middle;
+      border-top: 1px solid $border-colour;
+      padding: em(12, 19) em(20, 19) em(12, 19) 0;
+    }
+
+    @media (min-width: 769px) {
+        > dt {
+          padding: em(12, 19) em(12, 19) em(12, 19) 0;
+        }
+    }
+
+    &:last-child > * {
+      border-bottom: 1px solid $border-colour;
+    }
+  }
+
+}
+
+.tai-description-list--dynamic-columns {
+
+  > *:first-child > * {
+    border-top: none;
+  }
+
+  > * > *.tai-description-details--retain-column {
+    padding-right: 0;
+    text-align: right;
+    width: 30%;
+  }
+
+  @media (max-width: 768px) {
+
+      > * {
+
+        display: block;
+        border-bottom: 1px solid $border-colour;
+
+        > dt:first-of-type {
+            padding-bottom: 0;
+        }
+
+        > * {
+          display: block;
+          border-top: none;
+          margin-bottom: 0;
+          margin-right: 8em;
+
+          &.tai-description-details--retain-column {
+            width: 100%;
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin-right: 0;
+          }
+        }
+
+        &:last-child > * {
+          border-bottom: none;
+        }
+      }
+  }
+
+}
+

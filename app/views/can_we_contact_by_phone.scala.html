@@ -1,0 +1,81 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.forms.submit
+@import includes.{cancelLink, ptaHeader, backLink}
+@import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+@import uk.gov.hmrc.play.views.html.helpers.{form, input}
+@import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
+@import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
+@import play.api.mvc.Call
+@import includes.forms.inputRadioGroupNewStyling
+
+@(viewModel: CanWeContactByPhoneViewModel, yesNoForm: Form[YesNoTextEntryForm])(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever = TaiHtmlPartialRetriever)
+
+@gaEventActionString = @{"Can we contact you by phone?"}
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = Some(yesNoForm),
+        backLocation = Some(Call("GET", viewModel.backUrl)),
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = viewModel.mainHeading,
+        preHeadingText = viewModel.preHeading)}
+
+@main(
+    title = viewModel.mainHeading,
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = None) {
+
+    @form(action = Call("POST", viewModel.continueUrl), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {
+
+        <div>
+            <p class="text">@Messages("tai.canWeContactByPhone.explanation")</p>
+        </div>
+
+        @{inputRadioGroupNewStyling(
+            field = yesNoForm(YesNoTextEntryForm.YesNoChoice),
+            radioOptions = Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),
+            legend = Messages("tai.canWeContactByPhone.legend"),
+            legendHint = None,
+            ('_groupDivClass, "form-group" ),
+            ('_groupClass, "inline"),
+            ('_fieldsetAttributes, "id=yesNoChoice" ),
+            ('_legendClass, "visuallyhidden"),
+            ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Can we contact you by phone?:Yes" data-journey-val="Yes" data-dynamic-fields-hide="false" data-dynamic-fields="yesNoTextEntry"""") ),
+            ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Can we contact you by phone?:No" data-journey-val="No" data-dynamic-fields-hide="true" data-dynamic-fields="yesNoTextEntry"""") )
+        )}
+
+        <fieldset id="telephoneNumberEntry-container" class="@if(yesNoForm(YesNoTextEntryForm.YesNoChoice).value.getOrElse("") != YesNoTextEntryForm.YesValue){js-hidden} data-yesNoTextEntry inline form-field-group panel-indent">
+            @input(field=yesNoForm(YesNoTextEntryForm.YesNoTextEntry),
+            '_label -> Messages("tai.phoneNumber"),
+            '_inputHint -> Messages("tai.canWeContactByPhone.telephoneNumber.hint"),
+            '_hintId -> "phoneNumberHint",
+            '_inputClass -> "form-control input--cleared form-control-1-2")
+        </fieldset>
+
+        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(viewModel.preHeading))
+    }
+
+    @cancelLink(Call("GET", viewModel.cancelUrl), gaEventAction = Some(gaEventActionString))
+}
+
+
+
+
+
