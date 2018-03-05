@@ -157,6 +157,20 @@ class IncomeUpdateCalculatorNewControllerSpec extends PlaySpec with FakeTaiPlayA
     }
   }
 
+  "payslipAmountPage" must {
+    "display payslipAmount page" when {
+      "journey cache returns employment name, id and payPeriod" in {
+        val sut = createSut
+        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_PayPeriod))(any())).thenReturn(Future.successful(""))
+        val result = sut.payslipAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() mustBe Messages("tai.payslip.title")
+      }
+    }
+  }
+
   "calcUnavailablePage" must {
     "display calcUnavailable page" when {
       "journey cache returns employment name and id" in {

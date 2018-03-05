@@ -248,18 +248,15 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
   } recoverWith handleErrorResponse("processPayPeriod", nino)
 
-  //Payslip Amount
+  //migrated
   def payslipAmountPage() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id, name) => getPayslipAmountPage(Nino(user.getNino), id, name)
     moveToPageWithIncomeID(page)
   }
 
+  //migrated
   def getPayslipAmountPage(nino: Nino, id: Int, employerName: String)(
-    implicit
-    request: Request[AnyContent],
-    user: TaiUser,
-    sessionData: SessionData
-  ): Future[Result] = {
+    implicit request: Request[AnyContent], user: TaiUser, sessionData: SessionData): Future[Result] = {
 
     sendActingAttorneyAuditEvent("getPayslipAmountPage")
 

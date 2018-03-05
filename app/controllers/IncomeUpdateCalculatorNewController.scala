@@ -146,6 +146,19 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
         )
   }
 
+  def payslipAmountPage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        sendActingAttorneyAuditEvent("getPayslipAmountPage")
+        for {
+          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+          payPeriod <- journeyCacheService.mandatoryValue(UpdateIncome_PayPeriod)
+        } yield {
+          Ok(views.html.incomes.payslipAmount(PayslipForm.createForm(), payPeriod, id, Some(employerName)))
+        }
+  }
+
   def calcUnavailablePage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
