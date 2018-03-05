@@ -60,7 +60,7 @@ class AddPensionNumberSpec extends TaiViewSpec with FormValuesConstants {
           withError(AddPensionProviderNumberForm.PayrollNumberChoice, noPayrollNumberChooseError)
         def view: Html = views.html.pensions.addPensionNumber(formWithErrors, pensionNumberViewModel)
 
-        val errorMessage = doc(view).select(".error-notification").text
+        val errorMessage = doc(view).select(".error-message").text
         errorMessage mustBe noPayrollNumberChooseError
       }
 

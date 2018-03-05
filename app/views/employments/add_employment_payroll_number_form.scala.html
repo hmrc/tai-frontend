@@ -62,16 +62,16 @@
             ('_groupDivClass, "form-group" ),
             ('_groupClass, "inline"),
             ('_fieldsetAttributes, "id=payrollNumberChoice" ),
-            ('_legendClass, "visuallyhidden"),
+            ('_legendSpanClass, "visually-hidden"),
             ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Do you know your payroll number for this employer?:Yes" data-journey-val="Yes" data-dynamic-fields-hide="false" data-dynamic-fields="payrollNumberEntry"""") ),
             ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Do you know your payroll number for this employer?:No" data-journey-val="No" data-dynamic-fields-hide="true" data-dynamic-fields="payrollNumberEntry"""") )
         )}
 
-        <fieldset id="payrollNumberEntry-container" class="@if(payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberChoice).value.getOrElse("") != AddEmploymentPayrollNumberForm.YesValue){js-hidden} data-payrollNumberEntry inline form-field-group panel-indent">
+        <div id="payrollNumberEntry-container" class="@if(payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberChoice).value.getOrElse("") != AddEmploymentPayrollNumberForm.YesValue){js-hidden} data-payrollNumberEntry inline form-field-group panel-indent">
             @input(field=payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberEntry),
                 '_label -> Messages("tai.addEmployment.employmentPayrollNumber.label"),
                 '_inputClass -> "form-control input--cleared")
-        </fieldset>
+        </div>
 
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing employment"))
     }

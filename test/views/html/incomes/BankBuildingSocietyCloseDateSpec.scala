@@ -49,23 +49,23 @@ class BankBuildingSocietyCloseDateSpec extends TaiViewSpec {
 
   "have a legend in the form" in {
 
-    val legendItem = doc(view).select("form > fieldset > legend.heading-medium").text
+    val legendItem = doc(view).select("legend .form-label").text
 
     legendItem mustBe Messages("tai.closeBankAccount.closeDateForm.label", bankName)
   }
 
   "have a form hint" in {
 
-    val formHint = doc(view).select("form > fieldset > span.form-field--hint").text
+    val formHint = doc(view).select("legend .form-hint").text
 
     formHint mustBe Messages("tai.label.date.example")
   }
 
   "have a form input for day with relevant label" in {
 
-    val labelDay = doc(view).select("form > fieldset > div.form-group-day > label.form-label")
+    val labelDay = doc(view).select(".form-group-day .form-label")
     val inputLabelDay = labelDay.text
-    val numberOfInputs = doc(view).select("form > fieldset > div.form-group-day > input").size
+    val numberOfInputs = doc(view).select(".form-group-day input").size
 
     inputLabelDay mustBe Messages("tai.label.day")
     numberOfInputs mustBe 1
@@ -73,9 +73,9 @@ class BankBuildingSocietyCloseDateSpec extends TaiViewSpec {
 
   "have a form input for month with relevant label" in {
 
-    val labelMonth = doc(view).select("form > fieldset > div.form-group-month > label.form-label")
+    val labelMonth = doc(view).select(".form-group-month .form-label")
     val inputLabelMonth = labelMonth.text
-    val numberOfInputs = doc(view).select("form > fieldset > div.form-group-month > input").size
+    val numberOfInputs = doc(view).select(".form-group-month input").size
 
     inputLabelMonth mustBe Messages("tai.label.month")
     numberOfInputs mustBe 1
@@ -83,9 +83,9 @@ class BankBuildingSocietyCloseDateSpec extends TaiViewSpec {
 
   "have a form input for year with relevant label" in {
 
-    val labelYear = doc(view).select("form > fieldset > div.form-group-year > label.form-label")
+    val labelYear = doc(view).select(".form-group-year .form-label")
     val inputLabelYear = labelYear.text
-    val numberOfInputs = doc(view).select("form > fieldset > div.form-group-year > input").size
+    val numberOfInputs = doc(view).select(".form-group-year input").size
 
     inputLabelYear mustBe Messages("tai.label.year")
     numberOfInputs mustBe 1
@@ -107,8 +107,8 @@ class BankBuildingSocietyCloseDateSpec extends TaiViewSpec {
 
       def view: Html = views.html.incomes.bbsi.close.bank_building_society_close_date(formWithErrors, bankName, 1)
 
-      val errorMessage = doc(view).select(".error-notification").text
-      val fieldSetError = doc(view).select("fieldset").hasClass("form-field-group--error")
+      val errorMessage = doc(view).select(".error-message").text
+      val fieldSetError = doc(view).select("form > div").hasClass("form-group-error")
 
       fieldSetError mustBe true
       errorMessage mustBe globalErrorMessage

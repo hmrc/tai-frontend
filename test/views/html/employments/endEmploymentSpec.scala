@@ -70,39 +70,39 @@ class endEmploymentSpec extends TaiViewSpec {
 
     "have a legend in the form" in {
       def view: Html = views.html.employments.endEmployment(employmentEndDateForm, viewmodel)
-      val legendItem1 = doc(view).select("form > fieldset > legend.heading-medium").text
+      val legendItem1 = doc(view).select("legend .form-label").text
 
       legendItem1 mustBe Messages("tai.endEmployment.endDateForm.label", employmentName)
     }
 
     "have a form hint" in {
-      val legendItem2 = doc(view).select("form > fieldset > span.form-field--hint").text
+      val legendItem2 = doc(view).select("legend .form-hint").text
 
       legendItem2 mustBe Messages("tai.label.date.example")
     }
 
     "have a form input for day with relevant label" in {
-      val labelDay = doc(view).select("form > fieldset > div.form-group-day > label.form-label")
+      val labelDay = doc(view).select(".form-group-day .form-label")
       val inputLabelDay = labelDay.text
-      val numberOfInputs = doc(view).select("form > fieldset > div.form-group-day > input").size
+      val numberOfInputs = doc(view).select(".form-group-day input").size
 
       inputLabelDay mustBe Messages("tai.label.day")
       numberOfInputs mustBe 1
     }
 
     "have a form input for month with relevant label" in {
-      val labelMonth = doc(view).select("form > fieldset > div.form-group-month > label.form-label")
+      val labelMonth = doc(view).select(".form-group-month label.form-label")
       val inputLabelMonth = labelMonth.text
-      val numberOfInputs = doc(view).select("form > fieldset > div.form-group-month > input").size
+      val numberOfInputs = doc(view).select(".form-group-month input").size
 
       inputLabelMonth mustBe Messages("tai.label.month")
       numberOfInputs mustBe 1
     }
 
     "have a form input for year with relevant label" in {
-      val labelYear = doc(view).select("form > fieldset > div.form-group-year > label.form-label")
+      val labelYear = doc(view).select(".form-group-year .form-label")
       val inputLabelYear = labelYear.text
-      val numberOfInputs = doc(view).select("form > fieldset > div.form-group-year > input").size
+      val numberOfInputs = doc(view).select(".form-group-year input").size
 
       inputLabelYear mustBe Messages("tai.label.year")
       numberOfInputs mustBe 1
@@ -111,8 +111,8 @@ class endEmploymentSpec extends TaiViewSpec {
     "have an error message with the form inputs" when {
       "there is a form with an error" in {
         def view: Html = views.html.employments.endEmployment(formWithErrors, viewmodel)
-        val errorMessage = doc(view).select(".error-notification").text
-        val fieldSetError = doc(view).select("fieldset").hasClass("form-field-group--error")
+        val errorMessage = doc(view).select(".error-message").text
+        val fieldSetError = doc(view).select("form > div").hasClass("form-group-error")
 
         fieldSetError mustBe true
         errorMessage mustBe globalErrorMessage
@@ -121,7 +121,7 @@ class endEmploymentSpec extends TaiViewSpec {
 
     "have a 'continue' button" in {
 
-        val continueButton = doc(view).select("form > div > button[type=submit]").text
+        val continueButton = doc(view).select("button[type=submit]").text
 
         continueButton mustBe Messages("tai.WhatDoYouWantToDo.submit")
     }
