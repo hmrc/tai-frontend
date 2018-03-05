@@ -152,7 +152,8 @@
         <script type="text/javascript">@gaCallsAdditionalJs.get</script>
     }
 
-    <script>
+    <script type="text/javascript">
+
         /* Temp - pending AF update to > 3.0.2 */
         document.addEventListener("DOMContentLoaded", function(event) {
             window.GOVUK.performance.sendGoogleAnalyticsEvent = function (category, event, label) {
@@ -164,6 +165,20 @@
             };
             window.GOVUK.performance.stageprompt.setupForGoogleAnalytics();
         });
+
+        document.addEventListener("DOMContentLoaded", function(event) {
+            if ( window.history && window.history.replaceState && typeof history.replaceState === 'function' ) {
+                window.history.replaceState( null, null, window.location.href );
+            }
+            if (window.history && window.history.back && typeof history.back === 'function') {
+                var backLinkElem = document.getElementById("backLink");
+                if (backLinkElem !=  null){
+                    backLinkElem.setAttribute("onclick","javascript:window.history.back();");
+                    backLinkElem.setAttribute("href","javascript:void(0);");
+                }
+            }
+        });
+
     </script>
 }
 
