@@ -38,10 +38,10 @@ import views.html.incomes.howToUpdate
 import scala.concurrent.Future
 
 trait IncomeUpdateCalculatorController extends TaiBaseController
-    with DelegationAwareActions
-    with WithAuthorisedForTai
-    with Auditable
-    with JourneyCacheConstants {
+  with DelegationAwareActions
+  with WithAuthorisedForTai
+  with Auditable
+  with JourneyCacheConstants {
 
   def taiService: TaiService
   def journeyCacheService: JourneyCacheService
@@ -67,7 +67,6 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     }
   }
 
-
   def chooseHowToUpdatePage() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id2, name) => getChooseHowToUpdatePage(Nino(user.getNino), id2, name)
     moveToPageWithIncomeID(page)
@@ -84,11 +83,11 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             case (true, false) => {
               if (!TaxSummaryHelper.hasMultipleIncomes(details)) {
                 TaxSummaryHelper.getSingularIncomeId(details) match {
-                  case Some(incomeId) => Future.successful(Ok(views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), TaxSummaryHelper.hasMultipleIncomes(details), incomeId)))
+                  case Some(incomeId) => Future.successful(Ok(views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), incomeId)))
                   case None => Future.successful(Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None)))
                 }
               } else {
-                Future.successful(Ok(howToUpdate(HowToUpdateForm.createForm(), TaxSummaryHelper.hasMultipleIncomes(details), id, Some(employerName))))
+                Future.successful(Ok(howToUpdate(HowToUpdateForm.createForm(), id, Some(employerName))))
               }
             }
             case (false, false) => Future.successful(Redirect(routes.TaxAccountSummaryController.onPageLoad()))
@@ -108,11 +107,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
   } recoverWith handleErrorResponse("getChooseHowToUpdatePage", nino)
 
+  // Migrated
   def handleChooseHowToUpdate() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id, name) => processChooseHowToUpdate(Nino(user.getNino), id, name)
     moveToPageWithIncomeID(page)
   }
 
+  // Migrated
   def processChooseHowToUpdate(nino: Nino, id: Int, name: String)(
     implicit request: Request[AnyContent], user: TaiUser, sessionData: SessionData ): Future[Result] = {
     sendActingAttorneyAuditEvent("processChooseHowToUpdate")
@@ -120,7 +121,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     val rule: CustomRule = details => {
       HowToUpdateForm.createForm().bindFromRequest().fold(
         formWithErrors => {
-          Future.successful(BadRequest(views.html.incomes.howToUpdate(formWithErrors, TaxSummaryHelper.hasMultipleIncomes(details), id, Some(name))))
+          Future.successful(BadRequest(views.html.incomes.howToUpdate(formWithErrors, id, Some(name))))
         },
         formData => {
           formData.howToUpdate match {
@@ -137,11 +138,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
   } recoverWith handleErrorResponse("processChooseHowToUpdate", nino)
 
+  // Migrated
   def workingHoursPage() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id, name) => getWorkingHoursPage(Nino(user.getNino), id, name)
     moveToPageWithIncomeID(page)
   }
 
+  // Migrated
   def getWorkingHoursPage(nino: Nino, id: Int, name: String)(
     implicit request: Request[AnyContent], user: TaiUser, sessionData: SessionData ): Future[Result] = {
     sendActingAttorneyAuditEvent("getWorkingHours")
@@ -156,11 +159,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
   } recoverWith handleErrorResponse("getWorkingHours", nino)
 
+  // Migrated
   def handleWorkingHours() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id, name) => processWorkingHours(Nino(user.getNino), id, name)
     moveToPageWithIncomeID(page)
   }
 
+  // Migrated
   def processWorkingHours(nino: Nino, id: Int, name: String)(
     implicit request: Request[AnyContent], user: TaiUser, sessionData: SessionData): Future[Result] = {
 
@@ -184,11 +189,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
   } recoverWith handleErrorResponse("processWorkingHours", nino)
 
+  // migrated
   def payPeriodPage() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id, name) => getPayPeriodPage(Nino(user.getNino), id, name)
     moveToPageWithIncomeID(page)
   }
 
+  // migrated
   def getPayPeriodPage(nino: Nino, id: Int, employerName: String)(
     implicit request: Request[AnyContent], user: TaiUser, sessionData: SessionData ): Future[Result] = {
     sendActingAttorneyAuditEvent("getPayPeriodPage")
@@ -203,17 +210,15 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
   } recoverWith handleErrorResponse("getPayPeriodPage", nino)
 
+  //migrated
   def handlePayPeriod() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id, name) => processPayPeriod(Nino(user.getNino), id, name)
     moveToPageWithIncomeID(page)
   }
 
+  //migrated
   def processPayPeriod(nino: Nino, id: Int, employerName: String)(
-    implicit
-    request: Request[AnyContent],
-    user: TaiUser,
-    sessionData: SessionData
-  ): Future[Result] = {
+    implicit request: Request[AnyContent], user: TaiUser, sessionData: SessionData): Future[Result] = {
 
     sendActingAttorneyAuditEvent("processPayPeriod")
     val rule: CustomRule = details => {
@@ -232,8 +237,8 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               )
             )
           ).map { x =>
-              Redirect(routes.IncomeUpdateCalculatorController.payslipAmountPage())
-            }
+            Redirect(routes.IncomeUpdateCalculatorController.payslipAmountPage())
+          }
         }
       )
     }
@@ -279,8 +284,8 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   }
 
   def processPayslipAmount(nino: Nino, id: Int, employerName: String)(implicit
-    request: Request[AnyContent],
-    user: TaiUser, sessionData: SessionData): Future[Result] = {
+                                                                      request: Request[AnyContent],
+                                                                      user: TaiUser, sessionData: SessionData): Future[Result] = {
 
     sendActingAttorneyAuditEvent("processPayslipAmount")
     val rule: CustomRule = details => {
@@ -601,15 +606,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   }
 
   def processBonusOvertimeAmount(nino: Nino, id: Int, employerName: String)(
-    implicit
-    request: Request[AnyContent], user: TaiUser, sessionData: SessionData
-  ): Future[Result] = {
+    implicit request: Request[AnyContent], user: TaiUser, sessionData: SessionData): Future[Result] = {
     sendActingAttorneyAuditEvent("processBonusOvertimeAmount")
     val rule: CustomRule = details => {
       sessionData.incomeCalculation.map { data =>
-        val moreThisYear = data.bonusPaymentsForm.map(form => form.bonusPaymentsMoreThisYear.getOrElse("")).getOrElse("")
-        def fetchNonEmptyMessage = moreThisYear match {
-          case "Yes" => "tai.bonusPaymentsAmount.year.error"
+        val moreThisYear: Option[String] = data.bonusPaymentsForm.flatMap(form => form.bonusPaymentsMoreThisYear)
+        def nonEmptyMessage = moreThisYear match {
+          case Some("Yes") => "tai.bonusPaymentsAmount.year.error"
           case _ => data.payPeriodForm.flatMap(_.payPeriod) match {
             case Some("monthly") => "tai.bonusPaymentsAmount.month.error"
             case Some("fortnightly") => "tai.bonusPaymentsAmount.fortnightly.error"
@@ -618,14 +621,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           }
         }
 
-        val nonEmptyMessage = fetchNonEmptyMessage
         val notAnAmountMessage = moreThisYear match {
-          case "Yes" => "tai.bonusPaymentsAmount.error.form.notAnAmountAnnual"
+          case Some("Yes") => "tai.bonusPaymentsAmount.error.form.notAnAmountAnnual"
           case _ => "tai.bonusPaymentsAmount.error.form.notAnAmount"
         }
         BonusOvertimeAmountForm.createForm(Some(nonEmptyMessage), Some(notAnAmountMessage)).bindFromRequest().fold(
           formWithErrors => {
-            if (moreThisYear == "Yes") {
+            if (moreThisYear.contains("Yes")) {
               Future.successful(BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, "year", id, employerName = Some(employerName))))
             } else {
               Future.successful(
@@ -657,109 +659,93 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   } recoverWith handleErrorResponse("processTaxablePayslipAmount", nino)
 
   def estimatedPayPage() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
-    val page: IncomeIDPage = (id, name) => getEstimatedPayPage(Nino(user.getNino), id, name)
-    moveToPageWithIncomeID(page)
-  }
+    val nino = Nino(user.getNino)
+    val page: IncomeIDPage = (id, employerName) => {
 
-  def getEstimatedPayPage(nino: Nino, id: Int, employerName: String)(
-    implicit
-    request: Request[AnyContent],
-    user: TaiUser,
-    sessionData: SessionData
-  ): Future[Result] = {
+      sendActingAttorneyAuditEvent("getEstimatedPayPage")
 
-    sendActingAttorneyAuditEvent("getEstimatedPayPage")
+      val incomeCalculationForm = sessionData.incomeCalculation
+      val rule: CustomRule = details => {
+        incomeCalculationForm.map { form =>
 
-    val incomeCalculationForm = sessionData.incomeCalculation
-    val rule: CustomRule = details => {
-      incomeCalculationForm.map { form =>
+          val bonusOvertime = form.bonusPaymentsForm.flatMap(_.bonusPayments).getOrElse("") == "Yes"
 
-        val bonusOvertime = form.bonusPaymentsForm.flatMap(_.bonusPayments).getOrElse("") == "Yes"
+          if (form.incomeId.isDefined && form.incomeId.getOrElse(0) == id) {
 
-        if (form.incomeId.isDefined && form.incomeId.getOrElse(0) == id) {
+            val income = taiService.incomeForEdit(details, id)
+            val startDate = income.map(_.startDate).flatten
 
-          val income = taiService.incomeForEdit(details, id)
-          val startDate = income.map(_.startDate).flatten
+            taiService.calculateEstimatedPay(form, startDate).flatMap { CalculatedPay =>
+              val payYTD = TaxSummaryHelper.getTaxablePayYTD(details, income.get.employmentId)
+              val paymentDate = details.incomeData.map(_.incomeExplanations).getOrElse(Nil).find(_.incomeId == id).flatMap(_.paymentDate)
 
-          taiService.calculateEstimatedPay(form, startDate).flatMap { CalculatedPay =>
-            val newAmount = CalculatedPay.grossAnnualPay
-            val employmentId = income.get.employmentId
-            val payYTD = TaxSummaryHelper.getTaxablePayYTD(details, income.get.employmentId)
-            val paymentDate = details.incomeData.map(_.incomeExplanations).getOrElse(Nil).find(_.incomeId == id).flatMap(_.paymentDate)
+              if (CalculatedPay.grossAnnualPay.get > payYTD) {
 
-            if (CalculatedPay.grossAnnualPay.get > payYTD) {
-
-              taiService.updateTaiSession(sessionData.copy(incomeCalculation = Some(form.copy(
-                grossAmount = CalculatedPay.grossAnnualPay,
-                netAmount = CalculatedPay.netAnnualPay
-              )))).map { x =>
-
-                Ok(views.html.incomes.estimatedPay(CalculatedPay.grossAnnualPay, CalculatedPay.netAnnualPay, id, bonusOvertime,
-                  CalculatedPay.annualAmount, CalculatedPay.startDate, (CalculatedPay.grossAnnualPay == CalculatedPay.netAnnualPay),
-                  employerName = Some(employerName)))
+                taiService.updateTaiSession(sessionData.copy(incomeCalculation = Some(form.copy(
+                  grossAmount = CalculatedPay.grossAnnualPay,
+                  netAmount = CalculatedPay.netAnnualPay
+                )))).map { x =>
+                  Ok(views.html.incomes.estimatedPay(CalculatedPay.grossAnnualPay, CalculatedPay.netAnnualPay, id, bonusOvertime,
+                    CalculatedPay.annualAmount, CalculatedPay.startDate, (CalculatedPay.grossAnnualPay == CalculatedPay.netAnnualPay),
+                    employerName = Some(employerName)))
+                }
+              } else {
+                Future.successful(Ok(views.html.incomes.incorrectTaxableIncome(payYTD, paymentDate.getOrElse(new LocalDate))))
               }
-            } else {
-
-              Future.successful(Ok(views.html.incomes.incorrectTaxableIncome(payYTD, paymentDate.getOrElse(new LocalDate))))
             }
+          } else {
+            Future.successful(Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None)))
           }
 
-        } else {
-          Future.successful(Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None)))
-        }
+        }.getOrElse(Future.successful(Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None))))
+      }
 
-      }.getOrElse(Future.successful(Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None))))
-    }
+      ServiceChecks.executeWithServiceChecks(nino, SimpleServiceCheck, sessionData) {
+        Some(rule)
+      }
 
-    ServiceChecks.executeWithServiceChecks(nino, SimpleServiceCheck, sessionData) {
-      Some(rule)
-    }
+    } recoverWith handleErrorResponse("getEstimatedPayPage", nino)
 
-  } recoverWith handleErrorResponse("getEstimatedPayPage", nino)
-
-  def handleCalculationResult() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
-    val page: IncomeIDPage = (id, name) => processCalculationResult(Nino(user.taiRoot.nino), id, name)
     moveToPageWithIncomeID(page)
   }
 
-  def processCalculationResult(nino: Nino, id: Int, employerName: String)(
-    implicit
-    request: Request[AnyContent],
-    user: TaiUser,
-    sessionData: SessionData
-  ): Future[Result] = {
+  def handleCalculationResult() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user =>
+    implicit sessionData =>
+      implicit request =>
+        val nino = Nino(user.taiRoot.nino)
+        val page: IncomeIDPage = (id, employerName) => {
 
-    sendActingAttorneyAuditEvent("processCalculationResult")
+          sendActingAttorneyAuditEvent("processCalculationResult")
 
-    val rule: CustomRule = details => {
-      val incomeToEdit = taiService.incomeForEdit(details, id)
-      val readIncomeCalculationForm = sessionData.incomeCalculation
+          val rule: CustomRule = details => {
+            val incomeToEdit = taiService.incomeForEdit(details, id)
+            val readIncomeCalculationForm = sessionData.incomeCalculation
 
-      readIncomeCalculationForm.map { incomeCalculationForm =>
-        if (incomeCalculationForm.incomeId.isDefined && incomeCalculationForm.incomeId.getOrElse(0) == id) {
-          incomeToEdit.map { income =>
-            {
-              val newAmount = income.copy(newAmount = if (incomeCalculationForm.netAmount.isDefined) {
-                incomeCalculationForm.netAmount.getOrElse(BigDecimal(0)).intValue()
+            readIncomeCalculationForm.map { incomeCalculationForm =>
+              if (incomeCalculationForm.incomeId.isDefined && incomeCalculationForm.incomeId.getOrElse(0) == id) {
+                incomeToEdit.map { income => {
+                  val newAmount = income.copy(newAmount = if (incomeCalculationForm.netAmount.isDefined) {
+                    incomeCalculationForm.netAmount.getOrElse(BigDecimal(0)).intValue()
+                  } else {
+                    income.oldAmount
+                  })
+
+                  Future.successful(Ok(views.html.incomes.confirm_save_Income(
+                    EditIncomeForm.create(preFillData = newAmount).get, employerName = Some(employerName), true)))
+                }
+                }.getOrElse(Future.successful(Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None))))
               } else {
-                income.oldAmount
-              })
+                Future.successful(Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None)))
+              }
+            }.getOrElse(Future.successful(Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None))))
+          }
+          ServiceChecks.executeWithServiceChecks(nino, SimpleServiceCheck, sessionData) {
+            Some(rule)
+          }
+        } recoverWith handleErrorResponse("processCalculationResult", nino)
 
-              Future.successful(Ok(views.html.incomes.confirm_save_Income(
-                EditIncomeForm.create(preFillData = newAmount).get,
-                TaxSummaryHelper.hasMultipleIncomes(details), employerName = Some(employerName), true
-              )))
-            }
-          }.getOrElse(Future.successful(Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None))))
-        } else {
-          Future.successful(Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None)))
-        }
-      }.getOrElse(Future.successful(Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None))))
-    }
-    ServiceChecks.executeWithServiceChecks(nino, SimpleServiceCheck, sessionData) {
-      Some(rule)
-    }
-  } recoverWith handleErrorResponse("processCalculationResult", nino)
+        moveToPageWithIncomeID(page)
+  }
 
   def calcUnavailablePage() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id, name) => getCalcUnavailablePage(Nino(user.getNino), id, name)

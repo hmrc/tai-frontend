@@ -21,6 +21,7 @@ import data.TaiData
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
@@ -30,16 +31,18 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.tai.service.{ActivityLoggerService, EmploymentService, JourneyCacheService, TaiService}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Employment}
+import uk.gov.hmrc.tai.util.JourneyCacheConstants
 
 import scala.concurrent.Future
 import scala.util.Random
 
-class NewIncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
+class NewIncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with JourneyCacheConstants {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
@@ -301,6 +304,22 @@ class NewIncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayA
     }
   }
 
+  "calcUnavailablePage" must {
+    "display calcUnavailable page" when {
+      "journey cache returns employment name and id" in {
+        val sut = createSut
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(SampleId))
+        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_NameKey))(any())).thenReturn(Future.successful(EmployerName))
+
+        val result = sut.calcUnavailablePage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() mustBe Messages("tai.unableToCalculate.title")
+      }
+    }
+  }
+
   val SampleId = 1
   val EmployerName = "sample employer"
   def fakeNino = new Generator(new Random).nextNino
@@ -322,10 +341,11 @@ class NewIncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayA
     override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
     override val employmentService: EmploymentService = mock[EmploymentService]
 
-    val ad = AuthBuilder.createFakeAuthData
+    val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
     when(taiService.taiSession(any(), any(), any())(any())).thenReturn(Future.successful(AuthBuilder.createFakeSessionDataWithPY))
+    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
     when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
   }
 

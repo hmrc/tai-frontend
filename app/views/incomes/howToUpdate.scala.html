@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(howToUpdateForm: Form[uk.gov.hmrc.tai.forms.HowToUpdateForm], hasMultipleIncomes:Boolean, id: Int, employerName : Option[String] = None)(implicit request: Request[_],
+@(howToUpdateForm: Form[uk.gov.hmrc.tai.forms.HowToUpdateForm], id: Int, employerName : Option[String] = None)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
 
 @import includes.ptaHeader
