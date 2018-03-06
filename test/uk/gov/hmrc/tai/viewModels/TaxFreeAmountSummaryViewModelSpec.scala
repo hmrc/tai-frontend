@@ -55,7 +55,7 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
 
     "build a NOT displayable link" when {
       "coding component is another type" in {
-        val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(TaxableExpensesBenefit, Some(234), 11500, "TaxableExpensesBenefit"), employmentNames, companyCarBenefits)
+        val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(HotelAndMealExpenses, Some(1), 1, "HotelAndMealExpenses"), employmentNames, companyCarBenefits)
         row.link mustBe ChangeLinkViewModel(false)
       }
     }
@@ -92,6 +92,16 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
           val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(CarBenefit, None, 11500, "CarBenefit"), employmentNames, companyCarBenefits)
           val url = s"${ApplicationConfig.updateCompanyCarDetailsUrl}/0"
           row.link mustBe ChangeLinkViewModel(true, Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), url)
+        }
+      }
+    }
+
+    "build a displayable Company Benefit LinkViewModel" which {
+      "has the employment id and benefit type added to it" when {
+        "coding component is of type BenefitComponentType" in {
+          val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(TaxableExpensesBenefit, Some(234), 11500, "TaxableExpensesBenefit"), employmentNames, companyCarBenefits)
+          val url = controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(234, TaxableExpensesBenefit.toString).url
+          row.link mustBe ChangeLinkViewModel(true, Messages("tai.taxFreeAmount.table.taxComponent.TaxableExpensesBenefit"), url)
         }
       }
     }
