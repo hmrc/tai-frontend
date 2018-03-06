@@ -56,8 +56,8 @@ class BankBuildingSocietyAccountsDecisionSpec extends TaiViewSpec
 
       val errorDoc = doc(view)
 
-      errorDoc must haveElementAtPathWithText(".error-notification", Messages("tai.bbsi.decision.error.selectOption"))
-      errorDoc must haveElementAtPathWithClass("form div", "form-field--error")
+      errorDoc must haveElementAtPathWithText(".error-message", Messages("tai.bbsi.decision.error.selectOption"))
+      errorDoc must haveElementAtPathWithClass("form div", "form-group-error")
     }
 
     "have three radio buttons with relevant text" in {

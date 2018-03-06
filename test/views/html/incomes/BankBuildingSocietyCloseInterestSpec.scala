@@ -50,7 +50,7 @@ class BankBuildingSocietyCloseInterestSpec extends TaiViewSpec with FormValuesCo
 
         def view: Html = views.html.incomes.bbsi.close.bank_building_society_closing_interest(id, formWithErrors)
 
-        val errorMessage = doc(view).select(".error-notification").text
+        val errorMessage = doc(view).select(".error-message").text
         errorMessage mustBe closingInterestChoiceError
       }
     }

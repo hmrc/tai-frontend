@@ -31,34 +31,39 @@
         attrMinlength: String = "",
         attrMaxlength: String = "",
         attrPattern: String = "",
-        attrStep: String = "",
         attrTitle: String = "",
         attrDescribedBy: String = "",
-        data: String = ""
+        data: String = "",
+        hintClass: String = ""
 )(implicit lang: Lang, m: Messages)
 
-<div class="form-group @if(fieldErrorsEnabled && field.hasErrors) { form-field--error} @if(parentDateAttr) { form-group-@parentDateAttr} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}" @if(data) {
-    data-reveal="@data"}>
+<div class="form-group  @if(parentDateAttr) { form-group-@parentDateAttr} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}" @if(data) {data-reveal="@data"}>
     <label class="form-label@if(bold) {-bold}" for="@field.id">
         @if(labelText.nonEmpty) {
             @if(labelHidden) { <span class="visuallyhidden">}
             @Messages(labelText)
             @if(labelHidden) {</span>}
         }
-        @if(hintText.nonEmpty) { <span class="form-hint" id="@{ field.id }-hint">@Messages(hintText)</span> }
-        @if(fieldErrorsEnabled && field.hasErrors) { <span class="error-notification">@field.error</span> }
+        @if(hintText.nonEmpty) { <span class="form-hint @hintClass" id="@{ field.id }-hint">@Messages(hintText)</span> }
+        @if(fieldErrorsEnabled && field.hasErrors) { <span class="error-message">@field.error</span> }
     </label>
 
-    <input name="@field.name" class="form-control @if(attrType == "number") { input--no-spinner} @classes.mkString(" ")"
+    <input name="@field.name" class="form-control @if(fieldErrorsEnabled && field.hasErrors) { form-control-error} @if(attrType == "number") { input--no-spinner} @classes.mkString(" ")"
     value="@field.value" id="@field.id"
         @if(hintText.nonEmpty) { aria-describedby="@{ field.id }-hint" }
         @if(attrDescribedBy.nonEmpty) { aria-describedby="@attrDescribedBy-hint" }
-        @if(attrType.nonEmpty) { type="@attrType" } else { type="text" }
+        @if(attrType.nonEmpty) {
+            type="@attrType"
+            @if(attrType == "number"){
+                step="1"
+            }
+        } else {
+            type="text"
+        }
         @if(attrMin.nonEmpty) { min="@attrMin" }
         @if(attrMax.nonEmpty) { max="@attrMax" }
         @if(attrMinlength.nonEmpty) { minlength="@attrMinlength" }
         @if(attrMaxlength.nonEmpty) { maxlength="@attrMaxlength" }
         @if(attrPattern.nonEmpty) { pattern="@attrPattern" }
-        @if(attrStep.nonEmpty) { step="@attrStep" }
         @if(attrTitle.nonEmpty) { title="@Messages(attrTitle)" } />
 </div>

@@ -50,7 +50,7 @@ class EndEmploymentIrregularPaymentErrorPageSpec extends TaiViewSpec with Irregu
     "display error message" when {
       "form has error" in {
         val errorView = views.html.employments.EndEmploymentIrregularPaymentError(formWithErrors, model)
-        doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-notification")
+        doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-message")
       }
     }
   }
