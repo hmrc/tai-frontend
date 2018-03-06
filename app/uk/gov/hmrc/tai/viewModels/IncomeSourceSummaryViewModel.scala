@@ -19,7 +19,8 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.model.domain.{CarFuelBenefit, _}
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.util.{TaiConstants, ViewModelHelper}
@@ -72,6 +73,12 @@ object IncomeSourceSummaryViewModel {
         CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), ccBen.grossAmount, changeUrl)
     }
     val otherBenVMs = benefits.otherBenefits collect {
+
+      case carFuelBen @GenericBenefit(CarFuelBenefit, employmentId,_) =>{
+        val name = Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit")
+        val changeUrl = ApplicationConfig.companyCarFuelBenefitUrl
+        CompanyBenefitViewModel(name, carFuelBen.amount, changeUrl)
+      }
       case otherBen: GenericBenefit if otherBen.employmentId.isDefined && otherBen.employmentId.get == empId =>
         val name = Messages(s"tai.taxFreeAmount.table.taxComponent.${otherBen.benefitType.toString}")
         val changeSvc = if (name == Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance")) TaiConstants.MedicalBenefitsIform else TaiConstants.CompanyBenefitsIform
