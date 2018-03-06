@@ -185,6 +185,12 @@ trait DateFormatConstants {
   val DateWithYearFormat = "d MMMM yyyy"
 }
 
+trait UpdateOrRemoveCompanyBenefitDecisionConstants{
+  val DecisionChoice = "decisionChoice"
+  val YesIGetThisBenefit = "yesIGetThisBenefit"
+  val NoIDontGetThisBenefit = "noIDontGetThisBenefit"
+}
+
 trait RemoveCompanyBenefitStopDateConstants{
   val StopDateChoice = "stopDateChoice"
   val BeforeTaxYearEnd = "beforeTaxYearEnd"

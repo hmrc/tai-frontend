@@ -59,7 +59,6 @@ trait RemoveCompanyBenefitController extends TaiBaseController
   def journeyCacheService: JourneyCacheService
   def trackingJourneyCacheService: JourneyCacheService
   def benefitsService: BenefitsService
-  def employmentService: EmploymentService
 
   def stopDate: Action[AnyContent] = authorisedForTai(taiService).async {
     implicit user =>
@@ -67,7 +66,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
                 journeyCacheService.currentCache map { currentCache =>
-                  Ok(views.html.benefits.removeCompanyBenefit(
+                  Ok(views.html.benefits.removeCompanyBenefitStopDate(
                     RemoveCompanyBenefitStopDateForm.form,
                     currentCache(EndCompanyBenefit_BenefitTypeKey),
                     currentCache(EndCompanyBenefit_EmploymentNameKey)))
@@ -83,7 +82,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
             formWithErrors => {
               journeyCacheService.mandatoryValues(EndCompanyBenefit_BenefitTypeKey,EndCompanyBenefit_EmploymentNameKey) map  {
                 mandatoryValues =>
-                  BadRequest(views.html.benefits.removeCompanyBenefit(formWithErrors, mandatoryValues(0), mandatoryValues(1)))
+                  BadRequest(views.html.benefits.removeCompanyBenefitStopDate(formWithErrors, mandatoryValues(0), mandatoryValues(1)))
               }
 
             },
@@ -272,6 +271,5 @@ object RemoveCompanyBenefitController extends RemoveCompanyBenefitController wit
   override val trackingJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
-  override val employmentService = EmploymentService
   override def benefitsService: BenefitsService = BenefitsService
 }

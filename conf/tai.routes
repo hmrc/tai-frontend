@@ -241,6 +241,9 @@ GET         /update-income-details/success                                      
 GET         /income                                                                    controllers.TaxFreeAmountControllerNew.taxFreeAmount
 GET         /income-tax-refresh                                                        controllers.TaxAccountSummaryController.onPageLoad
 
+GET         /update-or-remove-company-benefit/decision                                 controllers.benefits.CompanyBenefitController.decision
+POST        /update-or-remove-company-benefit/decision                                 controllers.benefits.CompanyBenefitController.submitDecision
+
 GET         /remove-company-benefit/stop-date                                          controllers.benefits.RemoveCompanyBenefitController.stopDate
 POST        /remove-company-benefit/stop-date                                          controllers.benefits.RemoveCompanyBenefitController.submitStopDate
 GET         /remove-company-benefit/total-value-of-benefit                             controllers.benefits.RemoveCompanyBenefitController.totalValueOfBenefit
