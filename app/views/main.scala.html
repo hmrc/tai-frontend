@@ -106,6 +106,8 @@
         "cookieDomain" -> ApplicationConfig.analyticsHost,
         "confidenceLevel" -> user.map(_.authContext.user.confidenceLevel.toString).getOrElse(false),
         "authProvider" -> authProvider
+
+
     ) ++ gaDimensions.getOrElse(Map.empty)
 }
 
@@ -154,8 +156,21 @@
 
     <script type="text/javascript">
 
-        /* Temp - pending AF update to > 3.0.2 */
         document.addEventListener("DOMContentLoaded", function(event) {
+
+            if ( window.history && window.history.replaceState && typeof history.replaceState === 'function' ) {
+                window.history.replaceState( null, null, window.location.href );
+            }
+            if (window.history && window.history.back && typeof history.back === 'function') {
+                var backLinkElem = document.getElementById("backLink");
+                if (backLinkElem !=  null){
+                    var backScript = (document.referrer.indexOf(window.location.host) !== -1) ? "javascript:window.history.back();" : "javascript:void(0);"
+                    backLinkElem.setAttribute("onclick",backScript);
+                    backLinkElem.setAttribute("href","javascript:void(0);");
+                }
+            }
+
+            /* Temp - pending AF update to > 3.0.2 */
             window.GOVUK.performance.sendGoogleAnalyticsEvent = function (category, event, label) {
               if (window.ga && typeof(window.ga) === 'function') {
                 ga('send', 'event', category, event, label);
@@ -164,19 +179,7 @@
               }
             };
             window.GOVUK.performance.stageprompt.setupForGoogleAnalytics();
-        });
 
-        document.addEventListener("DOMContentLoaded", function(event) {
-            if ( window.history && window.history.replaceState && typeof history.replaceState === 'function' ) {
-                window.history.replaceState( null, null, window.location.href );
-            }
-            if (window.history && window.history.back && typeof history.back === 'function') {
-                var backLinkElem = document.getElementById("backLink");
-                if (backLinkElem !=  null){
-                    backLinkElem.setAttribute("onclick","javascript:window.history.back();");
-                    backLinkElem.setAttribute("href","javascript:void(0);");
-                }
-            }
         });
 
     </script>
