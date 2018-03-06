@@ -31,7 +31,7 @@ class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec{
       messages("tai.benefits.updateOrRemove.decision.heading",benefitType,employerName))
     behave like pageWithBackButton(controllers.routes.TaxAccountSummaryController.onPageLoad)
     behave like pageWithCancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad)
-    behave like pageWithContinueButtonForm(s"/check-income-tax/update-or-remove-company-benefit/decision")
+    behave like pageWithContinueButtonForm(s"/check-income-tax/company-benefit/decision")
 
     "have two radio buttons with relevant text" in {
       doc must haveInputLabelWithText(idYesIGetThisBenefit, messages("tai.benefits.updateOrRemove.decision.radio.yes"))
