@@ -153,9 +153,47 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
         for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-          payPeriod <- journeyCacheService.mandatoryValue(UpdateIncome_PayPeriod)
+          payPeriod <- journeyCacheService.mandatoryValue(UpdateIncome_PayPeriodKey)
         } yield {
           Ok(views.html.incomes.payslipAmount(PayslipForm.createForm(), payPeriod, id, Some(employerName)))
+        }
+  }
+
+  def handlePayslipAmount: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        sendActingAttorneyAuditEvent("processPayslipAmount")
+        PayslipForm.createForm().bindFromRequest().fold(
+          formWithErrors => {
+            for {
+              id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+              employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+              payPeriod <- journeyCacheService.mandatoryValue(UpdateIncome_PayPeriodKey)
+            } yield {
+              BadRequest(views.html.incomes.payslipAmount(formWithErrors, payPeriod, id, Some(employerName)))
+            }
+          },
+          formData => {
+            formData match {
+              case PayslipForm(Some(value)) => journeyCacheService.cache(UpdateIncome_TotalSalaryKey, value).map { _ =>
+                Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage())
+              }
+              case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage()))
+            }
+          }
+        )
+  }
+
+  def taxablePayslipAmountPage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        sendActingAttorneyAuditEvent("getTaxablePayslipAmountPage")
+        for {
+          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+          payPeriod <- journeyCacheService.mandatoryValue(UpdateIncome_PayPeriodKey)
+        } yield {
+          Ok(views.html.incomes.taxablePayslipAmount(TaxablePayslipForm.createForm(), payPeriod, id, Some(employerName)))
         }
   }
 

@@ -162,12 +162,50 @@ class IncomeUpdateCalculatorNewControllerSpec extends PlaySpec with FakeTaiPlayA
     "display payslipAmount page" when {
       "journey cache returns employment name, id and payPeriod" in {
         val sut = createSut
-        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_PayPeriod))(any())).thenReturn(Future.successful(""))
+        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(""))
         val result = sut.payslipAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() mustBe Messages("tai.payslip.title")
+      }
+    }
+  }
+
+  "handlePayslipAmount" must {
+    "redirect the user to payslipDeductionsPage page" when {
+      "user entered valid pay" in {
+        val sut = createSut
+        when(sut.journeyCacheService.cache(Matchers.eq(UpdateIncome_TotalSalaryKey), Matchers.eq("£3,000"))(any())).thenReturn(Future.successful(Map(""->"")))
+        val result = sut.handlePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("totalSalary" -> "£3,000"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.payslipDeductionsPage().url)
+      }
+    }
+
+    "redirect user back to how to payPeriod page" when {
+      "user input has error" in {
+        val sut = createSut
+        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(""))
+        val result = sut.handlePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody( "" -> ""))
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() mustBe Messages("tai.payslip.title")
+      }
+    }
+  }
+
+  "taxablePayslipAmountPage" must {
+    "display taxablePayslipAmount page" when {
+      "journey cache returns employment name, id and payPeriod" in {
+        val sut = createSut
+        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(""))
+        val result = sut.taxablePayslipAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() mustBe Messages("tai.taxablePayslip.title")
       }
     }
   }

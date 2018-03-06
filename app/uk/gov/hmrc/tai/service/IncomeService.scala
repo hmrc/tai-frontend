@@ -71,15 +71,11 @@ trait IncomeService extends JourneyCacheConstants {
     }
   }
 
-  def cachePayPeriod(form: PayPeriodForm)(implicit hc: HeaderCarrier): Map[String, String] = {
-    val otherInDays= form.otherInDays match {
-      case Some(days) =>  Map(UpdateIncome_OtherInDays -> days.toString)
-      case _ => Map.empty[String, String]
+  def cachePayPeriod(form: PayPeriodForm)(implicit hc: HeaderCarrier): Map[String, String] =
+    form.otherInDays match {
+      case Some(days) =>  Map(UpdateIncome_PayPeriodKey -> form.payPeriod.getOrElse(""), UpdateIncome_OtherInDaysKey -> days.toString)
+      case _ => Map(UpdateIncome_PayPeriodKey -> form.payPeriod.getOrElse(""))
     }
-
-    Map(UpdateIncome_PayPeriod -> form.payPeriod.getOrElse("")) ++ otherInDays
-  }
-
 }
 
 object IncomeService extends IncomeService {

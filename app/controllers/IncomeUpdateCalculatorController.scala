@@ -275,11 +275,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
   } recoverWith handleErrorResponse("getPayslipAmountPage", nino)
 
+  //migrated
   def handlePayslipAmount() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id, name) => processPayslipAmount(Nino(user.getNino), id, name)
     moveToPageWithIncomeID(page)
   }
 
+  //migrated
   def processPayslipAmount(nino: Nino, id: Int, employerName: String)(implicit
                                                                       request: Request[AnyContent],
                                                                       user: TaiUser, sessionData: SessionData): Future[Result] = {
@@ -317,11 +319,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   } recoverWith handleErrorResponse("processPayslipAmount", nino)
 
   //Taxable Payslip Amount
+  //migrated
   def taxablePayslipAmountPage() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id, name) => getTaxablePayslipAmountPage(Nino(user.getNino), id, name)
     moveToPageWithIncomeID(page)
   }
 
+  //migrated
   def getTaxablePayslipAmountPage(nino: Nino, id: Int, employerName: String)(
     implicit
     request: Request[AnyContent],
@@ -744,6 +748,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         moveToPageWithIncomeID(page)
   }
 
+  //migrated
   def calcUnavailablePage() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id, name) => getCalcUnavailablePage(Nino(user.getNino), id, name)
     moveToPageWithIncomeID(page)

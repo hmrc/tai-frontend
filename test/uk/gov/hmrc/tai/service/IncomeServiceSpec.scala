@@ -167,19 +167,19 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
     "return cached map data" when {
       "PayPeriodForm has otherInDays and payPeriod available" in {
         val sut = createSUT
-        val expectedCached = Map(UpdateIncome_PayPeriod -> "monthly", UpdateIncome_OtherInDays -> "100")
+        val expectedCached = Map(UpdateIncome_PayPeriodKey -> "monthly", UpdateIncome_OtherInDaysKey -> "100")
         sut.cachePayPeriod(PayPeriodForm(Some("monthly"), Some(100))) mustBe expectedCached
       }
 
       "PayPeriodForm has only payPeriod available" in {
         val sut = createSUT
-        val expectedCached = Map(UpdateIncome_PayPeriod -> "monthly")
+        val expectedCached = Map(UpdateIncome_PayPeriodKey -> "monthly")
         sut.cachePayPeriod(PayPeriodForm(Some("monthly"))) mustBe expectedCached
       }
 
       "PayPeriodForm is empty" in {
         val sut = createSUT
-        val expectedCached = Map(UpdateIncome_PayPeriod -> "")
+        val expectedCached = Map(UpdateIncome_PayPeriodKey -> "")
         sut.cachePayPeriod(PayPeriodForm(None)) mustBe expectedCached
       }
     }
