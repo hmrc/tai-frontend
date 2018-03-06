@@ -125,11 +125,13 @@ class HelpControllerSpec extends PlaySpec
     val partialHttpGet: HttpGet = mock[HttpGet]
 
     val nino: Nino = new Generator().nextNino
+
+    val fakeTaiRoot = TaiRoot(nino.nino, 0, "Mr", "name", None, "surname", "name surname", false, Some(false))
+
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(
       Some( AuthBuilder.createFakeAuthority(nino.nino))))
 
-    when(taiService.taiSession(any(), any(), any())(any()))
-      .thenReturn(Future.successful(SessionData(nino.nino, Some(TaiRoot(nino.nino, 1, "Mr", "Monkey", None, "Great Sage Equal of Heaven", "name", false, Some(false))), testTaxSummary, None, None)))
+    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
 
     val response = HttpResponse(1, None, Map("a" -> List("1", "2", "3")), None)
 
