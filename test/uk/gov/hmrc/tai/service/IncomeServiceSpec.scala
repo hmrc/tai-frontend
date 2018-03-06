@@ -25,6 +25,7 @@ import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.forms.PayPeriodForm
 import uk.gov.hmrc.tai.model.EmploymentAmount
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
@@ -34,7 +35,6 @@ import uk.gov.hmrc.tai.util.JourneyCacheConstants
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
-
 
 class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with JourneyCacheConstants {
 
@@ -159,6 +159,28 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val payment = paymentOnDate(new LocalDate(2017, 9, 6))
         val expectedCached = Map(UpdateIncome_PayToDateKey -> "2000", UpdateIncome_DateKey -> payment.date.toString)
         sut.cachePaymentForRegularIncome(Some(payment)) mustBe expectedCached
+      }
+    }
+  }
+
+  "cachePayPeriod" must {
+    "return cached map data" when {
+      "PayPeriodForm has otherInDays and payPeriod available" in {
+        val sut = createSUT
+        val expectedCached = Map(UpdateIncome_PayPeriod -> "monthly", UpdateIncome_OtherInDays -> "100")
+        sut.cachePayPeriod(PayPeriodForm(Some("monthly"), Some(100))) mustBe expectedCached
+      }
+
+      "PayPeriodForm has only payPeriod available" in {
+        val sut = createSUT
+        val expectedCached = Map(UpdateIncome_PayPeriod -> "monthly")
+        sut.cachePayPeriod(PayPeriodForm(Some("monthly"))) mustBe expectedCached
+      }
+
+      "PayPeriodForm is empty" in {
+        val sut = createSUT
+        val expectedCached = Map(UpdateIncome_PayPeriod -> "")
+        sut.cachePayPeriod(PayPeriodForm(None)) mustBe expectedCached
       }
     }
   }

@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.service
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.forms.PayPeriodForm
 import uk.gov.hmrc.tai.model.EmploymentAmount
 import uk.gov.hmrc.tai.model.domain.Payment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
@@ -68,6 +69,15 @@ trait IncomeService extends JourneyCacheConstants {
       case Some(payment) => Map(UpdateIncome_PayToDateKey -> payment.amountYearToDate.toString, UpdateIncome_DateKey -> payment.date.toString)
       case None => Map(UpdateIncome_PayToDateKey -> "0")
     }
+  }
+
+  def cachePayPeriod(form: PayPeriodForm)(implicit hc: HeaderCarrier): Map[String, String] = {
+    val otherInDays= form.otherInDays match {
+      case Some(days) =>  Map(UpdateIncome_OtherInDays -> days.toString)
+      case _ => Map.empty[String, String]
+    }
+
+    Map(UpdateIncome_PayPeriod -> form.payPeriod.getOrElse("")) ++ otherInDays
   }
 
 }

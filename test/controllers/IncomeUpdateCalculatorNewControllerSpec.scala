@@ -138,7 +138,8 @@ class IncomeUpdateCalculatorNewControllerSpec extends PlaySpec with FakeTaiPlayA
     "redirect the user to payslipAmountPage page" when {
       "user selected monthly" in {
         val sut = createSut
-        when(sut.journeyCacheService.cache(Matchers.eq(UpdateIncome_PayPeriod), Matchers.eq("monthly"))(any())).thenReturn(Future.successful(Map(""->"")))
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map(""->"")))
+        when(sut.incomeService.cachePayPeriod(any())(any())).thenReturn(Map(""->""))
         val result = sut.handlePayPeriod()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("payPeriod" -> "monthly"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.payslipAmountPage().url)

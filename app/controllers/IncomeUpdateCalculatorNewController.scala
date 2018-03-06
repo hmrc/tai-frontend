@@ -139,7 +139,7 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
             }
           },
           formData => {
-            journeyCacheService.cache(UpdateIncome_PayPeriod, formData.payPeriod.getOrElse("")).map { _ =>
+            journeyCacheService.cache(incomeService.cachePayPeriod(formData)).map { _ =>
               Redirect(routes.IncomeUpdateCalculatorController.payslipAmountPage())
             }
           }
