@@ -66,21 +66,28 @@ object IncomeSourceSummaryViewModel {
   }
 
   private def companyBenefitViewModels(empId: Int, benefits: Benefits): Seq[CompanyBenefitViewModel] = {
+
     val ccBenVMs = benefits.companyCarBenefits collect {
       case ccBen: CompanyCarBenefit if ccBen.employmentSeqNo == empId =>
         val changeUrl = controllers.routes.CompanyCarController.redirectCompanyCarSelection(empId).url
         CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), ccBen.grossAmount, changeUrl)
     }
-    val otherBenVMs = benefits.otherBenefits collect {
-      case otherBen: GenericBenefit if otherBen.employmentId.isDefined && otherBen.employmentId.get == empId =>
-        val name = Messages(s"tai.taxFreeAmount.table.taxComponent.${otherBen.benefitType.toString}")
-        val changeSvc = if (name == Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance")) TaiConstants.MedicalBenefitsIform else TaiConstants.CompanyBenefitsIform
-        val changeUrl = controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(changeSvc).url
-        CompanyBenefitViewModel(name, otherBen.amount, changeUrl)
-    }
-    ccBenVMs ++ otherBenVMs
-  }
 
+    val medBenVMs = benefits.otherBenefits collect {
+      case benefit: GenericBenefit if benefit.benefitType == MedicalInsurance && benefit.employmentId.isDefined && benefit.employmentId.get == empId =>
+        val changeUrl = controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform).url
+        CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"), benefit.amount, changeUrl)
+    }
+
+    val otherBenVMs = benefits.otherBenefits collect {
+      case otherBen: GenericBenefit if otherBen.benefitType != MedicalInsurance && otherBen.employmentId.isDefined && otherBen.employmentId.get == empId =>
+        val benefitName = Messages(s"tai.taxFreeAmount.table.taxComponent.${otherBen.benefitType.toString}")
+        val changeUrl = controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(empId, otherBen.benefitType.toString).url
+        CompanyBenefitViewModel(benefitName, otherBen.amount, changeUrl)
+    }
+
+    ccBenVMs ++ medBenVMs ++ otherBenVMs
+  }
 }
 
 case class CompanyBenefitViewModel(name: String, amount: BigDecimal, changeUrl: String)
