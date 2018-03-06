@@ -45,13 +45,11 @@
         <p class="text">@Messages("tai.addEmployment.employmentErrorPage.para2")</p>
     </div>
 
-    <div class="subsection">
-        @Link.toInternalPage(
+    @includes.link(
         id=Some("returnToYourIncomeDetails"),
-        value=Some(Messages("tai.IncomeTaxSummaryReturn")),
-        url = routes.TaxAccountSummaryController.onPageLoad.url,
-        cssClasses=Some("button")
-        ).toHtml
-    </div>
+        copy=Messages("tai.IncomeTaxSummaryReturn"),
+        url = routes.TaxAccountSummaryController.onPageLoad.url.toString,
+        isButton=true
+    )
 
 }

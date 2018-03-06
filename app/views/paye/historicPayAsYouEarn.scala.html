@@ -39,7 +39,6 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
     pageHeader = Some(header),
     gaCustomTitle = None
 ){
-<section>
 
     <div class="grid-layout grid-layout--stacked">
         @if(noOfPreviousYearsToShow > 1) {
@@ -49,7 +48,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
         }
         <div class="grid-layout__column grid-layout__column--2-3 section">
 
-            <section id="lastTaxYear">
+            <div id="lastTaxYear">
                 @if(!viewModel.hasEmployments) {
                     <div class="flush--bottom soft--bottom" id="rtiDown">
                         <p id="rtiDownMessage" class="text">@Messages("tai.rti_down_message")</p>
@@ -102,18 +101,17 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                     <h4 class="heading-medium">@Messages("tai.paye.lastTaxYear.checkTax.text")</h4>
 
                     <div class="subsection flush--top">
-                        @Link.toInternalPage(
-                          url=ApplicationConfig.taxYouPaidStatus,
-                          value=Some(Messages("tai.paye.lastTaxYear.checkTax.link")),
-                          id=Some("p800Link"),
-                          cssClasses=Some("button")
-                        ).toHtml
+                        @includes.link(
+                            id=Some("p800Link"),
+                            copy=Messages("tai.paye.lastTaxYear.checkTax.link"),
+                            url = ApplicationConfig.taxYouPaidStatus.toString,
+                            isButton=true
+                        )
                     </div>
                 }
 
-            </section>
+            </div>
 
         </div>
     </div>
-</section>
 }

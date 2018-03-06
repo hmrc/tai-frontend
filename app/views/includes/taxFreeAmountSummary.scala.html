@@ -38,22 +38,31 @@
                     <td id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" scope="row" class="break-word" @if(!row.link.isDisplayed) {colspan="2"}>
                         @row.label
                         @if(row.label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
-                            @Link.toInternalPage(
-                                id=Some("estimatedTaxOwedLink"),
-                                url=controllers.routes.CurrentYearPageController.potentialUnderpaymentPage.url,
-                                value=Some(Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")),
-                                cssClasses=Some("link-list__item"),
-                                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}"))).toHtml
+                            @includes.link(
+                                id=Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
+                                copy=Messages("tai.change"),
+                                altCopy=Some(Messages("tai.change") + " " + row.link.value),
+                                url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
+                                linkClasses = Seq("float--right"),
+                                isButton=true,
+                                isSecondary=true,
+                                attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${row.link.value}")
+                            )
                         }
                     </td>
 
                     @if(row.link.isDisplayed) {
                     <td id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ChangeLinkCell">
-                        @Link.toInternalPage(id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
-                                             url = row.link.href,
-                                             cssClasses = Some("float--right button--secondary"),
-                                             value = Some(Messages("tai.change", row.link.value)),
-                                             dataAttributes = Some(Map("journey-click" -> s"button - click:$gaEventActionString:${row.link.value}"))).toHtml
+                        @includes.link(
+                            id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
+                            url = row.link.href,
+                            linkClasses = Seq("float--right"),
+                            isButton=true,
+                            isSecondary=true,
+                            copy=Messages("tai.change"),
+                            altCopy=Some(Messages("tai.change") + " " + row.link.value),
+                            attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${row.link.value}")
+                        )
                     </td>
                     }
                     <td id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ValueCell" class="text--right">@row.value</td>
