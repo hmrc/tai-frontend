@@ -39,14 +39,11 @@
                         @row.label
                         @if(row.label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
                             @includes.link(
-                                id=Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
-                                copy=Messages("tai.change"),
-                                altCopy=Some(Messages("tai.change") + " " + row.link.value),
-                                url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
-                                linkClasses = Seq("float--right"),
-                                isButton=true,
-                                isSecondary=true,
-                                attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${row.link.value}")
+                                id=Some("estimatedTaxOwedLink"),
+                                copy=Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"),
+                                url = controllers.routes.CurrentYearPageController.potentialUnderpaymentPage.url.toString,
+                                linkClasses = Seq("link-list__item"),
+                                attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
                             )
                         }
                     </td>

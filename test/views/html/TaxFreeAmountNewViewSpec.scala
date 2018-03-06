@@ -107,8 +107,8 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
         doc.select("tr[id=summaryTable1Row2] > *").size mustBe 3
         doc must haveTableTdWithId("summaryTable1Row2ChangeLinkCell")
         doc must haveLinkWithUrlWithID("summaryTable1Row2ChangeLink", "/dummy/url2")
-        doc must haveElementAtPathWithClass("a[id=summaryTable1Row2ChangeLink] > span", "visuallyhidden")
-        doc must haveElementAtPathWithText("a[id=summaryTable1Row2ChangeLink] > span", "context2")
+        doc must haveElementAtPathWithClass("a[id=summaryTable1Row2ChangeLink] > span", "visually-hidden")
+        doc must haveElementAtPathWithText("a[id=summaryTable1Row2ChangeLink] > span", messages("tai.change") + " context2")
       }
 
       "excludes a link cell from table rows, where instructed by the view model" in {
