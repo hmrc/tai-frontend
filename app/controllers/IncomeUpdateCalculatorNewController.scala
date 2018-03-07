@@ -238,6 +238,49 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
         }
   }
 
+  def handlePayslipDeductions: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        sendActingAttorneyAuditEvent("processPayslipDeductions")
+
+        PayslipDeductionsForm.createForm().bindFromRequest().fold(
+          formWithErrors => {
+            for {
+              id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+              employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+            } yield {
+              BadRequest(views.html.incomes.payslipDeductions(formWithErrors, id, Some(employerName)))
+            }
+          },
+          formData => {
+            formData.payslipDeductions match {
+              case Some(payslipDeductions) if payslipDeductions == "Yes" =>
+                journeyCacheService.cache(UpdateIncome_PayslipDeductionsKey, payslipDeductions).map { _ =>
+                  Redirect(routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage())
+                }
+              case Some(payslipDeductions) => journeyCacheService.cache(UpdateIncome_PayslipDeductionsKey, payslipDeductions) map { _ =>
+                Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage())
+              }
+              case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage()))
+            }
+          }
+        )
+  }
+
+  def bonusPaymentsPage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        sendActingAttorneyAuditEvent("getBonusPaymentsPage")
+        for {
+          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+          paySlipDeductions <- journeyCacheService.mandatoryValue(UpdateIncome_PayslipDeductionsKey)
+        } yield {
+          val isPaySlipDeductions = paySlipDeductions == "Yes"
+          Ok(views.html.incomes.bonusPayments(BonusPaymentsForm.createForm(), id, isPaySlipDeductions, false, Some(employerName)))
+        }
+  }
+
   def calcUnavailablePage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
