@@ -100,8 +100,8 @@ trait JourneyCacheConstants {
   val UpdateIncome_TotalSalaryKey = "updateIncomeTotalSalaryKey"
   val UpdateIncome_TaxablePayKey = "updateIncomeTaxablePayKey"
   val UpdateIncome_PayslipDeductionsKey = "updateIncomePayslipDeductionsKey"
-
-
+  val UpdateIncome_BonusPaymentsKey = "updateIncomeBonusPaymentsKey"
+  val UpdateIncome_BonusPaymentsThisYearKey = "updateIncomeBonusPaymentsThisYearKey"
 
   val EndCompanyBenefit_JourneyKey = "end-company-benefit"
   val EndCompanyBenefit_EmploymentIdKey = "employmentId"

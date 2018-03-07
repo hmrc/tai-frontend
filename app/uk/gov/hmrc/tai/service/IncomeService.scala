@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.service
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
-import uk.gov.hmrc.tai.forms.PayPeriodForm
+import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, PayPeriodForm}
 import uk.gov.hmrc.tai.model.EmploymentAmount
 import uk.gov.hmrc.tai.model.domain.Payment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
@@ -73,9 +73,14 @@ trait IncomeService extends JourneyCacheConstants {
 
   def cachePayPeriod(form: PayPeriodForm)(implicit hc: HeaderCarrier): Map[String, String] =
     form.otherInDays match {
-      case Some(days) =>  Map(UpdateIncome_PayPeriodKey -> form.payPeriod.getOrElse(""), UpdateIncome_OtherInDaysKey -> days.toString)
+      case Some(days) => Map(UpdateIncome_PayPeriodKey -> form.payPeriod.getOrElse(""), UpdateIncome_OtherInDaysKey -> days.toString)
       case _ => Map(UpdateIncome_PayPeriodKey -> form.payPeriod.getOrElse(""))
     }
+
+  def cacheBonusPayments(bonusPaymentsForm: BonusPaymentsForm)(implicit hc: HeaderCarrier): Map[String, String] = {
+    bonusPaymentsForm.bonusPayments.fold(Map.empty[String, String])(bonusPayments => Map(UpdateIncome_BonusPaymentsKey -> bonusPayments)) ++
+      bonusPaymentsForm.bonusPaymentsMoreThisYear.fold(Map.empty[String, String])(bonusPayments => Map(UpdateIncome_BonusPaymentsKey -> bonusPayments))
+  }
 }
 
 object IncomeService extends IncomeService {

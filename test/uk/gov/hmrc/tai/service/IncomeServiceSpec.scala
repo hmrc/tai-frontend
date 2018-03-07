@@ -25,7 +25,7 @@ import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
-import uk.gov.hmrc.tai.forms.PayPeriodForm
+import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, PayPeriodForm}
 import uk.gov.hmrc.tai.model.EmploymentAmount
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
@@ -181,6 +181,28 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val sut = createSUT
         val expectedCached = Map(UpdateIncome_PayPeriodKey -> "")
         sut.cachePayPeriod(PayPeriodForm(None)) mustBe expectedCached
+      }
+    }
+  }
+
+  "cacheBonusPayments" must {
+    "return cached map data" when {
+      "bonusPaymentsForm has both bonusPayment and bonusPaymentsMoreThisYear available" in {
+        val sut = createSUT
+        val expectedCached = Map(UpdateIncome_BonusPaymentsKey -> "Yes", UpdateIncome_BonusPaymentsKey -> "No")
+        sut.cacheBonusPayments(BonusPaymentsForm(Some("Yes"), Some("No"))) mustBe expectedCached
+      }
+
+      "bonusPaymentsForm has only payPeriod available" in {
+        val sut = createSUT
+        val expectedCached = Map(UpdateIncome_BonusPaymentsKey -> "Yes")
+        sut.cacheBonusPayments(BonusPaymentsForm(Some("Yes"), None)) mustBe expectedCached
+      }
+
+      "bonusPaymentsForm is empty" in {
+        val sut = createSUT
+        val expectedCached = Map[String, String]()
+        sut.cacheBonusPayments(BonusPaymentsForm(None, None)) mustBe expectedCached
       }
     }
   }

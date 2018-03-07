@@ -153,9 +153,9 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
         for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-          payPeriod <- journeyCacheService.mandatoryValue(UpdateIncome_PayPeriodKey)
+          payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
         } yield {
-          Ok(views.html.incomes.payslipAmount(PayslipForm.createForm(), payPeriod, id, Some(employerName)))
+          Ok(views.html.incomes.payslipAmount(PayslipForm.createForm(), payPeriod.getOrElse(""), id, Some(employerName)))
         }
   }
 
@@ -168,9 +168,9 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
             for {
               id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
               employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-              payPeriod <- journeyCacheService.mandatoryValue(UpdateIncome_PayPeriodKey)
+              payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
             } yield {
-              BadRequest(views.html.incomes.payslipAmount(formWithErrors, payPeriod, id, Some(employerName)))
+              BadRequest(views.html.incomes.payslipAmount(formWithErrors, payPeriod.getOrElse(""), id, Some(employerName)))
             }
           },
           formData => {
@@ -191,9 +191,9 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
         for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-          payPeriod <- journeyCacheService.mandatoryValue(UpdateIncome_PayPeriodKey)
+          payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
         } yield {
-          Ok(views.html.incomes.taxablePayslipAmount(TaxablePayslipForm.createForm(), payPeriod, id, Some(employerName)))
+          Ok(views.html.incomes.taxablePayslipAmount(TaxablePayslipForm.createForm(), payPeriod.getOrElse(""), id, Some(employerName)))
         }
   }
 
@@ -209,9 +209,9 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
               for {
                 id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
                 employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-                payPeriod <- journeyCacheService.mandatoryValue(UpdateIncome_PayPeriodKey)
+                payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
               } yield {
-                BadRequest(views.html.incomes.taxablePayslipAmount(formWithErrors, payPeriod, id, Some(employerName)))
+                BadRequest(views.html.incomes.taxablePayslipAmount(formWithErrors, payPeriod.getOrElse(""), id, Some(employerName)))
               }
             },
             formData => {
@@ -274,11 +274,40 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
         for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-          paySlipDeductions <- journeyCacheService.mandatoryValue(UpdateIncome_PayslipDeductionsKey)
+          paySlipDeductions <- journeyCacheService.currentValue(UpdateIncome_PayslipDeductionsKey)
         } yield {
-          val isPaySlipDeductions = paySlipDeductions == "Yes"
+          val isPaySlipDeductions = paySlipDeductions.contains("Yes")
           Ok(views.html.incomes.bonusPayments(BonusPaymentsForm.createForm(), id, isPaySlipDeductions, false, Some(employerName)))
         }
+  }
+
+  def handleBonusPayments: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        sendActingAttorneyAuditEvent("processBonusPayments")
+
+        val bonusPayments: Option[String] = request.body.asFormUrlEncoded.flatMap(m => m.get("bonusPayments").flatMap(_.headOption))
+        val bonusPaymentsSelected = bonusPayments.contains("Yes")
+        BonusPaymentsForm.createForm(bonusPayments = bonusPayments).bindFromRequest().fold(
+          formWithErrors => {
+            for {
+              id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+              employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+              paySlipDeductions <- journeyCacheService.currentValue(UpdateIncome_PayslipDeductionsKey)
+            } yield {
+              val isPaySlipDeductions = paySlipDeductions.contains("Yes")
+              BadRequest(views.html.incomes.bonusPayments(formWithErrors, id, isPaySlipDeductions, bonusPaymentsSelected, Some(employerName)))
+            }
+          },
+          formData => {
+            journeyCacheService.cache(incomeService.cacheBonusPayments(formData)) map { _ =>
+              if(formData.bonusPayments.contains("Yes"))
+                Redirect(routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage())
+              else
+                Redirect(routes.IncomeUpdateCalculatorController.estimatedPayPage)
+            }
+          }
+        )
   }
 
   def calcUnavailablePage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
