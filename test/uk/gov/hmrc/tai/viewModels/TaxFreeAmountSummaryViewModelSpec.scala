@@ -100,7 +100,7 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
       "has the employment id and benefit type added to it" when {
         "coding component is of type BenefitComponentType" in {
           val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(TaxableExpensesBenefit, Some(234), 11500, "TaxableExpensesBenefit"), employmentNames, companyCarBenefits)
-          val url = controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(234, TaxableExpensesBenefit.toString).url
+          val url = controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(234, TaxableExpensesBenefit).url
           row.link mustBe ChangeLinkViewModel(true, Messages("tai.taxFreeAmount.table.taxComponent.TaxableExpensesBenefit"), url)
         }
       }

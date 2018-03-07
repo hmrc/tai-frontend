@@ -24,6 +24,7 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.model.domain.BenefitComponentType
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, TaiService}
 import uk.gov.hmrc.tai.util.{AuditConstants, JourneyCacheConstants}
 
@@ -42,13 +43,13 @@ trait CompanyBenefitController extends TaiBaseController
   def journeyCacheService: JourneyCacheService
   def trackingJourneyCacheService: JourneyCacheService
 
-  def redirectCompanyBenefitSelection(empId: Int, benefitType: String) : Action[AnyContent] = authorisedForTai(taiService).async {
+  def redirectCompanyBenefitSelection(empId: Int, benefitType: BenefitComponentType) : Action[AnyContent] = authorisedForTai(taiService).async {
       implicit user =>
         implicit taiRoot =>
           implicit request =>
             ServiceCheckLite.personDetailsCheck {
 
-              val cacheValues = Map(EndCompanyBenefit_EmploymentIdKey -> empId.toString, EndCompanyBenefit_BenefitTypeKey -> benefitType)
+              val cacheValues = Map(EndCompanyBenefit_EmploymentIdKey -> empId.toString, EndCompanyBenefit_BenefitTypeKey -> benefitType.toString)
 
               journeyCacheService.cache(cacheValues) map {
                 _ => Redirect(controllers.benefits.routes.CompanyBenefitController.decision())

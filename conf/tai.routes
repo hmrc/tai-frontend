@@ -252,5 +252,5 @@ POST        /remove-company-benefit/submit-your-answers                         
 GET         /remove-company-benefit/success                                            controllers.benefits.RemoveCompanyBenefitController.confirmation
 
 ## Company benefit
-GET         /redirect-company-benefit/:employmentId/:benefitType                       controllers.benefits.CompanyBenefitController.redirectCompanyBenefitSelection(employmentId: Int, benefitType: String)
+GET         /redirect-company-benefit/:employmentId/:benefitType                       controllers.benefits.CompanyBenefitController.redirectCompanyBenefitSelection(employmentId: Int, benefitType: uk.gov.hmrc.tai.model.domain.BenefitComponentType)
 GET         /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.decision

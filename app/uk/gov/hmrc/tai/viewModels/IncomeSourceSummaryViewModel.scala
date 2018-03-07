@@ -82,7 +82,7 @@ object IncomeSourceSummaryViewModel {
     val otherBenVMs = benefits.otherBenefits collect {
       case otherBen: GenericBenefit if otherBen.benefitType != MedicalInsurance && otherBen.employmentId.isDefined && otherBen.employmentId.get == empId =>
         val benefitName = Messages(s"tai.taxFreeAmount.table.taxComponent.${otherBen.benefitType.toString}")
-        val changeUrl = controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(empId, otherBen.benefitType.toString).url
+        val changeUrl = controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(empId, otherBen.benefitType).url
         CompanyBenefitViewModel(benefitName, otherBen.amount, changeUrl)
     }
 

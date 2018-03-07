@@ -131,7 +131,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         model.benefits mustBe Seq(
           CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), BigDecimal(200.22), controllers.routes.CompanyCarController.redirectCompanyCarSelection(1).url),
           CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"), BigDecimal(321.12), controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform).url),
-          CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.Entertaining"), BigDecimal(120653.99), controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(employmentId, Entertaining.toString).url)
+          CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.Entertaining"), BigDecimal(120653.99), controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(employmentId, Entertaining).url)
         )
       }
     }

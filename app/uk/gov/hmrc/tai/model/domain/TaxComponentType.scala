@@ -21,7 +21,7 @@ import play.api.libs.json._
 sealed trait TaxComponentType
 
 sealed trait AllowanceComponentType extends TaxComponentType
-sealed trait BenefitComponentType extends TaxComponentType
+sealed trait BenefitComponentType  extends TaxComponentType
 sealed trait DeductionComponentType extends TaxComponentType
 sealed trait IncomeComponentType extends TaxComponentType
 
@@ -79,35 +79,70 @@ case object UnderpaymentRestriction extends DeductionComponentType
 case object HigherPersonalAllowanceRestriction extends DeductionComponentType
 case object AdjustmentToRateBand extends DeductionComponentType
 
-case object BenefitInKind extends BenefitComponentType
-case object CarFuelBenefit extends BenefitComponentType
-case object MedicalInsurance extends BenefitComponentType
-case object CarBenefit extends BenefitComponentType
-case object Telephone extends BenefitComponentType
-case object ServiceBenefit extends BenefitComponentType
-case object TaxableExpensesBenefit extends BenefitComponentType
-case object VanBenefit extends BenefitComponentType
-case object VanFuelBenefit extends BenefitComponentType
-case object BeneficialLoan extends BenefitComponentType
-case object Accommodation extends BenefitComponentType
-case object Assets extends BenefitComponentType
-case object AssetTransfer extends BenefitComponentType
-case object EducationalServices extends BenefitComponentType
-case object Entertaining extends BenefitComponentType
-case object Expenses extends BenefitComponentType
-case object Mileage extends BenefitComponentType
-case object NonQualifyingRelocationExpenses extends BenefitComponentType
-case object NurseryPlaces extends BenefitComponentType
-case object OtherItems extends BenefitComponentType
-case object PaymentsOnEmployeesBehalf extends BenefitComponentType
-case object PersonalIncidentalExpenses extends BenefitComponentType
-case object QualifyingRelocationExpenses extends BenefitComponentType
-case object EmployerProvidedProfessionalSubscription extends BenefitComponentType
-case object IncomeTaxPaidButNotDeductedFromDirectorsRemuneration extends BenefitComponentType
-case object TravelAndSubsistence extends BenefitComponentType
-case object VouchersAndCreditCards extends BenefitComponentType
-case object NonCashBenefit extends BenefitComponentType
-case object EmployerProvidedServices extends BenefitComponentType
+case object BenefitInKind extends BenefitComponentType { val name = "BenefitInKind" }
+case object CarFuelBenefit extends BenefitComponentType { val name = "CarFuelBenefit" }
+case object MedicalInsurance extends BenefitComponentType { val name = "MedicalInsurance" }
+case object CarBenefit extends BenefitComponentType { val name = "CarBenefit" }
+case object Telephone extends BenefitComponentType { val name = "Telephone" }
+case object ServiceBenefit extends BenefitComponentType { val name = "ServiceBenefit" }
+case object TaxableExpensesBenefit extends BenefitComponentType { val name = "TaxableExpensesBenefit" }
+case object VanBenefit extends BenefitComponentType { val name = "VanBenefit" }
+case object VanFuelBenefit extends BenefitComponentType { val name = "VanFuelBenefit" }
+case object BeneficialLoan extends BenefitComponentType { val name = "BeneficialLoan" }
+case object Accommodation extends BenefitComponentType { val name = "Accommodation" }
+case object Assets extends BenefitComponentType { val name = "Assets" }
+case object AssetTransfer extends BenefitComponentType { val name = "AssetTransfer" }
+case object EducationalServices extends BenefitComponentType { val name = "EducationalServices" }
+case object Entertaining extends BenefitComponentType { val name = "Entertaining" }
+case object Expenses extends BenefitComponentType { val name = "Expenses" }
+case object Mileage extends BenefitComponentType { val name = "Mileage" }
+case object NonQualifyingRelocationExpenses extends BenefitComponentType { val name = "NonQualifyingRelocationExpenses" }
+case object NurseryPlaces extends BenefitComponentType { val name = "NurseryPlaces" }
+case object OtherItems extends BenefitComponentType { val name = "OtherItems" }
+case object PaymentsOnEmployeesBehalf extends BenefitComponentType { val name = "PaymentsOnEmployeesBehalf" }
+case object PersonalIncidentalExpenses extends BenefitComponentType { val name = "PersonalIncidentalExpenses" }
+case object QualifyingRelocationExpenses extends BenefitComponentType { val name = "QualifyingRelocationExpenses" }
+case object EmployerProvidedProfessionalSubscription extends BenefitComponentType { val name = "EmployerProvidedProfessionalSubscription" }
+case object IncomeTaxPaidButNotDeductedFromDirectorsRemuneration extends BenefitComponentType { val name = "IncomeTaxPaidButNotDeductedFromDirectorsRemuneration" }
+case object TravelAndSubsistence extends BenefitComponentType { val name = "TravelAndSubsistence" }
+case object VouchersAndCreditCards extends BenefitComponentType { val name = "VouchersAndCreditCards" }
+case object NonCashBenefit extends BenefitComponentType { val name = "NonCashBenefit" }
+case object EmployerProvidedServices extends BenefitComponentType { val name = "EmployerProvidedServices" }
+
+object BenefitComponentType {
+  def apply(name: String): BenefitComponentType = name match {
+    case BenefitInKind.name => BenefitInKind
+    case CarFuelBenefit.name => CarFuelBenefit
+    case MedicalInsurance.name => MedicalInsurance
+    case CarBenefit.name => CarBenefit
+    case Telephone.name => Telephone
+    case ServiceBenefit.name => ServiceBenefit
+    case TaxableExpensesBenefit.name => TaxableExpensesBenefit
+    case VanBenefit.name => VanBenefit
+    case VanFuelBenefit.name => VanFuelBenefit
+    case BeneficialLoan.name => BeneficialLoan
+    case Accommodation.name => Accommodation
+    case Assets.name => Assets
+    case AssetTransfer.name => AssetTransfer
+    case EducationalServices.name => EducationalServices
+    case Entertaining.name => Entertaining
+    case Expenses.name => Expenses
+    case Mileage.name => Mileage
+    case NonQualifyingRelocationExpenses.name => NonQualifyingRelocationExpenses
+    case NurseryPlaces.name => NurseryPlaces
+    case OtherItems.name => OtherItems
+    case PaymentsOnEmployeesBehalf.name => PaymentsOnEmployeesBehalf
+    case PersonalIncidentalExpenses.name => PersonalIncidentalExpenses
+    case QualifyingRelocationExpenses.name => QualifyingRelocationExpenses
+    case EmployerProvidedProfessionalSubscription.name => EmployerProvidedProfessionalSubscription
+    case IncomeTaxPaidButNotDeductedFromDirectorsRemuneration.name => IncomeTaxPaidButNotDeductedFromDirectorsRemuneration
+    case TravelAndSubsistence.name => TravelAndSubsistence
+    case VouchersAndCreditCards.name => VouchersAndCreditCards
+    case NonCashBenefit.name => NonCashBenefit
+    case EmployerProvidedServices.name => EmployerProvidedServices
+    case _ => throw new IllegalArgumentException(s"$name is not a currently supported Benefit Type")
+  }
+}
 
 case object NonCodedIncome extends NonTaxCodeIncomeComponentType with OtherIncomes
 case object Commission extends NonTaxCodeIncomeComponentType with OtherIncomes

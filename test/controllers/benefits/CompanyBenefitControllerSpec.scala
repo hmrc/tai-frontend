@@ -35,7 +35,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaiRoot
-import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment}
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, TaiService}
 import uk.gov.hmrc.tai.util._
 
@@ -56,13 +56,12 @@ class CompanyBenefitControllerSpec extends PlaySpec
     "redirect to decision page" in {
 
       val empId = 1
-      val benefitType = "testBenefitType"
 
       val SUT = createSUT
 
       when(SUT.journeyCacheService.cache(Matchers.any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-      val result = SUT.redirectCompanyBenefitSelection(empId, benefitType)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = SUT.redirectCompanyBenefitSelection(empId, BenefitInKind)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.CompanyBenefitController.decision().url
