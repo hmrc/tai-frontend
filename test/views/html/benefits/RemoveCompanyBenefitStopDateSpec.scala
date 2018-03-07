@@ -24,14 +24,14 @@ import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm.StopDateC
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.time.TaxYearResolver
 
-class RemoveCompanyBenefitSpec extends TaiViewSpec{
+class RemoveCompanyBenefitStopDateSpec extends TaiViewSpec{
 
   "stop date" should {
 
     behave like pageWithTitle(messages("tai.benefits.ended.stopDate.title"))
     behave like pageWithCombinedHeader(messages("tai.benefits.ended.journey.preHeader"),
       messages("tai.benefits.ended.stopDate.heading",benefitType, empName))
-    behave like pageWithBackButton(controllers.routes.TaxAccountSummaryController.onPageLoad)
+    behave like pageWithBackButton(controllers.benefits.routes.CompanyBenefitController.decision())
     behave like pageWithCancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad)
     behave like pageWithContinueButtonForm("/check-income-tax/remove-company-benefit/stop-date")
 
@@ -46,12 +46,12 @@ class RemoveCompanyBenefitSpec extends TaiViewSpec{
 
     "display error message" when {
       "form has error" in {
-        val errorView = views.html.benefits.removeCompanyBenefit(formWithErrors,benefitType,empName)
-        doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-notification")
+        val errorView = views.html.benefits.removeCompanyBenefitStopDate(formWithErrors,benefitType,empName)
+        doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-message")
       }
 
       "a decision has not been made" in {
-        val errorView = views.html.benefits.removeCompanyBenefit(formWithErrors,benefitType,empName)
+        val errorView = views.html.benefits.removeCompanyBenefitStopDate(formWithErrors,benefitType,empName)
         doc(errorView) must haveErrorLinkWithText(messages("tai.error.chooseOneOption"))
       }
 
@@ -69,7 +69,7 @@ class RemoveCompanyBenefitSpec extends TaiViewSpec{
     StopDateChoice -> ""
   ))
 
-  override def view = views.html.benefits.removeCompanyBenefit(RemoveCompanyBenefitStopDateForm.form,benefitType, empName)
+  override def view = views.html.benefits.removeCompanyBenefitStopDate(RemoveCompanyBenefitStopDateForm.form,benefitType, empName)
 
 }
 

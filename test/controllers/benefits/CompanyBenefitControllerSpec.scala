@@ -20,13 +20,14 @@ import builders.{AuthBuilder, RequestBuilder}
 import controllers.FakeTaiPlayApplication
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
+import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => mockEq}
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.test.Helpers.{status, _}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -42,11 +43,13 @@ import uk.gov.hmrc.tai.util._
 import scala.concurrent.Future
 import scala.util.Random
 
+
 class CompanyBenefitControllerSpec extends PlaySpec
   with MockitoSugar
   with FakeTaiPlayApplication
   with I18nSupport
   with FormValuesConstants
+  with UpdateOrRemoveCompanyBenefitDecisionConstants
   with JourneyCacheConstants
   with DateFormatConstants {
 
@@ -65,6 +68,94 @@ class CompanyBenefitControllerSpec extends PlaySpec
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.CompanyBenefitController.decision().url
+    }
+  }
+
+  "decision" must {
+    "show 'Do you currently get benefitType from Company?' page" when {
+      "the request has an authorised session" in {
+
+        val SUT = createSUT
+        val cache = Map(EndCompanyBenefit_EmploymentIdKey -> "1",EndCompanyBenefit_BenefitTypeKey -> "Expenses")
+
+        when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(SUT.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(SUT.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+
+        val result = SUT.decision(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() mustBe Messages("tai.benefits.updateOrRemove.decision.title")
+
+        verify(SUT.employmentService, times(1)).employment(any(),any())(any())
+        verify(SUT.journeyCacheService, times(1)).currentCache(any())
+        verify(SUT.journeyCacheService, times(1)).cache(
+          mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> "company name")))(any())
+      }
+    }
+
+    "throw exception" when {
+      "employment not found" in {
+        val SUT = createSUT
+        when(SUT.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+
+        val result = SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  "submit decision" must {
+
+    "redirect to the 'When did you stop getting benefits from company?' page" when {
+      "the form has the value noIDontGetThisBenefit" in {
+
+        val SUT = createSUT
+
+        val result = SUT.submitDecision(RequestBuilder.buildFakeRequestWithAuth("POST").
+          withFormUrlEncodedBody(DecisionChoice -> NoIDontGetThisBenefit))
+
+        status(result) mustBe SEE_OTHER
+
+        val redirectUrl = redirectLocation(result).getOrElse("")
+
+        redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.stopDate().url
+
+      }
+    }
+
+    "redirect to the appropriate IFORM update page" when {
+      "the form has the value yesIGetThisBenefit" in {
+
+        val SUT = createSUT
+
+        val result = SUT.submitDecision()(RequestBuilder.buildFakeRequestWithAuth("POST").
+          withFormUrlEncodedBody(DecisionChoice -> YesIGetThisBenefit))
+
+        status(result) mustBe SEE_OTHER
+
+        val redirectUrl = redirectLocation(result).getOrElse("")
+
+        redirectUrl mustBe controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url
+
+      }
+    }
+
+    "return Bad Request" when {
+      "the form submission is having blank value" in {
+        val SUT = createSUT
+        val cache = Map(EndCompanyBenefit_EmploymentNameKey -> "Employer A",EndCompanyBenefit_BenefitTypeKey -> "Expenses")
+
+        when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        val result = SUT.submitDecision(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> ""))
+
+        status(result) mustBe BAD_REQUEST
+
+        verify(SUT.journeyCacheService, times(1)).currentCache(any())
+
+      }
     }
   }
 
