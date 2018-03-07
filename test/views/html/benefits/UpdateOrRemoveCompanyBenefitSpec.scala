@@ -47,7 +47,7 @@ class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec{
     "display error message" when {
       "form has error" in {
         val errorView = views.html.benefits.updateOrRemoveCompanyBenefitDecision(formWithErrors, benefitType, employerName)
-        doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-notification")
+        doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-message")
       }
     }
 

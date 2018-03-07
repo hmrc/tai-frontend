@@ -47,7 +47,7 @@ class RemoveCompanyBenefitStopDateSpec extends TaiViewSpec{
     "display error message" when {
       "form has error" in {
         val errorView = views.html.benefits.removeCompanyBenefitStopDate(formWithErrors,benefitType,empName)
-        doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-notification")
+        doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-message")
       }
 
       "a decision has not been made" in {
