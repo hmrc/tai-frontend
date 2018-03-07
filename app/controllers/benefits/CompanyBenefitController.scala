@@ -20,7 +20,6 @@ import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
 import play.api.Play.current
-import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
@@ -55,8 +54,7 @@ trait CompanyBenefitController extends TaiBaseController
           implicit request =>
             ServiceCheckLite.personDetailsCheck {
 
-              val benefitTypeText = Messages(s"tai.taxFreeAmount.table.taxComponent.${benefitType.toString}")
-              val cacheValues = Map(EndCompanyBenefit_EmploymentIdKey -> empId.toString, EndCompanyBenefit_BenefitTypeKey -> benefitTypeText)
+              val cacheValues = Map(EndCompanyBenefit_EmploymentIdKey -> empId.toString, EndCompanyBenefit_BenefitTypeKey -> benefitType.toString)
 
               journeyCacheService.cache(cacheValues) map {
                 _ => Redirect(controllers.benefits.routes.CompanyBenefitController.decision())
