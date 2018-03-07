@@ -52,21 +52,24 @@ trait CompanyBenefitController extends TaiBaseController
       implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            journeyCacheService.currentCache flatMap { currentCache =>
-              employmentService.employment(Nino(user.getNino), currentCache(EndCompanyBenefit_EmploymentIdKey).toInt) flatMap {
-                  case Some(employment) =>
-                    val cache = Map(EndCompanyBenefit_EmploymentNameKey -> employment.name)
-                    journeyCacheService.cache(cache).map { _ =>
-                      Ok(views.html.benefits.updateOrRemoveCompanyBenefitDecision(
-                        UpdateOrRemoveCompanyBenefitDecisionForm.form,
-                        currentCache(EndCompanyBenefit_BenefitTypeKey),
-                        employment.name))
-                    }
-                  case None => throw new RuntimeException("No employment found")
-                }
+            (for{
+              currentCache <- journeyCacheService.currentCache
+              employment <- employmentService.employment(Nino(user.getNino), currentCache(EndCompanyBenefit_EmploymentIdKey).toInt)
+            } yield {
+              employment match {
+                case Some(employment) =>
+                  val cache = Map(EndCompanyBenefit_EmploymentNameKey -> employment.name)
+                  journeyCacheService.cache(cache).map { _ =>
+                    Ok(views.html.benefits.updateOrRemoveCompanyBenefitDecision(
+                      UpdateOrRemoveCompanyBenefitDecisionForm.form,
+                      currentCache(EndCompanyBenefit_BenefitTypeKey),
+                      employment.name))
+                  }
+                case None => throw new RuntimeException("No employment found")
               }
-            }
+            }).flatMap(identity)
           }
+  }
 
 
   def submitDecision: Action[AnyContent] = authorisedForTai(taiService).async {
