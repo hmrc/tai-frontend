@@ -44,7 +44,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
     <p>@Messages("tai.howToUpdate.explanation")</p>
 
-    <section class="text section flush--bottom">
+    <div class="text section flush--bottom">
         @form(action=controllers.routes.IncomeUpdateCalculatorController.handleChooseHowToUpdate){
                 @{inputRadioGroupNewStyling(
                     field=howToUpdateForm("howToUpdate"),
@@ -52,11 +52,11 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
                     legend=Messages("tai.whatDoYouWantToDo"),
                     legendHint=None,
                     ('_groupDivClass, "form-group" ),
-                    ('_legendClass, "visuallyhidden"),
+                    ('_legendSpanClass, "visually-hidden"),
                     ('_fieldsetAttributes, "id=howToUpdate" )
                 )}
             <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
         }
-    </section>
+    </div>
 
 }

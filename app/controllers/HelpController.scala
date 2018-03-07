@@ -17,45 +17,38 @@
 package controllers
 
 import controllers.audit.Auditable
-import controllers.auth.{TaiUser, WithAuthorisedForTai}
+import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever, WSHttpProxy}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.model.SessionData
 import uk.gov.hmrc.tai.service.TaiService
 
 import scala.concurrent.Future
 
 trait HelpController  extends TaiBaseController
   with DelegationAwareActions
-  with WithAuthorisedForTai
+  with WithAuthorisedForTaiLite
   with Auditable {
 
   def taiService: TaiService
   def httpGet: WSHttpProxy
   def webChatURL: String
 
-  def helpPage() = authorisedForTai(redirectToOrigin = true)(taiService).async {
-    implicit user => implicit sessionData => implicit request =>
-      getHelpPage(Nino(user.getNino))
+  def helpPage() = authorisedForTai(taiService).async {
+    implicit user => implicit taiRoot => implicit request =>
+      getEligibilityStatus map { status =>
+        Ok(views.html.help.getHelp(status))
+      } recoverWith handleErrorResponse("getHelpPage", Nino(user.getNino))
   }
 
-  private def getHelpPage(nino: Nino)(implicit request: Request[AnyContent], user: TaiUser, sessionData: SessionData): Future[Result] = {
-    getEligibilityStatus map { status =>
-      Ok(views.html.help.getHelp(status))
-    }
-  } recoverWith handleErrorResponse("getHelpPage", nino)
 
- private def getEligibilityStatus()(implicit
-                             headerCarrier: HeaderCarrier
-  ): Future[Option[String]] = {
+ private def getEligibilityStatus()(implicit headerCarrier: HeaderCarrier): Future[Option[String]] = {
     httpGet.GET[HttpResponse](webChatURL) map {
       response =>
         Logger.debug(s"Response Body: $response")

@@ -41,27 +41,27 @@ class CompanyCarFuelBenefitEndDateSpec extends TaiViewSpec {
     behave like pageWithContinueButtonForm("/check-income-tax/end-company-car/fuel-end-date")
 
     "have a form input for day with relevant label" in {
-      val labelDay = doc(view).select("form > fieldset > div.form-group-day > label.form-label")
+      val labelDay = doc(view).select(".form-group-day .form-label")
       val inputLabelDay = labelDay.text
-      val numberOfInputs = doc(view).select("form > fieldset > div.form-group-day > input").size
+      val numberOfInputs = doc(view).select(".form-group-day input").size
 
       inputLabelDay mustBe Messages("tai.label.day")
       numberOfInputs mustBe 1
     }
 
     "have a form input for month with relevant label" in {
-      val labelMonth = doc(view).select("form > fieldset > div.form-group-month > label.form-label")
+      val labelMonth = doc(view).select(".form-group-month .form-label")
       val inputLabelMonth = labelMonth.text
-      val numberOfInputs = doc(view).select("form > fieldset > div.form-group-month > input").size
+      val numberOfInputs = doc(view).select(".form-group-month input").size
 
       inputLabelMonth mustBe Messages("tai.label.month")
       numberOfInputs mustBe 1
     }
 
     "have a form input for year with relevant label" in {
-      val labelYear = doc(view).select("form > fieldset > div.form-group-year > label.form-label")
+      val labelYear = doc(view).select(".form-group-year .form-label")
       val inputLabelYear = labelYear.text
-      val numberOfInputs = doc(view).select("form > fieldset > div.form-group-year > input").size
+      val numberOfInputs = doc(view).select(".form-group-year input").size
 
       inputLabelYear mustBe Messages("tai.label.year")
       numberOfInputs mustBe 1
@@ -71,9 +71,9 @@ class CompanyCarFuelBenefitEndDateSpec extends TaiViewSpec {
 
       val emptyFormDoc = doc(views.html.benefits.fuelBenefitEndDate(errorForm))
 
-      emptyFormDoc.select(".error-summary--show > h2").text mustBe Messages("tai.income.error.form.summary")
+      emptyFormDoc.select(".error-summary--show h2").text mustBe Messages("tai.income.error.form.summary")
 
-      val errorAnchor = emptyFormDoc.select(".error-summary--show > ul > li > a").get(0)
+      val errorAnchor = emptyFormDoc.select(".error-summary--show li a").get(0)
       errorAnchor.attributes.get("href") mustBe "#dateForm_day"
       errorAnchor.attributes.get("id") mustBe "dateForm_day-error-summary"
       errorAnchor.text mustBe Messages("tai.companyCar.fuelBenefitEndDate.blank")
@@ -83,8 +83,8 @@ class CompanyCarFuelBenefitEndDateSpec extends TaiViewSpec {
 
       val emptyFormDoc = doc(views.html.benefits.fuelBenefitEndDate(errorForm))
 
-      emptyFormDoc.select(".error-notification").text mustBe Messages("tai.companyCar.fuelBenefitEndDate.blank")
-      emptyFormDoc.select("fieldset").hasClass("form-field-group--error") mustBe true
+      emptyFormDoc.select(".error-message").text mustBe Messages("tai.companyCar.fuelBenefitEndDate.blank")
+      emptyFormDoc.select("form > .form-group").hasClass("form-group-error") mustBe true
     }
   }
 
