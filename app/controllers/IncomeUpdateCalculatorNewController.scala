@@ -197,6 +197,47 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
         }
   }
 
+  def handleTaxablePayslipAmount: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        sendActingAttorneyAuditEvent("processTaxablePayslipAmount")
+
+        journeyCacheService.currentValue(UpdateIncome_TotalSalaryKey) flatMap { cacheTotalSalary =>
+          val totalSalary = FormHelper.stripNumber(cacheTotalSalary)
+          TaxablePayslipForm.createForm(totalSalary).bindFromRequest().fold(
+            formWithErrors => {
+              for {
+                id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+                employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+                payPeriod <- journeyCacheService.mandatoryValue(UpdateIncome_PayPeriodKey)
+              } yield {
+                BadRequest(views.html.incomes.taxablePayslipAmount(formWithErrors, payPeriod, id, Some(employerName)))
+              }
+            },
+            formData => {
+              formData.taxablePay match {
+                case Some(taxablePay) => journeyCacheService.cache(UpdateIncome_TaxablePayKey, taxablePay) map { _ =>
+                  Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage())
+                }
+                case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage()))
+              }
+            }
+          )
+        }
+  }
+
+  def payslipDeductionsPage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        sendActingAttorneyAuditEvent("getPayslipDeductionsPage")
+        for {
+          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+        } yield {
+          Ok(views.html.incomes.payslipDeductions(PayslipDeductionsForm.createForm(), id, Some(employerName)))
+        }
+  }
+
   def calcUnavailablePage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>

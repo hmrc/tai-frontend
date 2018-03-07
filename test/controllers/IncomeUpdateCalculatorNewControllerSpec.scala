@@ -210,6 +210,45 @@ class IncomeUpdateCalculatorNewControllerSpec extends PlaySpec with FakeTaiPlayA
     }
   }
 
+  "handleTaxablePayslipAmount" must {
+    "redirect the user to bonusPaymentsPage page" when {
+      "user entered valid taxable pay" in {
+        val sut = createSut
+        when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TotalSalaryKey))(any())).thenReturn(Future.successful(None))
+        when(sut.journeyCacheService.cache(Matchers.eq(UpdateIncome_TaxablePayKey), Matchers.eq("£3,000"))(any())).thenReturn(Future.successful(Map(""->"")))
+        val result = sut.handleTaxablePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("taxablePay" -> "£3,000"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url)
+      }
+    }
+
+    "redirect user back to how to payPeriod page" when {
+      "user input has error" in {
+        val sut = createSut
+        when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TotalSalaryKey))(any())).thenReturn(Future.successful(None))
+        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(""))
+        val result = sut.handleTaxablePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody( "" -> ""))
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() mustBe Messages("tai.taxablePayslip.title")
+      }
+    }
+  }
+
+  "payslipDeductionsPage" must {
+    "display payslipDeductions" when {
+      "journey cache returns employment name and id" in {
+        val sut = createSut
+        val result = sut.payslipDeductionsPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() mustBe Messages("tai.payslipDeductions.title")
+      }
+    }
+  }
+
   "calcUnavailablePage" must {
     "display calcUnavailable page" when {
       "journey cache returns employment name and id" in {

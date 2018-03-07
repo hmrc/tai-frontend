@@ -351,11 +351,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
   } recoverWith handleErrorResponse("getTaxablePayslipAmountPage", nino)
 
+  //migrated
   def handleTaxablePayslipAmount() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id, name) => processTaxablePayslipAmount(Nino(user.getNino), id, name)
     moveToPageWithIncomeID(page)
   }
 
+  //migrated
   def processTaxablePayslipAmount(nino: Nino, id: Int, employerName: String)(
     implicit
     request: Request[AnyContent],
@@ -396,11 +398,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
   } recoverWith handleErrorResponse("processTaxablePayslipAmount", nino)
 
+  //migrated
   def payslipDeductionsPage() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id, name) => getPayslipDeductionsPage(Nino(user.getNino), id, name)
     moveToPageWithIncomeID(page)
   }
 
+  //migrated
   def getPayslipDeductionsPage(nino: Nino, id: Int, employerName: String)(
     implicit
     request: Request[AnyContent],
