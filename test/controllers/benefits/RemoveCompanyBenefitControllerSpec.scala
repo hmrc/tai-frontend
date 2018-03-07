@@ -504,7 +504,6 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
     override implicit val partialRetriever: PartialRetriever = mock[PartialRetriever]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
-    override val employmentService: EmploymentService = mock[EmploymentService]
     override val benefitsService: BenefitsService = mock[BenefitsService]
 
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
