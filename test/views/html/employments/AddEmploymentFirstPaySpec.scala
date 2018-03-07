@@ -42,7 +42,7 @@ class AddEmploymentFirstPaySpec extends TaiViewSpec with FormValuesConstants {
           withError(AddEmploymentFirstPayForm.FirstPayChoice, noPayrollNumberChooseError)
         def view: Html = views.html.employments.add_employment_first_pay_form(formWithErrors, employerName)
 
-        val errorMessage = doc(view).select(".error-notification").text
+        val errorMessage = doc(view).select(".error-message").text
         errorMessage mustBe noPayrollNumberChooseError
       }
     }

@@ -212,7 +212,6 @@ trait UpdateIncomeDetailsController extends TaiBaseController
 }
 
 object UpdateIncomeDetailsController extends UpdateIncomeDetailsController with AuthenticationConnectors {
-
   override val taiService: TaiService = TaiService
   override val auditService: AuditService = AuditService
   override val journeyCacheService: JourneyCacheService = JourneyCacheService(UpdatePreviousYearsIncome_JourneyKey)

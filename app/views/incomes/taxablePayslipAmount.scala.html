@@ -39,7 +39,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     employerName = employerName,
     gaCustomTitle = None
 ){
-    <section class="section flush--bottom">
+    <div class="section flush--bottom">
         @form(action=controllers.routes.IncomeUpdateCalculatorController.handleTaxablePayslipAmount){
         <div id="payslip" class="form-field-group @if(taxablePayslipForm.hasErrors){form-group-error}">
             <label for="taxablePay">
@@ -55,7 +55,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
                 @taxablePayslipForm.errors.map{ error =>
                     <span class="error-message">@Messages(error.message)</span>
                 }
-            </legend>
+            </label>
             <input type="text" class="form-control @if(taxablePayslipForm.hasErrors){form-control-error}" id="taxablePay" name="taxablePay"/>
         </div>
         @includes.details_summary(Messages("tai.taxablePayslip.whatIsTaxablePay.title")){
@@ -63,5 +63,5 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         }
         <p class="subsection"><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
         }
-    </section>
+    </div>
 }

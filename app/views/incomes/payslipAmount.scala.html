@@ -56,7 +56,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
                         <span class="error-message">@Messages(error.message)</span>
                     }
                 </label>
-                <input type="text" class="form-control flush--bottom @if(payslipForm.hasErrors){form-control-error}" id="totalSalary" name="totalSalary"/>
+                <input type="text" class="form-control @if(payslipForm.hasErrors){form-control-error}" id="totalSalary" name="totalSalary"/>
             </div>
             <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
         }
