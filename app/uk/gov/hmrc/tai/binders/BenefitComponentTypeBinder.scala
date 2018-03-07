@@ -23,11 +23,13 @@ object BenefitComponentTypeBinder {
 
   implicit def benefitComponentTypeBinder = new PathBindable[BenefitComponentType] {
 
-    override def bind(key: String, value: String): Either[String, BenefitComponentType] = try {
-      Right(BenefitComponentType(value))
-    } catch {
-      case _ : Throwable => Left(s"The supplied value '${value}' is not a currently supported Benefit Type")
-    }
+    override def bind(key: String, value: String): Either[String, BenefitComponentType] =
+
+      BenefitComponentType(value) map {
+        Right(_)
+      } getOrElse {
+        Left(s"The supplied value '${value}' is not a currently supported Benefit Type")
+      }
 
     override def unbind(key: String, value: BenefitComponentType) = value.toString
   }
