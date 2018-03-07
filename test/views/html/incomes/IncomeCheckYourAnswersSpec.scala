@@ -39,10 +39,8 @@ class IncomeCheckYourAnswersSpec extends TaiViewSpec {
 
     behave like pageWithCheckYourAnswersSummary
 
-    "display a back button" which {
-      "redirects to the previous page defined in the view model" in {
-        doc must haveBackButtonWithUrl("fake/backlink/url")
-      }
+    "display a back button" in {
+      doc must haveBackLink
     }
 
     "display a cancel button" which {

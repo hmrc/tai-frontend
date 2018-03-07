@@ -30,12 +30,8 @@ class RemoveCompanyBenefitCheckYourAnswersSpec extends TaiViewSpec {
     behave like pageWithCancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad())
     behave like pageWithCheckYourAnswersSummary
 
-    "display a back button" which {
-      "links to the add telephone form page" when {
-        "page is displayed" in {
-          doc must haveBackButtonWithUrl(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url)
-        }
-      }
+    "display a back button" in {
+      doc must haveBackLink
     }
 
     "display the header for the check your answers section" in {

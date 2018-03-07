@@ -33,7 +33,7 @@ class CheckYourAnswersSpec extends TaiViewSpec {
     "display a back button" which {
       "links to the add telephone form page" when {
         "page is displayed" in {
-          doc must haveBackButtonWithUrl(controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber().url)
+          doc must haveBackLink
         }
       }
     }

@@ -35,7 +35,7 @@ class AddPensionNumberSpec extends TaiViewSpec with FormValuesConstants {
     behave like pageWithCombinedHeader(
       messages("tai.addPensionProvider.preHeadingText"),
       messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
-    behave like pageWithBackButton(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate())
+    behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/pension-number")
     behave like pageWithYesNoRadioButton(AddPensionProviderNumberForm.PayrollNumberChoice+"-yes", AddPensionProviderNumberForm.PayrollNumberChoice+"-no")
     behave like pageWithCancelLink(routes.TaxAccountSummaryController.onPageLoad())
@@ -44,9 +44,7 @@ class AddPensionNumberSpec extends TaiViewSpec with FormValuesConstants {
       val payrollNumberViewModel = PensionNumberViewModel(pensionProviderName, true)
       def view: Html = views.html.pensions.addPensionNumber(pensionNumberForm, pensionNumberViewModel)
       def doc: Document = Jsoup.parse(view.toString())
-      val backLink = controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate().url
-
-      doc must haveBackButtonWithUrl(backLink)
+      doc must haveBackLink
     }
 
     "have an input field for payroll number" in {

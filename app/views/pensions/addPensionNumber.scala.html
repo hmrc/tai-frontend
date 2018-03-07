@@ -30,7 +30,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(payrollNumberForm),
-        backLocation = Some(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addPensionProvider.pensionNumber.title", pensionNumberViewModel.pensionProviderName),
         preHeadingText = Messages("tai.addPensionProvider.preHeadingText"))}

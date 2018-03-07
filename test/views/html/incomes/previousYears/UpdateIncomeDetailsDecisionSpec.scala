@@ -33,7 +33,7 @@ class UpdateIncomeDetailsDecisionSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("tai.income.previousYears.decision.title"))
     behave like pageWithCombinedHeader(messages("tai.income.previousYears.journey.preHeader"),
       messages("tai.income.previousYears.decision.header",TaxPeriodLabelService.taxPeriodLabel(taxYear.year)))
-    behave like pageWithBackButton(controllers.routes.PayeControllerHistoric.payePage(taxYear))
+    behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.routes.PayeControllerHistoric.payePage(taxYear))
     behave like pageWithYesNoRadioButton(
       UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice+"-yes",

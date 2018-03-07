@@ -18,8 +18,7 @@
 @import includes.backLink
 
 @(formForErrorSummary: Option[Form[_]] = None,
-  backLocation: Option[Call],
-  showBackLink: Boolean = false,
+  displayBackLink: Boolean = false,
   backLinkGaEventAction: Option[String] = None,
   mainHeadingText: String,
   preHeadingText: String,
@@ -29,9 +28,8 @@
     if(preHeadingAccessibleAnnouncement=="") Messages("tai.ptaHeader.accessible.preHeading") else preHeadingAccessibleAnnouncement
 }
 
-@if(backLocation.isDefined) {
+@if(displayBackLink) {
     @backLink(
-        url = backLocation.get,
         gaEventAction = backLinkGaEventAction
     )
 }

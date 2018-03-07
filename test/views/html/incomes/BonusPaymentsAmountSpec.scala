@@ -40,7 +40,7 @@ class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
   when(bonusPaymentsAmountForm.hasErrors).thenReturn(false)
 
   "Bonus payments amount view with monthly pay" should {
-    behave like pageWithBackButton(controllers.routes.IncomeUpdateCalculatorController.bonusPaymentsPage())
+    behave like pageWithBackLink
     behave like pageWithCombinedHeader(
       messages("tai.bonusPaymentsAmount.preHeading"),
       messages("tai.bonusPaymentsAmount.month.title"))

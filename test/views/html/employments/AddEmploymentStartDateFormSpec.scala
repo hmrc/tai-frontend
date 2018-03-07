@@ -40,7 +40,7 @@ class AddEmploymentStartDateFormSpec extends TaiViewSpec {
     behave like pageWithCombinedHeader(
       messages("tai.addEmployment.addEmploymentJourneyLink"),
       messages("tai.addEmployment.startDateForm.title", employmentName))
-    behave like pageWithBackButton(controllers.employments.routes.AddEmploymentController.addEmploymentName())
+    behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-start-date")
     behave like pageWithCancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad())
 

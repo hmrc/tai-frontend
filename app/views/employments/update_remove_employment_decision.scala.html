@@ -27,7 +27,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(updateRemoveForm),
-        backLocation = Some(routes.IncomeSourceSummaryController.onPageLoad(empId)),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.employment.decision.heading", employmentName),
         preHeadingText = Messages("tai.employment.decision.preHeading")

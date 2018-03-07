@@ -35,7 +35,7 @@ class CanWeContactByPhoneSpec extends TaiViewSpec with FormValuesConstants {
 
     behave like pageWithCombinedHeader("pre heading","main heading")
 
-    behave like pageWithBackButton(Call("GET", "backUrl"))
+    behave like pageWithBackLink
     behave like pageWithContinueButtonForm("continueUrl")
     behave like pageWithYesNoRadioButton(YesNoTextEntryForm.YesNoChoice+"-yes", YesNoTextEntryForm.YesNoChoice+"-no")
     behave like pageWithCancelLink(Call("GET", "cancelUrl"))

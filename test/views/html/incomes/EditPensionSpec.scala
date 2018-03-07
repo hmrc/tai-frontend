@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class EditPensionSpec extends TaiViewSpec with MockitoSugar{
 
   "Edit Pension view" should {
-    behave like pageWithBackButton(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId: Int))
+    behave like pageWithBackLink
     behave like pageWithCombinedHeader(
       messages("tai.howToUpdate.preHeading"),
       messages("tai.incomes.pension.heading"))
