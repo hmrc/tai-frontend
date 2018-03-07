@@ -153,32 +153,6 @@
     @if(gaCallsAdditionalJs.isDefined && gaCallsAdditionalJs.get.toString.trim != ""){
         <script type="text/javascript">@gaCallsAdditionalJs.get</script>
     }
-
-    <script type="text/javascript">
-
-        if ( window.history && window.history.replaceState && typeof window.history.replaceState === 'function' ) {
-            window.history.replaceState( null, null, window.location.href );
-        }
-        if (window.history && window.history.back && typeof window.history.back === 'function') {
-            var backLinkElem = document.getElementById("backLink");
-            if (backLinkElem !=  null){
-                var backScript = (document.referrer.indexOf(window.location.host) !== -1) ? "javascript:window.history.back();" : "javascript:void(0);"
-                backLinkElem.setAttribute("onclick",backScript);
-                backLinkElem.setAttribute("href","javascript:void(0);");
-            }
-        }
-
-        /* Temp - pending AF update to > 3.0.2 */
-        window.GOVUK.performance.sendGoogleAnalyticsEvent = function (category, event, label) {
-          if (window.ga && typeof(window.ga) === 'function') {
-            ga('send', 'event', category, event, label);
-          } else {
-            _gaq.push(['_trackEvent', category, event, label, undefined, true]);
-          }
-        };
-        window.GOVUK.performance.stageprompt.setupForGoogleAnalytics();
-
-    </script>
 }
 
 @mustacheMap = @{
