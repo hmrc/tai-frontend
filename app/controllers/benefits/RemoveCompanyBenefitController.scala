@@ -65,6 +65,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
       implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
+            journeyCacheService.cache(Map(EndCompanyBenefit_BenefitTypeKey -> "awesome", EndCompanyBenefit_EmploymentNameKey -> "tesco" ))
                 journeyCacheService.currentCache map { currentCache =>
                   Ok(views.html.benefits.removeCompanyBenefitStopDate(
                     RemoveCompanyBenefitStopDateForm.form,
