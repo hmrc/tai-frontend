@@ -47,10 +47,10 @@ gaCustomTitle = None
         @Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext")
     </h3>
     <p>@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line1")</p>
-    <ul>
-        <li class="list-bullet">@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line2")</li>
-        <li class="list-bullet">@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line3")</li>
-        <li class="list-bullet">@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line4")</li>
+    <ul class="list list-bullet">
+        <li>@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line2")</li>
+        <li>@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line3")</li>
+        <li>@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line4")</li>
     </ul>
     <section class="text section flush--bottom">
         <p>@Link.toInternalPage(url=routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage.toString,cssClasses=Some("button--secondary"),value=Some(Messages("tai.estimatedPay.error.incorrectTaxableIncome.button"))).toHtml</p>

@@ -37,7 +37,7 @@
         hintClass: String = ""
 )(implicit lang: Lang, m: Messages)
 
-<div class="form-group  @if(parentDateAttr) { form-group-@parentDateAttr} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}" @if(data) {data-reveal="@data"}>
+<div class="form-group @if(fieldErrorsEnabled && field.hasErrors) {form-group-error}  @if(parentDateAttr) { form-group-@parentDateAttr} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}" @if(data) {data-reveal="@data"}>
     <label class="form-label@if(bold) {-bold}" for="@field.id">
         @if(labelText.nonEmpty) {
             @if(labelHidden) { <span class="visuallyhidden">}
@@ -45,7 +45,11 @@
             @if(labelHidden) {</span>}
         }
         @if(hintText.nonEmpty) { <span class="form-hint @hintClass" id="@{ field.id }-hint">@Messages(hintText)</span> }
-        @if(fieldErrorsEnabled && field.hasErrors) { <span class="error-message">@field.error</span> }
+        @if(fieldErrorsEnabled && field.hasErrors) {
+            <span class="error-message">
+                @field.errors.map(_.message)
+            </span>
+        }
     </label>
 
     <input name="@field.name" class="form-control @if(fieldErrorsEnabled && field.hasErrors) { form-control-error} @if(attrType == "number") { input--no-spinner} @classes.mkString(" ")"

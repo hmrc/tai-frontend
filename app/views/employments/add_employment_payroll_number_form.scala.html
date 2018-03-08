@@ -15,9 +15,9 @@
  *@
 
 @import includes.{backLink}
-@import includes.forms.submit
+@import includes.forms.{submit, input}
 @import includes.{cancelLink, ptaHeader}
-@import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary, input}
+@import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 @import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm
 @import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
@@ -67,10 +67,13 @@
             ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Do you know your payroll number for this employer?:No" data-journey-val="No" data-dynamic-fields-hide="true" data-dynamic-fields="payrollNumberEntry"""") )
         )}
 
-        <div id="payrollNumberEntry-container" class="@if(payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberChoice).value.getOrElse("") != AddEmploymentPayrollNumberForm.YesValue){js-hidden} data-payrollNumberEntry inline form-field-group panel-indent">
-            @input(field=payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberEntry),
-                '_label -> Messages("tai.addEmployment.employmentPayrollNumber.label"),
-                '_inputClass -> "form-control input--cleared")
+        <div id="payrollNumberEntry-container" class="@if(payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberChoice).value.getOrElse("") != AddEmploymentPayrollNumberForm.YesValue){js-hidden} data-payrollNumberEntry">
+            @input(
+                field = payrollNumberForm(AddEmploymentPayrollNumberForm.PayrollNumberEntry),
+                labelText = Messages("tai.addEmployment.employmentPayrollNumber.label"),
+                classes = Seq("form-control input--cleared"),
+                panel = true
+            )
         </div>
 
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing employment"))

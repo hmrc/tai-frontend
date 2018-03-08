@@ -26,38 +26,39 @@
 @gaEventActionString = @{"What do you want to tell us?"}
 
 @header = @{
-ptaHeader(
-formForErrorSummary = Some(updateIncomeDetailsForm),
-backLocation = Some(controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(viewModel.givenTaxYear)),
-backLinkGaEventAction = Some(gaEventActionString),
-mainHeadingText = Messages("tai.income.previousYears.details.heading", viewModel.formattedTaxYear),
-preHeadingText = Messages("tai.income.previousYears.details.preHeading")
-)
+    ptaHeader(
+        formForErrorSummary = Some(updateIncomeDetailsForm),
+        backLocation = Some(controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(viewModel.givenTaxYear)),
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.income.previousYears.details.heading", viewModel.formattedTaxYear),
+        preHeadingText = Messages("tai.income.previousYears.details.preHeading")
+    )
 }
 
 @main(
-title = Messages("tai.updateEmployment.whatDoYouWantToTellUs.title"),
-user = Some(user),
-pageHeader = Some(header),
-articleClasses = None,
-gaCustomTitle = None) {
+    title = Messages("tai.updateEmployment.whatDoYouWantToTellUs.title"),
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = None) {
 
-@form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDetails(), args=(Symbol("class"), "subsection")) {
+    @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDetails(), args=(Symbol("class"), "subsection")) {
 
-@textArea(field=updateIncomeDetailsForm("employmentDetails"),
-'_inputClass -> "form-control form-control--full-width",
-'_divClass -> "char-counter",
-'_label -> Messages("tai.income.previousYears.details.textarea.text",
-UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit),
-'_dataCharCounter -> true,
-'_dataCharField -> true,
-'_maxlength -> UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit)
+    @textArea(field=updateIncomeDetailsForm("employmentDetails"),
+        '_inputClass -> "form-control form-control--full-width",
+        '_divClass -> "char-counter",
+        '_label -> Messages("tai.income.previousYears.details.textarea.text",
+        UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit),
+        '_dataCharCounter -> true,
+        '_dataCharField -> true,
+        '_maxlength -> UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit
+    )
 
-@submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.updateEmployment.whatDoYouWantToTellUs.title")))
+    @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.updateEmployment.whatDoYouWantToTellUs.title")))
 
-}
+    }
 
-@cancelLink(controllers.routes.PayeControllerHistoric.payePage(viewModel.givenTaxYear), gaEventAction = Some(gaEventActionString))
+    @cancelLink(controllers.routes.PayeControllerHistoric.payePage(viewModel.givenTaxYear), gaEventAction = Some(gaEventActionString))
 
 }
 

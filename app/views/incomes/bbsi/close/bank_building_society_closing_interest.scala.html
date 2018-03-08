@@ -58,11 +58,11 @@
                 ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Do you know how much interest you earned?:No" data-journey-val="No" data-dynamic-fields-hide="true" data-dynamic-fields="closingInterestEntry"""") )
             )}
 
-            <fieldset id="closingInterestEntry-container" class="@if(closingInterestForm(BankAccountClosingInterestForm.ClosingInterestChoice).value.getOrElse("") != BankAccountClosingInterestForm.YesValue){js-hidden} data-closingInterestEntry inline form-field-group panel-indent">
+            <div id="closingInterestEntry-container" class="@if(closingInterestForm(BankAccountClosingInterestForm.ClosingInterestChoice).value.getOrElse("") != BankAccountClosingInterestForm.YesValue){js-hidden} data-closingInterestEntry inline form-field-group panel-indent">
                 @input(field=closingInterestForm(BankAccountClosingInterestForm.ClosingInterestEntry),
                 '_label -> Messages("tai.closeBankAccount.closingInterest.label"),
                 '_inputClass -> "form-control input--cleared")
-            </fieldset>
+            </div>
 
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Yes"), buttonMessageKey = Some(messages("tai.submit")))
     }
