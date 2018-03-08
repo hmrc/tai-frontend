@@ -56,7 +56,7 @@ class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends PlaySpec with Fa
     }
 
     "return a view model with correct table header" in {
-      baseModel.tableHeader mustBe Messages("tai.benefits.ended.tableHeader", "Awesome Benefit", "TestCompany")
+      baseModel.tableHeader mustBe Messages("tai.benefits.ended.tableHeader", "TestCompany", "Awesome Benefit")
     }
   }
 
