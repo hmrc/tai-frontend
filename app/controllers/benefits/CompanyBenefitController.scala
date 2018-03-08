@@ -28,6 +28,7 @@ import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
+import uk.gov.hmrc.tai.model.domain.BenefitComponentType
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, TaiService}
 import uk.gov.hmrc.tai.util.{AuditConstants, JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 
@@ -39,13 +40,27 @@ trait CompanyBenefitController extends TaiBaseController
   with Auditable
   with AuditConstants
   with JourneyCacheConstants
-  with UpdateOrRemoveCompanyBenefitDecisionConstants{
+  with UpdateOrRemoveCompanyBenefitDecisionConstants {
 
   def taiService: TaiService
   def auditService: AuditService
   def employmentService: EmploymentService
   def journeyCacheService: JourneyCacheService
   def trackingJourneyCacheService: JourneyCacheService
+
+  def redirectCompanyBenefitSelection(empId: Int, benefitType: BenefitComponentType) : Action[AnyContent] = authorisedForTai(taiService).async {
+      implicit user =>
+        implicit taiRoot =>
+          implicit request =>
+            ServiceCheckLite.personDetailsCheck {
+
+              val cacheValues = Map(EndCompanyBenefit_EmploymentIdKey -> empId.toString, EndCompanyBenefit_BenefitTypeKey -> benefitType.toString)
+
+              journeyCacheService.cache(cacheValues) map {
+                _ => Redirect(controllers.benefits.routes.CompanyBenefitController.decision())
+              }
+            }
+  }
 
   def decision: Action[AnyContent] = authorisedForTai(taiService).async {
     implicit user =>
@@ -96,7 +111,6 @@ trait CompanyBenefitController extends TaiBaseController
             }
           )
   }
-
 }
 
 object CompanyBenefitController extends CompanyBenefitController with AuthenticationConnectors {

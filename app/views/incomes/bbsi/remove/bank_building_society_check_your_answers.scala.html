@@ -40,7 +40,7 @@
     <p class="text">@Messages("tai.bbsi.remove.checkYourAnswers.description", bankName)</p>
 
     @form(action = controllers.income.bbsi.routes.BbsiRemoveAccountController.submitYourAnswers(id)) {
-        @submit(buttonMessageKey = Some(messages("tai.submit")))
+        @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
     }
 
     @cancelLink(controllers.income.bbsi.routes.BbsiController.accounts())

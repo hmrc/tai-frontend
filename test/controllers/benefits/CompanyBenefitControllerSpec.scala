@@ -21,6 +21,7 @@ import controllers.FakeTaiPlayApplication
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
+import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mock.MockitoSugar
@@ -35,7 +36,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaiRoot
-import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment}
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, TaiService}
 import uk.gov.hmrc.tai.util._
 
@@ -53,6 +54,22 @@ class CompanyBenefitControllerSpec extends PlaySpec
   with DateFormatConstants {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
+  "redirectCompanyBenefitSelection" must {
+    "redirect to decision page" in {
+
+      val empId = 1
+
+      val SUT = createSUT
+
+      when(SUT.journeyCacheService.cache(Matchers.any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+      val result = SUT.redirectCompanyBenefitSelection(empId, BenefitInKind)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe routes.CompanyBenefitController.decision().url
+    }
+  }
 
   "decision" must {
     "show 'Do you currently get benefitType from Company?' page" when {
@@ -77,7 +94,6 @@ class CompanyBenefitControllerSpec extends PlaySpec
           mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> "company name")))(any())
       }
     }
-
 
     "throw exception" when {
       "employment not found" in {
@@ -127,7 +143,6 @@ class CompanyBenefitControllerSpec extends PlaySpec
       }
     }
 
-
     "return Bad Request" when {
       "the form submission is having blank value" in {
         val SUT = createSUT
@@ -146,7 +161,9 @@ class CompanyBenefitControllerSpec extends PlaySpec
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   def generateNino: Nino = new Generator(new Random).nextNino
+
   private def createSUT = new SUT
+
   private val employment = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
     Some(new LocalDate("2016-05-26")), Nil, "", "", 2)
 
@@ -164,9 +181,8 @@ class CompanyBenefitControllerSpec extends PlaySpec
     override val trackingJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
 
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
+
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
     when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
-
   }
-
 }
