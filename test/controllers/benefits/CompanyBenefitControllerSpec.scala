@@ -60,8 +60,11 @@ class CompanyBenefitControllerSpec extends PlaySpec
     "show 'Do you currently get benefitType from Company?' page" when {
       "the request has an authorised session" in {
 
+        val empName = "company name"
+        val benefitType = "Expenses"
+
         val SUT = createSUT
-        val cache = Map(EndCompanyBenefit_EmploymentIdKey -> "1",EndCompanyBenefit_BenefitTypeKey -> "Expenses")
+        val cache = Map(EndCompanyBenefit_EmploymentIdKey -> "1",EndCompanyBenefit_BenefitTypeKey -> benefitType)
 
         when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(SUT.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -76,7 +79,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
         verify(SUT.employmentService, times(1)).employment(any(),any())(any())
         verify(SUT.journeyCacheService, times(1)).currentCache(any())
         verify(SUT.journeyCacheService, times(1)).cache(
-          mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> "company name", EndCompanyBenefit_BenefitNameKey -> "Expenses")))(any())
+          mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> empName, EndCompanyBenefit_BenefitNameKey -> benefitType)))(any())
       }
 
 
@@ -102,7 +105,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
         doc must haveHeadingWithText(Messages("tai.benefits.updateOrRemove.decision.heading",formattedBenefitName, empName))
 
         verify(SUT.journeyCacheService, times(1)).cache(
-          mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> "company name",EndCompanyBenefit_BenefitNameKey -> "Non-cash")))(any())
+          mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> empName,EndCompanyBenefit_BenefitNameKey -> formattedBenefitName)))(any())
 
       }
 
@@ -128,7 +131,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
         doc must haveHeadingWithText(Messages("tai.benefits.updateOrRemove.decision.heading",formattedBenefitName, empName))
 
         verify(SUT.journeyCacheService, times(1)).cache(
-          mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> "company name",EndCompanyBenefit_BenefitNameKey -> "Service")))(any())
+          mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> empName,EndCompanyBenefit_BenefitNameKey -> formattedBenefitName)))(any())
 
       }
 
