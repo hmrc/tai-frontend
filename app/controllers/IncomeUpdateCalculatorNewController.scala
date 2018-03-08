@@ -356,6 +356,52 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
         }
   }
 
+  def estimatedPayPage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        sendActingAttorneyAuditEvent("getEstimatedPayPage")
+
+        for {
+          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+          income <- incomeService.employmentAmount(Nino(user.getNino), id)
+          cache <- journeyCacheService.currentCache
+          calculatedPay <- incomeService.calculateEstimatedPay(cache, income.startDate)
+          payment <- incomeService.latestPayment(Nino(user.getNino), id)
+        } yield {
+          val payYTD: BigDecimal = payment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
+          val paymentDate: Option[LocalDate] = payment.map(_.date)
+
+          if (calculatedPay.grossAnnualPay.get > payYTD) {
+            val cache = Map(UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
+              UpdateIncome_NetAnnualPayKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
+            val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
+
+            journeyCacheService.cache(cache)
+            Ok(views.html.incomes.estimatedPay(calculatedPay.grossAnnualPay, calculatedPay.netAnnualPay, id, isBonusPayment,
+              calculatedPay.annualAmount, calculatedPay.startDate, calculatedPay.grossAnnualPay == calculatedPay.netAnnualPay,
+              employerName = Some(employerName)))
+          } else {
+            Ok(views.html.incomes.incorrectTaxableIncome(payYTD, paymentDate.getOrElse(new LocalDate)))
+          }
+        }
+  }
+
+  def handleCalculationResult: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        sendActingAttorneyAuditEvent("processCalculationResult")
+        for {
+          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+          income <- incomeService.employmentAmount(Nino(user.getNino), id)
+          netAmount <- journeyCacheService.currentValue(UpdateIncome_NetAnnualPayKey)
+        } yield {
+          val newAmount = income.copy(newAmount = netAmount.map(_.toInt).getOrElse(income.oldAmount))
+          Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = newAmount).get, Some(employerName), true))
+        }
+  }
+
   def calcUnavailablePage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>

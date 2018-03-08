@@ -16,15 +16,17 @@
 
 package uk.gov.hmrc.tai.service
 
+import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, PayPeriodForm}
-import uk.gov.hmrc.tai.model.EmploymentAmount
+import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, IncomeCalculation, PayDetails}
 import uk.gov.hmrc.tai.model.domain.Payment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -34,6 +36,8 @@ trait IncomeService extends JourneyCacheConstants {
   def taxAccountService: TaxAccountService
 
   def employmentService: EmploymentService
+
+  def taiConnector: TaiConnector
 
   def employmentAmount(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[EmploymentAmount] = {
     for {
@@ -64,6 +68,26 @@ trait IncomeService extends JourneyCacheConstants {
     }
   }
 
+  def calculateEstimatedPay(cache: Map[String, String], startDate: Option[LocalDate])(implicit hc: HeaderCarrier): Future[CalculatedPay] = {
+
+    val paymentFrequency = cache.getOrElse(UpdateIncome_PayPeriodKey, "")
+    val pay = FormHelper.convertCurrencyToInt(cache.get(UpdateIncome_TotalSalaryKey))
+    val taxablePay = BigDecimal(FormHelper.convertCurrencyToInt(cache.get(UpdateIncome_TaxablePayKey)))
+    val days = cache.getOrElse(UpdateIncome_OtherInDaysKey, "0").toInt
+    val bonus = BigDecimal(FormHelper.convertCurrencyToInt(cache.get(UpdateIncome_BonusOvertimeAmountKey)))
+
+    val payDetails = PayDetails(
+      paymentFrequency = paymentFrequency,
+      pay = Some(pay),
+      taxablePay = Some(taxablePay),
+      days = Some(days),
+      bonus = Some(bonus),
+      startDate = startDate
+    )
+
+    taiConnector.calculateEstimatedPay(payDetails)
+  }
+
   def cachePaymentForRegularIncome(latestPayment: Option[Payment])(implicit hc: HeaderCarrier): Map[String, String] = {
     latestPayment match {
       case Some(payment) => Map(UpdateIncome_PayToDateKey -> payment.amountYearToDate.toString, UpdateIncome_DateKey -> payment.date.toString)
@@ -86,4 +110,5 @@ trait IncomeService extends JourneyCacheConstants {
 object IncomeService extends IncomeService {
   override val taxAccountService: TaxAccountService = TaxAccountService
   override val employmentService: EmploymentService = EmploymentService
+  override val taiConnector: TaiConnector = TaiConnector
 }
