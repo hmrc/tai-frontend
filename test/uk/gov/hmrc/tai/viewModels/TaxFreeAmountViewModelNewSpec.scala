@@ -19,12 +19,12 @@ package uk.gov.hmrc.tai.viewModels
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.time.TaxYearResolver
-import uk.gov.hmrc.time.TaxYearResolver.{endOfCurrentTaxYear, startOfCurrentTaxYear}
 import uk.gov.hmrc.tai.util.TaiConstants
+import uk.gov.hmrc.time.TaxYearResolver
 
 class TaxFreeAmountViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -154,6 +154,9 @@ class TaxFreeAmountViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication
 
       "has additions rows with correct values" when {
         "there are only additions" in {
+
+          val taxFreeAllowanceLinkUrl = ApplicationConfig.taxFreeAllowanceLinkUrl
+
           val taxComponents = Seq(
             CodingComponent(GiftAidPayments, Some(234), 100, "GiftAidPayments"),
             CodingComponent(GiftsSharesCharity, Some(234), 200, "GiftsSharesCharity"),
@@ -176,17 +179,26 @@ class TaxFreeAmountViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication
                   TaxFreeAmountSummaryRowViewModel(
                     Messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"),
                     "£100",
-                    ChangeLinkViewModel(isDisplayed = false)
+                    ChangeLinkViewModel(
+                      isDisplayed = true,
+                      value =  Messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"),
+                      href = taxFreeAllowanceLinkUrl)
                   ),
                   TaxFreeAmountSummaryRowViewModel(
                     Messages("tai.taxFreeAmount.table.taxComponent.GiftsSharesCharity"),
                     "£200",
-                    ChangeLinkViewModel(isDisplayed = false)
+                    ChangeLinkViewModel(
+                      isDisplayed = true,
+                      value =  Messages("tai.taxFreeAmount.table.taxComponent.GiftsSharesCharity"),
+                      href = taxFreeAllowanceLinkUrl)
                   ),
                   TaxFreeAmountSummaryRowViewModel(
                     Messages("tai.taxFreeAmount.table.taxComponent.PersonalPensionPayments"),
                     "£1,000",
-                    ChangeLinkViewModel(isDisplayed = false)
+                    ChangeLinkViewModel(
+                      isDisplayed = true,
+                      value =  Messages("tai.taxFreeAmount.table.taxComponent.PersonalPensionPayments"),
+                      href = taxFreeAllowanceLinkUrl)
                   ),
                   TaxFreeAmountSummaryRowViewModel(
                     Messages("tai.taxFreeAmount.table.additions.total"),
@@ -337,6 +349,9 @@ class TaxFreeAmountViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication
 
       "correct rows" when {
         "there is a list of all components provided" in {
+
+          val taxFreeAllowanceLinkUrl = ApplicationConfig.taxFreeAllowanceLinkUrl
+
           val taxComponents = Seq(
             CodingComponent(PersonalAllowancePA, Some(234), 7500, "Personal Allowance"),
             CodingComponent(GiftAidPayments, Some(234), 512, "GiftAidPayments"),
@@ -371,12 +386,18 @@ class TaxFreeAmountViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication
               TaxFreeAmountSummaryRowViewModel(
                 Messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"),
                 "£512",
-                ChangeLinkViewModel(isDisplayed = false)
+                ChangeLinkViewModel(
+                  isDisplayed = true,
+                  value =  Messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"),
+                  href = taxFreeAllowanceLinkUrl)
               ),
               TaxFreeAmountSummaryRowViewModel(
                 Messages("tai.taxFreeAmount.table.taxComponent.GiftsSharesCharity"),
                 "£1,000",
-                ChangeLinkViewModel(isDisplayed = false)
+                ChangeLinkViewModel(
+                  isDisplayed = true,
+                  value =  Messages("tai.taxFreeAmount.table.taxComponent.GiftsSharesCharity"),
+                  href = taxFreeAllowanceLinkUrl)
               ),
               TaxFreeAmountSummaryRowViewModel(
                 Messages("tai.taxFreeAmount.table.additions.total"),

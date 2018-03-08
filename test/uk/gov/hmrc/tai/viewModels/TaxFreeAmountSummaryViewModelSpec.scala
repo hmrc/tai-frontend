@@ -55,7 +55,7 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
 
     "build a NOT displayable link" when {
       "coding component is another type" in {
-        val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(HotelAndMealExpenses, Some(1), 1, "HotelAndMealExpenses"), employmentNames, companyCarBenefits)
+        val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(DividendTax, Some(1), 1, "HotelAndMealExpenses"), employmentNames, companyCarBenefits)
         row.link mustBe ChangeLinkViewModel(false)
       }
     }
@@ -103,6 +103,14 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
           val url = controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(234, TaxableExpensesBenefit).url
           row.link mustBe ChangeLinkViewModel(true, Messages("tai.taxFreeAmount.table.taxComponent.TaxableExpensesBenefit"), url)
         }
+      }
+    }
+
+    "build a displayable Allowance LinkViewModel" when {
+      "coding component is of type AllowanceComponentType" in {
+        val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(PersonalPensionPayments, Some(1), 1, "PersonalPensionPayments"), employmentNames, companyCarBenefits)
+        val url = ApplicationConfig.taxFreeAllowanceLinkUrl
+        row.link mustBe ChangeLinkViewModel(true, Messages("tai.taxFreeAmount.table.taxComponent.PersonalPensionPayments"), url)
       }
     }
 
