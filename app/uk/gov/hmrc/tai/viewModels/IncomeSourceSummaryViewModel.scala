@@ -68,22 +68,22 @@ object IncomeSourceSummaryViewModel {
   private def companyBenefitViewModels(empId: Int, benefits: Benefits): Seq[CompanyBenefitViewModel] = {
 
     val ccBenVMs = benefits.companyCarBenefits collect {
-      case ccBen: CompanyCarBenefit if ccBen.employmentSeqNo == empId =>
+      case CompanyCarBenefit(`empId`, grossAmount, _, _) =>
         val changeUrl = controllers.routes.CompanyCarController.redirectCompanyCarSelection(empId).url
-        CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), ccBen.grossAmount, changeUrl)
+        CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), grossAmount, changeUrl)
     }
 
     val medBenVMs = benefits.otherBenefits collect {
-      case benefit: GenericBenefit if benefit.benefitType == MedicalInsurance && benefit.employmentId.isDefined && benefit.employmentId.get == empId =>
+      case GenericBenefit(MedicalInsurance, Some(`empId`), amount) =>
         val changeUrl = controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform).url
-        CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"), benefit.amount, changeUrl)
+        CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"), amount, changeUrl)
     }
 
     val otherBenVMs = benefits.otherBenefits collect {
-      case otherBen: GenericBenefit if otherBen.benefitType != MedicalInsurance && otherBen.employmentId.isDefined && otherBen.employmentId.get == empId =>
-        val benefitName = Messages(s"tai.taxFreeAmount.table.taxComponent.${otherBen.benefitType.toString}")
-        val changeUrl = controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(empId, otherBen.benefitType).url
-        CompanyBenefitViewModel(benefitName, otherBen.amount, changeUrl)
+      case GenericBenefit(benefitType, Some(`empId`), amount) if benefitType != MedicalInsurance =>
+        val benefitName = Messages(s"tai.taxFreeAmount.table.taxComponent.${benefitType.toString}")
+        val changeUrl = controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(empId, benefitType).url
+        CompanyBenefitViewModel(benefitName, amount, changeUrl)
     }
 
     ccBenVMs ++ medBenVMs ++ otherBenVMs
