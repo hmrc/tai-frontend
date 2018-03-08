@@ -30,7 +30,7 @@ class RemoveBankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec{
     behave like pageWithBackButton(controllers.income.bbsi.routes.BbsiController.decision(id))
     behave like pageWithCancelLink(controllers.income.bbsi.routes.BbsiController.accounts())
     behave like pageWithButtonForm("/check-income-tax/income/bank-building-society-savings/1/remove/check-your-answers",
-      messages("tai.submit"))
+      messages("tai.confirmAndSend"))
     behave like pageWithCombinedHeader(messages("tai.bbsi.remove.checkYourAnswers.preHeading"),
       messages("tai.bbsi.remove.checkYourAnswers.title", bankName))
 
