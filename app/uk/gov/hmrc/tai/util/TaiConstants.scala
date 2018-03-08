@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.util
 
 import hmrc.nps2.IabdType._
-import play.api.i18n.Messages
 
 
 trait JourneyCacheConstants {
