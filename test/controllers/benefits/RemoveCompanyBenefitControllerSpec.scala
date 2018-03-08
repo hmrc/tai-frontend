@@ -63,7 +63,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
     "show 'When did you stop getting benefits from company?' page" when {
       "the request has an authorised session" in {
         val SUT = createSUT
-        val cache = Map(EndCompanyBenefit_EmploymentNameKey -> "Test",EndCompanyBenefit_BenefitTypeKey -> "Test")
+        val cache = Map(EndCompanyBenefit_EmploymentNameKey -> "Test",EndCompanyBenefit_BenefitNameKey -> "Test")
 
         when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 

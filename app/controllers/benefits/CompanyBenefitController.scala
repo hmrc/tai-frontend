@@ -20,6 +20,7 @@ import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
 import play.api.Play.current
+import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
@@ -58,11 +59,15 @@ trait CompanyBenefitController extends TaiBaseController
             } yield {
               employment match {
                 case Some(employment) =>
-                  val cache = Map(EndCompanyBenefit_EmploymentNameKey -> employment.name)
+
+                  val formattedBenefitName = (raw"(B|b)enefit(s)?".r replaceAllIn(
+                    Messages(s"tai.taxFreeAmount.table.taxComponent.${currentCache(EndCompanyBenefit_BenefitTypeKey)}"),"")).trim
+                  val cache = Map(EndCompanyBenefit_EmploymentNameKey -> employment.name, EndCompanyBenefit_BenefitNameKey -> formattedBenefitName)
+
                   journeyCacheService.cache(cache).map { _ =>
                     Ok(views.html.benefits.updateOrRemoveCompanyBenefitDecision(
                       UpdateOrRemoveCompanyBenefitDecisionForm.form,
-                      currentCache(EndCompanyBenefit_BenefitTypeKey),
+                      formattedBenefitName,
                       employment.name))
                   }
                 case None => throw new RuntimeException("No employment found")
@@ -81,7 +86,7 @@ trait CompanyBenefitController extends TaiBaseController
               journeyCacheService.currentCache map { currentCache =>
                 BadRequest(views.html.benefits.updateOrRemoveCompanyBenefitDecision(
                   formWithErrors,
-                  currentCache(EndCompanyBenefit_BenefitTypeKey),
+                  currentCache(EndCompanyBenefit_BenefitNameKey),
                   currentCache(EndCompanyBenefit_EmploymentNameKey))
                 )
               }
