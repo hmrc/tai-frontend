@@ -301,13 +301,28 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
           },
           formData => {
             journeyCacheService.cache(incomeService.cacheBonusPayments(formData)) map { _ =>
-              if(formData.bonusPayments.contains("Yes"))
+              if (formData.bonusPayments.contains("Yes"))
                 Redirect(routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage())
               else
-                Redirect(routes.IncomeUpdateCalculatorController.estimatedPayPage)
+                Redirect(routes.IncomeUpdateCalculatorController.estimatedPayPage())
             }
           }
         )
+  }
+
+  def bonusOvertimeAmountPage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        for {
+          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+          moreThisYear <- journeyCacheService.currentValue(UpdateIncome_BonusPaymentsThisYearKey)
+        } yield {
+          if (moreThisYear.contains("Yes"))
+            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), "year", id, employerName = Some(employerName)))
+          else
+            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), moreThisYear.getOrElse(""), id, Some(employerName)))
+        }
   }
 
   def calcUnavailablePage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>

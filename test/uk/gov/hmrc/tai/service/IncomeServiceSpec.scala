@@ -189,7 +189,7 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
     "return cached map data" when {
       "bonusPaymentsForm has both bonusPayment and bonusPaymentsMoreThisYear available" in {
         val sut = createSUT
-        val expectedCached = Map(UpdateIncome_BonusPaymentsKey -> "Yes", UpdateIncome_BonusPaymentsKey -> "No")
+        val expectedCached = Map(UpdateIncome_BonusPaymentsKey -> "Yes", UpdateIncome_BonusPaymentsThisYearKey -> "No")
         sut.cacheBonusPayments(BonusPaymentsForm(Some("Yes"), Some("No"))) mustBe expectedCached
       }
 
