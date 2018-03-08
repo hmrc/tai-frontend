@@ -325,6 +325,37 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
         }
   }
 
+  def handleBonusOvertimeAmount: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        sendActingAttorneyAuditEvent("processBonusOvertimeAmount")
+        journeyCacheService.currentCache.flatMap { cache =>
+          val moreThisYear = cache.get(UpdateIncome_BonusPaymentsThisYearKey)
+          val payPeriod = cache.get(UpdateIncome_PayPeriodKey)
+          BonusOvertimeAmountForm.createForm(Some(BonusOvertimeAmountForm.bonusPaymentsAmountErrorMessage(moreThisYear, payPeriod)),
+            Some(BonusOvertimeAmountForm.notAmountMessage(payPeriod))).bindFromRequest().fold(
+            formWithErrors => {
+              val id = cache(UpdateIncome_IdKey).toInt
+              val employerName = cache.get(UpdateIncome_NameKey)
+              if (moreThisYear.contains("Yes")) {
+                Future.successful(BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, "year", id, employerName)))
+              } else {
+                Future.successful(BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, payPeriod.getOrElse(""), id, employerName)))
+              }
+            },
+            formData => {
+              formData.amount match {
+                case Some(amount) =>
+                  journeyCacheService.cache(UpdateIncome_BonusOvertimeAmountKey, amount) map { _ =>
+                    Redirect(routes.IncomeUpdateCalculatorController.estimatedPayPage())
+                  }
+                case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.estimatedPayPage()))
+              }
+            }
+          )
+        }
+  }
+
   def calcUnavailablePage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>

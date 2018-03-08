@@ -573,6 +573,8 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     val page: IncomeIDPage = (id, name) => getBonusOvertimeAmountPage(Nino(user.getNino), id, name)
     moveToPageWithIncomeID(page)
   }
+
+  //migrated
   def getBonusOvertimeAmountPage(nino: Nino, id: Int, employerName: String)(
     implicit
     request: Request[AnyContent],
@@ -612,11 +614,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     }
   } recoverWith handleErrorResponse("getBonusOvertimeAmountPage", nino)
 
+  //migrated
   def handleBonusOvertimeAmount() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id, name) => processBonusOvertimeAmount(Nino(user.getNino), id, name)
     moveToPageWithIncomeID(page)
   }
 
+  //migrated
   def processBonusOvertimeAmount(nino: Nino, id: Int, employerName: String)(
     implicit request: Request[AnyContent], user: TaiUser, sessionData: SessionData): Future[Result] = {
     sendActingAttorneyAuditEvent("processBonusOvertimeAmount")

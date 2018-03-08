@@ -317,7 +317,7 @@ class IncomeUpdateCalculatorNewControllerSpec extends PlaySpec with FakeTaiPlayA
       }
     }
 
-    "redirect user back to how to payslipDeductions page" when {
+    "redirect user back to how to bonusPayments page" when {
       "user input has error" in {
         val sut = createSut
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayslipDeductionsKey))(any())).thenReturn(Future.successful(None))
@@ -347,6 +347,41 @@ class IncomeUpdateCalculatorNewControllerSpec extends PlaySpec with FakeTaiPlayA
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_BonusPaymentsThisYearKey))(any())).thenReturn(Future.successful(None))
         val result = sut.bonusOvertimeAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() mustBe Messages("tai.bonusPaymentsAmount.period.title")
+      }
+    }
+  }
+
+  "handleBonusOvertimeAmount" must {
+    "redirect the user to estimatedPayPage page" when {
+      "user selected yes" in {
+        val sut = createSut
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(UpdateIncome_IdKey->"1", UpdateIncome_BonusPaymentsThisYearKey -> "Yes")))
+        when(sut.journeyCacheService.cache(Matchers.eq(UpdateIncome_BonusOvertimeAmountKey), Matchers.eq("£3,000"))(any())).thenReturn(Future.successful(Map(""->"")))
+        val result = sut.handleBonusOvertimeAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("amount" -> "£3,000"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.estimatedPayPage().url)
+      }
+    }
+
+    "redirect the user to bonusPaymentAmount page" when {
+      "bonus payment is yes" in {
+        val sut = createSut
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(UpdateIncome_IdKey->"1", UpdateIncome_BonusPaymentsThisYearKey -> "Yes")))
+        val result = sut.handleBonusOvertimeAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody())
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() mustBe Messages("tai.bonusPaymentsAmount.year.title")
+      }
+
+      "bonus payment is none" in {
+        val sut = createSut
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(UpdateIncome_IdKey->"1")))
+        val result = sut.handleBonusOvertimeAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody())
+        status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() mustBe Messages("tai.bonusPaymentsAmount.period.title")
