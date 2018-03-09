@@ -172,8 +172,8 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
       }
     }
 
-    "return redirect to captureClosingInterest page" when {
-      "form is supplied with a date after the current tax year" in {
+    "return error" when {
+      "form is supplied with a future date" in {
 
         val sut = createSUT
 
@@ -191,8 +191,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
         val result = sut.submitCloseDate(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(validFormData))
 
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.income.bbsi.routes.BbsiCloseAccountController.captureClosingInterest(bankAccountId).url
+        status(result) mustBe BAD_REQUEST
       }
     }
 
