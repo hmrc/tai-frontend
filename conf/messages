@@ -252,7 +252,7 @@ tai.employmentConfirmation.heading=Your update about an employment has been rece
 tai.employmentConfirmation.back=Return to your Income Tax Summary
 
 ##Add Employment page
-tai.addEmployment.addEmploymentJourneyLink=Add a missing Employment
+tai.addEmployment.addEmploymentJourneyLink=Add a missing employment
 tai.addEmployment.addNameForm.title=What is the name of the employer you want to add?
 tai.addEmployment.startDateForm.title=When did you start working for {0}?
 tai.addEmployment.startDateForm.customGaTitle=When did you start working for this employer?
