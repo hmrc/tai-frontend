@@ -361,7 +361,7 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
       implicit request =>
         sendActingAttorneyAuditEvent("getEstimatedPayPage")
 
-        for {
+        val result = for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
           income <- incomeService.employmentAmount(Nino(user.getNino), id)
@@ -369,22 +369,25 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
           calculatedPay <- incomeService.calculateEstimatedPay(cache, income.startDate)
           payment <- incomeService.latestPayment(Nino(user.getNino), id)
         } yield {
-          val payYTD: BigDecimal = payment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
+          val payYearToDate: BigDecimal = payment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
           val paymentDate: Option[LocalDate] = payment.map(_.date)
 
-          if (calculatedPay.grossAnnualPay.get > payYTD) {
+          if (calculatedPay.grossAnnualPay.get > payYearToDate) {
             val cache = Map(UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
               UpdateIncome_NetAnnualPayKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
             val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
 
-            journeyCacheService.cache(cache)
-            Ok(views.html.incomes.estimatedPay(calculatedPay.grossAnnualPay, calculatedPay.netAnnualPay, id, isBonusPayment,
-              calculatedPay.annualAmount, calculatedPay.startDate, calculatedPay.grossAnnualPay == calculatedPay.netAnnualPay,
-              employerName = Some(employerName)))
+            journeyCacheService.cache(cache).map { _ =>
+              Ok(views.html.incomes.estimatedPay(calculatedPay.grossAnnualPay, calculatedPay.netAnnualPay, id, isBonusPayment,
+                calculatedPay.annualAmount, calculatedPay.startDate, calculatedPay.grossAnnualPay == calculatedPay.netAnnualPay,
+                employerName = Some(employerName)))
+            }
           } else {
-            Ok(views.html.incomes.incorrectTaxableIncome(payYTD, paymentDate.getOrElse(new LocalDate)))
+            Future.successful(Ok(views.html.incomes.incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate))))
           }
         }
+
+        result.flatMap(identity)
   }
 
   def handleCalculationResult: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>

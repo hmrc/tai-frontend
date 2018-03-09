@@ -35,7 +35,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model._
-import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Employment}
+import uk.gov.hmrc.tai.model.domain.{AnnualAccount, Employment, Monthly, Payment}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
 
@@ -385,6 +385,80 @@ class IncomeUpdateCalculatorNewControllerSpec extends PlaySpec with FakeTaiPlayA
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() mustBe Messages("tai.bonusPaymentsAmount.period.title")
+      }
+    }
+  }
+
+  "estimatedPayPage" must {
+    "display estimatedPay page" when {
+      "payYearToDate is less than gross annual pay"  in {
+        val sut = createSut
+        val employmentAmount = EmploymentAmount("","",1,1,1)
+
+        when(sut.incomeService.employmentAmount(any(), any())(any())).thenReturn(Future.successful(employmentAmount))
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(sut.incomeService.calculateEstimatedPay(any(), any())(any())).thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
+        when(sut.incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+        val result = sut.estimatedPayPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() mustBe Messages("tai.estimatedPay.title")
+      }
+    }
+
+    "display incorrectTaxableIncome page" when {
+      "payYearToDate is greater than gross annual pay"  in {
+        val sut = createSut
+        val employmentAmount = EmploymentAmount("","",1,1,1)
+        val payment = Payment(new LocalDate(), 200, 50, 25, 100, 50, 25, Monthly)
+
+        when(sut.incomeService.employmentAmount(any(), any())(any())).thenReturn(Future.successful(employmentAmount))
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(sut.incomeService.calculateEstimatedPay(any(), any())(any())).thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
+        when(sut.incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(Some(payment)))
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+        val result = sut.estimatedPayPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() mustBe Messages("tai.currentYearSummary.heading")
+
+      }
+    }
+  }
+
+  "handleCalculationResult" must {
+    "display confirm_save_Income page" when {
+      "journey cache returns employment name, net amount and id" in {
+        val sut = createSut
+        val employmentAmount = EmploymentAmount("","",1,1,1)
+
+        when(sut.incomeService.employmentAmount(any(), any())(any())).thenReturn(Future.successful(employmentAmount))
+        when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NetAnnualPayKey))(any())).thenReturn(Future.successful(Some("100")))
+
+        val result = sut.handleCalculationResult()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() mustBe Messages("tai.incomes.confirm.save.title")
+      }
+
+      "journey cache does not returns net amount" in {
+        val sut = createSut
+        val employmentAmount = EmploymentAmount("","",1,1,1)
+
+        when(sut.incomeService.employmentAmount(any(), any())(any())).thenReturn(Future.successful(employmentAmount))
+        when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NetAnnualPayKey))(any())).thenReturn(Future.successful(None))
+
+        val result = sut.handleCalculationResult()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() mustBe Messages("tai.incomes.confirm.save.title")
       }
     }
   }

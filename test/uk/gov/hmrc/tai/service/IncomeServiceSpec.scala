@@ -27,7 +27,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, PayPeriodForm}
-import uk.gov.hmrc.tai.model.EmploymentAmount
+import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
 import uk.gov.hmrc.tai.model.tai.TaxYear
@@ -147,6 +147,34 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
     }
   }
 
+  "calculateEstimatedPay" must {
+    "return calculated pay" when {
+      "cache is empty and start date is not available" in {
+        val sut = createSUT
+        val payDetails = PayDetails("", Some(0), Some(0), Some(0), Some(0), None)
+
+        when(sut.taiConnector.calculateEstimatedPay(payDetails)).thenReturn(Future.successful(CalculatedPay(None, None)))
+        Await.result(sut.calculateEstimatedPay(Map.empty[String, String], None), 5.seconds) mustBe CalculatedPay(None, None)
+      }
+
+      "cache is not empty" in {
+        val sut = createSUT
+
+        val cache = Map(UpdateIncome_PayPeriodKey -> "monthly",
+          UpdateIncome_TotalSalaryKey -> "£100",
+          UpdateIncome_TaxablePayKey -> "£100",
+          UpdateIncome_OtherInDaysKey -> "10",
+          UpdateIncome_BonusOvertimeAmountKey -> "£100"
+        )
+
+        val payDetails = PayDetails("monthly", Some(100), Some(100), Some(10), Some(100), None)
+
+        when(sut.taiConnector.calculateEstimatedPay(payDetails)).thenReturn(Future.successful(CalculatedPay(None, None)))
+        Await.result(sut.calculateEstimatedPay(cache, None), 5.seconds) mustBe CalculatedPay(None, None)
+      }
+    }
+  }
+
   "cachePaymentForRegularIncome" must {
     "return cached map data" when {
       "payment is none" in {
@@ -234,7 +262,7 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
   class SUT extends IncomeService {
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override val employmentService: EmploymentService = mock[EmploymentService]
-    override def taiConnector: TaiConnector = mock[TaiConnector]
+    override val taiConnector: TaiConnector = mock[TaiConnector]
   }
 
 }
