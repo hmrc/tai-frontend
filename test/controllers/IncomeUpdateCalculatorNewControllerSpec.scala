@@ -494,6 +494,7 @@ class IncomeUpdateCalculatorNewControllerSpec extends PlaySpec with FakeTaiPlayA
     override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
     override val employmentService: EmploymentService = mock[EmploymentService]
     override val incomeService: IncomeService = mock[IncomeService]
+    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
 
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)

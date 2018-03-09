@@ -16,24 +16,24 @@
 
 package controllers
 
-import controllers.ServiceChecks.CustomRule
 import controllers.audit.Auditable
-import controllers.auth.{TaiUser, WithAuthorisedForTai, WithAuthorisedForTaiLite}
+import controllers.auth.WithAuthorisedForTaiLite
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.forms._
-import uk.gov.hmrc.tai.model.{EmploymentAmount, IncomeCalculation, SessionData}
-import uk.gov.hmrc.tai.service.TaiService.IncomeIDPage
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants, TaxSummaryHelper}
+import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
 import views.html.incomes.howToUpdate
 
 import scala.concurrent.Future
@@ -52,7 +52,39 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
 
   def activityLoggerService: ActivityLoggerService
 
+  def taxAccountService: TaxAccountService
+
   val incomeService: IncomeService
+
+  def howToUpdatePage(id: Int): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+
+        employmentService.employment(Nino(user.getNino), id) flatMap {
+          case Some(employment) =>
+            for {
+              incomeToEdit <- incomeService.employmentAmount(Nino(user.getNino), id)
+              taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
+              _ <- journeyCacheService.cache(Map(UpdateIncome_NameKey -> employment.name, UpdateIncome_IdKey -> id.toString))
+            } yield {
+              (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, taxCodeIncomeDetails) match {
+                case (true, false, TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) => {
+                  if (incomeService.editableIncomes(taxCodeIncomes).size > 1) {
+                    Ok(howToUpdate(HowToUpdateForm.createForm(), id, Some(employment.name)))
+                  } else {
+                    incomeService.singularIncomeId(taxCodeIncomes) match {
+                      case Some(incomeId) => Ok(views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), incomeId))
+                      case None => Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None))
+                    }
+                  }
+                }
+                case (false, false, _) => Redirect(routes.TaxAccountSummaryController.onPageLoad())
+                case _ => Redirect(routes.IncomeControllerNew.pensionIncome())
+              }
+            }
+          case None => throw new RuntimeException("Not able to find employment")
+        }
+  }
 
   def handleChooseHowToUpdate: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
     implicit taiRoot =>
@@ -423,6 +455,7 @@ object IncomeUpdateCalculatorNewController extends IncomeUpdateCalculatorNewCont
   override val journeyCacheService = JourneyCacheService(UpdateIncome_JourneyKey)
   override val employmentService: EmploymentService = EmploymentService
   override val incomeService: IncomeService = IncomeService
+  override val taxAccountService: TaxAccountService = TaxAccountService
 
   override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
 

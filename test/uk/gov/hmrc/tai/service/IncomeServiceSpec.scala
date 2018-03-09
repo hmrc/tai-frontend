@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiT
 import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, PayPeriodForm}
 import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails}
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
 
@@ -171,6 +171,62 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
 
         when(sut.taiConnector.calculateEstimatedPay(payDetails)).thenReturn(Future.successful(CalculatedPay(None, None)))
         Await.result(sut.calculateEstimatedPay(cache, None), 5.seconds) mustBe CalculatedPay(None, None)
+      }
+    }
+  }
+
+  "editableIncome" must {
+    "return editable incomes" when {
+      "provided with sequence of tax code income" in {
+        val sut = createSUT
+
+        val taxCodeIncomes = Seq(
+          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live),
+          TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOperation, Live),
+          TaxCodeIncome(JobSeekerAllowanceIncome, Some(5), 5555, "employment", "1150L", "employer5", OtherBasisOperation, Live),
+          TaxCodeIncome(JobSeekerAllowanceIncome, Some(6), 6666, "employment", "BR", "employer6", Week1Month1BasisOperation, Live),
+          TaxCodeIncome(OtherIncome, Some(7), 7777, "employment", "1150L", "employer7", OtherBasisOperation, Live),
+          TaxCodeIncome(OtherIncome, Some(8), 8888, "employment", "BR", "employer8", Week1Month1BasisOperation, Live),
+          TaxCodeIncome(EmploymentIncome, Some(9), 1111, "employment", "1150L", "employer9", OtherBasisOperation, PotentiallyCeased),
+          TaxCodeIncome(EmploymentIncome, Some(10), 2222, "employment", "BR", "employer10", Week1Month1BasisOperation, Ceased),
+          TaxCodeIncome(PensionIncome, Some(11), 1111, "employment", "1150L", "employer11", OtherBasisOperation, PotentiallyCeased),
+          TaxCodeIncome(PensionIncome, Some(12), 2222, "employment", "BR", "employer12", Week1Month1BasisOperation, Ceased)
+        )
+
+        val expectedTaxCodeIncomes = Seq(
+          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live),
+          TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOperation, Live),
+          TaxCodeIncome(EmploymentIncome, Some(9), 1111, "employment", "1150L", "employer9", OtherBasisOperation, PotentiallyCeased),
+          TaxCodeIncome(PensionIncome, Some(11), 1111, "employment", "1150L", "employer11", OtherBasisOperation, PotentiallyCeased)
+        )
+
+        sut.editableIncomes(taxCodeIncomes) mustBe expectedTaxCodeIncomes
+      }
+    }
+  }
+
+  "getSingularIncomeId" must {
+    "return singular income employment id" when {
+      "income size is 1" in {
+        val sut = createSUT
+        val taxCodeIncomes = Seq(
+          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live),
+          TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOperation, Ceased)
+        )
+
+        sut.singularIncomeId(taxCodeIncomes) mustBe Some(1)
+      }
+    }
+
+    "return none" when {
+      "income size is not 1" in {
+        val sut = createSUT
+        val taxCodeIncomes = Seq(
+          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live),
+          TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOperation, Live)
+        )
+
+        sut.singularIncomeId(taxCodeIncomes) mustBe None
       }
     }
   }

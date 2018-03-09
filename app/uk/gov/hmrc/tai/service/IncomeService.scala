@@ -22,11 +22,12 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, PayPeriodForm}
-import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, IncomeCalculation, PayDetails}
-import uk.gov.hmrc.tai.model.domain.Payment
+import uk.gov.hmrc.tai.model._
+import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
+import uk.gov.hmrc.tai.model.domain.income.Ceased
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -86,6 +87,22 @@ trait IncomeService extends JourneyCacheConstants {
     )
 
     taiConnector.calculateEstimatedPay(payDetails)
+  }
+
+  def editableIncomes(taxCodeIncomes: Seq[TaxCodeIncome]): Seq[TaxCodeIncome] = {
+    taxCodeIncomes.filter {
+      income => (income.componentType == EmploymentIncome || income.componentType == PensionIncome) &&
+        income.status != Ceased
+    }
+  }
+
+  def singularIncomeId(taxCodeIncomes: Seq[TaxCodeIncome]): Option[Int] = {
+    val incomes = editableIncomes(taxCodeIncomes)
+    if (incomes.size == 1) {
+      incomes.head.employmentId
+    } else {
+      None
+    }
   }
 
   def cachePaymentForRegularIncome(latestPayment: Option[Payment])(implicit hc: HeaderCarrier): Map[String, String] = {
