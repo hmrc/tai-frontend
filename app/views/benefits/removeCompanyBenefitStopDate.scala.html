@@ -21,7 +21,7 @@
 @import includes.forms.{radioGroupYesNo,inputRadioGroupNewStyling, submit}
 @import uk.gov.hmrc.time.TaxYearResolver
 
-@(stopDateForm: Form[Option[String]],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+@(stopDateForm: Form[Option[String]],benefitType:String, empName:String, referer:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
 
 @gaEventActionString = @{"Remove Company Benefits Stop Date"}
 @startOfCurrentTaxYear = @{TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}
@@ -66,5 +66,5 @@ gaCustomTitle = None){
 
     }
 
-    @cancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad)
+    @cancelLink(Call("GET", referer))
 }

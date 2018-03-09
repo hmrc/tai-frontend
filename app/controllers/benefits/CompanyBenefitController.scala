@@ -21,7 +21,7 @@ import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Call}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.PartialRetriever
@@ -74,9 +74,16 @@ trait CompanyBenefitController extends TaiBaseController
             } yield {
               employment match {
                 case Some(employment) =>
+                  val referer = request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
                   val viewModel = CompanyBenefitDecisionViewModel(
-                    currentCache(EndCompanyBenefit_BenefitTypeKey),employment.name, UpdateOrRemoveCompanyBenefitDecisionForm.form)
-                  val cache = Map(EndCompanyBenefit_EmploymentNameKey -> employment.name, EndCompanyBenefit_BenefitNameKey -> viewModel.benefitName)
+                    currentCache(EndCompanyBenefit_BenefitTypeKey),
+                    employment.name,
+                    UpdateOrRemoveCompanyBenefitDecisionForm.form,
+                    referer
+                  )
+                  val cache = Map(EndCompanyBenefit_EmploymentNameKey -> employment.name,
+                                  EndCompanyBenefit_BenefitNameKey -> viewModel.benefitName,
+                                  EndCompanyBenefit_RefererKey -> viewModel.referer)
 
                   journeyCacheService.cache(cache).map { _ =>
                     Ok(views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel))
@@ -95,8 +102,12 @@ trait CompanyBenefitController extends TaiBaseController
           UpdateOrRemoveCompanyBenefitDecisionForm.form.bindFromRequest.fold(
             formWithErrors => {
               journeyCacheService.currentCache map { currentCache =>
-                  val viewModel = CompanyBenefitDecisionViewModel(currentCache(EndCompanyBenefit_BenefitTypeKey),
-                    currentCache(EndCompanyBenefit_EmploymentNameKey),formWithErrors)
+                  val viewModel = CompanyBenefitDecisionViewModel(
+                    currentCache(EndCompanyBenefit_BenefitTypeKey),
+                    currentCache(EndCompanyBenefit_EmploymentNameKey),
+                    formWithErrors,
+                    currentCache(EndCompanyBenefit_RefererKey)
+                  )
                   BadRequest(views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel))
               }
             },

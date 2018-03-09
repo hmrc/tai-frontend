@@ -27,11 +27,10 @@ class CompanyBenefitDecisionVMSpec extends UnitSpec with FakeTaiPlayApplication
   "CompanyBenefitDecisionViewModel" should {
     "show the word benefit once when the word benefit is part of the benefit name " in {
 
-      val employerName = "company name"
       val benefitType = "NonCashBenefit"
       val formattedBenefitName = "Non-cash"
 
-      val viewModel = CompanyBenefitDecisionViewModel(benefitType,employerName,UpdateOrRemoveCompanyBenefitDecisionForm.form)
+      val viewModel = CompanyBenefitDecisionViewModel(benefitType,employerName,UpdateOrRemoveCompanyBenefitDecisionForm.form,referer)
 
       viewModel.benefitName shouldBe formattedBenefitName
 
@@ -39,15 +38,17 @@ class CompanyBenefitDecisionVMSpec extends UnitSpec with FakeTaiPlayApplication
 
     "show the word benefit once when the word benefits is part of the benefit name " in {
 
-      val employerName = "company name"
       val benefitType = "ServiceBenefit"
       val formattedBenefitName = "Service"
 
-      val viewModel = CompanyBenefitDecisionViewModel(benefitType,employerName,UpdateOrRemoveCompanyBenefitDecisionForm.form)
+      val viewModel = CompanyBenefitDecisionViewModel(benefitType,employerName,UpdateOrRemoveCompanyBenefitDecisionForm.form,referer)
 
       viewModel.benefitName shouldBe formattedBenefitName
 
     }
+
+    lazy val referer = "incomeDetailsUrl"
+    lazy val employerName = "company name"
 
   }
 }

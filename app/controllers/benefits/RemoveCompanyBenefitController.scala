@@ -69,7 +69,8 @@ trait RemoveCompanyBenefitController extends TaiBaseController
                   Ok(views.html.benefits.removeCompanyBenefitStopDate(
                     RemoveCompanyBenefitStopDateForm.form,
                     currentCache(EndCompanyBenefit_BenefitNameKey),
-                    currentCache(EndCompanyBenefit_EmploymentNameKey)))
+                    currentCache(EndCompanyBenefit_EmploymentNameKey),
+                    currentCache(EndCompanyBenefit_RefererKey)))
                 }
           }
   }
@@ -80,9 +81,9 @@ trait RemoveCompanyBenefitController extends TaiBaseController
         implicit request =>
           RemoveCompanyBenefitStopDateForm.form.bindFromRequest.fold(
             formWithErrors => {
-              journeyCacheService.mandatoryValues(EndCompanyBenefit_BenefitNameKey,EndCompanyBenefit_EmploymentNameKey) map  {
+              journeyCacheService.mandatoryValues(EndCompanyBenefit_BenefitNameKey,EndCompanyBenefit_EmploymentNameKey,EndCompanyBenefit_RefererKey) map  {
                 mandatoryValues =>
-                  BadRequest(views.html.benefits.removeCompanyBenefitStopDate(formWithErrors, mandatoryValues(0), mandatoryValues(1)))
+                  BadRequest(views.html.benefits.removeCompanyBenefitStopDate(formWithErrors, mandatoryValues(0), mandatoryValues(1), mandatoryValues(2)))
               }
 
             },

@@ -63,7 +63,9 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
     "show 'When did you stop getting benefits from company?' page" when {
       "the request has an authorised session" in {
         val SUT = createSUT
-        val cache = Map(EndCompanyBenefit_EmploymentNameKey -> "Test",EndCompanyBenefit_BenefitNameKey -> "Test")
+        val cache = Map(EndCompanyBenefit_EmploymentNameKey -> "Test",
+                        EndCompanyBenefit_BenefitNameKey -> "Test",
+                        EndCompanyBenefit_RefererKey -> "Test")
 
         when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
@@ -116,7 +118,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
       "the form submission is having blank value" in {
         val SUT = createSUT
 
-        when(SUT.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("EmployerA", "Expenses")))
+        when(SUT.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("EmployerA", "Expenses","Url")))
         val result = SUT.submitStopDate(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(StopDateChoice -> ""))
 
         status(result) mustBe BAD_REQUEST

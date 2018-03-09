@@ -62,5 +62,5 @@ gaCustomTitle = None){
 
     }
 
-    @cancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad)
+    @cancelLink(Call("GET",viewModel.referer))
 }

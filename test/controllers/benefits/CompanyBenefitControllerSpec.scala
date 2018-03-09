@@ -79,9 +79,12 @@ class CompanyBenefitControllerSpec extends PlaySpec
 
         val empName = "company name"
         val benefitType = "Expenses"
+        val referer = "/check-income-tax/income-summary"
 
         val SUT = createSUT
-        val cache = Map(EndCompanyBenefit_EmploymentIdKey -> "1",EndCompanyBenefit_BenefitTypeKey -> benefitType)
+        val cache = Map(EndCompanyBenefit_EmploymentIdKey -> "1",
+                        EndCompanyBenefit_BenefitTypeKey -> benefitType,
+                        EndCompanyBenefit_RefererKey -> referer)
 
         when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(SUT.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -96,7 +99,9 @@ class CompanyBenefitControllerSpec extends PlaySpec
         verify(SUT.employmentService, times(1)).employment(any(),any())(any())
         verify(SUT.journeyCacheService, times(1)).currentCache(any())
         verify(SUT.journeyCacheService, times(1)).cache(
-          mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> empName, EndCompanyBenefit_BenefitNameKey -> benefitType)))(any())
+          mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> empName,
+                    EndCompanyBenefit_BenefitNameKey -> benefitType,
+                    EndCompanyBenefit_RefererKey -> referer)))(any())
       }
 
     }
@@ -152,7 +157,9 @@ class CompanyBenefitControllerSpec extends PlaySpec
     "return Bad Request" when {
       "the form submission is having blank value" in {
         val SUT = createSUT
-        val cache = Map(EndCompanyBenefit_EmploymentNameKey -> "Employer A",EndCompanyBenefit_BenefitTypeKey -> "Expenses")
+        val cache = Map(EndCompanyBenefit_EmploymentNameKey -> "Employer A",
+                        EndCompanyBenefit_BenefitTypeKey -> "Expenses",
+                        EndCompanyBenefit_RefererKey -> "/check-income-tax/income-summary")
 
         when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         val result = SUT.submitDecision(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> ""))

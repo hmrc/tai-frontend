@@ -16,19 +16,25 @@
 
 package uk.gov.hmrc.tai.viewModels.benefit
 
-import play.api.i18n.Messages
 import play.api.Play.current
 import play.api.data.Form
+import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 
-class CompanyBenefitDecisionViewModel(val benefitName:String, val employerName:String, val decisionForm: Form[Option[String]])
+class CompanyBenefitDecisionViewModel(val benefitName:String,
+                                      val employerName:String,
+                                      val decisionForm: Form[Option[String]],
+                                      val referer:String)
 
 object CompanyBenefitDecisionViewModel{
 
-  def apply(benefitType:String,employerName:String, decisionForm: Form[Option[String]]): CompanyBenefitDecisionViewModel = {
+  def apply(benefitType:String,
+            employerName:String,
+            decisionForm: Form[Option[String]],
+            referer:String): CompanyBenefitDecisionViewModel = {
     val formattedBenefitName = (raw"(B|b)enefit(s)?".r replaceAllIn(
       Messages(s"tai.taxFreeAmount.table.taxComponent.${benefitType}"),"")).trim
-    new CompanyBenefitDecisionViewModel(formattedBenefitName,employerName,decisionForm)
+    new CompanyBenefitDecisionViewModel(formattedBenefitName,employerName,decisionForm,referer)
   }
 
 }
