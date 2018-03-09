@@ -106,6 +106,23 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
       }
     }
 
+    "build a displayable Car Fuel Benefit LinkViewModel" which {
+      "has the employment id added to it" when {
+        "tax component CarFuelBenefit and employment id is present" in {
+          val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(CarFuelBenefit, Some(234), 11500, "CarFuelBenefit"), employmentNames, companyCarBenefits)
+          val url = s"${ApplicationConfig.updateCompanyCarDetailsUrl}/234"
+          row.link mustBe ChangeLinkViewModel(true, Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"), url)
+        }
+      }
+      "has zero as employment id" when {
+        "tax component CarFuelBenefit and employment id is NOT present" in {
+          val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(CarFuelBenefit, None, 11500, "CarFuelBenefit"), employmentNames, companyCarBenefits)
+          val url = s"${ApplicationConfig.updateCompanyCarDetailsUrl}/0"
+          row.link mustBe ChangeLinkViewModel(true, Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"), url)
+        }
+      }
+    }
+
     "build a displayable Allowance LinkViewModel" when {
       "coding component is of type AllowanceComponentType" in {
         val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(PersonalPensionPayments, Some(1), 1, "PersonalPensionPayments"), employmentNames, companyCarBenefits)
