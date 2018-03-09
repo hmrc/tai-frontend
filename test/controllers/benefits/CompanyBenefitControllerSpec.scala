@@ -99,59 +99,6 @@ class CompanyBenefitControllerSpec extends PlaySpec
           mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> empName, EndCompanyBenefit_BenefitNameKey -> benefitType)))(any())
       }
 
-
-      "show the word benefit once when benefit is part of the benefit name " in {
-
-        val empName = "company name"
-        val benefitType = "NonCashBenefit"
-        val formattedBenefitName = "Non-cash"
-
-        val SUT = createSUT
-        val cache = Map(EndCompanyBenefit_EmploymentIdKey -> "1",EndCompanyBenefit_BenefitTypeKey -> benefitType)
-
-        when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-        when(SUT.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(SUT.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
-
-        val result = SUT.decision(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.benefits.updateOrRemove.decision.title")
-
-        doc must haveHeadingWithText(Messages("tai.benefits.updateOrRemove.decision.heading",formattedBenefitName, empName))
-
-        verify(SUT.journeyCacheService, times(1)).cache(
-          mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> empName,EndCompanyBenefit_BenefitNameKey -> formattedBenefitName)))(any())
-
-      }
-
-      "show the word benefit once when benefits is part of the benefit name " in {
-
-        val empName = "company name"
-        val benefitType = "ServiceBenefit"
-        val formattedBenefitName = "Service"
-
-        val SUT = createSUT
-        val cache = Map(EndCompanyBenefit_EmploymentIdKey -> "1",EndCompanyBenefit_BenefitTypeKey -> benefitType)
-
-        when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-        when(SUT.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(SUT.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
-
-        val result = SUT.decision(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.benefits.updateOrRemove.decision.title")
-
-        doc must haveHeadingWithText(Messages("tai.benefits.updateOrRemove.decision.heading",formattedBenefitName, empName))
-
-        verify(SUT.journeyCacheService, times(1)).cache(
-          mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> empName,EndCompanyBenefit_BenefitNameKey -> formattedBenefitName)))(any())
-
-      }
-
     }
 
     "throw exception" when {
@@ -205,7 +152,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
     "return Bad Request" when {
       "the form submission is having blank value" in {
         val SUT = createSUT
-        val cache = Map(EndCompanyBenefit_EmploymentNameKey -> "Employer A",EndCompanyBenefit_BenefitNameKey -> "Expenses")
+        val cache = Map(EndCompanyBenefit_EmploymentNameKey -> "Employer A",EndCompanyBenefit_BenefitTypeKey -> "Expenses")
 
         when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         val result = SUT.submitDecision(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> ""))
