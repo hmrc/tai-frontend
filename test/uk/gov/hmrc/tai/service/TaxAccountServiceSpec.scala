@@ -83,7 +83,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
 
   }
 
-  val taxAccountSummary = TaxAccountSummary(111,222, 333.23)
+  val taxAccountSummary = TaxAccountSummary(111,222, 333.23, 444.44, 111.11)
 
   val taxCodeIncomes = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOperation, Live),

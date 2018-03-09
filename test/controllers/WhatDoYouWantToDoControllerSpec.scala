@@ -449,7 +449,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
   private val nino = new Generator(new Random).nextNino
 
-  private val taxAccountSummary = TaxAccountSummary(111,222, 333)
+  private val taxAccountSummary = TaxAccountSummary(111,222, 333, 444, 111)
 
   private def createSUT(sessionData: Option[SessionData] = None,
                         sessionDataFailure: Option[Throwable] = None,
