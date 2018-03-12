@@ -109,7 +109,7 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
           formData => {
             formData.howToUpdate match {
               case Some("incomeCalculator") => Future.successful(Redirect(routes.IncomeUpdateCalculatorNewController.workingHoursPage()))
-              case _ => Future.successful(Redirect(routes.IncomeController.viewIncomeForEdit()))
+              case _ => Future.successful(Redirect(routes.IncomeControllerNew.viewIncomeForEdit()))
             }
           }
         )
