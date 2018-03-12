@@ -188,7 +188,8 @@ trait RemoveCompanyBenefitController extends TaiBaseController
                 EndCompanyBenefit_EmploymentNameKey,
                 EndCompanyBenefit_BenefitNameKey,
                 EndCompanyBenefit_BenefitStopDateKey,
-                EndCompanyBenefit_TelephoneQuestionKey),
+                EndCompanyBenefit_TelephoneQuestionKey,
+                EndCompanyBenefit_RefererKey),
               Seq(
                 EndCompanyBenefit_BenefitValueKey,
                 EndCompanyBenefit_TelephoneNumberKey
@@ -200,7 +201,8 @@ trait RemoveCompanyBenefitController extends TaiBaseController
                   mandatorySeq(2),
                   optionalSeq(0),
                   mandatorySeq(3),
-                  optionalSeq(1))))
+                  optionalSeq(1),
+                  mandatorySeq(4))))
               }
             }
           }

@@ -341,7 +341,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
       val SUT = createSUT
       when(SUT.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
         Future.successful((
-          Seq[String]("TestCompany","AwesomeType","After 6th","Yes"),
+          Seq[String]("TestCompany","AwesomeType","After 6th","Yes","Url"),
           Seq[Option[String]](Some("10000"),Some("123456789"))
         ))
       )

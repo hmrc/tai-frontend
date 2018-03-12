@@ -28,7 +28,8 @@ case class RemoveCompanyBenefitCheckYourAnswersViewModel(tableHeader: String,
                                                          stopDate: String,
                                                          valueOfBenefit: Option[String],
                                                          contactByPhone: String,
-                                                         phoneNumber: Option[String]) extends FormValuesConstants {
+                                                         phoneNumber: Option[String],
+                                                         referer: String) extends FormValuesConstants {
 
   def journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
 
@@ -89,9 +90,10 @@ object RemoveCompanyBenefitCheckYourAnswersViewModel extends ViewModelHelper wit
             stopDate: String,
             valueOfBenefit: Option[String],
             contactByPhone: String,
-            phoneNumber: Option[String]): RemoveCompanyBenefitCheckYourAnswersViewModel = {
+            phoneNumber: Option[String],
+            referer: String): RemoveCompanyBenefitCheckYourAnswersViewModel = {
     val tableHeader = Messages("tai.benefits.ended.tableHeader", employerName, benefitType)
-    new RemoveCompanyBenefitCheckYourAnswersViewModel(tableHeader, stopDate, valueOfBenefit, contactByPhone, phoneNumber)
+    new RemoveCompanyBenefitCheckYourAnswersViewModel(tableHeader, stopDate, valueOfBenefit, contactByPhone, phoneNumber, referer)
   }
 
 }
