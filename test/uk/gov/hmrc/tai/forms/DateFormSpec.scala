@@ -106,9 +106,6 @@ class DateFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport {
       }
 
       "date is in future" in {
-//        val validatedFormForValidDate = form.bind(validFutureDate)
-//
-//        validatedFormForValidDate.errors must contain(FormError(DayTag, List(Messages("tai.date.error.future"))))
 
         val validatorErrorMessage = Messages("tai.date.error.future")
 
