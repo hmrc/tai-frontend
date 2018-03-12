@@ -108,10 +108,10 @@ trait RemoveCompanyBenefitController extends TaiBaseController
       implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-              journeyCacheService.mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey) flatMap  {
+              journeyCacheService.mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey,EndCompanyBenefit_RefererKey) flatMap  {
                 mandartoryValues =>
                   Future.successful(Ok(views.html.benefits.
-                    removeBenefitTotalValue(BenefitViewModel(mandartoryValues(0), mandartoryValues(1)), CompanyBenefitTotalValueForm.form)
+                    removeBenefitTotalValue(BenefitViewModel(mandartoryValues(0), mandartoryValues(1), mandartoryValues(2)), CompanyBenefitTotalValueForm.form)
                   ))
               }
             }
@@ -123,10 +123,10 @@ trait RemoveCompanyBenefitController extends TaiBaseController
         implicit request =>
           CompanyBenefitTotalValueForm.form.bindFromRequest.fold(
             formWithErrors => {
-              journeyCacheService.mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey) flatMap  {
+              journeyCacheService.mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey,EndCompanyBenefit_RefererKey) flatMap  {
                 mandatoryValues =>
                   Future.successful(BadRequest(views.html.benefits.
-                    removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), formWithErrors)
+                    removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1), mandatoryValues(2)), formWithErrors)
                   ))
               }
             },

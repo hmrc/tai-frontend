@@ -18,5 +18,6 @@ package uk.gov.hmrc.tai.viewModels.benefit
 
 case class BenefitViewModel(
                              employerName: String,
-                             benefitName: String
+                             benefitName: String,
+                             referer:String
                            )

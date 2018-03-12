@@ -17,6 +17,7 @@
 package views.html.benefits
 
 import play.api.i18n.Messages
+import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.benefits.CompanyBenefitTotalValueForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -24,19 +25,13 @@ import uk.gov.hmrc.tai.viewModels.benefit.BenefitViewModel
 
 class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
 
-  val employerName = "HMRC"
-  val benefitName = "Other Benefit"
-
-
-  override def view: Html = views.html.benefits.removeBenefitTotalValue(BenefitViewModel(employerName, benefitName), CompanyBenefitTotalValueForm.form)
-
   "removeBenefitTotalValue" must {
     behave like pageWithTitle(Messages("tai.remove.company.benefit.total.value.title"))
     behave like pageWithCombinedHeader(Messages("tai.benefits.ended.journey.preHeader"),
       Messages("tai.remove.company.benefit.total.value.heading", benefitName, employerName))
 
     behave like pageWithContinueButtonForm("/check-income-tax/remove-company-benefit/total-value-of-benefit")
-    behave like pageWithCancelLink(controllers.routes.TaxFreeAmountControllerNew.taxFreeAmount())
+    behave like pageWithCancelLink(Call("GET",referer))
     behave like pageWithBackButton(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
 
     "contain static paragraph with text" in {
@@ -66,5 +61,11 @@ class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
     }
 
   }
+
+  private lazy val employerName = "HMRC"
+  private lazy val benefitName = "Other Benefit"
+  private lazy val referer = "url"
+
+  override def view: Html = views.html.benefits.removeBenefitTotalValue(BenefitViewModel(employerName, benefitName, referer), CompanyBenefitTotalValueForm.form)
 
 }

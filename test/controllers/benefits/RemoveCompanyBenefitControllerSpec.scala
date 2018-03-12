@@ -134,7 +134,8 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val SUT = createSUT
         val employmentName = "HMRC"
         val benefitName = "Employer Provided Services"
-        when(SUT.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(employmentName, benefitName)))
+        val referer = "Url"
+        when(SUT.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(employmentName, benefitName, referer)))
         val result = SUT.totalValueOfBenefit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
@@ -194,10 +195,11 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val SUT = createSUT
         val employmentName = "HMRC"
         val benefitName = "Employer Provided Services"
+        val referer = "Url"
 
         val removeCompanyBenefitFormData = ("totalValue", "")
 
-        when(SUT.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(employmentName, benefitName)))
+        when(SUT.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(employmentName, benefitName, referer)))
         when(SUT.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.submitBenefitValue()(RequestBuilder.buildFakeRequestWithAuth("POST")
@@ -212,10 +214,11 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val SUT = createSUT
         val employmentName = "HMRC"
         val benefitName = "Employer Provided Services"
+        val referer = "Url"
 
         val removeCompanyBenefitFormData = ("totalValue", "1234Â£$%@")
 
-        when(SUT.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(employmentName, benefitName)))
+        when(SUT.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(employmentName, benefitName, referer)))
         when(SUT.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.submitBenefitValue()(RequestBuilder.buildFakeRequestWithAuth("POST")
