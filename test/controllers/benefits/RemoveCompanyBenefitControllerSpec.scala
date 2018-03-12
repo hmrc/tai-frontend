@@ -238,7 +238,8 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
           EndCompanyBenefit_EmploymentIdKey -> "1",
           EndCompanyBenefit_EmploymentNameKey -> employment.name,
           EndCompanyBenefit_BenefitTypeKey -> "amazing",
-          EndCompanyBenefit_BenefitStopDateKey -> "before6April2017"
+          EndCompanyBenefit_BenefitStopDateKey -> "before6April2017",
+          EndCompanyBenefit_RefererKey -> "Test"
         )
         when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         val result = SUT.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -248,7 +249,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         doc.title() mustBe Messages("tai.canWeContactByPhone.title")
         doc.getElementsByClass("heading-secondary").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
         doc.getElementById("backLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url
-        doc.getElementById("cancelLink").attr("href") mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+        doc.getElementById("cancelLink").attr("href") mustBe cache(EndCompanyBenefit_RefererKey)
       }
     }
 
@@ -260,7 +261,8 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
           EndCompanyBenefit_EmploymentNameKey -> employment.name,
           EndCompanyBenefit_BenefitTypeKey -> "amazing",
           EndCompanyBenefit_BenefitStopDateKey -> "before6April2017",
-          EndCompanyBenefit_BenefitValueKey -> "12345"
+          EndCompanyBenefit_BenefitValueKey -> "12345",
+          EndCompanyBenefit_RefererKey -> "Test"
         )
         when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         val result = SUT.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -269,7 +271,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         doc.title() mustBe Messages("tai.canWeContactByPhone.title")
         doc.getElementsByClass("heading-secondary").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
         doc.getElementById("backLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit.url
-        doc.getElementById("cancelLink").attr("href") mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+        doc.getElementById("cancelLink").attr("href") mustBe cache(EndCompanyBenefit_RefererKey)
       }
     }
   }
@@ -302,7 +304,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
     "return BadRequest" when {
       "there is a form validation error (standard form validation)" in {
         val SUT = createSUT
-        when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(EndCompanyBenefit_RefererKey -> "Test")))
         val result = SUT.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           YesNoChoice -> YesValue, YesNoTextEntry -> ""))
 
@@ -313,7 +315,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
       "there is a form validation error (additional, controller specific constraint)" in {
         val SUT = createSUT
-        when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(EndCompanyBenefit_RefererKey -> "Test")))
 
         val tooFewCharsResult = SUT.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))

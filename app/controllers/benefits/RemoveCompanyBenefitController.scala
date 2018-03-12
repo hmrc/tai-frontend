@@ -157,6 +157,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
           YesNoTextEntryForm.form(
             Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
             Messages("tai.canWeContactByPhone.telephone.empty"),
+
             Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
             formWithErrors => {
               journeyCacheService.currentCache map { currentCache =>
@@ -257,7 +258,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
       Messages("tai.canWeContactByPhone.title"),
       backUrl,
       controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url,
-      controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      cache(EndCompanyBenefit_RefererKey)
     )
   }
 
