@@ -493,7 +493,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
 
-    val closeBankAccountDateForm = DateForm(Nil, "bankName")
+    val closeBankAccountDateForm = DateForm(Seq(futureDateValidation), "bankName")
 
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
