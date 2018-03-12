@@ -160,7 +160,6 @@ GET         /print-your-income/:year/:empId                                     
 
 ## Income calculator URIs
 GET         /update-income/choose-how-to-update-income/:empId                          controllers.IncomeUpdateCalculatorNewController.howToUpdatePage(empId: Int)
-GET         /update-income/how-to-update-income                                        controllers.IncomeUpdateCalculatorNewController.chooseHowToUpdatePage
 POST        /update-income/how-to-update-income                                        controllers.IncomeUpdateCalculatorNewController.handleChooseHowToUpdate
 
 GET         /update-income/working-hours                                               controllers.IncomeUpdateCalculatorNewController.workingHoursPage

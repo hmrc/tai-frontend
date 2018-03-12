@@ -75,20 +75,6 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
         }
   }
 
-  def chooseHowToUpdatePage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
-    implicit taiRoot =>
-      implicit request =>
-        sendActingAttorneyAuditEvent("getWorkingHours")
-        for {
-          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-          incomeToEdit <- incomeService.employmentAmount(Nino(user.getNino), id)
-          taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
-        } yield {
-          processHowToUpdatePage(id, employerName, incomeToEdit, taxCodeIncomeDetails)
-        }
-  }
-
   def processHowToUpdatePage(id: Int, employmentName: String, incomeToEdit: EmploymentAmount,
                              taxCodeIncomeDetails: TaiResponse)(implicit request: Request[AnyContent], user: TaiUser) = {
     (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, taxCodeIncomeDetails) match {
@@ -436,7 +422,7 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
                 employerName = Some(employerName)))
             }
           } else {
-            Future.successful(Ok(views.html.incomes.incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate))))
+            Future.successful(Ok(views.html.incomes.incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), id)))
           }
         }
 

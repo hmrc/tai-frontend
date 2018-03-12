@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class EditIncomeSpec extends TaiViewSpec with MockitoSugar {
 
   "Edit income view" should {
-    behave like pageWithBackButton(controllers.routes.IncomeUpdateCalculatorNewController.chooseHowToUpdatePage())
+    behave like pageWithBackButton(controllers.routes.IncomeUpdateCalculatorNewController.howToUpdatePage(empId))
     behave like pageWithCombinedHeader(
       messages("tai.incomes.edit.preHeading"),
       messages("tai.incomes.edit.heading"))
