@@ -36,7 +36,7 @@ class WhatDoYouWantToTellUsSpec extends TaiViewSpec {
       Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", employerName))
     behave like pageWithContinueButtonForm("/check-income-tax/update-employment/what-do-you-want-to-tell-us/1")
     behave like pageWithCancelLink(routes.IncomeSourceSummaryController.onPageLoad(1))
-    behave like pageWithBackButton(controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(1))
+    behave like pageWithBackLink
 
   }
 }

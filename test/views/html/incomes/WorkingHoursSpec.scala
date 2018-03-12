@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class WorkingHoursSpec extends TaiViewSpec {
 
   "How to update view" should {
-    behave like pageWithBackButton(controllers.routes.IncomeUpdateCalculatorNewController.chooseHowToUpdatePage())
+    behave like pageWithBackLink
     behave like pageWithCombinedHeader(
       messages("tai.workingHours.preHeading"),
       messages("tai.workingHours.title"))

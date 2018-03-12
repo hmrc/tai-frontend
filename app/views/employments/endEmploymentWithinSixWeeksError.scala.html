@@ -25,11 +25,12 @@
 @gaEventActionString = @{"You can not update this employment yet"}
 
 @header = @{
-ptaHeader(
-backLocation = None,
-backLinkGaEventAction = None,
-mainHeadingText = Messages("tai.endEmploymentWithinSixWeeksError.heading", model.earliestUpdateDateInHtml),
-preHeadingText = Messages("tai.endEmployment.preHeadingText"))}
+    ptaHeader(
+        displayBackLink = false,
+        backLinkGaEventAction = None,
+        mainHeadingText = Messages("tai.endEmploymentWithinSixWeeksError.heading", model.earliestUpdateDateInHtml),
+        preHeadingText = Messages("tai.endEmployment.preHeadingText"))
+}
 
 @main(
     title = Messages("tai.endEmploymentWithinSixWeeksError.heading", model.earliestUpdateDateInHtml),

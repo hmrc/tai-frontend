@@ -28,7 +28,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
     ptaHeader(
         mainHeadingText = Messages("tai.paye.heading"),
         preHeadingText = Messages("tai.paye.lastTaxYear.preHeading"),
-        backLocation = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString)
     )}
 

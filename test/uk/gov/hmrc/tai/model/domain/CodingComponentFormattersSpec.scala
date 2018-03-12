@@ -25,22 +25,24 @@ import uk.gov.hmrc.tai.model.domain.income._
 class CodingComponentFormattersSpec extends PlaySpec with CodingComponentFormatters {
 
   "codingComponentReads" must {
-    "read an allowance correctly" when {
-      "all mandatory fields are provided and iabd type is an allowance" in {
+    "read a coding component correctly" when {
+      "all fields are provided and iabd type is an allowance" in {
         val json = Json.obj(
           "componentType" -> "EmployerProvidedServices",
           "employmentId" -> 12,
           "amount" -> 12345,
           "description" -> "Some Description",
-          "iabdCategory" -> "Benefit")
+          "iabdCategory" -> "Benefit",
+          "inputAmount" -> BigDecimal("125000.02"))
         json.as[CodingComponent](codingComponentReads) mustBe CodingComponent(
           componentType = EmployerProvidedServices,
           employmentId = Some(12),
           amount = 12345,
-          description = "Some Description")
+          description = "Some Description",
+          inputAmount = Some(BigDecimal("125000.02")))
       }
 
-      "no employment sequence number is provided" in {
+      "only mandatory fields are provided and iabd type is an benefit" in {
         val json = Json.obj(
           "componentType" -> "EmployerProvidedServices",
           "amount" -> 12345,

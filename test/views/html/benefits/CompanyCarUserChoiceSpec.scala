@@ -33,7 +33,7 @@ class CompanyCarUserChoiceSpec extends TaiViewSpec {
       messages("tai.changeCompanyCar.sub.heading"),
       messages("tai.changeCompanyCar.heading", viewModel.carModel, viewModel.carProvider))
 
-    behave like pageWithBackButton(routes.TaxFreeAmountControllerNew.taxFreeAmount())
+    behave like pageWithBackLink
 
     behave like pageWithContinueButtonForm("/check-income-tax/end-company-car/decision")
 
@@ -63,7 +63,7 @@ class CompanyCarUserChoiceSpec extends TaiViewSpec {
 
       emptyFormDoc.select(".error-summary--show > h2").text mustBe Messages("tai.income.error.form.summary")
 
-      val errorAnchor = emptyFormDoc.select(".error-summary--show > ul > li > a").get(0)
+      val errorAnchor = emptyFormDoc.select(".error-summary--show li a").get(0)
       errorAnchor.attributes.get("href") mustBe "#userChoice"
       errorAnchor.attributes.get("id") mustBe "userChoice-error-summary"
       errorAnchor.text mustBe Messages("tai.changeCompanyCar.error.selectOption")
@@ -73,8 +73,8 @@ class CompanyCarUserChoiceSpec extends TaiViewSpec {
 
       val emptyFormDoc = doc(views.html.benefits.updateCompanyCar(emptyForm, viewModel))
 
-      emptyFormDoc.select(".error-notification").text mustBe Messages("tai.changeCompanyCar.error.selectOption")
-      emptyFormDoc.select("form > div").hasClass("form-field--error") mustBe true
+      emptyFormDoc.select(".error-message").text mustBe Messages("tai.changeCompanyCar.error.selectOption")
+      emptyFormDoc.select("form > div").hasClass("form-group-error") mustBe true
     }
   }
 

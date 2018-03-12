@@ -25,7 +25,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(workingHoursForm),
-        backLocation = Some(controllers.routes.IncomeUpdateCalculatorNewController.chooseHowToUpdatePage()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.workingHours.title"),
         preHeadingText = Messages("tai.workingHours.preHeading"))}
@@ -39,7 +39,7 @@
     employerName = employerName,
     gaCustomTitle = None
 ){
-    <section class="section flush--bottom soft--top">
+    <div class="section flush--bottom soft--top">
         @form(action=controllers.routes.IncomeUpdateCalculatorNewController.handleWorkingHours){
                 @{inputRadioGroupNewStyling(
                     field=workingHoursForm("workingHours"),
@@ -48,10 +48,10 @@
                     legendHint=None,
                     ('_groupDivClass, "form-group" ),
                     ('_legend, Messages("tai.workingHours.legend") ),
-                    ('_legendClass, "visuallyhidden"),
+                    ('_legendSpanClass, "visually-hidden"),
                     ('_fieldsetAttributes, "id=workingHours")
                 )}
             <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
         }
-    </section>
+    </div>
 }

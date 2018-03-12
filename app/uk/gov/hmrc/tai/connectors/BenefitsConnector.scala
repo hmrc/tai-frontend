@@ -31,7 +31,7 @@ trait BenefitsConnector {
   def httpHandler: HttpHandler
 
   def benefitsUrl(nino: String, taxYear: Int): String = s"$serviceUrl/tai/$nino/tax-account/$taxYear/benefits"
-  def endedCompanyBenefitUrl (nino: String, employmentId: Int) = s"/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
+  def endedCompanyBenefitUrl (nino: String, employmentId: Int) = s"$serviceUrl/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
 
   def benefits(nino: Nino, taxYear: Int)(implicit hc: HeaderCarrier): Future[Benefits] = {
       httpHandler.getFromApi(benefitsUrl(nino.nino, taxYear)) map (

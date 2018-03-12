@@ -26,7 +26,7 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle("main heading")
     behave like pageWithCombinedHeader(messages("tai.taxCode.preHeader"), "main heading")
-    behave like pageWithBackButton(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    behave like pageWithBackLink
 
     "display a summary section" which {
       "contains a tax free amount explanation" in {

@@ -241,6 +241,7 @@ trait JsoupMatchers {
   def haveErrorLinkWithText (expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "div.error-summary>ul>li>a")
   def haveClassWithText(expectedText: String, className: String) = new CssSelectorWithTextMatcher(expectedText, s".$className")
 
+  def haveBackLink = new CssSelector("a[id=backLink]")
   def haveBackButtonWithUrl(expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, "backLink")
   def haveCancelLinkWithUrl(expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, "cancelLink")
   def haveLinkWithUrlWithID(id: String, expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, id)

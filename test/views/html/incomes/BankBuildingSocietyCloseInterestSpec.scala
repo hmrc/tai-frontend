@@ -30,7 +30,7 @@ class BankBuildingSocietyCloseInterestSpec extends TaiViewSpec with FormValuesCo
   "Add bank account closing interest page" must {
     behave like pageWithTitle(messages("tai.closeBankAccount.closingInterest.title"))
     behave like pageWithHeader(messages("tai.closeBankAccount.closingInterest.heading", TaxYearResolver.currentTaxYear.toString))
-    behave like pageWithBackButton(controllers.income.bbsi.routes.BbsiCloseAccountController.captureCloseDate(id))
+    behave like pageWithBackLink
     behave like pageWithContinueButtonForm(s"/check-income-tax/income/bank-building-society-savings/$id/close/interest")
     behave like pageWithYesNoRadioButton(BankAccountClosingInterestForm.ClosingInterestChoice+"-yes", BankAccountClosingInterestForm.ClosingInterestChoice+"-no")
     behave like pageWithCancelLink(controllers.income.bbsi.routes.BbsiController.accounts())
@@ -50,7 +50,7 @@ class BankBuildingSocietyCloseInterestSpec extends TaiViewSpec with FormValuesCo
 
         def view: Html = views.html.incomes.bbsi.close.bank_building_society_closing_interest(id, formWithErrors)
 
-        val errorMessage = doc(view).select(".error-notification").text
+        val errorMessage = doc(view).select(".error-message").text
         errorMessage mustBe closingInterestChoiceError
       }
     }

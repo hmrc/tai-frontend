@@ -59,7 +59,7 @@ class WhatDoYouWantToDoSpec extends TaiViewSpec {
     }
 
     "have 'I want to check:' legend hint" in {
-      doc must haveElementAtPathWithText("legend div[id=radioGroupLegendHint", Messages("tai.whatDoYouWantToDo.iWantToCheck"))
+      doc must haveElementAtPathWithText("legend span[id=radioGroupLegendHint", Messages("tai.whatDoYouWantToDo.iWantToCheck"))
     }
 
     "have two radio buttons with relevant text" in {
@@ -70,11 +70,11 @@ class WhatDoYouWantToDoSpec extends TaiViewSpec {
     }
 
     "have error message with the radio buttons" in {
-      doc must haveElementAtPathWithText("form fieldset span.error-notification", Messages("tai.whatDoYouWantToDo.error.selectOption"))
+      doc must haveElementAtPathWithText("form .error-message", Messages("tai.whatDoYouWantToDo.error.selectOption"))
     }
 
     "have 'continue' button" in {
-      val continueButton = doc(view).select("form > p > input").attr("type", "submit").attr("value")
+      val continueButton = doc(view).select("form input.button").attr("type", "submit").attr("value")
 
       continueButton mustBe Messages("tai.WhatDoYouWantToDo.submit")
     }

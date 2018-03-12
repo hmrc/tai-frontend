@@ -25,7 +25,7 @@ class BankBuildingSocietyAccountsSpec extends TaiViewSpec {
 
   "bbsi accounts view" should {
     behave like pageWithTitle(messages("tai.bbsi.accountDetails.heading"))
-    behave like pageWithBackButton(controllers.income.bbsi.routes.BbsiController.untaxedInterestDetails())
+    behave like pageWithBackLink
     behave like haveReturnToSummaryButtonWithUrl(routes.TaxAccountSummaryController.onPageLoad())
 
     "display heading" in {

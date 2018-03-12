@@ -27,7 +27,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(updateRemoveForm),
-        backLocation = Some(routes.IncomeSourceSummaryController.onPageLoad(empId)),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.employment.decision.heading", employmentName),
         preHeadingText = Messages("tai.employment.decision.preHeading")
@@ -51,7 +51,7 @@
                 legendHint=None,
                 ('_groupDivClass, "form-group" ),
                 ('_fieldsetAttributes, "id=employmentDecision" ),
-                ('_legendClass, "visuallyhidden"),
+                ('_legendSpanClass, "visually-hidden"),
                 ('_radioOption1Attributes, Html("""data-journey-val="Yes"""") ),
                 ('_radioOption2Attributes, Html("""data-journey-val="No"""") )
             )}
