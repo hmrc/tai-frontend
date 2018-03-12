@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar {
 
   "Bonus payments view" should {
-    behave like pageWithBackButton(controllers.routes.IncomeUpdateCalculatorController.payslipDeductionsPage())
+    behave like pageWithBackLink
     behave like pageWithCombinedHeader(
       messages("tai.bonusPayments.preHeading"),
       messages("tai.bonusPayments.title"))

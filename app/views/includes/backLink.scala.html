@@ -14,8 +14,7 @@
  * limitations under the License.
  *@
 
-@(url: Call,
-  gaEventAction: Option[String] = None)(implicit m: Messages)
+@(gaEventAction: Option[String] = None)(implicit m: Messages)
 
 @import uk.gov.hmrc.urls.Link
 
@@ -26,10 +25,12 @@
     }
 }
 
+<noscript><style> .displayIfJsEnabled { display: none } </style></noscript>
+
 <p class="text">@Link.toInternalPage(
     id=Some("backLink"),
     value=Some(Messages("tai.back-link.upper")),
-    url = url.toString,
-    cssClasses=Some("link-back"),
+    url = "#",
+    cssClasses=Some("displayIfJsEnabled link-back"),
     dataAttributes = stagePromptAttributes
 ).toHtml</p>

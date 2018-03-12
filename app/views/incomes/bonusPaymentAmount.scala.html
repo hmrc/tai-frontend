@@ -41,7 +41,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(bonusOvertimeAmountForm),
-        backLocation = Some(controllers.routes.IncomeUpdateCalculatorController.bonusPaymentsPage()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = pageTitle,
         preHeadingText = Messages("tai.bonusPaymentsAmount.preHeading"))}

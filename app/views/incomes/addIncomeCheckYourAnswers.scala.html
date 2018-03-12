@@ -29,7 +29,7 @@
 
 @header = @{
     ptaHeader(
-        backLocation =Some(new Call("GET", viewModel.backLinkUrl)),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.checkYourAnswers"),
         preHeadingText = viewModel.preHeading) }

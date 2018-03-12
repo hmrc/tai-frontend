@@ -26,13 +26,13 @@
 @gaEventActionString = @{"What do you want to tell us?"}
 
 @header = @{
-ptaHeader(
-formForErrorSummary = Some(updateIncomeDetailsForm),
-backLocation = Some(controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(viewModel.givenTaxYear)),
-backLinkGaEventAction = Some(gaEventActionString),
-mainHeadingText = Messages("tai.income.previousYears.details.heading", viewModel.formattedTaxYear),
-preHeadingText = Messages("tai.income.previousYears.details.preHeading")
-)
+ ptaHeader(
+  formForErrorSummary = Some(updateIncomeDetailsForm),
+  displayBackLink = true,
+  backLinkGaEventAction = Some(gaEventActionString),
+  mainHeadingText = Messages("tai.income.previousYears.details.heading", viewModel.formattedTaxYear),
+  preHeadingText = Messages("tai.income.previousYears.details.preHeading")
+ )
 }
 
 @main(

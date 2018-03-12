@@ -38,7 +38,7 @@ class UpdateIncomeDetailsSpec extends TaiViewSpec{
       Messages("tai.income.previousYears.details.heading",formattedTaxYear))
     behave like pageWithContinueButtonForm("/check-income-tax/update-income-details/what-do-you-want-to-tell-us")
     behave like pageWithCancelLink(controllers.routes.PayeControllerHistoric.payePage(givenTaxYear))
-    behave like pageWithBackButton(controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(givenTaxYear))
+    behave like pageWithBackLink
 
   }
 

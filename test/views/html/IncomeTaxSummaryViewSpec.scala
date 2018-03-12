@@ -33,7 +33,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       preHeaderText ="Firstname Surname",
       mainHeaderText = "main heading")
 
-    behave like pageWithBackButton(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage)
+    behave like pageWithBackLink
 
     "display iForms status message when an iForm has not been fully processed" in{
       doc must haveElementWithId("isAnyFormInProgressBanner")

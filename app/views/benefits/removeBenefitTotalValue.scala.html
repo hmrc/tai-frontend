@@ -31,7 +31,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(companyBenefitTotalValueForm),
-        backLocation = Some(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.remove.company.benefit.total.value.heading", vm.benefitName, vm.employerName),
         preHeadingText = Messages("tai.benefits.ended.journey.preHeader")

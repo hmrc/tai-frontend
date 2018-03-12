@@ -29,7 +29,7 @@
 
 @header = @{
     ptaHeader(
-        backLocation = Some(controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.incomeTax.calculated.heading"),
         preHeadingText = taxYearRangeString,

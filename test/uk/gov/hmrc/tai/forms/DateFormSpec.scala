@@ -105,17 +105,18 @@ class DateFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport {
         validatedFormForInvalidDate.errors must contain(FormError(DayTag, List(Messages("tai.date.error.invalid"))))
       }
 
-      "a custom validator is supplied which returns false during validation" in {
+      "date is in future" in {
 
-        val validatorErrorMessage = "test error message"
+        val validatorErrorMessage = Messages("tai.date.error.future")
 
-        val customValidator = ((x: LocalDate) => { false}, validatorErrorMessage)
+        val customValidator = ((x: LocalDate) => !x.isAfter(LocalDate.now()), validatorErrorMessage)
 
         val dateFormWithCustomValidator = DateForm(Seq(customValidator), blankDateErrorMessage)
 
-        val validatedFormForValidDate = dateFormWithCustomValidator.form.bind(validDate)
+        val validatedFormForValidDate = dateFormWithCustomValidator.form.bind(validFutureDate)
 
         validatedFormForValidDate.errors must be(List(FormError(DayTag, validatorErrorMessage)))
+
       }
     }
   }
@@ -130,6 +131,7 @@ class DateFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport {
   private val YearTag: String = dateForm.DateFormYear
 
   private val validDate = Json.obj(DayTag -> 10, MonthTag -> 4, YearTag -> 2015)
+  private val validFutureDate = Json.obj(DayTag -> 10, MonthTag -> 4, YearTag -> (LocalDate.now().getYear + 1))
   private val validLeapYearDate = Json.obj(DayTag -> 29, MonthTag -> 2, YearTag -> 2016)
 
   private val invalidDay = Json.obj(DayTag -> "Bar", MonthTag -> 4, YearTag -> 2015)

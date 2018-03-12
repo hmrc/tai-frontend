@@ -29,8 +29,9 @@
 @header = @{
 ptaHeader(
 formForErrorSummary = Some(viewModel.decisionForm),
-backLocation=Some(controllers.routes.TaxAccountSummaryController.onPageLoad),
 mainHeadingText = Messages("tai.benefits.updateOrRemove.decision.heading",viewModel.benefitName,viewModel.employerName),
+displayBackLink = true,
+mainHeadingText = Messages("tai.benefits.updateOrRemove.decision.heading",benefitType,employerName),
 preHeadingText = Messages("tai.benefits.updateOrRemove.journey.preHeader"))
 }
 

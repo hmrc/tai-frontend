@@ -52,7 +52,8 @@ case class EmploymentEndDateForm(employerName: String) {
         ).getOrElse(None)
 
         inputDate match {
-          case Some(date) => Right(date)
+          case Some(date) if date.isAfter(LocalDate.now()) => Left(Seq(FormError(key = EmploymentFormDay, message = Messages("tai.date.error.future"))))
+          case Some(d) => Right(d)
           case _ => Left(Seq(FormError(key = EmploymentFormDay, message = Messages("tai.date.error.invalid"))))
         }
       } else { Left(errors) }
