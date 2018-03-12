@@ -37,7 +37,7 @@ class AddEmploymentErrorPageSpec extends TaiViewSpec {
       doc must haveParagraphWithText(messages("tai.addEmployment.employmentErrorPage.para2"))
     }
 
-    behave like pageWithBackButton(controllers.employments.routes.AddEmploymentController.receivedFirstPay())
+    behave like pageWithBackLink
   }
 
   override def view: Html = views.html.employments.add_employment_error_page("fake employer")

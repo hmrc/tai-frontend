@@ -73,9 +73,9 @@ trait TaiViewSpec extends PlaySpec
     }
   }
 
-  def pageWithBackButton(previousPage: => Call): Unit = {
-    "have a back button with url" in {
-      doc must haveBackButtonWithUrl(previousPage.url.toString)
+  def pageWithBackLink: Unit = {
+    "have a back link" in {
+      doc must haveBackLink
     }
   }
 

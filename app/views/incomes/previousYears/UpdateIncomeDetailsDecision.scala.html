@@ -30,7 +30,7 @@
 @header = @{
     ptaHeader(
     formForErrorSummary = Some(decisionForm),
-    backLocation=Some(controllers.routes.PayeControllerHistoric.payePage(taxYear)),
+    displayBackLink = true,
     mainHeadingText = Messages("tai.income.previousYears.decision.header",TaxPeriodLabelService.taxPeriodLabel(taxYear.year)),
     preHeadingText = Messages("tai.income.previousYears.journey.preHeader"))
 }
