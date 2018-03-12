@@ -131,7 +131,7 @@ class IncomeUpdateCalculatorNewControllerSpec extends PlaySpec with FakeTaiPlayA
         val sut = createSut
         val result = sut.handleChooseHowToUpdate()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("howToUpdate" -> "income"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.IncomeController.viewIncomeForEdit().url)
+        redirectLocation(result) mustBe Some(routes.IncomeControllerNew.viewIncomeForEdit().url)
       }
     }
 
