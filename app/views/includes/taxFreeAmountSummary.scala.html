@@ -40,7 +40,7 @@
                         @if(row.label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
                             @Link.toInternalPage(
                                 id=Some("estimatedTaxOwedLink"),
-                                url=controllers.routes.CurrentYearPageController.potentialUnderpaymentPage.url,
+                                url=controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url,
                                 value=Some(Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")),
                                 cssClasses=Some("link-list__item"),
                                 dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}"))).toHtml
