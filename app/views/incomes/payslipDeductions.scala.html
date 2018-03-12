@@ -27,7 +27,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(payslipDeductionsForm),
-        backLocation = Some(controllers.routes.IncomeUpdateCalculatorController.payslipAmountPage()),
+        backLocation = Some(controllers.routes.IncomeUpdateCalculatorNewController.payslipAmountPage()),
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.payslipDeductions.title"),
         preHeadingText = Messages("tai.payslipDeductions.preHeading"))}
@@ -46,7 +46,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         <p class="text">@Messages("tai.payslipDeductions.tellUs")</p>
         <p class="text">@Messages("tai.payslipDeductions.dontPayTax")</p>
 
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayslipDeductions){
+        @form(action=controllers.routes.IncomeUpdateCalculatorNewController.handlePayslipDeductions){
 
             @{inputRadioGroupNewStyling(
                 field=payslipDeductionsForm("payslipDeductions"),

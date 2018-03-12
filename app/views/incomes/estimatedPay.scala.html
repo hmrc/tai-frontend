@@ -28,8 +28,8 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @import uk.gov.hmrc.play.views.helpers._
 
  @backLinkLocation=@{
-     if(bonusOvertime){controllers.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage()}
-     else{controllers.routes.IncomeUpdateCalculatorController.bonusPaymentsPage()}
+     if(bonusOvertime){controllers.routes.IncomeUpdateCalculatorNewController.bonusOvertimeAmountPage()}
+     else{controllers.routes.IncomeUpdateCalculatorNewController.bonusPaymentsPage()}
  }
 
  @gaEventActionString = @{"Your estimated pay for the year"}
@@ -81,6 +81,6 @@ gaCustomTitle = None
 
 
     <section class="text section flush--bottom">
-            <p>@Link.toInternalPage(url=routes.IncomeUpdateCalculatorController.handleCalculationResult.toString,cssClasses=Some("button"),value=Some(Messages("tai.estimatedPay.checkTaxEstimate"))).toHtml</p>
+            <p>@Link.toInternalPage(url=routes.IncomeUpdateCalculatorNewController.handleCalculationResult.toString,cssClasses=Some("button"),value=Some(Messages("tai.estimatedPay.checkTaxEstimate"))).toHtml</p>
     </section>
 }

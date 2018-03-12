@@ -27,7 +27,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(payPeriodForm),
-        backLocation = Some(controllers.routes.IncomeUpdateCalculatorController.workingHoursPage()),
+        backLocation = Some(controllers.routes.IncomeUpdateCalculatorNewController.workingHoursPage()),
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.payPeriod.title"),
         preHeadingText = Messages("tai.payPeriod.preHeading"))}
@@ -59,7 +59,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     gaCustomTitle = None
 ){
     <section class="section flush--bottom">
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
+        @form(action=controllers.routes.IncomeUpdateCalculatorNewController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
             @{inputRadioGroupNewStyling(
                 field=payPeriodForm("payPeriod"),
                 radioOptions=Seq(("monthly" -> Messages("tai.payPeriod.monthly")), ("weekly" -> Messages("tai.payPeriod.weekly")),("fortnightly" -> Messages("tai.payPeriod.fortnightly")),("other" -> Messages("tai.payPeriod.other"))),

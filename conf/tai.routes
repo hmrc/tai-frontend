@@ -159,36 +159,36 @@ GET         /your-income-calculation/:year/:empId                               
 GET         /print-your-income/:year/:empId                                            controllers.YourIncomeCalculationController.printYourIncomeCalculation(year: uk.gov.hmrc.tai.model.tai.TaxYear,empId: Int)
 
 ## Income calculator URIs
-GET         /update-income/choose-how-to-update-income/:empId                          controllers.IncomeUpdateCalculatorController.howToUpdatePage(empId: Int)
-GET         /update-income/how-to-update-income                                        controllers.IncomeUpdateCalculatorController.chooseHowToUpdatePage
-POST        /update-income/how-to-update-income                                        controllers.IncomeUpdateCalculatorController.handleChooseHowToUpdate
+GET         /update-income/choose-how-to-update-income/:empId                          controllers.IncomeUpdateCalculatorNewController.howToUpdatePage(empId: Int)
+GET         /update-income/how-to-update-income                                        controllers.IncomeUpdateCalculatorNewController.chooseHowToUpdatePage
+POST        /update-income/how-to-update-income                                        controllers.IncomeUpdateCalculatorNewController.handleChooseHowToUpdate
 
-GET         /update-income/working-hours                                               controllers.IncomeUpdateCalculatorController.workingHoursPage
-POST        /update-income/working-hours                                               controllers.IncomeUpdateCalculatorController.handleWorkingHours
+GET         /update-income/working-hours                                               controllers.IncomeUpdateCalculatorNewController.workingHoursPage
+POST        /update-income/working-hours                                               controllers.IncomeUpdateCalculatorNewController.handleWorkingHours
 
-GET         /update-income/pay-period                                                  controllers.IncomeUpdateCalculatorController.payPeriodPage
-POST        /update-income/pay-period                                                  controllers.IncomeUpdateCalculatorController.handlePayPeriod
+GET         /update-income/pay-period                                                  controllers.IncomeUpdateCalculatorNewController.payPeriodPage
+POST        /update-income/pay-period                                                  controllers.IncomeUpdateCalculatorNewController.handlePayPeriod
 
-GET         /update-income/payslip-amount                                              controllers.IncomeUpdateCalculatorController.payslipAmountPage
-POST        /update-income/payslip-amount                                              controllers.IncomeUpdateCalculatorController.handlePayslipAmount
+GET         /update-income/payslip-amount                                              controllers.IncomeUpdateCalculatorNewController.payslipAmountPage
+POST        /update-income/payslip-amount                                              controllers.IncomeUpdateCalculatorNewController.handlePayslipAmount
 
-GET         /update-income/payslip-deductions                                          controllers.IncomeUpdateCalculatorController.payslipDeductionsPage
-POST        /update-income/payslip-deductions                                          controllers.IncomeUpdateCalculatorController.handlePayslipDeductions
+GET         /update-income/payslip-deductions                                          controllers.IncomeUpdateCalculatorNewController.payslipDeductionsPage
+POST        /update-income/payslip-deductions                                          controllers.IncomeUpdateCalculatorNewController.handlePayslipDeductions
 
-GET         /update-income/taxable-payslip-amount                                      controllers.IncomeUpdateCalculatorController.taxablePayslipAmountPage
-POST        /update-income/taxable-payslip-amount                                      controllers.IncomeUpdateCalculatorController.handleTaxablePayslipAmount
+GET         /update-income/taxable-payslip-amount                                      controllers.IncomeUpdateCalculatorNewController.taxablePayslipAmountPage
+POST        /update-income/taxable-payslip-amount                                      controllers.IncomeUpdateCalculatorNewController.handleTaxablePayslipAmount
 
-GET         /update-income/bonus-payments                                              controllers.IncomeUpdateCalculatorController.bonusPaymentsPage
-POST        /update-income/bonus-payments                                              controllers.IncomeUpdateCalculatorController.handleBonusPayments
+GET         /update-income/bonus-payments                                              controllers.IncomeUpdateCalculatorNewController.bonusPaymentsPage
+POST        /update-income/bonus-payments                                              controllers.IncomeUpdateCalculatorNewController.handleBonusPayments
 
-GET         /update-income/bonus-overtime-amount                                       controllers.IncomeUpdateCalculatorController.bonusOvertimeAmountPage
-POST        /update-income/bonus-overtime-amount                                       controllers.IncomeUpdateCalculatorController.handleBonusOvertimeAmount
+GET         /update-income/bonus-overtime-amount                                       controllers.IncomeUpdateCalculatorNewController.bonusOvertimeAmountPage
+POST        /update-income/bonus-overtime-amount                                       controllers.IncomeUpdateCalculatorNewController.handleBonusOvertimeAmount
 
-GET         /update-income/estimated-pay                                               controllers.IncomeUpdateCalculatorController.estimatedPayPage
+GET         /update-income/estimated-pay                                               controllers.IncomeUpdateCalculatorNewController.estimatedPayPage
 
-GET         /update-income/confirm-estimated-pay                                       controllers.IncomeUpdateCalculatorController.handleCalculationResult
+GET         /update-income/confirm-estimated-pay                                       controllers.IncomeUpdateCalculatorNewController.handleCalculationResult
 
-GET         /update-income/calculation-unavailable                                     controllers.IncomeUpdateCalculatorController.calcUnavailablePage
+GET         /update-income/calculation-unavailable                                     controllers.IncomeUpdateCalculatorNewController.calcUnavailablePage
 
 
 ## Regular Income URIs

@@ -65,7 +65,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         doc must haveSpanWithText("£" + model.estimatedTaxableIncome)
         doc must haveLinkWithText(messages("tai.income.details.updateTaxableIncome.update"))
         doc must haveLinkWithUrlWithID("updateIncome",
-          controllers.routes.IncomeUpdateCalculatorController.howToUpdatePage(model.empId).url)
+          controllers.routes.IncomeUpdateCalculatorNewController.howToUpdatePage(model.empId).url)
       }
 
       "income source is pension" in {
@@ -74,7 +74,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         pensionDoc must haveSpanWithText("£" + pensionModel.estimatedTaxableIncome)
         pensionDoc must haveLinkWithText(messages("tai.income.details.updateTaxableIncome.update"))
         pensionDoc must haveLinkWithUrlWithID("updateIncome",
-          controllers.routes.IncomeUpdateCalculatorController.howToUpdatePage(model.empId).url)
+          controllers.routes.IncomeUpdateCalculatorNewController.howToUpdatePage(model.empId).url)
       }
     }
 

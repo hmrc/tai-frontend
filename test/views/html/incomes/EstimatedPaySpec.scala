@@ -23,14 +23,14 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class EstimatedPaySpec extends TaiViewSpec with MockitoSugar {
 
   "Estimated pay view without bonusOverTime" should {
-    behave like pageWithBackButton(controllers.routes.IncomeUpdateCalculatorController.bonusPaymentsPage())
+    behave like pageWithBackButton(controllers.routes.IncomeUpdateCalculatorNewController.bonusPaymentsPage())
     behave like pageWithCombinedHeader(
       messages("tai.estimatedPay.preHeading"),
       messages("tai.estimatedPay.title"))
   }
   "Estimated pay view with bonusOverTime" should {
     val testView: Html = views.html.incomes.estimatedPay(None,None,id,true,None,None,false,None)
-    doc(testView) must haveBackButtonWithUrl(controllers.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().toString)
+    doc(testView) must haveBackButtonWithUrl(controllers.routes.IncomeUpdateCalculatorNewController.bonusOvertimeAmountPage().toString)
   }
 
   val id = 1

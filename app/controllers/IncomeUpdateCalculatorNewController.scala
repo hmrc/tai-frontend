@@ -17,19 +17,21 @@
 package controllers
 
 import controllers.audit.Auditable
-import controllers.auth.WithAuthorisedForTaiLite
+import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
+import uk.gov.hmrc.tai.model.EmploymentAmount
+import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service._
@@ -67,23 +69,42 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
               taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
               _ <- journeyCacheService.cache(Map(UpdateIncome_NameKey -> employment.name, UpdateIncome_IdKey -> id.toString))
             } yield {
-              (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, taxCodeIncomeDetails) match {
-                case (true, false, TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) => {
-                  if (incomeService.editableIncomes(taxCodeIncomes).size > 1) {
-                    Ok(howToUpdate(HowToUpdateForm.createForm(), id, Some(employment.name)))
-                  } else {
-                    incomeService.singularIncomeId(taxCodeIncomes) match {
-                      case Some(incomeId) => Ok(views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), incomeId))
-                      case None => Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None))
-                    }
-                  }
-                }
-                case (false, false, _) => Redirect(routes.TaxAccountSummaryController.onPageLoad())
-                case _ => Redirect(routes.IncomeControllerNew.pensionIncome())
-              }
+              processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails)
             }
           case None => throw new RuntimeException("Not able to find employment")
         }
+  }
+
+  def chooseHowToUpdatePage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        sendActingAttorneyAuditEvent("getWorkingHours")
+        for {
+          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+          incomeToEdit <- incomeService.employmentAmount(Nino(user.getNino), id)
+          taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
+        } yield {
+          processHowToUpdatePage(id, employerName, incomeToEdit, taxCodeIncomeDetails)
+        }
+  }
+
+  def processHowToUpdatePage(id: Int, employmentName: String, incomeToEdit: EmploymentAmount,
+                             taxCodeIncomeDetails: TaiResponse)(implicit request: Request[AnyContent], user: TaiUser) = {
+    (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, taxCodeIncomeDetails) match {
+      case (true, false, TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) => {
+        if (incomeService.editableIncomes(taxCodeIncomes).size > 1) {
+          Ok(views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), id, Some(employmentName)))
+        } else {
+          incomeService.singularIncomeId(taxCodeIncomes) match {
+            case Some(incomeId) => Ok(views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), incomeId))
+            case None => Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None))
+          }
+        }
+      }
+      case (false, false, _) => Redirect(routes.TaxAccountSummaryController.onPageLoad())
+      case _ => Redirect(routes.IncomeControllerNew.pensionIncome())
+    }
   }
 
   def handleChooseHowToUpdate: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
@@ -101,7 +122,7 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
           },
           formData => {
             formData.howToUpdate match {
-              case Some("incomeCalculator") => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.workingHoursPage()))
+              case Some("incomeCalculator") => Future.successful(Redirect(routes.IncomeUpdateCalculatorNewController.workingHoursPage()))
               case _ => Future.successful(Redirect(routes.IncomeController.viewIncomeForEdit()))
             }
           }
@@ -135,8 +156,8 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
           },
           formData => {
             formData.workingHours match {
-              case Some("same") => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.payPeriodPage()))
-              case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.calcUnavailablePage()))
+              case Some("same") => Future.successful(Redirect(routes.IncomeUpdateCalculatorNewController.payPeriodPage()))
+              case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorNewController.calcUnavailablePage()))
             }
           }
         )
@@ -172,7 +193,7 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
           },
           formData => {
             journeyCacheService.cache(incomeService.cachePayPeriod(formData)).map { _ =>
-              Redirect(routes.IncomeUpdateCalculatorController.payslipAmountPage())
+              Redirect(routes.IncomeUpdateCalculatorNewController.payslipAmountPage())
             }
           }
         )
@@ -208,9 +229,9 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
           formData => {
             formData match {
               case PayslipForm(Some(value)) => journeyCacheService.cache(UpdateIncome_TotalSalaryKey, value).map { _ =>
-                Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage())
+                Redirect(routes.IncomeUpdateCalculatorNewController.payslipDeductionsPage())
               }
-              case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage()))
+              case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorNewController.payslipDeductionsPage()))
             }
           }
         )
@@ -249,9 +270,9 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
             formData => {
               formData.taxablePay match {
                 case Some(taxablePay) => journeyCacheService.cache(UpdateIncome_TaxablePayKey, taxablePay) map { _ =>
-                  Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage())
+                  Redirect(routes.IncomeUpdateCalculatorNewController.bonusPaymentsPage())
                 }
-                case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage()))
+                case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorNewController.bonusPaymentsPage()))
               }
             }
           )
@@ -288,12 +309,12 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
             formData.payslipDeductions match {
               case Some(payslipDeductions) if payslipDeductions == "Yes" =>
                 journeyCacheService.cache(UpdateIncome_PayslipDeductionsKey, payslipDeductions).map { _ =>
-                  Redirect(routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage())
+                  Redirect(routes.IncomeUpdateCalculatorNewController.taxablePayslipAmountPage())
                 }
               case Some(payslipDeductions) => journeyCacheService.cache(UpdateIncome_PayslipDeductionsKey, payslipDeductions) map { _ =>
-                Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage())
+                Redirect(routes.IncomeUpdateCalculatorNewController.bonusPaymentsPage())
               }
-              case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage()))
+              case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorNewController.bonusPaymentsPage()))
             }
           }
         )
@@ -334,9 +355,9 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
           formData => {
             journeyCacheService.cache(incomeService.cacheBonusPayments(formData)) map { _ =>
               if (formData.bonusPayments.contains("Yes"))
-                Redirect(routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage())
+                Redirect(routes.IncomeUpdateCalculatorNewController.bonusOvertimeAmountPage())
               else
-                Redirect(routes.IncomeUpdateCalculatorController.estimatedPayPage())
+                Redirect(routes.IncomeUpdateCalculatorNewController.estimatedPayPage())
             }
           }
         )
@@ -379,9 +400,9 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
               formData.amount match {
                 case Some(amount) =>
                   journeyCacheService.cache(UpdateIncome_BonusOvertimeAmountKey, amount) map { _ =>
-                    Redirect(routes.IncomeUpdateCalculatorController.estimatedPayPage())
+                    Redirect(routes.IncomeUpdateCalculatorNewController.estimatedPayPage())
                   }
-                case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.estimatedPayPage()))
+                case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorNewController.estimatedPayPage()))
               }
             }
           )

@@ -132,7 +132,7 @@
 
                         <p id="pensionUpdateLink" class="text">@Html(Messages(
                               "tai.income.calculation.update.pension",
-                              Link.toInternalPage(url=routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage.toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
+                              Link.toInternalPage(url=routes.IncomeUpdateCalculatorNewController.chooseHowToUpdatePage.toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
                               ))</p>
                           <p class="text">@Html(Messages(
                               "tai.yourTaxableIncome.otherDetailsWrongPensionIform",
@@ -143,7 +143,7 @@
 
                         <p id="regularUpdateLink" class="text">@Html(Messages(
                               "tai.income.calculation.update.regular",
-                              Link.toInternalPage(url=routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage.toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
+                              Link.toInternalPage(url=routes.IncomeUpdateCalculatorNewController.chooseHowToUpdatePage.toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
                               ))</p>
                           }
                         }
@@ -183,7 +183,7 @@
                               @if(incomeCalcDetails.isPension){
                                   <p id="pensionUpdateLink" class="text">@Html(Messages(
                                       "tai.income.calculation.update.pension",
-                                      Link.toInternalPage(url=routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage.toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
+                                      Link.toInternalPage(url=routes.IncomeUpdateCalculatorNewController.chooseHowToUpdatePage.toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
                                       ))</p>
                                   <p class="text">@Html(Messages(
                                       "tai.yourTaxableIncome.otherDetailsWrongPensionIform",
@@ -192,7 +192,7 @@
                               } else {
                                   <p id="regularUpdateLink" class="text">@Html(Messages(
                                       "tai.income.calculation.update.regular",
-                                      Link.toInternalPage(url=routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage.toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
+                                      Link.toInternalPage(url=routes.IncomeUpdateCalculatorNewController.chooseHowToUpdatePage.toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
                                       ))</p>
                               }
                           }

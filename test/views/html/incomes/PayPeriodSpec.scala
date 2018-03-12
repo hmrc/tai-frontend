@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class PayPeriodSpec extends TaiViewSpec with MockitoSugar {
 
   "Pay period view" should {
-    behave like pageWithBackButton(controllers.routes.IncomeUpdateCalculatorController.workingHoursPage())
+    behave like pageWithBackButton(controllers.routes.IncomeUpdateCalculatorNewController.workingHoursPage())
     behave like pageWithCombinedHeader(
       messages("tai.payPeriod.preHeading"),
       messages("tai.payPeriod.title"))

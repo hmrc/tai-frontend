@@ -25,7 +25,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(workingHoursForm),
-        backLocation = Some(controllers.routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage()),
+        backLocation = Some(controllers.routes.IncomeUpdateCalculatorNewController.chooseHowToUpdatePage()),
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.workingHours.title"),
         preHeadingText = Messages("tai.workingHours.preHeading"))}
@@ -40,7 +40,7 @@
     gaCustomTitle = None
 ){
     <section class="section flush--bottom soft--top">
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleWorkingHours){
+        @form(action=controllers.routes.IncomeUpdateCalculatorNewController.handleWorkingHours){
                 @{inputRadioGroupNewStyling(
                     field=workingHoursForm("workingHours"),
                     radioOptions=Seq(("same" -> Messages("tai.workingHours.same")), ("veryDifferent" -> Messages("tai.workingHours.different"))),

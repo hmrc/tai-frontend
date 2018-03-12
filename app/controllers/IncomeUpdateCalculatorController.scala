@@ -48,7 +48,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   def employmentService: EmploymentService
   def activityLoggerService: ActivityLoggerService
 
-  def howToUpdatePage(id: Int) = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
+  /*def howToUpdatePage(id: Int) = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val rule: CustomRule = details => {
       employmentService.employment(Nino(user.getNino), id) flatMap {
         case Some(employment) =>
@@ -65,9 +65,9 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     ServiceChecks.executeWithServiceChecks(Nino(user.getNino), SimpleServiceCheck, sessionData) {
       Some(rule)
     }
-  }
+  }*/
 
-  def chooseHowToUpdatePage() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
+  /*def chooseHowToUpdatePage() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id2, name) => getChooseHowToUpdatePage(Nino(user.getNino), id2, name)
     moveToPageWithIncomeID(page)
   }
@@ -105,9 +105,9 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
       Some(rule)
     }
 
-  } recoverWith handleErrorResponse("getChooseHowToUpdatePage", nino)
+  } recoverWith handleErrorResponse("getChooseHowToUpdatePage", nino)*/
 
-  // Migrated
+  /*// Migrated
   def handleChooseHowToUpdate() = authorisedForTai(redirectToOrigin = true)(taiService).async { implicit user => implicit sessionData => implicit request =>
     val page: IncomeIDPage = (id, name) => processChooseHowToUpdate(Nino(user.getNino), id, name)
     moveToPageWithIncomeID(page)
@@ -795,7 +795,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     ServiceChecks.executeWithServiceChecks(nino, SimpleServiceCheck, sessionData) {
       Some(rule)
     }
-  } recoverWith handleErrorResponse("getCalcUnavailable", nino)
+  } recoverWith handleErrorResponse("getCalcUnavailable", nino)*/
 
   def moveToPageWithIncomeID(page: IncomeIDPage)(implicit user: TaiUser, request: Request[AnyContent], sessionData: SessionData): Future[Result] = {
     sessionData.editIncomeForm.map(x => (x.employmentId, x.name)).map { income =>
