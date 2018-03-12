@@ -82,6 +82,13 @@ with I18nSupport {
         validatedFormForInvalidYear.errors must contain(FormError(DayTag, List(Messages("tai.date.error.invalid"))))
         validatedFormForInvalidDate.errors must contain(FormError(DayTag, List(Messages("tai.date.error.invalid"))))
       }
+
+      "date is in future" in {
+        val validatedFormForValidDate = form.bind(validFutureDate)
+
+        validatedFormForValidDate.errors must contain(FormError(DayTag, List(Messages("tai.date.error.future"))))
+
+      }
     }
   }
 
@@ -93,6 +100,7 @@ with I18nSupport {
   private val YearTag: String = employmentEndDateForm.EmploymentFormYear
 
   private val validDate = Json.obj(DayTag -> 10, MonthTag -> 4, YearTag -> 2015)
+  private val validFutureDate = Json.obj(DayTag -> 10, MonthTag -> 4, YearTag -> (LocalDate.now().getYear + 1))
   private val validLeapYearDate = Json.obj(DayTag -> 29, MonthTag -> 2, YearTag -> 2016)
 
   private val invalidDay = Json.obj(DayTag -> "Bar", MonthTag -> 4, YearTag -> 2015)

@@ -30,7 +30,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     behave like pageWithCombinedHeader(model.displayName,
       messages("tai.employment.income.details.mainHeading", model.empOrPensionName,
         model.startOfCurrentYear.replace(" ", "\u00A0"), model.endOfCurrentYear.replace(" ", "\u00A0")))
-    behave like pageWithBackButton(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    behave like pageWithBackLink
     behave like pageWithTitle(messages("tai.employment.income.details.mainHeading", model.empOrPensionName,
       model.startOfCurrentYear, model.endOfCurrentYear))
 

@@ -24,7 +24,7 @@ import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.{CarBenefit, MarriageAllowanceReceived, MarriageAllowanceTransferred, MedicalInsurance}
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.util.{TaiConstants, ViewModelHelper}
 
 case class TaxFreeAmountSummaryCategoryViewModel(headerCol1: String,
@@ -71,6 +71,9 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
       case CarBenefit =>
         val url = s"${ApplicationConfig.updateCompanyCarDetailsUrl}/${codingComponent.employmentId.getOrElse(0)}"
         ChangeLinkViewModel(isDisplayed = true, Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), url)
+      case companyBenefit : BenefitComponentType =>
+        val url = controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(codingComponent.employmentId.getOrElse(0), companyBenefit).url
+        ChangeLinkViewModel(isDisplayed = true, Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}"), url)
       case _ =>
         ChangeLinkViewModel(isDisplayed = false)
     }

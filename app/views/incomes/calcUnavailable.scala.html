@@ -26,7 +26,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 @header = @{
     ptaHeader(
-        backLocation = Some(controllers.routes.IncomeUpdateCalculatorNewController.workingHoursPage()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.unableToCalculate.title"),
         preHeadingText = Messages("tai.unableToCalculate.preHeading"))}

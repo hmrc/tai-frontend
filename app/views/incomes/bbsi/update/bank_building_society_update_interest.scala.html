@@ -29,7 +29,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(updateInterestForm),
-        backLocation = Some(controllers.income.bbsi.routes.BbsiController.decision(viewModel.id)),
+        displayBackLink = true,
         mainHeadingText = messages("tai.bbsi.update.captureInterest.title", viewModel.bankName),
         preHeadingText = messages("tai.bbsi.update.captureInterest.preHeading")
     )

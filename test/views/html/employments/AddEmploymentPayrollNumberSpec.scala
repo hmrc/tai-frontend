@@ -35,7 +35,7 @@ class AddEmploymentPayrollNumberSpec extends TaiViewSpec with FormValuesConstant
     behave like pageWithCombinedHeader(
       messages("tai.addEmployment.addEmploymentJourneyLink"),
       messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
-    behave like pageWithBackButton(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate())
+    behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-payroll-number")
     behave like pageWithYesNoRadioButton(AddEmploymentPayrollNumberForm.PayrollNumberChoice+"-yes", AddEmploymentPayrollNumberForm.PayrollNumberChoice+"-no")
     behave like pageWithCancelLink(routes.TaxAccountSummaryController.onPageLoad())
@@ -44,9 +44,7 @@ class AddEmploymentPayrollNumberSpec extends TaiViewSpec with FormValuesConstant
       val payrollNumberViewModel = PayrollNumberViewModel(employerName, true)
       def view: Html = views.html.employments.add_employment_payroll_number_form(employmentPayrollForm, payrollNumberViewModel)
       def doc: Document = Jsoup.parse(view.toString())
-      val backLink = controllers.employments.routes.AddEmploymentController.receivedFirstPay().url
-
-      doc must haveBackButtonWithUrl(backLink)
+      doc must haveBackLink
     }
 
     "have an input field for payroll number" in {
@@ -60,7 +58,7 @@ class AddEmploymentPayrollNumberSpec extends TaiViewSpec with FormValuesConstant
           withError(AddEmploymentPayrollNumberForm.PayrollNumberChoice, noPayrollNumberChooseError)
         def view: Html = views.html.employments.add_employment_payroll_number_form(formWithErrors, payrollNumberViewModel)
 
-        val errorMessage = doc(view).select(".error-notification").text
+        val errorMessage = doc(view).select(".error-message").text
         errorMessage mustBe noPayrollNumberChooseError
       }
 

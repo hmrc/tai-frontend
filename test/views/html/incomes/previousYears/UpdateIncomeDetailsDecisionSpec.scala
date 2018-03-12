@@ -33,7 +33,7 @@ class UpdateIncomeDetailsDecisionSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("tai.income.previousYears.decision.title"))
     behave like pageWithCombinedHeader(messages("tai.income.previousYears.journey.preHeader"),
       messages("tai.income.previousYears.decision.header",TaxPeriodLabelService.taxPeriodLabel(taxYear.year)))
-    behave like pageWithBackButton(controllers.routes.PayeControllerHistoric.payePage(taxYear))
+    behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.routes.PayeControllerHistoric.payePage(taxYear))
     behave like pageWithYesNoRadioButton(
       UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice+"-yes",
@@ -57,7 +57,7 @@ class UpdateIncomeDetailsDecisionSpec extends TaiViewSpec {
   "display error message" when {
     "form has error" in {
       val errorView = views.html.incomes.previousYears.UpdateIncomeDetailsDecision(formWithErrors, taxYear)
-      doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-notification")
+      doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-message")
     }
   }
 

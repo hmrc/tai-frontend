@@ -36,7 +36,7 @@ class UpdateEmploymentCheckYourAnswersSpec extends TaiViewSpec {
     "display a back button" which {
       "links to the add telephone form page" when {
         "page is displayed" in {
-          doc must haveBackButtonWithUrl(controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url)
+          doc must haveBackLink
         }
       }
     }

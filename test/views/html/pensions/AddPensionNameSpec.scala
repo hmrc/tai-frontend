@@ -29,7 +29,7 @@ class AddPensionNameSpec extends TaiViewSpec {
     behave like pageWithCombinedHeader(
       messages("tai.addPensionProvider.preHeadingText"),
       messages("tai.addPensionProvider.addNameForm.title"))
-    behave like pageWithBackButton(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/name")
     behave like pageWithCancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad())
 

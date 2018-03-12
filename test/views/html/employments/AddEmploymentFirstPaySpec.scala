@@ -30,7 +30,7 @@ class AddEmploymentFirstPaySpec extends TaiViewSpec with FormValuesConstants {
     behave like pageWithCombinedHeader(
       messages("tai.addEmployment.addEmploymentJourneyLink"),
       messages("tai.addEmployment.employmentFirstPay.title", employerName))
-    behave like pageWithBackButton(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate())
+    behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-first-pay")
     behave like pageWithYesNoRadioButton(AddEmploymentFirstPayForm.FirstPayChoice+"-yes", AddEmploymentFirstPayForm.FirstPayChoice+"-no")
     behave like pageWithCancelLink(routes.TaxAccountSummaryController.onPageLoad())
@@ -42,7 +42,7 @@ class AddEmploymentFirstPaySpec extends TaiViewSpec with FormValuesConstants {
           withError(AddEmploymentFirstPayForm.FirstPayChoice, noPayrollNumberChooseError)
         def view: Html = views.html.employments.add_employment_first_pay_form(formWithErrors, employerName)
 
-        val errorMessage = doc(view).select(".error-notification").text
+        val errorMessage = doc(view).select(".error-message").text
         errorMessage mustBe noPayrollNumberChooseError
       }
     }

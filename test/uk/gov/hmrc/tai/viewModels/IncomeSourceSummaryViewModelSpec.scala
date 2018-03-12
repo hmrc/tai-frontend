@@ -112,24 +112,26 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
     "generate a sequence of company benefit view models with appropriate content" when {
       "company benefits are present, and associated with the supplied employment id" in {
 
+        val employmentId = 1
+
         val taxCodeIncomeSources = Seq(TaxCodeIncome(
-          EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOperation, Live))
+          EmploymentIncome, Some(employmentId), 100, "Test", "1100L", "Employer", Week1Month1BasisOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
-          None, Seq(annualAccount), "", "", 1)
+          None, Seq(annualAccount), "", "", employmentId)
 
-        val companyCars = Seq(CompanyCarBenefit(1, BigDecimal(200.22), Seq(CompanyCar(1, "transit", false, Some(LocalDate.now), None, None))))
+        val companyCars = Seq(CompanyCarBenefit(employmentId, BigDecimal(200.22), Seq(CompanyCar(1, "transit", false, Some(LocalDate.now), None, None))))
         val otherBenefits = Seq(
-          GenericBenefit(MedicalInsurance, Some(1), BigDecimal(321.12)),
-          GenericBenefit(Entertaining, Some(1), BigDecimal(120653.99))
+          GenericBenefit(MedicalInsurance, Some(employmentId), BigDecimal(321.12)),
+          GenericBenefit(Entertaining, Some(employmentId), BigDecimal(120653.99))
         )
         val benefits = Benefits(companyCars, otherBenefits)
 
-        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, benefits)
+        val model = IncomeSourceSummaryViewModel(employmentId, "User Name", taxCodeIncomeSources, employment, benefits)
         model.benefits mustBe Seq(
           CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), BigDecimal(200.22), controllers.routes.CompanyCarController.redirectCompanyCarSelection(1).url),
           CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"), BigDecimal(321.12), controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform).url),
-          CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.Entertaining"), BigDecimal(120653.99), controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url)
+          CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.Entertaining"), BigDecimal(120653.99), controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(employmentId, Entertaining).url)
         )
       }
     }

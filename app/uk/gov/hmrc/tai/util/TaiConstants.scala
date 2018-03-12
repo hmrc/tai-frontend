@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.util
 
 import hmrc.nps2.IabdType._
-import play.api.i18n.Messages
 
 
 trait JourneyCacheConstants {
@@ -193,6 +192,12 @@ trait TaxRegionConstants {
 trait DateFormatConstants {
   val DateWithoutYearFormat = "d MMMM"
   val DateWithYearFormat = "d MMMM yyyy"
+}
+
+trait UpdateOrRemoveCompanyBenefitDecisionConstants{
+  val DecisionChoice = "decisionChoice"
+  val YesIGetThisBenefit = "yesIGetThisBenefit"
+  val NoIDontGetThisBenefit = "noIDontGetThisBenefit"
 }
 
 trait RemoveCompanyBenefitStopDateConstants{

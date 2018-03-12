@@ -29,7 +29,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(irregularPayForm),
-        backLocation = Some(controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove(model.empId)),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.irregular.mainHeadingText", model.employerName),
         preHeadingText = Messages("tai.irregular.preHeadingText"))}

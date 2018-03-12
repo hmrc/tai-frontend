@@ -30,7 +30,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(yesNoForm),
-        backLocation = Some(Call("GET", viewModel.backUrl)),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.mainHeading,
         preHeadingText = viewModel.preHeading)}
@@ -56,18 +56,18 @@
             ('_groupDivClass, "form-group" ),
             ('_groupClass, "inline"),
             ('_fieldsetAttributes, "id=yesNoChoice" ),
-            ('_legendClass, "visuallyhidden"),
+            ('_legendSpanClass, "visually-hidden"),
             ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Can we contact you by phone?:Yes" data-journey-val="Yes" data-dynamic-fields-hide="false" data-dynamic-fields="yesNoTextEntry"""") ),
             ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Can we contact you by phone?:No" data-journey-val="No" data-dynamic-fields-hide="true" data-dynamic-fields="yesNoTextEntry"""") )
         )}
 
-        <fieldset id="telephoneNumberEntry-container" class="@if(yesNoForm(YesNoTextEntryForm.YesNoChoice).value.getOrElse("") != YesNoTextEntryForm.YesValue){js-hidden} data-yesNoTextEntry inline form-field-group panel-indent">
+        <div id="telephoneNumberEntry-container" class="@if(yesNoForm(YesNoTextEntryForm.YesNoChoice).value.getOrElse("") != YesNoTextEntryForm.YesValue){js-hidden} data-yesNoTextEntry inline form-field-group panel-indent">
             @input(field=yesNoForm(YesNoTextEntryForm.YesNoTextEntry),
             '_label -> Messages("tai.phoneNumber"),
             '_inputHint -> Messages("tai.canWeContactByPhone.telephoneNumber.hint"),
             '_hintId -> "phoneNumberHint",
             '_inputClass -> "form-control input--cleared form-control-1-2")
-        </fieldset>
+        </div>
 
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(viewModel.preHeading))
     }
