@@ -33,7 +33,7 @@ class CompanyCarUserChoiceSpec extends TaiViewSpec {
       messages("tai.changeCompanyCar.sub.heading"),
       messages("tai.changeCompanyCar.heading", viewModel.carModel, viewModel.carProvider))
 
-    behave like pageWithBackButton(routes.TaxFreeAmountControllerNew.taxFreeAmount())
+    behave like pageWithBackLink
 
     behave like pageWithContinueButtonForm("/check-income-tax/end-company-car/decision")
 

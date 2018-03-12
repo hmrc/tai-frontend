@@ -30,7 +30,7 @@
     ptaHeader(
         mainHeadingText = Messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName.getOrElse("")),
         preHeadingText = Messages("tai.yourIncome.preHeading"),
-        backLocation = Some(routes.PayeControllerHistoric.payePage(historicIncomeCalculationViewModel.taxYear)),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString)
     )}
 

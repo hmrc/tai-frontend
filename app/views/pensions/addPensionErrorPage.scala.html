@@ -27,7 +27,7 @@
 
 @header = @{
     ptaHeader(
-        backLocation = Some(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addPensionProvider.errorPage.title"),
         preHeadingText = Messages("tai.addPensionProvider.preHeadingText"))}

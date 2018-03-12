@@ -27,7 +27,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(dateForm),
-        backLocation =Some(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addPensionProvider.startDateForm.title", pensionProviderName),
         preHeadingText = Messages("tai.addPensionProvider.preHeadingText")

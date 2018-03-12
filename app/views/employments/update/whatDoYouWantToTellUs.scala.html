@@ -28,7 +28,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(updateEmploymentDetailsForm),
-        backLocation = Some(controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(viewmodel.empId)),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", viewmodel.employerName),
         preHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")

@@ -34,10 +34,8 @@ class UpdateBankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
 
     behave like pageWithCheckYourAnswersSummary
 
-    "display a back button" which {
-      "links to the BBSI update interest form page" in {
-        doc must haveBackButtonWithUrl(controllers.income.bbsi.routes.BbsiUpdateAccountController.captureInterest(0).url)
-      }
+    "display a back button" in {
+      doc must haveBackLink
     }
 
     "display the header for the check your answers section with the correct account" in {

@@ -31,7 +31,7 @@ class RemoveCompanyBenefitStopDateSpec extends TaiViewSpec{
     behave like pageWithTitle(messages("tai.benefits.ended.stopDate.title"))
     behave like pageWithCombinedHeader(messages("tai.benefits.ended.journey.preHeader"),
       messages("tai.benefits.ended.stopDate.heading",benefitType, empName))
-    behave like pageWithBackButton(controllers.benefits.routes.CompanyBenefitController.decision())
+    behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad)
     behave like pageWithContinueButtonForm("/check-income-tax/remove-company-benefit/stop-date")
 

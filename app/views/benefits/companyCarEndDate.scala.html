@@ -28,7 +28,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(dateForm),
-        backLocation =Some(routes.CompanyCarController.getCompanyCarDetails()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.companyCar.endDate.heading"),
         preHeadingText = Messages("tai.companyCar.endDate.sub.heading")) }
