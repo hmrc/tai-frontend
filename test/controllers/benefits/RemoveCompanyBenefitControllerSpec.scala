@@ -477,6 +477,22 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
     }
   }
 
+  "cancel" must {
+    "flush the cache and redirect to start of journey" in {
+      val SUT = createSUT
+
+      when(SUT.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("Url")))
+      when(SUT.journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+
+      val result = SUT.cancel(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+
+      redirectLocation(result).get mustBe "Url"
+      verify(SUT.journeyCacheService, times(1)).flush()(any())
+      verify(SUT.journeyCacheService, times(1)).mandatoryValues(any())(any())
+    }
+  }
+
   "confirmation" must {
     "show the update income details confirmation page" when {
       "the request has an authorised session" in {

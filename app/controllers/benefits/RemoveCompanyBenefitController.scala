@@ -22,12 +22,13 @@ import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Call}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
@@ -235,6 +236,18 @@ trait RemoveCompanyBenefitController extends TaiBaseController
               _ <- trackingJourneyCacheService.cache(TrackSuccessfulJourney_EndEmploymentBenefitKey, true.toString)
               _ <- journeyCacheService.flush
             } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.confirmation())
+          }
+  }
+
+  def cancel: Action[AnyContent] = authorisedForTai(taiService).async {
+    implicit user =>
+      implicit taiRoot =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            for {
+              mandatoryValues <- journeyCacheService.mandatoryValues(EndCompanyBenefit_RefererKey)
+              _ <- journeyCacheService.flush
+            }yield Redirect(mandatoryValues(0))
           }
   }
 
