@@ -38,7 +38,7 @@ class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
     "display a back button" which {
       "links to the BBSI end date form page" when {
         "the account is closed in the current tax year" in {
-          doc must haveBackButtonWithUrl(controllers.income.bbsi.routes.BbsiCloseAccountController.captureClosingInterest(0).url)
+          doc must haveBackLink
         }
       }
 
@@ -51,7 +51,7 @@ class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
           val viewModel = BbsiClosedCheckYourAnswersViewModel(0, formattedDate, Some(account), Some("123.45"))
           def view: Html = views.html.incomes.bbsi.close.bank_building_society_check_your_answers(viewModel)
 
-          doc(view) must haveBackButtonWithUrl(controllers.income.bbsi.routes.BbsiCloseAccountController.captureCloseDate(0).url)
+          doc(view) must haveBackLink
         }
       }
     }

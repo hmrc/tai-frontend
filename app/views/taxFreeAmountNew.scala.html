@@ -27,7 +27,7 @@
 
 @header = @{
     ptaHeader(
-        backLocation = Some(controllers.routes.TaxAccountSummaryController.onPageLoad()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.header,
         preHeadingText = Messages("tai.taxCode.preHeader"))

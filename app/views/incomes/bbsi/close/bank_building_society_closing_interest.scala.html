@@ -29,7 +29,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(closingInterestForm),
-        backLocation = Some(controllers.income.bbsi.routes.BbsiCloseAccountController.captureCloseDate(id)),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.closeBankAccount.closingInterest.heading", TaxYearResolver.currentTaxYear.toString),
         preHeadingText = Messages("tai.closeBankAccount.preHeadingText")

@@ -31,7 +31,7 @@ class BankBuildingSocietyUpdateInterestSpec extends TaiViewSpec {
     behave like pageWithCombinedHeader(messages("tai.bbsi.update.captureInterest.preHeading"),
       messages("tai.bbsi.update.captureInterest.title", bankName))
     behave like pageWithContinueButtonForm("/check-income-tax/income/bank-building-society-savings/1/update/interest")
-    behave like pageWithBackButton(controllers.income.bbsi.routes.BbsiController.decision(id))
+    behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.income.bbsi.routes.BbsiController.accounts())
 
     "display description" in {

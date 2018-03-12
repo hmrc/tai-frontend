@@ -35,7 +35,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
     behave like pageWithCombinedHeader(
       messages("tai.paye.lastTaxYear.preHeading"),
       messages("tai.paye.heading"))
-    behave like pageWithBackButton(Call("GET", routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().toString))
+    behave like pageWithBackLink
 
     "contain correct pre header and header" in {
       val taxYear = cyMinusOneTaxYear

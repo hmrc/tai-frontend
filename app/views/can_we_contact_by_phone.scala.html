@@ -30,7 +30,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(yesNoForm),
-        backLocation = Some(Call("GET", viewModel.backUrl)),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.mainHeading,
         preHeadingText = viewModel.preHeading)}

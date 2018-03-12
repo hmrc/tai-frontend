@@ -42,7 +42,7 @@ class BankBuildingSocietyCloseDateSpec extends TaiViewSpec {
       messages("tai.closeBankAccount.closeDateForm.title", bankName)
     )
 
-    behave like pageWithBackButton(controllers.income.bbsi.routes.BbsiController.accounts())
+    behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.income.bbsi.routes.BbsiController.accounts())
     behave like pageWithContinueButtonForm("/check-income-tax/income/bank-building-society-savings/1/close/date")
   }

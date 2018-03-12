@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class CalcUnavailableSpec extends TaiViewSpec with MockitoSugar {
 
   "Calculation unavailable page" should {
-    behave like pageWithBackButton(controllers.routes.IncomeUpdateCalculatorController.workingHoursPage())
+    behave like pageWithBackLink
     behave like pageWithCombinedHeader(
       messages("tai.unableToCalculate.preHeading"),
       messages("tai.unableToCalculate.title"))

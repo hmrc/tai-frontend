@@ -37,13 +37,13 @@ class CompanyCarCheckYourAnswersSpec extends TaiViewSpec {
 
     behave like pageWithCheckYourAnswersSummary
 
-    "display a back button" which{
-      "redirects to company car end date page if there is no fuel benefit" in{
+    "display a back button" when {
+      "there is no fuel benefit" in{
         val docWithoutFuelDate = doc(views.html.benefits.companyCarCheckYourAnswers(companyCarViewModelWithoutFuelStopDate))
-        docWithoutFuelDate must haveBackButtonWithUrl(routes.CompanyCarController.getCompanyCarEndDate().url)
+        docWithoutFuelDate must haveBackLink
       }
-      "redirects to fuel end date page if there is fuel benefit" in{
-        doc must haveBackButtonWithUrl(routes.CompanyCarController.getFuelBenefitEndDate().url)
+      "there is a fuel benefit" in{
+        doc must haveBackLink
       }
     }
 

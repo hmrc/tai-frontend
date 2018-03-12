@@ -23,7 +23,8 @@
 @(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever = TaiHtmlPartialRetriever)
 
 @header = @{
-    ptaHeader(backLocation = Some(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()),
+    ptaHeader(
+        displayBackLink = true,
         backLinkGaEventAction = None,
         mainHeadingText = messages("tai.incomeTaxComparison.heading"),
         preHeadingText = incomeTaxComparisonViewModel.username,

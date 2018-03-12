@@ -281,8 +281,7 @@ class estimatedIncomeTaxPageSpec extends TaiViewSpec with DateFormatConstants {
         incomeTaxReducedToZeroMessage = Some(""), ukDividends = None, taxBands = None, incomeEstimate = 100, taxFreeEstimate = 100, taxRegion = "")
 
       val doc = Jsoup.parseBodyFragment(views.html.estimatedIncomeTax(viewModel, iFormLinks = Html("")).toString())
-      doc.select("#backLink").text() mustBe Messages("tai.back-link.upper")
-      doc.select("#backLink").attr("href") mustBe routes.TaxAccountSummaryController.onPageLoad().toString
+      doc must haveBackLink
     }
 
     "show iform links" in {

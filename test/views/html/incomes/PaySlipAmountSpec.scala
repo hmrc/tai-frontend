@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class PaySlipAmountSpec extends TaiViewSpec with MockitoSugar {
 
   "Pay slip amount view" should {
-    behave like pageWithBackButton(controllers.routes.IncomeUpdateCalculatorController.payPeriodPage())
+    behave like pageWithBackLink
     behave like pageWithCombinedHeader(
       messages("tai.payslip.preHeading"),
       messages("tai.payslip.title"))
