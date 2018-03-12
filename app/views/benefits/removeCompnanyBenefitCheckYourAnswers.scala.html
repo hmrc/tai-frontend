@@ -51,7 +51,7 @@
       @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
     }
 
-    @cancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    @cancelLink(Call("GET",controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url))
 }
 
 

@@ -17,7 +17,6 @@
 package views.html.benefits
 
 import play.api.i18n.Messages
-import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.benefits.CompanyBenefitTotalValueForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -64,8 +63,7 @@ class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
 
   private lazy val employerName = "HMRC"
   private lazy val benefitName = "Other Benefit"
-  private lazy val referer = "url"
 
-  override def view: Html = views.html.benefits.removeBenefitTotalValue(BenefitViewModel(employerName, benefitName, referer), CompanyBenefitTotalValueForm.form)
+  override def view: Html = views.html.benefits.removeBenefitTotalValue(BenefitViewModel(employerName, benefitName), CompanyBenefitTotalValueForm.form)
 
 }

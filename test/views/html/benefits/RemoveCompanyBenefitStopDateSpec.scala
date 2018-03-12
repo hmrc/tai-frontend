@@ -18,7 +18,6 @@ package views.html.benefits
 
 import play.api.data.Form
 import play.api.i18n.Messages
-import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm.StopDateChoice
@@ -47,12 +46,12 @@ class RemoveCompanyBenefitStopDateSpec extends TaiViewSpec{
 
     "display error message" when {
       "form has error" in {
-        val errorView = views.html.benefits.removeCompanyBenefitStopDate(formWithErrors,benefitType,empName,referer)
+        val errorView = views.html.benefits.removeCompanyBenefitStopDate(formWithErrors,benefitType,empName)
         doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-message")
       }
 
       "a decision has not been made" in {
-        val errorView = views.html.benefits.removeCompanyBenefitStopDate(formWithErrors,benefitType,empName,referer)
+        val errorView = views.html.benefits.removeCompanyBenefitStopDate(formWithErrors,benefitType,empName)
         doc(errorView) must haveErrorLinkWithText(messages("tai.error.chooseOneOption"))
       }
 
@@ -65,13 +64,12 @@ class RemoveCompanyBenefitStopDateSpec extends TaiViewSpec{
   private val endOfCurrentTaxYear = TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM YYYY")
   private lazy val benefitType = "Expenses"
   private lazy val empName = "EmployerA"
-  private lazy val referer = "url"
 
   private lazy val formWithErrors: Form[Option[String]] = RemoveCompanyBenefitStopDateForm.form.bind(Map(
     StopDateChoice -> ""
   ))
 
-  override def view = views.html.benefits.removeCompanyBenefitStopDate(RemoveCompanyBenefitStopDateForm.form,benefitType, empName, referer)
+  override def view = views.html.benefits.removeCompanyBenefitStopDate(RemoveCompanyBenefitStopDateForm.form,benefitType, empName)
 
 }
 

@@ -18,7 +18,6 @@ package views.html.benefits
 
 import play.api.data.Form
 import play.api.i18n.Messages
-import play.api.mvc.Call
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -32,7 +31,7 @@ class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec{
     behave like pageWithCombinedHeader(messages("tai.benefits.updateOrRemove.journey.preHeader"),
       messages("tai.benefits.updateOrRemove.decision.heading",benefitType,employerName))
     behave like pageWithBackButton(controllers.routes.TaxAccountSummaryController.onPageLoad)
-    behave like pageWithCancelLink(Call("GET",referer))
+    behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel())
     behave like pageWithContinueButtonForm(s"/check-income-tax/company-benefit/decision")
 
     "have two radio buttons with relevant text" in {
@@ -69,9 +68,8 @@ class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec{
   private val idNoIDontGetThisBenefit= "decisionChoice-noidontgetthisbenefit"
   private lazy val benefitType = "Expenses"
   private lazy val employerName = "EmployerA"
-  private lazy val referer = "url"
-  private lazy val viewModel = CompanyBenefitDecisionViewModel(benefitType,employerName,UpdateOrRemoveCompanyBenefitDecisionForm.form,referer)
-  private lazy val viewModelWithErrors = CompanyBenefitDecisionViewModel(benefitType,employerName,formWithErrors,referer)
+  private lazy val viewModel = CompanyBenefitDecisionViewModel(benefitType,employerName,UpdateOrRemoveCompanyBenefitDecisionForm.form)
+  private lazy val viewModelWithErrors = CompanyBenefitDecisionViewModel(benefitType,employerName,formWithErrors)
 
   override def view = views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel)
 }

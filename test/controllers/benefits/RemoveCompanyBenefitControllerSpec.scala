@@ -41,7 +41,7 @@ import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, TaiService}
 import uk.gov.hmrc.tai.util.{DateFormatConstants, FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -249,7 +249,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         doc.title() mustBe Messages("tai.canWeContactByPhone.title")
         doc.getElementsByClass("heading-secondary").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
         doc.getElementById("backLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url
-        doc.getElementById("cancelLink").attr("href") mustBe cache(EndCompanyBenefit_RefererKey)
+        doc.getElementById("cancelLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
       }
     }
 
@@ -271,7 +271,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         doc.title() mustBe Messages("tai.canWeContactByPhone.title")
         doc.getElementsByClass("heading-secondary").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
         doc.getElementById("backLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit.url
-        doc.getElementById("cancelLink").attr("href") mustBe cache(EndCompanyBenefit_RefererKey)
+        doc.getElementById("cancelLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
       }
     }
   }

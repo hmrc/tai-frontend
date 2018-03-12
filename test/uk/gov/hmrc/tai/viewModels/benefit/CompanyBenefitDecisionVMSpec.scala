@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package controllers.viewModels.benefit
+package uk.gov.hmrc.tai.viewModels.benefit
 
 import controllers.FakeTaiPlayApplication
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
-import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
 class CompanyBenefitDecisionVMSpec extends UnitSpec with FakeTaiPlayApplication
 {
@@ -30,7 +29,7 @@ class CompanyBenefitDecisionVMSpec extends UnitSpec with FakeTaiPlayApplication
       val benefitType = "NonCashBenefit"
       val formattedBenefitName = "Non-cash"
 
-      val viewModel = CompanyBenefitDecisionViewModel(benefitType,employerName,UpdateOrRemoveCompanyBenefitDecisionForm.form,referer)
+      val viewModel = CompanyBenefitDecisionViewModel(benefitType,employerName,UpdateOrRemoveCompanyBenefitDecisionForm.form)
 
       viewModel.benefitName shouldBe formattedBenefitName
 
@@ -41,13 +40,12 @@ class CompanyBenefitDecisionVMSpec extends UnitSpec with FakeTaiPlayApplication
       val benefitType = "ServiceBenefit"
       val formattedBenefitName = "Service"
 
-      val viewModel = CompanyBenefitDecisionViewModel(benefitType,employerName,UpdateOrRemoveCompanyBenefitDecisionForm.form,referer)
+      val viewModel = CompanyBenefitDecisionViewModel(benefitType,employerName,UpdateOrRemoveCompanyBenefitDecisionForm.form)
 
       viewModel.benefitName shouldBe formattedBenefitName
 
     }
 
-    lazy val referer = "incomeDetailsUrl"
     lazy val employerName = "company name"
 
   }

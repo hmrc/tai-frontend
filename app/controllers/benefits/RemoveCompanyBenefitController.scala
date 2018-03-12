@@ -16,25 +16,24 @@
 
 package controllers.benefits
 
-import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
+import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Call}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, TaiService}
 import uk.gov.hmrc.tai.util.{AuditConstants, FormHelper, FormValuesConstants, JourneyCacheConstants, _}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
@@ -70,8 +69,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
                   Ok(views.html.benefits.removeCompanyBenefitStopDate(
                     RemoveCompanyBenefitStopDateForm.form,
                     currentCache(EndCompanyBenefit_BenefitNameKey),
-                    currentCache(EndCompanyBenefit_EmploymentNameKey),
-                    currentCache(EndCompanyBenefit_RefererKey)))
+                    currentCache(EndCompanyBenefit_EmploymentNameKey)))
                 }
           }
   }
@@ -82,9 +80,9 @@ trait RemoveCompanyBenefitController extends TaiBaseController
         implicit request =>
           RemoveCompanyBenefitStopDateForm.form.bindFromRequest.fold(
             formWithErrors => {
-              journeyCacheService.mandatoryValues(EndCompanyBenefit_BenefitNameKey,EndCompanyBenefit_EmploymentNameKey,EndCompanyBenefit_RefererKey) map  {
+              journeyCacheService.mandatoryValues(EndCompanyBenefit_BenefitNameKey,EndCompanyBenefit_EmploymentNameKey) map  {
                 mandatoryValues =>
-                  BadRequest(views.html.benefits.removeCompanyBenefitStopDate(formWithErrors, mandatoryValues(0), mandatoryValues(1), mandatoryValues(2)))
+                  BadRequest(views.html.benefits.removeCompanyBenefitStopDate(formWithErrors, mandatoryValues(0), mandatoryValues(1)))
               }
 
             },
@@ -109,10 +107,10 @@ trait RemoveCompanyBenefitController extends TaiBaseController
       implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-              journeyCacheService.mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey,EndCompanyBenefit_RefererKey) flatMap  {
-                mandartoryValues =>
+              journeyCacheService.mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey) flatMap  {
+                mandatoryValues =>
                   Future.successful(Ok(views.html.benefits.
-                    removeBenefitTotalValue(BenefitViewModel(mandartoryValues(0), mandartoryValues(1), mandartoryValues(2)), CompanyBenefitTotalValueForm.form)
+                    removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), CompanyBenefitTotalValueForm.form)
                   ))
               }
             }
@@ -124,10 +122,10 @@ trait RemoveCompanyBenefitController extends TaiBaseController
         implicit request =>
           CompanyBenefitTotalValueForm.form.bindFromRequest.fold(
             formWithErrors => {
-              journeyCacheService.mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey,EndCompanyBenefit_RefererKey) flatMap  {
+              journeyCacheService.mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey) flatMap  {
                 mandatoryValues =>
                   Future.successful(BadRequest(views.html.benefits.
-                    removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1), mandatoryValues(2)), formWithErrors)
+                    removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), formWithErrors)
                   ))
               }
             },
@@ -202,8 +200,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
                   mandatorySeq(2),
                   optionalSeq(0),
                   mandatorySeq(3),
-                  optionalSeq(1),
-                  mandatorySeq(4))))
+                  optionalSeq(1))))
               }
             }
           }
@@ -273,7 +270,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
       Messages("tai.canWeContactByPhone.title"),
       backUrl,
       controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url,
-      cache(EndCompanyBenefit_RefererKey)
+      controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
     )
   }
 
