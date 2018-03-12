@@ -31,7 +31,7 @@ class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
       Messages("tai.remove.company.benefit.total.value.heading", benefitName, employerName))
 
     behave like pageWithContinueButtonForm("/check-income-tax/remove-company-benefit/total-value-of-benefit")
-    behave like pageWithCancelLink(Call("GET",referer))
+    behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel())
     behave like pageWithBackButton(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
 
     "contain static paragraph with text" in {

@@ -74,6 +74,6 @@
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.remove.company.benefit.total.value.title")))
     }
 
-    @cancelLink(Call("GET", vm.referer), gaEventAction = Some(gaEventActionString))
+    @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url), gaEventAction = Some(gaEventActionString))
 
 }
