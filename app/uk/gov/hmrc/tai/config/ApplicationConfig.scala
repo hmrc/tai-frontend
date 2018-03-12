@@ -23,7 +23,7 @@ import views.html.helper
 
 object ApplicationConfig extends ServicesConfig {
 
-  val statusRange = s"${TaxYear().prev.year}-${TaxYear().year}"
+  def statusRange = s"${TaxYear().prev.year}-${TaxYear().year}"
 
   lazy val citizenAuthHost = fetchUrl("citizen-auth")
   lazy val companyAuthUrl = fetchUrl("company-auth")
