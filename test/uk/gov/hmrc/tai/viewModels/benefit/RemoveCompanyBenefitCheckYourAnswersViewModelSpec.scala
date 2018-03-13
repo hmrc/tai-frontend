@@ -63,7 +63,7 @@ class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends PlaySpec with Fa
   private lazy val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
     Messages("tai.checkYourAnswers.whatYouToldUs"),
     Messages("tai.noLongerGetBenefit"),
-    ""
+    controllers.benefits.routes.CompanyBenefitController.decision().url
   )
 
   private lazy val stopDateLine = CheckYourAnswersConfirmationLine(

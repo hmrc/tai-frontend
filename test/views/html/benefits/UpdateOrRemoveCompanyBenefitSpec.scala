@@ -21,6 +21,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
 class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec{
 
@@ -30,7 +31,7 @@ class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec{
     behave like pageWithCombinedHeader(messages("tai.benefits.updateOrRemove.journey.preHeader"),
       messages("tai.benefits.updateOrRemove.decision.heading",benefitType,employerName))
     behave like pageWithBackLink
-    behave like pageWithCancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad)
+    behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel())
     behave like pageWithContinueButtonForm(s"/check-income-tax/company-benefit/decision")
 
     "have two radio buttons with relevant text" in {
@@ -46,13 +47,13 @@ class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec{
 
     "display error message" when {
       "form has error" in {
-        val errorView = views.html.benefits.updateOrRemoveCompanyBenefitDecision(formWithErrors, benefitType, employerName)
+        val errorView = views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModelWithErrors)
         doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-message")
       }
     }
 
     "a decision has not been made" in {
-      val errorView = views.html.benefits.updateOrRemoveCompanyBenefitDecision(formWithErrors, benefitType, employerName)
+      val errorView = views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModelWithErrors)
       doc(errorView) must haveErrorLinkWithText(messages("tai.error.chooseOneOption"))
     }
 
@@ -67,7 +68,9 @@ class UpdateOrRemoveCompanyBenefitSpec extends TaiViewSpec{
   private val idNoIDontGetThisBenefit= "decisionChoice-noidontgetthisbenefit"
   private lazy val benefitType = "Expenses"
   private lazy val employerName = "EmployerA"
+  private lazy val viewModel = CompanyBenefitDecisionViewModel(benefitType,employerName,UpdateOrRemoveCompanyBenefitDecisionForm.form)
+  private lazy val viewModelWithErrors = CompanyBenefitDecisionViewModel(benefitType,employerName,formWithErrors)
 
-  override def view = views.html.benefits.updateOrRemoveCompanyBenefitDecision(UpdateOrRemoveCompanyBenefitDecisionForm.form,benefitType,employerName)
+  override def view = views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel)
 }
 
