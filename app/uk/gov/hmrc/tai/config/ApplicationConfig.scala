@@ -51,6 +51,7 @@ object ApplicationConfig extends ServicesConfig {
   lazy val feedbackSurveyUrl = s"$feedbackHost/feedback-survey?origin=TES"
   lazy val feedbackHost = configuration.getString(s"govuk-tax.$env.external-url.feedback-survey-frontend.host").getOrElse("")
   lazy val companyCarServiceUrl = s"${fetchUrl("paye-frontend")}/paye/company-car/service-landing-page"
+  lazy val companyCarFuelBenefitUrl = s"${fetchUrl("paye-frontend")}/paye/company-car/service-landing-page"
   lazy val updateCompanyCarDetailsUrl = s"$taiServiceUrl/redirect-company-car"
   lazy val taiServiceUrl = s"${fetchUrl("tai-frontend")}/check-income-tax"
   lazy val marriageServiceUrl = s"${fetchUrl("tamc-frontend")}/marriage-allowance-application/history"
