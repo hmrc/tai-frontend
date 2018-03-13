@@ -48,7 +48,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 @main(
     title = pageTitle,
-    articleClasses = Some("full-width text"),
+    articleClasses = Some("full-width"),
     user = Some(user),
     pageHeader = Some(header),
     employerName = employerName,
@@ -71,7 +71,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
                 }
                 <input type="text" class="form-control form-field-single" id="amount" name="amount"/>
             </fieldset>
-            <p class="text"><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
+            <p ><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
         }
     </section>
 }

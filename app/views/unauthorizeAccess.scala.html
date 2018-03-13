@@ -24,9 +24,9 @@
     articleClasses = Some("full-width"),
     gaCustomTitle = None
 ){
-    <header class="page-header text">
+    <header class="page-header">
         <h1>@Messages("tai.gatekeeper.refuse.title")</h1>
     </header>
-    <p class="text">@Messages("tai.gatekeeper.refuse.message")</p>
-    <p class="text" id="find-out-more">@Messages("tai.gatekeeper.findout.more") @Link.toExternalPage(url = Messages("tai.link.income_tax.url"), id = Some("income-tax-link"), value = Some(Messages("tai.gov.uk.text"))).toHtml</p>
+    <p >@Messages("tai.gatekeeper.refuse.message")</p>
+    <p  id="find-out-more">@Messages("tai.gatekeeper.findout.more") @Link.toExternalPage(url = Messages("tai.link.income_tax.url"), id = Some("income-tax-link"), value = Some(Messages("tai.gov.uk.text"))).toHtml</p>
 }

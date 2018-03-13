@@ -23,10 +23,10 @@
     user = Some(user),
     articleClasses = Some("full-width"),
     gaCustomTitle = None){
-<header class="page-header text">
+<header class="page-header">
     <h1>@Messages("tai.gatekeeper.refuse.title")</h1>
 </header>
 
-<p class="text">@Messages("tai.service.error.message")</p>
-<p class="text">@Link.toExternalPage(url = Messages("tai.hmrc.enquiry.url"), id=Some("no-update-incomes-link"), value = Some(Messages("tai.hmrc.enquiry.text"))).toHtml</p>
+<p >@Messages("tai.service.error.message")</p>
+<p >@Link.toExternalPage(url = Messages("tai.hmrc.enquiry.url"), id=Some("no-update-incomes-link"), value = Some(Messages("tai.hmrc.enquiry.text"))).toHtml</p>
 }

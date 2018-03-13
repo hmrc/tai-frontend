@@ -61,7 +61,7 @@
 @main(title = mainTitle, user = Some(user), pageHeader = Some(header), articleClasses = None, gaCustomTitle = Some(gaTitle)){
 
     @if(model.isPension){
-        <p class="text" aria-hidden="true">
+        <p  aria-hidden="true">
             @Link.toInternalPage(
                 id=Some("updatePension"),
                 url=ApplicationConfig.incomeFromEmploymentPensionLinkUrl,
@@ -74,7 +74,7 @@
             value=Some(messages("tai.pension.income.details.updateLinkText.screenReader"))).toHtml
         </p>
     }else {
-        <p class="text" aria-hidden="true">
+        <p  aria-hidden="true">
             @Link.toInternalPage(
                 id=Some("updateEmployer"),
                 url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(model.empId).url,
@@ -91,10 +91,10 @@
     <div class="grid-row">
         <div class="column-one-half subsection--wide">
                 <h2 class="flush">@messages("tai.income.details.estimatedTaxableIncome")</h2>
-                <p class="text break-word">@messages("tai.income.details.estimatedTaxableIncome.desc", model.empOrPensionName)</p>
+                <p class="break-word">@messages("tai.income.details.estimatedTaxableIncome.desc", model.empOrPensionName)</p>
                 <span class="heading-48 faded-text-dark" aria-hidden="true">@pounds(model.estimatedTaxableIncome)</span>
                 <span class="visuallyhidden">@Html(messages("tai.income.details.yourEstimatedTaxableIncome.screenReader", pounds(model.estimatedTaxableIncome)))</span>
-                <p class="text" aria-hidden="true">
+                <p  aria-hidden="true">
                     @Link.toInternalPage(
                         id=Some("updateIncome"),
                         url=controllers.routes.IncomeUpdateCalculatorController.howToUpdatePage(model.empId).url,
@@ -110,10 +110,10 @@
 
         <div class="column-one-half subsection--wide">
             <h2 class="flush">@messages("tai.income.details.incomeReceivedToDate")</h2>
-            <p class="text break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
+            <p class="break-word">@messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear))</p>
             <span class="heading-48 faded-text-dark" aria-hidden="true">@pounds(model.incomeReceivedToDate)</span>
             <span class="visuallyhidden">@Html(messages("tai.income.details.incomeReceivedToDate.screenReader", pounds(model.incomeReceivedToDate)))</span>
-            <p class="text" aria-hidden="true">
+            <p  aria-hidden="true">
                 @Link.toInternalPage(
                     id=Some("viewIncomeReceivedToDate"),
                     url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(model.empId)).url,
@@ -133,7 +133,7 @@
             <h2 class="flush--top">@messages("tai.taxCode")</h2>
             <span class="heading-48 faded-text-dark" aria-hidden="true">@model.taxCode</span>
             <span class="visuallyhidden">@messages("tai.income.details.yourTaxCode", model.taxCode)</span>
-            <p class="text">
+            <p >
                 @Link.toInternalPage(
                     id=Some("understandTaxCode"),
                     url=routes.YourTaxCodeController.taxCodes.toString,
@@ -144,11 +144,11 @@
         <div class="column-one-half">
             @if(model.isPension){
                 <h2 class="flush--top">@messages("tai.pensionNumber")</h2>
-                <p class="text" aria-hidden="true">@model.pensionOrPayrollNumber</p>
+                <p  aria-hidden="true">@model.pensionOrPayrollNumber</p>
                 <p class="visually-hidden">@messages("tai.pension.income.details.pensionNumber.screenReader", model.pensionOrPayrollNumber)</p>
             } else {
                 <h2 class="flush--top">@messages("tai.payRollNumber")</h2>
-                <p class="text" aria-hidden="true">@model.pensionOrPayrollNumber</p>
+                <p  aria-hidden="true">@model.pensionOrPayrollNumber</p>
                 <p class="visually-hidden">@messages("tai.employment.income.details.payrollNumber.screenReader", model.pensionOrPayrollNumber)</p>
             }
         </div>
@@ -184,7 +184,7 @@
 
         </dl>
         } else {
-        <p id="noCompanyBenefitsMessage" class="text">@Messages("tai.income.details.noCompanyBenefitsMsg", model.empOrPensionName)</p>
+        <p id="noCompanyBenefitsMessage" >@Messages("tai.income.details.noCompanyBenefitsMsg", model.empOrPensionName)</p>
         }
 
         <p class="icon icon-plus display-block">
