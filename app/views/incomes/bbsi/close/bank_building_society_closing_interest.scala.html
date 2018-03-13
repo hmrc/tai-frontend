@@ -29,7 +29,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(closingInterestForm),
-        backLocation = Some(controllers.income.bbsi.routes.BbsiCloseAccountController.captureCloseDate(id)),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.closeBankAccount.closingInterest.heading", TaxYearResolver.currentTaxYear.toString),
         preHeadingText = Messages("tai.closeBankAccount.preHeadingText")
@@ -53,7 +53,7 @@
                 ('_groupDivClass, "form-group" ),
                 ('_groupClass, "inline"),
                 ('_fieldsetAttributes, "id=closingInterestChoice" ),
-                ('_legendClass, "visuallyhidden"),
+                ('_legendSpanClass, "visually-hidden"),
                 ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Do you know how much interest you earned?:Yes" data-journey-val="Yes" data-dynamic-fields-hide="false" data-dynamic-fields="closingInterestEntry"""") ),
                 ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Do you know how much interest you earned?:No" data-journey-val="No" data-dynamic-fields-hide="true" data-dynamic-fields="closingInterestEntry"""") )
             )}

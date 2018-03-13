@@ -11,7 +11,10 @@ object FrontendBuild extends Build with MicroService {
   override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
   lazy val plugins : Seq[Plugins] = Seq(play.sbt.PlayScala, SbtWeb)
   override lazy val playSettings : Seq[Setting[_]] = Seq(
-    routesImport ++= Seq("uk.gov.hmrc.domain._", "_root_.uk.gov.hmrc.tai.binders.TaxYearObjectBinder._"),
+    routesImport ++= Seq(
+      "uk.gov.hmrc.domain._",
+      "_root_.uk.gov.hmrc.tai.binders.TaxYearObjectBinder._",
+      "_root_.uk.gov.hmrc.tai.binders.BenefitComponentTypeBinder._"),
     unmanagedResourceDirectories in Assets += baseDirectory.value / "app" / "assets",
     excludeFilter in Assets := "js*" || "sass*"
   ) ++ JavaScriptBuild.javaScriptUiSettings

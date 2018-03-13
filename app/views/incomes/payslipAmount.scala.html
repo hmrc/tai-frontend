@@ -25,7 +25,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(payslipForm),
-        backLocation = Some(controllers.routes.IncomeUpdateCalculatorController.payPeriodPage()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.payslip.title"),
         preHeadingText = Messages("tai.payslip.preHeading"))}
@@ -56,7 +56,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
                         <span class="error-message">@Messages(error.message)</span>
                     }
                 </label>
-                <input type="text" class="form-control flush--bottom @if(payslipForm.hasErrors){form-control-error}" id="totalSalary" name="totalSalary"/>
+                <input type="text" class="form-control @if(payslipForm.hasErrors){form-control-error}" id="totalSalary" name="totalSalary"/>
             </div>
             <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
         }

@@ -26,7 +26,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(income),
-        backLocation = Some(controllers.routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.incomes.edit.heading"),
         preHeadingText = Messages("tai.incomes.edit.preHeading"))}

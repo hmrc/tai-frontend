@@ -90,7 +90,7 @@ object TaxFreeAmountViewModelNew extends TaxAccountCalculator with ViewModelHelp
                            companyCarBenefits: Seq[CompanyCarBenefit]): Seq[TaxFreeAmountSummaryRowViewModel] = {
 
     val additionComponents: Seq[CodingComponent] = codingComponents.collect {
-      case cc @ CodingComponent(_: AllowanceComponentType, _, _, _) if !isPersonalAllowanceComponent(cc) => cc
+      case cc @ CodingComponent(_: AllowanceComponentType, _, _, _, _) if !isPersonalAllowanceComponent(cc) => cc
     }
     if (additionComponents.isEmpty) {
       Seq(TaxFreeAmountSummaryRowViewModel(

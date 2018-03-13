@@ -42,6 +42,7 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.util.{DateFormatConstants, FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -55,7 +56,8 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
   with FormValuesConstants
   with JourneyCacheConstants
   with RemoveCompanyBenefitStopDateConstants
-  with DateFormatConstants {
+  with DateFormatConstants
+  with JsoupMatchers {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -242,7 +244,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() mustBe Messages("tai.canWeContactByPhone.title")
         doc.getElementsByClass("heading-secondary").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
-        doc.getElementById("backLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url
+        doc must haveBackLink
         doc.getElementById("cancelLink").attr("href") mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
     }
@@ -263,7 +265,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() mustBe Messages("tai.canWeContactByPhone.title")
         doc.getElementsByClass("heading-secondary").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
-        doc.getElementById("backLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit.url
+        doc must haveBackLink
         doc.getElementById("cancelLink").attr("href") mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
       }
     }
@@ -504,7 +506,6 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
     override implicit val partialRetriever: PartialRetriever = mock[PartialRetriever]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
-    override val employmentService: EmploymentService = mock[EmploymentService]
     override val benefitsService: BenefitsService = mock[BenefitsService]
 
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))

@@ -68,26 +68,43 @@ object IncomeSourceSummaryViewModel {
 
   private def companyBenefitViewModels(empId: Int, benefits: Benefits): Seq[CompanyBenefitViewModel] = {
     val ccBenVMs = benefits.companyCarBenefits collect {
-      case ccBen: CompanyCarBenefit if ccBen.employmentSeqNo == empId =>
+      case CompanyCarBenefit(`empId`, grossAmount, _, _) =>
         val changeUrl = controllers.routes.CompanyCarController.redirectCompanyCarSelection(empId).url
-        CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), ccBen.grossAmount, changeUrl)
+        CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), grossAmount, changeUrl)
     }
-    val otherBenVMs = benefits.otherBenefits collect {
 
-      case carFuelBen @GenericBenefit(CarFuelBenefit, employmentId,_) =>{
-        val name = Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit")
+//    val medBenVMs = benefits.otherBenefits collect {
+//      case GenericBenefit(MedicalInsurance, Some(`empId`), amount) =>
+//        val changeUrl = controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform).url
+//        CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"), amount, changeUrl)
+//    }
+
+    val medBenVMs = benefits.otherBenefits collect {
+      case GenericBenefit(MedicalInsurance, Some(`empId`), amount) =>
+        val benefitName = Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance")
+        val changeUrl = controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform).url
+        CompanyBenefitViewModel(benefitName, amount, changeUrl)
+    }
+
+
+    val ccFuelBen = benefits.otherBenefits collect {
+      case GenericBenefit(CarFuelBenefit, Some(`empId`), amount) =>
+        val benefitName = Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit")
         val changeUrl = ApplicationConfig.companyCarFuelBenefitUrl
-        CompanyBenefitViewModel(name, carFuelBen.amount, changeUrl)
-      }
-      case otherBen: GenericBenefit if otherBen.employmentId.isDefined && otherBen.employmentId.get == empId =>
-        val name = Messages(s"tai.taxFreeAmount.table.taxComponent.${otherBen.benefitType.toString}")
-        val changeSvc = if (name == Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance")) TaiConstants.MedicalBenefitsIform else TaiConstants.CompanyBenefitsIform
-        val changeUrl = controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(changeSvc).url
-        CompanyBenefitViewModel(name, otherBen.amount, changeUrl)
+        CompanyBenefitViewModel(benefitName, amount, changeUrl)
     }
-    ccBenVMs ++ otherBenVMs
-  }
 
+
+    val otherBenVMs = benefits.otherBenefits collect {
+      case GenericBenefit(benefitType, Some(`empId`), amount) if benefitType != MedicalInsurance && benefitType != CarFuelBenefit =>
+        val benefitName = Messages(s"tai.taxFreeAmount.table.taxComponent.${benefitType.toString}")
+        val changeUrl = controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(empId, benefitType).url
+        CompanyBenefitViewModel(benefitName, amount, changeUrl)
+    }
+
+    ccBenVMs ++ medBenVMs ++ ccFuelBen ++ otherBenVMs
+
+  }
 }
 
 case class CompanyBenefitViewModel(name: String, amount: BigDecimal, changeUrl: String)

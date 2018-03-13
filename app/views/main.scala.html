@@ -106,6 +106,8 @@
         "cookieDomain" -> ApplicationConfig.analyticsHost,
         "confidenceLevel" -> user.map(_.authContext.user.confidenceLevel.toString).getOrElse(false),
         "authProvider" -> authProvider
+
+
     ) ++ gaDimensions.getOrElse(Map.empty)
 }
 
@@ -151,20 +153,6 @@
     @if(gaCallsAdditionalJs.isDefined && gaCallsAdditionalJs.get.toString.trim != ""){
         <script type="text/javascript">@gaCallsAdditionalJs.get</script>
     }
-
-    <script>
-        /* Temp - pending AF update to > 3.0.2 */
-        document.addEventListener("DOMContentLoaded", function(event) {
-            window.GOVUK.performance.sendGoogleAnalyticsEvent = function (category, event, label) {
-              if (window.ga && typeof(window.ga) === 'function') {
-                ga('send', 'event', category, event, label);
-              } else {
-                _gaq.push(['_trackEvent', category, event, label, undefined, true]);
-              }
-            };
-            window.GOVUK.performance.stageprompt.setupForGoogleAnalytics();
-        });
-    </script>
 }
 
 @mustacheMap = @{

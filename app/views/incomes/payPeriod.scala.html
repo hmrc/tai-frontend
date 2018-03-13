@@ -27,22 +27,24 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(payPeriodForm),
-        backLocation = Some(controllers.routes.IncomeUpdateCalculatorController.workingHoursPage()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.payPeriod.title"),
         preHeadingText = Messages("tai.payPeriod.preHeading"))}
 
 @howOftenPanel = @{
+    def errorMessage = Messages("tai.payPeriod.error.form.incomes.other.mandatory")
+    def labelMessage = Messages("tai.payPeriod.howOften")
     val errorSpan = payPeriodForm.errors.map{error =>
             if(error.key == "otherInDays"){
-                s"""<span class="error-notification">${Messages("tai.payPeriod.error.form.incomes.other.mandatory")}</span>"""
+                s"""<span class="error-message">${errorMessage}</span>"""
             }
         }.headOption.getOrElse("")
 
     s"""
     <div class="data-howOften panel-indent ${if(isNotDaysError) "js-hidden" else ""}" id="howOftenPanel">
-        <div class="${if(errorSpan!="") "form-field--error"}">
-            <label for="otherInDays" class="form-label">${Messages("tai.payPeriod.howOften")}</label>
+        <div class="${if(errorSpan!="") "form-group-error"}">
+            <label for="otherInDays" class="form-label">${labelMessage}</label>
             ${errorSpan}
             <input type="text" class="form-control flush--bottom" id="otherInDays" name="otherInDays" />
         </div>
@@ -58,7 +60,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     employerName = employerName,
     gaCustomTitle = None
 ){
-    <section class="section flush--bottom">
+    <div class="section flush--bottom">
         @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
             @{inputRadioGroupNewStyling(
                 field=payPeriodForm("payPeriod"),
@@ -66,15 +68,15 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
                 legend=Messages("tai.payPeriod.legend"),
                 legendHint=None,
                 ('_groupDivClass, "form-group" ),
-                ('_legendClass, "visuallyhidden"),
+                ('_legendSpanClass, "visually-hidden"),
                 ('_fieldsetAttributes, "id=payPeriod" ),
                 ('_radioOption1Attributes, Html("""data-dynamic-fields="howOften" data-dynamic-fields-hide="true"""") ),
                 ('_radioOption2Attributes, Html("""data-dynamic-fields="howOften" data-dynamic-fields-hide="true"""") ),
                 ('_radioOption3Attributes, Html("""data-dynamic-fields="howOften" data-dynamic-fields-hide="true"""") ),
-                ('_radioOption4Attributes, Html(s"""data-dynamic-fields="howOften" data-dynamic-fields-hide="false" ${if(!isNotDaysError) """checked="checked"""" }""") ),
+                ('_radioOption4Attributes, Html(s"""data-dynamic-fields="howOften" data-dynamic-fields-hide="false" ${if(!isNotDaysError) {"checked"} else {""}} """) ),
                 ('_radioOption4AdditionalMarkup, Html(howOftenPanel))
             )}
             <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
         }
-    </section>
+    </div>
 }

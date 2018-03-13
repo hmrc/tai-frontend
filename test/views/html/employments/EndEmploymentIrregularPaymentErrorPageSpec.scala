@@ -28,7 +28,7 @@ class EndEmploymentIrregularPaymentErrorPageSpec extends TaiViewSpec with Irregu
 
   "Irregular pay page" must {
     behave like pageWithTitle(messages("tai.irregular.preHeadingText"))
-    behave like pageWithBackButton(controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove(model.empId))
+    behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(model.empId))
     behave like pageWithCombinedHeader(messages("tai.irregular.preHeadingText"), messages("tai.irregular.mainHeadingText", model.employerName))
     behave like pageWithContinueButtonForm("/check-income-tax/end-employment/handle-irregular-payment/1")
@@ -50,7 +50,7 @@ class EndEmploymentIrregularPaymentErrorPageSpec extends TaiViewSpec with Irregu
     "display error message" when {
       "form has error" in {
         val errorView = views.html.employments.EndEmploymentIrregularPaymentError(formWithErrors, model)
-        doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-notification")
+        doc(errorView) must haveClassWithText(messages("tai.error.chooseOneOption"), "error-message")
       }
     }
   }

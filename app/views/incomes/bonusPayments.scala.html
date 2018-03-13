@@ -22,17 +22,12 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.forms.inputRadioGroupNewStyling
 
-@backLinkLocation=@{
-    if(paySlipDeductions){controllers.routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage()}
-    else{controllers.routes.IncomeUpdateCalculatorController.payslipDeductionsPage()}
-}
-
 @gaEventActionString = @{"Payslip deductions"}
 
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(bonusPaymentsForm),
-        backLocation = Some(backLinkLocation),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.bonusPayments.title"),
         preHeadingText = Messages("tai.bonusPayments.preHeading"))}
@@ -56,8 +51,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             legendHint=None,
             ('_groupDivClass, "form-group" ),
             ('_groupClass, "inline" ),
-            ('_legendClass, "section flush"),
-            ('_legendSpanClass, "heading-24"),
+            ('_legendSpanClass, "form-label-bold"),
             ('_fieldsetAttributes, "id=bonusPayments" ),
             ('_radioOption1Attributes, Html("""data-dynamic-fields="moreThisYear" data-dynamic-fields-hide="false"""") ),
             ('_radioOption2Attributes, Html("""data-dynamic-fields="moreThisYear" data-dynamic-fields-hide="true"""") )

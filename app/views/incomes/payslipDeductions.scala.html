@@ -27,7 +27,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(payslipDeductionsForm),
-        backLocation = Some(controllers.routes.IncomeUpdateCalculatorController.payslipAmountPage()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.payslipDeductions.title"),
         preHeadingText = Messages("tai.payslipDeductions.preHeading"))}
@@ -41,7 +41,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     gaCustomTitle = None
     ){
 
-    <section>
+    <div>
         <p class="text heading-24 flush--top">@Messages("tai.payslipDeductions.question")</p>
         <p class="text">@Messages("tai.payslipDeductions.tellUs")</p>
         <p class="text">@Messages("tai.payslipDeductions.dontPayTax")</p>
@@ -55,11 +55,11 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
                 legendHint=None,
                 ('_groupDivClass, "form-group" ),
                 ('_groupClass, "inline" ),
-                ('_legendClass, "visuallyhidden"),
+                ('_legendSpanClass, "visually-hidden"),
                 ('_fieldsetAttributes, "id=payslipDeductions" )
             )}
             <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
         }
-    </section>
+    </div>
 
 }

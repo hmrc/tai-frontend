@@ -31,7 +31,7 @@ class BankBuildingSocietyAccountsDecisionSpec extends TaiViewSpec
 
     behave like pageWithTitle(messages("tai.bbsi.decision.preHeading"))
     behave like pageWithHeader(messages("tai.bbsi.decision.heading", "TestBank1"))
-    behave like pageWithBackButton(controllers.income.bbsi.routes.BbsiController.accounts())
+    behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.income.bbsi.routes.BbsiController.accounts())
     behave like pageWithContinueButtonForm("/check-income-tax/income/bank-building-society-savings/accounts/1/decision")
 
@@ -56,8 +56,8 @@ class BankBuildingSocietyAccountsDecisionSpec extends TaiViewSpec
 
       val errorDoc = doc(view)
 
-      errorDoc must haveElementAtPathWithText(".error-notification", Messages("tai.bbsi.decision.error.selectOption"))
-      errorDoc must haveElementAtPathWithClass("form div", "form-field--error")
+      errorDoc must haveElementAtPathWithText(".error-message", Messages("tai.bbsi.decision.error.selectOption"))
+      errorDoc must haveElementAtPathWithClass("form div", "form-group-error")
     }
 
     "have three radio buttons with relevant text" in {

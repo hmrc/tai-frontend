@@ -252,7 +252,7 @@ tai.employmentConfirmation.heading=Your update about an employment has been rece
 tai.employmentConfirmation.back=Return to your Income Tax Summary
 
 ##Add Employment page
-tai.addEmployment.addEmploymentJourneyLink=Add a missing Employment
+tai.addEmployment.addEmploymentJourneyLink=Add a missing employment
 tai.addEmployment.addNameForm.title=What is the name of the employer you want to add?
 tai.addEmployment.startDateForm.title=When did you start working for {0}?
 tai.addEmployment.startDateForm.customGaTitle=When did you start working for this employer?
@@ -1555,3 +1555,10 @@ tai.remove.company.benefit.total.value.whatHappens.desc=Your employer will tell 
 
 tai.remove.company.benefit.beforeTaxYearEnd=Before {0}
 tai.remove.company.benefit.onOrAfterTaxYearEnd=On or after {0}
+
+## Update Or Remove Company Benefit
+tai.benefits.updateOrRemove.journey.preHeader=Update or remove company benefit
+tai.benefits.updateOrRemove.decision.title=Do you currently receive this company benefit?
+tai.benefits.updateOrRemove.decision.heading=Do you currently get {0} benefit from {1}?
+tai.benefits.updateOrRemove.decision.radio.yes=Yes, I currently get this benefit
+tai.benefits.updateOrRemove.decision.radio.no=No, I do not get this benefit any more

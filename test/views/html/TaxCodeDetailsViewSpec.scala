@@ -26,7 +26,7 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
   "Tax code view page" must {
     behave like pageWithTitle("main heading")
     behave like pageWithCombinedHeader(messages("tai.taxCode.preHeader"),"main heading")
-    behave like pageWithBackButton(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    behave like pageWithBackLink
 
     "display the provided lede message" in {
       doc must haveParagraphWithText("lede message")
