@@ -36,7 +36,7 @@ case class RemoveCompanyBenefitCheckYourAnswersViewModel(tableHeader: String,
     val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.whatYouToldUs"),
       Messages("tai.noLongerGetBenefit"),
-      ""
+      controllers.benefits.routes.CompanyBenefitController.decision().url
     )
 
     val stopDateLine = CheckYourAnswersConfirmationLine(
