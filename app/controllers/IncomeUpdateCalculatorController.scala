@@ -21,6 +21,7 @@ import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTai}
 import org.joda.time.LocalDate
 import play.api.Play.current
+import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
@@ -609,7 +610,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
       sessionData.incomeCalculation.map { data =>
         val moreThisYear = data.bonusPaymentsForm.map(form => form.bonusPaymentsMoreThisYear.getOrElse("")).getOrElse("")
         def fetchNonEmptyMessage = moreThisYear match {
-          case "Yes" => "tai.bonusPaymentsAmount.year.error"
+          case "Yes" => Messages("tai.bonusPaymentsAmount.year.error")
           case _ => data.payPeriodForm.flatMap(_.payPeriod) match {
             case Some("monthly") => "tai.bonusPaymentsAmount.month.error"
             case Some("fortnightly") => "tai.bonusPaymentsAmount.fortnightly.error"

@@ -45,7 +45,6 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     employerName = employerName,
     gaCustomTitle = None
     ) {
-    <section class="section flush--bottom soft--top">
     @form(action = controllers.routes.IncomeUpdateCalculatorController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
 
         @{inputRadioGroupNewStyling(
@@ -73,7 +72,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             ('_fieldsetAttributes, "id=bonusPaymentsMoreThisYear" )
         )}
 
-        <p class="text section flush--bottom"><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
+        <div class="section">
+            <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
+        </div>
     }
-    </section>
 }

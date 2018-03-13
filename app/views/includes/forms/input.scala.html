@@ -19,6 +19,7 @@
         fieldErrorsEnabled: Boolean = true,
         labelText: String = "",
         hintText: String = "",
+        hintClass: String = "form-hint",
         bold: Boolean = false,
         classes: Seq[String] = Seq.empty,
         panel: Boolean = false,
@@ -33,18 +34,18 @@
         attrPattern: String = "",
         attrTitle: String = "",
         attrDescribedBy: String = "",
-        data: String = "",
-        hintClass: String = ""
+        data: String = ""
 )(implicit lang: Lang, m: Messages)
 
 <div class="form-group @if(fieldErrorsEnabled && field.hasErrors) {form-group-error}  @if(parentDateAttr) { form-group-@parentDateAttr} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}" @if(data) {data-reveal="@data"}>
-    <label class="form-label@if(bold) {-bold}" for="@field.id">
+    <label for="@field.id">
         @if(labelText.nonEmpty) {
-            @if(labelHidden) { <span class="visuallyhidden">}
+            <span class="@if(labelHidden){visually-hidden}else{form-label@if(bold){-bold}}">
             @Messages(labelText)
-            @if(labelHidden) {</span>}
+            </span>
         }
-        @if(hintText.nonEmpty) { <span class="form-hint @hintClass" id="@{ field.id }-hint">@Messages(hintText)</span> }
+        @if(hintText.nonEmpty) { <span class="@hintClass" id="@{ field.id }-hint">@Messages(hintText)</span> }
+
         @if(fieldErrorsEnabled && field.hasErrors) {
             <span class="error-message">
                 @field.errors.map(_.message)
