@@ -405,6 +405,7 @@ class IncomeUpdateCalculatorNewControllerSpec extends PlaySpec with FakeTaiPlayA
       "more this year from journey cache returns yes" in {
         val sut = createSut
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_BonusPaymentsThisYearKey))(any())).thenReturn(Future.successful(Some("Yes")))
+        when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(Some("Weekly")))
         val result = sut.bonusOvertimeAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
@@ -415,6 +416,7 @@ class IncomeUpdateCalculatorNewControllerSpec extends PlaySpec with FakeTaiPlayA
       "more this year from journey cache does not return yes" in {
         val sut = createSut
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_BonusPaymentsThisYearKey))(any())).thenReturn(Future.successful(None))
+        when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(Some("Weekly")))
         val result = sut.bonusOvertimeAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 

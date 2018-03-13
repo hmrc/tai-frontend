@@ -356,11 +356,12 @@ trait IncomeUpdateCalculatorNewController extends TaiBaseController
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
           moreThisYear <- journeyCacheService.currentValue(UpdateIncome_BonusPaymentsThisYearKey)
+          payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
         } yield {
           if (moreThisYear.contains("Yes"))
             Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), "year", id, employerName = Some(employerName)))
           else
-            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), moreThisYear.getOrElse(""), id, Some(employerName)))
+            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), payPeriod.getOrElse(""), id, Some(employerName)))
         }
   }
 
