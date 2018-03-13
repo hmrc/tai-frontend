@@ -52,7 +52,7 @@
                         @Link.toInternalPage(id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
                                              url = row.link.href,
                                              cssClasses = Some("float--right"),
-                                             value = Some(Messages("tai.updateOrRemoveWithVisuallyHiddenDescription", row.link.value)),
+                                             value = Some(s"""${Messages("tai.updateOrRemove")} <span class="visuallyhidden">${row.link.value}</span>"""),
                                              dataAttributes = Some(Map("journey-click" -> s"button - click:$gaEventActionString:${row.link.value}"))).toHtml
                     </td>
                     }
