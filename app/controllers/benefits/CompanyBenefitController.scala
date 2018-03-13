@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.domain.BenefitComponentType
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, TaiService}
 import uk.gov.hmrc.tai.util.{AuditConstants, JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
+import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
 import scala.concurrent.Future
 
@@ -73,12 +74,23 @@ trait CompanyBenefitController extends TaiBaseController
             } yield {
               employment match {
                 case Some(employment) =>
-                  val cache = Map(EndCompanyBenefit_EmploymentNameKey -> employment.name)
+
+                  val referer = currentCache.get(EndCompanyBenefit_RefererKey) match{
+                    case Some(value) => value
+                    case None => request.headers.get("Referer").getOrElse(controllers.routes.TaxAccountSummaryController.onPageLoad.url)
+                  }
+
+                  val viewModel = CompanyBenefitDecisionViewModel(
+                    currentCache(EndCompanyBenefit_BenefitTypeKey),
+                    employment.name,
+                    UpdateOrRemoveCompanyBenefitDecisionForm.form
+                  )
+                  val cache = Map(EndCompanyBenefit_EmploymentNameKey -> employment.name,
+                                  EndCompanyBenefit_BenefitNameKey -> viewModel.benefitName,
+                                  EndCompanyBenefit_RefererKey -> referer)
+
                   journeyCacheService.cache(cache).map { _ =>
-                    Ok(views.html.benefits.updateOrRemoveCompanyBenefitDecision(
-                      UpdateOrRemoveCompanyBenefitDecisionForm.form,
-                      currentCache(EndCompanyBenefit_BenefitTypeKey),
-                      employment.name))
+                    Ok(views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel))
                   }
                 case None => throw new RuntimeException("No employment found")
               }
@@ -94,11 +106,11 @@ trait CompanyBenefitController extends TaiBaseController
           UpdateOrRemoveCompanyBenefitDecisionForm.form.bindFromRequest.fold(
             formWithErrors => {
               journeyCacheService.currentCache map { currentCache =>
-                BadRequest(views.html.benefits.updateOrRemoveCompanyBenefitDecision(
-                  formWithErrors,
-                  currentCache(EndCompanyBenefit_BenefitTypeKey),
-                  currentCache(EndCompanyBenefit_EmploymentNameKey))
-                )
+                  val viewModel = CompanyBenefitDecisionViewModel(
+                    currentCache(EndCompanyBenefit_BenefitTypeKey),
+                    currentCache(EndCompanyBenefit_EmploymentNameKey),
+                    formWithErrors)
+                  BadRequest(views.html.benefits.updateOrRemoveCompanyBenefitDecision(viewModel))
               }
             },
             success =>{

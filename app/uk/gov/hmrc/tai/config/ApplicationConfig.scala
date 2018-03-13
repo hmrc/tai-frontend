@@ -18,9 +18,12 @@ package uk.gov.hmrc.tai.config
 
 import play.api.Play._
 import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.tai.model.tai.TaxYear
 import views.html.helper
 
 object ApplicationConfig extends ServicesConfig {
+
+  def statusRange = s"${TaxYear().prev.year}-${TaxYear().year}"
 
   lazy val citizenAuthHost = fetchUrl("citizen-auth")
   lazy val companyAuthUrl = fetchUrl("company-auth")
@@ -56,7 +59,7 @@ object ApplicationConfig extends ServicesConfig {
   lazy val mainContentHeaderPartialUrl = s"${fetchUrl("header-service")}/personal-account/integration/main-content-header"
   lazy val sa16UpliftUrl = s"${fetchUrl("identity-verification-frontend")}/mdtp/uplift"
   lazy val taiFrontendServiceUrl = s"$taiServiceUrl/income-tax"
-  lazy val taxYouPaidStatus = s"${fetchUrl("taxcalc-frontend")}/tax-you-paid/status"
+  lazy val taxYouPaidStatus = s"${fetchUrl("taxcalc-frontend")}/tax-you-paid/$statusRange/status"
   lazy val gg_web_context = configuration.getString(s"$env.external-url.gg.web-context").getOrElse("gg")
   lazy val ida_web_context = configuration.getString(s"$env.external-url.ida.web-context").getOrElse("ida")
   lazy val hardshipHelpBase = configuration.getString(s"govuk-tax.$env.external-url.hardship-help.host").getOrElse("")
