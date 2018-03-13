@@ -73,12 +73,6 @@ object IncomeSourceSummaryViewModel {
         CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), grossAmount, changeUrl)
     }
 
-//    val medBenVMs = benefits.otherBenefits collect {
-//      case GenericBenefit(MedicalInsurance, Some(`empId`), amount) =>
-//        val changeUrl = controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform).url
-//        CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"), amount, changeUrl)
-//    }
-
     val medBenVMs = benefits.otherBenefits collect {
       case GenericBenefit(MedicalInsurance, Some(`empId`), amount) =>
         val benefitName = Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance")
