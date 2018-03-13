@@ -96,8 +96,7 @@ class RemoveCompanyBenefitCheckYourAnswersViewModelSpec extends PlaySpec with Fa
     "Before 6 April",
     Some("1000000"),
     "Yes",
-    Some("0123456789"),
-    "Url"
+    Some("0123456789")
   )
 
 }

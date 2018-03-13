@@ -28,7 +28,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(firstPayForm),
-        backLocation = Some(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addEmployment.employmentFirstPay.title", employerName),
         preHeadingText = Messages("tai.addEmployment.addEmploymentJourneyLink"))}

@@ -27,15 +27,11 @@ class RemoveCompanyBenefitCheckYourAnswersSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("tai.checkYourAnswers"))
     behave like pageWithCombinedHeader(messages("tai.benefits.ended.journey.preHeader"), messages("tai.checkYourAnswers"))
     behave like pageWithButtonForm("/check-income-tax/remove-company-benefit/submit-your-answers", messages("tai.confirmAndSend"))
-    behave like pageWithCancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel)
     behave like pageWithCheckYourAnswersSummary
 
-    "display a back button" which {
-      "links to the add telephone form page" when {
-        "page is displayed" in {
-          doc must haveBackButtonWithUrl(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url)
-        }
-      }
+    "display a back button" in {
+      doc must haveBackLink
     }
 
     "display the header for the check your answers section" in {
@@ -73,7 +69,7 @@ class RemoveCompanyBenefitCheckYourAnswersSpec extends TaiViewSpec {
 
   }
 
-  def viewModel = RemoveCompanyBenefitCheckYourAnswersViewModel("Awesome benefit from TestCompany","Hello","Before 6 April",Some("10000"),"Yes",Some("123456789"),"Url")
+  def viewModel = RemoveCompanyBenefitCheckYourAnswersViewModel("Awesome benefit from TestCompany","Hello","Before 6 April",Some("10000"),"Yes",Some("123456789"))
 
   override def view = views.html.benefits.removeCompnanyBenefitCheckYourAnswers(viewModel)
 }

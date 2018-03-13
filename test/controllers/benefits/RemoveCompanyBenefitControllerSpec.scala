@@ -42,6 +42,8 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
+import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, TaiService}
 import uk.gov.hmrc.tai.util.{DateFormatConstants, FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -55,7 +57,8 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
   with FormValuesConstants
   with JourneyCacheConstants
   with RemoveCompanyBenefitStopDateConstants
-  with DateFormatConstants {
+  with DateFormatConstants
+  with JsoupMatchers {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -248,8 +251,8 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() mustBe Messages("tai.canWeContactByPhone.title")
         doc.getElementsByClass("heading-secondary").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
-        doc.getElementById("backLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.stopDate.url
-        doc.getElementById("cancelLink").attr("href") mustBe cache(EndCompanyBenefit_RefererKey)
+        doc must haveBackLink
+        doc.getElementById("cancelLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
       }
     }
 
@@ -270,8 +273,8 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() mustBe Messages("tai.canWeContactByPhone.title")
         doc.getElementsByClass("heading-secondary").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
-        doc.getElementById("backLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit.url
-        doc.getElementById("cancelLink").attr("href") mustBe cache(EndCompanyBenefit_RefererKey)
+        doc must haveBackLink
+        doc.getElementById("cancelLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
       }
     }
   }
@@ -474,6 +477,22 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         redirectLocation(result).get mustBe controllers.benefits.routes.RemoveCompanyBenefitController.confirmation().url
         verify(SUT.journeyCacheService, times(1)).flush()(any())
       }
+    }
+  }
+
+  "cancel" must {
+    "flush the cache and redirect to start of journey" in {
+      val SUT = createSUT
+
+      when(SUT.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("Url")))
+      when(SUT.journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+
+      val result = SUT.cancel(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+
+      redirectLocation(result).get mustBe "Url"
+      verify(SUT.journeyCacheService, times(1)).flush()(any())
+      verify(SUT.journeyCacheService, times(1)).mandatoryValues(any())(any())
     }
   }
 

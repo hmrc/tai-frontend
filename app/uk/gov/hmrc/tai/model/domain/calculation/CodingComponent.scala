@@ -18,4 +18,8 @@ package uk.gov.hmrc.tai.model.domain.calculation
 
 import uk.gov.hmrc.tai.model.domain.TaxComponentType
 
-case class CodingComponent(componentType:TaxComponentType, employmentId:Option[Int], amount:BigDecimal, description:String)
+case class CodingComponent(componentType:TaxComponentType,
+                           employmentId:Option[Int],
+                           amount:BigDecimal,
+                           description:String,
+                           inputAmount: Option[BigDecimal] = None)

@@ -23,18 +23,16 @@ import play.api.i18n.Messages.Implicits._
 
 class CompanyBenefitDecisionViewModel(val benefitName:String,
                                       val employerName:String,
-                                      val decisionForm: Form[Option[String]],
-                                      val referer:String)
+                                      val decisionForm: Form[Option[String]])
 
 object CompanyBenefitDecisionViewModel{
 
   def apply(benefitType:String,
             employerName:String,
-            decisionForm: Form[Option[String]],
-            referer:String): CompanyBenefitDecisionViewModel = {
+            decisionForm: Form[Option[String]]): CompanyBenefitDecisionViewModel = {
     val formattedBenefitName = (raw"(B|b)enefit(s)?".r replaceAllIn(
       Messages(s"tai.taxFreeAmount.table.taxComponent.${benefitType}"),"")).trim
-    new CompanyBenefitDecisionViewModel(formattedBenefitName,employerName,decisionForm,referer)
+    new CompanyBenefitDecisionViewModel(formattedBenefitName,employerName,decisionForm)
   }
 
 }

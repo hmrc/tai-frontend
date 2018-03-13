@@ -27,7 +27,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(dateForm),
-        backLocation =Some(controllers.employments.routes.AddEmploymentController.addEmploymentName()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addEmployment.startDateForm.title", employmentName),
         preHeadingText = Messages("tai.addEmployment.addEmploymentJourneyLink")

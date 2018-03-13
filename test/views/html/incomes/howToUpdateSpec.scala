@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class howToUpdateSpec extends TaiViewSpec {
 
   "How to update view" should {
-    behave like pageWithBackButton(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId: Int))
+    behave like pageWithBackLink
     behave like pageWithCombinedHeader(
       messages("tai.howToUpdate.preHeading"),
       messages("tai.howToUpdate.title"))

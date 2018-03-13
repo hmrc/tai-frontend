@@ -29,8 +29,8 @@
 @header = @{
 ptaHeader(
 formForErrorSummary = Some(viewModel.decisionForm),
-backLocation=Some(controllers.routes.TaxAccountSummaryController.onPageLoad),
 mainHeadingText = Messages("tai.benefits.updateOrRemove.decision.heading",viewModel.benefitName,viewModel.employerName),
+displayBackLink = true,
 preHeadingText = Messages("tai.benefits.updateOrRemove.journey.preHeader"))
 }
 
@@ -62,5 +62,5 @@ gaCustomTitle = None){
 
     }
 
-    @cancelLink(Call("GET",viewModel.referer))
+    @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url))
 }

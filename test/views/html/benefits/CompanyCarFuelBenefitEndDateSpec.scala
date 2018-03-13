@@ -34,7 +34,7 @@ class CompanyCarFuelBenefitEndDateSpec extends TaiViewSpec {
       messages("tai.companyCar.fuelBenefitEndDate.sub.heading"),
       messages("tai.companyCar.fuelBenefitEndDate.heading"))
 
-    behave like pageWithBackButton(routes.CompanyCarController.getCompanyCarEndDate())
+    behave like pageWithBackLink
 
     behave like pageWithCancelLink(routes.TaxFreeAmountControllerNew.taxFreeAmount())
 
