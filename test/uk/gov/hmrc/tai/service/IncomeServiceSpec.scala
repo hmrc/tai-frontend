@@ -151,7 +151,7 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
     "return calculated pay" when {
       "cache is empty and start date is not available" in {
         val sut = createSUT
-        val payDetails = PayDetails("", Some(0), Some(0), Some(0), Some(0), None)
+        val payDetails = PayDetails("", Some(0), None, Some(0), None, None)
 
         when(sut.taiConnector.calculateEstimatedPay(payDetails)).thenReturn(Future.successful(CalculatedPay(None, None)))
         Await.result(sut.calculateEstimatedPay(Map.empty[String, String], None), 5.seconds) mustBe CalculatedPay(None, None)

@@ -71,18 +71,22 @@ trait IncomeService extends JourneyCacheConstants {
 
   def calculateEstimatedPay(cache: Map[String, String], startDate: Option[LocalDate])(implicit hc: HeaderCarrier): Future[CalculatedPay] = {
 
+    def isCacheAvailable(key: String): Option[BigDecimal]  =
+      if (cache.contains(key)) Some(BigDecimal(FormHelper.convertCurrencyToInt(cache.get(key)))) else None
+
+
     val paymentFrequency = cache.getOrElse(UpdateIncome_PayPeriodKey, "")
     val pay = FormHelper.convertCurrencyToInt(cache.get(UpdateIncome_TotalSalaryKey))
-    val taxablePay = BigDecimal(FormHelper.convertCurrencyToInt(cache.get(UpdateIncome_TaxablePayKey)))
+    val taxablePay = isCacheAvailable(UpdateIncome_TaxablePayKey)
     val days = cache.getOrElse(UpdateIncome_OtherInDaysKey, "0").toInt
-    val bonus = BigDecimal(FormHelper.convertCurrencyToInt(cache.get(UpdateIncome_BonusOvertimeAmountKey)))
+    val bonus = isCacheAvailable(UpdateIncome_BonusOvertimeAmountKey)
 
     val payDetails = PayDetails(
       paymentFrequency = paymentFrequency,
       pay = Some(pay),
-      taxablePay = Some(taxablePay),
+      taxablePay = taxablePay,
       days = Some(days),
-      bonus = Some(bonus),
+      bonus = bonus,
       startDate = startDate
     )
 
@@ -91,8 +95,9 @@ trait IncomeService extends JourneyCacheConstants {
 
   def editableIncomes(taxCodeIncomes: Seq[TaxCodeIncome]): Seq[TaxCodeIncome] = {
     taxCodeIncomes.filter {
-      income => (income.componentType == EmploymentIncome || income.componentType == PensionIncome) &&
-        income.status != Ceased
+      income =>
+        (income.componentType == EmploymentIncome || income.componentType == PensionIncome) &&
+          income.status != Ceased
     }
   }
 
