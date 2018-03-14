@@ -16,7 +16,6 @@
 
 package views.html
 
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryRowViewModel, TaxFreeAmountViewModelNew}
 
@@ -44,8 +43,6 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
         doc must haveElementAtPathWithText("section[id=taxFreeAmountSummary] p", messages("tai.taxFreeAmount.summarysection.p2"))
         doc must haveElementAtPathWithText("section[id=taxFreeAmountSummary] li", messages("tai.taxFreeAmount.summarysection.bullet1"))
         doc must haveElementAtPathWithText("section[id=taxFreeAmountSummary] li", messages("tai.taxFreeAmount.summarysection.bullet2"))
-        doc must haveLinkWithUrlWithID("taxFreeAllowanceChangeLink", ApplicationConfig.taxFreeAllowanceLinkUrl)
-        doc must haveElementAtPathWithText("section[id=taxFreeAmountSummary] a", messages("tai.taxFreeAllowance.detailsWrongIformLink"))
       }
     }
 

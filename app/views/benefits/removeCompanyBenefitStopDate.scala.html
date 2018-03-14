@@ -66,5 +66,5 @@ gaCustomTitle = None){
 
     }
 
-    @cancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad)
+    @cancelLink(Call("GET",controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url))
 }

@@ -252,6 +252,7 @@ POST        /remove-company-benefit/telephone-number                            
 GET         /remove-company-benefit/check-your-answers                                 controllers.benefits.RemoveCompanyBenefitController.checkYourAnswers
 POST        /remove-company-benefit/submit-your-answers                                controllers.benefits.RemoveCompanyBenefitController.submitYourAnswers
 GET         /remove-company-benefit/success                                            controllers.benefits.RemoveCompanyBenefitController.confirmation
+GET         /remove-company-benefit/cancel                                             controllers.benefits.RemoveCompanyBenefitController.cancel
 
 ## Company benefit
 GET         /redirect-company-benefit/:employmentId/:benefitType                       controllers.benefits.CompanyBenefitController.redirectCompanyBenefitSelection(employmentId: Int, benefitType: uk.gov.hmrc.tai.model.domain.BenefitComponentType)

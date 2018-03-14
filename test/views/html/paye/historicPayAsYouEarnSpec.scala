@@ -21,6 +21,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.mvc.Call
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -258,6 +259,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
 
+        doc must haveLinkWithUrlWithID("p800Link", ApplicationConfig.taxYouPaidStatus.toString)
         doc.select("#p800Link").size() mustBe 1
       }
     }
