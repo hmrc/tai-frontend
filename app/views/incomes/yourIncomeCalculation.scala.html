@@ -89,18 +89,6 @@
                                         <th class="text--right">@Messages("tai.income.calculation.incomeTable.nationalInsuranceHeader")</th>
                                     </tr>
                                 </thead>
-                                <tfoot>
-                                    <tr class="table__row--bold">
-                                        <td>@Messages("tai.taxFree.total")</td>
-                                        <td class="text--right">@{f"${incomeCalcDetails.employmentPayments.last.taxablePayYTD}%,.2f"}</td>
-                                        <td class="text--right">@{f"${incomeCalcDetails.employmentPayments.last.taxedYTD}%,.2f"}</td>
-                                        @if(incomeCalcDetails.employmentPayments.last.nicPaid.isDefined){
-                                        <td class="text--right">@{f"${incomeCalcDetails.employmentPayments.last.nicPaidYTD.get}%,.2f"}</td>
-                                        }else {
-                                        <td class="text--right"></td>
-                                        }
-                                    </tr>
-                                </tfoot>
                                 <tbody>
                                     @for(payment <- incomeCalcDetails.employmentPayments){
                                     <tr class="pension-contributions-data">
@@ -115,6 +103,18 @@
                                     </tr>
                                 }
                                 </tbody>
+                                <tfoot>
+                                <tr class="table__row--bold">
+                                    <td>@Messages("tai.taxFree.total")</td>
+                                    <td class="text--right">@{f"${incomeCalcDetails.employmentPayments.last.taxablePayYTD}%,.2f"}</td>
+                                    <td class="text--right">@{f"${incomeCalcDetails.employmentPayments.last.taxedYTD}%,.2f"}</td>
+                                    @if(incomeCalcDetails.employmentPayments.last.nicPaid.isDefined){
+                                    <td class="text--right">@{f"${incomeCalcDetails.employmentPayments.last.nicPaidYTD.get}%,.2f"}</td>
+                                    }else {
+                                    <td class="text--right"></td>
+                                    }
+                                </tr>
+                                </tfoot>
                             </table>
 
                             @incomeCalcDetails.totalNotEqualMessage.map{ message =>
