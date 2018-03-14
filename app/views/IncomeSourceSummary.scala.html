@@ -207,6 +207,15 @@
         </p>
         }
 
+        <p>
+            @Link.toInternalPage(
+            id=Some("taxableIncomeLink"),
+            url=routes.TaxAccountSummaryController.onPageLoad.url,
+            value=Some(Messages("tai.returnToIncomeTaxSummary")),
+            cssClasses=Some(""),
+            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToIncomeTaxSummary")}"))).toHtml
+        </p>
+
     </section>
     }
 
