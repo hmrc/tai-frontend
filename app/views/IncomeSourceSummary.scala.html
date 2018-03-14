@@ -133,7 +133,7 @@
             <h2 class="flush--top">@messages("tai.taxCode")</h2>
             <span class="heading-48 faded-text-dark" aria-hidden="true">@model.taxCode</span>
             <span class="visuallyhidden">@messages("tai.income.details.yourTaxCode", model.taxCode)</span>
-            <p >
+            <p>
                 @Link.toInternalPage(
                     id=Some("understandTaxCode"),
                     url=routes.YourTaxCodeController.taxCodes.toString,
@@ -184,7 +184,7 @@
 
         </dl>
         } else {
-        <p id="noCompanyBenefitsMessage" >@Messages("tai.income.details.noCompanyBenefitsMsg", model.empOrPensionName)</p>
+        <p id="noCompanyBenefitsMessage">@Messages("tai.income.details.noCompanyBenefitsMsg", model.empOrPensionName)</p>
         }
 
         <p class="icon icon-plus display-block">

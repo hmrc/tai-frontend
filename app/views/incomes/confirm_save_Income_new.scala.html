@@ -53,11 +53,11 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
 
                     <section class="section flush--bottom soft--ends">
                         @if(FormHelper.convertCurrencyToInt(income.newAmount) == income.oldAmount){
-                            <p >@Messages(s"tai.incomes.confirm.save.messageEquals", income.toEmploymentAmount().newAmount)</p>
-                            <p >@Messages("tai.incomes.confirm.save.messageEquals.details", income.name)</p>
+                            <p>@Messages(s"tai.incomes.confirm.save.messageEquals", income.toEmploymentAmount().newAmount)</p>
+                            <p>@Messages("tai.incomes.confirm.save.messageEquals.details", income.name)</p>
                         }else{
-                            <p >@Messages(s"tai.incomes.confirm.save.message", income.toEmploymentAmount().newAmount)</p>
-                            <p >@Messages("tai.incomes.confirm.save.message.details")</p>
+                            <p>@Messages(s"tai.incomes.confirm.save.message", income.toEmploymentAmount().newAmount)</p>
+                            <p>@Messages("tai.incomes.confirm.save.message.details")</p>
                         }
                     </section>
                 @if(FormHelper.convertCurrencyToInt(income.newAmount) != income.oldAmount){
@@ -80,6 +80,6 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
             </div>
         </div>
     </div>
-    <p ><a href="@routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage.toString">@Messages("tai.incomes.confirm.No.Save")</a></p>
-    <p ><a href="@routes.TaxAccountSummaryController.onPageLoad">@Messages("tai.cancel.noSave")</a></p>
+    <p><a href="@routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage.toString">@Messages("tai.incomes.confirm.No.Save")</a></p>
+    <p><a href="@routes.TaxAccountSummaryController.onPageLoad">@Messages("tai.cancel.noSave")</a></p>
 }

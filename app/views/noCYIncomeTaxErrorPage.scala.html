@@ -36,7 +36,7 @@
         </h2>
     </div>
 
-    <p id="no-income-info" >
+    <p id="no-income-info">
     @noCYIncomeTaxErrorViewModel.endDate match {
         case Some(date) => {
             @Messages("tai.noCYIncomeError.body.with.employment", date)
@@ -47,7 +47,7 @@
     }
     </p>
 
-    <p id="missing-info-Iform" >@Html(Messages(
+    <p id="missing-info-Iform">@Html(Messages(
         "tai.noCYIncomeError.missingInfo",
         Link.toInternalPage(url = routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url, value = Some(Messages("tai.missingInfo.link.message"))).toHtml
     ))</p>

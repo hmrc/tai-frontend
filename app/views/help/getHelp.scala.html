@@ -34,8 +34,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 </header>
 
 @status match {
-    case Some("0") =>{<p >@Messages("tai.getHelp.p1")</p>}
-    case _ =>{<p >@Messages("tai.getHelp.p1.with.acronym")</p>}
+    case Some("0") =>{<p>@Messages("tai.getHelp.p1")</p>}
+    case _ =>{<p>@Messages("tai.getHelp.p1.with.acronym")</p>}
 }
 
 <h2 class="heading-medium">@Messages("tai.getHelp.webchat.h2")</h2>

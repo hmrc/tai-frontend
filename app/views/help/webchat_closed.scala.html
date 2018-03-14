@@ -20,19 +20,19 @@
 @import uk.gov.hmrc.tai.util.TaxSummaryHelper
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
-<p  data-journey='link - view:@Messages("tai.getHelp.webchat.h2"):@Messages("tai.getHelp.webchat.closed.p2")'>@Messages("tai.getHelp.webchat.closed.p2")</p>
-<p >@Messages("tai.getHelp.webchat.p2")</p>
+<p data-journey='link - view:@Messages("tai.getHelp.webchat.h2"):@Messages("tai.getHelp.webchat.closed.p2")'>@Messages("tai.getHelp.webchat.closed.p2")</p>
+<p>@Messages("tai.getHelp.webchat.p2")</p>
 
 <ul class="bullets">
     <li>@Messages("tai.getHelp.webchat.li1")</li>
     <li>@Messages("tai.getHelp.webchat.li2")</li>
 </ul>
 
-<p >@Messages("tai.getHelp.p2")</p>
+<p>@Messages("tai.getHelp.p2")</p>
 
 <h2 class="heading-medium">@Messages("tai.getHelp.form.h2")</h2>
 
-<p >@Html(Messages("tai.getHelp.form.p1.text.with.also",
+<p>@Html(Messages("tai.getHelp.form.p1.text.with.also",
     Link.toInternalPage(id=Some("get-help-iform-link"),
     url=ApplicationConfig.hardshipHelpUrl,
     value=Some(Messages("tai.getHelp.form.link.title"))).toHtml))</p>

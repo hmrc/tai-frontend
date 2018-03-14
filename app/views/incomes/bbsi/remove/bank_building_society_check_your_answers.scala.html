@@ -37,7 +37,7 @@
     gaCustomTitle = Some(Messages("tai.bbsi.remove.checkYourAnswers.customGaTitle"))
 ) {
 
-    <p >@Messages("tai.bbsi.remove.checkYourAnswers.description", bankName)</p>
+    <p>@Messages("tai.bbsi.remove.checkYourAnswers.description", bankName)</p>
 
     @form(action = controllers.income.bbsi.routes.BbsiRemoveAccountController.submitYourAnswers(id)) {
         @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))

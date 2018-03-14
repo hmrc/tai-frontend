@@ -64,11 +64,11 @@
                 @if(potentialUnderpaymentDetails.displayCYOnly){
                         <section class="section soft--top">
                             <p  id="iya-cy-how-much">@Messages("tai.iya.paidTooLittle.cy.text", MoneyPounds(potentialUnderpaymentDetails.iyaCYAmount, 2).quantity)</p>
-                            <p >@Html(
+                            <p>@Html(
                                Messages("tai.iya.check.your.tax.code.text",
                                Link.toInternalPage(url=routes.YourTaxCodeController.taxCodes.toString,value=Some(Messages("tai.iya.your.tax.code.linkText"))).toHtml
                                ))</p>
-                             <p >@Html(
+                             <p>@Html(
                                 Messages("tai.iya.paidTooLittle.cy.text2",
                                 MoneyPounds(potentialUnderpaymentDetails.iyaCYAmount, 2).quantity,
                                 s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}",
@@ -78,28 +78,28 @@
                 @if(potentialUnderpaymentDetails.displayCYPlusOneOnly){
                         <section class="section soft--top">
                             <p   id="iya-cy-plus-one-how-much">@Html(Messages("tai.iya.tax-code-change.cy-plus-one.text1",MoneyPounds(potentialUnderpaymentDetails.iyaCYPlusOneAmount, 2).quantity)) </p>
-                            <p >@Html(
+                            <p>@Html(
                                 Messages("tai.iya.check.your.tax.code.text",
                                 Link.toInternalPage(url=routes.YourTaxCodeController.taxCodes.toString,value=Some(Messages("tai.iya.your.tax.code.linkText"))).toHtml
                                 ))</p>
-                            <p >@Messages("tai.iya.tax-code-change.cy-plus-one.text2", s"${uk.gov.hmrc.time.TaxYearResolver.startOfNextTaxYear.toString("d MMMM yyyy")}")</p>
-                            <p >@Messages("tai.iya.tax-code-change.cy-plus-one.text3", s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</p>
+                            <p>@Messages("tai.iya.tax-code-change.cy-plus-one.text2", s"${uk.gov.hmrc.time.TaxYearResolver.startOfNextTaxYear.toString("d MMMM yyyy")}")</p>
+                            <p>@Messages("tai.iya.tax-code-change.cy-plus-one.text3", s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</p>
                         </section>
                 }
                 @if(potentialUnderpaymentDetails.displayCYAndCYPlusOneOnly){
                         <section class="section soft--top">
-                            <p >@Messages("tai.iya.paidTooLittle.cy-and-cy-plus-one.text1",MoneyPounds(potentialUnderpaymentDetails.iyaTotalAmount, 2).quantity)</p>
-                            <p >@Html(
+                            <p>@Messages("tai.iya.paidTooLittle.cy-and-cy-plus-one.text1",MoneyPounds(potentialUnderpaymentDetails.iyaTotalAmount, 2).quantity)</p>
+                            <p>@Html(
                                 Messages("tai.iya.check.your.tax.code.text",
                                 Link.toInternalPage(url=routes.YourTaxCodeController.taxCodes.toString,value=Some(Messages("tai.iya.your.tax.code.linkText"))).toHtml
                                 ))</p>
-                            <p >@Html(
+                            <p>@Html(
                                 Messages("tai.iya.paidTooLittle.cy-and-cy-plus-one.text2",
                                 MoneyPounds(potentialUnderpaymentDetails.iyaCYAmount, 2).quantity,
                                 s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}",
                                 MoneyPounds(potentialUnderpaymentDetails.iyaTaxCodeChangeAmount, 0).quantity,
                                 Link.toInternalPage(url=routes.HelpController.helpPage.toString,value=Some(Messages("tai.iya.paidTooLittle.get.help.linkText"))).toHtml)) </p>
-                            <p  id="iya-cy-and-cy-plus-one-how-much">@Messages("tai.iya.paidTooLittle.cy-and-cy-plus-one.text3",
+                            <p id="iya-cy-and-cy-plus-one-how-much">@Messages("tai.iya.paidTooLittle.cy-and-cy-plus-one.text3",
                                 MoneyPounds(potentialUnderpaymentDetails.iyaCYPlusOneAmount, 2).quantity,
                                 s"${uk.gov.hmrc.time.TaxYearResolver.startOfNextTaxYear.toString("d MMMM yyyy")}",
                                 s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.plusYears(1).toString("d MMMM yyyy")}")</p>
@@ -108,14 +108,14 @@
                 @if(potentialUnderpaymentDetails.displayNoValues){
                     <section class="section">
                         <h3 class="h2-heading">@Messages("tai.potential-underpayment.where.title")</h3>
-                        <p >@Messages("tai.potential-underpayment.none.text")</p>
+                        <p>@Messages("tai.potential-underpayment.none.text")</p>
                     </section>
                 }
             </div>
         </div>
     </div>
     @if(potentialUnderpaymentDetails.displayCYOnly){
-        <p >@Html(Messages("tai.iya.paidTooLittle.get.help",
+        <p>@Html(Messages("tai.iya.paidTooLittle.get.help",
             Link.toInternalPage(url=routes.HelpController.helpPage.toString,value=Some(Messages("tai.iya.paidTooLittle.get.help.linkText"))).toHtml))</p>
     }
 

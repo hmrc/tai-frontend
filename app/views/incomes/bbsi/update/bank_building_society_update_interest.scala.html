@@ -47,8 +47,8 @@
         <p><span class="lede">@Html(messages("tai.bbsi.update.captureInterest.para1", TaxYear().start.toString(dateFormatPattern),
             TaxYear().end.toString(dateFormatPattern),
             pounds(viewModel.interest)))</span></p>
-        <p >@messages("tai.bbsi.update.captureInterest.para2")</p>
-        <p >@messages("tai.bbsi.update.captureInterest.para3")</p>
+        <p>@messages("tai.bbsi.update.captureInterest.para2")</p>
+        <p>@messages("tai.bbsi.update.captureInterest.para3")</p>
 
         @form(action = controllers.income.bbsi.routes.BbsiUpdateAccountController.submitInterest(viewModel.id), args=(Symbol("class"), "subsection")) {
             @input(
