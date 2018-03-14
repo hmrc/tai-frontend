@@ -34,12 +34,12 @@
 
             <h3 id="@{typeLabel}@{idx}Heading" class="heading-large flush break-word-only">@incomeSource.name</h3>
 
-            <p class="text flush--top">
+            <p class="flush--top">
                 <span class="visuallyhidden">@accessibleAmountPrefix </span>
                 <span class="heading-36 faded-text-dark">@incomeSource.amount</span>
             </p>
 
-            <p class="text flush--top">
+            <p class="flush--top">
                 @if(incomeSource.displayTaxCode){
                 @Link.toInternalPage(
                     id=Some(s"${typeLabel}${idx}TaxCodeLink"),
@@ -57,7 +57,7 @@
             </p>
 
             @if(incomeSource.displayDetailsLink){
-            <p class="text flush--top">
+            <p class="flush--top">
                 @Link.toInternalPage(
                     id=Some(s"${typeLabel}${idx}DetailsLink"),
                     url=incomeSource.detailsLinkUrl,

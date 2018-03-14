@@ -20,9 +20,9 @@
 
 @(model: TaxCodeComparisonViewModel)(implicit messages: Messages)
 
-<h2 class="heading-large text" id="taxCodesHeading">@messages("tai.incomeTaxComparison.taxCodes.subHeading")</h2>
+<h2 class="heading-large" id="taxCodesHeading">@messages("tai.incomeTaxComparison.taxCodes.subHeading")</h2>
 
-<p class="text">@messages("tai.incomeTaxComparison.taxCodes.description")</p>
+<p>@messages("tai.incomeTaxComparison.taxCodes.description")</p>
 
 @if(model.hasScottishTaxCodeNextYear) {
     <p class="notice text">
