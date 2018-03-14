@@ -68,12 +68,13 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
                 legend=Messages("tai.payPeriod.legend"),
                 legendHint=None,
                 ('_groupDivClass, "form-group" ),
+                ('_radioOption4WrapAttribute, "data-target=howOftenPanel"),
                 ('_legendSpanClass, "visually-hidden"),
                 ('_fieldsetAttributes, "id=payPeriod" ),
-                ('_radioOption1Attributes, Html("""data-dynamic-fields="howOften" data-dynamic-fields-hide="true"""") ),
-                ('_radioOption2Attributes, Html("""data-dynamic-fields="howOften" data-dynamic-fields-hide="true"""") ),
-                ('_radioOption3Attributes, Html("""data-dynamic-fields="howOften" data-dynamic-fields-hide="true"""") ),
-                ('_radioOption4Attributes, Html(s"""data-dynamic-fields="howOften" data-dynamic-fields-hide="false" ${if(!isNotDaysError) {"checked"} else {""}} """) ),
+                ('_radioOption1Attributes, Html("""""") ),
+                ('_radioOption2Attributes, Html("""""") ),
+                ('_radioOption3Attributes, Html("""""") ),
+                ('_radioOption4Attributes, Html(s""" ${if(!isNotDaysError) {"checked"} else {""}} """) ),
                 ('_radioOption4AdditionalMarkup, Html(howOftenPanel))
             )}
             <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
