@@ -81,6 +81,7 @@
                     @if(incomeCalcDetails.employmentPayments.nonEmpty) {
                         <div class="section soft--top soft--bottom">
                             <table id="taxable-income-table" class="table-section">
+                                <caption class="text--left table__caption table__caption--bottom-border">@Messages("tai.income.calculation.incomeTable.caption")</caption>
                                 <thead>
                                     <tr>
                                         <th>@Messages("tai.income.calculation.incomeTable.dateHeader")</th>
@@ -97,7 +98,7 @@
                                         <td class="text--right">@{f"${payment.taxed}%,.2f"}</td>
                                         @if(payment.nicPaid.isDefined){
                                             <td class="text--right">@{f"${payment.nicPaid.get}%,.2f"}</td>
-                                        }else {
+                                        }else{
                                             <td class="text--right"></td>
                                         }
                                     </tr>
