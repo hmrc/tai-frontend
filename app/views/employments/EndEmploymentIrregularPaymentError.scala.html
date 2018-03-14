@@ -44,8 +44,8 @@
     <p>
         <span class="lede">@Messages("tai.irregular.para1", model.employerName)</span>
     </p>
-    <p class="text">@Messages("tai.irregular.para2", model.employerName)</p>
-    <p class="text">@Messages("tai.irregular.para3")</p>
+    <p>@Messages("tai.irregular.para2", model.employerName)</p>
+    <p>@Messages("tai.irregular.para3")</p>
 
     @form(action= controllers.employments.routes.EndEmploymentController.handleIrregularPaymentError(model.empId), args = Symbol("data-journey-dynamic-radios") -> "") {
 

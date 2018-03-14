@@ -47,7 +47,7 @@
         <div class="grid grid-2-3">
             <div class="inner-block">
                 <section class="section soft--ends">
-                    <p class="text">@Messages("tai.extendedTaxReliefs.description")</p>
+                    <p>@Messages("tai.extendedTaxReliefs.description")</p>
                     <table id="now-pay-tax-on" class="table-section">
                         <thead>
                             <tr>
@@ -63,12 +63,12 @@
                                         @includes.details_summary(Messages("tai.extendedTaxReliefs.giftAid.title")){
                                             @if(TaxSummaryHelper.hasNoTaxableIncome(taxSummaryDetails)){
                                                 @if(TaxSummaryHelper.getGiftAid(taxSummaryDetails)._2 <= BigDecimal(0)){
-                                                    <p class="text">@Messages("tai.extendedTaxReliefs.giftAid.BR.description")</p>
+                                                    <p>@Messages("tai.extendedTaxReliefs.giftAid.BR.description")</p>
                                                 } else {
-                                                    <p class="text">@Messages("tai.extendedTaxReliefs.giftAid.HR.description")</p>
+                                                    <p>@Messages("tai.extendedTaxReliefs.giftAid.HR.description")</p>
                                                 }
                                             }else{
-                                                <p class="text">@Messages("tai.extendedTaxReliefs.giftAid.NoTax.description")</p>
+                                                <p>@Messages("tai.extendedTaxReliefs.giftAid.NoTax.description")</p>
                                             }
                                         }
                                     </td>
@@ -81,7 +81,7 @@
                                 <tr>
                                     <td>
                                         @includes.details_summary(Messages("tai.extendedTaxReliefs.ppr.title")){
-                                            <p class="text">@Messages("tai.extendedTaxReliefs.ppr.description")</p>
+                                            <p>@Messages("tai.extendedTaxReliefs.ppr.description")</p>
                                         }
                                     </td>
                                     <td class="text--right">@MoneyPounds(TaxSummaryHelper.getPPR(taxSummaryDetails)._1,0).quantity</td>

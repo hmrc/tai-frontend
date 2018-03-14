@@ -33,18 +33,18 @@
         gaEventAction = backLinkGaEventAction
     )
 }
-
-@if(formForErrorSummary.isDefined) {
 <div class="grid-row">
-    <div class="grid grid-2-3">
-        <div class="inner-block">
-        @errorSummary(Messages("tai.income.error.form.summary"), formForErrorSummary.get, Seq("flush"))
-        </div>
-    </div>
-</div>
-}
+  <div class="column-two-thirds">
 
-<header class="page-heading">
-    <h1 class="heading-xlarge">@{mainHeadingText}</h1>
-    <p class="heading-secondary"><span class="visuallyhidden">@preHeadingHidden </span>@{preHeadingText}</p>
-</header>
+    @if(formForErrorSummary.isDefined) {
+      @errorSummary(Messages("tai.income.error.form.summary"), formForErrorSummary.get, Seq("flush"))
+    }
+
+    <header class="page-heading">
+      <h1 class="heading-xlarge">@{mainHeadingText}</h1>
+      <p class="heading-secondary"><span class="visuallyhidden">@preHeadingHidden </span>@{preHeadingText}</p>
+    </header>
+
+ </div>
+</div>
+
