@@ -91,7 +91,7 @@ class endEmploymentSpec extends TaiViewSpec {
     }
 
     "have a form input for month with relevant label" in {
-      val labelMonth = doc(view).select(".form-group-month label.form-label")
+      val labelMonth = doc(view).select(".form-group-month .form-label")
       val inputLabelMonth = labelMonth.text
       val numberOfInputs = doc(view).select(".form-group-month input").size
 
