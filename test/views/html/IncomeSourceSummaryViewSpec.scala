@@ -17,13 +17,12 @@
 package views.html
 
 import controllers.routes
-import uk.gov.hmrc.tai.viewModels.{CompanyBenefitViewModel, IncomeSourceSummaryViewModel}
 import org.jsoup.Jsoup
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.tai.util.TaiConstants
+import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.{CompanyBenefitViewModel, IncomeSourceSummaryViewModel}
 
 class IncomeSourceSummaryViewSpec extends TaiViewSpec {
   "Income details spec" must {
@@ -175,6 +174,10 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(model.copy(displayAddCompanyCarLink = false)).toString)
         testDoc must not(haveElementWithId("addMissingCompanyCarLink"))
       }
+    }
+
+    "display a link to return to income tax summary" in {
+      doc must haveLinkWithUrlWithID("taxableIncomeLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url)
     }
 
   }
