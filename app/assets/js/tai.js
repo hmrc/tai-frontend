@@ -1,6 +1,9 @@
 $(document).ready(function() {
 	// Details/summary polyfill from frontend toolkit
 	GOVUK.details.init()
+
+	var showHideContent = new GOVUK.ShowHideContent()
+	showHideContent.init()
 });
 
 // re-enable any disabled buttons when navigating back
