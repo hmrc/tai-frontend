@@ -71,9 +71,15 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
       case CarBenefit =>
         val url = s"${ApplicationConfig.updateCompanyCarDetailsUrl}/${codingComponent.employmentId.getOrElse(0)}"
         ChangeLinkViewModel(isDisplayed = true, Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), url)
+      case CarFuelBenefit =>
+        val url = s"${ApplicationConfig.updateCompanyCarDetailsUrl}/${codingComponent.employmentId.getOrElse(0)}"
+        ChangeLinkViewModel(isDisplayed = true, Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"), url)
       case companyBenefit : BenefitComponentType =>
         val url = controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(codingComponent.employmentId.getOrElse(0), companyBenefit).url
         ChangeLinkViewModel(isDisplayed = true, Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}"), url)
+      case allowanceComponentType : AllowanceComponentType =>
+        val url = ApplicationConfig.taxFreeAllowanceLinkUrl
+        ChangeLinkViewModel(isDisplayed = true, Messages(s"tai.taxFreeAmount.table.taxComponent.${allowanceComponentType.toString}"), url)
       case _ =>
         ChangeLinkViewModel(isDisplayed = false)
     }

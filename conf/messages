@@ -13,7 +13,6 @@ tai.taxYear={0} to {1}
 tai.total=Total
 tai.back-link.upper=Back
 tai.backToHome-link.upper=Back to account home
-tai.change=Change <span class="visuallyhidden">{0}</span>
 tai.update=Update
 tai.updateOrRemove=Update or remove
 tai.viewDetails=View details
