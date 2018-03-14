@@ -71,9 +71,6 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
                 ('_radioOption4WrapAttribute, "data-target=howOftenPanel"),
                 ('_legendSpanClass, "visually-hidden"),
                 ('_fieldsetAttributes, "id=payPeriod" ),
-                ('_radioOption1Attributes, Html("""""") ),
-                ('_radioOption2Attributes, Html("""""") ),
-                ('_radioOption3Attributes, Html("""""") ),
                 ('_radioOption4Attributes, Html(s""" ${if(!isNotDaysError) {"checked"} else {""}} """) ),
                 ('_radioOption4AdditionalMarkup, Html(howOftenPanel))
             )}
