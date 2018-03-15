@@ -17,25 +17,22 @@
 package controllers
 
 import controllers.audit.Auditable
-import controllers.auth.{WithAuthorisedForTai, WithAuthorisedForTaiLite}
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import controllers.auth.WithAuthorisedForTaiLite
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
-import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, TaiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.AuditConstants
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModelNEW
-
-import scala.concurrent.Future
 
 trait PotentialUnderpaymentController extends TaiBaseController
   with DelegationAwareActions
@@ -54,10 +51,20 @@ trait PotentialUnderpaymentController extends TaiBaseController
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
 
-            Future.successful(Ok(""))
-          }
-  }
+            sendActingAttorneyAuditEvent("getPotentialUnderpaymentPage")
+            val tasFuture = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear())
+            val ccFuture = codingComponentService.taxFreeAmountComponents(Nino(user.getNino), TaxYear())
 
+            for {
+              TaiSuccessResponseWithPayload(tas: TaxAccountSummary) <- tasFuture
+              ccs <- ccFuture
+            } yield {
+              auditService.createAndSendAuditEvent(PotentialUnderpayment_InYearAdjustment, Map("nino" -> user.getNino))
+              val vm = PotentialUnderpaymentViewModelNEW(tas, ccs)
+              Ok(views.html.potentialUnderpaymentNEW(vm))
+            }
+          } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", Nino(user.getNino))
+  }
 }
 
 object PotentialUnderpaymentController extends PotentialUnderpaymentController with AuthenticationConnectors {
