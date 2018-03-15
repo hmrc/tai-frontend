@@ -23,16 +23,16 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.util.ViewModelHelper
 
-case class PotentialUnderpaymentViewModelNEW(iyaCYAmount: BigDecimal,
-                                             iyaTaxCodeChangeAmount: BigDecimal,
-                                             iyaCYPlusOneAmount: BigDecimal,
-                                             iyaTotalAmount: BigDecimal,
-                                             pageTitle: String,
-                                             gaDimensions: Option[Map[String, String]] = None)
+case class PotentialUnderpaymentViewModel(iyaCYAmount: BigDecimal,
+                                          iyaTaxCodeChangeAmount: BigDecimal,
+                                          iyaCYPlusOneAmount: BigDecimal,
+                                          iyaTotalAmount: BigDecimal,
+                                          pageTitle: String,
+                                          gaDimensions: Option[Map[String, String]] = None)
 
-object PotentialUnderpaymentViewModelNEW extends ViewModelHelper {
+object PotentialUnderpaymentViewModel extends ViewModelHelper {
 
-  def apply(taxAccountSummary: TaxAccountSummary, codingComponents: Seq[CodingComponent]): PotentialUnderpaymentViewModelNEW = {
+  def apply(taxAccountSummary: TaxAccountSummary, codingComponents: Seq[CodingComponent]): PotentialUnderpaymentViewModel = {
 
     val iyaTaxCodeChangeAmount = codingComponents.collect({
       case CodingComponent(EstimatedTaxYouOweThisYear, _, amount, _) => amount
@@ -56,7 +56,7 @@ object PotentialUnderpaymentViewModelNEW extends ViewModelHelper {
         Messages("tai.iya.tax.you.owe.cy-plus-one.title")
       }
 
-    PotentialUnderpaymentViewModelNEW(
+    PotentialUnderpaymentViewModel(
       taxAccountSummary.totalInYearAdjustmentIntoCY,
       iyaTaxCodeChangeAmount,
       taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne,

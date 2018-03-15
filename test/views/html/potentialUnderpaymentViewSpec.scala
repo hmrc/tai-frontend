@@ -23,9 +23,9 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModelNEW
+import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 
-class potentialUnderpaymentNEWPageSpec extends TaiViewSpec {
+class potentialUnderpaymentViewSpec extends TaiViewSpec {
 
   implicit val hc = HeaderCarrier()
 
@@ -37,7 +37,7 @@ class potentialUnderpaymentNEWPageSpec extends TaiViewSpec {
 
     "omit underpayment contet if no underpayment is present" in {
 
-      val html = views.html.potentialUnderpaymentNEW(PotentialUnderpaymentViewModelNEW(tasNoUnderpay, ccs))
+      val html = views.html.potentialUnderpayment(PotentialUnderpaymentViewModel(tasNoUnderpay, ccs))
       val doc = Jsoup.parseBodyFragment(html.toString)
 
       doc.title() mustBe Messages("tai.iya.tax.you.owe.cy-plus-one.title")
@@ -48,7 +48,7 @@ class potentialUnderpaymentNEWPageSpec extends TaiViewSpec {
 
     "display the potential underpayment page configured for a CY IYA, when only a CY amount is present" in {
 
-      val html = views.html.potentialUnderpaymentNEW(PotentialUnderpaymentViewModelNEW(tasCYOnly, ccs))
+      val html = views.html.potentialUnderpayment(PotentialUnderpaymentViewModel(tasCYOnly, ccs))
       val doc = Jsoup.parseBodyFragment(html.toString)
 
       doc.title() mustBe Messages("tai.iya.tax.you.owe.title")
@@ -62,7 +62,7 @@ class potentialUnderpaymentNEWPageSpec extends TaiViewSpec {
 
     "display the potential underpayment page configured for a CY+1 IYA, when only a CY+1 amount is present" in {
 
-      val html = views.html.potentialUnderpaymentNEW(PotentialUnderpaymentViewModelNEW(tasCyPlusOneOnly, ccs))
+      val html = views.html.potentialUnderpayment(PotentialUnderpaymentViewModel(tasCyPlusOneOnly, ccs))
       val doc = Jsoup.parseBodyFragment(html.toString)
 
       doc.title() mustBe Messages("tai.iya.tax.you.owe.cy-plus-one.title")
@@ -96,5 +96,5 @@ class potentialUnderpaymentNEWPageSpec extends TaiViewSpec {
   val tasCYOnly = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)
   val tasCyPlusOneOnly = TaxAccountSummary(11.11, 22.22, 0, 44.44, 55.55)
 
-  override def view = views.html.potentialUnderpaymentNEW(PotentialUnderpaymentViewModelNEW(tas, ccs))
+  override def view = views.html.potentialUnderpayment(PotentialUnderpaymentViewModel(tas, ccs))
 }

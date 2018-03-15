@@ -32,7 +32,7 @@ import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, TaiService, TaxAccountService}
 import uk.gov.hmrc.tai.util.AuditConstants
-import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModelNEW
+import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 
 trait PotentialUnderpaymentController extends TaiBaseController
   with DelegationAwareActions
@@ -60,8 +60,8 @@ trait PotentialUnderpaymentController extends TaiBaseController
               ccs <- ccFuture
             } yield {
               auditService.createAndSendAuditEvent(PotentialUnderpayment_InYearAdjustment, Map("nino" -> user.getNino))
-              val vm = PotentialUnderpaymentViewModelNEW(tas, ccs)
-              Ok(views.html.potentialUnderpaymentNEW(vm))
+              val vm = PotentialUnderpaymentViewModel(tas, ccs)
+              Ok(views.html.potentialUnderpayment(vm))
             }
           } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", Nino(user.getNino))
   }

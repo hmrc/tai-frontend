@@ -22,34 +22,34 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.model.domain.{DividendTax, EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
-class PotentialUnderpaymentViewModelNEWSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
+class PotentialUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "PotentialUnderpaymentViewModel apply method" must {
 
     "return an instance with an iyaCYAmount drawn from the totalInYearAdjustmentIntoCY value of the supplied TaxAccountSummary" in {
-      PotentialUnderpaymentViewModelNEW(tas, Nil).iyaCYAmount mustBe BigDecimal(123.45)
-      PotentialUnderpaymentViewModelNEW(tasZero, Nil).iyaCYAmount mustBe BigDecimal(0)
+      PotentialUnderpaymentViewModel(tas, Nil).iyaCYAmount mustBe BigDecimal(123.45)
+      PotentialUnderpaymentViewModel(tasZero, Nil).iyaCYAmount mustBe BigDecimal(0)
     }
 
     "return an instance with an iyaCYPlusOneAmount drawn from the totalInYearAdjustmentIntoCYPlusOne value of the supplied TaxAccountSummary" in {
-      PotentialUnderpaymentViewModelNEW(tas, Nil).iyaCYPlusOneAmount mustBe BigDecimal(10.01)
-      PotentialUnderpaymentViewModelNEW(tasZero, Nil).iyaCYPlusOneAmount mustBe BigDecimal(0)
+      PotentialUnderpaymentViewModel(tas, Nil).iyaCYPlusOneAmount mustBe BigDecimal(10.01)
+      PotentialUnderpaymentViewModel(tasZero, Nil).iyaCYPlusOneAmount mustBe BigDecimal(0)
     }
 
     "return an instance with an iyaTotalAmount drawn from the totalInYearAdjustment value of the supplied TaxAccountSummary" in {
-      PotentialUnderpaymentViewModelNEW(tas, Nil).iyaTotalAmount mustBe BigDecimal(133.46)
-      PotentialUnderpaymentViewModelNEW(tasZero, Nil).iyaTotalAmount mustBe BigDecimal(0)
+      PotentialUnderpaymentViewModel(tas, Nil).iyaTotalAmount mustBe BigDecimal(133.46)
+      PotentialUnderpaymentViewModel(tasZero, Nil).iyaTotalAmount mustBe BigDecimal(0)
     }
 
     "return an instance with a iyaTaxCodeChangeAmount drawn from the 'EstimatedTaxYouOweThisYear' coding componenet where present" in {
-      PotentialUnderpaymentViewModelNEW(tas, ccs).iyaTaxCodeChangeAmount mustBe BigDecimal(33.44)
+      PotentialUnderpaymentViewModel(tas, ccs).iyaTaxCodeChangeAmount mustBe BigDecimal(33.44)
     }
 
     "return an instance with a iyaTaxCodeChangeAmount drawn from the first 'EstimatedTaxYouOweThisYear' coding componenet where more than one is present" in {
       val twoMatchCCs = ccs :+ CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 66.66, "EstimatedTaxYouOweThisYear")
-      PotentialUnderpaymentViewModelNEW(tas, twoMatchCCs).iyaTaxCodeChangeAmount mustBe BigDecimal(33.44)
+      PotentialUnderpaymentViewModel(tas, twoMatchCCs).iyaTaxCodeChangeAmount mustBe BigDecimal(33.44)
     }
 
     "return an instance with a iyaTaxCodeChangeAmount of zero where no 'EstimatedTaxYouOweThisYear' coding componenet is present" in {
@@ -57,34 +57,34 @@ class PotentialUnderpaymentViewModelNEWSpec extends PlaySpec with FakeTaiPlayApp
         CodingComponent(MarriageAllowanceTransferred, Some(1), 1400.86, "MarriageAllowanceTransfererd"),
         CodingComponent(DividendTax, Some(1), 33.44, "DividendTax")
       )
-      PotentialUnderpaymentViewModelNEW(tas, noneMatchCCs).iyaTaxCodeChangeAmount mustBe BigDecimal(0)
-      PotentialUnderpaymentViewModelNEW(tas, Nil).iyaTaxCodeChangeAmount mustBe BigDecimal(0)
+      PotentialUnderpaymentViewModel(tas, noneMatchCCs).iyaTaxCodeChangeAmount mustBe BigDecimal(0)
+      PotentialUnderpaymentViewModel(tas, Nil).iyaTaxCodeChangeAmount mustBe BigDecimal(0)
     }
 
     "return an instance with a title value" which {
       "is set to the current year value when no CY+1 ampount is present" in {
-        PotentialUnderpaymentViewModelNEW(tasNoCYPlusOne, Nil).pageTitle mustBe Messages("tai.iya.tax.you.owe.title")
+        PotentialUnderpaymentViewModel(tasNoCYPlusOne, Nil).pageTitle mustBe Messages("tai.iya.tax.you.owe.title")
       }
       "is set to the general value when both CY and CY+1 amounts are present" in {
-        PotentialUnderpaymentViewModelNEW(tas, Nil).pageTitle mustBe Messages("tai.iya.tax.you.owe.cy-plus-one.title")
+        PotentialUnderpaymentViewModel(tas, Nil).pageTitle mustBe Messages("tai.iya.tax.you.owe.cy-plus-one.title")
       }
     }
 
     "return an instance with a gaDimensions map value" which {
       "will set in year calc 'current year' google analytic dimensions when only CY values are present" in {
-        PotentialUnderpaymentViewModelNEW(tasNoCYPlusOne, Nil).gaDimensions mustBe
+        PotentialUnderpaymentViewModel(tasNoCYPlusOne, Nil).gaDimensions mustBe
           Some(Map("valueOfIycdcPayment" -> "123.45", "iycdcReconciliationStatus" -> "Current Year"))
       }
       "will set in year calc 'next year' google analytic dimensions when only CY+1 values are present" in {
-        PotentialUnderpaymentViewModelNEW(tasCYPlusOneOnly, Nil).gaDimensions mustBe
+        PotentialUnderpaymentViewModel(tasCYPlusOneOnly, Nil).gaDimensions mustBe
           Some(Map("valueOfIycdcPayment" -> "10.01", "iycdcReconciliationStatus" -> "Next Year"))
       }
       "will set n year calc 'current and next year' google analytic dimensions when CY and CY+1 values are present" in {
-        PotentialUnderpaymentViewModelNEW(tas, Nil).gaDimensions mustBe
+        PotentialUnderpaymentViewModel(tas, Nil).gaDimensions mustBe
           Some(Map("valueOfIycdcPayment" -> "123.45", "iycdcReconciliationStatus" -> "Current and Next Year"))
       }
       "is set to None if neither CY nor CY+1 values are present" in {
-        PotentialUnderpaymentViewModelNEW(tasZero, Nil).gaDimensions mustBe None
+        PotentialUnderpaymentViewModel(tasZero, Nil).gaDimensions mustBe None
       }
     }
 

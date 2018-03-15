@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import includes.ptaHeader
 
-@(viewModel:uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModelNEW)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+@(viewModel:uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
 
 @gaCallsAdditionalJs = {
     @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount <= 0){
