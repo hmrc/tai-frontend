@@ -28,7 +28,7 @@
 
 @header = @{
     ptaHeader(
-        backLocation =Some(new Call("GET", viewModel.backLinkUrl)),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.checkYourAnswers"),
         preHeadingText = viewModel.preHeading) }
@@ -49,7 +49,7 @@
             confirmationLines = viewModel.journeyConfirmationLines
         )
 
-        <p class="text subsection">@viewModel.postConfirmationText</p>
+        <p class="subsection">@viewModel.postConfirmationText</p>
 
         @submit(
             buttonMessageKey = Some(messages("tai.confirmAndSend")),

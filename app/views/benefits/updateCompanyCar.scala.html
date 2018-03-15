@@ -27,7 +27,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(wdywtdForm),
-        backLocation =Some(routes.TaxFreeAmountControllerNew.taxFreeAmount()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.changeCompanyCar.heading", viewModel.carModel, viewModel.carProvider),
         preHeadingText = Messages("tai.changeCompanyCar.sub.heading")) }

@@ -29,7 +29,7 @@
 
 @header = @{
     ptaHeader(
-        backLocation = Some(controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.incomeTax.calculated.heading"),
         preHeadingText = taxYearRangeString,
@@ -60,12 +60,6 @@
                                 <th class="text--right">@Messages("tai.incomeTax.calculated.table.headingFour")</th>
                             </tr>
                         </thead>
-                        <tfoot>
-                            <tr class="table__row--bold" >
-                                <td colspan="3">@Messages("tai.incomeTax.calculated.table.foot")</td>
-                                <td id="totalTaxEstimate" class="text--right">@MoneyPounds(taxExplanationViewModel.totalTax, 2).quantity</td>
-                            </tr>
-                        </tfoot>
                         <tbody>
                             @for(taxBand <- taxExplanationViewModel.nonSavings.sortBy(_.rate)){
                                 <tr>
@@ -92,8 +86,15 @@
                                 </tr>
                             }
                         </tbody>
+                        <tfoot>
+                            <tr class="table__row--bold" >
+                                <td colspan="3">@Messages("tai.incomeTax.calculated.table.foot")</td>
+                                <td id="totalTaxEstimate" class="text--right">@MoneyPounds(taxExplanationViewModel.totalTax, 2).quantity</td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </section>
+            </div>
         </div>
     </div>
 }

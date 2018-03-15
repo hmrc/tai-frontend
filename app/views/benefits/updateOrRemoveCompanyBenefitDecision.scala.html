@@ -20,16 +20,17 @@
 @import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 @import includes.forms.{inputRadioGroupNewStyling, submit}
 @import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
-@(decisionForm: Form[Option[String]],benefitType:String,employerName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+@(viewModel: CompanyBenefitDecisionViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
 
 @gaEventActionString = @{"Update Or Remove Company Benefit Decision"}
 
 @header = @{
 ptaHeader(
-formForErrorSummary = Some(decisionForm),
-backLocation=Some(controllers.routes.TaxAccountSummaryController.onPageLoad),
-mainHeadingText = Messages("tai.benefits.updateOrRemove.decision.heading",benefitType,employerName),
+formForErrorSummary = Some(viewModel.decisionForm),
+mainHeadingText = Messages("tai.benefits.updateOrRemove.decision.heading",viewModel.benefitName,viewModel.employerName),
+displayBackLink = true,
 preHeadingText = Messages("tai.benefits.updateOrRemove.journey.preHeader"))
 }
 
@@ -44,11 +45,11 @@ gaCustomTitle = None){
     @form(action = controllers.benefits.routes.CompanyBenefitController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {
 
         @{inputRadioGroupNewStyling(
-            decisionForm(UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice),
+            viewModel.decisionForm(UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice),
             Seq(
             UpdateOrRemoveCompanyBenefitDecisionForm.YesIGetThisBenefit -> Messages("tai.benefits.updateOrRemove.decision.radio.yes"),
             UpdateOrRemoveCompanyBenefitDecisionForm.NoIDontGetThisBenefit -> Messages("tai.benefits.updateOrRemove.decision.radio.no")),
-            Messages("tai.benefits.updateOrRemove.decision.heading", benefitType,employerName),
+            Messages("tai.benefits.updateOrRemove.decision.heading", viewModel.benefitName,viewModel.employerName),
             None,
             ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Yes, I currently get this benefit"""")),
             ('_radioOption2Attributes, Html("""data-journey-click="radio - select:No, I do not get this benefit any more"""")),
@@ -61,5 +62,5 @@ gaCustomTitle = None){
 
     }
 
-    @cancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad)
+    @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url))
 }

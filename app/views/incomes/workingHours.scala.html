@@ -25,7 +25,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(workingHoursForm),
-        backLocation = Some(controllers.routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.workingHours.title"),
         preHeadingText = Messages("tai.workingHours.preHeading"))}
@@ -33,7 +33,7 @@
 
 @main(
     title = Messages("tai.workingHours.title"),
-    articleClasses = Some("full-width text"),
+    articleClasses = Some("full-width"),
     user = Some(user),
     pageHeader = Some(header),
     employerName = employerName,

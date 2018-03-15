@@ -13,7 +13,6 @@ tai.taxYear={0} to {1}
 tai.total=Total
 tai.back-link.upper=Back
 tai.backToHome-link.upper=Back to account home
-tai.change=Change <span class="visuallyhidden">{0}</span>
 tai.update=Update
 tai.updateOrRemove=Update or remove
 tai.viewDetails=View details
@@ -252,7 +251,7 @@ tai.employmentConfirmation.heading=Your update about an employment has been rece
 tai.employmentConfirmation.back=Return to your Income Tax Summary
 
 ##Add Employment page
-tai.addEmployment.addEmploymentJourneyLink=Add a missing Employment
+tai.addEmployment.addEmploymentJourneyLink=Add a missing employment
 tai.addEmployment.addNameForm.title=What is the name of the employer you want to add?
 tai.addEmployment.startDateForm.title=When did you start working for {0}?
 tai.addEmployment.startDateForm.customGaTitle=When did you start working for this employer?
@@ -1088,6 +1087,7 @@ tai.income.calculation.payrollingBik.message1=Your employer may be including you
 tai.income.calculation.payrollingBik.message2=Please contact your employer if you have questions about their value.
 tai.income.calculation.backLink=Back
 tai.income.calculation.potentailly.ceased=We’ve used an estimated amount of £{0} until we know the actual amount.
+tai.income.calculation.incomeTable.caption=Dates and amounts
 tai.income.calculation.incomeTable.dateHeader=Date
 tai.income.calculation.incomeTable.taxPaidHeader=Income Tax paid (£)
 tai.income.calculation.incomeTable.incomeHeader=Taxable income (£)

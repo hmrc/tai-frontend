@@ -31,7 +31,7 @@ class AddPensionReceivedFirstPaySpec extends TaiViewSpec with FormValuesConstant
     behave like pageWithCombinedHeader(
       messages("tai.addPensionProvider.preHeadingText"),
       messages("tai.addPensionProvider.firstPay.title", pensionProviderName))
-      behave like pageWithBackButton(controllers.pensions.routes.AddPensionProviderController.addPensionProviderName())
+      behave like pageWithBackLink
       behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/received-first-payment")
       behave like pageWithYesNoRadioButton(AddPensionProviderFirstPayForm.FirstPayChoice+"-yes", AddPensionProviderFirstPayForm.FirstPayChoice+"-no")
       behave like pageWithCancelLink(routes.TaxAccountSummaryController.onPageLoad())

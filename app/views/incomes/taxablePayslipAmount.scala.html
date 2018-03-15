@@ -27,7 +27,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(taxablePayslipForm),
-        backLocation = Some(controllers.routes.IncomeUpdateCalculatorController.payslipDeductionsPage),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.taxablePayslip.title"),
         preHeadingText = Messages("tai.howToUpdate.preHeading"))}
@@ -44,7 +44,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
 @main(
     title = Messages("tai.taxablePayslip.title"),
-    articleClasses = Some("full-width text"),
+    articleClasses = Some("full-width"),
     user = Some(user),
     pageHeader = Some(header),
     employerName = employerName,

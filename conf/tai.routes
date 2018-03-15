@@ -149,7 +149,9 @@ GET         /income-tax-comparison                                              
 
 
 GET         /your-income-calculation                                                   controllers.YourIncomeCalculationController.yourIncomeCalculationPage(id: Option[Int])
+GET         /your-income-calculation-new/:id                                           controllers.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(id: Int)
 GET         /print-your-income-calculation                                             controllers.YourIncomeCalculationController.printYourIncomeCalculationPage(id: Option[Int])
+GET         /print-your-income-calculation-new/:id                                             controllers.YourIncomeCalculationControllerNew.printYourIncomeCalculationPage(id: Int)
 
 GET         /your-income-calculation-previous-year/:empId                              controllers.YourIncomeCalculationController.yourIncomeCalculationPreviousYearPage(empId: Int)
 GET         /print-your-income-calculation-previous-year/:empId                        controllers.YourIncomeCalculationController.printYourIncomeCalculationPreviousYearPage(empId: Int)
@@ -253,5 +255,8 @@ POST        /remove-company-benefit/telephone-number                            
 GET         /remove-company-benefit/check-your-answers                                 controllers.benefits.RemoveCompanyBenefitController.checkYourAnswers
 POST        /remove-company-benefit/submit-your-answers                                controllers.benefits.RemoveCompanyBenefitController.submitYourAnswers
 GET         /remove-company-benefit/success                                            controllers.benefits.RemoveCompanyBenefitController.confirmation
+GET         /remove-company-benefit/cancel                                             controllers.benefits.RemoveCompanyBenefitController.cancel
 
-
+## Company benefit
+GET         /redirect-company-benefit/:employmentId/:benefitType                       controllers.benefits.CompanyBenefitController.redirectCompanyBenefitSelection(employmentId: Int, benefitType: uk.gov.hmrc.tai.model.domain.BenefitComponentType)
+GET         /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.decision

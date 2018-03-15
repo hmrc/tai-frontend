@@ -26,7 +26,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(nameForm),
-        backLocation =Some(routes.TaxAccountSummaryController.onPageLoad()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addEmployment.addNameForm.title"),
         preHeadingText = Messages("tai.addEmployment.addEmploymentJourneyLink"))}
