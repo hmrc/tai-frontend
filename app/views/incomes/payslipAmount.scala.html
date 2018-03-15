@@ -40,7 +40,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     gaCustomTitle = None
 ){
     <section class="section flush--bottom">
-        @form(action=controllers.routes.IncomeUpdateCalculatorNewController.handlePayslipAmount){
+        @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayslipAmount){
             <div id="payslip" class="form-field-group @if(payslipForm.hasErrors){form-group-error}">
                 <label for="totalSalary">
                     <span class="form-label-bold">

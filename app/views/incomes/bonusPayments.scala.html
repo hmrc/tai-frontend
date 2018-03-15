@@ -41,7 +41,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     gaCustomTitle = None
     ) {
     <section class="section flush--bottom soft--top">
-    @form(action = controllers.routes.IncomeUpdateCalculatorNewController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
+    @form(action = controllers.routes.IncomeUpdateCalculatorController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
 
         @{inputRadioGroupNewStyling(
             field=bonusPaymentsForm("bonusPayments"),

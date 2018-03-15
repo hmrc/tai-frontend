@@ -236,8 +236,6 @@ trait IncomeControllerNew extends TaiBaseController
             employmentAmount <- incomeService.employmentAmount(Nino(user.getNino), id)
           } yield {
             (employmentAmount.isLive, employmentAmount.isOccupationalPension) match {
-              //ToDo - Put Calculator back in
-              //case (true, false) => Ok(views.html.incomes.incomeCalculator(CalculateIncomeForm.create(details)))
               case (true, false) => Redirect(routes.IncomeControllerNew.regularIncome())
               case (false, false) => Redirect(routes.TaxAccountSummaryController.onPageLoad())
               case _ => Redirect(routes.IncomeControllerNew.pensionIncome())

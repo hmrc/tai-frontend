@@ -56,7 +56,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     ){
 
     <section class="section flush--bottom soft--top">
-        @form(action=controllers.routes.IncomeUpdateCalculatorNewController.handleBonusOvertimeAmount){
+        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleBonusOvertimeAmount){
             <fieldset id="bonusOvertimeAmount" class="form-field-group @if(bonusOvertimeAmountForm.hasErrors){error}">
                 <label for="amount" id="bonusOvertimeAmountDescription">
                     <span class="heading-24">

@@ -40,7 +40,7 @@
     gaCustomTitle = None
 ){
     <div class="section flush--bottom soft--top">
-        @form(action=controllers.routes.IncomeUpdateCalculatorNewController.handleWorkingHours){
+        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleWorkingHours){
                 @{inputRadioGroupNewStyling(
                     field=workingHoursForm("workingHours"),
                     radioOptions=Seq(("same" -> Messages("tai.workingHours.same")), ("veryDifferent" -> Messages("tai.workingHours.different"))),

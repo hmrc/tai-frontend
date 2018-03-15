@@ -40,7 +40,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     gaCustomTitle = None
 ){
     <div class="section flush--bottom">
-        @form(action=controllers.routes.IncomeUpdateCalculatorNewController.handleTaxablePayslipAmount){
+        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleTaxablePayslipAmount){
         <div id="payslip" class="form-field-group @if(taxablePayslipForm.hasErrors){form-group-error}">
             <label for="taxablePay">
                 <span class="form-label-bold">
