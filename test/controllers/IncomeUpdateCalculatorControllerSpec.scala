@@ -37,7 +37,7 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome}
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
 
@@ -47,6 +47,24 @@ import scala.util.Random
 class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with JourneyCacheConstants {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+
+  "howToUpdatePage" must {
+    "render the right response to the user" in {
+      val sut = createSut
+      val employment = Employment("company", Some("123"), new LocalDate("2016-05-26"), None, Nil, "", "", 1)
+      val employmentAmount = EmploymentAmount(name = "name", description = "description", employmentId = SampleId,
+        newAmount = 200, oldAmount = 200, isLive = false, isOccupationalPension = true)
+
+      when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+      when(sut.incomeService.employmentAmount(any(), any())(any())).thenReturn(Future.successful(employmentAmount))
+      when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome])))
+      when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+      val result = sut.howToUpdatePage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(routes.IncomeControllerNew.pensionIncome().url)
+    }
+  }
 
   "processHowToUpdatePage" must {
     val employmentAmount = (isLive: Boolean, isOccupationalPension: Boolean) => EmploymentAmount(name = "name", description = "description", employmentId = SampleId,
