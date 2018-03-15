@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
+import data.TaiData
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -27,6 +28,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.http.{ForbiddenException, Upstream4xxResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.PartialRetriever
@@ -85,11 +87,18 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
 
       }
     }
-
     "raise an in year adjustment audit events" in {
       val sut = new SUT()
       Await.result( sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
       verify(sut.auditService, times(1)).createAndSendAuditEvent(Matchers.eq(PotentialUnderpayment_InYearAdjustment), any())(any(), any())
+    }
+    "return the service unavailable error page in response to an internal error" in {
+      val sut = new SUT()
+      when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.failed(new ForbiddenException("")))
+      val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(res) mustBe INTERNAL_SERVER_ERROR
+      val doc = Jsoup.parse(contentAsString(res))
+      doc.title() mustBe "Sorry, we are experiencing technical difficulties - 500"
     }
   }
 
