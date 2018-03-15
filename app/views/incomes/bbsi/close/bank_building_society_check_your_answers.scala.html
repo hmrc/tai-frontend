@@ -41,7 +41,7 @@
         confirmationLines = viewModel.journeyConfirmationLines
     )
 
-    <p class="text subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
+    <p class="subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
 
     @form(action = controllers.income.bbsi.routes.BbsiCloseAccountController.submitYourAnswers(viewModel.id)) {
         @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
