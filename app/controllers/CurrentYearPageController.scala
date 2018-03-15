@@ -57,27 +57,6 @@ trait CurrentYearPageController extends TaiBaseController
 
   def activityLoggerService: ActivityLoggerService
 
-
-//  def potentialUnderpaymentPage(): Action[AnyContent] = authorisedForTai(redirectToOrigin = true)(taiService).async {
-//    implicit user => implicit sessionData => implicit request =>
-//      getPotentialUnderpaymentPage(Nino(user.getNino))
-//  }
-//
-//  def getPotentialUnderpaymentPage(nino: Nino)(implicit request: Request[AnyContent], user: TaiUser, sessionData: SessionData): Future[Result] = {
-//
-//    sendActingAttorneyAuditEvent("getPotentialUnderpaymentPage")
-//
-//    val rule: CustomRule = details => {
-//      auditService.createAndSendAuditEvent(PotentialUnderpayment_InYearAdjustment, Map("nino" -> nino.nino))
-//      val pModel = ViewModelFactory.create(PotentialUnderpaymentPageVM, nino, details)
-//      Future.successful(Ok(views.html.potentialUnderpayment(pModel)))
-//    }
-//
-//    ServiceChecks.executeWithServiceChecks(nino, SimpleServiceCheck, sessionData) {
-//      Some(rule)
-//    }
-//  } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", nino)
-
   def reliefsPage(): Action[AnyContent] = authorisedForTai(redirectToOrigin = true)(taiService).async {
     implicit user => implicit sessionData => implicit request =>
       getReliefsPage(Nino(user.getNino))

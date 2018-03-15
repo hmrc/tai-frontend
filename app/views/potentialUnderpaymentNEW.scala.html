@@ -24,15 +24,15 @@
 @(viewModel:uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModelNEW)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
 
 @gaCallsAdditionalJs = {
-    @if(viewModel.iyaCYAmount>0 && viewModel.iyaCYPlusOneAmount<=0){
+    @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount <= 0){
         ga('send', 'pageview', '/check-income-tax/underpayment-estimate-current');
     }
 
-    @if(viewModel.iyaCYAmount==0 && viewModel.iyaCYPlusOneAmount>0){
+    @if(viewModel.iyaCYAmount == 0 && viewModel.iyaCYPlusOneAmount > 0){
         ga('send', 'pageview', '/check-income-tax/underpayment-estimate-next');
     }
 
-    @if(viewModel.iyaCYAmount>0 && viewModel.iyaCYPlusOneAmount>0){
+    @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount > 0){
         ga('send', 'pageview', '/check-income-tax/underpayment-estimate-both');
     }
 }
