@@ -1087,6 +1087,7 @@ tai.income.calculation.payrollingBik.message1=Your employer may be including you
 tai.income.calculation.payrollingBik.message2=Please contact your employer if you have questions about their value.
 tai.income.calculation.backLink=Back
 tai.income.calculation.potentailly.ceased=We’ve used an estimated amount of £{0} until we know the actual amount.
+tai.income.calculation.incomeTable.caption=Dates and amounts
 tai.income.calculation.incomeTable.dateHeader=Date
 tai.income.calculation.incomeTable.taxPaidHeader=Income Tax paid (£)
 tai.income.calculation.incomeTable.incomeHeader=Taxable income (£)

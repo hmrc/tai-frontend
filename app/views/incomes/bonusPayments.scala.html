@@ -34,7 +34,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 @main(
     title = Messages("tai.bonusPayments.title"),
-    articleClasses = Some("full-width text"),
+    articleClasses = Some("full-width"),
     user = Some(user),
     pageHeader = Some(header),
     employerName = employerName,
@@ -67,7 +67,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             ('_fieldsetAttributes, "id=bonusPaymentsMoreThisYear" )
         )}
 
-        <p class="text section flush--bottom"><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
+        <p class="section flush--bottom"><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
     }
     </section>
 }

@@ -26,13 +26,13 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     employerName = employerName,
     gaCustomTitle = None
 ){
-    <header class="page-header text">
+    <header class="page-header">
         <h1 class="heading-xlarge" id="currentYearTitle">@Messages("tai.incomes.updated.check.title")</h1>
     </header>
 
     <section class="section soft--top">
-        <p class="text">@Messages("tai.incomes.updated.check.text")</p>
-        <p class="text">@Messages("tai.incomes.seeChanges.text")</p>
+        <p>@Messages("tai.incomes.updated.check.text")</p>
+        <p>@Messages("tai.incomes.seeChanges.text")</p>
     </section>
     <p><a class="button" href="@routes.TaxAccountSummaryController.onPageLoad()">@Messages("tai.IncomeTaxSummaryReturn")</a></p>
 }
