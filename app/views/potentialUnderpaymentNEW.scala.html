@@ -115,7 +115,9 @@
 
     @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount <= 0){
         <p class="text">@Html(Messages("tai.iya.paidTooLittle.get.help",
-            Link.toInternalPage(url=routes.HelpController.helpPage.toString,value=Some(Messages("tai.iya.paidTooLittle.get.help.linkText"))).toHtml))</p>
+            Link.toInternalPage(url=routes.HelpController.helpPage.toString,
+                                value=Some(Messages("tai.iya.paidTooLittle.get.help.linkText")),
+                                id=Some("getHelpLink")).toHtml))</p>
     }
 
 }

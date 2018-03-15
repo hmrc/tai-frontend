@@ -21,6 +21,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.tai.util.ViewModelHelper
 
 case class PotentialUnderpaymentViewModelNEW(iyaCYAmount: BigDecimal,
                                              iyaTaxCodeChangeAmount: BigDecimal,
@@ -29,7 +30,7 @@ case class PotentialUnderpaymentViewModelNEW(iyaCYAmount: BigDecimal,
                                              pageTitle: String,
                                              gaDimensions: Option[Map[String, String]] = None)
 
-object PotentialUnderpaymentViewModelNEW {
+object PotentialUnderpaymentViewModelNEW extends ViewModelHelper {
 
   def apply(taxAccountSummary: TaxAccountSummary, codingComponents: Seq[CodingComponent]): PotentialUnderpaymentViewModelNEW = {
 
