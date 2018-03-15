@@ -101,6 +101,10 @@ messages: Messages, user: controllers.auth.TaiUser)
                 </tfoot>
             </table>
 
+            @if(model.messageWhenTotalNotEqual.isDefined) {
+                <p>@model.messageWhenTotalNotEqual.get</p>
+                <p>@Messages("tai.income.calculation.totalNotMatching.message")</p>
+            }
         </section>
     }
 
