@@ -35,7 +35,9 @@
             class="button @linkClasses.mkString(" ")"
         }
     } else {
-        class="@linkClasses.mkString(" ")"
+        @if(linkClasses){
+            class="@linkClasses.mkString(" ")"
+        }
     }
     @if(attributes){
         @for((attr, value) <- attributes){

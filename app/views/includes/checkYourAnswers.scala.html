@@ -31,13 +31,13 @@
                 @line.answer
             </div>
             <div class="cya-change">
-                <a id="confirmation-line-@{idx.toString}-change-link"
-                    href="@line.changeUrl?edit=true"
-                    target="_self"
-                    data-sso="false"
-                    @if(gaEventAction.isDefined) { data-journey-click="link - click:@gaEventAction.get:Change @line.question.toLowerCase" }>
-                    @Messages("tai.checkYourAnswers.change.label")
-                <span class="visuallyhidden"> @line.question.toLowerCase</span></a>
+                @includes.link(
+                    id = Some("confirmation-line-" + idx.toString + "-change-link"),
+                    url = line.changeUrl + "?edit=true",
+                    copy=Messages("tai.checkYourAnswers.change.label"),
+                    altCopy=Some(Messages("tai.checkYourAnswers.change.label") + " " + line.question.toLowerCase),
+                    attributes = if(gaEventAction.isDefined) {Seq("data-journey-click" -> s"link - click:@gaEventAction.get:Change @line.question.toLowerCase")} else {Seq.empty}
+                )
             </div>
         </li>
     }
