@@ -75,20 +75,6 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
-  def chooseHowToUpdatePage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
-    implicit taiRoot =>
-      implicit request =>
-        sendActingAttorneyAuditEvent("getWorkingHours")
-        for {
-          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-          incomeToEdit <- incomeService.employmentAmount(Nino(user.getNino), id)
-          taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
-        } yield {
-          processHowToUpdatePage(id, employerName, incomeToEdit, taxCodeIncomeDetails)
-        }
-  }
-
   def processHowToUpdatePage(id: Int, employmentName: String, incomeToEdit: EmploymentAmount,
                              taxCodeIncomeDetails: TaiResponse)(implicit request: Request[AnyContent], user: TaiUser) = {
     (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, taxCodeIncomeDetails) match {
@@ -371,12 +357,12 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
           moreThisYear <- journeyCacheService.currentValue(UpdateIncome_BonusPaymentsThisYearKey)
+          payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
         } yield {
           if (moreThisYear.contains("Yes")) {
             Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), "year", id, employerName = Some(employerName)))
-          } else {
-            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), moreThisYear.getOrElse(""), id, Some(employerName)))
-          }
+          else
+            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), payPeriod.getOrElse(""), id, Some(employerName)))
         }
   }
 
@@ -438,7 +424,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
                 employerName = Some(employerName)))
             }
           } else {
-            Future.successful(Ok(views.html.incomes.incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate))))
+            Future.successful(Ok(views.html.incomes.incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), id)))
           }
         }
 

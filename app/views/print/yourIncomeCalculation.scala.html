@@ -29,11 +29,11 @@
 @import uk.gov.hmrc.tai.util.CeasedEmploymentHelper
 @import uk.gov.hmrc.tai.util.TaiConstants._
 
-@(incomeCalcDetails: uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel, empId: Option[Int])(implicit request: Request[_],
+@(incomeCalcDetails: uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel, empId: Int)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser)
 
 @printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
-    <a id="backLink" href="@controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(empId)">@Messages("tai.label.back")</a>
+    <a id="backLink" href="@controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(empId))">@Messages("tai.label.back")</a>
 }{
 
     <br><strong><p>@user.getDisplayName</p></strong>

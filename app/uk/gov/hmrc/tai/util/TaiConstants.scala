@@ -113,6 +113,8 @@ trait JourneyCacheConstants {
   val EndCompanyBenefit_BenefitValueKey = "benefitValue"
   val EndCompanyBenefit_TelephoneQuestionKey = "telephoneContactAllowed"
   val EndCompanyBenefit_TelephoneNumberKey = "telephoneNumber"
+  val EndCompanyBenefit_BenefitNameKey = "benefitName"
+  val EndCompanyBenefit_RefererKey = "referer"
 }
 
 trait AuditConstants {
