@@ -361,8 +361,9 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         } yield {
           if (moreThisYear.contains("Yes")) {
             Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), "year", id, employerName = Some(employerName)))
-          else
+          } else {
             Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), payPeriod.getOrElse(""), id, Some(employerName)))
+          }
         }
   }
 
