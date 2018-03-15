@@ -52,9 +52,12 @@ gaCustomTitle = None
         <li>@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line3")</li>
         <li>@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line4")</li>
     </ul>
-    <section class="section flush--bottom">
-        <p>@Link.toInternalPage(url=routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage.toString,cssClasses=Some("button--secondary"),value=Some(Messages("tai.estimatedPay.error.incorrectTaxableIncome.button"))).toHtml</p>
-    </section>
+    @includes.link(
+        copy=Messages("tai.estimatedPay.error.incorrectTaxableIncome.button"),
+        url = routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage.toString,
+        isButton=true,
+        isSecondary=true
+    )
 </div>
 
 }

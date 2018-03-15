@@ -75,7 +75,10 @@ gaCustomTitle = None
     </div>
 
 
-    <div class="section flush--bottom">
-            <p>@Link.toInternalPage(url=routes.IncomeUpdateCalculatorController.handleCalculationResult.toString,cssClasses=Some("button"),value=Some(Messages("tai.estimatedPay.checkTaxEstimate"))).toHtml</p>
-    </div>
+    @includes.link(
+        copy=Messages("tai.estimatedPay.checkTaxEstimate"),
+        url = routes.IncomeUpdateCalculatorController.handleCalculationResult.toString,
+        isButton=true
+    )
+
 }

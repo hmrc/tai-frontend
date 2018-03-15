@@ -1,0 +1,55 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(
+    copy: String,
+    altCopy: Option[String] = Some(""),
+    url: String,
+    isButton: Boolean = false,
+    isSecondary: Boolean = false,
+    linkClasses: Seq[String] = Seq.empty,
+    id: Option[String] = Some(""),
+    attributes: Seq[(String, String)] = Seq.empty
+)(implicit m: Messages)
+
+
+<a @if(id.getOrElse("").nonEmpty){id="@id"} href="@url"
+    @if(isButton){
+        role="button"
+        @if(isSecondary){
+            class="button--secondary @linkClasses.mkString(" ")"
+        }else{
+            class="button @linkClasses.mkString(" ")"
+        }
+    } else {
+        @if(linkClasses){
+            class="@linkClasses.mkString(" ")"
+        }
+    }
+    @if(attributes){
+        @for((attr, value) <- attributes){
+            @attr="@value"
+        }
+    }
+    >
+
+    @if(altCopy.getOrElse("").nonEmpty){
+        <span aria-hidden="true">@copy</span>
+        <span class="visually-hidden">@altCopy</span>
+    } else {
+        @copy
+    }
+</a>

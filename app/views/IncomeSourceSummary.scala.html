@@ -171,13 +171,13 @@
                     @pounds(benefit.amount)
                 </dd>
                 <dd class="tai-description-details--retain-column" id="companyBenefitChangeLinkDescriptionText@idx">
-                    <a id=@{s"changeCompanyBenefitLink${idx}"}
-                       href="@benefit.changeUrl"
-                       target="_self"
-                       data-sso="false"
-                       data-journey-click="link - click:@gaEventActionString:@{s"${Messages("tai.updateOrRemove")} ${benefit.name.toLowerCase}"}">
-                        @Messages("tai.updateOrRemove")
-                        <span class="visuallyhidden"> @benefit.name.toLowerCase</span></a>
+                    @includes.link(
+                        id = Some("changeCompanyBenefitLink" + idx.toString),
+                        url = benefit.changeUrl,
+                        copy=Messages("tai.updateOrRemove"),
+                        altCopy=Some(Messages("tai.updateOrRemove") + " " + benefit.name.toLowerCase),
+                        attributes = Seq("data-journey-click" -> ("link - click:" + gaEventActionString + ":" + Messages("tai.updateOrRemove") + " " + benefit.name.toLowerCase))
+                    )
                 </dd>
             </div>
             }
