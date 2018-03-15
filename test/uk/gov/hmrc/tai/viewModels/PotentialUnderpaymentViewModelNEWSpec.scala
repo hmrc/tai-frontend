@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.viewModels
 
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.model.domain.{DividendTax, EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
@@ -60,10 +60,40 @@ class PotentialUnderpaymentViewModelNEWSpec extends PlaySpec with FakeTaiPlayApp
       PotentialUnderpaymentViewModelNEW(tas, noneMatchCCs).iyaTaxCodeChangeAmount mustBe BigDecimal(0)
       PotentialUnderpaymentViewModelNEW(tas, Nil).iyaTaxCodeChangeAmount mustBe BigDecimal(0)
     }
+
+    "return an instance with a title value" which {
+      "is set to the current year value when no CY+1 ampount is present" in {
+        PotentialUnderpaymentViewModelNEW(tasNoCYPlusOne, Nil).pageTitle mustBe Messages("tai.iya.tax.you.owe.title")
+      }
+      "is set to the general value when both CY and CY+1 amounts are present" in {
+        PotentialUnderpaymentViewModelNEW(tas, Nil).pageTitle mustBe Messages("tai.iya.tax.you.owe.cy-plus-one.title")
+      }
+    }
+
+    "return an instance with a gaDimensions map value" which {
+      "will set in year calc 'current year' google analytic dimensions when only CY values are present" in {
+        PotentialUnderpaymentViewModelNEW(tasNoCYPlusOne, Nil).gaDimensions mustBe
+          Some(Map("valueOfIycdcPayment" -> "123.45", "iycdcReconciliationStatus" -> "Current Year"))
+      }
+      "will set in year calc 'next year' google analytic dimensions when only CY+1 values are present" in {
+        PotentialUnderpaymentViewModelNEW(tasCYPlusOneOnly, Nil).gaDimensions mustBe
+          Some(Map("valueOfIycdcPayment" -> "10.01", "iycdcReconciliationStatus" -> "Next Year"))
+      }
+      "will set n year calc 'current and next year' google analytic dimensions when CY and CY+1 values are present" in {
+        PotentialUnderpaymentViewModelNEW(tas, Nil).gaDimensions mustBe
+          Some(Map("valueOfIycdcPayment" -> "123.45", "iycdcReconciliationStatus" -> "Current and Next Year"))
+      }
+      "is set to None if neither CY nor CY+1 values are present" in {
+        PotentialUnderpaymentViewModelNEW(tasZero, Nil).gaDimensions mustBe None
+      }
+    }
+
   }
 
   val tas = TaxAccountSummary(333.22, 14500, 123.45, 133.46, 10.01)
   val tasZero = TaxAccountSummary(0, 0, 0, 0, 0)
+  val tasNoCYPlusOne = TaxAccountSummary(333.22, 14500, 123.45, 133.46, 0)
+  val tasCYPlusOneOnly = TaxAccountSummary(333.22, 14500, 0, 133.46, 10.01)
   val ccs = Seq(
     CodingComponent(MarriageAllowanceTransferred, Some(1), 1400.86, "MarriageAllowanceTransfererd"),
     CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear")

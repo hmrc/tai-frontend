@@ -18,11 +18,16 @@ package uk.gov.hmrc.tai.viewModels
 
 import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, TaxAccountSummary}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import play.api.Play.current
+import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
 
 case class PotentialUnderpaymentViewModelNEW(iyaCYAmount: BigDecimal,
                                              iyaTaxCodeChangeAmount: BigDecimal,
                                              iyaCYPlusOneAmount: BigDecimal,
-                                             iyaTotalAmount: BigDecimal)
+                                             iyaTotalAmount: BigDecimal,
+                                             pageTitle: String,
+                                             gaDimensions: Option[Map[String, String]] = None)
 
 object PotentialUnderpaymentViewModelNEW {
 
@@ -32,11 +37,31 @@ object PotentialUnderpaymentViewModelNEW {
       case CodingComponent(EstimatedTaxYouOweThisYear, _, amount, _) => amount
     }).headOption.getOrElse(BigDecimal(0))
 
+    val gaDimensions =
+      (taxAccountSummary.totalInYearAdjustmentIntoCY, taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne) match {
+        case (cy, ny) if cy > 0 && ny <= 0 =>
+          Some(Map("valueOfIycdcPayment" -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(), "iycdcReconciliationStatus" -> "Current Year"))
+        case (cy, ny) if cy == 0 && ny > 0 =>
+          Some(Map("valueOfIycdcPayment" -> taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne.toString(), "iycdcReconciliationStatus" -> "Next Year"))
+        case (cy, ny) if cy > 0 && ny > 0 =>
+          Some(Map("valueOfIycdcPayment" -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(), "iycdcReconciliationStatus" -> "Current and Next Year"))
+        case _ => None
+      }
+
+    val title =
+      if(taxAccountSummary.totalInYearAdjustmentIntoCY > 0 && taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne <= 0){
+        Messages("tai.iya.tax.you.owe.title")
+      } else {
+        Messages("tai.iya.tax.you.owe.cy-plus-one.title")
+      }
+
     PotentialUnderpaymentViewModelNEW(
       taxAccountSummary.totalInYearAdjustmentIntoCY,
       iyaTaxCodeChangeAmount,
       taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne,
-      taxAccountSummary.totalInYearAdjustment
+      taxAccountSummary.totalInYearAdjustment,
+      title,
+      gaDimensions
     )
   }
 }
