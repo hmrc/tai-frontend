@@ -29,11 +29,11 @@
 @classArguments = @{if(stopDateForm(RemoveCompanyBenefitStopDateForm.StopDateChoice).value.getOrElse("") != RemoveCompanyBenefitStopDateForm.BeforeTaxYearEnd) "js-hidden data-stopDate inline form-field-group panel-indent" else "data-stopDate inline form-field-group panel-indent"}
 
 @header = @{
-ptaHeader(
-formForErrorSummary = Some(stopDateForm),
-backLocation=Some(controllers.routes.TaxAccountSummaryController.onPageLoad),
-mainHeadingText = Messages("tai.benefits.ended.stopDate.heading", benefitType, empName),
-preHeadingText = Messages("tai.benefits.ended.journey.preHeader"))
+    ptaHeader(
+        formForErrorSummary = Some(stopDateForm),
+        displayBackLink = true,
+        mainHeadingText = Messages("tai.benefits.ended.stopDate.heading", benefitType, empName),
+        preHeadingText = Messages("tai.benefits.ended.journey.preHeader"))
 }
 
 
@@ -66,5 +66,5 @@ gaCustomTitle = None){
 
     }
 
-    @cancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad)
+    @cancelLink(Call("GET",controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url))
 }

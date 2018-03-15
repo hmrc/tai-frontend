@@ -26,7 +26,7 @@
 
 @header = @{
     ptaHeader(
-        backLocation = Some(controllers.routes.TaxAccountSummaryController.onPageLoad()),
+        displayBackLink = true,
         mainHeadingText = messages("tai.bbsi.overview.heading"),
         preHeadingText = messages("tai.bbsi.account.preHeading")
     )
@@ -41,18 +41,18 @@
 ) {
     @defining("d MMMM yyyy") { dateFormatPattern =>
         <div class="section flush--bottom">
-            <p class="text">@Messages("tai.bbsi.overview.para1")</p>
-            <p class="text flush--bottom">@Messages("tai.bbsi.overview.para2")</p>
-            <p class="text">
+            <p>@Messages("tai.bbsi.overview.para1")</p>
+            <p class="flush--bottom">@Messages("tai.bbsi.overview.para2")</p>
+            <p>
                 <span class="display-block bold-large">@pounds(interest)</span>
                 @Messages("tai.bbsi.overview.interest.year.desc", TaxYear().start.toString(dateFormatPattern), TaxYear().end.toString(dateFormatPattern))
             </p>
-            <p class="text">@Messages("tai.bbsi.overview.interest.estimate.desc", TaxYear().prev.start.toString(dateFormatPattern), TaxYear().prev.end.toString(dateFormatPattern))</p>
+            <p>@Messages("tai.bbsi.overview.interest.estimate.desc", TaxYear().prev.start.toString(dateFormatPattern), TaxYear().prev.end.toString(dateFormatPattern))</p>
         </div>
 
         <div class="section flush--bottom">
             <h2 class="heading-medium">@Messages("tai.bbsi.overview.whatYouMustDo.title")</h2>
-            <p class="text">@Messages("tai.bbsi.overview.whatYouMustDo.desc")</p>
+            <p>@Messages("tai.bbsi.overview.whatYouMustDo.desc")</p>
             <ul class="list-bullet">
                 <li>@Messages("tai.bbsi.overview.whatYouMustDo.point1", TaxYear().start.toString(dateFormatPattern), TaxYear().end.toString(dateFormatPattern))</li>
                 <li>@Messages("tai.bbsi.overview.whatYouMustDo.point2")</li>
@@ -61,7 +61,7 @@
 
         <div class="section flush--bottom">
             <h2 class="heading-medium">@Messages("tai.bbsi.overview.whyThisIsImp.title")</h2>
-            <p class="text">@Messages("tai.bbsi.overview.whyThisIsImp.desc")</p>
+            <p>@Messages("tai.bbsi.overview.whyThisIsImp.desc")</p>
             <ul class="list-bullet">
                 <li>@Messages("tai.bbsi.overview.whyThisIsImp.point1")</li>
                 <li>@Messages("tai.bbsi.overview.whyThisIsImp.point2")</li>

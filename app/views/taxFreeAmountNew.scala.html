@@ -27,7 +27,7 @@
 
 @header = @{
     ptaHeader(
-        backLocation = Some(controllers.routes.TaxAccountSummaryController.onPageLoad()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.header,
         preHeadingText = Messages("tai.taxCode.preHeader"))
@@ -47,7 +47,7 @@
 
                 <section id="taxFreeAmountSummary" class="section flush--bottom">
 
-                    <p id="ledeMessage" class="text flush--top">
+                    <p id="ledeMessage" class="flush--top">
                         <span class="lede">@Messages("tai.taxFreeAmount.summarysection.taxFreeExplanation")</span>
                     </p>
 
@@ -55,18 +55,12 @@
                         <span class="display-block bold-large section section--narrow flush--bottom">@viewModel.annualTaxFreeAmount</span>
                     </h2>
 
-                    <p class="text">@Messages("tai.taxFreeAmount.summarysection.p2")</p>
+                    <p>@Messages("tai.taxFreeAmount.summarysection.p2")</p>
                     <ul class="bullets">
                         <li>@Messages("tai.taxFreeAmount.summarysection.bullet1")</li>
                         <li>@Messages("tai.taxFreeAmount.summarysection.bullet2")</li>
                     </ul>
-                    <p class="text section--narrow flush">
-                        @Link.toInternalPage(
-                            id=Some("taxFreeAllowanceChangeLink"),
-                            url=ApplicationConfig.taxFreeAllowanceLinkUrl,
-                            value=Some(Messages("tai.taxFreeAllowance.detailsWrongIformLink")),
-                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAllowance.detailsWrongIformLink")}"))).toHtml
-                    </p>
+
                 </section>
 
                 <section id="taxFreeAmountDetail" class="section">

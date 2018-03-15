@@ -56,8 +56,8 @@
                             linkClasses = Seq("float--right"),
                             isButton=true,
                             isSecondary=true,
-                            copy=Messages("tai.change"),
-                            altCopy=Some(Messages("tai.change") + " " + row.link.value),
+                            copy=Messages("tai.updateOrRemove"),
+                            altCopy=Some(Messages("tai.updateOrRemove") + " " + row.link.value),
                             attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${row.link.value}")
                         )
                     </td>

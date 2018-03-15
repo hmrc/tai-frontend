@@ -27,16 +27,11 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.play.views.helpers._
 
- @backLinkLocation=@{
-     if(bonusOvertime){controllers.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage()}
-     else{controllers.routes.IncomeUpdateCalculatorController.bonusPaymentsPage()}
- }
-
  @gaEventActionString = @{"Your estimated pay for the year"}
 
  @header = @{
      ptaHeader(
-         backLocation = Some(backLinkLocation),
+         displayBackLink = true,
          backLinkGaEventAction = Some(gaEventActionString),
          mainHeadingText = Messages("tai.estimatedPay.title"),
          preHeadingText = Messages("tai.estimatedPay.preHeading"))}

@@ -29,7 +29,7 @@
 
 @header = @{
     ptaHeader(
-        backLocation =Some(new Call("GET", viewModel.backLinkUrl)),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.checkYourAnswers"),
         preHeadingText = viewModel.preHeading) }
@@ -51,7 +51,7 @@
         )
 
         @if(viewModel.postConfirmationText.isDefined) {
-            <p class="text subsection">@viewModel.postConfirmationText.get</p>
+            <p class="subsection">@viewModel.postConfirmationText.get</p>
         }
 
         @submit(

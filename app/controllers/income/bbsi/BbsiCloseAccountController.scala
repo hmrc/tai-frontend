@@ -19,6 +19,7 @@ package controllers.income.bbsi
 
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{ServiceCheckLite, TaiBaseController}
+import org.joda.time.LocalDate
 import uk.gov.hmrc.tai.forms.DateForm
 import uk.gov.hmrc.tai.forms.income.bbsi.BankAccountClosingInterestForm
 import uk.gov.hmrc.tai.viewModels.income.BbsiClosedCheckYourAnswersViewModel
@@ -50,6 +51,8 @@ trait BbsiCloseAccountController extends TaiBaseController
 
   def journeyCacheService: JourneyCacheService
 
+  def futureDateValidation: (LocalDate => Boolean, String) = ((date: LocalDate) => !date.isAfter(LocalDate.now()), Messages("tai.date.error.future"))
+
   def captureCloseDate(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
     implicit user =>
       implicit taiRoot =>
@@ -58,7 +61,7 @@ trait BbsiCloseAccountController extends TaiBaseController
             bbsiService.bankAccount(Nino(user.getNino), id) map {
               case Some(BankAccount(_, Some(_), Some(_), Some(bankName), _, _)) =>
                 Ok(views.html.incomes.bbsi.close.bank_building_society_close_date(
-                  DateForm(Nil, Messages("tai.closeBankAccount.closeDateForm.blankDate", bankName)).form, bankName, id))
+                  DateForm(Seq(futureDateValidation), Messages("tai.closeBankAccount.closeDateForm.blankDate", bankName)).form, bankName, id))
               case Some(_) => throw new RuntimeException(s"Bank account does not contain name, number or sortcode for nino: [${user.getNino}] and id: [$id]")
               case None => throw new RuntimeException(s"Bank account not found for nino: [${user.getNino}] and id: [$id]")
             }
@@ -71,7 +74,7 @@ trait BbsiCloseAccountController extends TaiBaseController
         implicit request =>
           bbsiService.bankAccount(Nino(user.getNino), id) flatMap {
             case Some(BankAccount(_, Some(_), Some(_), Some(bankName), _, _)) =>
-              DateForm(Nil, Messages("tai.closeBankAccount.closeDateForm.blankDate", bankName))
+              DateForm(Seq(futureDateValidation), Messages("tai.closeBankAccount.closeDateForm.blankDate", bankName))
                 .form.bindFromRequest()
                 .fold(
                   formWithErrors => {

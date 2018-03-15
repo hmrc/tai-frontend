@@ -24,7 +24,7 @@ class BankBuildingSocietyOverviewSpec extends TaiViewSpec{
 
   "BankBuildingSociety Overview page" should {
     behave like pageWithTitle(messages("tai.bbsi.overview.heading"))
-    behave like pageWithBackButton(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    behave like pageWithBackLink
     behave like pageWithHeader(messages("tai.bbsi.overview.heading"))
 
     "display first section" in {

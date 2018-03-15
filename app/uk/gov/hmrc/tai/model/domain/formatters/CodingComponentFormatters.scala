@@ -37,7 +37,8 @@ trait CodingComponentFormatters {
       val employmentId = (json \ "employmentId").asOpt[Int]
       val amount = (json \ "amount").as[BigDecimal]
       val description = (json \ "description").as[String]
-      JsSuccess(CodingComponent(componentType, employmentId, amount, description))
+      val inputAmount = (json \ "inputAmount").asOpt[BigDecimal]
+      JsSuccess(CodingComponent(componentType, employmentId, amount, description, inputAmount))
     }
   }
 

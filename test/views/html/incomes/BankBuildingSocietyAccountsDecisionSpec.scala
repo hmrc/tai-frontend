@@ -31,7 +31,7 @@ class BankBuildingSocietyAccountsDecisionSpec extends TaiViewSpec
 
     behave like pageWithTitle(messages("tai.bbsi.decision.preHeading"))
     behave like pageWithHeader(messages("tai.bbsi.decision.heading", "TestBank1"))
-    behave like pageWithBackButton(controllers.income.bbsi.routes.BbsiController.accounts())
+    behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.income.bbsi.routes.BbsiController.accounts())
     behave like pageWithContinueButtonForm("/check-income-tax/income/bank-building-society-savings/accounts/1/decision")
 

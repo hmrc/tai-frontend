@@ -23,7 +23,7 @@
 
 @header = @{
     ptaHeader(
-        backLocation = Some(controllers.income.bbsi.routes.BbsiController.decision(id)),
+        displayBackLink = true,
         mainHeadingText = Messages("tai.bbsi.remove.checkYourAnswers.title", bankName),
         preHeadingText = Messages("tai.bbsi.remove.checkYourAnswers.preHeading")
     )
@@ -37,10 +37,10 @@
     gaCustomTitle = Some(Messages("tai.bbsi.remove.checkYourAnswers.customGaTitle"))
 ) {
 
-    <p class="text">@Messages("tai.bbsi.remove.checkYourAnswers.description", bankName)</p>
+    <p>@Messages("tai.bbsi.remove.checkYourAnswers.description", bankName)</p>
 
     @form(action = controllers.income.bbsi.routes.BbsiRemoveAccountController.submitYourAnswers(id)) {
-        @submit(buttonMessageKey = Some(messages("tai.submit")))
+        @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
     }
 
     @cancelLink(controllers.income.bbsi.routes.BbsiController.accounts())

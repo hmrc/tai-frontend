@@ -26,7 +26,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(howToUpdateForm),
-        backLocation = Some(controllers.routes.IncomeSourceSummaryController.onPageLoad(id)),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.howToUpdate.title"),
         preHeadingText = Messages("tai.howToUpdate.preHeading"))}
@@ -44,7 +44,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
     <p>@Messages("tai.howToUpdate.explanation")</p>
 
-    <div class="text section flush--bottom">
+    <div class="section flush--bottom">
         @form(action=controllers.routes.IncomeUpdateCalculatorController.handleChooseHowToUpdate){
                 @{inputRadioGroupNewStyling(
                     field=howToUpdateForm("howToUpdate"),

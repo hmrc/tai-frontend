@@ -26,7 +26,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(income),
-        backLocation = Some(controllers.routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.incomes.edit.heading"),
         preHeadingText = Messages("tai.incomes.edit.preHeading"))}
@@ -52,7 +52,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         </ul>
     </section>
 
-    <section class="section--branded hmrc text">
+    <section class="section--branded hmrc">
         <h2 class="h2-heading">@Messages("tai.incomes.edit.incomeTax.update.heading")</h2>
         <p>@Messages("tai.incomes.edit.text",s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</p>
         <p>@Messages("tai.enterWholeAndNumericalOnly")</p>

@@ -21,6 +21,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.mvc.Call
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -35,7 +36,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
     behave like pageWithCombinedHeader(
       messages("tai.paye.lastTaxYear.preHeading"),
       messages("tai.paye.heading"))
-    behave like pageWithBackButton(Call("GET", routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().toString))
+    behave like pageWithBackLink
 
     "contain correct pre header and header" in {
       val taxYear = cyMinusOneTaxYear
@@ -258,6 +259,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
 
+        doc must haveLinkWithUrlWithID("p800Link", ApplicationConfig.taxYouPaidStatus.toString)
         doc.select("#p800Link").size() mustBe 1
       }
     }

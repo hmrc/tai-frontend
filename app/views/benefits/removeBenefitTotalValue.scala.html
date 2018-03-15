@@ -31,7 +31,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(companyBenefitTotalValueForm),
-        backLocation = Some(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.remove.company.benefit.total.value.heading", vm.benefitName, vm.employerName),
         preHeadingText = Messages("tai.benefits.ended.journey.preHeader")
@@ -54,7 +54,7 @@
 
         <summary>
             @includes.details_summary(Messages("tai.remove.company.benefit.total.value.whatHappens.link")){
-            <span class="text">@Messages("tai.remove.company.benefit.total.value.whatHappens.desc", uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("yyyy"),uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("yyyy"), uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))</span>
+            <span>@Messages("tai.remove.company.benefit.total.value.whatHappens.desc", uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("yyyy"),uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("yyyy"), uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))</span>
         }
         </summary>
 
@@ -74,6 +74,6 @@
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.remove.company.benefit.total.value.title")))
     }
 
-    @cancelLink(controllers.routes.TaxFreeAmountControllerNew.taxFreeAmount(), gaEventAction = Some(gaEventActionString))
+    @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url), gaEventAction = Some(gaEventActionString))
 
 }

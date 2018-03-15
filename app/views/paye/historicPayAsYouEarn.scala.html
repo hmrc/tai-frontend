@@ -28,7 +28,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
     ptaHeader(
         mainHeadingText = Messages("tai.paye.heading"),
         preHeadingText = Messages("tai.paye.lastTaxYear.preHeading"),
-        backLocation = Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString)
     )}
 
@@ -51,8 +51,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
             <div id="lastTaxYear">
                 @if(!viewModel.hasEmployments) {
                     <div class="flush--bottom soft--bottom" id="rtiDown">
-                        <p id="rtiDownMessage" class="text">@Messages("tai.rti_down_message")</p>
-                        <p id="rtiDownContact" class="text">@Messages("tai.rti_down_message_contact")</p>
+                        <p id="rtiDownMessage">@Messages("tai.rti_down_message")</p>
+                        <p id="rtiDownContact">@Messages("tai.rti_down_message_contact")</p>
                     </div>
                 } else {
                     <section id="lastTaxYearIncome">

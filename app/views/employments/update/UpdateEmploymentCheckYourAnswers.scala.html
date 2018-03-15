@@ -25,7 +25,7 @@
 
 @header = @{
     ptaHeader(
-    backLocation = Some(controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber()),
+    displayBackLink = true,
     mainHeadingText = Messages("tai.checkYourAnswers"),
     preHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")
 )
@@ -44,7 +44,7 @@
         confirmationLines = viewModel.journeyConfirmationLines
     )
 
-    <p class="text subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
+    <p class="subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
 
 
     @form(action = controllers.employments.routes.UpdateEmploymentController.submitYourAnswers()) {

@@ -25,7 +25,7 @@
 
 @header = @{
     ptaHeader(
-    backLocation = Some(controllers.income.bbsi.routes.BbsiUpdateAccountController.captureInterest(viewModel.id)),
+    displayBackLink = true,
     mainHeadingText = Messages("tai.checkYourAnswers"),
     preHeadingText = Messages("tai.bbsi.update.checkYourAnswers.preHeading")
 )
@@ -44,7 +44,7 @@
         confirmationLines = viewModel.journeyConfirmationLines
     )
 
-    <p class="text subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
+    <p class="subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
 
     @form(action = controllers.income.bbsi.routes.BbsiUpdateAccountController.submitYourAnswers(viewModel.id)) {
         @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
