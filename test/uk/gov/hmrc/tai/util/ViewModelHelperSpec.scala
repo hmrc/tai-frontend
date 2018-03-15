@@ -35,7 +35,7 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with DateFormatC
     }
     "return the string representation of the provided MoneyPounds with a pound symbol prefix and negative sign" when {
       "the value is negative" in {
-        withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe "-£1,000.00"
+        withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe s"${minusSign}£1,000.00"
       }
     }
   }
@@ -73,4 +73,5 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with DateFormatC
     }
   }
 
+  val minusSign = "\u2212"
 }

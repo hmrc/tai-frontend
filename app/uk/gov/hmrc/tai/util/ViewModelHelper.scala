@@ -25,7 +25,7 @@ import uk.gov.hmrc.time.TaxYearResolver
 trait ViewModelHelper {
 
   def withPoundPrefixAndSign(moneyPounds: MoneyPounds): String = {
-    val sign = if (moneyPounds.isNegative) "-" else ""
+    val sign = if (moneyPounds.isNegative) "\u2212" else ""
       s"${sign}£${moneyPounds.quantity}"
   }
 
