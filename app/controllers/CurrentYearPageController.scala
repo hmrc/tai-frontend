@@ -19,13 +19,11 @@ package controllers
 import controllers.ServiceChecks.CustomRule
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTai}
-import controllers.viewModels.PotentialUnderpaymentPageVM
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.PayeAccount
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.tai.auth.ConfigProperties
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
@@ -33,7 +31,6 @@ import uk.gov.hmrc.tai.connectors.{LocalTemplateRenderer, PreferencesFrontendCon
 import uk.gov.hmrc.tai.model.SessionData
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.{AuditConstants, TaxAccountCalculator}
-import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 
