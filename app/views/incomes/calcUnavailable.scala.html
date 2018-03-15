@@ -38,17 +38,17 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     employerName = employerName,
     gaCustomTitle = None
 ){
-<section class="section--branded hmrc flush--bottom">
+<div class="section--branded hmrc flush--bottom">
     <h2 class="heading-medium">@Messages("tai.unableToCalculate.nextSteps")</h2>
     <p>@Messages("tai.unableToCalculate.cantCalc")</p>
     <h3 class="heading-small">@Messages("tai.unableToCalculate.enterOwnFigures")</h3>
     <p>@Html(Messages("tai.unableToCalculate.enterOwnFigures.text", Link.toInternalPage(url=routes.IncomeControllerNew.viewIncomeForEdit.toString,value=Some(Messages("tai.unableToCalculate.enterOwnFigures.link"))).toHtml))</p>
     <h3 class="heading-small">@Messages("tai.unableToCalculate.contactHmrc")</h3>
     <p>@Messages("tai.unableToCalculate.noNeedToContact")</p>
-    <ul class="bullets">
+    <ul class="list list-bullet">
         <li>@Messages("tai.unableToCalculate.telephone")</li>
         <li>@Messages("tai.unableToCalculate.textphone")</li>
         <li>@Messages("tai.unableToCalculate.outsideUk")</li>
     </ul>
-</section>
+</div>
 }

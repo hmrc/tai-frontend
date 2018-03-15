@@ -33,11 +33,11 @@
 
     @confirmation_summary()
 
-    @Link.toInternalPage(
-    id=Some("returnToAccounts"),
-    value=Some(Messages("tai.bbsi.confirmation.back")),
-    url = controllers.income.bbsi.routes.BbsiController.accounts().url,
-    cssClasses=Some("button")
-    ).toHtml
+    @includes.link(
+        id=Some("returnToAccounts"),
+        copy=Messages("tai.bbsi.confirmation.back"),
+        url = controllers.income.bbsi.routes.BbsiController.accounts().url.toString,
+        isButton=true
+    )
 
 }

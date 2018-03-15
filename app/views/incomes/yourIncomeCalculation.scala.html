@@ -208,12 +208,12 @@
                     }
 
                     <div class="subsection">
-                        @Link.toInternalPage(
-                        id=Some("returnToSummary"),
-                        value=Some(Messages("tai.IncomeTaxSummaryReturn")),
-                        url = routes.TaxAccountSummaryController.onPageLoad.url,
-                        cssClasses=Some("button")
-                        ).toHtml
+                        @includes.link(
+                            id=Some("returnToSummary"),
+                            copy=Messages("tai.IncomeTaxSummaryReturn"),
+                            url = routes.TaxAccountSummaryController.onPageLoad.url.toString,
+                            isButton=true
+                        )
                     </div>
                 </div>
             </div>
