@@ -149,7 +149,9 @@ GET         /income-tax-comparison                                              
 
 
 GET         /your-income-calculation                                                   controllers.YourIncomeCalculationController.yourIncomeCalculationPage(id: Option[Int])
+GET         /your-income-calculation-new/:id                                           controllers.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(id: Int)
 GET         /print-your-income-calculation                                             controllers.YourIncomeCalculationController.printYourIncomeCalculationPage(id: Option[Int])
+GET         /print-your-income-calculation-new/:id                                             controllers.YourIncomeCalculationControllerNew.printYourIncomeCalculationPage(id: Int)
 
 GET         /your-income-calculation-previous-year/:empId                              controllers.YourIncomeCalculationController.yourIncomeCalculationPreviousYearPage(empId: Int)
 GET         /print-your-income-calculation-previous-year/:empId                        controllers.YourIncomeCalculationController.printYourIncomeCalculationPreviousYearPage(empId: Int)
