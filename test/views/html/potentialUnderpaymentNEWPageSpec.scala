@@ -16,21 +16,14 @@
 
 package views.html
 
-import controllers.ViewModelFactory
-import controllers.viewModels.PotentialUnderpaymentPageVM
-import data.TaiData
 import org.jsoup.Jsoup
-import org.scalatest.concurrent.ScalaFutures
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModelNEW
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 
 class potentialUnderpaymentNEWPageSpec extends TaiViewSpec {
 
