@@ -71,7 +71,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
       status(result) mustBe OK
 
-      doc.title() mustBe Messages("tai.paye.heading")
+      doc.title() must include(Messages("tai.paye.heading"))
 
       doc.select("#thisTaxYear").size must be(0)
       doc.select("#lastTaxYear").size must be(1)
@@ -87,7 +87,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
       status(result) mustBe OK
 
-      doc.title() mustBe Messages("tai.paye.heading")
+      doc.title() must include(Messages("tai.paye.heading"))
 
       doc.select("#thisTaxYear").size must be(0)
       doc.select("#lastTaxYear").size must be(1)
@@ -149,7 +149,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
         status(result) mustBe NOT_FOUND
         verify(testController.employmentService, times(1)).employments(any(), any())(any())
         val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() mustBe "Page not found - 404"
+        doc.title() must include("Page not found - 404")
         doc must haveHeadingWithText(Messages("tai.errorMessage.heading.nps"))
         doc must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message1.nps"))
         doc must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message2.nps"))
@@ -165,7 +165,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
         status(result) mustBe NOT_FOUND
         verify(testController.employmentService, times(1)).employments(any(), any())(any())
         val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() mustBe "Page not found - 404"
+        doc.title() must include("Page not found - 404")
         doc must haveHeadingWithText(Messages("tai.errorMessage.heading"))
         doc must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message1"))
       }
@@ -179,7 +179,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
         status(result) mustBe BAD_REQUEST
         val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() mustBe "Bad request - 400"
+        doc.title() must include("Bad request - 400")
         doc must haveHeadingWithText(Messages("tai.errorMessage.heading"))
         doc must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message1"))
       }
@@ -193,7 +193,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
         status(result) mustBe INTERNAL_SERVER_ERROR
         val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() mustBe "Sorry, we are experiencing technical difficulties - 500"
+        doc.title() must include("Sorry, we are experiencing technical difficulties - 500")
         doc must haveHeadingWithText(Messages("tai.technical.error.heading"))
         doc must haveParagraphWithText(Messages("tai.technical.error.message"))
       }
@@ -207,7 +207,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
         status(result) mustBe INTERNAL_SERVER_ERROR
         val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() mustBe "Sorry, we are experiencing technical difficulties - 500"
+        doc.title() must include("Sorry, we are experiencing technical difficulties - 500")
         doc must haveHeadingWithText(Messages("tai.technical.error.heading"))
         doc must haveParagraphWithText(Messages("tai.technical.error.message"))
       }
@@ -219,7 +219,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
     val result = testController.payePage(TaxYear().prev)()(RequestBuilder.buildFakeRequestWithAuth("GET"))
     val doc = Jsoup.parse(contentAsString(result))
     status(result) mustBe OK
-    doc.title() mustBe Messages("tai.paye.heading")
+    doc.title() must include(Messages("tai.paye.heading"))
     doc must haveLinkWithUrlWithID("updateEmployment", controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(TaxYear().prev).url)
   }
 

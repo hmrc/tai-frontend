@@ -70,7 +70,7 @@ class IncomeControllerNewSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.incomes.edit.heading")
+        doc.title() must include(Messages("tai.incomes.edit.heading"))
       }
     }
 
@@ -249,7 +249,7 @@ class IncomeControllerNewSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.incomes.updated.check.title")
+        doc.title() must include(Messages("tai.incomes.updated.check.title"))
       }
     }
 
@@ -266,7 +266,7 @@ class IncomeControllerNewSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.incomes.updated.check.title")
+        doc.title() must include(Messages("tai.incomes.updated.check.title"))
       }
     }
 
@@ -301,7 +301,7 @@ class IncomeControllerNewSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.incomes.pension.heading")
+        doc.title() must include(Messages("tai.incomes.pension.heading"))
       }
     }
 

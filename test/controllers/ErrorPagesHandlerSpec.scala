@@ -55,7 +55,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
       val doc = Jsoup.parse(content)
 
       val title = doc.select("title").text()
-      title mustBe "Bad request - 400"
+      title must include("Bad request - 400")
 
       val heading = doc.select(".h1-heading").text()
       heading mustBe "There is a problem"
@@ -82,7 +82,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
       val doc = Jsoup.parse(content)
 
       val title = doc.select("title").text()
-      title mustBe "Bad request - 400"
+      title must include("Bad request - 400")
 
       val heading = doc.select(".h1-heading").text()
       heading mustBe Messages("tai.errorMessage.heading.nps")
@@ -101,7 +101,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
       val doc = Jsoup.parse(content)
 
       val title = doc.select("title").text()
-      title mustBe "Bad request - 400"
+      title must include("Bad request - 400")
 
       val heading = doc.select(".h1-heading").text()
       heading mustBe "There is a problem"
@@ -125,7 +125,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
       heading mustBe "Sorry we’re experiencing technical difficulties"
 
       val title = doc.select("title").text()
-      title mustBe "Sorry, we are experiencing technical difficulties - 500"
+      title must include("Sorry, we are experiencing technical difficulties - 500")
 
     }
 
@@ -154,7 +154,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
       heading mustBe Messages("tai.errorMessage.heading.nps")
 
       val title = doc.select("title").text()
-      title mustBe "Page not found - 404"
+      title must include("Page not found - 404")
 
     }
 
@@ -171,7 +171,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
       heading mustBe "There is a problem"
 
       val title = doc.select("title").text()
-      title mustBe "Page not found - 404"
+      title must include("Page not found - 404")
 
     }
 
@@ -191,7 +191,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
       heading mustBe "Sorry we’re experiencing technical difficulties"
 
       val title = doc.select("title").text()
-      title mustBe "Sorry, we are experiencing technical difficulties - 500"
+      title must include("Sorry, we are experiencing technical difficulties - 500")
 
     }
   }
@@ -297,7 +297,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
         val result = partialErrorFunction(new NotFoundException(NpsTaxAccountCYDataAbsentMsg))
         status(result) mustBe BAD_REQUEST
         val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() mustBe "Sorry, there is a problem so you can’t use this service"
+        doc.title() must include("Sorry, there is a problem so you can’t use this service")
       }
 
       "there are no employment for current year but employment is available for previous year" in {
@@ -330,7 +330,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
         val result = partialErrorFunction(new BadRequestException(NpsNoEmploymentForCurrentTaxYear))
         status(result) mustBe BAD_REQUEST
         val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() mustBe "Sorry, there is a problem so you can’t use this service"
+        doc.title() must include("Sorry, there is a problem so you can’t use this service")
       }
 
       "there is hod bad request exception" in {

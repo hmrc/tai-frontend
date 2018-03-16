@@ -51,7 +51,7 @@ class NoCYIncomeTaxErrorControllerSpec
       val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       val doc = Jsoup.parse(contentAsString(result))
       status(result) mustBe OK
-      doc.title() mustBe Messages("tai.noCYIncomeError.heading")
+      doc.title() must include(Messages("tai.noCYIncomeError.heading"))
     }
 
     "call employment service to fetch sequence of employments" in {

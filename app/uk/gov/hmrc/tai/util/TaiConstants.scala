@@ -213,6 +213,7 @@ object TaxRegionConstants extends TaxRegionConstants
 object TaiConstants {
 
   val SERVICE_IDENTIFIER = "TES"
+  val SERVICE_NAME_PUBLIC = "Pay As You Earn (PAYE)"
 
   val incomeTaxPage = 1
   val incomePage = 2

@@ -48,7 +48,7 @@ class potentialUnderpaymentPageSpec extends TaiViewSpec
 
       val doc = Jsoup.parseBodyFragment(html.toString)
 
-      doc.title() mustBe Messages("tai.iya.tax.you.owe.cy-plus-one.title")
+      doc.title() must include(Messages("tai.iya.tax.you.owe.cy-plus-one.title"))
 
       val potentialUnderpayment = doc.select("#potential-underpayment-amount")
       potentialUnderpayment.size() must be(0)
@@ -65,7 +65,7 @@ class potentialUnderpaymentPageSpec extends TaiViewSpec
 
       val doc = Jsoup.parseBodyFragment(html.toString)
 
-      doc.title() mustBe Messages("tai.iya.tax.you.owe.cy-plus-one.title")
+      doc.title() must include(Messages("tai.iya.tax.you.owe.cy-plus-one.title"))
 
       val potentialUnderpayment = doc.select("#potential-underpayment-amount")
       potentialUnderpayment.size() must be(0)
@@ -80,7 +80,7 @@ class potentialUnderpaymentPageSpec extends TaiViewSpec
 
       val doc = Jsoup.parseBodyFragment(html.toString)
 
-      doc.title() mustBe Messages("tai.iya.tax.you.owe.cy-plus-one.title")
+      doc.title() must include(Messages("tai.iya.tax.you.owe.cy-plus-one.title"))
 
       val inYearAdjustmentIntoCYAndCYPlusOne = doc.select("#iya-cy-and-cy-plus-one-how-much")
       inYearAdjustmentIntoCYAndCYPlusOne.size() must be(1)
@@ -105,7 +105,7 @@ class potentialUnderpaymentPageSpec extends TaiViewSpec
 
       val doc = Jsoup.parseBodyFragment(html.toString)
 
-      doc.title() mustBe Messages("tai.iya.tax.you.owe.title")
+      doc.title() must include(Messages("tai.iya.tax.you.owe.title"))
 
       val inYearAdjustmentIntoCYAndCYPlusOne = doc.select("#iya-cy-and-cy-plus-one-how-much")
       inYearAdjustmentIntoCYAndCYPlusOne.size() must be(0)
@@ -129,7 +129,7 @@ class potentialUnderpaymentPageSpec extends TaiViewSpec
 
       val doc = Jsoup.parseBodyFragment(html.toString)
 
-      doc.title() mustBe Messages("tai.iya.tax.you.owe.cy-plus-one.title")
+      doc.title() must include(Messages("tai.iya.tax.you.owe.cy-plus-one.title"))
 
       val inYearAdjustmentIntoCYAndCYPlusOne = doc.select("#iya-cy-and-cy-plus-one-how-much")
       inYearAdjustmentIntoCYAndCYPlusOne.size() must be(0)

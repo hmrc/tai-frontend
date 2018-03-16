@@ -62,9 +62,9 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.employment.income.details.mainHeading", "employment",
+        doc.title() must include(Messages("tai.employment.income.details.mainHeading", "employment",
           TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy"),
-          TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))
+          TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")))
       }
 
       "asked for pension details" in {
@@ -79,9 +79,9 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.pension.income.details.mainHeading", "pension",
+        doc.title() must include(Messages("tai.pension.income.details.mainHeading", "pension",
           TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy"),
-          TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))
+          TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")))
       }
     }
 
