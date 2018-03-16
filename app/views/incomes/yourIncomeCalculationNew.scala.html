@@ -113,8 +113,8 @@
                             </tbody>
                         </table>
 
-                        @if(model.messageWhenTotalNotEqual.isDefined) {
-                            <p>@model.messageWhenTotalNotEqual.get</p>
+                        @model.messageWhenTotalNotEqual.map { message =>
+                            <p>@message</p>
                             <p>@Messages("tai.income.calculation.totalNotMatching.message")</p>
                         }
                     </div>
