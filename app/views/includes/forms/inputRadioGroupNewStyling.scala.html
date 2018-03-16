@@ -42,7 +42,7 @@
         @for(((value, label), optionIdx) <- radioOptions zip (Stream from 1)) {
 
             @defining(s"${elements.field.name}-${value.toLowerCase.replace(" ","_")}")  { inputId =>
-                <div class="multiple-choice">
+                <div class="multiple-choice" @elements.args.get( Symbol(s"_radioOption${optionIdx}WrapAttribute") )>
                     <input  type="radio"
                             id="@inputId"
                             name="@elements.field.name"

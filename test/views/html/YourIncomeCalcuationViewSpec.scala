@@ -28,7 +28,7 @@ class YourTaxableIncomeIncomesSpec extends TaiViewSpec {
 
   override def view: Html = views.html.incomes.yourIncomeCalculation(yourIncomeCalculationViewModel, empId)
 
-  private val customView = (yourIncomeCalculationViewModel: YourIncomeCalculationViewModel, employmentId: Option[Int]) =>
+  private val customView = (yourIncomeCalculationViewModel: YourIncomeCalculationViewModel, employmentId: Int) =>
     views.html.incomes.yourIncomeCalculation(yourIncomeCalculationViewModel, employmentId)
 
   "YourIncomeCalculationView" should {
@@ -54,7 +54,7 @@ class YourTaxableIncomeIncomesSpec extends TaiViewSpec {
   }
 
 
-  val empId = Some(1)
+  val empId = 1
   val yourIncomeCalculationViewModel = YourIncomeCalculationViewModel(employerName = "test",
     employmentPayments = Nil, isPension = true, incomeCalculationMsg = "", incomeCalculationEstimateMsg = Some("We’ve used an estimated amount of £2,000 until we know the actual amount."), empId = 1, hasPrevious = true,
     editableDetails = EditableDetails(payRollingBiks = false, isEditable = true), rtiDown = false,

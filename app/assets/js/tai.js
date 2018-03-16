@@ -6,6 +6,9 @@ $(document).ready(function() {
 	// with role="button" when the space key is pressed.
 	GOVUK.shimLinksWithButtonRole.init()
 
+	var showHideContent = new GOVUK.ShowHideContent()
+	showHideContent.init()
+
 	// Move focus to error summary
 	$('.error-summary').focus();
 });

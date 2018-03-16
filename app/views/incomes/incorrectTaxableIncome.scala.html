@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@( payYTD: BigDecimal = 0, payDate: org.joda.time.LocalDate)(implicit request: Request[_], messages: Messages,
+@( payYTD: BigDecimal = 0, payDate: org.joda.time.LocalDate, id: Int)(implicit request: Request[_], messages: Messages,
 user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
 
 @import uk.gov.hmrc.play.views.formatting.Money._
@@ -54,7 +54,7 @@ gaCustomTitle = None
     </ul>
     @includes.link(
         copy=Messages("tai.estimatedPay.error.incorrectTaxableIncome.button"),
-        url = routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage.toString,
+        url = routes.IncomeUpdateCalculatorController.howToUpdatePage(id).toString,
         isButton=true,
         isSecondary=true
     )

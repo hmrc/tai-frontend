@@ -17,8 +17,11 @@
 package uk.gov.hmrc.tai.viewModels
 
 import org.joda.time.LocalDate
+import play.api.i18n.Messages
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income.{TaxCodeIncome, TaxCodeIncomeSourceStatus}
+import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, TaxCodeIncomeSourceStatus}
 
 case class PaymentDetailsViewModel(date: LocalDate,
                                    taxableIncome: BigDecimal,
@@ -38,7 +41,8 @@ case class YourIncomeCalculationViewModelNew(
                                               rtiStatus: RealTimeStatus,
                                               latestPayment: Option[LatestPayment],
                                               endDate: Option[LocalDate],
-                                              isPension: Boolean
+                                              isPension: Boolean,
+                                              messageWhenTotalNotEqual: Option[String]
                                             )
 
 object YourIncomeCalculationViewModelNew {
@@ -50,15 +54,37 @@ object YourIncomeCalculationViewModelNew {
 
     val realTimeStatus = employment.latestAnnualAccount.map(_.realTimeStatus).getOrElse(TemporarilyUnavailable)
 
+    val latestPayment = latestPaymentDetails(employment)
+    val isPension = taxCodeIncome.componentType == PensionIncome
     YourIncomeCalculationViewModelNew(
       employment.sequenceNumber,
       employment.name,
       paymentDetails,
       taxCodeIncome.status,
       realTimeStatus,
-      latestPaymentDetails(employment),
+      latestPayment,
       employment.endDate,
-      taxCodeIncome.componentType == PensionIncome)
+      isPension,
+      totalNotEqualMessage(taxCodeIncome.status == Live, paymentDetails, latestPayment, isPension)
+    )
+  }
+
+  private def totalNotEqualMessage(isLive: Boolean,
+                                   payments: Seq[PaymentDetailsViewModel],
+                                   latestPayment: Option[LatestPayment],
+                                   isPension: Boolean) = {
+    val isTotalEqual = payments.map(_.taxAmount).sum == latestPayment.map(_.taxAmountYearToDate).getOrElse(0) &&
+      payments.map(_.taxableIncome).sum == latestPayment.map(_.amountYearToDate).getOrElse(0) &&
+      payments.map(_.nationalInsuranceAmount).sum == latestPayment.map(_.nationalInsuranceAmountYearToDate).getOrElse(0)
+
+    if(isLive && !isTotalEqual && isPension) {
+      Some(Messages("tai.income.calculation.totalNotMatching.pension.message"))
+    } else if (isLive && !isTotalEqual && !isPension) {
+      Some(Messages("tai.income.calculation.totalNotMatching.emp.message"))
+    } else {
+      None
+    }
+
   }
 
   private def latestPaymentDetails(employment: Employment) = {

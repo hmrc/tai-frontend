@@ -51,11 +51,12 @@
                 legend=Messages("tai.closeBankAccount.closingInterest.legend"),
                 legendHint=None,
                 ('_groupDivClass, "form-group" ),
+                ('_radioOption1WrapAttribute, "data-target=closingInterestEntry-container"),
                 ('_groupClass, "inline"),
                 ('_fieldsetAttributes, "id=closingInterestChoice" ),
                 ('_legendSpanClass, "visually-hidden"),
-                ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Do you know how much interest you earned?:Yes" data-journey-val="Yes" data-dynamic-fields-hide="false" data-dynamic-fields="closingInterestEntry"""") ),
-                ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Do you know how much interest you earned?:No" data-journey-val="No" data-dynamic-fields-hide="true" data-dynamic-fields="closingInterestEntry"""") )
+                ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Do you know how much interest you earned?:Yes" data-journey-val="Yes"""") ),
+                ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Do you know how much interest you earned?:No" data-journey-val="No"""") )
             )}
 
             <div id="closingInterestEntry-container" class="@if(closingInterestForm(BankAccountClosingInterestForm.ClosingInterestChoice).value.getOrElse("") != BankAccountClosingInterestForm.YesValue){js-hidden} data-closingInterestEntry">

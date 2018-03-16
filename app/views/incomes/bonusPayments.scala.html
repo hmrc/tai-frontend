@@ -49,11 +49,10 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             legend=Messages("tai.bonusPayments.question"),
             legendHint=None,
             ('_groupDivClass, "form-group" ),
+            ('_radioOption1WrapAttribute, "data-target=bonusPaymentsMoreThisYear"),
             ('_groupClass, "inline" ),
             ('_legendSpanClass, "form-label-bold"),
-            ('_fieldsetAttributes, "id=bonusPayments" ),
-            ('_radioOption1Attributes, Html("""data-dynamic-fields="moreThisYear" data-dynamic-fields-hide="false"""") ),
-            ('_radioOption2Attributes, Html("""data-dynamic-fields="moreThisYear" data-dynamic-fields-hide="true"""") )
+            ('_fieldsetAttributes, "id=bonusPayments" )
         )}
 
         @{inputRadioGroupNewStyling(
@@ -61,8 +60,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no"))),
             legend=Messages("tai.bonusPayments.moreThisYear"),
             legendHint=None,
-            ('_groupDivClass, "form-group data-moreThisYear" + (if(!bonusPaymentSelected) " js-hidden" else "") ),
-            ('_groupClass, "inline panel-indent" ),
+            ('_groupDivClass, "form-group data-moreThisYear"),
+            ('_groupClass, "inline panel-indent" + (if(!bonusPaymentSelected) " js-hidden" else "") ),
             ('_legendClass, "section flush"),
             ('_fieldsetAttributes, "id=bonusPaymentsMoreThisYear" )
         )}
