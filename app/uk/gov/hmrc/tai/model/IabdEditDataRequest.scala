@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.model
 
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
-import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
+import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import play.api.Play.current
 import play.api.i18n.Messages
@@ -74,7 +74,8 @@ object EmploymentAmount {
       None,
       Some(employment.startDate),
       employment.endDate,
-      taxCodeIncome.status == Live
+      taxCodeIncome.status == Live,
+      taxCodeIncome.componentType == PensionIncome
     )
   }
 }
