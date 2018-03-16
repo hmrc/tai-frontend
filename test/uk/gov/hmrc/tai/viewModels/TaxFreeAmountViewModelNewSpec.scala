@@ -25,6 +25,7 @@ import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.time.TaxYearResolver
+import TaiConstants.encodedMinusSign
 
 class TaxFreeAmountViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -83,7 +84,7 @@ class TaxFreeAmountViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication
             CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
           val sut = TaxFreeAmountViewModelNew(taxComponents, employmentNames, companyCarBenefits)
 
-          sut.annualTaxFreeAmount mustBe s"${minusSign}£1,200"
+          sut.annualTaxFreeAmount mustBe s"${encodedMinusSign}£1,200"
         }
       }
 
@@ -223,7 +224,7 @@ class TaxFreeAmountViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication
           sut mustBe TaxFreeAmountViewModelNew(
             expectedHeader,
             expectedTitle,
-            s"${minusSign}£6,200",
+            s"${encodedMinusSign}£6,200",
             Seq(
               emptyPersonalAllowanceItem,
               emptyAdditionsItem,
@@ -257,7 +258,7 @@ class TaxFreeAmountViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication
                     "£6,200",
                     ChangeLinkViewModel(isDisplayed = false)
                   ))),
-              totalsItem(s"${minusSign}£6,200")
+              totalsItem(s"${encodedMinusSign}£6,200")
             )
           )
         }
@@ -313,7 +314,7 @@ class TaxFreeAmountViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication
               Seq(
                 TaxFreeAmountSummaryRowViewModel(
                   Messages("tai.taxFreeAmount.table.totals.label"),
-                  s"${minusSign}£1,988",
+                  s"${encodedMinusSign}£1,988",
                   ChangeLinkViewModel(isDisplayed = false)
                 )))
         }
@@ -536,7 +537,5 @@ class TaxFreeAmountViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication
 
   val employmentNames = Map.empty[Int, String]
   val companyCarBenefits = Seq.empty[CompanyCarBenefit]
-
-  val minusSign = "\u2212"
 }
 

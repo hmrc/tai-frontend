@@ -22,7 +22,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.util.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
+import uk.gov.hmrc.tai.util.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform, encodedMinusSign}
 import uk.gov.hmrc.time.TaxYearResolver
 
 class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
@@ -59,8 +59,8 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
       "has correctly formatted negative tax free amount and estimated income" when {
         "taxAccountSummary has a negative values" in {
           val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, TaxAccountSummary(-54321, -12345, 333.32), true, nonTaxCodeIncome)
-          sut.taxFreeAmount mustBe s"${minusSign}£12,345"
-          sut.estimatedIncomeTaxAmount mustBe s"${minusSign}£54,321"
+          sut.taxFreeAmount mustBe s"${encodedMinusSign}£12,345"
+          sut.estimatedIncomeTaxAmount mustBe s"${encodedMinusSign}£54,321"
         }
       }
 
@@ -261,7 +261,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
       "has the amount field as negative formatted value coming from taxCodeIncome model" in {
         val taxCodeIncomeNegative = taxCodeIncome.copy(amount = -1111)
         val sut = IncomeSourceViewModel(taxCodeIncomeNegative, employment)
-        sut.amount mustBe s"${minusSign}£1,111"
+        sut.amount mustBe s"${encodedMinusSign}£1,111"
       }
       "has the amount field as zero formatted value coming from taxCodeIncome model" in {
         val taxCodeIncomeZero = taxCodeIncome.copy(amount = 0)
@@ -502,6 +502,4 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
   val nonTaxCodeIncome = NonTaxCodeIncome(Some(uk.gov.hmrc.tai.model.domain.income.UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest", Seq.empty[BankAccount])), Seq(
     OtherNonTaxCodeIncome(Profit, None, 100, "Profit")
   ))
-
-  val minusSign = "\u2212"
 }

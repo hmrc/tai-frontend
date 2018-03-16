@@ -21,11 +21,12 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.time.TaxYearResolver
+import TaiConstants.encodedMinusSign
 
 trait ViewModelHelper {
 
   def withPoundPrefixAndSign(moneyPounds: MoneyPounds): String = {
-    val sign = if (moneyPounds.isNegative) "\u2212" else ""
+    val sign = if (moneyPounds.isNegative) encodedMinusSign else ""
       s"${sign}£${moneyPounds.quantity}"
   }
 

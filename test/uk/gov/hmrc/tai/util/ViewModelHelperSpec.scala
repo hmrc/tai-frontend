@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.util
 
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import TaiConstants.encodedMinusSign
 
 class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with DateFormatConstants {
 
@@ -35,7 +36,7 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with DateFormatC
     }
     "return the string representation of the provided MoneyPounds with a pound symbol prefix and negative sign" when {
       "the value is negative" in {
-        withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe s"${minusSign}£1,000.00"
+        withPoundPrefixAndSign(MoneyPounds(-1000)) mustBe s"${encodedMinusSign}£1,000.00"
       }
     }
   }
@@ -72,6 +73,4 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with DateFormatC
       replaced mustBe "something\u00A0with\u00A0non\u00A0breaks"
     }
   }
-
-  val minusSign = "\u2212"
 }

@@ -291,4 +291,6 @@ object TaiConstants {
 
   val EmergencyTaxCodeSuffix = "X"
   val ScottishTaxCodePrefix = "S"
+
+  val encodedMinusSign = "\u2212"
 }
