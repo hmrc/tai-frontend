@@ -31,5 +31,5 @@ class howToUpdateSpec extends TaiViewSpec {
 
   val empId = 1
 
-  override def view: Html = views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), hasMultipleIncomes = false, empId, None)
+  override def view: Html = views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), empId, None)
 }

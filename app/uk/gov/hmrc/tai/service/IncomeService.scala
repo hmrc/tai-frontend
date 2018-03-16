@@ -16,14 +16,18 @@
 
 package uk.gov.hmrc.tai.service
 
+import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
-import uk.gov.hmrc.tai.model.EmploymentAmount
-import uk.gov.hmrc.tai.model.domain.Payment
+import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, PayPeriodForm}
+import uk.gov.hmrc.tai.model._
+import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
+import uk.gov.hmrc.tai.model.domain.income.Ceased
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -33,6 +37,8 @@ trait IncomeService extends JourneyCacheConstants {
   def taxAccountService: TaxAccountService
 
   def employmentService: EmploymentService
+
+  def taiConnector: TaiConnector
 
   def employmentAmount(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[EmploymentAmount] = {
     for {
@@ -63,6 +69,47 @@ trait IncomeService extends JourneyCacheConstants {
     }
   }
 
+  def calculateEstimatedPay(cache: Map[String, String], startDate: Option[LocalDate])(implicit hc: HeaderCarrier): Future[CalculatedPay] = {
+
+    def isCacheAvailable(key: String): Option[BigDecimal]  =
+      if (cache.contains(key)) Some(BigDecimal(FormHelper.convertCurrencyToInt(cache.get(key)))) else None
+
+
+    val paymentFrequency = cache.getOrElse(UpdateIncome_PayPeriodKey, "")
+    val pay = FormHelper.convertCurrencyToInt(cache.get(UpdateIncome_TotalSalaryKey))
+    val taxablePay = isCacheAvailable(UpdateIncome_TaxablePayKey)
+    val days = cache.getOrElse(UpdateIncome_OtherInDaysKey, "0").toInt
+    val bonus = isCacheAvailable(UpdateIncome_BonusOvertimeAmountKey)
+
+    val payDetails = PayDetails(
+      paymentFrequency = paymentFrequency,
+      pay = Some(pay),
+      taxablePay = taxablePay,
+      days = Some(days),
+      bonus = bonus,
+      startDate = startDate
+    )
+
+    taiConnector.calculateEstimatedPay(payDetails)
+  }
+
+  def editableIncomes(taxCodeIncomes: Seq[TaxCodeIncome]): Seq[TaxCodeIncome] = {
+    taxCodeIncomes.filter {
+      income =>
+        (income.componentType == EmploymentIncome || income.componentType == PensionIncome) &&
+          income.status != Ceased
+    }
+  }
+
+  def singularIncomeId(taxCodeIncomes: Seq[TaxCodeIncome]): Option[Int] = {
+    val incomes = editableIncomes(taxCodeIncomes)
+    if (incomes.size == 1) {
+      incomes.head.employmentId
+    } else {
+      None
+    }
+  }
+
   def cachePaymentForRegularIncome(latestPayment: Option[Payment])(implicit hc: HeaderCarrier): Map[String, String] = {
     latestPayment match {
       case Some(payment) => Map(UpdateIncome_PayToDateKey -> payment.amountYearToDate.toString, UpdateIncome_DateKey -> payment.date.toString)
@@ -70,9 +117,20 @@ trait IncomeService extends JourneyCacheConstants {
     }
   }
 
+  def cachePayPeriod(form: PayPeriodForm)(implicit hc: HeaderCarrier): Map[String, String] =
+    form.otherInDays match {
+      case Some(days) => Map(UpdateIncome_PayPeriodKey -> form.payPeriod.getOrElse(""), UpdateIncome_OtherInDaysKey -> days.toString)
+      case _ => Map(UpdateIncome_PayPeriodKey -> form.payPeriod.getOrElse(""))
+    }
+
+  def cacheBonusPayments(bonusPaymentsForm: BonusPaymentsForm)(implicit hc: HeaderCarrier): Map[String, String] = {
+    bonusPaymentsForm.bonusPayments.fold(Map.empty[String, String])(bonusPayments => Map(UpdateIncome_BonusPaymentsKey -> bonusPayments)) ++
+      bonusPaymentsForm.bonusPaymentsMoreThisYear.fold(Map.empty[String, String])(bonusPayments => Map(UpdateIncome_BonusPaymentsThisYearKey -> bonusPayments))
+  }
 }
 
 object IncomeService extends IncomeService {
   override val taxAccountService: TaxAccountService = TaxAccountService
   override val employmentService: EmploymentService = EmploymentService
+  override val taiConnector: TaiConnector = TaiConnector
 }

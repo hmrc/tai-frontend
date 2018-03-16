@@ -466,6 +466,45 @@ class IncomeControllerNewSpec extends PlaySpec
     }
   }
 
+  "viewIncomeForEdit" must {
+    "redirect user" when {
+      "employment is live and is not occupational pension" in {
+        val sut = createSUT
+
+        val employmentAmount = EmploymentAmount("employment","(Current employer)",1,11,11,None,None,None,None,true,false)
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
+        when(sut.incomeService.employmentAmount(any(), any())(any())).thenReturn(Future.successful(employmentAmount))
+
+        val result = sut.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.IncomeControllerNew.regularIncome().url
+      }
+
+      "employment is not live and is not occupational pension" in {
+        val sut = createSUT
+
+        val employmentAmount = EmploymentAmount("employment","(Current employer)",1,11,11,None,None,None,None,false,false)
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
+        when(sut.incomeService.employmentAmount(any(), any())(any())).thenReturn(Future.successful(employmentAmount))
+
+        val result = sut.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.TaxAccountSummaryController.onPageLoad().url
+      }
+
+      "employment is not live and is occupational pension" in {
+        val sut = createSUT
+
+        val employmentAmount = EmploymentAmount("employment","(Current employer)",1,11,11,None,None,None,None,false, true)
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
+        when(sut.incomeService.employmentAmount(any(), any())(any())).thenReturn(Future.successful(employmentAmount))
+
+        val result = sut.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.IncomeControllerNew.pensionIncome().url
+      }
+    }
+  }
 
   val nino = new Generator(new Random).nextNino
 
