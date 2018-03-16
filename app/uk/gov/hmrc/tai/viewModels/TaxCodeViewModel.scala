@@ -20,9 +20,10 @@ import uk.gov.hmrc.tai.viewModels.TaxCodeDescriptor._
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.domain.income.{TaxCodeIncome, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
 import uk.gov.hmrc.tai.util.{DateFormatConstants, ViewModelHelper}
 import uk.gov.hmrc.urls.Link
 
@@ -33,18 +34,21 @@ case class TaxCodeViewModel(title: String,
                             ledeMessage: String,
                             taxCodeDetails: Seq[DescriptionListViewModel])
 
+case class TaxCodeDescription(taxCode: String, basisOperation: BasisOperation)
+
 object TaxCodeViewModel extends ViewModelHelper with DateFormatConstants {
 
-  def apply(taxCodeIncomes: Seq[TaxCodeIncome]): TaxCodeViewModel = {
+  def apply(taxCodeIncomes: Seq[TaxCodeIncome], nino: Nino): TaxCodeViewModel = {
+
+    val explanationRules: Seq[TaxCodeDescription => ListMap[String, String]] = Seq(scottishTaxCodeExplanation,
+      untaxedTaxCodeExplanation,
+      fetchTaxCodeExplanation,
+      emergencyTaxCodeExplanation)
 
     val descriptionListViewModels = taxCodeIncomes.map { taxCodeIncome =>
       val taxCode = taxCodeIncome.taxCodeWithEmergencySuffix
-      val explanationRules: Seq[TaxCodeIncome => ListMap[String, String]] = Seq(scottishTaxCodeExplanation,
-        untaxedTaxCodeExplanation,
-        fetchTaxCodeExplanation,
-        emergencyTaxCodeExplanation)
-
-      val explanation = explanationRules.foldLeft(ListMap[String, String]())((expl, rule) => expl ++ rule(taxCodeIncome))
+      val taxDescription = TaxCodeDescription(taxCodeIncome.taxCode, taxCodeIncome.basisOperation)
+      val explanation = explanationRules.foldLeft(ListMap[String, String]())((expl, rule) => expl ++ rule(taxDescription))
       DescriptionListViewModel(Messages("tai.taxCode.subheading", taxCodeIncome.name, taxCode), explanation)
     }
 
@@ -65,9 +69,9 @@ object TaxCodeDescriptor {
   val TaxAmountFactor = 10
   val EmergencyTaxCode = "X"
 
-  val scottishTaxCodeExplanation = (taxCodeIncome: TaxCodeIncome) => {
+  val scottishTaxCodeExplanation = (taxCodeDescription: TaxCodeDescription) => {
     val scottishRegex = "^S".r
-    val taxCode = taxCodeIncome.taxCode
+    val taxCode = taxCodeDescription.taxCode
     scottishRegex.findFirstIn(taxCode) match {
       case Some(code) => ListMap(code -> Messages(s"tai.taxCode.$code",
         Link.toExternalPage(url = ApplicationConfig.scottishRateIncomeTaxUrl, value=Some(Messages("tai.taxCode.scottishIncomeText.link"))).toHtml))
@@ -75,9 +79,9 @@ object TaxCodeDescriptor {
     }
   }
 
-  val untaxedTaxCodeExplanation = (taxCodeIncome: TaxCodeIncome) => {
+  val untaxedTaxCodeExplanation = (taxCodeDescription: TaxCodeDescription) => {
     val untaxedRegex = "K".r
-    val taxCode = taxCodeIncome.taxCode
+    val taxCode = taxCodeDescription.taxCode
     untaxedRegex.findFirstIn(taxCode) match {
       case Some(code) =>
         val amount = taxAmount(taxCode)
@@ -88,18 +92,18 @@ object TaxCodeDescriptor {
     }
   }
 
-  val fetchTaxCodeExplanation = (taxCodeIncome: TaxCodeIncome) => {
-    val codeExplanation = suffixTaxCodeExplanation(taxCodeIncome)
+  val fetchTaxCodeExplanation = (taxCodeDescription: TaxCodeDescription) => {
+    val codeExplanation = suffixTaxCodeExplanation(taxCodeDescription)
 
     if (codeExplanation.isEmpty)
-      standAloneTaxCodeExplanation(taxCodeIncome)
+      standAloneTaxCodeExplanation(taxCodeDescription)
     else
       codeExplanation
   }
 
-  val standAloneTaxCodeExplanation = (taxCodeIncome: TaxCodeIncome) => {
+  val standAloneTaxCodeExplanation = (taxCodeDescription: TaxCodeDescription) => {
     val standAloneRegex = "0T|BR|D0|D1|NT".r
-    val taxCode = taxCodeIncome.taxCode
+    val taxCode = taxCodeDescription.taxCode
     standAloneRegex.findFirstIn(taxCode) match {
       case Some(code) =>
         ListMap(code -> Messages(s"tai.taxCode.$code"))
@@ -107,9 +111,9 @@ object TaxCodeDescriptor {
     }
   }
 
-  val suffixTaxCodeExplanation = (taxCodeIncome: TaxCodeIncome) => {
+  val suffixTaxCodeExplanation = (taxCodeDescription: TaxCodeDescription) => {
     val suffixRegex = """L|M|\d[0-9]*N|\d[1-9]T|\d+0T|[1-9]T""".r
-    val taxCode = taxCodeIncome.taxCode
+    val taxCode = taxCodeDescription.taxCode
     suffixRegex.findFirstIn(taxCode) match {
       case Some(code) =>
         val amount = taxAmount(taxCode)
@@ -126,8 +130,8 @@ object TaxCodeDescriptor {
     amount.map(_.toInt).getOrElse(0)
   }
 
-  val emergencyTaxCodeExplanation = (taxCodeIncome: TaxCodeIncome) => {
-    taxCodeIncome.basisOperation match {
+  val emergencyTaxCodeExplanation = (taxCodeDescription: TaxCodeDescription) => {
+    taxCodeDescription.basisOperation match {
       case Week1Month1BasisOperation => ListMap(EmergencyTaxCode -> Messages("tai.taxCode.X"))
       case _ => ListMap[String, String]()
     }

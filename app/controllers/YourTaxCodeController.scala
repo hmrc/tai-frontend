@@ -51,7 +51,7 @@ trait YourTaxCodeController extends TaiBaseController
             val nino = Nino(user.taiRoot.nino)
             taxAccountService.taxCodeIncomes(nino, TaxYear()) map {
               case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) =>
-                val taxCodeViewModel = TaxCodeViewModel(taxCodeIncomes)
+                val taxCodeViewModel = TaxCodeViewModel(taxCodeIncomes, nino)
                 Ok(views.html.taxCodeDetails(taxCodeViewModel))
               case TaiTaxAccountFailureResponse(e) => throw new RuntimeException(e)
               case _ => throw new RuntimeException("could not fetch tax codes")
