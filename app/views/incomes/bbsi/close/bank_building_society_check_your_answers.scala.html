@@ -21,15 +21,9 @@
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.income.BbsiClosedCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever = TaiHtmlPartialRetriever)
 
-@closeAccountBackLocation = @{if(viewModel.bankAccountClosedInCurrentTaxYear) {
-    controllers.income.bbsi.routes.BbsiCloseAccountController.captureClosingInterest(viewModel.id)
-} else {
-    controllers.income.bbsi.routes.BbsiCloseAccountController.captureCloseDate(viewModel.id)
-}}
-
 @header = @{
     ptaHeader(
-        backLocation = Some(closeAccountBackLocation),
+        displayBackLink = true,
         mainHeadingText = Messages("tai.checkYourAnswers"),
         preHeadingText = Messages("tai.bbsi.end.checkYourAnswers.preHeading")
     )
@@ -47,7 +41,7 @@
         confirmationLines = viewModel.journeyConfirmationLines
     )
 
-    <p class="text subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
+    <p class="subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
 
     @form(action = controllers.income.bbsi.routes.BbsiCloseAccountController.submitYourAnswers(viewModel.id)) {
         @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))

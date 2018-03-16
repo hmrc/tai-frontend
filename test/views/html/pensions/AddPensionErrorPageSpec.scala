@@ -37,7 +37,7 @@ class AddPensionErrorPageSpec extends TaiViewSpec {
       doc must haveParagraphWithText(messages("tai.addPensionProvider.errorPage.para2"))
     }
 
-    behave like pageWithBackButton(controllers.pensions.routes.AddPensionProviderController.receivedFirstPay())
+    behave like pageWithBackLink
   }
 
   override def view: Html = views.html.pensions.addPensionErrorPage("fake pension provider")

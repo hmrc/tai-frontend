@@ -35,7 +35,7 @@ object PotentialUnderpaymentViewModel extends ViewModelHelper {
   def apply(taxAccountSummary: TaxAccountSummary, codingComponents: Seq[CodingComponent]): PotentialUnderpaymentViewModel = {
 
     val iyaTaxCodeChangeAmount = codingComponents.collect({
-      case CodingComponent(EstimatedTaxYouOweThisYear, _, amount, _) => amount
+      case CodingComponent(EstimatedTaxYouOweThisYear, _, amount, _, _) => amount
     }).headOption.getOrElse(BigDecimal(0))
 
     val gaDimensions =

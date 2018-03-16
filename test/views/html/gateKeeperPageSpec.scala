@@ -30,7 +30,7 @@ class gateKeeperPageSpec extends TaiViewSpec {
   "Gate Keeper page" should {
     behave like pageWithHeader(messages("tai.gatekeeper.heading"))
     behave like pageWithTitle(messages("tai.gatekeeper.heading"))
-    behave like pageWithBackButton(Call("GET", ApplicationConfig.pertaxServiceUrl.toString))
+    behave like pageWithBackLink
   }
 
   "have the tax year, tax year start date and tax year end date as h2" in {

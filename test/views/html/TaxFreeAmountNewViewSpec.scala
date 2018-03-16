@@ -16,7 +16,6 @@
 
 package views.html
 
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryRowViewModel, TaxFreeAmountViewModelNew}
 
@@ -26,7 +25,7 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
 
     behave like pageWithTitle("main heading")
     behave like pageWithCombinedHeader(messages("tai.taxCode.preHeader"), "main heading")
-    behave like pageWithBackButton(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    behave like pageWithBackLink
 
     "display a summary section" which {
       "contains a tax free amount explanation" in {
@@ -44,8 +43,6 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
         doc must haveElementAtPathWithText("section[id=taxFreeAmountSummary] p", messages("tai.taxFreeAmount.summarysection.p2"))
         doc must haveElementAtPathWithText("section[id=taxFreeAmountSummary] li", messages("tai.taxFreeAmount.summarysection.bullet1"))
         doc must haveElementAtPathWithText("section[id=taxFreeAmountSummary] li", messages("tai.taxFreeAmount.summarysection.bullet2"))
-        doc must haveLinkWithUrlWithID("taxFreeAllowanceChangeLink", ApplicationConfig.taxFreeAllowanceLinkUrl)
-        doc must haveElementAtPathWithText("section[id=taxFreeAmountSummary] a", messages("tai.taxFreeAllowance.detailsWrongIformLink"))
       }
     }
 
@@ -107,8 +104,8 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
         doc.select("tr[id=summaryTable1Row2] > *").size mustBe 3
         doc must haveTableTdWithId("summaryTable1Row2ChangeLinkCell")
         doc must haveLinkWithUrlWithID("summaryTable1Row2ChangeLink", "/dummy/url2")
-        doc must haveElementAtPathWithClass("a[id=summaryTable1Row2ChangeLink] > span", "visuallyhidden")
-        doc must haveElementAtPathWithText("a[id=summaryTable1Row2ChangeLink] > span", "context2")
+        doc must haveElementAtPathWithClass("a[id=summaryTable1Row2ChangeLink] > span", "visually-hidden")
+        doc must haveElementAtPathWithText("a[id=summaryTable1Row2ChangeLink] > span", messages("tai.updateOrRemove") + " context2")
       }
 
       "excludes a link cell from table rows, where instructed by the view model" in {

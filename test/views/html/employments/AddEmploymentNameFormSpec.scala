@@ -30,7 +30,7 @@ class AddEmploymentNameFormSpec extends TaiViewSpec {
     behave like pageWithCombinedHeader(
       messages("tai.addEmployment.addEmploymentJourneyLink"),
       messages("tai.addEmployment.addNameForm.title"))
-    behave like pageWithBackButton(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-name")
     behave like pageWithCancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad())
 

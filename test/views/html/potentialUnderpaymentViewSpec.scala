@@ -32,7 +32,7 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
   "the Potential Underpayment view method" should {
 
     "show a back button" when {
-      behave like pageWithBackButton(controllers.routes.TaxAccountSummaryController.onPageLoad)
+      behave like pageWithBackLink
     }
 
     "omit underpayment contet if no underpayment is present" in {

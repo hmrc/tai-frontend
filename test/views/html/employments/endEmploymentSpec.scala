@@ -55,7 +55,7 @@ class endEmploymentSpec extends TaiViewSpec {
       messages("tai.endEmployment.preHeadingText"),
       messages("tai.endEmployment.endDateForm.title", employmentName))
 
-    behave like pageWithBackButton(controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(employmentId))
+    behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(viewmodel.empId))
     behave like pageWithContinueButtonForm(s"/check-income-tax/end-employment/date/$employmentId")
 

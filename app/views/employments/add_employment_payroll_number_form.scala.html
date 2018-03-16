@@ -30,8 +30,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(payrollNumberForm),
-        backLocation = if(payrollNumberViewModel.firstPayChoice) Some(controllers.employments.routes.AddEmploymentController.receivedFirstPay())
-                        else Some(controllers.employments.routes.AddEmploymentController.addEmploymentStartDate()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName),
         preHeadingText = Messages("tai.addEmployment.addEmploymentJourneyLink"))}
@@ -44,7 +43,7 @@
     gaCustomTitle = Some(Messages("tai.addEmployment.employmentPayrollNumber.customGaTitle"))
 ) {
 
-    <p class="text">@Messages("tai.addEmployment.employmentPayrollNumber.info")</p>
+    <p>@Messages("tai.addEmployment.employmentPayrollNumber.info")</p>
     <ul id="payroll-number-info" class="bullets">
         <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet1")</li>
         <li>@Messages("tai.addEmployment.employmentPayrollNumber.bullet2")</li>

@@ -30,7 +30,7 @@
     ptaHeader(
         mainHeadingText = Messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName.getOrElse("")),
         preHeadingText = Messages("tai.yourIncome.preHeading"),
-        backLocation = Some(routes.PayeControllerHistoric.payePage(historicIncomeCalculationViewModel.taxYear)),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString)
     )}
 
@@ -54,19 +54,20 @@
                     @historicIncomeCalculationViewModel.realTimeStatus match {
                         case Available if  historicIncomeCalculationViewModel.payments.nonEmpty => {
                             <section class="subsection subsection--wide">
-                                <p id="previous-year-summary-message" class="text">@Messages("tai.income.calculation.summary.previous",historicIncomeCalculationViewModel.payments.head.date.toString(dateFormatPattern),historicIncomeCalculationViewModel.payments.last.date.toString(dateFormatPattern))</p>
+                                <p id="previous-year-summary-message">@Messages("tai.income.calculation.summary.previous",historicIncomeCalculationViewModel.payments.head.date.toString(dateFormatPattern),historicIncomeCalculationViewModel.payments.last.date.toString(dateFormatPattern))</p>
                                 @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.nonEmpty) {
                                     @historicIncomeCalculationViewModel.employerName.map { name =>
-                                    <p id="eyu-message-previous" class="text">@Messages("tai.income.calculation.eyu.previous", name)</p>
+                                    <p id="eyu-message-previous">@Messages("tai.income.calculation.eyu.previous", name)</p>
                                     }
                                 } else {
                                     @historicIncomeCalculationViewModel.employerName.map { name =>
-                                    <p class="text">@Messages("tai.income.calculation.previous", name)</p>
+                                    <p>@Messages("tai.income.calculation.previous", name)</p>
                                     }
                                 }
                             </section>
                             <section class="section soft--top soft--bottom">
                                 <table id="taxable-income-table" class="table-section">
+                                    <caption class="text--left table__caption table__caption--bottom-border visually-hidden">@Messages("tai.income.calculation.incomeTable.caption")</caption>
                                     <thead>
                                     <tr>
                                         <th>@Messages("tai.income.calculation.incomeTable.dateHeader")</th>
@@ -75,15 +76,6 @@
                                         <th class="text--right">@Messages("tai.income.calculation.incomeTable.nationalInsuranceHeader")</th>
                                     </tr>
                                     </thead>
-                                    <tfoot>
-                                    <tr class="table__row--bold">
-                                        <td>@Messages("tai.taxFree.total")</td>
-                                        <td class="text--right">@{f"${historicIncomeCalculationViewModel.payments.last.amountYearToDate}%,.2f"}</td>
-                                        <td class="text--right">@{f"${historicIncomeCalculationViewModel.payments.last.taxAmountYearToDate}%,.2f"}</td>
-                                        <td class="text--right">@{f"${historicIncomeCalculationViewModel.payments.last.nationalInsuranceAmountYearToDate}%,.2f"}</td>
-                                        <td class="text--right"></td>
-                                    </tr>
-                                    </tfoot>
                                     <tbody>
                                     @for(payment <- historicIncomeCalculationViewModel.payments){
                                     <tr class="pension-contributions-data">
@@ -91,21 +83,28 @@
                                         <td class="text--right">@{f"${payment.amount}%,.2f"}</td>
                                         <td class="text--right">@{f"${payment.taxAmount}%,.2f"}</td>
                                         <td class="text--right">@{f"${payment.nationalInsuranceAmount}%,.2f"}</td>
-                                        <td class="text--right"></td>
                                     </tr>
                                     }
                                     </tbody>
+                                    <tfoot>
+                                    <tr class="table__row--bold">
+                                        <td>@Messages("tai.taxFree.total")</td>
+                                        <td class="text--right">@{f"${historicIncomeCalculationViewModel.payments.last.amountYearToDate}%,.2f"}</td>
+                                        <td class="text--right">@{f"${historicIncomeCalculationViewModel.payments.last.taxAmountYearToDate}%,.2f"}</td>
+                                        <td class="text--right">@{f"${historicIncomeCalculationViewModel.payments.last.nationalInsuranceAmountYearToDate}%,.2f"}</td>
+                                    </tr>
+                                    </tfoot>
                                 </table>
 
                                 <div id="eyu-messages" class="section flush--bottom soft--bottom">
                                     <div class="eyu-multi-messages">
                                         @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size == 1) {
-                                        <p class="text">
+                                        <p>
                                             @Messages("tai.income.calculation.eyu.summary.single", historicIncomeCalculationViewModel.employerName.getOrElse("")) </p>
-                                        <p class="text">@historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages(0)</p>
+                                        <p>@historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages(0)</p>
                                         }
                                         @if(historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages.size > 1) {
-                                        <p class="text">@Messages("tai.income.calculation.eyu.summary.multi", historicIncomeCalculationViewModel.employerName.getOrElse(""))</p>
+                                        <p>@Messages("tai.income.calculation.eyu.summary.multi", historicIncomeCalculationViewModel.employerName.getOrElse(""))</p>
                                         <ul id="eyu-multi-messages-bullets" class="bullets" style="padding-left: 3%">
                                             @for(eyuMessage <- historicIncomeCalculationViewModel.endOfTaxYearUpdateMessages){
                                             <li>@eyuMessage</li>
@@ -115,19 +114,19 @@
                                     </div>
                                 </div>
 
-                                <p class="text">@historicIncomeCalculationViewModel.iFormLink</p>
+                                <p>@historicIncomeCalculationViewModel.iFormLink</p>
                             </section>
                         }
                         case TemporarilyUnavailable => {
                             <section class="subsection subsection--wide">
-                                <p class="text">@Messages("tai.income.calculation.rtiUnavailablePreviousYear.message",TaxYear(historicIncomeCalculationViewModel.taxYear.year).end.toString(dateFormatPattern))</p>
-                                <p class="text">@Messages("tai.income.calculation.rtiUnavailablePreviousYear.message.contact")</p>
+                                <p>@Messages("tai.income.calculation.rtiUnavailablePreviousYear.message",TaxYear(historicIncomeCalculationViewModel.taxYear.year).end.toString(dateFormatPattern))</p>
+                                <p>@Messages("tai.income.calculation.rtiUnavailablePreviousYear.message.contact")</p>
                             </section>
                         }
                         case _ => {
                             <section class="subsection subsection--wide">
-                                <p class="text">@Messages("tai.income.calculation.noRtiDataPreviousYear",TaxYear(historicIncomeCalculationViewModel.taxYear.year).end.toString(dateFormatPattern))</p>
-                                <p class="text">@historicIncomeCalculationViewModel.iFormLink</p>
+                                <p>@Messages("tai.income.calculation.noRtiDataPreviousYear",TaxYear(historicIncomeCalculationViewModel.taxYear.year).end.toString(dateFormatPattern))</p>
+                                <p>@historicIncomeCalculationViewModel.iFormLink</p>
                             </section>
                         }
                     }

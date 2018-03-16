@@ -26,7 +26,7 @@
 
 @header = @{
     ptaHeader(
-        backLocation = Some(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.header,
         preHeadingText = s"${user.taiRoot.firstName} ${user.taiRoot.surname}",
@@ -113,12 +113,12 @@
                 <h2 id="annualAmountsSummaryHeading" class="heading-section">@Messages("tai.incomeTaxSummary.annualAmounts.section.heading")</h2>
 
                 <h3>@Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeHeading")</h3>
-                <p class="text flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreePara")</p>
-                <p class="text flush">
+                <p class="flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreePara")</p>
+                <p class="flush">
                     <span class="visually-hidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix") </span>
                     <span class="display-block heading-36 faded-text-dark section--narrow flush">@viewModel.taxFreeAmount</span>
                 </p>
-                <p class="text flush--top">
+                <p class="flush--top">
                     @Link.toInternalPage(
                         id=Some("taxFreeAmountLink"),
                         url=routes.TaxFreeAmountControllerNew.taxFreeAmount.toString,
@@ -127,12 +127,12 @@
                         dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeLink")}"))).toHtml
                 </p>
                 <h3>@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxHeading")</h3>
-                <p class="text flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxPara")</p>
-                <p class="text flush">
+                <p class="flush--bottom">@Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxPara")</p>
+                <p class="flush">
                     <span class="visually-hidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix") </span>
                     <span class="display-block heading-36 faded-text-dark section--narrow flush">@viewModel.estimatedIncomeTaxAmount</span>
                 </p>
-                <p class="text flush--top">
+                <p class="flush--top">
                     @Link.toInternalPage(
                         id=Some("estimatedIncomeTaxLink"),
                         url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.toString,

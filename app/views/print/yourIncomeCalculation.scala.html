@@ -42,37 +42,37 @@ messages: Messages, user: controllers.auth.TaiUser)
             @incomeCalcDetails.employmentStatus match {
                 case Some(EmploymentPotentiallyCeased) => {
                     @if(incomeCalcDetails.employmentPayments.nonEmpty) {
-                    <strong class="text">@Messages("tai.income.calculation.ceased.heading",incomeCalcDetails.employmentPayments.last.paidOn.toString("d MMMM yyyy"))</strong>
+                    <strong>@Messages("tai.income.calculation.ceased.heading",incomeCalcDetails.employmentPayments.last.paidOn.toString("d MMMM yyyy"))</strong>
                     } else {
-                    <strong class="text">@Messages("tai.income.calculation.heading",s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</strong>
+                    <strong>@Messages("tai.income.calculation.heading",s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</strong>
                     }
 
-                    <p class="text">@Messages("tai.income.calculation.potentially.ceased.lede")</p>
+                    <p>@Messages("tai.income.calculation.potentially.ceased.lede")</p>
                 }
                 case Some(EmploymentCeased) => {
                     @if(incomeCalcDetails.employmentPayments.nonEmpty) {
-                    <strong class="text">@Messages("tai.income.calculation.ceased.heading",incomeCalcDetails.employmentPayments.last.paidOn.toString("d MMMM yyyy"))</strong>
+                    <strong>@Messages("tai.income.calculation.ceased.heading",incomeCalcDetails.employmentPayments.last.paidOn.toString("d MMMM yyyy"))</strong>
                     } else {
-                    <strong class="text">@Messages("tai.income.calculation.heading",s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</strong>
+                    <strong>@Messages("tai.income.calculation.heading",s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</strong>
                     }
 
-                    <p class="text">@Messages("tai.income.calculation.rti.ceased.emp",s"${CeasedEmploymentHelper.toDisplayFormat(incomeCalcDetails.endDate)}")</p>
+                    <p>@Messages("tai.income.calculation.rti.ceased.emp",s"${CeasedEmploymentHelper.toDisplayFormat(incomeCalcDetails.endDate)}")</p>
                 }
 
                 case _ => {
                     @if(incomeCalcDetails.employmentPayments.nonEmpty) {
-                        <strong class="text">@Messages("tai.income.calculation.heading.withRti", incomeCalcDetails.employmentPayments.last.paidOn.toString("d MMMM yyyy"))</strong>
+                        <strong>@Messages("tai.income.calculation.heading.withRti", incomeCalcDetails.employmentPayments.last.paidOn.toString("d MMMM yyyy"))</strong>
                     } else {
-                        <strong class="text">@Messages("tai.income.calculation.heading",s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</strong>
+                        <strong>@Messages("tai.income.calculation.heading",s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</strong>
                     }
                     @if(!incomeCalcDetails.rtiDown) {
-                        <p class="text" id="incomeCalculationMsg@incomeCalcDetails.empId">@incomeCalcDetails.incomeCalculationMsg</p>
+                        <p id="incomeCalculationMsg@incomeCalcDetails.empId">@incomeCalcDetails.incomeCalculationMsg</p>
                         @incomeCalcDetails.payrollMsg.map { payrollMessage =>
-                            <p class="text" id="payrollNumber@incomeCalcDetails.empId">@payrollMessage</p>
+                            <p id="payrollNumber@incomeCalcDetails.empId">@payrollMessage</p>
                         }
                     } else {
-                        <p class="text" id="rtiUnavailableCurrentYear">@Messages("tai.income.calculation.rtiUnavailableCurrentYear.message")</p>
-                        <p class="text" id="rtiUnavailableCurrentYearContact">@Messages("tai.income.calculation.rtiUnavailableCurrentYear.message.contact")</p>
+                        <p id="rtiUnavailableCurrentYear">@Messages("tai.income.calculation.rtiUnavailableCurrentYear.message")</p>
+                        <p id="rtiUnavailableCurrentYearContact">@Messages("tai.income.calculation.rtiUnavailableCurrentYear.message.contact")</p>
 
                     }
                 }
@@ -119,8 +119,8 @@ messages: Messages, user: controllers.auth.TaiUser)
             </table>
 
             @incomeCalcDetails.totalNotEqualMessage.map{ message =>
-            <p class="text">@message</p>
-            <p class="text">@Messages("tai.income.calculation.totalNotMatching.message")</p>
+            <p>@message</p>
+            <p>@Messages("tai.income.calculation.totalNotMatching.message")</p>
             }
         </section>
     }
@@ -140,8 +140,8 @@ messages: Messages, user: controllers.auth.TaiUser)
 
                         @if(incomeCalcDetails.editableDetails.isEditable && incomeCalcDetails.editableDetails.payRollingBiks){
                             <div class="panel-indent panel-indent--info panel-indent--gutter">
-                                <p id="payrolling1" class="text">@Messages("tai.income.calculation.payrollingBik.message1")</p>
-                                <p id="payrolling2" class="text">@Messages("tai.income.calculation.payrollingBik.message2")</p>
+                                <p id="payrolling1">@Messages("tai.income.calculation.payrollingBik.message1")</p>
+                                <p id="payrolling2">@Messages("tai.income.calculation.payrollingBik.message2")</p>
                             </div>
                         }
                     }

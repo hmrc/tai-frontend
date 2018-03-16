@@ -35,7 +35,7 @@ case class RemoveCompanyBenefitCheckYourAnswersViewModel(tableHeader: String,
     val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.whatYouToldUs"),
       Messages("tai.noLongerGetBenefit"),
-      ""
+      controllers.benefits.routes.CompanyBenefitController.decision().url
     )
 
     val stopDateLine = CheckYourAnswersConfirmationLine(
@@ -90,7 +90,7 @@ object RemoveCompanyBenefitCheckYourAnswersViewModel extends ViewModelHelper wit
             valueOfBenefit: Option[String],
             contactByPhone: String,
             phoneNumber: Option[String]): RemoveCompanyBenefitCheckYourAnswersViewModel = {
-    val tableHeader = Messages("tai.benefits.ended.tableHeader", benefitType, employerName)
+    val tableHeader = Messages("tai.benefits.ended.tableHeader", employerName, benefitType)
     new RemoveCompanyBenefitCheckYourAnswersViewModel(tableHeader, stopDate, valueOfBenefit, contactByPhone, phoneNumber)
   }
 

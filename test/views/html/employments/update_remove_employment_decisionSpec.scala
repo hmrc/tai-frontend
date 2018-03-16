@@ -36,7 +36,7 @@ class update_remove_employment_decisionSpec extends TaiViewSpec with FormValuesC
   "update_remove_employment_decision" must {
     behave like pageWithTitle(messages("tai.employment.decision.title", employmentName))
 
-    behave like pageWithBackButton(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+    behave like pageWithBackLink
 
     behave like pageWithCombinedHeader(
       preHeaderText = messages("tai.employment.decision.preHeading"),

@@ -17,20 +17,19 @@
 package views.html
 
 import controllers.routes
-import uk.gov.hmrc.tai.viewModels.{CompanyBenefitViewModel, IncomeSourceSummaryViewModel}
 import org.jsoup.Jsoup
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.tai.util.TaiConstants
+import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.{CompanyBenefitViewModel, IncomeSourceSummaryViewModel}
 
 class IncomeSourceSummaryViewSpec extends TaiViewSpec {
   "Income details spec" must {
     behave like pageWithCombinedHeader(model.displayName,
       messages("tai.employment.income.details.mainHeading", model.empOrPensionName,
         model.startOfCurrentYear.replace(" ", "\u00A0"), model.endOfCurrentYear.replace(" ", "\u00A0")))
-    behave like pageWithBackButton(controllers.routes.TaxAccountSummaryController.onPageLoad())
+    behave like pageWithBackLink
     behave like pageWithTitle(messages("tai.employment.income.details.mainHeading", model.empOrPensionName,
       model.startOfCurrentYear, model.endOfCurrentYear))
 
@@ -157,7 +156,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(modelWithCompanyBenefits).toString)
       testDoc must haveElementAtPathWithText("#companyBenefitDescriptionTerm1", "ben1")
       testDoc must haveElementAtPathWithText("#companyBenefitDescriptionText1", "£100")
-      testDoc must haveElementAtPathWithText("#companyBenefitChangeLinkDescriptionText1 a", s"${messages("tai.updateOrRemove")} ben1")
+      testDoc must haveElementAtPathWithText("#companyBenefitChangeLinkDescriptionText1 a span", s"${messages("tai.updateOrRemove")} ben1")
       testDoc must haveLinkWithUrlWithID("changeCompanyBenefitLink1", "url1")
     }
 
@@ -175,6 +174,10 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(model.copy(displayAddCompanyCarLink = false)).toString)
         testDoc must not(haveElementWithId("addMissingCompanyCarLink"))
       }
+    }
+
+    "display a link to return to income tax summary" in {
+      doc must haveLinkWithUrlWithID("taxableIncomeLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url)
     }
 
   }

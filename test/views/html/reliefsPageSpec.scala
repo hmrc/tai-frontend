@@ -32,7 +32,7 @@ class reliefsPageSpec extends TaiViewSpec with DateFormatConstants {
   "Releifs" should {
     behave like pageWithTitle("Your tax relief payments")
     behave like pageWithHeader("Your tax relief payments")
-    behave like pageWithBackButton(routes.EstimatedIncomeTaxController.estimatedIncomeTax)
+    behave like pageWithBackLink
   }
   "show correct header content" in {
 

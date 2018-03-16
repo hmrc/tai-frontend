@@ -44,9 +44,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
     }
 
     "have a back link" in {
-      val backLink = doc.getElementById("backLink")
-      backLink must haveLinkURL(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev).url)
-      doc.getElementsByTag("a").toString must include(messages("tai.back-link.upper"))
+      doc must haveBackLink
     }
 
     "have informative text when payment data is not available" when {

@@ -32,7 +32,7 @@
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(bankAccountsDecisionForm),
-        backLocation =Some(controllers.income.bbsi.routes.BbsiController.accounts()),
+        displayBackLink = true,
         mainHeadingText = messages("tai.bbsi.decision.heading",viewModel.bankName),
         preHeadingText = messages("tai.bbsi.decision.preHeading")
     )

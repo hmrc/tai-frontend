@@ -24,7 +24,7 @@
 
 @header = @{
     ptaHeader(
-        backLocation =if(viewModel.showFuelBenefits) Some(routes.CompanyCarController.getFuelBenefitEndDate) else Some(routes.CompanyCarController.getCompanyCarEndDate),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.companyCar.checkAnswers.heading"),
         preHeadingText = Messages("tai.companyCar.checkAnswers.sub.heading")) }

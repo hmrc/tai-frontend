@@ -24,20 +24,14 @@ import uk.gov.hmrc.tai.viewModels.benefit.BenefitViewModel
 
 class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
 
-  val employerName = "HMRC"
-  val benefitName = "Other Benefit"
-
-
-  override def view: Html = views.html.benefits.removeBenefitTotalValue(BenefitViewModel(employerName, benefitName), CompanyBenefitTotalValueForm.form)
-
   "removeBenefitTotalValue" must {
     behave like pageWithTitle(Messages("tai.remove.company.benefit.total.value.title"))
     behave like pageWithCombinedHeader(Messages("tai.benefits.ended.journey.preHeader"),
       Messages("tai.remove.company.benefit.total.value.heading", benefitName, employerName))
 
     behave like pageWithContinueButtonForm("/check-income-tax/remove-company-benefit/total-value-of-benefit")
-    behave like pageWithCancelLink(controllers.routes.TaxFreeAmountControllerNew.taxFreeAmount())
-    behave like pageWithBackButton(controllers.benefits.routes.RemoveCompanyBenefitController.stopDate())
+    behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel())
+    behave like pageWithBackLink
 
     "contain static paragraph with text" in {
       doc must haveParagraphWithText(Messages("tai.remove.company.benefit.total.value.dontKnow"))
@@ -66,5 +60,10 @@ class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
     }
 
   }
+
+  private lazy val employerName = "HMRC"
+  private lazy val benefitName = "Other Benefit"
+
+  override def view: Html = views.html.benefits.removeBenefitTotalValue(BenefitViewModel(employerName, benefitName), CompanyBenefitTotalValueForm.form)
 
 }

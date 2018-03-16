@@ -25,7 +25,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(payslipForm),
-        backLocation = Some(controllers.routes.IncomeUpdateCalculatorController.payPeriodPage()),
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.payslip.title"),
         preHeadingText = Messages("tai.payslip.preHeading"))}
@@ -33,7 +33,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 @main(
     title = Messages("tai.payslip.title"),
-    articleClasses = Some("full-width text"),
+    articleClasses = Some("full-width"),
     user = Some(user),
     pageHeader = Some(header),
     employerName = employerName,

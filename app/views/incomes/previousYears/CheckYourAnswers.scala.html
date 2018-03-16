@@ -26,7 +26,7 @@
 
 @header = @{
   ptaHeader(
-  backLocation = Some(controllers.income.previousYears.routes.UpdateIncomeDetailsController.telephoneNumber()),
+  displayBackLink = true,
   mainHeadingText = Messages("tai.checkYourAnswers"),
   preHeadingText = Messages("tai.income.previousYears.journey.preHeader"))
 }
@@ -46,7 +46,7 @@
         )
     </div>
 
-    <p class="text subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
+    <p class="subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
 
 
     @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitYourAnswers()) {

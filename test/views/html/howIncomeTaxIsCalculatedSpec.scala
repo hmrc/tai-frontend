@@ -30,7 +30,7 @@ class howIncomeTaxIsCalculatedSpec extends TaiViewSpec with BandTypesConstants w
 
   "view" must {
     behave like pageWithTitle(messages("tai.incomeTax.calculated.title"))
-    behave like pageWithBackButton(routes.EstimatedIncomeTaxController.estimatedIncomeTax())
+    behave like pageWithBackLink
   }
 
   "display headings" in {

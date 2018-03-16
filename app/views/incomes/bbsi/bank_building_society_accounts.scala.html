@@ -25,7 +25,7 @@
 
 @header = @{
     ptaHeader(
-        backLocation =Some(controllers.income.bbsi.routes.BbsiController.untaxedInterestDetails()),
+        displayBackLink = true,
         mainHeadingText = messages("tai.bbsi.accountDetails.heading"),
         preHeadingText = messages("tai.bbsi.account.preHeading")
     )
@@ -38,8 +38,8 @@
     articleClasses = None,
     gaCustomTitle = None
 ) {
-    <p class="text">@messages("tai.bbsi.account.desc1")</p>
-    <p class="text">@messages("tai.bbsi.account.desc2")</p>
+    <p>@messages("tai.bbsi.account.desc1")</p>
+    <p>@messages("tai.bbsi.account.desc2")</p>
 
 <table class="subsection flush--top">
     <caption class="text--left section flush--bottom">@messages("tai.bbsi.account.table.heading", TaxYear().year.toString, TaxYear().next.year.toString)</caption>
