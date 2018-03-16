@@ -112,6 +112,11 @@
                                 }
                             </tbody>
                         </table>
+
+                        @model.messageWhenTotalNotEqual.map { message =>
+                            <p>@message</p>
+                            <p>@Messages("tai.income.calculation.totalNotMatching.message")</p>
+                        }
                     </div>
                 }
 

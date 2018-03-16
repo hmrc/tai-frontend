@@ -16,12 +16,16 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain._
 
-class YourIncomeCalculationViewModelNewSpec extends PlaySpec {
+class YourIncomeCalculationViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
+
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "Your Income Calculation View Model" must {
     "return employment details" when {
@@ -45,6 +49,28 @@ class YourIncomeCalculationViewModelNewSpec extends PlaySpec {
       "employment type is Pension Income" in {
         val model = incomeCalculationViewModel(employmentType = PensionIncome)
         model.isPension mustBe true
+      }
+    }
+
+    "show message" when {
+      "total is not equal for employment" in {
+        val model = incomeCalculationViewModel()
+
+        model.messageWhenTotalNotEqual mustBe Some(Messages("tai.income.calculation.totalNotMatching.emp.message"))
+      }
+
+      "total is not equal for pension" in {
+        val model = incomeCalculationViewModel(employmentType = PensionIncome)
+
+        model.messageWhenTotalNotEqual mustBe Some(Messages("tai.income.calculation.totalNotMatching.pension.message"))
+      }
+    }
+
+    "doesn't show message" when {
+      "total is equal" in {
+        val model = incomeCalculationViewModel(payments = Seq(firstPayment))
+
+        model.messageWhenTotalNotEqual mustBe None
       }
     }
   }
