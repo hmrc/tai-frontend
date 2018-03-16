@@ -41,13 +41,13 @@
     <label for="@field.id">
         @if(labelText.nonEmpty) {
             <span class="@if(labelHidden){visually-hidden}else{form-label @if(bold){form-label-bold}}">
-            @Messages(labelText)
+            @labelText
             @if(isCurrency){
                 <span class="visually-hidden">@Messages("tai.inPounds")</span>
             }
             </span>
         }
-        @if(hintText.nonEmpty) { <span class="@hintClass" id="@{ field.id }-hint">@Messages(hintText)</span> }
+        @if(hintText.nonEmpty) { <span class="@hintClass" id="@{ field.id }-hint">@hintText</span> }
 
         @if(fieldErrorsEnabled && field.hasErrors) {
             <span class="error-message">

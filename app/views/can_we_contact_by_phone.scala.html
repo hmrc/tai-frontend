@@ -64,8 +64,8 @@
         <div id="telephoneNumberEntry-container" class="@if(yesNoForm(YesNoTextEntryForm.YesNoChoice).value.getOrElse("") != YesNoTextEntryForm.YesValue){js-hidden} data-yesNoTextEntry">
             @input(
                 field=yesNoForm(YesNoTextEntryForm.YesNoTextEntry),
-                labelText = "tai.phoneNumber",
-                hintText = "tai.canWeContactByPhone.telephoneNumber.hint",
+                labelText = Messages("tai.phoneNumber"),
+                hintText = Messages("tai.canWeContactByPhone.telephoneNumber.hint"),
                 classes = Seq("form-control input--cleared form-control-1-2"),
                 panel = true
             )
