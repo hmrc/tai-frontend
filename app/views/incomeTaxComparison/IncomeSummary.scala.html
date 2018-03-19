@@ -29,18 +29,24 @@
 
     <thead id="incomeSummeryComparisonTableHeader">
     <tr class="text--right">
+        <th></th>
         <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="text--right">
             @messages("tai.CurrentTaxYearEnds",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM"))
         </th>
         <th id="taxCodeComparisonTableTableHeaderCol2" scope="col" class="text--right">
-            <div>@messages("tai.NextTaxYear")</div>
+            @messages("tai.NextTaxYearFrom",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY"))
         </th>
     </tr>
     </thead>
 
     <tbody id="incomeSummaryComparisonTableBody">
-
-
+        @for(incomeSource <- viewModel) {
+            <tr>
+                <td>@incomeSource.name</td>
+                <td class="text--right">@incomeSource.amount</td>
+                <td></td>
+            </tr>
+        }
     </tbody>
 
 </table>

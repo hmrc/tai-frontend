@@ -16,7 +16,6 @@
 
 package views.html.incomeTaxComparison
 
-import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.IncomeSourceViewModel
@@ -30,19 +29,32 @@ class IncomeSummarySpec extends TaiViewSpec {
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment"))
     }
 
-    "display employment income summary table" in {
+    "display one employment income summary table" in {
       doc must haveThWithText(messages("tai.CurrentTaxYearEnds",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM")))
-      //doc must haveThWithText(Messages("tai.NextTaxYear"))
+      doc must haveThWithText(messages("tai.NextTaxYearFrom",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))
 
-//      doc must haveTdWithText("EMPLOYER")
-//      doc must haveTdWithText("15,000")
-//      doc must haveTdWithText("15,000")
+      doc must haveTdWithText("Company1")
+      doc must haveTdWithText("£15,000")
+    }
+
+    "display multiple employments income summary table" in{
+
+      doc must haveThWithText(messages("tai.CurrentTaxYearEnds",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM")))
+      doc must haveThWithText(messages("tai.NextTaxYearFrom",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))
+
+      doc must haveTdWithText("Company1")
+      doc must haveTdWithText("£15,000")
+
+      doc must haveTdWithText("Company2")
+      doc must haveTdWithText("£20,000")
+
     }
 
   }
 
   private lazy val incomeSourceViewModelList =
-    Seq(IncomeSourceViewModel("Company1", "£23,000", "1150L", true, "123456", true, "", false, "view income details", "fake/url"))
+    Seq(IncomeSourceViewModel("Company1", "£15,000", "1150L", true, "123456", true, "", false, "view income details", "fake/url"),
+        IncomeSourceViewModel("Company2", "£20,000", "1150L", true, "123456", true, "", false, "view income details", "fake/url"))
 
   override def view: Html = views.html.incomeTaxComparison.IncomeSummary(incomeSourceViewModelList)
 }

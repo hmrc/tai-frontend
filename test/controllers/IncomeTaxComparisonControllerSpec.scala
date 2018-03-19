@@ -57,8 +57,8 @@ with I18nSupport {
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
       when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
         Future.successful(Seq.empty[CodingComponent]))
-
-      when(sut.employmentService.employments(Matchers.any(),Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(Future.successful(Seq(employment)))
+      when(sut.employmentService.employments(Matchers.any(),Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(
+        Future.successful(Seq(employment)))
 
 
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
