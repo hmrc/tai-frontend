@@ -42,6 +42,10 @@
                 @IncomeTax(incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel)
             </section>
 
+            <section class="section" id="incomeSummary" aria-labelledby="incomeSummaryHeading">
+                @IncomeSummary(incomeTaxComparisonViewModel.incomeSourceViewModelList)
+            </section>
+
             <section class="section" id="taxCodes" aria-labelledby="taxCodesHeading">
                 @TaxCodes(incomeTaxComparisonViewModel.taxCodeComparisonViewModel)
             </section>

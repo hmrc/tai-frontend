@@ -54,6 +54,7 @@ tai.ptaHeader.accessible.preHeading=This section is
 tai.payRollNumber=Payroll number
 tai.pensionNumber=Pension number
 tai.CurrentTaxYear=Current tax year
+tai.CurrentTaxYearEnds=Current tax year ends {0}
 tai.NextTaxYear=Next tax year
 tai.notKnown.response=I do not know
 tai.returnToIncomeTaxSummary=Return to your Income Tax Summary
@@ -1452,6 +1453,7 @@ tai.incomeTaxComparison.preHeading.screenReader=This section is the income tax c
 tai.incomeTaxComparison.incomeTax.subHeading.more=We estimate you will pay {0} more tax next year
 tai.incomeTaxComparison.incomeTax.subHeading.less=We estimate you will pay {0} less tax next year
 tai.incomeTaxComparison.incomeTax.subHeading.same=We estimate you will pay the same amount of tax next year
+tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment = Income from employment
 tai.incomeTaxComparison.incomeTax.description=This data is an estimate based on what we know about you now, it may change when we receive more information.
 tai.incomeTaxComparison.incomeTax.column1=ends {0}
 tai.incomeTaxComparison.incomeTax.column2=from {0}
@@ -1561,3 +1563,5 @@ tai.benefits.updateOrRemove.decision.title=Do you currently receive this company
 tai.benefits.updateOrRemove.decision.heading=Do you currently get {0} benefit from {1}?
 tai.benefits.updateOrRemove.decision.radio.yes=Yes, I currently get this benefit
 tai.benefits.updateOrRemove.decision.radio.no=No, I do not get this benefit any more
+
+

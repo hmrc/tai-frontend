@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.tai.viewModels.incomeTaxComparison
 
-import uk.gov.hmrc.tai.viewModels.TaxFreeAmountComparisonViewModel
-import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.EstimatedIncomeTaxComparisonViewModel
-import uk.gov.hmrc.tai.viewModels.{TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
+import uk.gov.hmrc.tai.viewModels.{IncomeSourceViewModel, TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
 
 case class IncomeTaxComparisonViewModel(username: String,
                                         estimatedIncomeTaxComparisonViewModel: EstimatedIncomeTaxComparisonViewModel,
                                         taxCodeComparisonViewModel: TaxCodeComparisonViewModel,
-                                        taxFreeAmountComparisonViewModel: TaxFreeAmountComparisonViewModel)
+                                        taxFreeAmountComparisonViewModel: TaxFreeAmountComparisonViewModel,
+                                        incomeSourceViewModelList: Seq[IncomeSourceViewModel])

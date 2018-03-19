@@ -16,13 +16,12 @@
 
 package views.html.incomeTaxComparison
 
-import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.viewModels.{TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
+import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-
+import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
+import uk.gov.hmrc.tai.viewModels.{IncomeSourceViewModel, TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
 
 class MainSpec extends TaiViewSpec {
   "Cy plus one view" must {
@@ -39,6 +38,10 @@ class MainSpec extends TaiViewSpec {
 
     "show the tax codes section" in {
       doc(view) must haveSectionWithId("taxCodes")
+    }
+
+    "show the income summary section" in {
+      doc(view) must haveSectionWithId("incomeSummary")
     }
 
     "show the tax free amount section with heading" in {
@@ -82,6 +85,7 @@ class MainSpec extends TaiViewSpec {
         href = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
         text = messages("tai.incomeTaxSummary.link"))
     }
+
   }
 
   private lazy val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
@@ -89,8 +93,10 @@ class MainSpec extends TaiViewSpec {
 
   private lazy val estimatedIncomeTaxComparisonViewModel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
 
+  private lazy val employments = Seq(IncomeSourceViewModel("Company1", "£23,000", "1150L", true, "123456", true, "", false, "view income details", "fake/url"))
+
   private lazy val incomeTaxComparisonViewModel = IncomeTaxComparisonViewModel("USERNAME", estimatedIncomeTaxComparisonViewModel,
-    TaxCodeComparisonViewModel(Nil), TaxFreeAmountComparisonViewModel(Nil, Nil))
+    TaxCodeComparisonViewModel(Nil), TaxFreeAmountComparisonViewModel(Nil, Nil),employments)
 
   override def view: Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModel)
 }
