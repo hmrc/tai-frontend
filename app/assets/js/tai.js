@@ -42,4 +42,3 @@ window.GOVUK.performance.sendGoogleAnalyticsEvent = function (category, event, l
     _gaq.push(['_trackEvent', category, event, label, undefined, true]);
   }
 };
-window.GOVUK.performance.stageprompt.setupForGoogleAnalytics();
