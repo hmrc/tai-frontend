@@ -251,4 +251,24 @@ object BonusOvertimeAmountForm{
                                                           BonusOvertimeAmountForm.apply)(BonusOvertimeAmountForm.unapply)
     )
   }
+
+  def bonusPaymentsAmountErrorMessage(moreThisYear: Option[String], payPeriod: Option[String]) = {
+    moreThisYear match {
+      case Some("Yes") => "tai.bonusPaymentsAmount.year.error"
+      case _ =>
+        payPeriod match {
+          case Some("monthly") => "tai.bonusPaymentsAmount.month.error"
+          case Some("fortnightly") => "tai.bonusPaymentsAmount.fortnightly.error"
+          case Some("weekly") => "tai.bonusPaymentsAmount.week.error"
+          case _ => "tai.bonusPaymentsAmount.period.error"
+        }
+    }
+  }
+
+  def notAmountMessage(moreThisYear: Option[String]) = {
+    moreThisYear match {
+      case Some("Yes") => "tai.bonusPaymentsAmount.error.form.notAnAmountAnnual"
+      case _ => "tai.bonusPaymentsAmount.error.form.notAnAmount"
+    }
+  }
 }

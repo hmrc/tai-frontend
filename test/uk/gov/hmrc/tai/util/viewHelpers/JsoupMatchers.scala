@@ -255,4 +255,6 @@ trait JsoupMatchers {
   def haveLinkElement(id:String, href: String, text: String) = new IdSelectorWithUrlAndTextMatcher(id, href, text)
 
   def haveInputLabelWithText (id:String, expectedText: String) = new CssSelectorWithTextMatcher(expectedText, s"label[for=$id]")
+
+  def haveStrongWithText (expectedText: String) = new CssSelectorWithTextMatcher(expectedText,"strong")
 }

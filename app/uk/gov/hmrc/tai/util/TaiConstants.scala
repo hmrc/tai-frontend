@@ -94,6 +94,16 @@ trait JourneyCacheConstants {
   val UpdateIncome_PayToDateKey = "updateIncomePayToDateKey"
   val UpdateIncome_DateKey = "updateIncomeDateKey"
   val UpdateIncome_NewAmountKey = "updateIncomeNewAmountKey"
+  val UpdateIncome_PayPeriodKey = "updateIncomePayPeriodKey"
+  val UpdateIncome_OtherInDaysKey = "updateIncomeOtherInDaysKey"
+  val UpdateIncome_TotalSalaryKey = "updateIncomeTotalSalaryKey"
+  val UpdateIncome_TaxablePayKey = "updateIncomeTaxablePayKey"
+  val UpdateIncome_PayslipDeductionsKey = "updateIncomePayslipDeductionsKey"
+  val UpdateIncome_BonusPaymentsKey = "updateIncomeBonusPaymentsKey"
+  val UpdateIncome_BonusPaymentsThisYearKey = "updateIncomeBonusPaymentsThisYearKey"
+  val UpdateIncome_BonusOvertimeAmountKey = "updateIncomeBonusOvertimeAmountKey"
+  val UpdateIncome_GrossAnnualPayKey = "updateIncomeGrossAnnualPayKey"
+  val UpdateIncome_NetAnnualPayKey = "updateIncomeNetAnnualPayKey"
 
   val EndCompanyBenefit_JourneyKey = "end-company-benefit"
   val EndCompanyBenefit_EmploymentIdKey = "employmentId"
@@ -291,4 +301,6 @@ object TaiConstants {
 
   val EmergencyTaxCodeSuffix = "X"
   val ScottishTaxCodePrefix = "S"
+
+  val encodedMinusSign = "\u2212"
 }

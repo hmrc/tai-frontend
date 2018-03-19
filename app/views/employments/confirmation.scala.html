@@ -31,11 +31,11 @@ gaCustomTitle = None) {
 
 @confirmation_summary()
 
-@Link.toInternalPage(
-id=Some("returnToSummary"),
-value=Some(Messages("tai.employmentConfirmation.back")),
-url = routes.TaxAccountSummaryController.onPageLoad().toString,
-cssClasses=Some("button")
-).toHtml
+@includes.link(
+    id=Some("returnToSummary"),
+    copy=Messages("tai.employmentConfirmation.back"),
+    url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
+    isButton=true
+)
 
 }
