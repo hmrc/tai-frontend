@@ -34,7 +34,7 @@ case class TaxCodeViewModel(title: String,
                             ledeMessage: String,
                             taxCodeDetails: Seq[DescriptionListViewModel])
 
-case class TaxCodeDescription(taxCode: String, basisOperation: BasisOperation)
+case class TaxCodeDescription(taxCode: String, basisOperation: BasisOperation, scottishTaxRate: Option[Int])
 
 object TaxCodeViewModel extends ViewModelHelper with DateFormatConstants {
 
@@ -47,7 +47,7 @@ object TaxCodeViewModel extends ViewModelHelper with DateFormatConstants {
 
     val descriptionListViewModels = taxCodeIncomes.map { taxCodeIncome =>
       val taxCode = taxCodeIncome.taxCodeWithEmergencySuffix
-      val taxDescription = TaxCodeDescription(taxCodeIncome.taxCode, taxCodeIncome.basisOperation)
+      val taxDescription = TaxCodeDescription(taxCodeIncome.taxCode, taxCodeIncome.basisOperation, None)
       val explanation = explanationRules.foldLeft(ListMap[String, String]())((expl, rule) => expl ++ rule(taxDescription))
       DescriptionListViewModel(Messages("tai.taxCode.subheading", taxCodeIncome.name, taxCode), explanation)
     }
@@ -102,11 +102,17 @@ object TaxCodeDescriptor {
   }
 
   val standAloneTaxCodeExplanation = (taxCodeDescription: TaxCodeDescription) => {
-    val standAloneRegex = "0T|BR|D0|D1|NT".r
+    val standAloneRegex = "0T|BR|D0|D1|NT|D2|D3|D4|D5|D6|D7|D8".r
     val taxCode = taxCodeDescription.taxCode
     standAloneRegex.findFirstIn(taxCode) match {
       case Some(code) =>
-        ListMap(code -> Messages(s"tai.taxCode.$code"))
+        val message = if(taxCodeDescription.scottishTaxRate.isEmpty) {
+          Messages(s"tai.taxCode.$code")
+        } else {
+          Messages(s"tai.taxCode.$code", taxCodeDescription.scottishTaxRate.get)
+        }
+
+        ListMap(code -> message)
       case _ => ListMap[String, String]()
     }
   }
