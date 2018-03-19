@@ -15,8 +15,8 @@
  *@
 
 @import includes.{ptaHeader, cancelLink}
-@import includes.forms.submit
-@import uk.gov.hmrc.play.views.html.helpers.{form, input}
+@import includes.forms.{submit, input}
+@import uk.gov.hmrc.play.views.html.helpers.{form}
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 @import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.tai.forms.income.bbsi.BankAccountClosingInterestForm
@@ -59,11 +59,13 @@
                 ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Do you know how much interest you earned?:No" data-journey-val="No"""") )
             )}
 
-            <fieldset id="closingInterestEntry-container" class="@if(closingInterestForm(BankAccountClosingInterestForm.ClosingInterestChoice).value.getOrElse("") != BankAccountClosingInterestForm.YesValue){js-hidden} data-closingInterestEntry inline form-field-group panel-indent">
-                @input(field=closingInterestForm(BankAccountClosingInterestForm.ClosingInterestEntry),
-                '_label -> Messages("tai.closeBankAccount.closingInterest.label"),
-                '_inputClass -> "form-control input--cleared")
-            </fieldset>
+            <div id="closingInterestEntry-container" class="@if(closingInterestForm(BankAccountClosingInterestForm.ClosingInterestChoice).value.getOrElse("") != BankAccountClosingInterestForm.YesValue){js-hidden} data-closingInterestEntry">
+                @input(
+                    field=closingInterestForm(BankAccountClosingInterestForm.ClosingInterestEntry),
+                    labelText = Messages("tai.closeBankAccount.closingInterest.label"),
+                    panel = true
+                )
+            </div>
 
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Yes"), buttonMessageKey = Some(messages("tai.submit")))
     }

@@ -14,10 +14,10 @@
  * limitations under the License.
  *@
 
-@import includes.forms.submit
+@import includes.forms.{submit, input}
 @import includes.{cancelLink, ptaHeader, backLink}
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-@import uk.gov.hmrc.play.views.html.helpers.{form, input}
+@import uk.gov.hmrc.play.views.html.helpers.{form}
 @import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 @import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 @import play.api.mvc.Call
@@ -62,12 +62,14 @@
             ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Can we contact you by phone?:No" data-journey-val="No"""") )
         )}
 
-        <div id="telephoneNumberEntry-container" class="@if(yesNoForm(YesNoTextEntryForm.YesNoChoice).value.getOrElse("") != YesNoTextEntryForm.YesValue){js-hidden} data-yesNoTextEntry inline form-field-group panel-indent">
-            @input(field=yesNoForm(YesNoTextEntryForm.YesNoTextEntry),
-            '_label -> Messages("tai.phoneNumber"),
-            '_inputHint -> Messages("tai.canWeContactByPhone.telephoneNumber.hint"),
-            '_hintId -> "phoneNumberHint",
-            '_inputClass -> "form-control input--cleared form-control-1-2")
+        <div id="telephoneNumberEntry-container" class="@if(yesNoForm(YesNoTextEntryForm.YesNoChoice).value.getOrElse("") != YesNoTextEntryForm.YesValue){js-hidden} data-yesNoTextEntry">
+            @input(
+                field=yesNoForm(YesNoTextEntryForm.YesNoTextEntry),
+                labelText = Messages("tai.phoneNumber"),
+                hintText = Messages("tai.canWeContactByPhone.telephoneNumber.hint"),
+                classes = Seq("form-control input--cleared form-control-1-2"),
+                panel = true
+            )
         </div>
 
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(viewModel.preHeading))

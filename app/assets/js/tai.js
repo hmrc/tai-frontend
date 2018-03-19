@@ -8,6 +8,9 @@ $(document).ready(function() {
 
 	var showHideContent = new GOVUK.ShowHideContent()
 	showHideContent.init()
+
+	// Move focus to error summary
+	$('.error-summary').focus();
 });
 
 // re-enable any disabled buttons when navigating back
