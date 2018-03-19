@@ -30,6 +30,7 @@ import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
+import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxBand, TotalTax, UkDividendsIncomeCategory}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -94,7 +95,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
         when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(taxAccountSummaryJson))
         val result = sut.taxAccountSummary(generateNino, currentTaxYear)
-        Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(TaxAccountSummary(111,222, 3131.12))
+        Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(TaxAccountSummary(111, 222, 3131.12))
       }
     }
 
@@ -170,6 +171,24 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     }
   }
 
+  "total tax" must {
+    "return the total tax details for the given year" when {
+      "provided with nino" in {
+        val sut = createSUT
+        val nino = generateNino
+
+        val expectedTotalTax = TotalTax(1000,
+          List(IncomeCategory(UkDividendsIncomeCategory,10,20,30,List(TaxBand("","",0,0,None,None,0), TaxBand("B","BR",10000,500,Some(5000),Some(20000),10)))))
+
+        when(sut.httpHandler.getFromApi(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/total-tax"))(any())).
+          thenReturn(Future.successful(totalTaxJson))
+
+        val result = sut.totalTax(nino, currentTaxYear)
+        Await.result(result, 5.seconds) mustBe TaiSuccessResponseWithPayload(expectedTotalTax)
+      }
+    }
+  }
+
   private val currentTaxYear = TaxYear()
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -187,7 +206,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       "basisOperation" -> "OtherBasisOperation",
       "status" -> "Live"
     ))),
-  "links" -> JsArray(Seq()))
+    "links" -> JsArray(Seq()))
 
   val codingComponentSampleJson = Json.obj(
     "data" -> Json.arr(
@@ -223,7 +242,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       "nonTaxCodeIncomes" -> Json.obj(
         "otherNonTaxCodeIncomes" -> Json.arr(
           Json.obj(
-            "incomeComponentType" -> "Profit" ,
+            "incomeComponentType" -> "Profit",
             "amount" -> 100,
             "description" -> "Profit"
           )
@@ -231,6 +250,66 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       )
     )
     ,
+    "links" -> Json.arr()
+  )
+
+  private val totalTaxJson = Json.obj(
+    "data" -> Json.obj(
+      "amount" -> 1000,
+      "incomeCategories" -> Json.arr(
+        Json.obj(
+          "incomeCategoryType" -> "UkDividendsIncomeCategory",
+          "totalTax" -> 10,
+          "totalTaxableIncome" -> 20,
+          "totalIncome" -> 30,
+          "taxBands" -> Json.arr(
+            Json.obj(
+              "bandType" -> "",
+              "code" -> "",
+              "income" -> 0,
+              "tax" -> 0,
+              "rate" -> 0
+            ),
+            Json.obj(
+              "bandType" -> "B",
+              "code" -> "BR",
+              "income" -> 10000,
+              "tax" -> 500,
+              "lowerBand" -> 5000,
+              "upperBand" -> 20000,
+              "rate" -> 10
+            )
+          )
+        )
+      ),
+      "reliefsGivingBackTax" -> Json.obj(
+        "amount" -> 100,
+        "taxAdjustmentComponents" -> Json.arr(
+          Json.obj(
+            "taxAdjustmentType" -> "EnterpriseInvestmentSchemeRelief",
+            "taxAdjustmentAmount" -> 100
+          )
+        )
+      ),
+      "otherTaxDue" -> Json.obj(
+        "amount" -> 100,
+        "taxAdjustmentComponents" -> Json.arr(
+          Json.obj(
+            "taxAdjustmentType" -> "ExcessGiftAidTax",
+            "taxAdjustmentAmount" -> 100
+          )
+        )
+      ),
+      "alreadyTaxedAtSource" -> Json.obj(
+        "amount" -> 100,
+        "taxAdjustmentComponents" -> Json.arr(
+          Json.obj(
+            "taxAdjustmentType" -> "TaxOnBankBSInterest",
+            "taxAdjustmentAmount" -> 100
+          )
+        )
+      )
+    ),
     "links" -> Json.arr()
   )
 
