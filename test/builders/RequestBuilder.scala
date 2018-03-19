@@ -38,7 +38,6 @@ object RequestBuilder {
       SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
       SessionKeys.authProvider -> "IDA",
       SessionKeys.userId -> s"/path/to/authority")
-  SessionKeys.authToken -> "a token"
 
   def buildFakeRequestWithAuth(method: String, action: String) =
     FakeRequest(method = method, path = "").withFormUrlEncodedBody(
@@ -56,7 +55,6 @@ object RequestBuilder {
       SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
       SessionKeys.authProvider -> "IDA",
       SessionKeys.userId -> s"/path/to/authority")
-  SessionKeys.authToken -> "a token"
 
   def buildFakeInvalidRequestWithAuth(method: String) =
     FakeRequest(method = method, path = "").withFormUrlEncodedBody(
@@ -65,7 +63,6 @@ object RequestBuilder {
       SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
       SessionKeys.authProvider -> "IDA",
       SessionKeys.userId -> s"/path/to/authority")
-  SessionKeys.authToken -> "a token"
 
   def buildFakeRequestWithoutAuth(method: String) =
     FakeRequest(method = method, path = "").withFormUrlEncodedBody(
