@@ -21,53 +21,55 @@
 @for((item, itemIdx) <- items zip (Stream from 1)) {
 
     @if(item.rows.nonEmpty) {
-    <table id="summaryTable@{itemIdx.toString}" class="table--font-reset @if(itemIdx==items.length && item.rows.length==1){table--spaced-top}">
-
-        <caption id="summaryTable@{itemIdx.toString}Caption" class="text--left table__caption @if(item.hideHeaders){table__caption--bottom-border} @if(item.hideCaption){visuallyhidden}">@item.caption</caption>
-
-        <thead id="summaryTable@{itemIdx.toString}Head" @if(item.hideHeaders) {class="visuallyhidden"}>
-            <tr>
-                <th id="summaryTable@{itemIdx.toString}Col1Header" scope="col" colspan="2">@item.headerCol1</th>
-                <th id="summaryTable@{itemIdx.toString}Col2Header" scope="col" class="text--right">@item.headerCol2</th>
-            </tr>
-        </thead>
-
-        <tbody id="summaryTable@{itemIdx.toString}Body">
+        @if(itemIdx==items.length && item.rows.length==1) {
             @for((row, rowIdx) <- item.rows zip (Stream from 1)) {
-                <tr id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}" @if(itemIdx==items.length && item.rows.length==1) {class="table__row--top-border table__footer--highlight highlight"}>
-                    <td id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" scope="row" class="break-word" @if(!row.link.isDisplayed) {colspan="2"}>
-                        @row.label
-                        @if(row.label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
-                            @includes.link(
-                                id=Some("estimatedTaxOwedLink"),
-                                copy=Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"),
-                                url = controllers.routes.CurrentYearPageController.potentialUnderpaymentPage.url.toString,
-                                linkClasses = Seq("link-list__item"),
-                                attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
-                            )
-                        }
-                    </td>
-
-                    @if(row.link.isDisplayed) {
-                    <td id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ChangeLinkCell">
-                        @includes.link(
-                            id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
-                            url = row.link.href,
-                            linkClasses = Seq("float--right"),
-                            isButton=true,
-                            isSecondary=true,
-                            copy=Messages("tai.updateOrRemove"),
-                            altCopy=Some(Messages("tai.updateOrRemove") + " " + row.link.value),
-                            attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${row.link.value}")
-                        )
-                    </td>
-                    }
-                    <td id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ValueCell" class="text--right">@row.value</td>
-                </tr>
+            <div class="govuk-check-your-answers cya-questions-long highlight">
+                <div>
+                    <h3 class="cya-question">@row.label</h3><div class="cya-change"></div><div class="cya-answer text--right bold">@row.value</div>
+                </div>
+            </div>
             }
-        </tbody>
+        } else {
+            <div id="summaryTable@{itemIdx.toString}" class="section">
+                <h3 id="summaryTable@{itemIdx.toString}Caption">@item.caption</h3>
+                <ul id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long cya-tax-summary" role="list">
+                    @for((row, rowIdx) <- item.rows zip (Stream from 1)) {
+                        <li id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}">
+                            <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" class="cya-question">
+                                @row.label
+                                @if(row.label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
+                                    @includes.link(
+                                        id=Some("estimatedTaxOwedLink"),
+                                        copy=Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"),
+                                        url = controllers.routes.CurrentYearPageController.potentialUnderpaymentPage.url.toString,
+                                        linkClasses = Seq("link-list__item"),
+                                        attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
+                                    )
+                                }
+                            </div>
 
-    </table>
+                            @if(row.link.isDisplayed) {
+                            <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ChangeLinkCell" class="cya-change">
+                                @includes.link(
+                                    id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
+                                    url = row.link.href,
+                                    isButton=true,
+                                    isSecondary=true,
+                                    copy=Messages("tai.updateOrRemove"),
+                                    altCopy=Some(Messages("tai.updateOrRemove") + " " + row.link.value),
+                                    attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${row.link.value}")
+                                )
+                            </div>
+                            } else {
+                                <div class="cya-change"></div>
+                            }
+                            <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ValueCell" class="cya-answer">@row.value</div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+
     }
 
 }
