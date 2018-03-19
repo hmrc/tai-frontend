@@ -50,6 +50,14 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
       }
     }
 
+    "return a redirect to the referrer url" when {
+      "the request is authorised and a referrer header is present" in {
+        val result = new SUT().switchToLanguage("enlish")(RequestBuilder.buildFakeRequestWithAuth("GET", Map("Referer" -> "/fake/url")))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get must include("/fake/url")
+      }
+    }
+
     "return a redirect to the GG sign in page" when {
       "the requested is unauthorised" in {
         val sut = new SUT()
