@@ -102,17 +102,13 @@ object TaxCodeDescriptor {
   }
 
   val standAloneTaxCodeExplanation = (taxCodeDescription: TaxCodeDescription) => {
-    val standAloneRegex = "0T|BR|D0|D1|NT|D2|D3|D4|D5|D6|D7|D8".r
-    val taxCode = taxCodeDescription.taxCode
-    standAloneRegex.findFirstIn(taxCode) match {
-      case Some(code) =>
-        val message = if(taxCodeDescription.scottishTaxRate.isEmpty) {
-          Messages(s"tai.taxCode.$code")
-        } else {
-          Messages(s"tai.taxCode.$code", taxCodeDescription.scottishTaxRate.get)
-        }
+    val standAloneRegex = "0T|BR|D0|D1|NT".r
+    val scottishStandAloneRegex = "D2|D3|D4|D5|D6|D7|D8".r
 
-        ListMap(code -> message)
+    val taxCode = taxCodeDescription.taxCode
+    (standAloneRegex.findFirstIn(taxCode), scottishStandAloneRegex.findFirstIn(taxCode)) match {
+      case (Some(code), None) => ListMap(code -> Messages(s"tai.taxCode.$code"))
+      case (None, Some(code)) => ListMap(code -> Messages(s"tai.taxCode.$code", taxCodeDescription.scottishTaxRate.get))
       case _ => ListMap[String, String]()
     }
   }
