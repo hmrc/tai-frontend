@@ -25,6 +25,7 @@ import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.RequestHeader
 import play.api.test.Helpers.status
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.PartialRetriever
@@ -32,6 +33,7 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.TaiService
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.util.TaiConstants
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -44,7 +46,7 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
 
     "return a redirect to the what do you want to do page" when {
       "the request is authorised but no referrer header is present" in {
-        val result = new SUT().switchToLanguage("enlish")(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
       }
@@ -52,7 +54,7 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
 
     "return a redirect to the referrer url" when {
       "the request is authorised and a referrer header is present" in {
-        val result = new SUT().switchToLanguage("enlish")(RequestBuilder.buildFakeRequestWithAuth("GET", Map("Referer" -> "/fake/url")))
+        val result = new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET", Map("Referer" -> "/fake/url")))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("/fake/url")
       }
@@ -62,7 +64,7 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
       "the requested is unauthorised" in {
         val sut = new SUT()
         when(sut.authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(None))
-        val result = sut.switchToLanguage("enlish")(RequestBuilder.buildFakeRequestWithoutAuth("GET"))
+        val result = sut.switchToLanguage("english")(RequestBuilder.buildFakeRequestWithoutAuth("GET"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must include("gg/sign-in")
       }
@@ -91,6 +93,14 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
         result.header.headers.isDefinedAt("Set-Cookie") mustBe true
         result.header.headers("Set-Cookie") must include("PLAY_LANG=en;")
       }
+    }
+
+    "set a session attribute containing the user language choice" in {
+      val result = Await.result(new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
+      result.header.headers.isDefinedAt("Set-Cookie") mustBe true
+
+      implicit val rh = mock[RequestHeader]
+      result.session.get(TaiConstants.UserLanguageChoice) mustBe Some("en")
     }
   }
 

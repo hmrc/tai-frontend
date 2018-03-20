@@ -30,6 +30,7 @@ import uk.gov.hmrc.tai.service.TaiService
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.tai.util.TaiConstants
 
 import scala.concurrent.Future
 
@@ -64,7 +65,7 @@ trait TaiLanguageController extends LanguageController with TaiBaseController
             val redirectURL = request.headers.get(REFERER).getOrElse(fallbackURL)
 
             Future.successful(
-              Redirect(redirectURL).withLang(Lang(newLanguage.code)).flashing(LanguageUtils.FlashWithSwitchIndicator)
+              Redirect(redirectURL).withLang(Lang(newLanguage.code)).withSession(TaiConstants.UserLanguageChoice -> newLanguage.code)
             )
           }
   }
