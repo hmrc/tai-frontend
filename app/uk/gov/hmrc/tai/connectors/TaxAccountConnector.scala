@@ -112,8 +112,7 @@ trait TaxAccountConnector extends CodingComponentFormatters {
       ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve total tax for $nino with exception:${e.getMessage}")
-        //TaiTaxAccountFailureResponse(e.getMessage)
-        throw e
+        TaiTaxAccountFailureResponse(e.getMessage)
     }
   }
 

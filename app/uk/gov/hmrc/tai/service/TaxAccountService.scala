@@ -20,7 +20,9 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
-import uk.gov.hmrc.tai.connectors.responses.TaiResponse
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.model.domain.tax.TotalTax
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 
@@ -42,6 +44,14 @@ trait TaxAccountService {
 
   def updateEstimatedIncome(nino: Nino, newAmount: Int, year: TaxYear, id: Int)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     taxAccountConnector.updateEstimatedIncome(nino, year, newAmount, id)
+  }
+
+  def scottishBandRates(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Map[String, BigDecimal]]= {
+    taxAccountConnector.totalTax(nino, year) map {
+      case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
+        totalTax.incomeCategories.flatMap(_.taxBands.map(band => band.code -> band.rate)).toMap
+      case _ => throw new RuntimeException("could not fetch scottish tax band rates")
+    }
   }
 }
 
