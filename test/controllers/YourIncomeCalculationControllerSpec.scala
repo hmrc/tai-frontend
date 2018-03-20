@@ -365,7 +365,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
     val ad = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    val sampleEmployment = Employment("empName", None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1)
+    val sampleEmployment = Employment("empName", None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false)
     val emp = when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(sampleEmployment)))
 
     val sd = sessionData.getOrElse(AuthBuilder.createFakeSessionDataWithPY)

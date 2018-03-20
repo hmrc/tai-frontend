@@ -39,7 +39,7 @@ class YourIncomeCalculationViewModelNewSpec extends PlaySpec with FakeTaiPlayApp
           PaymentDetailsViewModel(new LocalDate().minusWeeks(4), 100, 50, 25)
         )
         model.latestPayment mustBe Some(
-          LatestPayment(new LocalDate().minusWeeks(1), 400, 50, 25)
+          LatestPayment(new LocalDate().minusWeeks(1), 400, 50, 25, Irregular)
         )
         model.endDate mustBe None
         model.isPension mustBe false
@@ -85,7 +85,7 @@ class YourIncomeCalculationViewModelNewSpec extends PlaySpec with FakeTaiPlayApp
                                          employmentType: TaxCodeIncomeComponentType = EmploymentIncome) = {
     val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.tai.TaxYear(), realTimeStatus, payments, Nil)
     val employment = Employment("test employment", Some("EMPLOYER1"), LocalDate.now(),
-      if(employmentStatus == Ceased) Some(LocalDate.parse("2017-08-08")) else None, Seq(annualAccount), "", "", 2)
+      if(employmentStatus == Ceased) Some(LocalDate.parse("2017-08-08")) else None, Seq(annualAccount), "", "", 2, None, false)
     val taxCodeIncome = TaxCodeIncome(employmentType, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, employmentStatus)
     YourIncomeCalculationViewModelNew(taxCodeIncome, employment)
   }

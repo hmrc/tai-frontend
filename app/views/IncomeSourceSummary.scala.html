@@ -103,7 +103,7 @@
                 <p class="visuallyhidden">
                     @Link.toInternalPage(
                         id=Some("updateIncomeScreenReader"),
-                        url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(model.empId)).url,
+                        url=controllers.routes.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(model.empId).url,
                         value=Some(messages("tai.income.details.updateTaxableIncome.screenReader"))).toHtml
                 </p>
         </div>
@@ -116,7 +116,7 @@
             <p  aria-hidden="true">
                 @Link.toInternalPage(
                     id=Some("viewIncomeReceivedToDate"),
-                    url=controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(model.empId)).url,
+                    url=controllers.routes.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(model.empId).url,
                     value=Some(messages("tai.income.details.checkPaymentsReceived"))).toHtml
             </p>
             <p class="visuallyhidden">

@@ -52,14 +52,16 @@ trait YourIncomeCalculationController extends TaiBaseController
     implicit user =>
       implicit sessionData =>
         implicit request =>
-          showIncomeCalculationPageForCurrentYear(nino = Nino(user.getNino), empId = empId)
+          Future.successful(Redirect(routes.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(empId.getOrElse(-1))))
+          //showIncomeCalculationPageForCurrentYear(nino = Nino(user.getNino), empId = empId)
   }
 
   def printYourIncomeCalculationPage(empId: Option[Int] = None): Action[AnyContent] = authorisedForTai(redirectToOrigin = true)(taiService).async {
     implicit user =>
       implicit sessionData =>
         implicit request =>
-          showIncomeCalculationPageForCurrentYear(nino = Nino(user.getNino), empId = empId, printPage = true)
+          Future.successful(Redirect(routes.YourIncomeCalculationControllerNew.printYourIncomeCalculationPage(empId.getOrElse(-1))))
+          //showIncomeCalculationPageForCurrentYear(nino = Nino(user.getNino), empId = empId, printPage = true)
   }
 
   def showIncomeCalculationPageForCurrentYear(nino: Nino, empId: Option[Int], printPage: Boolean = false)

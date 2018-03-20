@@ -154,7 +154,7 @@ class YourIncomeCalculationControllerNewSpec extends PlaySpec
   val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
   val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.tai.TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
   val employment = Employment("test employment", Some("EMPLOYER1"), LocalDate.now(),
-    None, Seq(annualAccount), "", "", 2)
+    None, Seq(annualAccount), "", "", 2, None, false)
 
   val taxCodeIncomes = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOperation, Live),

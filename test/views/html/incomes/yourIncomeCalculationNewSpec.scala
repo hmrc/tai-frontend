@@ -191,7 +191,7 @@ class yourIncomeCalculationNewSpec extends TaiViewSpec {
                                          employmentType: TaxCodeIncomeComponentType = EmploymentIncome,
                                          totalNotEqualMessage: Option[String] = Some("")) = {
 
-    val latestPayment = if (payments.isEmpty) None else Some(LatestPayment(new LocalDate().minusWeeks(4), 400, 50, 25))
+    val latestPayment = if (payments.isEmpty) None else Some(LatestPayment(new LocalDate().minusWeeks(4), 400, 50, 25, Weekly))
     YourIncomeCalculationViewModelNew(
       2,
       "test employment",
@@ -201,7 +201,10 @@ class yourIncomeCalculationNewSpec extends TaiViewSpec {
       latestPayment,
       if (employmentStatus == Ceased) Some(LocalDate.parse("2017-08-08")) else None,
       employmentType == PensionIncome,
-      totalNotEqualMessage
+      totalNotEqualMessage,
+      "",
+      None,
+      false
     )
   }
 }
