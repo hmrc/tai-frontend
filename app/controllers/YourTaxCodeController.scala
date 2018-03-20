@@ -47,11 +47,12 @@ trait YourTaxCodeController extends TaiBaseController
       implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-
             val nino = Nino(user.taiRoot.nino)
+            val scottishTaxRateBands = () => taxAccountService.scottishBandRates(nino, TaxYear())
+
             taxAccountService.taxCodeIncomes(nino, TaxYear()) map {
               case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) =>
-                val taxCodeViewModel = TaxCodeViewModel(taxCodeIncomes, nino)
+                val taxCodeViewModel = TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands)
                 Ok(views.html.taxCodeDetails(taxCodeViewModel))
               case TaiTaxAccountFailureResponse(e) => throw new RuntimeException(e)
               case _ => throw new RuntimeException("could not fetch tax codes")

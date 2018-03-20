@@ -16,18 +16,18 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import uk.gov.hmrc.tai.viewModels.TaxCodeDescriptor._
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
 import uk.gov.hmrc.tai.util.{DateFormatConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.viewModels.TaxCodeDescriptor._
 import uk.gov.hmrc.urls.Link
 
 import scala.collection.immutable.ListMap
+import scala.concurrent.Future
 
 case class TaxCodeViewModel(title: String,
                             mainHeading: String,
@@ -38,7 +38,7 @@ case class TaxCodeDescription(taxCode: String, basisOperation: BasisOperation, s
 
 object TaxCodeViewModel extends ViewModelHelper with DateFormatConstants {
 
-  def apply(taxCodeIncomes: Seq[TaxCodeIncome], nino: Nino): TaxCodeViewModel = {
+  def apply(taxCodeIncomes: Seq[TaxCodeIncome], scottishTaxRateBands: () => Future[Map[String, BigDecimal]]): TaxCodeViewModel = {
 
     val explanationRules: Seq[TaxCodeDescription => ListMap[String, String]] = Seq(scottishTaxCodeExplanation,
       untaxedTaxCodeExplanation,
@@ -52,7 +52,6 @@ object TaxCodeViewModel extends ViewModelHelper with DateFormatConstants {
       DescriptionListViewModel(Messages("tai.taxCode.subheading", taxCodeIncome.name, taxCode), explanation)
     }
 
-    val taxYear = uk.gov.hmrc.tai.model.tai.TaxYear()
     val taxCodesPrefix = if (taxCodeIncomes.size > 1) Messages("tai.taxCode.multiple.code.title.pt1") else Messages("tai.taxCode.single.code.title.pt1")
 
     val title = s"$taxCodesPrefix ${currentTaxYearRange(DateWithYearFormat)}"
