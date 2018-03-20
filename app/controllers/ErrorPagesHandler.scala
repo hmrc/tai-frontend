@@ -220,6 +220,29 @@ trait ErrorPagesHandler {
       }
   }
 
+  def npsTaxAccountAbsentResult(employments: Nino => Future[Seq[Employment]])
+                                                (implicit request: Request[AnyContent], user: TaiUser, ec: ExecutionContext, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
+    case e:BadRequestException if e.getMessage.toLowerCase.contains(NpsTaxAccountDataAbsentMsg) && request.method == "GET" =>
+      employments(Nino(user.getNino)) flatMap {
+        case Nil => {
+          Logger.warn(s"<No data returned from nps tax account, and subsequent nps employment check also empty> - for nino ${user.getNino} @${rl.getName}")
+          Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
+        }
+      }
+  }
+
+  def npsTaxAccountCYAbsentResult(employments: Nino => Future[Seq[Employment]])
+                               (implicit request: Request[AnyContent], user: TaiUser, ec: ExecutionContext, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
+    case e:NotFoundException if e.getMessage.toLowerCase.contains(NpsTaxAccountCYDataAbsentMsg) && request.method == "GET" =>
+      employments(Nino(user.getNino)) flatMap {
+        case Nil => {
+          Logger.warn(s"<No current year data returned from nps tax account, and subsequent nps employment check also empty> - for nino ${user.getNino} @${rl.getName}")
+          Future.successful(BadRequest(views.html.error_no_primary()))
+        }
+      }
+  }
+
+
   def npsNoEmploymentForCYResult(employments: Nino => Future[Seq[Employment]],
                                                 proceed: TaiRoot => Future[Result])
                                                (implicit request: Request[AnyContent], user: TaiUser, ec: ExecutionContext, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {

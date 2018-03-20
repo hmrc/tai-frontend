@@ -17,22 +17,27 @@
 package controllers
 
 import controllers.audit.Auditable
-import controllers.auth.WithAuthorisedForTaiLite
+import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.model.domain.{Employment, TaxAccountSummary}
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.AuditConstants
+import uk.gov.hmrc.time.TaxYearResolver
+
+import scala.concurrent.Future
 
 trait TaxAccountSummaryController extends TaiBaseController
   with DelegationAwareActions
@@ -66,11 +71,25 @@ trait TaxAccountSummaryController extends TaiBaseController
               employments <- employmentsFuture
               isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
             } yield {
+
                   val vm = TaxAccountSummaryViewModel(taxCodeIncomes, employments, taxAccountSummary, isAnyFormInProgress, nonTaxCodeIncome)
                   Ok(views.html.incomeTaxSummary(vm))
               }
-          }
+          } recoverWith hodStatusRedirect
   }
+
+  def hodStatusRedirect(implicit request: Request[AnyContent], user: TaiUser, taiRoot: TaiRoot): PartialFunction[Throwable, Future[Result]] = {
+
+    implicit val rl:RecoveryLocation = classOf[TaxAccountSummaryController]
+
+    npsTaxAccountAbsentResult(previousYearEmployments) orElse
+    npsTaxAccountCYAbsentResult(previousYearEmployments) orElse
+    hodInternalErrorResult
+  }
+
+  private[controllers] def previousYearEmployments(implicit hc: HeaderCarrier): Nino => Future[Seq[Employment]] = {
+    nino => Future.successful(Seq.empty[Employment])
+    }
 
 
 }
