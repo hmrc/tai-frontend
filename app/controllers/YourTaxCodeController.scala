@@ -32,6 +32,8 @@ import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.{TaiService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.TaxCodeViewModel
 
+import scala.concurrent.Future
+
 trait YourTaxCodeController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
@@ -48,14 +50,16 @@ trait YourTaxCodeController extends TaiBaseController
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             val nino = Nino(user.taiRoot.nino)
-            val scottishTaxRateBands = () => taxAccountService.scottishBandRates(nino, TaxYear())
 
-            taxAccountService.taxCodeIncomes(nino, TaxYear()) map {
-              case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) =>
-                val taxCodeViewModel = TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands)
-                Ok(views.html.taxCodeDetails(taxCodeViewModel))
-              case TaiTaxAccountFailureResponse(e) => throw new RuntimeException(e)
-              case _ => throw new RuntimeException("could not fetch tax codes")
+            def isScottishTax(income: TaxCodeIncome) = "^S".r.findFirstIn(income.taxCode).isDefined
+
+            for {
+              TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+              scottishTaxRateBands <- if (taxCodeIncomes.exists(isScottishTax)) taxAccountService.scottishBandRates(nino, TaxYear())
+              else Future.successful(Map.empty[String, BigDecimal])
+            } yield {
+              val taxCodeViewModel = TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands)
+              Ok(views.html.taxCodeDetails(taxCodeViewModel))
             }
           }
   }

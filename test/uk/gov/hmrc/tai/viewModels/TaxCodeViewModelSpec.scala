@@ -293,7 +293,7 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
   private val taxCodeIncomes1 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live)
   private val taxCodeIncomes2 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "BR", "employer2", Week1Month1BasisOperation, Live)
   private val nino = new Generator().nextNino
-  private val scottishTaxRateBands = () => Future.successful(Map.empty[String, BigDecimal])
+  private val scottishTaxRateBands = Map.empty[String, BigDecimal]
 
   def sut(taxCodeIncomes: Seq[TaxCodeIncome]) = TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands)
 

@@ -38,7 +38,7 @@ case class TaxCodeDescription(taxCode: String, basisOperation: BasisOperation, s
 
 object TaxCodeViewModel extends ViewModelHelper with DateFormatConstants {
 
-  def apply(taxCodeIncomes: Seq[TaxCodeIncome], scottishTaxRateBands: () => Future[Map[String, BigDecimal]]): TaxCodeViewModel = {
+  def apply(taxCodeIncomes: Seq[TaxCodeIncome], scottishTaxRateBands: Map[String, BigDecimal]): TaxCodeViewModel = {
 
     val explanationRules: Seq[TaxCodeDescription => ListMap[String, String]] = Seq(scottishTaxCodeExplanation,
       untaxedTaxCodeExplanation,
