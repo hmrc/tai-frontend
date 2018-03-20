@@ -21,9 +21,10 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait TaxAccountService {
@@ -46,11 +47,22 @@ trait TaxAccountService {
     taxAccountConnector.updateEstimatedIncome(nino, year, newAmount, id)
   }
 
-  def scottishBandRates(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Map[String, BigDecimal]]= {
-    taxAccountConnector.totalTax(nino, year) map {
-      case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
-        totalTax.incomeCategories.flatMap(_.taxBands.map(band => band.code -> band.rate)).toMap
-      case _ => throw new RuntimeException("could not fetch scottish tax band rates")
+  def totalTax(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+    taxAccountConnector.totalTax(nino, year)
+  }
+
+  def scottishBandRates(nino: Nino, year: TaxYear, taxCodeIncomes: Seq[TaxCodeIncome])(implicit hc: HeaderCarrier): Future[Map[String, BigDecimal]] = {
+
+    def isScottishTax(income: TaxCodeIncome) = "^S".r.findFirstIn(income.taxCode).isDefined
+
+    if (taxCodeIncomes.exists(isScottishTax)) {
+      taxAccountConnector.totalTax(nino, year) map {
+        case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
+          totalTax.incomeCategories.flatMap(_.taxBands.map(band => band.code -> band.rate)).toMap
+        case _ => Map.empty[String, BigDecimal]
+      }
+    } else {
+      Future.successful(Map.empty[String, BigDecimal])
     }
   }
 }

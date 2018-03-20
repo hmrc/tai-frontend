@@ -51,12 +51,9 @@ trait YourTaxCodeController extends TaiBaseController
           ServiceCheckLite.personDetailsCheck {
             val nino = Nino(user.taiRoot.nino)
 
-            def isScottishTax(income: TaxCodeIncome) = "^S".r.findFirstIn(income.taxCode).isDefined
-
             for {
               TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-              scottishTaxRateBands <- if (taxCodeIncomes.exists(isScottishTax)) taxAccountService.scottishBandRates(nino, TaxYear())
-              else Future.successful(Map.empty[String, BigDecimal])
+              scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeIncomes)
             } yield {
               val taxCodeViewModel = TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands)
               Ok(views.html.taxCodeDetails(taxCodeViewModel))

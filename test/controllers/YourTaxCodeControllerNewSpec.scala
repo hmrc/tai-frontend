@@ -53,7 +53,7 @@ class YourTaxCodeControllerNewSpec extends PlaySpec with FakeTaiPlayApplication 
       val taxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L",
         "employment", OtherBasisOperation, Live))
       when(SUT.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
-      when(SUT.taxAccountService.scottishBandRates(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, BigDecimal]))
+      when(SUT.taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map.empty[String, BigDecimal]))
       val result = SUT.taxCodes()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe OK
