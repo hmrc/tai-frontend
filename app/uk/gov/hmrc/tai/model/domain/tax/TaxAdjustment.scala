@@ -44,38 +44,33 @@ case object TaxCreditOnForeignIncomeDividends extends AlreadyTaxedAtSource
 object TaxAdjustmentType {
   implicit val formatTaxAdjustmentType = new Format[TaxAdjustmentType] {
     override def writes(taxAdjustmentType: TaxAdjustmentType): JsValue = ???
-    override def reads(json: JsValue): JsResult[TaxAdjustmentType] = ???
+
+    override def reads(json: JsValue): JsResult[TaxAdjustmentType] = {
+      json.as[String] match {
+        case "EnterpriseInvestmentSchemeRelief" => JsSuccess(EnterpriseInvestmentSchemeRelief)
+        case "ConcessionalRelief" => JsSuccess(ConcessionalRelief)
+        case "MaintenancePayments" => JsSuccess(MaintenancePayments)
+        case "MarriedCouplesAllowance" => JsSuccess(MarriedCouplesAllowance)
+        case "DoubleTaxationRelief" => JsSuccess(DoubleTaxationRelief)
+        case "ExcessGiftAidTax" => JsSuccess(ExcessGiftAidTax)
+        case "ExcessWidowsAndOrphans" => JsSuccess(ExcessWidowsAndOrphans)
+        case "PensionPaymentsAdjustment" => JsSuccess(PensionPaymentsAdjustment)
+        case "ChildBenefit" => JsSuccess(ChildBenefit)
+        case "TaxOnBankBSInterest" => JsSuccess(TaxOnBankBSInterest)
+        case "TaxCreditOnUKDividends" => JsSuccess(TaxCreditOnUKDividends)
+        case "TaxCreditOnForeignInterest" => JsSuccess(TaxCreditOnForeignInterest)
+        case "TaxCreditOnForeignIncomeDividends" => JsSuccess(TaxCreditOnForeignIncomeDividends)
+        case _ => throw new IllegalArgumentException("Invalid income category type")
+      }
+    }
   }
 }
 
-object ReliefsGivingBackTax {
-  implicit val formatReliefsGivingBackTax = new Format[ReliefsGivingBackTax] {
-    override def writes(taxAdjustmentType: ReliefsGivingBackTax): JsValue = JsString(taxAdjustmentType.toString)
-    override def reads(json: JsValue): JsResult[ReliefsGivingBackTax] = ???
-  }
-}
-
-object OtherTaxDue {
-  implicit val formatOtherTaxDue = new Format[OtherTaxDue] {
-    override def writes(taxAdjustmentType: OtherTaxDue): JsValue = JsString(taxAdjustmentType.toString)
-    override def reads(json: JsValue): JsResult[OtherTaxDue] = ???
-  }
-}
-
-object AlreadyTaxedAtSource {
-  implicit val formatAlreadyTaxedAtSource = new Format[AlreadyTaxedAtSource] {
-    override def writes(taxAdjustmentType: AlreadyTaxedAtSource): JsValue = JsString(taxAdjustmentType.toString)
-    override def reads(json: JsValue): JsResult[AlreadyTaxedAtSource] = ???
-  }
-}
-
-case class TaxAdjustmentComponent(taxAdjustmentType: TaxAdjustmentType,
-                                  taxAdjustmentAmount: BigDecimal)
+case class TaxAdjustmentComponent(taxAdjustmentType: TaxAdjustmentType, taxAdjustmentAmount: BigDecimal)
 
 object TaxAdjustmentComponent {
   implicit val format: Format[TaxAdjustmentComponent] = Json.format[TaxAdjustmentComponent]
 }
-
 
 case class TaxAdjustment(amount: BigDecimal, taxAdjustmentComponents: Seq[TaxAdjustmentComponent])
 

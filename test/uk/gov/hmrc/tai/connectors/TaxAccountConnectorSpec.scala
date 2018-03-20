@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxBand, TotalTax, UkDividendsIncomeCategory}
+import uk.gov.hmrc.tai.model.domain.tax._
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -178,7 +178,10 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         val nino = generateNino
 
         val expectedTotalTax = TotalTax(1000,
-          List(IncomeCategory(UkDividendsIncomeCategory,10,20,30,List(TaxBand("","",0,0,None,None,0), TaxBand("B","BR",10000,500,Some(5000),Some(20000),10)))))
+          List(IncomeCategory(UkDividendsIncomeCategory, 10, 20, 30, List(TaxBand("", "", 0, 0, None, None, 0), TaxBand("B", "BR", 10000, 500, Some(5000), Some(20000), 10)))),
+          Some(tax.TaxAdjustment(100, List(TaxAdjustmentComponent(EnterpriseInvestmentSchemeRelief, 100)))),
+          Some(tax.TaxAdjustment(100, List(TaxAdjustmentComponent(ExcessGiftAidTax, 100)))),
+          Some(tax.TaxAdjustment(100, List(TaxAdjustmentComponent(TaxOnBankBSInterest, 100)))))
 
         when(sut.httpHandler.getFromApi(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/total-tax"))(any())).
           thenReturn(Future.successful(totalTaxJson))
