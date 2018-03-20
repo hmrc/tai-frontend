@@ -20,7 +20,8 @@
 @import uk.gov.hmrc.play.views.helpers.AttorneyRegime.standAlone
 @import uk.gov.hmrc.play.views.html.layouts
 @import uk.gov.hmrc.tai.util.TaiConstants
-@import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig}
+@import uk.gov.hmrc.play.language.LanguageUtils
 
 @(title: String,
         sidebarLinks: Option[Html] = None,
@@ -155,6 +156,16 @@
     }
 }
 
+
+@isWelshEnabled = @{
+    object featureToggles extends FeatureTogglesConfig
+    featureToggles.welshLanguageEnabled
+}
+
+@isWelshActive = @{
+    LanguageUtils.getCurrentLang == Lang("cy")
+}
+
 @mustacheMap = @{
     Map[String, Any](
         "pageTitle" -> title,
@@ -183,7 +194,13 @@
             Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai.js"))
         ),
         "inlineScript" -> inlineScript,
-        "assetsPath" -> ApplicationConfig.assetsPath
+        "assetsPath" -> ApplicationConfig.assetsPath,
+
+        "showPropositionLinks" -> isWelshEnabled,
+        "langSelector" -> isWelshEnabled,
+        "enUrl" -> "/check-income-tax/language/english",
+        "cyUrl" -> "/check-income-tax/language/cymraeg",
+        "isWelsh" -> isWelshActive
     )
 }
 

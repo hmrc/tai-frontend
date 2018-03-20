@@ -65,7 +65,7 @@ trait TaiLanguageController extends LanguageController with TaiBaseController
             val redirectURL = request.headers.get(REFERER).getOrElse(fallbackURL)
 
             Future.successful(
-              Redirect(redirectURL).withLang(Lang(newLanguage.code)).withSession(TaiConstants.UserLanguageChoice -> newLanguage.code)
+              Redirect(redirectURL).withLang(Lang(newLanguage.code))
             )
           }
   }
