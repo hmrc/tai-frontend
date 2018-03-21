@@ -180,7 +180,8 @@
         "googleAnalytics" -> googleAnalytics,
         "gaCustomEvent" -> gaCustomEvent,
         "scriptElems" -> Seq(
-            Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai.js"))
+            Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai.js")),
+            Map("url" -> controllers.routes.AssetsController.versioned("javascript/char-count.js"))
         ),
         "inlineScript" -> inlineScript,
         "assetsPath" -> ApplicationConfig.assetsPath

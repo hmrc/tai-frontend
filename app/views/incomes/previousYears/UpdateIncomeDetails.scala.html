@@ -16,9 +16,9 @@
 
 @import uk.gov.hmrc.tai.viewModels.income.previousYears.UpdateHistoricIncomeDetailsViewModel
 @import includes.{cancelLink, ptaHeader}
-@import uk.gov.hmrc.play.views.html.helpers.{form, textArea}
+@import uk.gov.hmrc.play.views.html.helpers.{form}
 @import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsForm
-@import includes.forms.submit
+@import includes.forms.{submit, textArea}
 
 
 @(viewModel: UpdateHistoricIncomeDetailsViewModel, updateIncomeDetailsForm: Form[String])(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
@@ -36,26 +36,24 @@
 }
 
 @main(
-title = Messages("tai.updateEmployment.whatDoYouWantToTellUs.title"),
-user = Some(user),
-pageHeader = Some(header),
-articleClasses = None,
-gaCustomTitle = None) {
+    title = Messages("tai.updateEmployment.whatDoYouWantToTellUs.title"),
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = None) {
 
-@form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDetails(), args=(Symbol("class"), "subsection")) {
+    @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDetails(), args=(Symbol("class"), "subsection")) {
 
-@textArea(field=updateIncomeDetailsForm("employmentDetails"),
-'_inputClass -> "form-control form-control--full-width",
-'_divClass -> "char-counter",
-'_label -> Messages("tai.income.previousYears.details.textarea.text",
-UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit),
-'_dataCharCounter -> true,
-'_dataCharField -> true,
-'_maxlength -> UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit)
+         @textArea(
+                field=updateIncomeDetailsForm("employmentDetails"),
+                classes = Seq("form-control form-control--full-width js-char-count"),
+                labelText = Messages("tai.income.previousYears.details.textarea.text", UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit),
+                maxlength = UpdateIncomeDetailsForm.historicEmploymentDetailsCharLimit.toString
+            )
 
-@submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.updateEmployment.whatDoYouWantToTellUs.title")))
+            @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.updateEmployment.whatDoYouWantToTellUs.title")))
 
-}
+    }
 
 @cancelLink(controllers.routes.PayeControllerHistoric.payePage(viewModel.givenTaxYear), gaEventAction = Some(gaEventActionString))
 

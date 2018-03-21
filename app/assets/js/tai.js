@@ -1,6 +1,16 @@
 $(document).ready(function() {
 	// Details/summary polyfill from frontend toolkit
 	GOVUK.details.init()
+
+
+
+	// Character/Word Count
+      var charCount = new GOVUK.CharCount()
+      charCount.init({
+        selector: 'js-char-count',
+        highlight: true
+      })
+
 });
 
 // re-enable any disabled buttons when navigating back
