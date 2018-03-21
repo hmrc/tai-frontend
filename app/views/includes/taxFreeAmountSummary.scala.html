@@ -53,8 +53,6 @@
                                 @includes.link(
                                     id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
                                     url = row.link.href,
-                                    isButton=true,
-                                    isSecondary=true,
                                     copy=Messages("tai.updateOrRemove"),
                                     altCopy=Some(Messages("tai.updateOrRemove") + " " + row.link.value),
                                     attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${row.link.value}")
