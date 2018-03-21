@@ -18,7 +18,6 @@ package controllers.employments
 
 import builders.{AuthBuilder, RequestBuilder}
 import controllers.FakeTaiPlayApplication
-import data.TaiData
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -40,9 +39,9 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
+import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.model.{SessionData, TaiRoot, TaxSummaryDetails}
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, TaiService}
 import uk.gov.hmrc.tai.util._
 
@@ -289,7 +288,7 @@ class EndEmploymentControllerSpec
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
-      doc.title() mustBe Messages("tai.tellUsAboutEmployment.title")
+      doc.title() mustBe Messages("tai.endEmployment.endDateForm.title", employerName)
     }
 
     "call the Employment service to get the correct employment details" in {

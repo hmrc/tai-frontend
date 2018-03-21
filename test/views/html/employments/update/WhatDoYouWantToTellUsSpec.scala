@@ -31,7 +31,7 @@ class WhatDoYouWantToTellUsSpec extends TaiViewSpec {
     UpdateEmploymentDetailsForm.form)
 
   "whatDoYouWantToTellUs" must {
-    behave like pageWithTitle(Messages("tai.updateEmployment.whatDoYouWantToTellUs.title"))
+    behave like pageWithTitle(Messages("tai.updateEmployment.whatDoYouWantToTellUs.title", employerName))
     behave like pageWithCombinedHeader(Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
       Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", employerName))
     behave like pageWithContinueButtonForm("/check-income-tax/update-employment/what-do-you-want-to-tell-us/1")

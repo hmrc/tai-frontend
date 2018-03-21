@@ -208,8 +208,8 @@ tai.noCYIncomeError.missingInfo = {0} if you do have taxable income in this tax 
 tai.missingInfo.link.message = Tell us what to change
 
 ##Update or remove employment decision
-tai.employment.decision.title=Update or remove employer - Do you currently work for {0}?
-tai.employment.decision.customGaTitle=Update or remove employer - Do you currently work for this employer?
+tai.employment.decision.title=Do you currently work for {0}?
+tai.employment.decision.customGaTitle=Do you currently work for this employer?
 tai.employment.decision.preHeading=Update or remove employer
 tai.employment.decision.heading=Do you currently work for {0}?
 tai.employment.decision.legend=Do you currently work for this employer?
@@ -219,6 +219,7 @@ tai.employment.decision.radio2=No, I do not work here any more
 ##End Employment Pages
 tai.endEmployment.preHeadingText=Employment ended
 tai.endEmployment.endDateForm.title=When did you finish working for {0}?
+tai.endEmployment.endDateForm.customGaTitle=When did you finish working for this employer?
 tai.endEmployment.endDateForm.label=Enter the date you left {0}
 tai.endEmploymentWithinSixWeeksError.heading=You can not update your details before {0}
 tai.endEmploymentWithinSixWeeksError.employerAndPayDate=Our records show you were last paid by {0} on {1}.
@@ -240,7 +241,8 @@ tai.irregular.option1=contact {0} first
 tai.irregular.option2=update my details now
 
 ##Update Employment Pages
-tai.updateEmployment.whatDoYouWantToTellUs.title=What do you want to tell us?
+tai.updateEmployment.whatDoYouWantToTellUs.title=What do you want to tell us about {0}?
+tai.updateEmployment.whatDoYouWantToTellUs.customGaTitle=What do you want to tell us about this employer?
 tai.updateEmployment.whatDoYouWantToTellUs.heading=What do you want to tell us about {0}?
 tai.updateEmployment.whatDoYouWantToTellUs.preHeading=Update employment
 tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.blank=Enter what you want to tell us about your employment
