@@ -214,8 +214,6 @@ object TaiConstants {
 
   val SERVICE_IDENTIFIER = "TES"
 
-  val UserLanguageChoice = "UserLanguageChoice"
-
   val incomeTaxPage = 1
   val incomePage = 2
   val taxFreeAmountPage = 3
