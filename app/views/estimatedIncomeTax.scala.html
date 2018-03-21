@@ -60,7 +60,7 @@
                         </section>
                         <section id="estimatedIncomeText" class="soft--top flush--bottom">
 
-                            <p  id="estimatedIncomeDesc" class="text">
+                            <p  id="estimatedIncomeDesc">
                                 @Html(Messages("tai.estimatedIncome.desc",
                                     pounds(viewModel.incomeEstimate),
                                     taxYearRangeString,
@@ -68,7 +68,7 @@
                             </p>
 
                             @includes.details_summary(Messages("tai.estimatedIncome.whyEstimate.link")){
-                                <p class="text">@Messages("tai.estimatedIncome.whyEstimate.desc", uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))</p>
+                                <p>@Messages("tai.estimatedIncome.whyEstimate.desc", uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))</p>
                             }
                         </section>
 
@@ -77,7 +77,7 @@
 
                             @if(viewModel.taxRelief){
                                 <h3 id="tax-relief-title" class="heading-medium">@Messages("tai.estimatedIncome.taxrelief.title")</h3>
-                                <p id="tax-relief-message" class="text">@Html(Messages(
+                                <p id="tax-relief-message">@Html(Messages(
                                     "tai.estimatedIncome.taxRelief",
                                     Link.toInternalPage(
                                         url=routes.CurrentYearPageController.reliefsPage().toString,
@@ -87,8 +87,8 @@
                             }
                             @if(viewModel.potentialUnderpayment){
                                 <div class="panel-indent panel-indent--info panel-indent--gutter">
-                                    <p id="income-potential-underpayment" class="text">@Messages("tai.potentialUnderpayment.title")</p>
-                                    <p id="link-potential-underpayment" data-journey='link - view:@Messages("tai.estimatedIncomeTax.howWeWorkedOut"):@Messages("tai.view.PotentialUnderpayment")' class="text">@Link.toInternalPage(url=routes.CurrentYearPageController.potentialUnderpaymentPage.toString,
+                                    <p id="income-potential-underpayment">@Messages("tai.potentialUnderpayment.title")</p>
+                                    <p id="link-potential-underpayment" data-journey='link - view:@Messages("tai.estimatedIncomeTax.howWeWorkedOut"):@Messages("tai.view.PotentialUnderpayment")' class="text">@Link.toInternalPage(url=routes.PotentialUnderpaymentController.potentialUnderpaymentPage.toString,
                                         value=Some("tai.view.PotentialUnderpayment"),
                                         dataAttributes=Some(Map("journey-click"->s"link - click:${Messages("tai.estimatedIncomeTax.howWeWorkedOut")}:${Messages("tai.view.PotentialUnderpayment")}."))
                                         ).toHtml</p>
@@ -96,17 +96,17 @@
                             }
                             @if(viewModel.hasSSR) {
                                 <h3 id="starting-rate-savings-title" class="heading-medium">@Messages("tai.estimatedIncome.SSR.title")</h3>
-                                <p id="starting-rate-savings-text1" class="text">@Messages("tai.estimatedIncome.SSR.text1", viewModel.ssrValue)</p>
+                                <p id="starting-rate-savings-text1">@Messages("tai.estimatedIncome.SSR.text1", viewModel.ssrValue)</p>
                             }
                             @if(viewModel.hasPSA) {
                                 <h3 id="personal-savings-allowance-title" class="heading-medium">@Messages("tai.estimatedIncome.PSA.title")</h3>
-                                <p id="personal-savings-allowance-text1" class="text">@Html(Messages("tai.estimatedIncome.PSA.text1",
+                                <p id="personal-savings-allowance-text1">@Html(Messages("tai.estimatedIncome.PSA.text1",
                                     viewModel.psaValue,
                                     Link.toExternalPage(url="https://www.gov.uk/apply-tax-free-interest-on-savings", value=Some(Messages("tai.estimatedIncome.PSA.linkText"))).toHtml))</p>
                             }
                             @TaxSummaryHelper.displayZeroTaxRateMessage(viewModel.ukDividends, viewModel.taxBands).map { divRateMessage =>
                                 <h3 id="dividends-allowance-title" class="heading-medium">@Messages("tai.estimatedIncome.DIV.title")</h3>
-                                <p id="dividendZeroRateMessage" class="text">@divRateMessage</p>
+                                <p id="dividendZeroRateMessage">@divRateMessage</p>
                             }
                         </section>
 
@@ -114,7 +114,7 @@
                             <section>
                                 <h3 id ="additionalTaxTable-heading" class="heading-medium">
                                     @Messages("tai.estimatedIncome.additionalTax.title")</h3>
-                                <p id="additionalTaxTable-desc" class="text">@Messages("tai.estimatedIncome.additionalTax.desc")</p>
+                                <p id="additionalTaxTable-desc">@Messages("tai.estimatedIncome.additionalTax.desc")</p>
                                 <table id="additionalTaxTable" class="table-section">
                                     <thead>
                                         <tr>
@@ -149,7 +149,7 @@
                         @if(viewModel.reductionsTable.size>0){
                             <section class="section soft--top soft--bottom">
                                 <h3 id="taxPaidElsewhereTable-heading" class="heading-medium">@Messages("tai.estimatedIncome.reductionsTax.title")</h3>
-                                <p id="taxPaidElsewhereTable-desc" class="text">@Messages("tai.estimatedIncome.reductionsTax.desc")</p>
+                                <p id="taxPaidElsewhereTable-desc">@Messages("tai.estimatedIncome.reductionsTax.desc")</p>
                                 <table id="taxPaidElsewhereTable" class="table-section">
                                     <thead>
                                         <tr>
@@ -161,7 +161,7 @@
                                         <tr>
                                             <td>
                                                 @includes.details_summary(taxPaidElsewhere._1){
-                                                    <p class="text">@Html(taxPaidElsewhere._3)</p>
+                                                    <p>@Html(taxPaidElsewhere._3)</p>
                                                 }
                                             </td>
                                             <td class="text--right">@taxPaidElsewhere._2</td>
@@ -176,7 +176,7 @@
                                 </table>
 
                                 @viewModel.incomeTaxReducedToZeroMessage.map { incomeTaxReducedToZeroMessage => 
-                                    <p id="reducedToZero" class="text indent">@incomeTaxReducedToZeroMessage</p> 
+                                    <p id="reducedToZero" class="indent">@incomeTaxReducedToZeroMessage</p> 
                                 }
 
                             </section>
@@ -189,6 +189,6 @@
                 </div>
             </div>
         }
-        case _ => { <p class="text" id="no-increase-tax">@Messages("tai.no.increasesTax")</p> }
+        case _ => { <p  id="no-increase-tax">@Messages("tai.no.increasesTax")</p> }
     }
 }

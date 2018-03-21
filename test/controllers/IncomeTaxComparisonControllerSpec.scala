@@ -78,7 +78,7 @@ with I18nSupport {
 
   val nino: Nino = new Generator(new Random).nextNino
 
-  val taxAccountSummary = TaxAccountSummary(111,222, 333)
+  val taxAccountSummary = TaxAccountSummary(111,222, 333, 444, 111)
 
   val taxCodeIncomes = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOperation, Live),

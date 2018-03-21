@@ -18,6 +18,7 @@
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
 
 @import uk.gov.hmrc.play.views.html.helpers._
+@import includes.forms.input
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 
@@ -31,37 +32,41 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         mainHeadingText = Messages("tai.taxablePayslip.title"),
         preHeadingText = Messages("tai.howToUpdate.preHeading"))}
 
+@pageDesc = @{
+    payPeriod match {
+        case "monthly" => { Messages("tai.payslip.month") }
+        case "fortnightly" => { Messages("tai.payslip.fortnight") }
+        case "weekly" => { Messages("tai.payslip.week") }
+        case _ => { Messages("tai.payslip.period") }
+    }
+}
+
+
 @main(
     title = Messages("tai.taxablePayslip.title"),
-    articleClasses = Some("full-width text"),
+    articleClasses = Some("full-width"),
     user = Some(user),
     pageHeader = Some(header),
     employerName = employerName,
     gaCustomTitle = None
 ){
-    <div class="section flush--bottom">
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleTaxablePayslipAmount){
-        <div id="payslip" class="form-field-group @if(taxablePayslipForm.hasErrors){form-group-error}">
-            <label for="taxablePay">
-                <span class="form-label-bold">
-                    @payPeriod match {
-                        case "monthly" => { @Messages("tai.taxablePayslip.month") }
-                        case "fortnightly" => { @Messages("tai.taxablePayslip.fortnight") }
-                        case "weekly" => { @Messages("tai.taxablePayslip.week") }
-                        case _ => { @Messages("tai.taxablePayslip.period") }
-                    }
-                </span>
-                <span class="form-hint">@Messages("tai.taxablePayslip.shownOnPayslip")</span>
-                @taxablePayslipForm.errors.map{ error =>
-                    <span class="error-message">@Messages(error.message)</span>
-                }
-            </label>
-            <input type="text" class="form-control @if(taxablePayslipForm.hasErrors){form-control-error}" id="taxablePay" name="taxablePay"/>
-        </div>
+
+    @form(action=controllers.routes.IncomeUpdateCalculatorController.handleTaxablePayslipAmount){
+
+
+        @input(
+            field = taxablePayslipForm("taxablePay"),
+            labelText = pageDesc,
+            bold = true,
+            hintText = Messages("tai.taxablePayslip.shownOnPayslip")
+        )
+
+
         @includes.details_summary(Messages("tai.taxablePayslip.whatIsTaxablePay.title")){
             @Messages("tai.taxablePayslip.whatIsTaxablePay.description")
         }
-        <p class="subsection"><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
-        }
-    </div>
+        <div class="section">
+            <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
+        </div>
+    }
 }

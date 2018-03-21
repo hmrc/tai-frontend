@@ -74,9 +74,9 @@ trait YourIncomeCalculationController extends TaiBaseController
 
       Future.successful {
         if (printPage) {
-          Ok(views.html.print.yourIncomeCalculation(fModel, empId))
+          Ok(views.html.print.yourIncomeCalculation(fModel, empId.getOrElse(sessionEmpId)))
         } else {
-          Ok(views.html.incomes.yourIncomeCalculation(fModel, empId))
+          Ok(views.html.incomes.yourIncomeCalculation(fModel, empId.getOrElse(sessionEmpId)))
         }
       }
 

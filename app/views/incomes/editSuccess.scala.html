@@ -31,8 +31,13 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     </header>
 
     <section class="section soft--top">
-        <p class="text">@Messages("tai.incomes.updated.check.text")</p>
-        <p class="text">@Messages("tai.incomes.seeChanges.text")</p>
+        <p>@Messages("tai.incomes.updated.check.text")</p>
+        <p>@Messages("tai.incomes.seeChanges.text")</p>
     </section>
-    <p><a class="button" href="@routes.TaxAccountSummaryController.onPageLoad()">@Messages("tai.IncomeTaxSummaryReturn")</a></p>
+
+    @includes.link(
+        copy=Messages("tai.IncomeTaxSummaryReturn"),
+        url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
+        isButton=true
+    )
 }

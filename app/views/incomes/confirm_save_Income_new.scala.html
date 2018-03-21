@@ -46,18 +46,18 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
 
                 @if(income.toEmploymentAmount().newAmount == 0){
                 <section class="section flush--bottom soft--ends">
-                    <p class="text" id="result">@Messages(s"tai.incomes.confirm.same.result", income.toEmploymentAmount().oldAmount)</p>
-                    <p class="text" id="resultSame">@Messages(s"tai.incomes.confirm.same",income.name)</p>
+                    <p  id="result">@Messages(s"tai.incomes.confirm.same.result", income.toEmploymentAmount().oldAmount)</p>
+                    <p  id="resultSame">@Messages(s"tai.incomes.confirm.same",income.name)</p>
                 </section>
                 }else{
 
                     <section class="section flush--bottom soft--ends">
                         @if(FormHelper.convertCurrencyToInt(income.newAmount) == income.oldAmount){
-                            <p class="text">@Messages(s"tai.incomes.confirm.save.messageEquals", income.toEmploymentAmount().newAmount)</p>
-                            <p class="text">@Messages("tai.incomes.confirm.save.messageEquals.details", income.name)</p>
+                            <p>@Messages(s"tai.incomes.confirm.save.messageEquals", income.toEmploymentAmount().newAmount)</p>
+                            <p>@Messages("tai.incomes.confirm.save.messageEquals.details", income.name)</p>
                         }else{
-                            <p class="text">@Messages(s"tai.incomes.confirm.save.message", income.toEmploymentAmount().newAmount)</p>
-                            <p class="text">@Messages("tai.incomes.confirm.save.message.details")</p>
+                            <p>@Messages(s"tai.incomes.confirm.save.message", income.toEmploymentAmount().newAmount)</p>
+                            <p>@Messages("tai.incomes.confirm.save.message.details")</p>
                         }
                     </section>
                 @if(FormHelper.convertCurrencyToInt(income.newAmount) != income.oldAmount){
@@ -80,6 +80,6 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
             </div>
         </div>
     </div>
-    <p class="text"><a href="@routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage.toString">@Messages("tai.incomes.confirm.No.Save")</a></p>
-    <p class="text"><a href="@routes.TaxAccountSummaryController.onPageLoad">@Messages("tai.cancel.noSave")</a></p>
+    <p><a href="@routes.IncomeUpdateCalculatorController.howToUpdatePage(income.employmentId).toString">@Messages("tai.incomes.confirm.No.Save")</a></p>
+    <p><a href="@routes.TaxAccountSummaryController.onPageLoad">@Messages("tai.cancel.noSave")</a></p>
 }

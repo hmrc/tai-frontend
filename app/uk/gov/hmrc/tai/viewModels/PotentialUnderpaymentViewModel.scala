@@ -16,27 +16,53 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-case class PotentialUnderpaymentViewModel(
-  displayCYOnly:Boolean = false,
-  displayCYPlusOneOnly:Boolean = false,
-  displayCYAndCYPlusOneOnly:Boolean = false,
-  displayNoValues:Boolean = true,
-  iyaCYAmount:BigDecimal,
-  iyaCYPlusOneAmount:BigDecimal,
-  iyaTotalAmount:BigDecimal,
-  iyaTaxCodeChangeAmount:BigDecimal){
+import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, TaxAccountSummary}
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import play.api.Play.current
+import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.tai.util.ViewModelHelper
 
-  def gaDimensions: Option[Map[String, String]] = {
-    if(displayCYOnly){
-      Some(Map("valueOfIycdcPayment" -> iyaCYAmount.toString(), "iycdcReconciliationStatus" -> "Current Year"))
-    } else if(displayCYPlusOneOnly){
-      Some(Map("valueOfIycdcPayment" -> iyaCYPlusOneAmount.toString(), "iycdcReconciliationStatus" -> "Next Year"))
-    } else if(displayCYAndCYPlusOneOnly){
-      Some(Map("valueOfIycdcPayment" -> iyaCYAmount.toString(), "iycdcReconciliationStatus" -> "Current and Next Year"))
-    } else {
-      None
-    }
+case class PotentialUnderpaymentViewModel(iyaCYAmount: BigDecimal,
+                                          iyaTaxCodeChangeAmount: BigDecimal,
+                                          iyaCYPlusOneAmount: BigDecimal,
+                                          iyaTotalAmount: BigDecimal,
+                                          pageTitle: String,
+                                          gaDimensions: Option[Map[String, String]] = None)
+
+object PotentialUnderpaymentViewModel extends ViewModelHelper {
+
+  def apply(taxAccountSummary: TaxAccountSummary, codingComponents: Seq[CodingComponent]): PotentialUnderpaymentViewModel = {
+
+    val iyaTaxCodeChangeAmount = codingComponents.collect({
+      case CodingComponent(EstimatedTaxYouOweThisYear, _, amount, _, _) => amount
+    }).headOption.getOrElse(BigDecimal(0))
+
+    val gaDimensions =
+      (taxAccountSummary.totalInYearAdjustmentIntoCY, taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne) match {
+        case (cy, ny) if cy > 0 && ny <= 0 =>
+          Some(Map("valueOfIycdcPayment" -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(), "iycdcReconciliationStatus" -> "Current Year"))
+        case (cy, ny) if cy == 0 && ny > 0 =>
+          Some(Map("valueOfIycdcPayment" -> taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne.toString(), "iycdcReconciliationStatus" -> "Next Year"))
+        case (cy, ny) if cy > 0 && ny > 0 =>
+          Some(Map("valueOfIycdcPayment" -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(), "iycdcReconciliationStatus" -> "Current and Next Year"))
+        case _ => None
+      }
+
+    val title =
+      if(taxAccountSummary.totalInYearAdjustmentIntoCY > 0 && taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne <= 0){
+        Messages("tai.iya.tax.you.owe.title")
+      } else {
+        Messages("tai.iya.tax.you.owe.cy-plus-one.title")
+      }
+
+    PotentialUnderpaymentViewModel(
+      taxAccountSummary.totalInYearAdjustmentIntoCY,
+      iyaTaxCodeChangeAmount,
+      taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne,
+      taxAccountSummary.totalInYearAdjustment,
+      title,
+      gaDimensions
+    )
   }
-
 }
-

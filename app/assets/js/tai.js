@@ -2,6 +2,16 @@ $(document).ready(function() {
 	// Details/summary polyfill from frontend toolkit
 	GOVUK.details.init()
 
+	// Use GOV.UK shim-links-with-button-role.js to trigger a link styled to look like a button,
+	// with role="button" when the space key is pressed.
+	GOVUK.shimLinksWithButtonRole.init()
+
+	var showHideContent = new GOVUK.ShowHideContent()
+	showHideContent.init()
+
+	// Move focus to error summary
+	$('.error-summary').focus();
+
 
 
 	// Character/Word Count
@@ -20,13 +30,15 @@ window.onpageshow = function(event) {
 }
 
 /* Back link configuration */
+// store referrer value to cater for IE - https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/10474810/  */
+var docReferrer = document.referrer
 if (window.history && window.history.replaceState && typeof window.history.replaceState === 'function') {
     window.history.replaceState(null, null, window.location.href);
 }
 var backLinkElem = document.getElementById("backLink");
 if (backLinkElem !=  null){
     if (window.history && window.history.back && typeof window.history.back === 'function') {
-        var backScript = (document.referrer.indexOf(window.location.host) !== -1) ? "javascript:window.history.back(); return false;" : "javascript:void(0);"
+        var backScript = (docReferrer === "" || docReferrer.indexOf(window.location.host) !== -1) ? "javascript:window.history.back(); return false;" : "javascript:void(0);"
         backLinkElem.setAttribute("onclick",backScript);
         backLinkElem.setAttribute("href","javascript:void(0);");
     }
@@ -40,4 +52,3 @@ window.GOVUK.performance.sendGoogleAnalyticsEvent = function (category, event, l
     _gaq.push(['_trackEvent', category, event, label, undefined, true]);
   }
 };
-window.GOVUK.performance.stageprompt.setupForGoogleAnalytics();

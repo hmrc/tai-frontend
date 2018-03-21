@@ -39,14 +39,14 @@
     gaCustomTitle = None
 ) {
 
-    <p class="text">@messages("tai.endEmploymentWithinSixWeeksError.employerAndPayDate", model.employerName, model.latestPayDateInHtml)</p>
-    <p class="text">@messages("tai.endEmploymentWithinSixWeeksError.whatTheEmployerShouldDo", model.earliestUpdateDateInHtml)</p>
-    <p class="text">@messages("tai.endEmploymentWithinSixWeeksError.checkWithEmployer", model.employerName)</p>
+    <p>@messages("tai.endEmploymentWithinSixWeeksError.employerAndPayDate", model.employerName, model.latestPayDateInHtml)</p>
+    <p>@messages("tai.endEmploymentWithinSixWeeksError.whatTheEmployerShouldDo", model.earliestUpdateDateInHtml)</p>
+    <p>@messages("tai.endEmploymentWithinSixWeeksError.checkWithEmployer", model.employerName)</p>
     <ul class="bullets">
         <li>@messages("tai.endEmploymentWithinSixWeeksError.sendDetailsToHMRC")</li>
         <li>@messages("tai.endEmploymentWithinSixWeeksError.askForP45")</li>
     </ul>
-    <p class="text">@messages("tai.endEmploymentWithinSixWeeksError.wait6Weeks", model.earliestUpdateDateInHtml)
+    <p>@messages("tai.endEmploymentWithinSixWeeksError.wait6Weeks", model.earliestUpdateDateInHtml)
 
     <div class="subsection">
         @Link.toInternalPage(

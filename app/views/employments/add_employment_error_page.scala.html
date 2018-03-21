@@ -41,17 +41,15 @@
   gaCustomTitle = None) {
 
     <div class="subsection">
-        <p class="text">@Messages("tai.addEmployment.employmentErrorPage.para1", employerName)</p>
-        <p class="text">@Messages("tai.addEmployment.employmentErrorPage.para2")</p>
+        <p>@Messages("tai.addEmployment.employmentErrorPage.para1", employerName)</p>
+        <p>@Messages("tai.addEmployment.employmentErrorPage.para2")</p>
     </div>
 
-    <div class="subsection">
-        @Link.toInternalPage(
+    @includes.link(
         id=Some("returnToYourIncomeDetails"),
-        value=Some(Messages("tai.IncomeTaxSummaryReturn")),
-        url = routes.TaxAccountSummaryController.onPageLoad.url,
-        cssClasses=Some("button")
-        ).toHtml
-    </div>
+        copy=Messages("tai.IncomeTaxSummaryReturn"),
+        url = routes.TaxAccountSummaryController.onPageLoad.url.toString,
+        isButton=true
+    )
 
 }

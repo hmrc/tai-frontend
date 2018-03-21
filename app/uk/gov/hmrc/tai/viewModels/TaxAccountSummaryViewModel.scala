@@ -78,7 +78,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with DateFormatConstan
       employmentViewModels,
       pensionsViewModels,
       ceasedEmploymentViewModels,
-      taxAccountSummary.totalInYearAdjustment > 0,
+      taxAccountSummary.totalInYearAdjustmentIntoCY > 0,
       isAnyFormInProgress,
       IncomeSourceViewModel(nonTaxCodeIncome))
 

@@ -50,7 +50,7 @@
         </legend>
         <div class="form-date">
             @input(
-                labelText = "tai.label.day",
+                labelText = Messages("tai.label.day"),
                 field = form(s"${fieldPrefix}_day"),
                 bold = false,
                 classes = Seq("input--no-spinner"),
@@ -64,7 +64,7 @@
             )
 
             @input(
-                labelText = "tai.label.month",
+                labelText = Messages("tai.label.month"),
                 field = form(s"${fieldPrefix}_month"),
                 bold = false,
                 classes = Seq("input--no-spinner"),
@@ -77,7 +77,7 @@
             )
 
             @input(
-                labelText = "tai.label.year",
+                labelText = Messages("tai.label.year"),
                 field = form(s"${fieldPrefix}_year"),
                 bold = false,
                 classes = Seq("input--no-spinner"),
