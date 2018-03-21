@@ -41,46 +41,48 @@
     <p>@messages("tai.bbsi.account.desc1")</p>
     <p>@messages("tai.bbsi.account.desc2")</p>
 
-<table class="subsection flush--top">
-    <caption class="text--left section flush--bottom">@messages("tai.bbsi.account.table.heading", TaxYear().year.toString, TaxYear().next.year.toString)</caption>
-    <thead>
-    <tr>
-        <th>@messages("tai.bbsi.account.table.accountDetails")</th>
-        <th class="text--right">@messages("tai.bbsi.account.table.amount")</th>
-        <th class="text--right">@messages("tai.bbsi.account.table.action")</th>
-    </tr>
-    </thead>
-    <tbody>
-    @for(bankAccount <- untaxedInterest.bankAccounts.sortBy(- _.grossInterest)) {
-    <tr>
-        @if(bankAccount.accountNumber.forall(_.endsWith("0000")) && bankAccount.sortCode.forall(_.equals("000000"))){
-        <td>
-            <span class="display-block break-word"><b class="bold">@messages("tai.bbsi.account.accountDetailsUnavailable")</b></span>
-            <span class="display-block break-word">@messages("tai.bbsi.account.youToldUsTheAmount")</span>
-        </td>
-        <td class="text--right">@pounds(bankAccount.grossInterest, 2)</td>
-        <td class="text--right"></td>
-        }else{
-        <td>
-            <span class="display-block break-word"><b class="bold">@bankAccount.bankName.getOrElse("")</b></span>
-            <span class="display-block break-word">@bankAccount.accountNumber.getOrElse("")</span>
-            <span class="display-block break-word">@bankAccount.formattedSortCode.getOrElse("")</span>
-        </td>
-        <td class="text--right">@pounds(bankAccount.grossInterest, 2)</td>
-        <td class="text--right">@Link.toInternalPage(url=controllers.income.bbsi.routes.BbsiController.decision(bankAccount.id).url,id= Some(s"bbsiAccountDecision${bankAccount.id}"), value=Some(messages("tai.bbsi.account.updateOrRemoveLink"))).toHtml</td>
-        }
+<h2 class="heading-medium">@messages("tai.bbsi.account.table.heading", TaxYear().year.toString, TaxYear().next.year.toString)</h2>
 
-    </tr>
+@* @messages("tai.bbsi.account.table.accountDetails")*@
+@*@messages("tai.bbsi.account.table.amount")*@
+@*@messages("tai.bbsi.account.table.action") *@
+
+<div class="govuk-check-your-answers govuk-check-your-answers--tax-summary section">
+    @for(bankAccount <- untaxedInterest.bankAccounts.sortBy(- _.grossInterest)) {
+        <div>
+        @if(bankAccount.accountNumber.forall(_.endsWith("0000")) && bankAccount.sortCode.forall(_.equals("000000"))){
+            <div class="cya-question"><h3 class="heading-small">@messages("tai.bbsi.account.accountDetailsUnavailable")<h3></div>
+            <div class="cya-answer">@messages("tai.bbsi.account.youToldUsTheAmount")</div>
+            <div class="cya-change">@pounds(bankAccount.grossInterest, 2)</div>
+        }else{
+            <div class="cya-question">
+                <h3 class="heading-small break-word">@bankAccount.bankName.getOrElse("")</h3>
+                <span>@bankAccount.accountNumber.getOrElse("")<span>
+                <span>@bankAccount.formattedSortCode.getOrElse("")<span>
+            </div>
+            <div class="cya-answer">@messages("tai.bbsi.account.table.amount") @pounds(bankAccount.grossInterest, 2)</div>
+            <div class="cya-change">
+                @includes.link(
+                    id=Some(s"bbsiAccountDecision${bankAccount.id}"),
+                    url=controllers.income.bbsi.routes.BbsiController.decision(bankAccount.id).url,
+                    copy=Messages("tai.bbsi.account.updateOrRemoveLink"),
+                    altCopy=Some(Messages("tai.bbsi.account.updateOrRemoveLink") + " " + bankAccount.bankName.getOrElse(""))
+                )
+            </div>
+        }
+        </div>
     }
-    </tbody>
-    <tfoot class = "table__footer--highlight">
-    <tr class="highlight">
-        <td>@messages("tai.bbsi.account.table.total")</td>
-        <td class="text--right">@pounds(untaxedInterest.amount, 2)</td>
-        <td></td>
-    </tr>
-    </tfoot>
-</table>
+    <div class="highlight">
+        <div class="cya-question"><h3 class="heading-small">@messages("tai.bbsi.account.table.total")<h3></div>
+        <div class="cya-answer">@pounds(untaxedInterest.amount, 2)</div>
+        <div class="cya-change"></div>
+    </div>
+</div>
+
+
+
+
+
 
 <div class="panel-indent">
     <p>@messages("tai.bbsi.account.totalEstimatedInterest.desc1")</p>
