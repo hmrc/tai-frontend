@@ -219,7 +219,7 @@ trait ErrorPagesHandler {
         }
       }
   }
-  
+
   def npsNoEmploymentForCYResult(employments: Nino => Future[Seq[Employment]],
                                                 proceed: TaiRoot => Future[Result])
                                                (implicit request: Request[AnyContent], user: TaiUser, ec: ExecutionContext, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
