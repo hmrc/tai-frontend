@@ -53,9 +53,9 @@ trait TaxAccountService {
 
   def scottishBandRates(nino: Nino, year: TaxYear, taxCodeIncomes: Seq[TaxCodeIncome])(implicit hc: HeaderCarrier): Future[Map[String, BigDecimal]] = {
 
-    def isScottishTax(income: TaxCodeIncome) = "^S".r.findFirstIn(income.taxCode).isDefined
+    def isScottishStandAloneTaxcode(income: TaxCodeIncome) = "D0|D1|D2|D3|D4|D5|D6|D7|D8".r.findFirstIn(income.taxCode).isDefined
 
-    if (taxCodeIncomes.exists(isScottishTax)) {
+    if (taxCodeIncomes.exists(isScottishStandAloneTaxcode)) {
       taxAccountConnector.totalTax(nino, year) map {
         case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
           totalTax.incomeCategories.flatMap(_.taxBands.map(band => band.code -> band.rate)).toMap

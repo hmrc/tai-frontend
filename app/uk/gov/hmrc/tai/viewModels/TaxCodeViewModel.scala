@@ -34,7 +34,7 @@ case class TaxCodeViewModel(title: String,
                             ledeMessage: String,
                             taxCodeDetails: Seq[DescriptionListViewModel])
 
-case class TaxCodeDescription(taxCode: String, basisOperation: BasisOperation, scottishTaxRate: Option[Int])
+case class TaxCodeDescription(taxCode: String, basisOperation: BasisOperation, scottishTaxRateBands: Map[String, BigDecimal])
 
 object TaxCodeViewModel extends ViewModelHelper with DateFormatConstants {
 
@@ -47,7 +47,7 @@ object TaxCodeViewModel extends ViewModelHelper with DateFormatConstants {
 
     val descriptionListViewModels = taxCodeIncomes.map { taxCodeIncome =>
       val taxCode = taxCodeIncome.taxCodeWithEmergencySuffix
-      val taxDescription = TaxCodeDescription(taxCodeIncome.taxCode, taxCodeIncome.basisOperation, None)
+      val taxDescription = TaxCodeDescription(taxCodeIncome.taxCode, taxCodeIncome.basisOperation, scottishTaxRateBands)
       val explanation = explanationRules.foldLeft(ListMap[String, String]())((expl, rule) => expl ++ rule(taxDescription))
       DescriptionListViewModel(Messages("tai.taxCode.subheading", taxCodeIncome.name, taxCode), explanation)
     }
@@ -101,13 +101,13 @@ object TaxCodeDescriptor {
   }
 
   val standAloneTaxCodeExplanation = (taxCodeDescription: TaxCodeDescription) => {
-    val standAloneRegex = "0T|BR|D0|D1|NT".r
-    val scottishStandAloneRegex = "D2|D3|D4|D5|D6|D7|D8".r
+    val standAloneRegex = "0T|BR|NT".r
+    val scottishStandAloneRegex = "D0|D1|D2|D3|D4|D5|D6|D7|D8".r
 
     val taxCode = taxCodeDescription.taxCode
     (standAloneRegex.findFirstIn(taxCode), scottishStandAloneRegex.findFirstIn(taxCode)) match {
       case (Some(code), None) => ListMap(code -> Messages(s"tai.taxCode.$code"))
-      case (None, Some(code)) => ListMap(code -> Messages(s"tai.taxCode.$code", taxCodeDescription.scottishTaxRate.get))
+      case (None, Some(code)) => ListMap(code -> Messages(s"tai.taxCode.$code", taxCodeDescription.scottishTaxRateBands.getOrElse(taxCode, BigDecimal(0))))
       case _ => ListMap[String, String]()
     }
   }

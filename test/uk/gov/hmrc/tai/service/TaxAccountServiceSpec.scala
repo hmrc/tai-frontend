@@ -99,14 +99,14 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
       "tai connector returns total tax value with tax bands" in {
         val sut = createSut
         val totalTax = TotalTax(1000,
-          List(IncomeCategory(UkDividendsIncomeCategory, 10, 20, 30, List(TaxBand("S", "D0", 0, 0, None, None, 20),
-            TaxBand("B", "BR", 10000, 500, Some(5000), Some(20000), 10)))),
+          List(IncomeCategory(UkDividendsIncomeCategory, 10, 20, 30, List(TaxBand("S", "SD0", 0, 0, None, None, 20),
+            TaxBand("B", "1150L", 10000, 500, Some(5000), Some(20000), 10)))),
           None, None, None)
 
         when(sut.taxAccountConnector.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
 
         val result = sut.scottishBandRates(generateNino, TaxYear(), scottishTaxCodeIncomes)
-        Await.result(result, 5 seconds) mustBe Map("D0" -> 20, "BR" -> 10)
+        Await.result(result, 5 seconds) mustBe Map("SD0" -> 20, "1150L" -> 10)
       }
     }
 
@@ -155,7 +155,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOperation, Live))
 
   val scottishTaxCodeIncomes = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOperation, Live),
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "SD0", "employer", OtherBasisOperation, Live),
     TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employer", "1150L", "employer", OtherBasisOperation, Live)
   )
 
