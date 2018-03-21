@@ -54,11 +54,12 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     @form(action=controllers.routes.IncomeUpdateCalculatorController.handleTaxablePayslipAmount){
 
 
-        @input(
+        @includes.forms.input(
             field = taxablePayslipForm("taxablePay"),
             labelText = pageDesc,
             bold = true,
-            hintText = Messages("tai.taxablePayslip.shownOnPayslip")
+            hintText = Messages("tai.taxablePayslip.shownOnPayslip"),
+            isCurrency = true
         )
 
 
