@@ -74,33 +74,37 @@ messages: Messages, user: controllers.auth.TaiUser)
         <section class="section soft--top soft--bottom">
             <table id="taxable-income-table" class="print-table-section print-table">
                 <thead>
-                <tr class="print-table__row--bold">
-                    <th id="print-date-column">@Messages("tai.income.calculation.incomeTable.dateHeader")</th>
-                    <th id="print-taxable-income-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.incomeHeader")</th>
-                    <th id="print-income-tax-paid-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.taxPaidHeader")</th>
-                    <th id="print-ni-paid-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.nationalInsuranceHeader")</th>
-                </tr>
+                    <tr class="print-table__row--bold">
+                        <th id="print-date-column">@Messages("tai.income.calculation.incomeTable.dateHeader")</th>
+                        <th id="print-taxable-income-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.incomeHeader")</th>
+                        <th id="print-income-tax-paid-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.taxPaidHeader")</th>
+                        <th id="print-ni-paid-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.nationalInsuranceHeader")</th>
+                    </tr>
                 </thead>
                 <tbody>
-                @for(payment <- model.payments){
-                <tr class="print-pension-contributions-data">
-                    <td>@payment.date.toString("d MMM yyyy")</td>
-                    <td class="print-text--right">£ @{f"${payment.taxableIncome}%,.2f"}</td>
-                    <td class="print-text--right">£ @{f"${payment.taxAmount}%,.2f"}</td>
-                    <td class="print-text--right">£ @{f"${payment.nationalInsuranceAmount}%,.2f"}</td>
-                </tr>
-                }
+                    @for(payment <- model.payments){
+                        <tr class="print-pension-contributions-data">
+                            <td>@payment.date.toString("d MMM yyyy")</td>
+                            <td class="print-text--right">£ @{f"${payment.taxableIncome}%,.2f"}</td>
+                            <td class="print-text--right">£ @{f"${payment.taxAmount}%,.2f"}</td>
+                            <td class="print-text--right">£ @{f"${payment.nationalInsuranceAmount}%,.2f"}</td>
+                        </tr>
+                    }
                 </tbody>
                 <tfoot>
-                <tr class="print-table__row--bold">
-                    <td>@Messages("tai.taxFree.total")</td>
-                    <td class="print-text--right">£ @{f"${model.latestPayment.get.amountYearToDate}%,.2f"}</td>
-                    <td class="print-text--right">£ @{f"${model.latestPayment.get.taxAmountYearToDate}%,.2f"}</td>
-                    <td class="print-text--right">£ @{f"${model.latestPayment.get.nationalInsuranceAmountYearToDate}%,.2f"}</td>
-                </tr>
+                    <tr class="print-table__row--bold">
+                        <td>@Messages("tai.taxFree.total")</td>
+                        <td class="print-text--right">£ @{f"${model.latestPayment.get.amountYearToDate}%,.2f"}</td>
+                        <td class="print-text--right">£ @{f"${model.latestPayment.get.taxAmountYearToDate}%,.2f"}</td>
+                        <td class="print-text--right">£ @{f"${model.latestPayment.get.nationalInsuranceAmountYearToDate}%,.2f"}</td>
+                    </tr>
                 </tfoot>
             </table>
 
+            @model.messageWhenTotalNotEqual.map { message =>
+                <p>@message</p>
+                <p>@Messages("tai.income.calculation.totalNotMatching.message")</p>
+            }
         </section>
     }
 

@@ -41,13 +41,13 @@ class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
       doc must haveBulletPointWithText(Messages("tai.remove.company.benefit.total.value.enter"))
     }
     "contain label with static text" in {
-      val label = doc(view).select("form legend.form-label").get(0).text
+      val label = doc(view).select("form .form-label").get(0).text
       label must include(Messages("tai.remove.company.benefit.total.value.value"))
-      label must include(Messages("tai.remove.company.benefit.total.value.hint"))
+      label must include(Messages("tai.inPounds"))
 
     }
     "contain hint with static text" in {
-      val hint = doc(view).select("form span.form-hint").get(0).text
+      val hint = doc(view).select("form .form-hint").get(0).text
       hint mustBe Messages("tai.remove.company.benefit.total.value.hint")
     }
     "contain summary with text and a hidden text" in {
@@ -56,7 +56,7 @@ class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
     }
     "contain an input field with pound symbol appended" in {
       doc must haveElementAtPathWithId("input", "totalValue")
-      doc must haveElementAtPathWithId("span", "poundSymbol")
+      doc must haveElementAtPathWithClass("input", "form-control-currency")
     }
 
   }

@@ -24,17 +24,18 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
-import uk.gov.hmrc.tai.model.EmploymentAmount
+import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, PayPeriodForm}
+import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails}
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
-
 
 class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with JourneyCacheConstants {
 
@@ -146,6 +147,90 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
     }
   }
 
+  "calculateEstimatedPay" must {
+    "return calculated pay" when {
+      "cache is empty and start date is not available" in {
+        val sut = createSUT
+        val payDetails = PayDetails("", Some(0), None, Some(0), None, None)
+
+        when(sut.taiConnector.calculateEstimatedPay(payDetails)).thenReturn(Future.successful(CalculatedPay(None, None)))
+        Await.result(sut.calculateEstimatedPay(Map.empty[String, String], None), 5.seconds) mustBe CalculatedPay(None, None)
+      }
+
+      "cache is not empty" in {
+        val sut = createSUT
+
+        val cache = Map(UpdateIncome_PayPeriodKey -> "monthly",
+          UpdateIncome_TotalSalaryKey -> "£100",
+          UpdateIncome_TaxablePayKey -> "£100",
+          UpdateIncome_OtherInDaysKey -> "10",
+          UpdateIncome_BonusOvertimeAmountKey -> "£100"
+        )
+
+        val payDetails = PayDetails("monthly", Some(100), Some(100), Some(10), Some(100), None)
+
+        when(sut.taiConnector.calculateEstimatedPay(payDetails)).thenReturn(Future.successful(CalculatedPay(None, None)))
+        Await.result(sut.calculateEstimatedPay(cache, None), 5.seconds) mustBe CalculatedPay(None, None)
+      }
+    }
+  }
+
+  "editableIncome" must {
+    "return editable incomes" when {
+      "provided with sequence of tax code income" in {
+        val sut = createSUT
+
+        val taxCodeIncomes = Seq(
+          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live),
+          TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOperation, Live),
+          TaxCodeIncome(JobSeekerAllowanceIncome, Some(5), 5555, "employment", "1150L", "employer5", OtherBasisOperation, Live),
+          TaxCodeIncome(JobSeekerAllowanceIncome, Some(6), 6666, "employment", "BR", "employer6", Week1Month1BasisOperation, Live),
+          TaxCodeIncome(OtherIncome, Some(7), 7777, "employment", "1150L", "employer7", OtherBasisOperation, Live),
+          TaxCodeIncome(OtherIncome, Some(8), 8888, "employment", "BR", "employer8", Week1Month1BasisOperation, Live),
+          TaxCodeIncome(EmploymentIncome, Some(9), 1111, "employment", "1150L", "employer9", OtherBasisOperation, PotentiallyCeased),
+          TaxCodeIncome(EmploymentIncome, Some(10), 2222, "employment", "BR", "employer10", Week1Month1BasisOperation, Ceased),
+          TaxCodeIncome(PensionIncome, Some(11), 1111, "employment", "1150L", "employer11", OtherBasisOperation, PotentiallyCeased),
+          TaxCodeIncome(PensionIncome, Some(12), 2222, "employment", "BR", "employer12", Week1Month1BasisOperation, Ceased)
+        )
+
+        val expectedTaxCodeIncomes = Seq(
+          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live),
+          TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOperation, Live),
+          TaxCodeIncome(EmploymentIncome, Some(9), 1111, "employment", "1150L", "employer9", OtherBasisOperation, PotentiallyCeased),
+          TaxCodeIncome(PensionIncome, Some(11), 1111, "employment", "1150L", "employer11", OtherBasisOperation, PotentiallyCeased)
+        )
+
+        sut.editableIncomes(taxCodeIncomes) mustBe expectedTaxCodeIncomes
+      }
+    }
+  }
+
+  "getSingularIncomeId" must {
+    "return singular income employment id" when {
+      "income size is 1" in {
+        val sut = createSUT
+        val taxCodeIncomes = Seq(
+          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live),
+          TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOperation, Ceased)
+        )
+
+        sut.singularIncomeId(taxCodeIncomes) mustBe Some(1)
+      }
+    }
+
+    "return none" when {
+      "income size is not 1" in {
+        val sut = createSUT
+        val taxCodeIncomes = Seq(
+          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live),
+          TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOperation, Live)
+        )
+
+        sut.singularIncomeId(taxCodeIncomes) mustBe None
+      }
+    }
+  }
+
   "cachePaymentForRegularIncome" must {
     "return cached map data" when {
       "payment is none" in {
@@ -159,6 +244,50 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val payment = paymentOnDate(new LocalDate(2017, 9, 6))
         val expectedCached = Map(UpdateIncome_PayToDateKey -> "2000", UpdateIncome_DateKey -> payment.date.toString)
         sut.cachePaymentForRegularIncome(Some(payment)) mustBe expectedCached
+      }
+    }
+  }
+
+  "cachePayPeriod" must {
+    "return cached map data" when {
+      "PayPeriodForm has otherInDays and payPeriod available" in {
+        val sut = createSUT
+        val expectedCached = Map(UpdateIncome_PayPeriodKey -> "monthly", UpdateIncome_OtherInDaysKey -> "100")
+        sut.cachePayPeriod(PayPeriodForm(Some("monthly"), Some(100))) mustBe expectedCached
+      }
+
+      "PayPeriodForm has only payPeriod available" in {
+        val sut = createSUT
+        val expectedCached = Map(UpdateIncome_PayPeriodKey -> "monthly")
+        sut.cachePayPeriod(PayPeriodForm(Some("monthly"))) mustBe expectedCached
+      }
+
+      "PayPeriodForm is empty" in {
+        val sut = createSUT
+        val expectedCached = Map(UpdateIncome_PayPeriodKey -> "")
+        sut.cachePayPeriod(PayPeriodForm(None)) mustBe expectedCached
+      }
+    }
+  }
+
+  "cacheBonusPayments" must {
+    "return cached map data" when {
+      "bonusPaymentsForm has both bonusPayment and bonusPaymentsMoreThisYear available" in {
+        val sut = createSUT
+        val expectedCached = Map(UpdateIncome_BonusPaymentsKey -> "Yes", UpdateIncome_BonusPaymentsThisYearKey -> "No")
+        sut.cacheBonusPayments(BonusPaymentsForm(Some("Yes"), Some("No"))) mustBe expectedCached
+      }
+
+      "bonusPaymentsForm has only payPeriod available" in {
+        val sut = createSUT
+        val expectedCached = Map(UpdateIncome_BonusPaymentsKey -> "Yes")
+        sut.cacheBonusPayments(BonusPaymentsForm(Some("Yes"), None)) mustBe expectedCached
+      }
+
+      "bonusPaymentsForm is empty" in {
+        val sut = createSUT
+        val expectedCached = Map[String, String]()
+        sut.cacheBonusPayments(BonusPaymentsForm(None, None)) mustBe expectedCached
       }
     }
   }
@@ -189,6 +318,7 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
   class SUT extends IncomeService {
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override val employmentService: EmploymentService = mock[EmploymentService]
+    override val taiConnector: TaiConnector = mock[TaiConnector]
   }
 
 }

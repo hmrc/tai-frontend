@@ -49,7 +49,7 @@ trait EstimatedIncomePageVMBuilder {
         value = Some(Messages("tai.mergedTaxBand.description")),
         id = Some("taxExplanation")
       ).toHtml.body,
-      "underpaymentEstimatePageUrl" -> routes.CurrentYearPageController.potentialUnderpaymentPage().url
+      "underpaymentEstimatePageUrl" -> routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url
     )
 
     // Request to build the domain model.

@@ -1,6 +1,16 @@
 $(document).ready(function() {
 	// Details/summary polyfill from frontend toolkit
 	GOVUK.details.init()
+
+	// Use GOV.UK shim-links-with-button-role.js to trigger a link styled to look like a button,
+	// with role="button" when the space key is pressed.
+	GOVUK.shimLinksWithButtonRole.init()
+
+	var showHideContent = new GOVUK.ShowHideContent()
+	showHideContent.init()
+
+	// Move focus to error summary
+	$('.error-summary').focus();
 });
 
 // re-enable any disabled buttons when navigating back
@@ -32,4 +42,3 @@ window.GOVUK.performance.sendGoogleAnalyticsEvent = function (category, event, l
     _gaq.push(['_trackEvent', category, event, label, undefined, true]);
   }
 };
-window.GOVUK.performance.stageprompt.setupForGoogleAnalytics();

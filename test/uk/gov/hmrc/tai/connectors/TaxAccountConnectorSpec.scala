@@ -88,13 +88,15 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
           "data" -> Json.obj(
             "totalEstimatedTax" -> 111,
             "taxFreeAmount" -> 222,
-            "totalInYearAdjustment" -> 3131.12
+            "totalInYearAdjustmentIntoCY" -> 1111.11,
+            "totalInYearAdjustment" -> 2222.23,
+            "totalInYearAdjustmentIntoCYPlusOne" -> 1111.12
           ),
           "links" -> Json.arr())
 
         when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(taxAccountSummaryJson))
         val result = sut.taxAccountSummary(generateNino, currentTaxYear)
-        Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(TaxAccountSummary(111,222, 3131.12))
+        Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(TaxAccountSummary(111,222, 1111.11, 2222.23, 1111.12))
       }
     }
 

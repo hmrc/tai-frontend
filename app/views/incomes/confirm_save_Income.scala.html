@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(income: uk.gov.hmrc.tai.forms.EditIncomeForm, hasMultipleIncomes: Boolean, employerName : Option[String] = None, fromIncomeCalculation: Boolean = false)(implicit
+@(income: uk.gov.hmrc.tai.forms.EditIncomeForm, employerName : Option[String] = None, fromIncomeCalculation: Boolean = false)(implicit
 request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
 
 
@@ -45,13 +45,13 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
 
 
                 @if(income.toEmploymentAmount().newAmount == 0){
-                <section class="section flush--bottom soft--ends">
-                    <p  id="result">@Messages(s"tai.incomes.confirm.same.result", income.toEmploymentAmount().oldAmount)</p>
-                    <p  id="resultSame">@Messages(s"tai.incomes.confirm.same",income.name)</p>
-                </section>
+                <div class="section flush--bottom soft--ends">
+                    <p id="result">@Messages(s"tai.incomes.confirm.same.result", income.toEmploymentAmount().oldAmount)</p>
+                    <p id="resultSame">@Messages(s"tai.incomes.confirm.same",income.name)</p>
+                </div>
                 }else{
 
-                    <section class="section flush--bottom soft--ends">
+                    <div class="section flush--bottom soft--ends">
                         @if(FormHelper.convertCurrencyToInt(income.newAmount) == income.oldAmount){
                             <p>@Messages(s"tai.incomes.confirm.save.messageEquals", income.toEmploymentAmount().newAmount)</p>
                             <p>@Messages("tai.incomes.confirm.save.messageEquals.details", income.name)</p>
@@ -59,9 +59,9 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                             <p>@Messages(s"tai.incomes.confirm.save.message", income.toEmploymentAmount().newAmount)</p>
                             <p>@Messages("tai.incomes.confirm.save.message.details")</p>
                         }
-                    </section>
+                    </div>
                 @if(FormHelper.convertCurrencyToInt(income.newAmount) != income.oldAmount){
-                    <section class="section">
+                    <div class="section">
                         @form(action = controllers.routes.IncomeController.updateIncomes) {
                             <input type="hidden" id="name" name="name" value="@income.name"/>
                             <input type="hidden" id="description" name="description" value="@income.description"/>
@@ -74,12 +74,12 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                                 <input type="submit" class="button section" value='@Messages("tai.incomes.confirm.save")'/>
                             </div>
                         }
-                    </section>
+                    </div>
                 }
                 }
             </div>
         </div>
     </div>
-    <p><a href="@routes.IncomeUpdateCalculatorController.chooseHowToUpdatePage.toString">@Messages("tai.incomes.confirm.No.Save")</a></p>
+    <p><a href="@routes.IncomeUpdateCalculatorController.howToUpdatePage(income.employmentId).toString">@Messages("tai.incomes.confirm.No.Save")</a></p>
     <p><a href="@routes.TaxAccountSummaryController.onPageLoad">@Messages("tai.cancel.noSave")</a></p>
 }

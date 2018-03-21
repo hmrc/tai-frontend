@@ -20,6 +20,7 @@ import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
 import play.api.Play.current
+import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
@@ -223,6 +224,23 @@ trait IncomeControllerNew extends TaiBaseController
             }
           }
 
+        }
+  }
+
+  def viewIncomeForEdit: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          for {
+            id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+            employmentAmount <- incomeService.employmentAmount(Nino(user.getNino), id)
+          } yield {
+            (employmentAmount.isLive, employmentAmount.isOccupationalPension) match {
+              case (true, false) => Redirect(routes.IncomeControllerNew.regularIncome())
+              case (false, false) => Redirect(routes.TaxAccountSummaryController.onPageLoad())
+              case _ => Redirect(routes.IncomeControllerNew.pensionIncome())
+            }
+          }
         }
   }
 

@@ -15,8 +15,8 @@
  *@
 
 @import includes.{ptaHeader, cancelLink}
-@import includes.forms.submit
-@import uk.gov.hmrc.play.views.html.helpers.{form, input}
+@import includes.forms.{submit, input}
+@import uk.gov.hmrc.play.views.html.helpers.{form}
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 @import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.tai.forms.income.bbsi.BankAccountClosingInterestForm
@@ -51,18 +51,21 @@
                 legend=Messages("tai.closeBankAccount.closingInterest.legend"),
                 legendHint=None,
                 ('_groupDivClass, "form-group" ),
+                ('_radioOption1WrapAttribute, "data-target=closingInterestEntry-container"),
                 ('_groupClass, "inline"),
                 ('_fieldsetAttributes, "id=closingInterestChoice" ),
                 ('_legendSpanClass, "visually-hidden"),
-                ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Do you know how much interest you earned?:Yes" data-journey-val="Yes" data-dynamic-fields-hide="false" data-dynamic-fields="closingInterestEntry"""") ),
-                ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Do you know how much interest you earned?:No" data-journey-val="No" data-dynamic-fields-hide="true" data-dynamic-fields="closingInterestEntry"""") )
+                ('_radioOption1Attributes, Html("""data-journey-click="radio - select:Do you know how much interest you earned?:Yes" data-journey-val="Yes"""") ),
+                ('_radioOption2Attributes, Html("""data-journey-click="radio - select:Do you know how much interest you earned?:No" data-journey-val="No"""") )
             )}
 
-            <fieldset id="closingInterestEntry-container" class="@if(closingInterestForm(BankAccountClosingInterestForm.ClosingInterestChoice).value.getOrElse("") != BankAccountClosingInterestForm.YesValue){js-hidden} data-closingInterestEntry inline form-field-group panel-indent">
-                @input(field=closingInterestForm(BankAccountClosingInterestForm.ClosingInterestEntry),
-                '_label -> Messages("tai.closeBankAccount.closingInterest.label"),
-                '_inputClass -> "form-control input--cleared")
-            </fieldset>
+            <div id="closingInterestEntry-container" class="@if(closingInterestForm(BankAccountClosingInterestForm.ClosingInterestChoice).value.getOrElse("") != BankAccountClosingInterestForm.YesValue){js-hidden} data-closingInterestEntry">
+                @input(
+                    field=closingInterestForm(BankAccountClosingInterestForm.ClosingInterestEntry),
+                    labelText = Messages("tai.closeBankAccount.closingInterest.label"),
+                    panel = true
+                )
+            </div>
 
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Yes"), buttonMessageKey = Some(messages("tai.submit")))
     }

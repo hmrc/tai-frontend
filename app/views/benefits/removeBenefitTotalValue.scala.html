@@ -59,19 +59,18 @@
         </summary>
 
     @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitBenefitValue()) {
-        <fieldset class = "form-group subsection @if(totalValueField.hasErrors) {form-field--error}">
-                <legend class = "form-label">
-                    @Messages("tai.remove.company.benefit.total.value.value")
-                    <span class = "form-hint">@Messages("tai.remove.company.benefit.total.value.hint")</span>
-                </legend>
-            @if(totalValueField.hasErrors) {<span class="error-notification">@totalValueField.error.map(_.message)</span>}
-                <div>
-                    <span id="poundSymbol">£</span>
-                    <input class="text--left input--small" type="text" id="totalValue" name="@totalValueField.name" value="@totalValueField.value" />
-                </div>
-        </fieldset>
+        <div class="section">
+        @includes.forms.input(
+            field = companyBenefitTotalValueForm("totalValue"),
+            labelText = Messages("tai.remove.company.benefit.total.value.value"),
+            bold = true,
+            hintText = Messages("tai.remove.company.benefit.total.value.hint"),
+            classes = Seq("form-control-1-3"),
+            isCurrency = true
+        )
 
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.remove.company.benefit.total.value.title")))
+        </div>
     }
 
     @cancelLink(Call("GET", controllers.benefits.routes.RemoveCompanyBenefitController.cancel().url), gaEventAction = Some(gaEventActionString))

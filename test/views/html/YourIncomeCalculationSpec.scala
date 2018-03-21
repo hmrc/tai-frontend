@@ -28,9 +28,6 @@ import uk.gov.hmrc.tai.model.EditableDetails
 import uk.gov.hmrc.tai.util.CeasedEmploymentHelper
 import uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel
 
-/**
- * Created by user on 29/09/15.
- */
 class YourIncomeCalculationSpec
   extends UnitSpec
   with FakeTaiPlayApplication
@@ -43,7 +40,7 @@ class YourIncomeCalculationSpec
       val taxSummary = TaiData.getBasicRateTaxSummary
       val incomeCalcViewModel = YourIncomeCalculationViewModel(employerName = "test", employmentPayments= Nil ,isPension = false, incomeCalculationMsg = "", empId = 2, hasPrevious = true,
         editableDetails = EditableDetails(payRollingBiks = false,isEditable = false), rtiDown = false, employmentStatus = Some(1), endDate = None)
-      val doc = Jsoup.parse(views.html.incomes.yourIncomeCalculation(incomeCalcViewModel, empId = Some(2))(request = FakeRequest("GET", routes.YourIncomeCalculationController.yourIncomeCalculationPage(None).url), messages = play.api.i18n.Messages.Implicits.applicationMessages, user = builders.UserBuilder.apply(), templateRenderer = MockTemplateRenderer, partialRetriever = MockPartialRetriever).toString())
+      val doc = Jsoup.parse(views.html.incomes.yourIncomeCalculation(incomeCalcViewModel, empId = 2)(request = FakeRequest("GET", routes.YourIncomeCalculationController.yourIncomeCalculationPage(None).url), messages = play.api.i18n.Messages.Implicits.applicationMessages, user = builders.UserBuilder.apply(), templateRenderer = MockTemplateRenderer, partialRetriever = MockPartialRetriever).toString())
       doc.select("#payrolling1").size shouldBe 0
       doc.select("#payrolling2").size shouldBe 0
       doc.select("#pensionUpdateLink").size shouldBe 0
@@ -55,7 +52,7 @@ class YourIncomeCalculationSpec
       val incomeCalcViewModel = YourIncomeCalculationViewModel(employerName = "test", employmentPayments= Nil ,isPension = false, incomeCalculationMsg = "", empId = 2, hasPrevious = true,
         editableDetails = EditableDetails(payRollingBiks = true,isEditable = true), rtiDown = false, employmentStatus = Some(1), endDate = None)
       val doc = Jsoup.parse(
-        views.html.incomes.yourIncomeCalculation(incomeCalcViewModel, empId = Some(2))(
+        views.html.incomes.yourIncomeCalculation(incomeCalcViewModel, empId = 2)(
           FakeRequest(
             "GET",
             routes.YourIncomeCalculationController.yourIncomeCalculationPage(None).url
@@ -74,7 +71,7 @@ class YourIncomeCalculationSpec
     "show the pensionUpdate Link for an editable pension" in {
       val incomeCalcViewModel = YourIncomeCalculationViewModel(employerName = "test", employmentPayments= Nil ,isPension = true, incomeCalculationMsg = "", empId = 2, hasPrevious = true,
         editableDetails = EditableDetails(payRollingBiks = false,isEditable = true), rtiDown = false, employmentStatus = Some(1), endDate = None)
-      val doc = Jsoup.parse(views.html.incomes.yourIncomeCalculation(incomeCalcViewModel, empId = Some(2))(request = FakeRequest("GET", routes.YourIncomeCalculationController.yourIncomeCalculationPage(None).url), messages = play.api.i18n.Messages.Implicits.applicationMessages, user = builders.UserBuilder.apply(), templateRenderer = MockTemplateRenderer, partialRetriever = MockPartialRetriever).toString())
+      val doc = Jsoup.parse(views.html.incomes.yourIncomeCalculation(incomeCalcViewModel, empId = 2)(request = FakeRequest("GET", routes.YourIncomeCalculationController.yourIncomeCalculationPage(None).url), messages = play.api.i18n.Messages.Implicits.applicationMessages, user = builders.UserBuilder.apply(), templateRenderer = MockTemplateRenderer, partialRetriever = MockPartialRetriever).toString())
       doc.select("#pensionUpdateLink").size shouldBe 1
       doc.select("#regularUpdateLink").size shouldBe 0
 
@@ -83,7 +80,7 @@ class YourIncomeCalculationSpec
     "show the regularUpdate Link for an editable employment" in {
       val incomeCalcViewModel = YourIncomeCalculationViewModel(employerName = "test", employmentPayments= Nil ,isPension = false, incomeCalculationMsg = "", empId = 2, hasPrevious = true,
         editableDetails = EditableDetails(payRollingBiks = false,isEditable = true), rtiDown = false, employmentStatus = Some(1), endDate = None)
-      val doc = Jsoup.parse(views.html.incomes.yourIncomeCalculation(incomeCalcViewModel, empId = Some(2))(request = FakeRequest("GET", routes.YourIncomeCalculationController.yourIncomeCalculationPage(None).url), messages = play.api.i18n.Messages.Implicits.applicationMessages, user = builders.UserBuilder.apply(), templateRenderer = MockTemplateRenderer, partialRetriever = MockPartialRetriever).toString())
+      val doc = Jsoup.parse(views.html.incomes.yourIncomeCalculation(incomeCalcViewModel, empId = 2)(request = FakeRequest("GET", routes.YourIncomeCalculationController.yourIncomeCalculationPage(None).url), messages = play.api.i18n.Messages.Implicits.applicationMessages, user = builders.UserBuilder.apply(), templateRenderer = MockTemplateRenderer, partialRetriever = MockPartialRetriever).toString())
       doc.select("#pensionUpdateLink").size shouldBe 0
       doc.select("#regularUpdateLink").size shouldBe 1
 
@@ -92,7 +89,7 @@ class YourIncomeCalculationSpec
     "not show a side navigation component, where no previous tax year details are present" in {
       val incomeCalcViewModel = YourIncomeCalculationViewModel(employerName = "test", employmentPayments= Nil ,isPension = false, incomeCalculationMsg = "", empId = 2, hasPrevious = false,
         editableDetails = EditableDetails(payRollingBiks = false,isEditable = true), rtiDown = false, employmentStatus = Some(1), endDate = None)
-      val doc = Jsoup.parse(views.html.incomes.yourIncomeCalculation(incomeCalcViewModel, empId = Some(2))(request = FakeRequest("GET", routes.YourIncomeCalculationController.yourIncomeCalculationPage(None).url), messages = play.api.i18n.Messages.Implicits.applicationMessages, user = builders.UserBuilder.apply(), templateRenderer = MockTemplateRenderer, partialRetriever = MockPartialRetriever).toString())
+      val doc = Jsoup.parse(views.html.incomes.yourIncomeCalculation(incomeCalcViewModel, empId = 2)(request = FakeRequest("GET", routes.YourIncomeCalculationController.yourIncomeCalculationPage(None).url), messages = play.api.i18n.Messages.Implicits.applicationMessages, user = builders.UserBuilder.apply(), templateRenderer = MockTemplateRenderer, partialRetriever = MockPartialRetriever).toString())
       doc.select("#taxableIncomeSideNav").size shouldBe 0
     }
   }
