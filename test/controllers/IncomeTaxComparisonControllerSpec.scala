@@ -59,6 +59,8 @@ with I18nSupport {
         Future.successful(Seq.empty[CodingComponent]))
       when(sut.employmentService.employments(Matchers.any(),Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(
         Future.successful(Seq(employment)))
+      when(sut.employmentService.employments(Matchers.any(),Matchers.eq(TaxYear().next))(Matchers.any())).thenReturn(
+        Future.successful(Seq(employment)))
 
 
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -68,6 +70,8 @@ with I18nSupport {
       doc.title() mustBe s"Name Surname-${Messages("tai.incomeTaxComparison.heading")}"
 
       verify(sut.employmentService, times(1)).employments(Matchers.any(),Matchers.eq(TaxYear()))(Matchers.any())
+      verify(sut.employmentService, times(1)).employments(Matchers.any(),Matchers.eq(TaxYear().next))(Matchers.any())
+
     }
 
     "throw an error page" when {

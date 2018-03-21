@@ -17,10 +17,10 @@
 @import uk.gov.hmrc.tai.viewModels.TaxCodeComparisonViewModel
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.urls.Link
-@import uk.gov.hmrc.tai.viewModels.IncomeSourceViewModel
+@import uk.gov.hmrc.tai.viewModels.IncomeSourceComparisonViewModel
 @import uk.gov.hmrc.time.TaxYearResolver
 
-@(viewModel:Seq[IncomeSourceViewModel])(implicit messages: Messages)
+@(incomeSourceViewModel:IncomeSourceComparisonViewModel)(implicit messages: Messages)
 
 <h2 id="incomeSummaryHeading"
     class="heading-large">@messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment")</h2>
@@ -40,11 +40,11 @@
     </thead>
 
     <tbody id="incomeSummaryComparisonTableBody">
-        @for(incomeSource <- viewModel) {
+        @for(employmentIncomeSourceDetail <- incomeSourceViewModel.employmentIncomeSourceDetail) {
             <tr>
-                <td>@incomeSource.name</td>
-                <td class="text--right">@incomeSource.amount</td>
-                <td></td>
+                <td>@employmentIncomeSourceDetail.name</td>
+                <td class="text--right">@employmentIncomeSourceDetail.amountCY</td>
+                <td class="text--right">@employmentIncomeSourceDetail.amountCYPlusOne</td>
             </tr>
         }
     </tbody>

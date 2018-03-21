@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
-import uk.gov.hmrc.tai.viewModels.{IncomeSourceViewModel, TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
+import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonViewModel, IncomeSourceViewModel, TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
 
 class MainSpec extends TaiViewSpec {
   "Cy plus one view" must {
@@ -90,13 +90,10 @@ class MainSpec extends TaiViewSpec {
 
   private lazy val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
   private lazy val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 200)
-
   private lazy val estimatedIncomeTaxComparisonViewModel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
 
-  private lazy val employments = Seq(IncomeSourceViewModel("Company1", "£23,000", "1150L", true, "123456", true, "", false, "view income details", "fake/url"))
-
   private lazy val incomeTaxComparisonViewModel = IncomeTaxComparisonViewModel("USERNAME", estimatedIncomeTaxComparisonViewModel,
-    TaxCodeComparisonViewModel(Nil), TaxFreeAmountComparisonViewModel(Nil, Nil),employments)
+    TaxCodeComparisonViewModel(Nil), TaxFreeAmountComparisonViewModel(Nil, Nil),IncomeSourceComparisonViewModel(Nil))
 
   override def view: Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModel)
 }

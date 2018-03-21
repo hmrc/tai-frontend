@@ -18,7 +18,7 @@ package views.html.incomeTaxComparison
 
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.IncomeSourceViewModel
+import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonDetail, IncomeSourceComparisonViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
 
 class IncomeSummarySpec extends TaiViewSpec {
@@ -29,32 +29,27 @@ class IncomeSummarySpec extends TaiViewSpec {
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment"))
     }
 
-    "display one employment income summary table" in {
-      doc must haveThWithText(messages("tai.CurrentTaxYearEnds",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM")))
-      doc must haveThWithText(messages("tai.NextTaxYearFrom",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))
 
-      doc must haveTdWithText("Company1")
-      doc must haveTdWithText("£15,000")
-    }
-
-    "display multiple employments income summary table" in{
+    "display employments income summary table" in{
 
       doc must haveThWithText(messages("tai.CurrentTaxYearEnds",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM")))
       doc must haveThWithText(messages("tai.NextTaxYearFrom",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))
 
-      doc must haveTdWithText("Company1")
-      doc must haveTdWithText("£15,000")
+      doc must haveTdWithText(employmentOneIncomeSourceDetail.name)
+      doc must haveTdWithText(employmentOneIncomeSourceDetail.amountCY)
+      doc must haveTdWithText(employmentOneIncomeSourceDetail.amountCYPlusOne)
 
-      doc must haveTdWithText("Company2")
-      doc must haveTdWithText("£20,000")
+      doc must haveTdWithText(employmentTwoIncomeSourceDetail.name)
+      doc must haveTdWithText(employmentTwoIncomeSourceDetail.amountCY)
+      doc must haveTdWithText(employmentTwoIncomeSourceDetail.amountCYPlusOne)
 
     }
-
   }
 
-  private lazy val incomeSourceViewModelList =
-    Seq(IncomeSourceViewModel("Company1", "£15,000", "1150L", true, "123456", true, "", false, "view income details", "fake/url"),
-        IncomeSourceViewModel("Company2", "£20,000", "1150L", true, "123456", true, "", false, "view income details", "fake/url"))
+  private lazy val employmentOneIncomeSourceDetail = IncomeSourceComparisonDetail("Company1","£15,000","£15,500")
+  private lazy val employmentTwoIncomeSourceDetail = IncomeSourceComparisonDetail("Company2","£16,000","£16,500")
 
-  override def view: Html = views.html.incomeTaxComparison.IncomeSummary(incomeSourceViewModelList)
+  private val incomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(Seq(employmentOneIncomeSourceDetail,employmentTwoIncomeSourceDetail))
+
+  override def view: Html = views.html.incomeTaxComparison.IncomeSummary(incomeSourceComparisonViewModel)
 }
