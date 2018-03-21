@@ -1392,7 +1392,8 @@ tai.bbsi.account.whatHappensNext.desc1=The figures shown, or any update you send
 tai.bbsi.account.whatHappensNext.desc2=Details of the interest you actually received for April {0} to April {1} will be sent to us after 5 April {1}. We will use the actual figures to calculate how much Income Tax you should have paid in that year.
 
 ##BBSI decision
-tai.bbsi.decision.heading=What do you want to tell us about your account with {0}
+tai.bbsi.decision.title=What do you want to tell us about your account with {0}
+tai.bbsi.decision.customGaTitle=What do you want to tell us about your account
 tai.bbsi.decision.preHeading=Update or remove account
 tai.bbsi.decision.error.selectOption=Choose one option
 tai.bbsi.decision.radio1=I want to update the estimated amount of interest
