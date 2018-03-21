@@ -107,7 +107,7 @@ object TaxCodeDescriptor {
     val taxCode = taxCodeDescription.taxCode
     (standAloneRegex.findFirstIn(taxCode), scottishStandAloneRegex.findFirstIn(taxCode)) match {
       case (Some(code), None) => ListMap(code -> Messages(s"tai.taxCode.$code"))
-      case (None, Some(code)) => ListMap(code -> Messages(s"tai.taxCode.$code", taxCodeDescription.scottishTaxRateBands.getOrElse(taxCode, BigDecimal(0))))
+      case (None, Some(code)) => ListMap(code -> Messages(s"tai.taxCode.DX", taxCodeDescription.scottishTaxRateBands.getOrElse(taxCode, BigDecimal(0))))
       case _ => ListMap[String, String]()
     }
   }

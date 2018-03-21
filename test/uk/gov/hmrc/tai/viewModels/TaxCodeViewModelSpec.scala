@@ -218,74 +218,74 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
       "tax code has BR" in {
         val taxCode = "BR"
         TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, Map.empty[String, BigDecimal])) mustBe
-          ListMap(taxCode -> Messages(s"tai.taxCode.$taxCode"))
+          ListMap(taxCode -> Messages(s"tai.taxCode.BR"))
       }
 
       "tax code has D0" in {
         val taxCode = "D0"
         TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, Map.empty[String, BigDecimal])) mustBe
-          ListMap(taxCode -> Messages(s"tai.taxCode.$taxCode"))
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 0))
       }
 
       "tax code has D1" in {
         val taxCode = "D1"
         TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, Map.empty[String, BigDecimal])) mustBe
-          ListMap(taxCode -> Messages(s"tai.taxCode.$taxCode"))
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 0))
       }
 
       "tax code has NT" in {
         val taxCode = "NT"
         TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, Map.empty[String, BigDecimal])) mustBe
-          ListMap(taxCode -> Messages(s"tai.taxCode.$taxCode"))
+          ListMap(taxCode -> Messages(s"tai.taxCode.NT"))
       }
 
       "tax code has D2" in {
         val taxCode = "D2"
         val scottishTaxRate: Map[String, BigDecimal] = Map(taxCode -> 10.0)
         TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, scottishTaxRate)) mustBe
-          ListMap(taxCode -> Messages(s"tai.taxCode.$taxCode", 10))
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 10))
       }
 
       "tax code has D3" in {
         val taxCode = "D3"
         val scottishTaxRate: Map[String, BigDecimal] = Map(taxCode -> 10.0)
         TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, scottishTaxRate)) mustBe
-          ListMap(taxCode -> Messages(s"tai.taxCode.$taxCode", 10))
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 10))
       }
 
       "tax code has D4" in {
         val taxCode = "D4"
         val scottishTaxRate: Map[String, BigDecimal] = Map(taxCode -> 10.0)
         TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, scottishTaxRate)) mustBe
-          ListMap(taxCode -> Messages(s"tai.taxCode.$taxCode", 10))
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 10))
       }
 
       "tax code has D5" in {
         val taxCode = "D5"
         val scottishTaxRate: Map[String, BigDecimal] = Map(taxCode -> 10.0)
         TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, scottishTaxRate)) mustBe
-          ListMap(taxCode -> Messages(s"tai.taxCode.$taxCode", 10))
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 10))
       }
 
       "tax code has D6" in {
         val taxCode = "D6"
         val scottishTaxRate: Map[String, BigDecimal] = Map(taxCode -> 10.0)
         TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, scottishTaxRate)) mustBe
-          ListMap(taxCode -> Messages(s"tai.taxCode.$taxCode", 10))
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 10))
       }
 
       "tax code has D7" in {
         val taxCode = "D7"
         val scottishTaxRate: Map[String, BigDecimal] = Map(taxCode -> 10.0)
         TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, scottishTaxRate)) mustBe
-          ListMap(taxCode -> Messages(s"tai.taxCode.$taxCode", 10))
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 10))
       }
 
       "tax code has D8" in {
         val taxCode = "D8"
         val scottishTaxRate: Map[String, BigDecimal] = Map(taxCode -> 10.0)
         TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, scottishTaxRate)) mustBe
-          ListMap(taxCode -> Messages(s"tai.taxCode.$taxCode", 10))
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 10))
       }
     }
   }
