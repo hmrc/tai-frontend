@@ -95,8 +95,10 @@ trait FeatureTogglesConfig extends ServicesConfig {
   val scottishTaxRateEnabled = configuration.getBoolean("tai.scottishTaxRate.enabled").getOrElse(false)
   val cyPlusOneEnabled = configuration.getBoolean("tai.cyPlusOne.enabled").getOrElse(false)
   val previousEmploymentUpdateToggle = configuration.getBoolean("tai.feature.previousEmploymentUpdate.enabled").getOrElse(false)
-  val welshLanguageEnabled =  configuration.getBoolean("tai.feature.welshLanguage.enabled").getOrElse(true)
+  val welshLanguageEnabled =  configuration.getBoolean("tai.feature.welshLanguage.enabled").getOrElse(false)
 }
+
+object FeatureTogglesConfig extends FeatureTogglesConfig
 
 trait TaiConfig extends ServicesConfig {
   lazy val baseURL: String = baseUrl("tai")

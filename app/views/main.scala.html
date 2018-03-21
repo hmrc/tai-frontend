@@ -158,8 +158,7 @@
 
 
 @isWelshEnabled = @{
-    object featureToggles extends FeatureTogglesConfig
-    featureToggles.welshLanguageEnabled
+    FeatureTogglesConfig.welshLanguageEnabled
 }
 
 @isWelshActive = @{
@@ -198,8 +197,8 @@
 
         "showPropositionLinks" -> isWelshEnabled,
         "langSelector" -> isWelshEnabled,
-        "enUrl" -> "/check-income-tax/language/english",
-        "cyUrl" -> "/check-income-tax/language/cymraeg",
+        "enUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("english"),
+        "cyUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("cymraeg"),
         "isWelsh" -> isWelshActive
     )
 }

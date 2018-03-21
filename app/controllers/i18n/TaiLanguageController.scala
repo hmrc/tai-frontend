@@ -30,7 +30,6 @@ import uk.gov.hmrc.tai.service.TaiService
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import uk.gov.hmrc.tai.util.TaiConstants
 
 import scala.concurrent.Future
 
@@ -69,7 +68,6 @@ trait TaiLanguageController extends LanguageController with TaiBaseController
             )
           }
   }
-
 }
 
 object TaiLanguageController extends TaiLanguageController with AuthenticationConnectors {

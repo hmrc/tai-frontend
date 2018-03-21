@@ -94,14 +94,6 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
         result.header.headers("Set-Cookie") must include("PLAY_LANG=en;")
       }
     }
-
-    "set a session attribute containing the user language choice" in {
-      val result = Await.result(new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
-      result.header.headers.isDefinedAt("Set-Cookie") mustBe true
-
-      implicit val rh = mock[RequestHeader]
-      result.session.get(TaiConstants.UserLanguageChoice) mustBe Some("en")
-    }
   }
 
   private class SUT(welshEnabled: Boolean = true) extends TaiLanguageController {
