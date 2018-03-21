@@ -351,7 +351,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
   def createSUT(sessionData: Option[SessionData] = None) = new SUT(sessionData)
 
-  class SUT(sessionData: Option[SessionData] = None) extends YourIncomeCalculationController {
+  class SUT(sessionData: Option[SessionData] = None, cyApdNewPage: Boolean = false) extends YourIncomeCalculationController {
 
     override val taiService = mock[TaiService]
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
@@ -361,6 +361,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
     override implicit val templateRenderer = MockTemplateRenderer
     override implicit val partialRetriever = MockPartialRetriever
     override val employmentService = mock[EmploymentService]
+    override val cyApdNewPageEnabled: Boolean = cyApdNewPage
 
     val ad = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)

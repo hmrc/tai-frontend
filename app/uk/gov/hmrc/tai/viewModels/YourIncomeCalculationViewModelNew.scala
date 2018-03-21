@@ -53,7 +53,7 @@ case class YourIncomeCalculationViewModelNew(
                                             )
 
 object YourIncomeCalculationViewModelNew {
-  def apply(taxCodeIncome: TaxCodeIncome, employment: Employment): YourIncomeCalculationViewModelNew = {
+  def apply(taxCodeIncome: Option[TaxCodeIncome], employment: Employment): YourIncomeCalculationViewModelNew = {
 
     val payments = employment.latestAnnualAccount.map(_.payments).getOrElse(Seq.empty[Payment])
     val paymentDetails = payments.map(payment => PaymentDetailsViewModel(
@@ -62,28 +62,32 @@ object YourIncomeCalculationViewModelNew {
     val realTimeStatus = employment.latestAnnualAccount.map(_.realTimeStatus).getOrElse(TemporarilyUnavailable)
 
     val latestPayment = latestPaymentDetails(employment)
-    val isPension = taxCodeIncome.componentType == PensionIncome
-    val (incomeCalculationMessage, incomeCalculationEstimateMessage) = incomeExplanationMessage(
-      taxCodeIncome.status,
-      employment,
-      isPension,
-      taxCodeIncome,
-      latestPayment.map(_.paymentFrequency),
-      latestPayment.map(_.amountYearToDate).getOrElse(BigDecimal(0)),
-      latestPayment.map(_.date))
+    val isPension = taxCodeIncome.exists(_.componentType == PensionIncome)
+    val status = taxCodeIncome.map(_.status).getOrElse(Ceased)
+
+    val (incomeCalculationMessage, incomeCalculationEstimateMessage) = taxCodeIncome map { income =>
+      incomeExplanationMessage(
+        income.status,
+        employment,
+        isPension,
+        income,
+        latestPayment.map(_.paymentFrequency),
+        latestPayment.map(_.amountYearToDate).getOrElse(BigDecimal(0)),
+        latestPayment.map(_.date))
+    } getOrElse(None, None)
 
     YourIncomeCalculationViewModelNew(
       employment.sequenceNumber,
       employment.name,
       paymentDetails,
-      taxCodeIncome.status,
+      status,
       realTimeStatus,
       latestPayment,
       employment.endDate,
       isPension,
-      totalNotEqualMessage(taxCodeIncome.status == Live, paymentDetails, latestPayment, isPension),
+      totalNotEqualMessage(status == Live, paymentDetails, latestPayment, isPension),
       incomeCalculationMessage.getOrElse(""),
-      if(taxCodeIncome.status == Ceased) None else incomeCalculationEstimateMessage,
+      if(status == Ceased) None else incomeCalculationEstimateMessage,
       employment.hasPayrolledBenefit
     )
   }

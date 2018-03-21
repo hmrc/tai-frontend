@@ -27,7 +27,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.PartialRetriever
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.model.SessionData
@@ -40,7 +40,8 @@ import scala.concurrent.Future
 trait YourIncomeCalculationController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTai
-  with Auditable {
+  with Auditable
+  with FeatureTogglesConfig {
 
   def taiService: TaiService
 
@@ -52,16 +53,22 @@ trait YourIncomeCalculationController extends TaiBaseController
     implicit user =>
       implicit sessionData =>
         implicit request =>
-          Future.successful(Redirect(routes.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(empId.getOrElse(-1))))
-          //showIncomeCalculationPageForCurrentYear(nino = Nino(user.getNino), empId = empId)
+          if(cyApdNewPageEnabled){
+            Future.successful(Redirect(routes.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(empId.getOrElse(-1))))
+          } else{
+            showIncomeCalculationPageForCurrentYear(nino = Nino(user.getNino), empId = empId)
+          }
   }
 
   def printYourIncomeCalculationPage(empId: Option[Int] = None): Action[AnyContent] = authorisedForTai(redirectToOrigin = true)(taiService).async {
     implicit user =>
       implicit sessionData =>
         implicit request =>
-          Future.successful(Redirect(routes.YourIncomeCalculationControllerNew.printYourIncomeCalculationPage(empId.getOrElse(-1))))
-          //showIncomeCalculationPageForCurrentYear(nino = Nino(user.getNino), empId = empId, printPage = true)
+          if(cyApdNewPageEnabled){
+            Future.successful(Redirect(routes.YourIncomeCalculationControllerNew.printYourIncomeCalculationPage(empId.getOrElse(-1))))
+          }else {
+            showIncomeCalculationPageForCurrentYear(nino = Nino(user.getNino), empId = empId, printPage = true)
+          }
   }
 
   def showIncomeCalculationPageForCurrentYear(nino: Nino, empId: Option[Int], printPage: Boolean = false)

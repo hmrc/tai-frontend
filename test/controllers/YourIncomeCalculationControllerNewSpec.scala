@@ -134,17 +134,6 @@ class YourIncomeCalculationControllerNewSpec extends PlaySpec
         val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
-
-
-      "tax code details for passed employment is not present" in {
-        val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(TaiTaxAccountFailureResponse("Error")))
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-
-        val result = sut.printYourIncomeCalculationPage(3)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
     }
   }
 

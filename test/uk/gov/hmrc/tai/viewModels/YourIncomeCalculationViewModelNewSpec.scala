@@ -87,8 +87,7 @@ class YourIncomeCalculationViewModelNewSpec extends PlaySpec with FakeTaiPlayApp
     val employment = Employment("test employment", Some("EMPLOYER1"), LocalDate.now(),
       if(employmentStatus == Ceased) Some(LocalDate.parse("2017-08-08")) else None, Seq(annualAccount), "", "", 2, None, false)
     val taxCodeIncome = TaxCodeIncome(employmentType, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, employmentStatus)
-    YourIncomeCalculationViewModelNew(taxCodeIncome, employment)
+    YourIncomeCalculationViewModelNew(Some(taxCodeIncome), employment)
   }
-
 
 }
