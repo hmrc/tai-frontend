@@ -8,6 +8,9 @@ $(document).ready(function() {
 
 	var showHideContent = new GOVUK.ShowHideContent()
 	showHideContent.init()
+
+	// Move focus to error summary
+	$('.error-summary').focus();
 });
 
 // re-enable any disabled buttons when navigating back
@@ -39,4 +42,3 @@ window.GOVUK.performance.sendGoogleAnalyticsEvent = function (category, event, l
     _gaq.push(['_trackEvent', category, event, label, undefined, true]);
   }
 };
-window.GOVUK.performance.stageprompt.setupForGoogleAnalytics();

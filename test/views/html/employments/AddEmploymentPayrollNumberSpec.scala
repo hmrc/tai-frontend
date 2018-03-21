@@ -68,7 +68,7 @@ class AddEmploymentPayrollNumberSpec extends TaiViewSpec with FormValuesConstant
           withError(AddEmploymentPayrollNumberForm.PayrollNumberEntry, noPayrollNumberChooseError)
         def view: Html = views.html.employments.add_employment_payroll_number_form(formWithErrors, payrollNumberViewModel)
 
-        val errorMessage = doc(view).select(".error-notification").text
+        val errorMessage = doc(view).select(".error-message").text
         errorMessage mustBe noPayrollNumberChooseError
       }
     }

@@ -15,9 +15,9 @@
  *@
 
 @import includes.{backLink}
-@import includes.forms.submit
+@import includes.forms.{submit, input}
 @import includes.{cancelLink, ptaHeader}
-@import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary, input}
+@import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 
 @(nameForm: Form[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever = TaiHtmlPartialRetriever)
@@ -41,7 +41,12 @@
   gaCustomTitle = None) {
 
   @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionProviderName(), args=(Symbol("class"), "subsection")) {
-    @input(field=nameForm("pensionProviderName"), '_inputClass ->"form-control form-control--full-width")
+    @input(
+      field = nameForm("pensionProviderName"),
+      labelText = Messages("tai.addPensionProvider.addNameForm.title"),
+      labelHidden = true,
+      classes = Seq("form-control--full-width")
+    )
 
     @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing pension provider"))
   }

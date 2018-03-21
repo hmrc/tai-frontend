@@ -19,6 +19,7 @@
         fieldErrorsEnabled: Boolean = true,
         labelText: String = "",
         hintText: String = "",
+        hintClass: String = "form-hint",
         bold: Boolean = false,
         classes: Seq[String] = Seq.empty,
         panel: Boolean = false,
@@ -31,39 +32,47 @@
         attrMinlength: String = "",
         attrMaxlength: String = "",
         attrPattern: String = "",
-        attrTitle: String = "",
         attrDescribedBy: String = "",
         data: String = "",
-        hintClass: String = ""
+        isCurrency: Boolean = false
 )(implicit lang: Lang, m: Messages)
 
-<div class="form-group  @if(parentDateAttr) { form-group-@parentDateAttr} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}" @if(data) {data-reveal="@data"}>
-    <label class="form-label@if(bold) {-bold}" for="@field.id">
+<div class="form-group @if(fieldErrorsEnabled && field.hasErrors) {form-group-error}  @if(parentDateAttr) { form-group-@parentDateAttr} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}" @if(data) {data-reveal="@data"}>
+    <label for="@field.id">
         @if(labelText.nonEmpty) {
-            @if(labelHidden) { <span class="visuallyhidden">}
-            @Messages(labelText)
-            @if(labelHidden) {</span>}
-        }
-        @if(hintText.nonEmpty) { <span class="form-hint @hintClass" id="@{ field.id }-hint">@Messages(hintText)</span> }
-        @if(fieldErrorsEnabled && field.hasErrors) { <span class="error-message">@field.error</span> }
-    </label>
-
-    <input name="@field.name" class="form-control @if(fieldErrorsEnabled && field.hasErrors) { form-control-error} @if(attrType == "number") { input--no-spinner} @classes.mkString(" ")"
-    value="@field.value" id="@field.id"
-        @if(hintText.nonEmpty) { aria-describedby="@{ field.id }-hint" }
-        @if(attrDescribedBy.nonEmpty) { aria-describedby="@attrDescribedBy-hint" }
-        @if(attrType.nonEmpty) {
-            type="@attrType"
-            @if(attrType == "number"){
-                step="1"
+            <span class="@if(labelHidden){visually-hidden}else{form-label @if(bold){form-label-bold}}">
+            @labelText
+            @if(isCurrency){
+                <span class="visually-hidden">@Messages("tai.inPounds")</span>
             }
-        } else {
-            type="text"
+            </span>
         }
-        @if(attrMin.nonEmpty) { min="@attrMin" }
-        @if(attrMax.nonEmpty) { max="@attrMax" }
-        @if(attrMinlength.nonEmpty) { minlength="@attrMinlength" }
-        @if(attrMaxlength.nonEmpty) { maxlength="@attrMaxlength" }
-        @if(attrPattern.nonEmpty) { pattern="@attrPattern" }
-        @if(attrTitle.nonEmpty) { title="@Messages(attrTitle)" } />
+        @if(hintText.nonEmpty) { <span class="@hintClass" id="@{ field.id }-hint">@hintText</span> }
+
+        @if(fieldErrorsEnabled && field.hasErrors) {
+            <span class="error-message">
+                @field.errors.map(_.message)
+            </span>
+        }
+    </label>
+    @if(isCurrency){
+        <span aria-hidden="true">£</span>
+    }
+        <input name="@field.name" class="form-control @if(fieldErrorsEnabled && field.hasErrors) { form-control-error} @if(attrType == "number") { input--no-spinner} @if(isCurrency){ form-control-currency}  @classes.mkString(" ")"
+        value="@field.value" id="@field.id"
+            @if(attrDescribedBy) { aria-describedby="@attrDescribedBy-hint" }
+            @if(attrType.nonEmpty) {
+                type="@attrType"
+                @if(attrType == "number"){
+                    step="1"
+                }
+            } else {
+                type="text"
+            }
+            @if(attrMin.nonEmpty) { min="@attrMin" }
+            @if(attrMax.nonEmpty) { max="@attrMax" }
+            @if(attrMinlength.nonEmpty) { minlength="@attrMinlength" }
+            @if(attrMaxlength.nonEmpty) { maxlength="@attrMaxlength" }
+            @if(attrPattern.nonEmpty) { pattern="@attrPattern" } />
+
 </div>
