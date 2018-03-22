@@ -38,7 +38,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
           Week1Month1BasisOperation, Live))
 
         val employment = Employment("test employment", Some("PENSION-1122"), LocalDate.now(),
-          None, Seq(annualAccount), "", "", 2)
+          None, Seq(annualAccount), "", "", 2, None, false)
 
         val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits)
 
@@ -54,7 +54,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
           OtherBasisOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
-          None, Seq(annualAccount), "", "", 2)
+          None, Seq(annualAccount), "", "", 2, None, false)
 
         val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits)
 
@@ -69,7 +69,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
           Week1Month1BasisOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
-          None, Seq(annualAccount), "", "", 2)
+          None, Seq(annualAccount), "", "", 2, None, false)
 
         val exception = the[RuntimeException] thrownBy IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits)
 
@@ -84,7 +84,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
           EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
-          None, Seq(annualAccount), "", "", 1)
+          None, Seq(annualAccount), "", "", 1, None, false)
 
         val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits)
         model.benefits mustBe Seq.empty[CompanyBenefitViewModel]
@@ -96,7 +96,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
           EmploymentIncome, Some(7), 100, "Test", "1100L", "Employer", Week1Month1BasisOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
-          None, Seq(annualAccount), "", "", 7)
+          None, Seq(annualAccount), "", "", 7, None, false)
 
         val companyCars = Seq(CompanyCarBenefit(2, BigDecimal(200.22), Seq(CompanyCar(1, "transit", false, Some(LocalDate.now), None, None))))
         val otherBenefits = Seq(
@@ -119,7 +119,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
           EmploymentIncome, Some(employmentId), 100, "Test", "1100L", "Employer", Week1Month1BasisOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
-          None, Seq(annualAccount), "", "", employmentId)
+          None, Seq(annualAccount), "", "", employmentId, None, false)
 
         val companyCars = Seq(CompanyCarBenefit(employmentId, BigDecimal(200.22), Seq(CompanyCar(1, "transit", false, Some(LocalDate.now), None, None))))
         val otherBenefits = Seq(
@@ -141,7 +141,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
           EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
-          None, Seq(annualAccount), "", "", 1)
+          None, Seq(annualAccount), "", "", 1, None, false)
 
         val companyCars = Seq(CompanyCarBenefit(1, BigDecimal(200.22), Seq(CompanyCar(1, "transit", true, Some(LocalDate.now), None, None))))
         val otherBenefits = Seq(
@@ -167,7 +167,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
           EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
-          None, Seq(annualAccount), "", "", 1)
+          None, Seq(annualAccount), "", "", 1, None, false)
 
         val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits)
         model.displayAddCompanyCarLink mustBe true
@@ -180,7 +180,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
           EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
-          None, Seq(annualAccount), "", "", 1)
+          None, Seq(annualAccount), "", "", 1, None, false)
 
         val companyCars = Seq(CompanyCarBenefit(1, BigDecimal(200.22), Seq(CompanyCar(1, "transit", false, Some(LocalDate.now), None, None))))
         val benefits = Benefits(companyCars, Seq.empty[GenericBenefit])

@@ -64,7 +64,7 @@ messages: Messages, user: controllers.auth.TaiUser)
                         <p id="rtiUnavailableCurrentYear">@Messages("tai.income.calculation.rtiUnavailableCurrentYear.message")</p>
                         <p id="rtiUnavailableCurrentYearContact">@Messages("tai.income.calculation.rtiUnavailableCurrentYear.message.contact")</p>
                     } else {
-
+                        <p id="incomeCalculationMsg@model.empId">@model.incomeCalculationMessage</p>
                     }
                 }
             }
@@ -119,7 +119,14 @@ messages: Messages, user: controllers.auth.TaiUser)
                     }
 
                     case _ => {
+                        <h4 class="heading-small">@model.incomeCalculationEstimateMessage</h4>
 
+                        @if(model.hasPayrolledBenefit){
+                            <div class="panel-indent panel-indent--info panel-indent--gutter">
+                                <p id="payrolling1">@Messages("tai.income.calculation.payrollingBik.message1")</p>
+                                <p id="payrolling2">@Messages("tai.income.calculation.payrollingBik.message2")</p>
+                            </div>
+                        }
                     }
                 }
             </div>

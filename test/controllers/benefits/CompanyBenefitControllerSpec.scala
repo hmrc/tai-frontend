@@ -178,7 +178,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
   private def createSUT = new SUT
 
   private val employment = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
-    Some(new LocalDate("2016-05-26")), Nil, "", "", 2)
+    Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false)
 
   private class SUT extends CompanyBenefitController {
 
