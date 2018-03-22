@@ -30,26 +30,92 @@ class IncomeSummarySpec extends TaiViewSpec {
     }
 
 
-    "display employments income summary table" in{
+    "display employment income summary information" in{
 
-      doc must haveThWithText(messages("tai.CurrentTaxYearEnds",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM")))
-      doc must haveThWithText(messages("tai.NextTaxYearFrom",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))
+      doc(view) must haveThWithText(messages("tai.CurrentTaxYearEnds",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM")))
+      doc(view) must haveThWithText(messages("tai.NextTaxYearFrom",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))
 
-      doc must haveTdWithText(employmentOneIncomeSourceDetail.name)
-      doc must haveTdWithText(employmentOneIncomeSourceDetail.amountCY)
-      doc must haveTdWithText(employmentOneIncomeSourceDetail.amountCYPlusOne)
+      doc(view) must haveTdWithText(employmentOneIncomeSourceDetail.name)
+      doc(view) must haveTdWithText(employmentOneIncomeSourceDetail.amountCY)
+      doc(view) must haveTdWithText(employmentOneIncomeSourceDetail.amountCYPlusOne)
 
-      doc must haveTdWithText(employmentTwoIncomeSourceDetail.name)
-      doc must haveTdWithText(employmentTwoIncomeSourceDetail.amountCY)
-      doc must haveTdWithText(employmentTwoIncomeSourceDetail.amountCYPlusOne)
+      doc(view) must haveTdWithText(employmentTwoIncomeSourceDetail.name)
+      doc(view) must haveTdWithText(employmentTwoIncomeSourceDetail.amountCY)
+      doc(view) must haveTdWithText(employmentTwoIncomeSourceDetail.amountCYPlusOne)
 
     }
+
+    "have income from pension header" in {
+      doc(viewPensionsOnly) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromPrivatePensions"))
+    }
+
+
+    "display pensions income summary information" in{
+
+      doc(viewPensionsOnly) must haveThWithText(messages("tai.CurrentTaxYearEnds",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM")))
+      doc(viewPensionsOnly) must haveThWithText(messages("tai.NextTaxYearFrom",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))
+
+      doc(viewPensionsOnly) must haveTdWithText(pensionOneIncomeSourceDetail.name)
+      doc(viewPensionsOnly) must haveTdWithText(pensionOneIncomeSourceDetail.amountCY)
+      doc(viewPensionsOnly) must haveTdWithText(pensionOneIncomeSourceDetail.amountCYPlusOne)
+
+      doc(viewPensionsOnly) must haveTdWithText(pensionTwoIncomeSourceDetail.name)
+      doc(viewPensionsOnly) must haveTdWithText(pensionTwoIncomeSourceDetail.amountCY)
+      doc(viewPensionsOnly) must haveTdWithText(pensionTwoIncomeSourceDetail.amountCYPlusOne)
+
+    }
+
+    "have income and employment pension header" in {
+      doc(viewCombined) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions"))
+    }
+
+    "display combined employment and private pensions income summary information" in{
+
+      doc(viewCombined) must haveThWithText(messages("tai.CurrentTaxYearEnds",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM")))
+      doc(viewCombined) must haveThWithText(messages("tai.NextTaxYearFrom",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))
+
+      doc(viewCombined) must haveTdWithText(employmentOneIncomeSourceDetail.name)
+      doc(viewCombined) must haveTdWithText(employmentOneIncomeSourceDetail.amountCY)
+      doc(viewCombined) must haveTdWithText(employmentOneIncomeSourceDetail.amountCYPlusOne)
+
+      doc(viewCombined) must haveTdWithText(employmentTwoIncomeSourceDetail.name)
+      doc(viewCombined) must haveTdWithText(employmentTwoIncomeSourceDetail.amountCY)
+      doc(viewCombined) must haveTdWithText(employmentTwoIncomeSourceDetail.amountCYPlusOne)
+
+      doc(viewCombined) must haveTdWithText(pensionOneIncomeSourceDetail.name)
+      doc(viewCombined) must haveTdWithText(pensionOneIncomeSourceDetail.amountCY)
+      doc(viewCombined) must haveTdWithText(pensionOneIncomeSourceDetail.amountCYPlusOne)
+
+      doc(viewCombined) must haveTdWithText(pensionTwoIncomeSourceDetail.name)
+      doc(viewCombined) must haveTdWithText(pensionTwoIncomeSourceDetail.amountCY)
+      doc(viewCombined) must haveTdWithText(pensionTwoIncomeSourceDetail.amountCYPlusOne)
+
+    }
+
+    "display no content when no CY or CY+1 details are available" in{
+
+      doc(viewNoDetails) mustNot haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment"))
+      doc(viewNoDetails) mustNot haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromPrivatePensions"))
+      doc(viewNoDetails) mustNot haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions"))
+
+      doc(viewNoDetails) mustNot haveElementWithId("incomeSummaryComparisonTable")
+    }
+
   }
 
   private lazy val employmentOneIncomeSourceDetail = IncomeSourceComparisonDetail("Company1","£15,000","£15,500")
   private lazy val employmentTwoIncomeSourceDetail = IncomeSourceComparisonDetail("Company2","£16,000","£16,500")
 
-  private val incomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(Seq(employmentOneIncomeSourceDetail,employmentTwoIncomeSourceDetail))
+  private lazy val pensionOneIncomeSourceDetail = IncomeSourceComparisonDetail("pension1","£15,000","£15,500")
+  private lazy val pensionTwoIncomeSourceDetail = IncomeSourceComparisonDetail("pension2","£16,000","£16,500")
 
-  override def view: Html = views.html.incomeTaxComparison.IncomeSummary(incomeSourceComparisonViewModel)
+  private val employmentIncomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(Seq(employmentOneIncomeSourceDetail,employmentTwoIncomeSourceDetail),Nil)
+  private val pensionIncomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(Nil,Seq(pensionOneIncomeSourceDetail,pensionTwoIncomeSourceDetail))
+  private val combinedIncomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(Seq(employmentOneIncomeSourceDetail,employmentTwoIncomeSourceDetail)
+                                                                                          ,Seq(pensionOneIncomeSourceDetail,pensionTwoIncomeSourceDetail))
+
+  override def view: Html = views.html.incomeTaxComparison.IncomeSummary(employmentIncomeSourceComparisonViewModel)
+  def viewPensionsOnly: Html = views.html.incomeTaxComparison.IncomeSummary(pensionIncomeSourceComparisonViewModel)
+  def viewCombined: Html = views.html.incomeTaxComparison.IncomeSummary(combinedIncomeSourceComparisonViewModel)
+  def viewNoDetails: Html = views.html.incomeTaxComparison.IncomeSummary(IncomeSourceComparisonViewModel(Nil,Nil))
 }

@@ -22,31 +22,56 @@
 
 @(incomeSourceViewModel:IncomeSourceComparisonViewModel)(implicit messages: Messages)
 
-<h2 id="incomeSummaryHeading"
-    class="heading-large">@messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment")</h2>
-
-<table class="table--font-reset flush--bottom" id="incomeSummaryComparisonTable">
-
-    <thead id="incomeSummeryComparisonTableHeader">
-    <tr class="text--right">
-        <th></th>
-        <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="text--right">
-            @messages("tai.CurrentTaxYearEnds",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM"))
-        </th>
-        <th id="taxCodeComparisonTableTableHeaderCol2" scope="col" class="text--right">
-            @messages("tai.NextTaxYearFrom",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY"))
-        </th>
-    </tr>
-    </thead>
-
-    <tbody id="incomeSummaryComparisonTableBody">
-        @for(employmentIncomeSourceDetail <- incomeSourceViewModel.employmentIncomeSourceDetail) {
-            <tr>
-                <td>@employmentIncomeSourceDetail.name</td>
-                <td class="text--right">@employmentIncomeSourceDetail.amountCY</td>
-                <td class="text--right">@employmentIncomeSourceDetail.amountCYPlusOne</td>
-            </tr>
+@{
+    (incomeSourceViewModel.employmentIncomeSourceDetail.size > 0, incomeSourceViewModel.pensionIncomeSourceDetail.size > 0) match {
+        case(true,true) => {
+            <h2 id="incomeSummaryHeading"
+                class="heading-large">{messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions")}</h2>
         }
-    </tbody>
+        case(true,false) => {
+            <h2 id="incomeSummaryHeading"
+                class="heading-large">{messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment")}</h2>
+        }
+        case(false,true) => {
+            <h2 id="incomeSummaryHeading"
+                class="heading-large">{messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromPrivatePensions")}</h2>
+        }
+        case _ =>
+    }
+}
 
-</table>
+@if(incomeSourceViewModel.employmentIncomeSourceDetail.size > 0 || incomeSourceViewModel.pensionIncomeSourceDetail.size > 0){
+    <table class="table--font-reset flush--bottom" id="incomeSummaryComparisonTable">
+
+        <thead id="incomeSummeryComparisonTableHeader">
+        <tr class="text--right">
+            <th></th>
+            <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="text--right">
+                @messages("tai.CurrentTaxYearEnds",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM"))
+            </th>
+            <th id="taxCodeComparisonTableTableHeaderCol2" scope="col" class="text--right">
+                @messages("tai.NextTaxYearFrom",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY"))
+            </th>
+        </tr>
+        </thead>
+
+        <tbody id="incomeSummaryComparisonTableBody">
+            @for(employmentIncomeSourceDetail <- incomeSourceViewModel.employmentIncomeSourceDetail) {
+                <tr>
+                    <td>@employmentIncomeSourceDetail.name</td>
+                    <td class="text--right">@employmentIncomeSourceDetail.amountCY</td>
+                    <td class="text--right">@employmentIncomeSourceDetail.amountCYPlusOne</td>
+                </tr>
+            }
+
+            @for(pensionIncomeSourceDetail <- incomeSourceViewModel.pensionIncomeSourceDetail) {
+            <tr>
+                <td>@pensionIncomeSourceDetail.name</td>
+                <td class="text--right">@pensionIncomeSourceDetail.amountCY</td>
+                <td class="text--right">@pensionIncomeSourceDetail.amountCYPlusOne</td>
+            </tr>
+            }
+        </tbody>
+
+    </table>
+}

@@ -17,11 +17,12 @@
 package uk.gov.hmrc.tai.viewModels
 
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
+import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import uk.gov.hmrc.tai.util.{TaiConstants, ViewModelHelper}
 
-case class IncomeSourceComparisonViewModel(employmentIncomeSourceDetail: Seq[IncomeSourceComparisonDetail])
+case class IncomeSourceComparisonViewModel(employmentIncomeSourceDetail: Seq[IncomeSourceComparisonDetail],
+                                           pensionIncomeSourceDetail: Seq[IncomeSourceComparisonDetail])
 
 object IncomeSourceComparisonViewModel extends ViewModelHelper {
 
@@ -34,15 +35,30 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper {
     val employmentIncomeSourceDetailCY = incomeSourceDetail(employmentTaxCodeIncomes, employmentsCY,TaiConstants.CurrentTaxYear)
 
     val employmentTaxCodeIncomesCYPlusOne = taxCodeIncomesCYPlusOne filter liveEmployment
-    val employmentIncomeSourceDetailCYPlusOne = incomeSourceDetail(employmentTaxCodeIncomesCYPlusOne, employmentsCYPlusOne,TaiConstants.CurrentTaxYearPlusOne)
+    val employmentIncomeSourceDetailCYPlusOne = incomeSourceDetail(
+      employmentTaxCodeIncomesCYPlusOne, employmentsCYPlusOne,TaiConstants.CurrentTaxYearPlusOne)
 
-    val incomeSourceComparisonDetailSeq = incomeSourceComparisionDetail(employmentIncomeSourceDetailCY, employmentIncomeSourceDetailCYPlusOne).sortBy(_.amountCY).reverse
+    val pensionTaxCodeIncomes = taxCodeIncomesCY filter livePension
+    val pensionIncomeSourceDetailCY = incomeSourceDetail(pensionTaxCodeIncomes, employmentsCY,TaiConstants.CurrentTaxYear)
 
-    IncomeSourceComparisonViewModel(incomeSourceComparisonDetailSeq)
+    val pensionTaxCodeIncomesCYPlusOne = taxCodeIncomesCYPlusOne filter livePension
+    val pensionIncomeSourceDetailCYPlusOne = incomeSourceDetail(
+      pensionTaxCodeIncomesCYPlusOne, employmentsCYPlusOne,TaiConstants.CurrentTaxYearPlusOne)
+
+    val employmentIncomeSourceComparisonDetailSeq = incomeSourceComparisionDetail(
+      employmentIncomeSourceDetailCY, employmentIncomeSourceDetailCYPlusOne).sortBy(_.amountCY).reverse
+
+    val pensionIncomeSourceComparisonDetailSeq = incomeSourceComparisionDetail(
+      pensionIncomeSourceDetailCY, pensionIncomeSourceDetailCYPlusOne).sortBy(_.amountCY).reverse
+
+    IncomeSourceComparisonViewModel(employmentIncomeSourceComparisonDetailSeq,pensionIncomeSourceComparisonDetailSeq)
 
   }
   private def liveEmployment(taxCodeIncome: TaxCodeIncome) =
     taxCodeIncome.componentType == EmploymentIncome && taxCodeIncome.status == Live
+
+  private def livePension(taxCodeIncome: TaxCodeIncome) =
+    taxCodeIncome.componentType == PensionIncome && taxCodeIncome.status == Live
 
 
   private def incomeSourceDetail(taxCodeIncomes: Seq[TaxCodeIncome], employments: Seq[Employment], taxYearStatus:String): Seq[IncomeSourceDetail] = {
