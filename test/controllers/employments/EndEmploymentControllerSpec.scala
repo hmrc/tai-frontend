@@ -57,7 +57,6 @@ class EndEmploymentControllerSpec
   with I18nSupport
   with JourneyCacheConstants
   with FormValuesConstants
-  with DatePatternConstants
   with IrregularPayConstants
   with EmploymentDecisionConstants {
 

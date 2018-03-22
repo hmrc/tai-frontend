@@ -27,7 +27,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.util.{DatePatternConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.JourneyCacheConstants
 
 
 case class CompanyCarCheckAnswersViewModel(carModel: String,
@@ -59,8 +59,7 @@ case class CompanyCarCheckAnswersViewModel(carModel: String,
   }
 }
 
-object CompanyCarCheckAnswersViewModel extends JourneyCacheConstants
-  with DatePatternConstants {
+object CompanyCarCheckAnswersViewModel extends JourneyCacheConstants {
 
   def apply(cacheMap: Map[String, String], taxYear: TaxYear)(implicit messages: Messages): CompanyCarCheckAnswersViewModel = {
 

@@ -48,7 +48,6 @@ trait EndEmploymentController extends TaiBaseController
   with Auditable
   with JourneyCacheConstants
   with FormValuesConstants
-  with DatePatternConstants
   with IrregularPayConstants
   with AuditConstants {
 

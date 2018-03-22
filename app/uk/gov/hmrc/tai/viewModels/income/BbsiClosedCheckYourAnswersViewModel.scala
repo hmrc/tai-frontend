@@ -25,9 +25,8 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.time.TaxYearResolver
-import uk.gov.hmrc.tai.util.DatePatternConstants
 
-case class BbsiClosedCheckYourAnswersViewModel(id: Int, closeBankAccountDate: String, closeBankAccountName: Option[String], closeBankAccountInterest: Option[String]) extends DatePatternConstants {
+case class BbsiClosedCheckYourAnswersViewModel(id: Int, closeBankAccountDate: String, closeBankAccountName: Option[String], closeBankAccountInterest: Option[String]) {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 

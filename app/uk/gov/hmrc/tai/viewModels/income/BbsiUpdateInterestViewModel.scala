@@ -22,9 +22,8 @@ import play.api.Play.current
 import play.api.i18n.Messages
 
 import uk.gov.hmrc.play.views.formatting.Money
-import uk.gov.hmrc.tai.util.DatePatternConstants
 
-case class BbsiUpdateInterestViewModel(id: Int, interestAmount: String, bankName: String) extends DatePatternConstants {
+case class BbsiUpdateInterestViewModel(id: Int, interestAmount: String, bankName: String) {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 

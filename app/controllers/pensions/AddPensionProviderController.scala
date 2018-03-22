@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint._
 import uk.gov.hmrc.tai.forms.pensions.{AddPensionProviderFirstPayForm, AddPensionProviderNumberForm, PensionAddDateForm, PensionProviderNameForm}
 import uk.gov.hmrc.tai.model.domain.AddPensionProvider
 import uk.gov.hmrc.tai.service.{PensionProviderService, _}
-import uk.gov.hmrc.tai.util.{AuditConstants, DatePatternConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNumberViewModel}
 
@@ -48,8 +48,7 @@ trait AddPensionProviderController extends TaiBaseController
   with Auditable
   with JourneyCacheConstants
   with AuditConstants
-  with FormValuesConstants
-  with DatePatternConstants {
+  with FormValuesConstants {
 
   def taiService: TaiService
   def auditService: AuditService

@@ -126,10 +126,6 @@ trait AuditConstants {
   val AddPension_CantAddPensionProvider = "cantAddPensionProvider"
 }
 
-trait DatePatternConstants {
-  val datePatternWithFullMonthName = "dd MMMM yyyy"
-}
-
 trait AddEmploymentPayrollNumberConstants {
   val PayrollNumberChoice = "payrollNumberChoice"
   val PayrollNumberEntry = "payrollNumberEntry"

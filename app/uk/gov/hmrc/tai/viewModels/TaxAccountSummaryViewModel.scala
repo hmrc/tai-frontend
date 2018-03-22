@@ -26,7 +26,6 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.util.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
 import uk.gov.hmrc.tai.util.{DateFormatConstants, ViewModelHelper}
-import uk.gov.hmrc.tai.viewModels.benefit.CompanyCarCheckAnswersViewModel.datePatternWithFullMonthName
 import uk.gov.hmrc.time.TaxYearResolver
 
 

@@ -20,8 +20,7 @@ import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages
-
-import uk.gov.hmrc.tai.util.DatePatternConstants
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 case class IncomeCheckYourAnswersViewModel(preHeading: String,
                                            backLinkUrl: String,
@@ -30,7 +29,7 @@ case class IncomeCheckYourAnswersViewModel(preHeading: String,
                                            submissionUrl: String,
                                            cancelUrl: String)
 
-object IncomeCheckYourAnswersViewModel extends DatePatternConstants {
+object IncomeCheckYourAnswersViewModel {
 
   def apply(preHeading: String,
             incomeSourceName: String,
@@ -46,7 +45,7 @@ object IncomeCheckYourAnswersViewModel extends DatePatternConstants {
 
       val mandatoryLines = Seq(
         CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q1"), incomeSourceName, controllers.employments.routes.AddEmploymentController.addEmploymentName.url),
-        CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q2"), readable(incomeSourceStart), controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url),
+        CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q2"), Dates.formatDate(new LocalDate(incomeSourceStart)), controllers.employments.routes.AddEmploymentController.addEmploymentStartDate.url),
         CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q3"), incomeSourceRefNo, controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber.url),
         CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q4"), contactableByPhone, controllers.employments.routes.AddEmploymentController.addTelephoneNumber.url)
       )
@@ -75,7 +74,7 @@ object IncomeCheckYourAnswersViewModel extends DatePatternConstants {
     val journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
 
       val mandatoryLines = Seq(
-        CheckYourAnswersConfirmationLine(Messages("tai.checkYourAnswers.dateEmploymentEnded"), readable(incomeSourceEnd), controllers.employments.routes.EndEmploymentController.endEmploymentPage(employmentId).url),
+        CheckYourAnswersConfirmationLine(Messages("tai.checkYourAnswers.dateEmploymentEnded"), Dates.formatDate(new LocalDate(incomeSourceEnd)), controllers.employments.routes.EndEmploymentController.endEmploymentPage(employmentId).url),
         CheckYourAnswersConfirmationLine(Messages("tai.checkYourAnswers.contactByPhone"), contactableByPhone, controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url)
       )
 
@@ -89,12 +88,5 @@ object IncomeCheckYourAnswersViewModel extends DatePatternConstants {
     val postConfirmationText = Messages("tai.checkYourAnswers.confirmText")
 
     IncomeCheckYourAnswersViewModel(preHeading, backLinkUrl, journeyConfirmationLines, Some(postConfirmationText), submissionUrl,cancelUrl)
-  }
-
-
-
-
-  private def readable(isoDateString: String): String = {
-    LocalDate.parse(isoDateString).toString(datePatternWithFullMonthName)
   }
 }

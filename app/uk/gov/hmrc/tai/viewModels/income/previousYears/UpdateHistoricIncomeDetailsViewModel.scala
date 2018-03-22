@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels.income.previousYears
 
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.DateFormatConstants
@@ -23,6 +24,6 @@ import uk.gov.hmrc.tai.util.DateFormatConstants
 case class UpdateHistoricIncomeDetailsViewModel(taxYear: Int) extends DateFormatConstants{
 
   val givenTaxYear: TaxYear = TaxYear(taxYear)
-  val formattedTaxYear = TaxPeriodLabelService.taxPeriodLabel(taxYear)
+  def formattedTaxYear(implicit messages: Messages) = TaxPeriodLabelService.taxPeriodLabel(taxYear)
 
 }

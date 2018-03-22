@@ -16,43 +16,42 @@
 
 package uk.gov.hmrc.tai.service
 
-import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.time.TaxYearResolver
 
 
 trait TaxPeriodLabelService {
 
-  lazy val taxYearPrefix = Messages("tai.taxYearHeading") + " "
+  def taxYearPrefix(implicit messages: Messages) = messages("tai.taxYearHeading") + " "
 
 
-  def shortFormCurrentTaxPeriodLabel : String = {
+  def shortFormCurrentTaxPeriodLabel(implicit messages: Messages) : String = {
     taxYearPrefix + TaxYearResolver.startOfCurrentTaxYear.toString("yy") + "/" + TaxYearResolver.endOfCurrentTaxYear.toString("yy")
   }
 
-  def shortFormCurrentYearMinus1TaxPeriodLabel : String = {
+  def shortFormCurrentYearMinus1TaxPeriodLabel(implicit messages: Messages) : String = {
     taxYearPrefix + TaxYearResolver.startOfCurrentTaxYear.minusYears(1).toString("yy") + "/" + TaxYearResolver.endOfCurrentTaxYear.minusYears(1).toString("yy")
   }
 
-  def shortFormCurrentYearMinus2TaxPeriodLabel : String = {
+  def shortFormCurrentYearMinus2TaxPeriodLabel(implicit messages: Messages) : String = {
     taxYearPrefix + TaxYearResolver.startOfCurrentTaxYear.minusYears(2).toString("yy") + "/" + TaxYearResolver.endOfCurrentTaxYear.minusYears(2).toString("yy")
   }
 
-  def longFormCurrentTaxPeriodLabel : String = {
-    TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy") + " to " + TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")
+  def longFormCurrentTaxPeriodLabel(implicit messages: Messages) : String = {
+    Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear) + " " + messages("language.to") + " " + Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)
   }
 
-  def longFormCurrentYearMinus1TaxPeriodLabel : String = {
-    TaxYearResolver.startOfCurrentTaxYear.minusYears(1).toString("d MMMM yyyy") + " to " + TaxYearResolver.endOfCurrentTaxYear.minusYears(1).toString("d MMMM yyyy")
+  def longFormCurrentYearMinus1TaxPeriodLabel(implicit messages: Messages) : String = {
+    Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear.minusYears(1)) + " " + messages("language.to") + " " + Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear.minusYears(1))
   }
 
-  def longFormCurrentYearMinus2TaxPeriodLabel : String = {
-    TaxYearResolver.startOfCurrentTaxYear.minusYears(2).toString("d MMMM yyyy") + " to " + TaxYearResolver.endOfCurrentTaxYear.minusYears(2).toString("d MMMM yyyy")
+  def longFormCurrentYearMinus2TaxPeriodLabel(implicit messages: Messages) : String = {
+    Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear.minusYears(2)) + " " + messages("language.to") + " " + Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear.minusYears(2))
   }
 
-  def taxPeriodLabel(year: Int) : String = {
-    TaxYearResolver.startOfTaxYear(year).toString("d MMMM yyyy") + " to " + TaxYearResolver.startOfTaxYear( year + 1).minusDays(1).toString("d MMMM yyyy")
+  def taxPeriodLabel(year: Int)(implicit messages: Messages) : String = {
+    Dates.formatDate(TaxYearResolver.startOfTaxYear(year)) + " " + messages("language.to") + " " + Dates.formatDate(TaxYearResolver.startOfTaxYear( year + 1).minusDays(1))
   }
 }
 
