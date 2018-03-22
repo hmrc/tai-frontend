@@ -1534,7 +1534,7 @@ tai.income.previousYears.confirmation.back=Return to your income details for pre
 ## Company Benefit Ended
 tai.benefits.ended.journey.preHeader=Company benefit ended
 
-tai.benefits.ended.stopDate.title=When did you stop getting this benefit?
+tai.benefits.ended.stopDate.customGaTitle=When did you stop getting this benefit?
 tai.benefits.ended.stopDate.heading=When did you stop getting {0} benefit from {1}?
 tai.benefits.ended.stopDate.radio.beforeTaxYearEnd=Before {0}
 tai.benefits.ended.stopDate.radio.onOrAfterTaxYearEnd=On or after {0}
@@ -1547,7 +1547,7 @@ tai.benefits.ended.tableHeader={0} benefit from {1}
 tai.noLongerGetBenefit=I no longer get this benefit
 tai.benefits.ended.confirmation.back=Return to your tax free amount page
 
-tai.remove.company.benefit.total.value.title=What was the total value of the benefit?
+tai.remove.company.benefit.total.value.customGaTitle=What was the total value of the benefit?
 tai.remove.company.benefit.total.value.heading=What was the total value of your {0} benefit from {1}?
 
 tai.remove.company.benefit.total.value.dontKnow=If you don’t know the exact amount you can either:
@@ -1563,7 +1563,7 @@ tai.remove.company.benefit.onOrAfterTaxYearEnd=On or after {0}
 
 ## Update Or Remove Company Benefit
 tai.benefits.updateOrRemove.journey.preHeader=Update or remove company benefit
-tai.benefits.updateOrRemove.decision.title=Do you currently receive this company benefit?
+tai.benefits.updateOrRemove.decision.customGaTitle=Do you currently receive this company benefit?
 tai.benefits.updateOrRemove.decision.heading=Do you currently get {0} benefit from {1}?
 tai.benefits.updateOrRemove.decision.radio.yes=Yes, I currently get this benefit
 tai.benefits.updateOrRemove.decision.radio.no=No, I do not get this benefit any more

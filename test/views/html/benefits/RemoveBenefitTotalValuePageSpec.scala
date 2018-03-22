@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.viewModels.benefit.BenefitViewModel
 class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
 
   "removeBenefitTotalValue" must {
-    behave like pageWithTitle(Messages("tai.remove.company.benefit.total.value.title"))
+    behave like pageWithTitle(Messages("tai.remove.company.benefit.total.value.heading", benefitName, employerName))
     behave like pageWithCombinedHeader(Messages("tai.benefits.ended.journey.preHeader"),
       Messages("tai.remove.company.benefit.total.value.heading", benefitName, employerName))
 

@@ -94,7 +94,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.benefits.updateOrRemove.decision.title")
+        doc.title() mustBe Messages("tai.benefits.updateOrRemove.decision.heading", benefitType, empName)
 
         verify(SUT.employmentService, times(1)).employment(any(),any())(any())
         verify(SUT.journeyCacheService, times(1)).currentCache(any())

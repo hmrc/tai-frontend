@@ -36,11 +36,11 @@ preHeadingText = Messages("tai.benefits.updateOrRemove.journey.preHeader"))
 
 
 @main(
-title = Messages("tai.benefits.updateOrRemove.decision.title"),
+title = Messages("tai.benefits.updateOrRemove.decision.heading",viewModel.benefitName,viewModel.employerName),
 user = Some(user),
 pageHeader = Some(header),
 articleClasses = None,
-gaCustomTitle = None){
+gaCustomTitle = Some(Messages("tai.benefits.updateOrRemove.decision.customGaTitle"))){
 
     @form(action = controllers.benefits.routes.CompanyBenefitController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {
 
