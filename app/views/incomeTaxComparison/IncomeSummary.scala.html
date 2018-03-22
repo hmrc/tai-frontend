@@ -47,10 +47,10 @@
         <tr class="text--right">
             <th></th>
             <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="text--right">
-                @messages("tai.CurrentTaxYearEnds",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM"))
+                @messages("tai.CurrentTaxYearEnds",incomeSourceViewModel.htmlNonBroken(TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM")))
             </th>
             <th id="taxCodeComparisonTableTableHeaderCol2" scope="col" class="text--right">
-                @messages("tai.NextTaxYearFrom",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY"))
+                @messages("tai.NextTaxYearFrom",incomeSourceViewModel.htmlNonBroken(TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))
             </th>
         </tr>
         </thead>

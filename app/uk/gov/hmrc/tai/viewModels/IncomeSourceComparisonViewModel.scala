@@ -17,14 +17,15 @@
 package uk.gov.hmrc.tai.viewModels
 
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}
-import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
+import uk.gov.hmrc.tai.filters.TaxAccountFilter
+import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.util.{TaiConstants, ViewModelHelper}
 
 case class IncomeSourceComparisonViewModel(employmentIncomeSourceDetail: Seq[IncomeSourceComparisonDetail],
-                                           pensionIncomeSourceDetail: Seq[IncomeSourceComparisonDetail])
+                                           pensionIncomeSourceDetail: Seq[IncomeSourceComparisonDetail]) extends ViewModelHelper
 
-object IncomeSourceComparisonViewModel extends ViewModelHelper {
+object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFilter{
 
   def apply(taxCodeIncomesCY:Seq[TaxCodeIncome],
             employmentsCY:Seq[Employment],
@@ -54,12 +55,6 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper {
     IncomeSourceComparisonViewModel(employmentIncomeSourceComparisonDetailSeq,pensionIncomeSourceComparisonDetailSeq)
 
   }
-  private def liveEmployment(taxCodeIncome: TaxCodeIncome) =
-    taxCodeIncome.componentType == EmploymentIncome && taxCodeIncome.status == Live
-
-  private def livePension(taxCodeIncome: TaxCodeIncome) =
-    taxCodeIncome.componentType == PensionIncome && taxCodeIncome.status == Live
-
 
   private def incomeSourceDetail(taxCodeIncomes: Seq[TaxCodeIncome], employments: Seq[Employment], taxYearStatus:String): Seq[IncomeSourceDetail] = {
     taxCodeIncomes.flatMap { (t: TaxCodeIncome) =>
