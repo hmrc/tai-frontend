@@ -191,7 +191,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
     val untaxedInterest = nonTaxCodeIncome.untaxedInterest.map(u =>
       IncomeSourceViewModel(
-        u.description,
+        Messages("tai.typeDecodes." + u.incomeComponentType.toString),
         withPoundPrefixAndSign(MoneyPounds(u.amount, 0)),
         "",
         displayTaxCode = false,
@@ -206,8 +206,9 @@ object IncomeSourceViewModel extends ViewModelHelper {
     )
 
     val otherIncomeSources = nonTaxCodeIncome.otherNonTaxCodeIncomes.map(otherNonTaxCodeIncome => {
+
       val model = IncomeSourceViewModel(
-        otherNonTaxCodeIncome.description,
+        Messages("tai.typeDecodes." + otherNonTaxCodeIncome.incomeComponentType.toString),
         withPoundPrefixAndSign(MoneyPounds(otherNonTaxCodeIncome.amount, 0)),
         "",
         displayTaxCode = false,
