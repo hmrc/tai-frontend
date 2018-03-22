@@ -106,9 +106,9 @@ trait CompanyCarController extends TaiBaseController
           ServiceCheckLite.personDetailsCheck {
               journeyCacheService.currentValueAsDate(CompanyCar_DateGivenBackKey) map {
                 case Some(date) =>
-                  Ok(views.html.benefits.companyCarEndDate(DateForm(Messages("tai.companyCar.endDate.blankXX")).form.fill(date)))
+                  Ok(views.html.benefits.companyCarEndDate(DateForm(Messages("tai.companyCar.endDate.blank")).form.fill(date)))
                 case _ =>
-                  Ok(views.html.benefits.companyCarEndDate(DateForm(Messages("tai.companyCar.endDate.blankXX")).form))
+                  Ok(views.html.benefits.companyCarEndDate(DateForm(Messages("tai.companyCar.endDate.blank")).form))
               }
           }
   }
