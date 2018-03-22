@@ -60,17 +60,17 @@ trait AddEmploymentController extends TaiBaseController
 
   def successfulJourneyCacheService: JourneyCacheService
 
-  lazy val telephoneNumberViewModel: CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
-    Messages("tai.addEmployment.cya.preHeading"),
-    Messages("tai.canWeContactByPhone.title"),
+  def telephoneNumberViewModel(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
+    messages("tai.addEmployment.cya.preHeading"),
+    messages("tai.canWeContactByPhone.title"),
     controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url,
     controllers.employments.routes.AddEmploymentController.submitTelephoneNumber().url,
     controllers.routes.TaxAccountSummaryController.onPageLoad().url
   )
 
-  lazy val telephoneNumberSizeConstraint: Constraint[String] =
+  def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
     Constraint[String]((textContent: String) => textContent match {
-      case txt if txt.length < 8 || txt.length > 30 => Invalid(Messages("tai.canWeContactByPhone.telephone.invalid"))
+      case txt if txt.length < 8 || txt.length > 30 => Invalid(messages("tai.canWeContactByPhone.telephone.invalid"))
       case _ => Valid
     })
 
