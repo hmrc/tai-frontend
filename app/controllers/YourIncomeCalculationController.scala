@@ -54,7 +54,10 @@ trait YourIncomeCalculationController extends TaiBaseController
       implicit sessionData =>
         implicit request =>
           if(cyApdNewPageEnabled){
-            Future.successful(Redirect(routes.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(empId.getOrElse(-1))))
+            empId match {
+              case Some(id) => Future.successful(Redirect(routes.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(id)))
+              case _ => throw new RuntimeException("Employment id not present")
+            }
           } else{
             showIncomeCalculationPageForCurrentYear(nino = Nino(user.getNino), empId = empId)
           }
@@ -65,7 +68,10 @@ trait YourIncomeCalculationController extends TaiBaseController
       implicit sessionData =>
         implicit request =>
           if(cyApdNewPageEnabled){
-            Future.successful(Redirect(routes.YourIncomeCalculationControllerNew.printYourIncomeCalculationPage(empId.getOrElse(-1))))
+            empId match {
+              case Some(id) => Future.successful(Redirect(routes.YourIncomeCalculationControllerNew.printYourIncomeCalculationPage(empId.getOrElse(-1))))
+              case _ => throw new RuntimeException("Employment id not present")
+            }
           }else {
             showIncomeCalculationPageForCurrentYear(nino = Nino(user.getNino), empId = empId, printPage = true)
           }
