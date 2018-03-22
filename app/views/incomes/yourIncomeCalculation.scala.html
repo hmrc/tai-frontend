@@ -21,7 +21,7 @@
 @(incomeCalcDetails: uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel, empId: Int)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
 
 @main(
-    title = Messages("tai.income.calculation.TaxableIncomeDetails", "test"),
+    title = Messages("tai.income.calculation.TaxableIncomeDetails", incomeCalcDetails.employerName),
     user = Some(user),
     employerName = Some(incomeCalcDetails.employerName),
     gaCustomTitle = Some(Messages("tai.yourIncome.heading"))

@@ -18,7 +18,6 @@ package controllers
 
 import builders.{AuthBuilder, RequestBuilder, UserBuilder}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
-import uk.gov.hmrc.tai.model.SessionData
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
@@ -28,15 +27,15 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.service.{ActivityLoggerService, EmploymentService, TaiService}
-import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.model.tai.{AnnualAccount, TaxYear}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.tai.model.{SessionData, TaxSummaryDetails}
+import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.rti.RtiStatus
+import uk.gov.hmrc.tai.model.tai.{AnnualAccount, TaxYear}
+import uk.gov.hmrc.tai.model.{IncomeData, IncomeExplanation, SessionData, TaxSummaryDetails}
+import uk.gov.hmrc.tai.service.{ActivityLoggerService, EmploymentService, TaiService}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -89,13 +88,16 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
     "display the current year page with rti down message when Rti is Down" in {
 
+      val incomeId = 1
+
+      val SUT = createSUT()
+
       val sessionDataWithRTIError = AuthBuilder.createFakeSessionDataWithPY.copy(
-        taxSummaryDetailsCY = TaxSummaryDetails("", 0, accounts = Seq(AnnualAccount(TaxYear(2016),
-          None, None, Some(RtiStatus(500, "Response"))))))
+        taxSummaryDetailsCY = TaxSummaryDetails("", 0,
+          accounts = Seq(AnnualAccount(TaxYear(), None, None, Some(RtiStatus(INTERNAL_SERVER_ERROR, "Response")))),
+          incomeData = Some(IncomeData(List(IncomeExplanation(employerName = SUT.sampleEmployment.name, incomeId = incomeId))))))
 
-      val SUT = createSUT(Some(sessionDataWithRTIError))
-
-      val result = SUT.showIncomeCalculationPageForCurrentYear(nino, None)(FakeRequest("GET", ""),
+      val result = SUT.showIncomeCalculationPageForCurrentYear(nino, Some(incomeId))(FakeRequest("GET", ""),
         UserBuilder.apply(), sessionDataWithRTIError)
 
       status(result) mustBe 200
@@ -104,7 +106,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val contents = doc.body()
 
       contents.toString.contains(Messages("tai.income.calculation.rtiUnavailableCurrentYear.message")) mustBe true
-      doc.title() mustBe Messages("tai.yourIncome.heading")
+      doc.title() mustBe Messages("tai.income.calculation.TaxableIncomeDetails", SUT.sampleEmployment.name)
     }
 
     "call yourIncomeCalculationPage() successfully with an authorised session " in {
