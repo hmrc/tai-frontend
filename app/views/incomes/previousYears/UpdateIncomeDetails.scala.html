@@ -36,11 +36,11 @@
 }
 
 @main(
-    title = Messages("tai.updateEmployment.whatDoYouWantToTellUs.title"),
+    title = Messages("tai.income.previousYears.details.heading", viewModel.formattedTaxYear),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = None) {
+    gaCustomTitle = Some(Messages("tai.income.previousYears.details.customGaTitle"))) {
 
     @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDetails(), args=(Symbol("class"), "subsection")) {
 

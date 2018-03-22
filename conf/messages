@@ -1515,7 +1515,7 @@ tai.pension.income.details.pensionNumber.screenReader=Your pension number is {0}
 
 ## Update Income Details - Previous Years
 tai.income.previousYears.journey.preHeader=Update income details
-tai.income.previousYears.decision.title=Update income decision
+tai.income.previousYears.decision.customGaTitle=Update income decision
 tai.income.previousYears.decision.header=Update income details for {0}
 tai.income.previousYears.decision.IWantTo=I want to:
 tai.income.previousYears.decision.radio.yes=contact my employer or pension provider first
@@ -1528,6 +1528,7 @@ tai.income.previousYears.details.textarea.error.maximumExceeded=You can only ent
 tai.income.previousYears.details.heading=What do you want to tell us about your income details for {0}?
 tai.income.previousYears.details.preHeading=Update income details
 tai.income.previousYears.details.textarea.text=Enter details about your update (Maximum characters 500)
+tai.income.previousYears.details.customGaTitle=What do you want to tell us about your income details?
 tai.income.previousYears.confirmation.heading=Your update has been received
 tai.income.previousYears.confirmation.back=Return to your income details for previous years
 
