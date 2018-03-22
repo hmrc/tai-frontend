@@ -40,7 +40,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     webChat = webChat,
     gaCustomTitle = None
 ){
-    <section class="section--branded hmrc text">
+    <div class="section--branded hmrc text">
         <h2>@Messages("tai.incomes.edit.incomeTax.update.pension.heading")</h2>
         <p>@Messages("tai.incomes.edit.pension.text")</p>
         <p>@Messages("tai.enterWholeAndNumericalOnly")</p>
@@ -81,5 +81,5 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
                 <p><input type="submit" class="button" value='@Messages("tai.next")'/></p>
             </div>
         }
-    </section>
+    </div>
 }

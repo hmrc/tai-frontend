@@ -102,7 +102,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
 
   val employment = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1)
 
-  val taxAccountSummary = TaxAccountSummary(111,222, 333.33)
+  val taxAccountSummary = TaxAccountSummary(111,222, 333.33, 444.44, 111.11)
 
   val taxCodeIncomes = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOperation, Live),

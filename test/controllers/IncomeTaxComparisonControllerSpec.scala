@@ -94,7 +94,7 @@ with I18nSupport {
 
   val nino: Nino = new Generator(new Random).nextNino
   val employment = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1)
-  val taxAccountSummary = TaxAccountSummary(111,222, 333)
+  val taxAccountSummary = TaxAccountSummary(111,222, 333, 444, 111)
 
   val taxCodeIncomes = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOperation, Live),
@@ -116,7 +116,5 @@ with I18nSupport {
 
     when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
-
-
   }
 }
