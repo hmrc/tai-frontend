@@ -61,30 +61,23 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                             @Messages("tai.paye.lastTaxYear.heading")
                             <br/> @{TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)}</h3>
 
-                        <table id="last-tax-year-table" class="flush--bottom">
-                            <thead>
-                                <tr>
-                                    <th>@Messages("tai.paye.lastTaxYear.table.headingOne")</th>
-                                    <th class="text--right">@Messages("tai.paye.lastTaxYear.table.headingTwo")</th>
-                                    <th>@Messages("tai.paye.lastTaxYear.table.headingThree")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <div id="last-tax-year-table" class="flush--bottom">
+                            <ul class="govuk-check-your-answers cya-questions-short govuk-check-your-answers--tax-summary">
                                 @for(employment <- viewModel.employments){
-                                    <tr>
-                                        <td>@employment.name</td>
-                                        <td class="text--right">£@{f"${employment.taxablePayYTD}%,.2f"}</td>
-                                        <td>@Link.toInternalPage(
+                                    <li>
+                                        <div class="cya-question">@employment.name</div>
+                                        <div class="cya-answer">£@{f"${employment.taxablePayYTD}%,.2f"}</div>
+                                        <div class="cya-change">@Link.toInternalPage(
                                             url =
                                             routes.YourIncomeCalculationController.yourIncomeCalculation(viewModel.taxYear,
                                             employment.id).toString(),
                                             value = Some(Messages("tai.paye.lastTaxYear.table.link"))
                                             ).toHtml
-                                        </td>
-                                    </tr>
+                                        </div>
+                                    </li>
                                 }
-                            </tbody>
-                        </table>
+                            </ul>
+                        </div>
                     </section>
             }
 

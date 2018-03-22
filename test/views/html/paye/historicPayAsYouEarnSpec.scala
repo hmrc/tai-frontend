@@ -72,19 +72,15 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
 
         doc.select("#lastTaxYearIncome").size mustBe 1
 
-        doc.select("#last-tax-year-table thead > tr > th:nth-child(1)").text mustBe messages("tai.paye.lastTaxYear.table.headingOne")
-        doc.select("#last-tax-year-table thead > tr > th:nth-child(2)").text mustBe messages("tai.paye.lastTaxYear.table.headingTwo")
-        doc.select("#last-tax-year-table thead > tr > th:nth-child(3)").text mustBe messages("tai.paye.lastTaxYear.table.headingThree")
+        doc.select("#last-tax-year-table li").size() mustBe 1
 
-        doc.select("#last-tax-year-table tbody > tr").size() mustBe 1
+        doc.select("#last-tax-year-table .cya-question").text() mustBe "test employment"
+        doc.select("#last-tax-year-table .cya-answer").text() mustBe "£0.00"
 
-        doc.select("#last-tax-year-table tbody > tr > td:nth-child(1)").text() mustBe "test employment"
-        doc.select("#last-tax-year-table tbody > tr > td:nth-child(2)").text() mustBe "£0.00"
-
-        doc.select("#last-tax-year-table tbody > tr > td:nth-child(3) a").text() mustBe
+        doc.select("#last-tax-year-table .cya-change a").text() mustBe
           messages("tai.paye.lastTaxYear.table.link")
 
-        doc.select("#last-tax-year-table tbody > tr > td:nth-child(3) a").attr("href") mustBe
+        doc.select("#last-tax-year-table .cya-change a").attr("href") mustBe
           routes.YourIncomeCalculationController.yourIncomeCalculation(cyMinusOneTaxYear, employment.id).toString
 
         doc.select("#p800Link").size mustBe 1
@@ -120,19 +116,15 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
 
         doc.select("#lastTaxYearIncome").size mustBe 1
 
-        doc.select("#last-tax-year-table thead > tr > th:nth-child(1)").text mustBe messages("tai.paye.lastTaxYear.table.headingOne")
-        doc.select("#last-tax-year-table thead > tr > th:nth-child(2)").text mustBe messages("tai.paye.lastTaxYear.table.headingTwo")
-        doc.select("#last-tax-year-table thead > tr > th:nth-child(3)").text mustBe messages("tai.paye.lastTaxYear.table.headingThree")
+        doc.select("#last-tax-year-table li").size() mustBe 1
 
-        doc.select("#last-tax-year-table tbody > tr").size() mustBe 1
+        doc.select("#last-tax-year-table .cya-question").text() mustBe "test employment"
+        doc.select("#last-tax-year-table .cya-answer").text() mustBe "£123.32"
 
-        doc.select("#last-tax-year-table tbody > tr > td:nth-child(1)").text() mustBe "test employment"
-        doc.select("#last-tax-year-table tbody > tr > td:nth-child(2)").text() mustBe "£123.32"
-
-        doc.select("#last-tax-year-table tbody > tr > td:nth-child(3) a").text() mustBe
+        doc.select("#last-tax-year-table .cya-change a").text() mustBe
           messages("tai.paye.lastTaxYear.table.link")
 
-        doc.select("#last-tax-year-table tbody > tr > td:nth-child(3) a").attr("href") mustBe
+        doc.select("#last-tax-year-table .cya-change a").attr("href") mustBe
           routes.YourIncomeCalculationController.yourIncomeCalculation(cyMinusOneTaxYear, employment.id).toString
 
         doc.select("#p800Link").size mustBe 1
@@ -151,28 +143,24 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
 
         doc.select("#lastTaxYearIncome").size mustBe 1
 
-        doc.select("#last-tax-year-table thead > tr > th:nth-child(1)").text mustBe messages("tai.paye.lastTaxYear.table.headingOne")
-        doc.select("#last-tax-year-table thead > tr > th:nth-child(2)").text mustBe messages("tai.paye.lastTaxYear.table.headingTwo")
-        doc.select("#last-tax-year-table thead > tr > th:nth-child(3)").text mustBe messages("tai.paye.lastTaxYear.table.headingThree")
+        doc.select("#last-tax-year-table li").size() mustBe 2
 
-        doc.select("#last-tax-year-table tbody > tr").size() mustBe 2
+        doc.select("#last-tax-year-table li:nth-child(1) .cya-question").text() mustBe "test employment 1"
+        doc.select("#last-tax-year-table li:nth-child(1) .cya-answer").text() mustBe "£123.32"
 
-        doc.select("#last-tax-year-table tbody > tr:nth-child(1) > td:nth-child(1)").text() mustBe "test employment 1"
-        doc.select("#last-tax-year-table tbody > tr:nth-child(1) > td:nth-child(2)").text() mustBe "£123.32"
-
-        doc.select("#last-tax-year-table tbody > tr:nth-child(1) > td:nth-child(3) a").text() mustBe
+        doc.select("#last-tax-year-table li:nth-child(1) .cya-change a").text() mustBe
           messages("tai.paye.lastTaxYear.table.link")
 
-        doc.select("#last-tax-year-table tbody > tr:nth-child(1) > td:nth-child(3) a").attr("href") mustBe
+        doc.select("#last-tax-year-table li:nth-child(1) .cya-change a").attr("href") mustBe
           routes.YourIncomeCalculationController.yourIncomeCalculation(cyMinusOneTaxYear, employment1.id).toString
 
-        doc.select("#last-tax-year-table tbody > tr:nth-child(2) > td:nth-child(1)").text() mustBe "test employment 2"
-        doc.select("#last-tax-year-table tbody > tr:nth-child(2) > td:nth-child(2)").text() mustBe "£345.54"
+        doc.select("#last-tax-year-table li:nth-child(2) .cya-question").text() mustBe "test employment 2"
+        doc.select("#last-tax-year-table li:nth-child(2) .cya-answer").text() mustBe "£345.54"
 
-        doc.select("#last-tax-year-table tbody > tr:nth-child(2) > td:nth-child(3) a").text() mustBe
+        doc.select("#last-tax-year-table li:nth-child(2) .cya-change a").text() mustBe
           messages("tai.paye.lastTaxYear.table.link")
 
-        doc.select("#last-tax-year-table tbody > tr:nth-child(2) > td:nth-child(3) a").attr("href") mustBe
+        doc.select("#last-tax-year-table li:nth-child(2) .cya-change a").attr("href") mustBe
           routes.YourIncomeCalculationController.yourIncomeCalculation(cyMinusOneTaxYear, employment2.id).toString
 
         doc.select("#p800Link").size mustBe 1
@@ -189,8 +177,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
 
         doc.select("#lastTaxYearIncome").size mustBe 1
 
-        doc.select("#last-tax-year-table thead > tr").size() mustBe 1
-        doc.select("#last-tax-year-table tbody > tr").size() mustBe 1
+        doc.select("#last-tax-year-table li").size() mustBe 1
 
         doc.select("#p800Link").size mustBe 1
 
@@ -214,8 +201,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         doc.select("#p800Link").size mustBe 1
 
         doc.select("#lastTaxYearIncome").size mustBe 0
-        doc.select("#last-tax-year-table thead > tr").size() mustBe 0
-        doc.select("#last-tax-year-table tbody > tr").size() mustBe 0
+        doc.select("#last-tax-year-table li").size() mustBe 0
       }
     }
 
