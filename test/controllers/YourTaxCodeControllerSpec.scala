@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.service.{TaiService, TaxAccountService}
 import scala.concurrent.Future
 import scala.util.Random
 
-class YourTaxCodeControllerNewSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
+class YourTaxCodeControllerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   private implicit val hc = HeaderCarrier()
