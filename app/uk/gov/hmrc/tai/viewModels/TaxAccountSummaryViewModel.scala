@@ -49,8 +49,8 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with DateFormatConstan
             isAnyFormInProgress: Boolean,
             nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
-    val header = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak(DateWithYearFormat)
-    val title = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRange(DateWithYearFormat)
+    val header = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak
+    val title = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRange
 
     val taxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
     val estimatedIncomeTaxAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))
@@ -66,7 +66,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with DateFormatConstan
       viewModelsFromMatchingIncomeSources(ceasedEmploymentTaxCodeIncomes, employments) ++
       viewModelsFromNonMatchingCeasedEmployments(taxCodeIncomes, employments)
 
-    val lastTaxYearEnd = TaxYearResolver.endOfCurrentTaxYear.minusYears(1).toString("d MMMM yyyy")
+    val lastTaxYearEnd = Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear.minusYears(1))
 
     TaxAccountSummaryViewModel(
       header,

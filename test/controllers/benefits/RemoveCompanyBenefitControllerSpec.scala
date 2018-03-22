@@ -34,6 +34,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
@@ -515,7 +516,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
   def generateNino: Nino = new Generator(new Random).nextNino
 
-  val startOfTaxYear = TaxYearResolver.startOfCurrentTaxYear.toString(DateWithYearFormat)
+  val startOfTaxYear = Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   private def createSUT = new SUT

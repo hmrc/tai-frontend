@@ -37,8 +37,8 @@ object TaxFreeAmountViewModelNew extends TaxAccountCalculator with ViewModelHelp
 
     val taxFreeAmountMsg = Messages("tai.taxFreeAmount.heading.pt1")
 
-    val headerWithAdditionalMarkup = s"""$taxFreeAmountMsg ${currentTaxYearRangeHtmlNonBreak(DateWithYearFormat)}"""
-    val title = s"$taxFreeAmountMsg ${currentTaxYearRange(DateWithYearFormat)}"
+    val headerWithAdditionalMarkup = s"""$taxFreeAmountMsg ${currentTaxYearRangeHtmlNonBreak}"""
+    val title = s"$taxFreeAmountMsg ${currentTaxYearRange}"
 
     val taxFreeAmountTotal: BigDecimal = taxFreeAmount(codingComponents)
 

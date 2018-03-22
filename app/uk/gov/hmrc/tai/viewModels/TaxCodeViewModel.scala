@@ -51,8 +51,8 @@ object TaxCodeViewModel extends ViewModelHelper with DateFormatConstants {
     val taxYear = uk.gov.hmrc.tai.model.tai.TaxYear()
     val taxCodesPrefix = if (taxCodeIncomes.size > 1) Messages("tai.taxCode.multiple.code.title.pt1") else Messages("tai.taxCode.single.code.title.pt1")
 
-    val title = s"$taxCodesPrefix ${currentTaxYearRange(DateWithYearFormat)}"
-    val mainHeading = s"$taxCodesPrefix ${currentTaxYearRangeHtmlNonBreak(DateWithYearFormat)}"
+    val title = s"$taxCodesPrefix ${currentTaxYearRange}"
+    val mainHeading = s"$taxCodesPrefix ${currentTaxYearRangeHtmlNonBreak}"
     val ledeMessage = if (taxCodeIncomes.size > 1) Messages("tai.taxCode.multiple.info") else Messages("tai.taxCode.single.info")
 
     TaxCodeViewModel(title, mainHeading, ledeMessage, descriptionListViewModels)

@@ -18,10 +18,10 @@ package uk.gov.hmrc.tai.util
 
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.time.TaxYearResolver
 import TaiConstants.encodedMinusSign
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 trait ViewModelHelper {
 
@@ -32,30 +32,26 @@ trait ViewModelHelper {
 
   def withPoundPrefix(moneyPounds: MoneyPounds): String = s"£${moneyPounds.quantity}"
 
+  //used without year!
   def currentTaxYearHeaderHtmlNonBreak(format: String): String = {
     htmlNonBroken( TaxYearResolver.endOfCurrentTaxYear.toString(format) )
   }
 
+  //used without year!
   def nextTaxYearHeaderHtmlNonBreak(format: String): String = {
     htmlNonBroken( TaxYearResolver.startOfNextTaxYear.toString(format) )
   }
 
-  def currentTaxYearRange(format: String): String = {
-    Messages("tai.taxYear",
-      TaxYearResolver.startOfCurrentTaxYear.toString(format),
-      TaxYearResolver.endOfCurrentTaxYear.toString(format))
+  def currentTaxYearRange(implicit messages: Messages): String = {
+    messages("tai.taxYear",
+      Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear),
+      Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))
   }
 
-  def currentTaxYearRangeHtmlNonBreak(format: String): String = {
-    Messages("tai.taxYear",
-      htmlNonBroken( TaxYearResolver.startOfCurrentTaxYear.toString(format) ),
-      htmlNonBroken( TaxYearResolver.endOfCurrentTaxYear.toString(format) ))
-  }
-
-  def taxYearRangeHtmlNonBreak(format: String, year: Int): String = {
-    Messages("tai.taxYear",
-      htmlNonBroken( TaxYearResolver.startOfTaxYear(year).toString(format) ),
-      htmlNonBroken( TaxYearResolver.startOfTaxYear(year+1).minusDays(1).toString(format) ))
+  def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String = {
+    messages("tai.taxYear",
+      htmlNonBroken( Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear) ),
+      htmlNonBroken( Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear) ))
   }
 
   def htmlNonBroken(string: String): String = {

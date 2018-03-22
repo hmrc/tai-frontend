@@ -25,6 +25,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
@@ -78,6 +79,9 @@ trait RemoveCompanyBenefitController extends TaiBaseController
     implicit user =>
       implicit taiRoot =>
         implicit request =>
+
+          val startOfTaxYear = Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)
+
           RemoveCompanyBenefitStopDateForm.form.bindFromRequest.fold(
             formWithErrors => {
               journeyCacheService.mandatoryValues(EndCompanyBenefit_BenefitNameKey,EndCompanyBenefit_EmploymentNameKey) map  {
@@ -273,8 +277,6 @@ trait RemoveCompanyBenefitController extends TaiBaseController
       controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
     )
   }
-
-  val startOfTaxYear = TaxYearResolver.startOfCurrentTaxYear.toString(DateWithYearFormat)
 
 }
 
