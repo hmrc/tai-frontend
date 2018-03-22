@@ -56,7 +56,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
-      doc.title() mustBe Messages("tai.yourIncome.heading")
+      doc.title() mustBe Messages("tai.income.calculation.TaxableIncomeDetails", SUT.sampleEmployment.name)
     }
 
     "display the current year with missing data" in {
@@ -70,7 +70,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
-      doc.title() mustBe Messages("tai.yourIncome.heading")
+      doc.title() mustBe Messages("tai.income.calculation.TaxableIncomeDetails", SUT.sampleEmployment.name)
     }
 
     "display the current year with ceased employments data" in {
@@ -84,7 +84,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
-      doc.title() mustBe Messages("tai.yourIncome.heading")
+      doc.title() mustBe Messages("tai.income.calculation.TaxableIncomeDetails", SUT.sampleEmployment.name)
     }
 
     "display the current year page with rti down message when Rti is Down" in {
@@ -365,7 +365,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
     val ad = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    val sampleEmployment = Employment("empName", None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1)
+    val sampleEmployment = Employment("employer1", None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1)
     val emp = when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(sampleEmployment)))
 
     val sd = sessionData.getOrElse(AuthBuilder.createFakeSessionDataWithPY)
