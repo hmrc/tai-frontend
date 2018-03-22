@@ -33,7 +33,7 @@
                                     @includes.link(
                                         id=Some("estimatedTaxOwedLink"),
                                         copy=Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"),
-                                        url = controllers.routes.CurrentYearPageController.potentialUnderpaymentPage.url.toString,
+                                        url = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
                                         linkClasses = Seq("link-list__item"),
                                         attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
                                     )

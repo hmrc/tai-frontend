@@ -100,7 +100,8 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
       val viewModel: TaxFreeAmountViewModelNew = TaxFreeAmountViewModelNew("main heading", "main heading", "£2020", svm)
 
       val document = doc(views.html.taxFreeAmountNew(viewModel))
-      document must haveLinkElement("estimatedTaxOwedLink", controllers.routes.CurrentYearPageController.potentialUnderpaymentPage.url, messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"))
+
+      document must haveLinkElement("estimatedTaxOwedLink", controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url, messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"))
     }
   }
 
