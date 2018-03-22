@@ -24,9 +24,11 @@ user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateR
 @import uk.gov.hmrc.play.views.html.layouts.loginStatus
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.play.views.helpers._
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.time.TaxYearResolver
 
 @main(
-title = Messages("tai.currentYearSummary.heading",s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}"),
+title = Messages("tai.currentYearSummary.heading",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}"),
 articleClasses = Some("full-width text"),
 user = Some(user),
 gaCustomTitle = None

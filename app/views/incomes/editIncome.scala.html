@@ -20,6 +20,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.time.TaxYearResolver
 
 @gaEventActionString = @{"Update your annual taxable pay"}
 
@@ -54,7 +56,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
     <section class="section--branded hmrc">
         <h2 class="h2-heading">@Messages("tai.incomes.edit.incomeTax.update.heading")</h2>
-        <p>@Messages("tai.incomes.edit.text",s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</p>
+        <p>@Messages("tai.incomes.edit.text",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</p>
         <p>@Messages("tai.enterWholeAndNumericalOnly")</p>
 
         @form(action = controllers.routes.IncomeControllerNew.editRegularIncome){

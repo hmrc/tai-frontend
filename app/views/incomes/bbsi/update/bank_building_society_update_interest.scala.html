@@ -23,6 +23,8 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.forms.submit
 @import uk.gov.hmrc.tai.viewModels.income.BbsiUpdateAccountViewModel
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.time.TaxYearResolver
 
 @(viewModel: BbsiUpdateAccountViewModel, updateInterestForm: Form[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever = TaiHtmlPartialRetriever)
 
@@ -43,9 +45,8 @@
     gaCustomTitle = Some(Messages("tai.bbsi.update.captureInterest.customGaTitle"))
 ) {
 
-    @defining("d MMMM yyyy") { dateFormatPattern =>
-        <p><span class="lede">@Html(messages("tai.bbsi.update.captureInterest.para1", TaxYear().start.toString(dateFormatPattern),
-            TaxYear().end.toString(dateFormatPattern),
+        <p><span class="lede">@Html(messages("tai.bbsi.update.captureInterest.para1", Dates.formatDate(TaxYear().start),
+            Dates.formatDate(TaxYear().end),
             pounds(viewModel.interest)))</span></p>
         <p>@messages("tai.bbsi.update.captureInterest.para2")</p>
         <p>@messages("tai.bbsi.update.captureInterest.para3")</p>
@@ -67,13 +68,12 @@
             <p class="section flush">@messages("tai.bbsi.update.captureInterest.para4",
                 TaxYear().year.toString,
                 TaxYear().end.getYear.toString,
-                TaxYear().end.toString(dateFormatPattern))</p>
+                Dates.formatDate(TaxYear().end))</p>
 
             @submit()
         }
 
         @cancelLink(controllers.income.bbsi.routes.BbsiController.accounts())
-    }
 }
 
 

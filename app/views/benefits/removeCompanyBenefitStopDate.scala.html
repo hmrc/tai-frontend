@@ -20,12 +20,13 @@
 @import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
 @import includes.forms.{radioGroupYesNo,inputRadioGroupNewStyling, submit}
 @import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 @(stopDateForm: Form[Option[String]],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
 
 @gaEventActionString = @{"Remove Company Benefits Stop Date"}
-@startOfCurrentTaxYear = @{TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}
-@endOfCurrentTaxYear = @{TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}
+@startOfCurrentTaxYear = @{Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}
+@endOfCurrentTaxYear = @{Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}
 @classArguments = @{if(stopDateForm(RemoveCompanyBenefitStopDateForm.StopDateChoice).value.getOrElse("") != RemoveCompanyBenefitStopDateForm.BeforeTaxYearEnd) "js-hidden data-stopDate inline form-field-group panel-indent" else "data-stopDate inline form-field-group panel-indent"}
 
 @header = @{
