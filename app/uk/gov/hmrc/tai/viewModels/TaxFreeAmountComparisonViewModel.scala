@@ -19,15 +19,15 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.util.{DateFormatConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.ViewModelHelper
 
 case class TaxFreeAmountComparisonViewModel(
                                               personalAllowance: PersonalAllowance,
                                               additions: Additions,
                                               deductions: Deductions,
-                                              footer: Footer) extends ViewModelHelper with DateFormatConstants {
-  lazy val currentTaxYearHeader: String = currentTaxYearHeaderHtmlNonBreak(DateWithoutYearFormat)
-  lazy val nextTaxYearHeader: String = nextTaxYearHeaderHtmlNonBreak(DateWithYearFormat)
+                                              footer: Footer) extends ViewModelHelper {
+  def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
+  def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
   val hasAdditions: Boolean = additions.additions.nonEmpty
   val hasDeductions: Boolean = deductions.deductions.nonEmpty
 }

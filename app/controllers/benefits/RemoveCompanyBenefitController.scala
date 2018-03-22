@@ -52,8 +52,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
   with JourneyCacheConstants
   with AuditConstants
   with FormValuesConstants
-  with RemoveCompanyBenefitStopDateConstants
-  with DateFormatConstants {
+  with RemoveCompanyBenefitStopDateConstants {
 
   def taiService: TaiService
   def auditService: AuditService

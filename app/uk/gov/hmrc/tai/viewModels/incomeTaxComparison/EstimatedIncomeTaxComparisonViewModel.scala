@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.tai.viewModels.incomeTaxComparison
 
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.util.{DateFormatConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.ViewModelHelper
 
-case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxComparisonItem]) extends ViewModelHelper with DateFormatConstants {
-  lazy val currentTaxYearHeader: String = currentTaxYearHeaderHtmlNonBreak(DateWithoutYearFormat)
-  lazy val nextTaxYearHeader: String = nextTaxYearHeaderHtmlNonBreak(DateWithYearFormat)
+case class EstimatedIncomeTaxComparisonViewModel(items: Seq[EstimatedIncomeTaxComparisonItem]) extends ViewModelHelper {
+  def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
+  def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
 
   lazy val comparisonItemsByYear = items.sortBy(_.year)
 

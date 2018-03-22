@@ -23,7 +23,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.income.{TaxCodeIncome, Week1Month1BasisOperation}
-import uk.gov.hmrc.tai.util.{DateFormatConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.urls.Link
 
 import scala.collection.immutable.ListMap
@@ -33,7 +33,7 @@ case class TaxCodeViewModel(title: String,
                             ledeMessage: String,
                             taxCodeDetails: Seq[DescriptionListViewModel])
 
-object TaxCodeViewModel extends ViewModelHelper with DateFormatConstants {
+object TaxCodeViewModel extends ViewModelHelper {
 
   def apply(taxCodeIncomes: Seq[TaxCodeIncome])(implicit messages: Messages): TaxCodeViewModel = {
 

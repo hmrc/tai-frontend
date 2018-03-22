@@ -187,11 +187,6 @@ trait TaxRegionConstants {
   val ScottishTaxRegion = "SCOTTISH"
 }
 
-trait DateFormatConstants {
-  val DateWithoutYearFormat = "d MMMM"
-  val DateWithYearFormat = "d MMMM yyyy"
-}
-
 trait UpdateOrRemoveCompanyBenefitDecisionConstants{
   val DecisionChoice = "decisionChoice"
   val YesIGetThisBenefit = "yesIGetThisBenefit"

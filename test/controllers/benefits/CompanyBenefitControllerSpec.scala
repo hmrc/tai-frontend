@@ -52,7 +52,6 @@ class CompanyBenefitControllerSpec extends PlaySpec
   with FormValuesConstants
   with UpdateOrRemoveCompanyBenefitDecisionConstants
   with JourneyCacheConstants
-  with DateFormatConstants
   with JsoupMatchers{
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

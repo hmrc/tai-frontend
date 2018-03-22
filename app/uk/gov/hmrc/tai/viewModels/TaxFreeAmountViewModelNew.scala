@@ -24,14 +24,14 @@ import uk.gov.hmrc.tai.model.domain.{AllowanceComponentType, PersonalAllowancePA
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.util.{DateFormatConstants, TaxAccountCalculator, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{TaxAccountCalculator, ViewModelHelper}
 
 case class TaxFreeAmountViewModelNew(header: String,
                                      title: String,
                                      annualTaxFreeAmount: String,
                                      summaryItems: Seq[TaxFreeAmountSummaryCategoryViewModel])
 
-object TaxFreeAmountViewModelNew extends TaxAccountCalculator with ViewModelHelper with DateFormatConstants {
+object TaxFreeAmountViewModelNew extends TaxAccountCalculator with ViewModelHelper {
 
   def apply(codingComponents: Seq[CodingComponent], employmentName: Map[Int, String], companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages): TaxFreeAmountViewModelNew = {
 

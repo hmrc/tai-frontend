@@ -21,12 +21,12 @@ import hmrc.nps2.TaxBand
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.viewModels.TaxExplanationViewModel
 import play.twirl.api.Html
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.time.TaxYearResolver
-import uk.gov.hmrc.tai.util.DateFormatConstants
 
-class howIncomeTaxIsCalculatedSpec extends TaiViewSpec with BandTypesConstants with DateFormatConstants {
+class howIncomeTaxIsCalculatedSpec extends TaiViewSpec with BandTypesConstants {
 
   "view" must {
     behave like pageWithTitle(messages("tai.incomeTax.calculated.title"))
@@ -42,8 +42,8 @@ class howIncomeTaxIsCalculatedSpec extends TaiViewSpec with BandTypesConstants w
     accessiblePreHeading.text mustBe Messages("tai.estimatedIncome.accessiblePreHeading")
 
     val expectedTaxYearString =  Messages("tai.taxYear",
-      nonBreakable(TaxYearResolver.startOfCurrentTaxYear.toString(DateWithYearFormat)),
-      nonBreakable(TaxYearResolver.endOfCurrentTaxYear.toString(DateWithYearFormat)) )
+      nonBreakable(Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)),
+      nonBreakable(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)) )
 
     val preHeading = doc.select("header p")
     preHeading.text mustBe s"${Messages("tai.estimatedIncome.accessiblePreHeading")} ${expectedTaxYearString}"

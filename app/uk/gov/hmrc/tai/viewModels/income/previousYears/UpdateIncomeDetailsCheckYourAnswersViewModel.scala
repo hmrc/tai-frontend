@@ -21,7 +21,7 @@ import play.api.Play.current
 
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
-import uk.gov.hmrc.tai.util.{DateFormatConstants, FormValuesConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{FormValuesConstants, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 
@@ -62,7 +62,7 @@ case class UpdateIncomeDetailsCheckYourAnswersViewModel(tableHeader: String,
 }
 
 
-object UpdateIncomeDetailsCheckYourAnswersViewModel extends ViewModelHelper with DateFormatConstants {
+object UpdateIncomeDetailsCheckYourAnswersViewModel extends ViewModelHelper {
 
   def apply(taxYear: TaxYear,
             whatYouToldUs: String,

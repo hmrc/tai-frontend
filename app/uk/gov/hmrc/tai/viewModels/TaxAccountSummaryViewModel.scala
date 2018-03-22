@@ -25,7 +25,7 @@ import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.util.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
-import uk.gov.hmrc.tai.util.{DateFormatConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.time.TaxYearResolver
 
 
@@ -42,7 +42,7 @@ case class TaxAccountSummaryViewModel(header: String,
                                       otherIncomeSources: Seq[IncomeSourceViewModel]
                                      )
 
-object TaxAccountSummaryViewModel extends ViewModelHelper with DateFormatConstants {
+object TaxAccountSummaryViewModel extends ViewModelHelper {
   def apply(taxCodeIncomes: Seq[TaxCodeIncome],
             employments: Seq[Employment],
             taxAccountSummary: TaxAccountSummary,

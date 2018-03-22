@@ -32,14 +32,12 @@ trait ViewModelHelper {
 
   def withPoundPrefix(moneyPounds: MoneyPounds): String = s"£${moneyPounds.quantity}"
 
-  //used without year!
-  def currentTaxYearHeaderHtmlNonBreak(format: String): String = {
-    htmlNonBroken( TaxYearResolver.endOfCurrentTaxYear.toString(format) )
+  def currentTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
+    htmlNonBroken( Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear) )
   }
 
-  //used without year!
-  def nextTaxYearHeaderHtmlNonBreak(format: String): String = {
-    htmlNonBroken( TaxYearResolver.startOfNextTaxYear.toString(format) )
+  def nextTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
+    htmlNonBroken( Dates.formatDate(TaxYearResolver.startOfNextTaxYear) )
   }
 
   def currentTaxYearRange(implicit messages: Messages): String = {

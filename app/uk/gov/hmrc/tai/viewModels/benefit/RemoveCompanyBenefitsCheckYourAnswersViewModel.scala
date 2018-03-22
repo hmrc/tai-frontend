@@ -20,7 +20,7 @@ import play.api.Play.current
 import play.api.i18n.Messages
 
 import uk.gov.hmrc.play.views.formatting.Money
-import uk.gov.hmrc.tai.util.{DateFormatConstants, FormValuesConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{FormValuesConstants, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 
@@ -82,7 +82,7 @@ case class RemoveCompanyBenefitCheckYourAnswersViewModel(tableHeader: String,
 
 }
 
-object RemoveCompanyBenefitCheckYourAnswersViewModel extends ViewModelHelper with DateFormatConstants {
+object RemoveCompanyBenefitCheckYourAnswersViewModel extends ViewModelHelper {
 
   def apply(benefitType: String,
             employerName: String,
