@@ -374,8 +374,8 @@ tai.extendedTaxReliefs=Your estimate includes any <a href="{0}">tax relief</a> y
 tai.extendedTaxReliefs.heading=Your tax relief payments
 tai.extendedTaxReliefs.description=Tax relief means you pay less tax to take account of money you’ve spent on Gift Aid donations or personal pension payments.
 tai.extendedTaxReliefs.payments=Payment
-tai.extendedTaxReliefs.source=Amount paid (£)
-tai.extendedTaxReliefs.relief=Tax saving (£)
+tai.extendedTaxReliefs.source=Amount&nbsp;paid (£)
+tai.extendedTaxReliefs.relief=Tax&nbsp;saving (£)
 tai.extendedTaxReliefs.ppr.title=Personal Pension payments
 tai.extendedTaxReliefs.ppr.description=This is the tax relief you’ve claimed for your Personal Pension payments if you pay higher rate tax. Basic rate tax relief is given at source by your pension provider.
 tai.extendedTaxReliefs.giftAid.title=Gift Aid
