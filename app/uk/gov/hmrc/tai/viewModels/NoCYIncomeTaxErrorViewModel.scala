@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.viewModels
 
 
 import org.joda.time.LocalDate
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.Employment
 
 case class NoCYIncomeTaxErrorViewModel(endDate: Option[String])
@@ -26,7 +27,7 @@ object NoCYIncomeTaxErrorViewModel {
 
   val dateFormat = "d MMMM yyyy"
 
-  def apply(employments: Seq[Employment]): NoCYIncomeTaxErrorViewModel = {
+  def apply(employments: Seq[Employment])(implicit messages: Messages): NoCYIncomeTaxErrorViewModel = {
     val endDate = mostRecentEmploymentEndDate(employments)
     NoCYIncomeTaxErrorViewModel(endDate)
   }

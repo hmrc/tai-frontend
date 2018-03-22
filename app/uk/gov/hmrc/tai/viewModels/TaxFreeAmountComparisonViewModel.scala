@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.{DateFormatConstants, ViewModelHelper}
@@ -34,7 +35,7 @@ case class TaxFreeAmountComparisonViewModel(
 
 object TaxFreeAmountComparisonViewModel {
 
-  def apply(codingComponentForYears: Seq[CodingComponentForYear], taxAccountSummaryForYears: Seq[TaxAccountSummaryForYear]): TaxFreeAmountComparisonViewModel = {
+  def apply(codingComponentForYears: Seq[CodingComponentForYear], taxAccountSummaryForYears: Seq[TaxAccountSummaryForYear])(implicit messages: Messages): TaxFreeAmountComparisonViewModel = {
     val sortedcodingComponentsByYear = codingComponentForYears.sortBy(_.year)
     val sortedTaxAccountSummaryByYear = taxAccountSummaryForYears.sortBy(_.year)
     val personalAllowance = createPersonalAllowanceRow(sortedcodingComponentsByYear)

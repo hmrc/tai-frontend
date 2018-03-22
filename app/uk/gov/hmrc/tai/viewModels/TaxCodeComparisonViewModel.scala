@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import uk.gov.hmrc.tai.util.TaiConstants.ScottishTaxCodePrefix
@@ -38,7 +39,7 @@ case class TaxCodeComparisonViewModel(employmentTaxCodes: Seq[TaxCodeDetail], pe
 }
 
 object TaxCodeComparisonViewModel {
-  def apply(taxCodeForYears: Seq[TaxCodeForYear]): TaxCodeComparisonViewModel = {
+  def apply(taxCodeForYears: Seq[TaxCodeForYear])(implicit messages: Messages): TaxCodeComparisonViewModel = {
 
     val employmentTaxCodes = taxCodeDetails(taxCodeForYears, EmploymentIncome)
     val pensionTaxCodes = taxCodeDetails(taxCodeForYears, PensionIncome)

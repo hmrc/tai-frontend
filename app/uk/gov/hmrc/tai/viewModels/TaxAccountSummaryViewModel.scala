@@ -20,7 +20,7 @@ import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
@@ -48,7 +48,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with DateFormatConstan
             employments: Seq[Employment],
             taxAccountSummary: TaxAccountSummary,
             isAnyFormInProgress: Boolean,
-            nonTaxCodeIncome: NonTaxCodeIncome): TaxAccountSummaryViewModel = {
+            nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
     val header = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak(DateWithYearFormat)
     val title = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRange(DateWithYearFormat)
@@ -94,7 +94,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with DateFormatConstan
     taxCodeIncome.componentType == EmploymentIncome && taxCodeIncome.status != Live
 
   private def viewModelsFromMatchingIncomeSources(taxCodeIncomes: Seq[TaxCodeIncome],
-                                                  employments: Seq[Employment]): Seq[IncomeSourceViewModel] = {
+                                                  employments: Seq[Employment])(implicit messages: Messages): Seq[IncomeSourceViewModel] = {
     taxCodeIncomes.flatMap {
       (t: TaxCodeIncome) =>
         t.employmentId.flatMap {
@@ -104,7 +104,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with DateFormatConstan
   }
 
   private def viewModelsFromNonMatchingCeasedEmployments(taxCodeIncomes: Seq[TaxCodeIncome],
-                                                         employments: Seq[Employment]): Seq[IncomeSourceViewModel] = {
+                                                         employments: Seq[Employment])(implicit messages: Messages): Seq[IncomeSourceViewModel] = {
     val unmatchedCeased = employments
       .withFilter(emp => !taxCodeIncomes.exists(tci => tci.employmentId.isDefined && tci.employmentId.get == emp.sequenceNumber))
       .withFilter(_.endDate.isDefined)
@@ -127,7 +127,7 @@ case class IncomeSourceViewModel(name: String,
 
 object IncomeSourceViewModel extends ViewModelHelper {
 
-  def apply(employment: Employment): IncomeSourceViewModel = {
+  def apply(employment: Employment)(implicit messages: Messages): IncomeSourceViewModel = {
 
     val amountNumeric: BigDecimal = (
       for {
@@ -157,7 +157,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
   }
 
   def apply(taxCodeIncome: TaxCodeIncome,
-            employment: Employment): IncomeSourceViewModel = {
+            employment: Employment)(implicit messages: Messages): IncomeSourceViewModel = {
 
     val endDate: Option[String] = employment.endDate.map(
       new LocalDate(_).toString(DateTimeFormat.forPattern(datePatternWithFullMonthName)))
@@ -187,7 +187,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
       incomeSourceSummaryUrl)
   }
 
-  def apply(nonTaxCodeIncome: NonTaxCodeIncome): Seq[IncomeSourceViewModel] = {
+  def apply(nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): Seq[IncomeSourceViewModel] = {
 
     val untaxedInterest = nonTaxCodeIncome.untaxedInterest.map(u =>
       IncomeSourceViewModel(

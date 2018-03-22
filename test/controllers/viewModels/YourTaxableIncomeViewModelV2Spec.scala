@@ -16,6 +16,7 @@
 
 package controllers.viewModels
 
+import controllers.FakeTaiPlayApplication
 import hmrc.nps2.IabdType
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -23,10 +24,11 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.domain.BankAccount
 import uk.gov.hmrc.tai.model.{IabdSummary, IncreasesTax, TaxComponent, TaxSummaryDetails}
 import uk.gov.hmrc.tai.viewModels.YourTaxableIncomeViewModelV2
+import play.api.i18n.Messages.Implicits._
 
 import scala.util.Random
 
-class YourTaxableIncomeViewModelV2Spec extends PlaySpec with MockitoSugar {
+class YourTaxableIncomeViewModelV2Spec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
 
   "YourTaxableIncomeViewModelV2 apply method" should {
     "return the model with company car field as false" when {

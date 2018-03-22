@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.viewModels
 
 import hmrc.nps2.IabdType
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.TaxSummaryDetails
 import uk.gov.hmrc.tai.model.{IabdSummary, TaxSummaryDetails}
 import uk.gov.hmrc.tai.model.domain.BankAccount
@@ -24,7 +25,7 @@ import uk.gov.hmrc.tai.model.domain.BankAccount
 case class YourTaxableIncomeViewModelV2(hasCompanyCar: Boolean, hasBankAccount: Boolean)
 
 object YourTaxableIncomeViewModelV2 {
-  def apply(taxSummaryDetails: TaxSummaryDetails, bankAccounts: Seq[BankAccount]): YourTaxableIncomeViewModelV2 = {
+  def apply(taxSummaryDetails: TaxSummaryDetails, bankAccounts: Seq[BankAccount])(implicit messages: Messages): YourTaxableIncomeViewModelV2 = {
     val carBenefitsList: Option[List[IabdSummary]] = taxSummaryDetails
       .increasesTax
       .flatMap(_

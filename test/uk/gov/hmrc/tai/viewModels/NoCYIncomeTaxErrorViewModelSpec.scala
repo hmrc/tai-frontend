@@ -16,12 +16,14 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.tai
+import play.api.i18n.Messages.Implicits._
 
-class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec{
+class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
   "NoCYIncomeTaxErrorViewModel" should {
 

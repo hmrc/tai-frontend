@@ -19,10 +19,12 @@ package uk.gov.hmrc.tai.viewModels.income
 import controllers.FakeTaiPlayApplication
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
+
+
 
 class BbsiClosedCheckYourAnswersViewModelSpec extends PlaySpec
   with JourneyCacheConstants with FakeTaiPlayApplication {
@@ -36,12 +38,12 @@ class BbsiClosedCheckYourAnswersViewModelSpec extends PlaySpec
 
         result.journeyConfirmationLines.length mustBe 3
 
-        result.journeyConfirmationLines(0) mustBe CheckYourAnswersConfirmationLine(
+        result.journeyConfirmationLines(applicationMessages)(0) mustBe CheckYourAnswersConfirmationLine(
           Messages("tai.checkYourAnswers.whatYouToldUs"),
           Messages("tai.bbsi.end.checkYourAnswers.rowOne.answer"),
           "/check-income-tax/income/bank-building-society-savings/accounts/0/decision")
 
-        result.journeyConfirmationLines(1) mustBe CheckYourAnswersConfirmationLine(
+        result.journeyConfirmationLines(applicationMessages)(1) mustBe CheckYourAnswersConfirmationLine(
             Messages("tai.bbsi.end.checkYourAnswers.rowTwo.question"),
             dateWithinCurrentTaxYear.toString("dd MMMM yyyy"),
             "/check-income-tax/income/bank-building-society-savings/0/close/date")
@@ -56,17 +58,17 @@ class BbsiClosedCheckYourAnswersViewModelSpec extends PlaySpec
 
         result.journeyConfirmationLines.length mustBe 3
 
-        result.journeyConfirmationLines(0) mustBe CheckYourAnswersConfirmationLine(
+        result.journeyConfirmationLines(applicationMessages)(0) mustBe CheckYourAnswersConfirmationLine(
           Messages("tai.checkYourAnswers.whatYouToldUs"),
           Messages("tai.bbsi.end.checkYourAnswers.rowOne.answer"),
           "/check-income-tax/income/bank-building-society-savings/accounts/0/decision")
 
-        result.journeyConfirmationLines(1) mustBe CheckYourAnswersConfirmationLine(
+        result.journeyConfirmationLines(applicationMessages)(1) mustBe CheckYourAnswersConfirmationLine(
           Messages("tai.bbsi.end.checkYourAnswers.rowTwo.question"),
           dateWithinCurrentTaxYear.toString("dd MMMM yyyy"),
           "/check-income-tax/income/bank-building-society-savings/0/close/date")
 
-        result.journeyConfirmationLines(2) mustBe CheckYourAnswersConfirmationLine(
+        result.journeyConfirmationLines(applicationMessages)(2) mustBe CheckYourAnswersConfirmationLine(
           Messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYearResolver.currentTaxYear.toString),
           "£123,456",
           "/check-income-tax/income/bank-building-society-savings/0/close/interest")
@@ -81,12 +83,12 @@ class BbsiClosedCheckYourAnswersViewModelSpec extends PlaySpec
 
         result.journeyConfirmationLines.length mustBe 2
 
-        result.journeyConfirmationLines(0) mustBe CheckYourAnswersConfirmationLine(
+        result.journeyConfirmationLines(applicationMessages)(0) mustBe CheckYourAnswersConfirmationLine(
           Messages("tai.checkYourAnswers.whatYouToldUs"),
           Messages("tai.bbsi.end.checkYourAnswers.rowOne.answer"),
           "/check-income-tax/income/bank-building-society-savings/accounts/0/decision")
 
-        result.journeyConfirmationLines(1) mustBe CheckYourAnswersConfirmationLine(
+        result.journeyConfirmationLines(applicationMessages)(1) mustBe CheckYourAnswersConfirmationLine(
           Messages("tai.bbsi.end.checkYourAnswers.rowTwo.question"),
           dateBeforeCurrentTaxYear.toString("dd MMMM yyyy"),
           "/check-income-tax/income/bank-building-society-savings/0/close/date")

@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, TaxCodeIncomeSourceStatus}
 
@@ -46,7 +46,7 @@ case class YourIncomeCalculationViewModelNew(
                                             )
 
 object YourIncomeCalculationViewModelNew {
-  def apply(taxCodeIncome: TaxCodeIncome, employment: Employment): YourIncomeCalculationViewModelNew = {
+  def apply(taxCodeIncome: TaxCodeIncome, employment: Employment)(implicit messages: Messages): YourIncomeCalculationViewModelNew = {
 
     val payments = employment.latestAnnualAccount.map(_.payments).getOrElse(Seq.empty[Payment])
     val paymentDetails = payments.map(payment => PaymentDetailsViewModel(
@@ -72,7 +72,7 @@ object YourIncomeCalculationViewModelNew {
   private def totalNotEqualMessage(isLive: Boolean,
                                    payments: Seq[PaymentDetailsViewModel],
                                    latestPayment: Option[LatestPayment],
-                                   isPension: Boolean) = {
+                                   isPension: Boolean)(implicit messages: Messages) = {
     val isTotalEqual = payments.map(_.taxAmount).sum == latestPayment.map(_.taxAmountYearToDate).getOrElse(0) &&
       payments.map(_.taxableIncome).sum == latestPayment.map(_.amountYearToDate).getOrElse(0) &&
       payments.map(_.nationalInsuranceAmount).sum == latestPayment.map(_.nationalInsuranceAmountYearToDate).getOrElse(0)

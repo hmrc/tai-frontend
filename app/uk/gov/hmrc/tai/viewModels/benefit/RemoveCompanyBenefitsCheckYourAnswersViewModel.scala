@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.viewModels.benefit
 
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+
 import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.tai.util.{DateFormatConstants, FormValuesConstants, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
@@ -30,7 +30,7 @@ case class RemoveCompanyBenefitCheckYourAnswersViewModel(tableHeader: String,
                                                          contactByPhone: String,
                                                          phoneNumber: Option[String]) extends FormValuesConstants {
 
-  def journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
+  def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
     val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.whatYouToldUs"),
@@ -89,7 +89,7 @@ object RemoveCompanyBenefitCheckYourAnswersViewModel extends ViewModelHelper wit
             stopDate: String,
             valueOfBenefit: Option[String],
             contactByPhone: String,
-            phoneNumber: Option[String]): RemoveCompanyBenefitCheckYourAnswersViewModel = {
+            phoneNumber: Option[String])(implicit messages: Messages): RemoveCompanyBenefitCheckYourAnswersViewModel = {
     val tableHeader = Messages("tai.benefits.ended.tableHeader", employerName, benefitType)
     new RemoveCompanyBenefitCheckYourAnswersViewModel(tableHeader, stopDate, valueOfBenefit, contactByPhone, phoneNumber)
   }

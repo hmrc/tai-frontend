@@ -28,7 +28,7 @@ class BbsiUpdateInterestViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       val result = BbsiUpdateInterestViewModel(1, "100.12", "TEST")
 
       val updateLine = result.journeyConfirmationLines.head
-      val interestLine = result.journeyConfirmationLines(1)
+      val interestLine = result.journeyConfirmationLines(applicationMessages)(1)
 
       updateLine.question mustBe Messages("tai.checkYourAnswers.whatYouToldUs")
       updateLine.answer mustBe Messages("tai.bbsi.update.checkYourAnswers.rowOne.answer")

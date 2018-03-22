@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.tai
+import play.api.i18n.Messages.Implicits._
 
-class HistoricPayAsYouEarnViewModelSpec extends PlaySpec {
+class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
   "HistoricPayAsYouEarnViewModel" should {
 

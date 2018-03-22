@@ -20,7 +20,7 @@ import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+
 import uk.gov.hmrc.tai.util.DatePatternConstants
 
 case class EndIncomeCheckYourAnswersViewModel(preHeading: String,
@@ -31,7 +31,7 @@ case class EndIncomeCheckYourAnswersViewModel(preHeading: String,
                                               phoneNumber: Option[String],
                                               backLinkUrl: String) extends DatePatternConstants {
 
-  def journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
+  def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
     val mandatoryLines = Seq(
       CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q2"), readable(employmentEndDate), controllers.employments.routes.EndEmploymentController.endEmploymentPage(employmentId).url),

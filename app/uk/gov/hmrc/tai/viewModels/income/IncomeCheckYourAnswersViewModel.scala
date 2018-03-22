@@ -20,7 +20,7 @@ import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+
 import uk.gov.hmrc.tai.util.DatePatternConstants
 
 case class IncomeCheckYourAnswersViewModel(preHeading: String,
@@ -40,7 +40,7 @@ object IncomeCheckYourAnswersViewModel extends DatePatternConstants {
             phoneNumber: Option[String],
             backLinkUrl: String,
             submissionUrl: String,
-            cancelUrl: String): IncomeCheckYourAnswersViewModel = {
+            cancelUrl: String)(implicit messages: Messages): IncomeCheckYourAnswersViewModel = {
 
     val journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
 
@@ -70,7 +70,7 @@ object IncomeCheckYourAnswersViewModel extends DatePatternConstants {
             phoneNumber: Option[String],
             backLinkUrl: String,
             submissionUrl: String,
-            cancelUrl: String): IncomeCheckYourAnswersViewModel = {
+            cancelUrl: String)(implicit messages: Messages): IncomeCheckYourAnswersViewModel = {
 
     val journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
 

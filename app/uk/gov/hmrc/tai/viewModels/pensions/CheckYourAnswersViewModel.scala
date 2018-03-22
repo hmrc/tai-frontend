@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels.pensions
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+
 import uk.gov.hmrc.tai.util.DatePatternConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
@@ -37,7 +37,7 @@ object CheckYourAnswersViewModel extends DatePatternConstants {
             pensionStartDate: String,
             pensionRefNo: String,
             contactableByPhone: String,
-            phoneNumber: Option[String]): CheckYourAnswersViewModel = {
+            phoneNumber: Option[String])(implicit messages: Messages): CheckYourAnswersViewModel = {
 
     val journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
 

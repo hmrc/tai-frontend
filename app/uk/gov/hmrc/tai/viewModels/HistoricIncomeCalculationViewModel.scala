@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.tai
 import uk.gov.hmrc.tai.util.TaiConstants.EYU_DATE_FORMAT
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+
 import play.api.Play.current
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.urls.Link
@@ -33,7 +33,7 @@ case class HistoricIncomeCalculationViewModel(employerName: Option[String], empl
 
 object HistoricIncomeCalculationViewModel {
 
-  def apply(employments: Seq[Employment], employmentId: Int, taxYear: uk.gov.hmrc.tai.model.tai.TaxYear): HistoricIncomeCalculationViewModel = {
+  def apply(employments: Seq[Employment], employmentId: Int, taxYear: uk.gov.hmrc.tai.model.tai.TaxYear)(implicit messages: Messages): HistoricIncomeCalculationViewModel = {
     val (employment, annualAccount) = fetchEmploymentAndAnnualAccount(employments, taxYear, employmentId)
     val realTimeStatus = fetchRealTimeStatus(annualAccount)
     val (payments, endOfTaxYearUpdateMessages) = annualAccount match {
@@ -57,7 +57,7 @@ object HistoricIncomeCalculationViewModel {
     (employment, annualAccount)
   }
 
-  def createEndOfYearTaxUpdateMessages(annualAccount: AnnualAccount): Seq[String] = {
+  def createEndOfYearTaxUpdateMessages(annualAccount: AnnualAccount)(implicit messages: Messages): Seq[String] = {
     val lessOrMore = (amount: BigDecimal) => amount.abs.toString + (if (amount > 0) " more" else " less")
     val eyuObjectList = filterEndOfYearUpdateAdjustments(annualAccount)
 
@@ -78,7 +78,7 @@ object HistoricIncomeCalculationViewModel {
     }
   }
 
-  def createIFormLink = {
+  def createIFormLink(implicit messages: Messages) = {
     Html(Messages("tai.income.calculation.detailsWrongIform.description",
       Link.toInternalPage(url = ApplicationConfig.incomeFromEmploymentPensionLinkUrl,
       value = Some(Messages("tai.income.calculation.detailsWrongIformLink")),

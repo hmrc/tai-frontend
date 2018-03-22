@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels
 import controllers.routes
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
@@ -40,7 +40,7 @@ case class TaxFreeAmountSummaryRowViewModel(label: String,
 
 object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
 
-  def apply(codingComponent: CodingComponent, employmentName: Map[Int, String], companyCarBenefits: Seq[CompanyCarBenefit]): TaxFreeAmountSummaryRowViewModel = {
+  def apply(codingComponent: CodingComponent, employmentName: Map[Int, String], companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages): TaxFreeAmountSummaryRowViewModel = {
 
     def isCarBenefitComponent(codingComponent: CodingComponent) = codingComponent.componentType == CarBenefit
 

@@ -22,7 +22,7 @@ import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.{DatePatternConstants, JourneyCacheConstants}
 
@@ -36,7 +36,7 @@ case class CompanyCarCheckAnswersViewModel(carModel: String,
                                           ) {
   lazy val showFuelBenefits: Boolean = !dateFuelBenefitStopped.isEmpty
 
-  def journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
+  def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
     val line1 = Seq(
       CheckYourAnswersConfirmationLine(
@@ -59,7 +59,7 @@ case class CompanyCarCheckAnswersViewModel(carModel: String,
 object CompanyCarCheckAnswersViewModel extends JourneyCacheConstants
   with DatePatternConstants {
 
-  def apply(cacheMap: Map[String, String], taxYear: TaxYear): CompanyCarCheckAnswersViewModel = {
+  def apply(cacheMap: Map[String, String], taxYear: TaxYear)(implicit messages: Messages): CompanyCarCheckAnswersViewModel = {
 
     def convertToDatePatternWithMonthAsLetters(date: String): String = {
       val datePattern = DateTimeFormat.forPattern(datePatternWithFullMonthName)
