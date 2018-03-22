@@ -43,22 +43,26 @@
 
 <h2 class="heading-medium">@messages("tai.bbsi.account.table.heading", TaxYear().year.toString, TaxYear().next.year.toString)</h2>
 
-@* @messages("tai.bbsi.account.table.accountDetails")*@
-@*@messages("tai.bbsi.account.table.amount")*@
-@*@messages("tai.bbsi.account.table.action") *@
-
 <div class="govuk-check-your-answers govuk-check-your-answers--tax-summary section">
     @for(bankAccount <- untaxedInterest.bankAccounts.sortBy(- _.grossInterest)) {
         <div>
         @if(bankAccount.accountNumber.forall(_.endsWith("0000")) && bankAccount.sortCode.forall(_.equals("000000"))){
-            <div class="cya-question"><h3 class="heading-small">@messages("tai.bbsi.account.accountDetailsUnavailable")<h3></div>
+            <div class="cya-question">
+                <h3 class="heading-small">@messages("tai.bbsi.account.accountDetailsUnavailable")</h3>
+            </div>
             <div class="cya-answer">@messages("tai.bbsi.account.youToldUsTheAmount")</div>
             <div class="cya-change">@pounds(bankAccount.grossInterest, 2)</div>
         }else{
             <div class="cya-question">
                 <h3 class="heading-small break-word">@bankAccount.bankName.getOrElse("")</h3>
-                <span>@bankAccount.accountNumber.getOrElse("")<span>
-                <span>@bankAccount.formattedSortCode.getOrElse("")<span>
+                <div>
+                    <span class="visually-hidden">@Messages("tai.bbsi.account.accountNumber") </span>
+                    @bankAccount.accountNumber.getOrElse("")
+                </div>
+                <div>
+                    <span class="visually-hidden">@Messages("tai.bbsi.account.sortCode") </span>
+                    @bankAccount.formattedSortCode.getOrElse("")
+                </div>
             </div>
             <div class="cya-answer">@messages("tai.bbsi.account.table.amount") @pounds(bankAccount.grossInterest, 2)</div>
             <div class="cya-change">
@@ -73,7 +77,7 @@
         </div>
     }
     <div class="highlight">
-        <div class="cya-question"><h3 class="heading-small">@messages("tai.bbsi.account.table.total")<h3></div>
+        <div class="cya-question"><h3 class="heading-small">@messages("tai.bbsi.account.table.total")</h3></div>
         <div class="cya-answer">@pounds(untaxedInterest.amount, 2)</div>
         <div class="cya-change"></div>
     </div>

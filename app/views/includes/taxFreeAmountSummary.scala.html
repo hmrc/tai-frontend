@@ -21,18 +21,10 @@
 @for((item, itemIdx) <- items zip (Stream from 1)) {
 
     @if(item.rows.nonEmpty) {
-        @if(itemIdx==items.length && item.rows.length==1) {
-            @for((row, rowIdx) <- item.rows zip (Stream from 1)) {
-            <div class="govuk-check-your-answers govuk-check-your-answers--tax-summary cya-questions-long highlight">
-                <div>
-                    <div class="cya-question"><h3 class="heading-small flush--top flush--bottom">@row.label</h3></div><div class="cya-change"></div><div class="cya-answer bold">@row.value</div>
-                </div>
-            </div>
-            }
-        } else {
-            <div id="summaryTable@{itemIdx.toString}" class="section">
+
+            <div id="summaryTable@{itemIdx.toString}" class="row">
                 <h3 class="heading-medium" id="summaryTable@{itemIdx.toString}Caption">@item.caption</h3>
-                <ul id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary" role="list">
+                <ul id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx==items.length && item.rows.length==1){highlight}" role="list">
                     @for((row, rowIdx) <- item.rows zip (Stream from 1)) {
                         <li id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}">
                             <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" class="cya-question">
@@ -66,7 +58,7 @@
                     }
                 </ul>
             </div>
-        }
+
 
     }
 
