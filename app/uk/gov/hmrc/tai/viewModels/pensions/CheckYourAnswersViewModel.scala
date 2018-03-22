@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels.pensions
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages
-
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.util.DatePatternConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
@@ -43,7 +43,7 @@ object CheckYourAnswersViewModel extends DatePatternConstants {
 
       val mandatoryLines = Seq(
         CheckYourAnswersConfirmationLine(Messages("tai.addPensionProvider.cya.q1"), pensionProviderName, controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url),
-        CheckYourAnswersConfirmationLine(Messages("tai.addPensionProvider.cya.q2"), readable(pensionStartDate), controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate().url),
+        CheckYourAnswersConfirmationLine(Messages("tai.addPensionProvider.cya.q2"), Dates.formatDate(new LocalDate(pensionStartDate)), controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate().url),
         CheckYourAnswersConfirmationLine(Messages("tai.addPensionProvider.cya.q3"), pensionRefNo, controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url),
         CheckYourAnswersConfirmationLine(Messages("tai.addPensionProvider.cya.q4"), contactableByPhone, controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url)
       )
@@ -62,10 +62,5 @@ object CheckYourAnswersViewModel extends DatePatternConstants {
       postConfirmationText,
       controllers.pensions.routes.AddPensionProviderController.submitYourAnswers().url,
       controllers.routes.TaxAccountSummaryController.onPageLoad().url)
-  }
-
-
-  private def readable(isoDateString: String): String = {
-    LocalDate.parse(isoDateString).toString(datePatternWithFullMonthName)
   }
 }

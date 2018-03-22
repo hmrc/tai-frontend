@@ -20,7 +20,7 @@ import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import play.api.Play.current
 import play.api.i18n.Messages
-
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
@@ -139,8 +139,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
     val amountString = if(amountNumeric != BigDecimal(0)) withPoundPrefixAndSign(MoneyPounds(amountNumeric, 0)) else ""
 
-    val endDate: Option[String] = employment.endDate.map(
-      new LocalDate(_).toString(DateTimeFormat.forPattern(datePatternWithFullMonthName)))
+    val endDate: Option[String] = employment.endDate.map( Dates.formatDate(_) )
 
     IncomeSourceViewModel(
       employment.name,
@@ -159,8 +158,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
   def apply(taxCodeIncome: TaxCodeIncome,
             employment: Employment)(implicit messages: Messages): IncomeSourceViewModel = {
 
-    val endDate: Option[String] = employment.endDate.map(
-      new LocalDate(_).toString(DateTimeFormat.forPattern(datePatternWithFullMonthName)))
+    val endDate: Option[String] = employment.endDate.map( Dates.formatDate(_) )
     val detailsLinkLabel = taxCodeIncome.componentType match {
       case EmploymentIncome if taxCodeIncome.status == Live => Messages("tai.incomeTaxSummary.employmentAndBenefits.link")
       case EmploymentIncome if taxCodeIncome.status != Live => Messages("tai.incomeTaxSummary.employment.link")

@@ -45,7 +45,7 @@ class BbsiClosedCheckYourAnswersViewModelSpec extends PlaySpec
 
         result.journeyConfirmationLines(applicationMessages)(1) mustBe CheckYourAnswersConfirmationLine(
             Messages("tai.bbsi.end.checkYourAnswers.rowTwo.question"),
-            dateWithinCurrentTaxYear.toString("dd MMMM yyyy"),
+            dateWithinCurrentTaxYear.toString("d MMMM yyyy"),
             "/check-income-tax/income/bank-building-society-savings/0/close/date")
       }
     }
@@ -65,7 +65,7 @@ class BbsiClosedCheckYourAnswersViewModelSpec extends PlaySpec
 
         result.journeyConfirmationLines(applicationMessages)(1) mustBe CheckYourAnswersConfirmationLine(
           Messages("tai.bbsi.end.checkYourAnswers.rowTwo.question"),
-          dateWithinCurrentTaxYear.toString("dd MMMM yyyy"),
+          dateWithinCurrentTaxYear.toString("d MMMM yyyy"),
           "/check-income-tax/income/bank-building-society-savings/0/close/date")
 
         result.journeyConfirmationLines(applicationMessages)(2) mustBe CheckYourAnswersConfirmationLine(
@@ -90,7 +90,7 @@ class BbsiClosedCheckYourAnswersViewModelSpec extends PlaySpec
 
         result.journeyConfirmationLines(applicationMessages)(1) mustBe CheckYourAnswersConfirmationLine(
           Messages("tai.bbsi.end.checkYourAnswers.rowTwo.question"),
-          dateBeforeCurrentTaxYear.toString("dd MMMM yyyy"),
+          dateBeforeCurrentTaxYear.toString("d MMMM yyyy"),
           "/check-income-tax/income/bank-building-society-savings/0/close/date")
       }
     }

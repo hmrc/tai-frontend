@@ -1571,7 +1571,7 @@ tai.typeDecodes.OtherIncomeEarned=Other Income Earned
 tai.typeDecodes.OtherIncomeNotEarned=Other Income Not Earned
 tai.typeDecodes.PartTimeEarnings=Part Time Earnings
 tai.typeDecodes.Tips=Tips
-tai.typeDecodes.OtherEarnings=Other Earnings
+tai.typeDecodes.OtherEarnings=Other EarningsF
 tai.typeDecodes.CasualEarnings=Casual Earnings
 tai.typeDecodes.PersonalPensionAnnuity=Personal Pension Annuity
 tai.typeDecodes.ForeignPropertyIncome=Foreign Property Income
@@ -1594,3 +1594,7 @@ tai.typeDecodes.StatePension=StatePension
 tai.typeDecodes.EmploymentAndSupportAllowance=Employment And Support Allowance
 tai.typeDecodes.JobSeekersAllowance=Job Seekers Allowance
 tai.typeDecodes.IncapacityBenefit=Incapacity Benefit
+
+language.to=to
+language.day.singular=day
+language.day.plural=days

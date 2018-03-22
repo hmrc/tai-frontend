@@ -16,13 +16,16 @@
 
 package uk.gov.hmrc.tai.viewModels.benefit
 
+import java.util.Locale
+
 import controllers.routes
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import play.api.Play.current
 import play.api.i18n.Messages
-
+import uk.gov.hmrc.play.language.LanguageUtils
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.{DatePatternConstants, JourneyCacheConstants}
 
@@ -62,8 +65,7 @@ object CompanyCarCheckAnswersViewModel extends JourneyCacheConstants
   def apply(cacheMap: Map[String, String], taxYear: TaxYear)(implicit messages: Messages): CompanyCarCheckAnswersViewModel = {
 
     def convertToDatePatternWithMonthAsLetters(date: String): String = {
-      val datePattern = DateTimeFormat.forPattern(datePatternWithFullMonthName)
-      new LocalDate(date).toString(datePattern)
+      Dates.formatDate(new LocalDate(date))
     }
 
     val viewModel = for {

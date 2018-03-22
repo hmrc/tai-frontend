@@ -1594,3 +1594,7 @@ tai.typeDecodes.StatePension=WELSHStatePension
 tai.typeDecodes.EmploymentAndSupportAllowance=WELSHEmployment And Support Allowance
 tai.typeDecodes.JobSeekersAllowance=WELSHJob Seekers Allowance
 tai.typeDecodes.IncapacityBenefit=WELSHIncapacity Benefit
+
+language.to=WELSHto
+language.day.singular=WELSHday
+language.day.plural=WELSHdays

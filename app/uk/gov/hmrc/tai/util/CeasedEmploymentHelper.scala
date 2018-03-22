@@ -20,11 +20,12 @@ import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+//import play.api.i18n.Messages.Implicits._
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.{CeasedEmploymentDetails, TaiRoot}
 import uk.gov.hmrc.urls.Link
 import TaiConstants._
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.config.ApplicationConfig
 
 object CeasedEmploymentHelper {
@@ -43,7 +44,7 @@ object CeasedEmploymentHelper {
     }
   }
 
-  def getCeasedMsg(ceasedDetail: CeasedEmploymentDetails): (Option[String]) = {
+  def getCeasedMsg(ceasedDetail: CeasedEmploymentDetails)(implicit messages: Messages): (Option[String]) = {
     val ceasedKey: String = ceasedDetail.ceasedStatus match {
       case Some(CeasedMinusThree) => if(ApplicationConfig.isTaiCy3Enabled) "contact" else CEASED_MINUS_TWO
       case _ => ceasedDetail.ceasedStatus.getOrElse("")
@@ -53,7 +54,7 @@ object CeasedEmploymentHelper {
       ceasedDetail.endDate.map(_.toString("d MMMM yyyy")).getOrElse("")))
   }
 
-  def getTellUsCeasedMsg(ceasedDetail: CeasedEmploymentDetails): Html = {
+  def getTellUsCeasedMsg(ceasedDetail: CeasedEmploymentDetails)(implicit messages: Messages): Html = {
     Html(Messages("tai.income.calculation.detailsWrongIform." + (if (ceasedDetail.isPension.getOrElse(false)) {
       "pension"
     } else {
@@ -63,10 +64,9 @@ object CeasedEmploymentHelper {
       dataAttributes = Some(Map("journey-click" -> "check-income-tax:Outbound Link:wrong-other-income-iform"))).toHtml))
   }
 
-  def toDisplayFormat(date: Option[LocalDate]): String = {
-    val messageDateFormatter = DateTimeFormat.forPattern("d MMMM yyyy")
+  def toDisplayFormat(date: Option[LocalDate])(implicit messages: Messages): String = {
     date match {
-      case Some(dt) => messageDateFormatter.print(dt)
+      case Some(dt) => Dates.formatDate(dt)
       case _ => ""
     }
   }
