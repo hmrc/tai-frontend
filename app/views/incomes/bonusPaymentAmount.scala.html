@@ -51,9 +51,6 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     if(bonusPeriod == "year"){
         Messages("tai.bonusPaymentsAmount.year.message")
     }
-    else{
-        ""
-    }
 }
 
 @main(
@@ -66,13 +63,12 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     ){
     <div class="section flush--bottom soft--top">
         @form(action=controllers.routes.IncomeUpdateCalculatorController.handleBonusOvertimeAmount){
-            @includes.forms.input(
+            @input(
                 field = bonusOvertimeAmountForm("amount"),
                 labelText = pageDesc,
                 bold = true,
                 hintText = hint.toString,
-                hintClass = "body-text",
-                isCurrency = true
+                hintClass = "body-text"
             )
 
             <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
