@@ -18,11 +18,12 @@ package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.domain._
@@ -37,7 +38,7 @@ import uk.gov.hmrc.tai.service.{CodingComponentService, TaiService, TaxAccountSe
 import scala.concurrent.Future
 import scala.util.Random
 
-class IncomeTaxComparisonControllerSpec extends PlaySpec
+class sbtIncomeTaxComparisonControllerSpec extends PlaySpec
 with FakeTaiPlayApplication
 with MockitoSugar
 with I18nSupport {
@@ -56,6 +57,9 @@ with I18nSupport {
 
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
+
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.title() mustBe Messages("tai.incomeTaxComparison.heading")
     }
 
     "throw an error page" when {
