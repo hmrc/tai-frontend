@@ -51,12 +51,11 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 ){
 
         @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayslipAmount){
-            @includes.forms.input(
+            @input(
               field = payslipForm("totalSalary"),
               labelText = pageDesc,
               bold = true,
-              hintText = Messages("tai.payslip.payBeforeTakenOff"),
-              isCurrency = true
+              hintText = Messages("tai.payslip.payBeforeTakenOff")
             )
 
             <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
