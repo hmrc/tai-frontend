@@ -321,7 +321,7 @@ class CompanyCarServiceSpec extends PlaySpec
     Some(1)
   )
 
-  val employment = Employment("The Man Plc", None, new LocalDate("2016-06-09"), None, Nil, "", "", 1)
+  val employment = Employment("The Man Plc", None, new LocalDate("2016-06-09"), None, Nil, "", "", 1, None, false)
   val companyCars = Seq(companyCar, companyCarWithDateWithDrawn)
 
   def generateNino: Nino = new Generator(new Random).nextNino

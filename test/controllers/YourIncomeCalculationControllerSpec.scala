@@ -33,9 +33,9 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.rti.RtiStatus
+import uk.gov.hmrc.tai.service.{ActivityLoggerService, EmploymentService, TaiService}
 import uk.gov.hmrc.tai.model.tai.{AnnualAccount, TaxYear}
 import uk.gov.hmrc.tai.model.{IncomeData, IncomeExplanation, SessionData, TaxSummaryDetails}
-import uk.gov.hmrc.tai.service.{ActivityLoggerService, EmploymentService, TaiService}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -43,7 +43,6 @@ import scala.concurrent.{Await, Future}
 class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
 
   "Calling the YourIncomeCalculation method" should {
-
     "display the current year" in {
 
       val SUT = createSUT()
@@ -51,7 +50,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val result = SUT.showIncomeCalculationPageForCurrentYear(nino, None)(FakeRequest("GET", ""),
         UserBuilder.apply(), sessionData)
 
-      status(result) mustBe 200
+      status(result) mustBe OK
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
@@ -65,7 +64,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val result = SUT.showIncomeCalculationPageForCurrentYear(nino, None)(FakeRequest("GET", ""),
         UserBuilder.apply(), sessionData)
 
-      status(result) mustBe 200
+      status(result) mustBe OK
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
@@ -79,7 +78,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val result = SUT.showIncomeCalculationPageForCurrentYear(nino, None)(FakeRequest("GET", ""),
         UserBuilder.apply(), sessionData)
 
-      status(result) mustBe 200
+      status(result) mustBe OK
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
@@ -100,7 +99,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val result = SUT.showIncomeCalculationPageForCurrentYear(nino, Some(incomeId))(FakeRequest("GET", ""),
         UserBuilder.apply(), sessionDataWithRTIError)
 
-      status(result) mustBe 200
+      status(result) mustBe OK
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
       val contents = doc.body()
@@ -115,7 +114,26 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
       val result = SUT.yourIncomeCalculationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-      status(result) mustBe 200
+      status(result) mustBe OK
+    }
+
+    "redirect to new apd page" when {
+      "flag is true" in {
+        val SUT = createSUT(cyApdNewPage = true)
+        val result = SUT.yourIncomeCalculationPage(Some(1))(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(1).url
+      }
+    }
+
+    "throw an error" when {
+      "flag is true and id is not present" in {
+        val SUT = createSUT(cyApdNewPage = true)
+        val result = SUT.yourIncomeCalculationPage(None)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
     }
   }
 
@@ -127,7 +145,26 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
       val result = SUT.printYourIncomeCalculationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-      status(result) mustBe 200
+      status(result) mustBe OK
+    }
+
+    "redirect to new apd print page" when {
+      "flag is true" in {
+        val SUT = createSUT(cyApdNewPage = true)
+        val result = SUT.printYourIncomeCalculationPage(Some(1))(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.YourIncomeCalculationControllerNew.printYourIncomeCalculationPage(1).url
+      }
+    }
+
+    "throw an error" when {
+      "flag is true and id is not present" in {
+        val SUT = createSUT(cyApdNewPage = true)
+        val result = SUT.printYourIncomeCalculationPage(None)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
     }
 
     "print the current year" in {
@@ -137,7 +174,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val result = SUT.showIncomeCalculationPageForCurrentYear(nino, None, true)(FakeRequest("GET", ""),
         UserBuilder.apply(), sessionData)
 
-      status(result) mustBe 200
+      status(result) mustBe OK
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
@@ -151,7 +188,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val result = SUT.showIncomeCalculationPageForCurrentYear(nino, None, true)(FakeRequest("GET", ""),
         UserBuilder.apply(), sessionData)
 
-      status(result) mustBe 200
+      status(result) mustBe OK
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
@@ -165,7 +202,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val result = SUT.showIncomeCalculationPageForCurrentYear(nino, None, true)(FakeRequest("GET", ""),
         UserBuilder.apply(), sessionData)
 
-      status(result) mustBe 200
+      status(result) mustBe OK
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
@@ -183,7 +220,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val result = SUT.showIncomeCalculationPageForCurrentYear(nino, None, true)(FakeRequest("GET", ""),
         UserBuilder.apply(), sessionDataWithRTIError)
 
-      status(result) mustBe 200
+      status(result) mustBe OK
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
       val contents = doc.body()
@@ -201,7 +238,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val result = SUT.showHistoricIncomeCalculation(nino, 1, year = TaxYear().prev)(FakeRequest("GET", ""),
           UserBuilder.apply(), sessionData)
 
-        status(result) mustBe 200
+        status(result) mustBe OK
         val content = contentAsString(result)
         val doc = Jsoup.parse(content)
 
@@ -215,7 +252,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val result = SUT.showHistoricIncomeCalculation(nino, 1)(FakeRequest("GET", ""),
           UserBuilder.apply(), sessionData)
 
-        status(result) mustBe 200
+        status(result) mustBe OK
         val content = contentAsString(result)
         val doc = Jsoup.parse(content)
 
@@ -229,7 +266,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val result = SUT.showHistoricIncomeCalculation(nino, 1)(FakeRequest("GET", ""),
           UserBuilder.apply(), sessionData)
 
-        status(result) mustBe 200
+        status(result) mustBe OK
         val content = contentAsString(result)
         val doc = Jsoup.parse(content)
 
@@ -242,7 +279,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
         val result = SUT.yourIncomeCalculationPreviousYearPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe 200
+        status(result) mustBe OK
       }
 
       "call yourIncomeCalculation() successfully with an authorised session " in {
@@ -251,7 +288,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
         val result = SUT.yourIncomeCalculation(TaxYear(TaxYear().year - 2), 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe 200
+        status(result) mustBe OK
       }
 
       "call employments service to retrieve employments" in {
@@ -267,7 +304,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val SUT = createSUT()
         val result = SUT.printYourIncomeCalculationPreviousYearPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe 200
+        status(result) mustBe OK
       }
     }
 
@@ -276,7 +313,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val SUT = createSUT()
         val result = SUT.printYourIncomeCalculation(TaxYear(TaxYear().year - 2), 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe 200
+        status(result) mustBe OK
       }
     }
 
@@ -287,7 +324,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
           val result = sut.yourIncomeCalculation(TaxYear(), 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-          status(result) mustBe 200
+          status(result) mustBe OK
         }
       }
 
@@ -297,7 +334,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
           val result = sut.yourIncomeCalculation(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-          status(result) mustBe 200
+          status(result) mustBe OK
 
           val content = contentAsString(result)
           val doc = Jsoup.parse(content)
@@ -312,7 +349,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
           val result = sut.yourIncomeCalculation(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-          status(result) mustBe 400
+          status(result) mustBe BAD_REQUEST
         }
       }
     }
@@ -324,7 +361,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
           val result = sut.printYourIncomeCalculation(TaxYear(), 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-          status(result) mustBe 200
+          status(result) mustBe OK
 
           val content = contentAsString(result)
           val doc = Jsoup.parse(content)
@@ -338,7 +375,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
           val result = sut.printYourIncomeCalculation(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-          status(result) mustBe 400
+          status(result) mustBe BAD_REQUEST
         }
       }
     }
@@ -351,9 +388,9 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
   val nino = new Generator().nextNino
 
-  def createSUT(sessionData: Option[SessionData] = None) = new SUT(sessionData)
+  def createSUT(sessionData: Option[SessionData] = None, cyApdNewPage: Boolean = false) = new SUT(sessionData, cyApdNewPage)
 
-  class SUT(sessionData: Option[SessionData] = None) extends YourIncomeCalculationController {
+  class SUT(sessionData: Option[SessionData] = None, cyApdNewPage: Boolean = false) extends YourIncomeCalculationController {
 
     override val taiService = mock[TaiService]
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
@@ -363,11 +400,12 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
     override implicit val templateRenderer = MockTemplateRenderer
     override implicit val partialRetriever = MockPartialRetriever
     override val employmentService = mock[EmploymentService]
+    override val cyApdNewPageEnabled: Boolean = cyApdNewPage
 
     val ad = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    val sampleEmployment = Employment("employer1", None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1)
+    val sampleEmployment = Employment("employer1", None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false)
     val emp = when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(sampleEmployment)))
 
     val sd = sessionData.getOrElse(AuthBuilder.createFakeSessionDataWithPY)

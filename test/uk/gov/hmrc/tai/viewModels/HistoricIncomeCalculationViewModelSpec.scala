@@ -87,7 +87,7 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
         val date = new LocalDate("2017-06-09")
         val sampleEndOfTaxYearUpdate = EndOfTaxYearUpdate(date, Seq(Adjustment(NationalInsuranceAdjustment, -10.0)))
         val sampleAnnualAccount = AnnualAccount("1-2-3", previousYear, Available, Nil, List(sampleEndOfTaxYearUpdate))
-        val sampleEmployment = Employment("emp1", None, new LocalDate(2017, 6, 10), None, Seq(sampleAnnualAccount), "taxNumber", "payeNumber", 1)
+        val sampleEmployment = Employment("emp1", None, new LocalDate(2017, 6, 10), None, Seq(sampleAnnualAccount), "taxNumber", "payeNumber", 1, None, false)
 
         val sut = createSUT(employments = List(sampleEmployment))
         sut.endOfTaxYearUpdateMessages mustBe Seq(Messages("tai.income.calculation.eyu.single.nationalInsurance", date.toString(EYU_DATE_FORMAT), "10.0 less"))
@@ -279,8 +279,8 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
 
   val sampleAnnualAccount = AnnualAccount("1-2-3", previousYear, Available, List(samplePayment), Nil)
 
-  val sampleEmployment1 = Employment(empName, None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1)
-  val sampleEmployment2 = Employment("emp2", None, new LocalDate(2017, 6, 10), None, Seq(sampleAnnualAccount), "taxNumber", "payeNumber", 2)
+  val sampleEmployment1 = Employment(empName, None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false)
+  val sampleEmployment2 = Employment("emp2", None, new LocalDate(2017, 6, 10), None, Seq(sampleAnnualAccount), "taxNumber", "payeNumber", 2, None, false)
   val sampleEmployments = List(sampleEmployment1, sampleEmployment2)
 
   def createSUT(employments: Seq[Employment] = sampleEmployments, employmentId: Int = 1, taxYear: uk.gov.hmrc.tai.model.tai.TaxYear = previousYear) = {

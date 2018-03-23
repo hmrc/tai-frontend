@@ -331,7 +331,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
   }
 
   private val employment = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
-    Some(new LocalDate("2016-05-26")), Nil, "", "", 2)
+    Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false)
 
   def generateNino: Nino = new Generator(new Random).nextNino
 

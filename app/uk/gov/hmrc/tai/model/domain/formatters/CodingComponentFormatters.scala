@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.tai.model.domain.formatters
 
+import org.joda.time.LocalDate
 import play.api.libs.json.{JsResult, JsSuccess, JsValue, Reads}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, Ceased, Live, PotentiallyCeased, TaxCodeIncome, TaxCodeIncomeSourceStatus}
+import uk.gov.hmrc.tai.model.domain.income._
 
 trait CodingComponentFormatters {
 
@@ -160,6 +161,9 @@ trait CodingComponentFormatters {
       val name = (json \ "name").as[String]
       val basisOperation = (json \ "basisOperation").as[BasisOperation]
       val status = (json \ "status").as[TaxCodeIncomeSourceStatus](taxCodeIncomeSourceStatusReads)
+      val iabdUpdateSource = (json \ "iabdUpdateSource").asOpt[IabdUpdateSource]
+      val updateNotificationDate = (json \ "updateNotificationDate").asOpt[LocalDate]
+      val updateActionDate = (json \ "updateActionDate").asOpt[LocalDate]
 
       JsSuccess(TaxCodeIncome(
         componentType,
@@ -169,7 +173,10 @@ trait CodingComponentFormatters {
         taxCode,
         name,
         basisOperation,
-        status))
+        status,
+        iabdUpdateSource,
+        updateNotificationDate,
+        updateActionDate))
     }
   }
 

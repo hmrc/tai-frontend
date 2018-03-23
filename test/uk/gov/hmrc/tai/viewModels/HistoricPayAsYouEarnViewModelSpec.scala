@@ -40,7 +40,7 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec {
         val multiYearAccounts = Seq(cyMinusOneAnnualAccount, cyMinusThreeAnnualAccount)
 
         val employment = Employment("test employment", Some("111111"), empStartDateWithinCYMinusThree,
-          None, multiYearAccounts, "", "", 2)
+          None, multiYearAccounts, "", "", 2, None, false)
 
         val sut = createSut(cyMinusTwoTaxYear, Seq(employment))
 
@@ -52,7 +52,7 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec {
       "one employment is supplied which has an AnnualAccount but no payments or updates" in {
 
         val employment = Employment("test employment", Some("111111"), empStartDateWithinCYMinusOne,
-          None, Seq(annualAccountWithNoPayments), "", "", 2)
+          None, Seq(annualAccountWithNoPayments), "", "", 2, None, false)
 
         val sut = createSut(Seq(employment))
 
@@ -72,7 +72,7 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec {
       "one employment is supplied which has an AnnualAccount containing one payment" in {
 
         val employment = Employment("test employment", Some("111111"), empStartDateWithinCYMinusOne,
-          None, Seq(annualAccountWithSinglePayment), "", "", 2)
+          None, Seq(annualAccountWithSinglePayment), "", "", 2, None, false)
 
         val sut = createSut(Seq(employment))
 
@@ -92,7 +92,7 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec {
       "one employment is supplied which has an AnnualAccount containing multiple payments" in {
 
         val employment = Employment("test employment", Some("111111"), empStartDateWithinCYMinusOne,
-          None, Seq(annualAccountWithMultiplePayments), "", "", 2)
+          None, Seq(annualAccountWithMultiplePayments), "", "", 2, None, false)
 
         val sut = createSut(Seq(employment))
 
@@ -112,9 +112,9 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec {
       "multiple employments are supplied containing an AnnualAccount which has multiple payments" in {
 
         val employment1 = Employment("test employment1", Some("111111"), empStartDateWithinCYMinusOne,
-          None, Seq(annualAccountWithMultiplePayments), "", "", 2)
+          None, Seq(annualAccountWithMultiplePayments), "", "", 2, None, false)
         val employment2 = Employment("test employment2", Some("111112"), empStartDateWithinCYMinusOne,
-          None, Seq(annualAccountWithMultiplePayments), "", "", 3)
+          None, Seq(annualAccountWithMultiplePayments), "", "", 3, None, false)
 
         val sut = createSut(Seq(employment2, employment1))
 
