@@ -205,7 +205,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val content = contentAsString(result)
         val doc = Jsoup.parse(content)
 
-        doc.title() mustBe Messages("tai.yourIncome.heading")
+        doc.title() mustBe Messages("tai.income.calculation.TaxableIncomeDetails",SUT.sampleEmployment.name)
       }
 
       "display the previous year with missing data" in {
@@ -219,7 +219,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val content = contentAsString(result)
         val doc = Jsoup.parse(content)
 
-        doc.title() mustBe Messages("tai.yourIncome.heading")
+        doc.title() mustBe Messages("tai.income.calculation.TaxableIncomeDetails",SUT.sampleEmployment.name)
       }
 
       "display the previous year with ceased employments data" in {
@@ -233,7 +233,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val content = contentAsString(result)
         val doc = Jsoup.parse(content)
 
-        doc.title() mustBe Messages("tai.yourIncome.heading")
+        doc.title() mustBe Messages("tai.income.calculation.TaxableIncomeDetails",SUT.sampleEmployment.name)
       }
 
       "call yourIncomeCalculationPreviousYearPage() successfully with an authorised session " in {
