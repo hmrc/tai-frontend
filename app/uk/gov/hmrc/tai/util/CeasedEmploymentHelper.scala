@@ -51,7 +51,7 @@ object CeasedEmploymentHelper {
     }
 
     Some(Messages("tai.paye.ceased." + (if (ceasedDetail.isPension.get) "pension." else "emp.") + ceasedKey,
-      ceasedDetail.endDate.map(_.toString("d MMMM yyyy")).getOrElse("")))
+      ceasedDetail.endDate.map(Dates.formatDate).getOrElse("")))
   }
 
   def getTellUsCeasedMsg(ceasedDetail: CeasedEmploymentDetails)(implicit messages: Messages): Html = {
