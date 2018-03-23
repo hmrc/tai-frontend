@@ -301,7 +301,7 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
   )
 
   def employmentWithAccounts(accounts: List[AnnualAccount]) = Employment("ABCD", Some("ABC123"), new LocalDate(2000, 5, 20),
-    None, accounts, "", "", 8)
+    None, accounts, "", "", 8, None, false)
 
   def paymentOnDate(date: LocalDate) = Payment(
     date = date,

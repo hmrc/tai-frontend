@@ -144,6 +144,47 @@ class yourIncomeCalculationNewSpec extends TaiViewSpec {
         doc(totalNotEqualView) must haveParagraphWithText(messages("tai.income.calculation.totalNotMatching.message"))
       }
     }
+
+    "show income calculation message" when {
+      "employment is live" in {
+        val model = incomeCalculationViewModel(incomeCalculationMessage = "TEST", incomeCalculationEstimateMessage = Some("ESTIMATE"))
+
+        def incomeMessagesView = views.html.print.yourIncomeCalculationNew(model)
+
+        doc(incomeMessagesView) must haveParagraphWithText(model.incomeCalculationMessage)
+      }
+    }
+
+    "show income calculation estimate message" when {
+
+      "employment is live" in {
+        val model = incomeCalculationViewModel(incomeCalculationMessage = "TEST", incomeCalculationEstimateMessage = Some("ESTIMATE"))
+
+        def incomeMessagesView = views.html.print.yourIncomeCalculationNew(model)
+
+        doc(incomeMessagesView) must haveHeadingH4WithText(model.incomeCalculationEstimateMessage.get)
+      }
+
+      "employment is ceased" in {
+        val model = incomeCalculationViewModel(employmentStatus = Ceased,
+          incomeCalculationMessage = "TEST", incomeCalculationEstimateMessage = Some("ESTIMATE"))
+
+        def incomeMessagesView = views.html.print.yourIncomeCalculationNew(model)
+
+        doc(incomeMessagesView) must haveHeadingH4WithText(model.incomeCalculationEstimateMessage.get)
+      }
+    }
+
+    "show payroll messages" when {
+      "hasPayrolled benefit is true" in {
+        val model = incomeCalculationViewModel(hasPayrolledBenefit = true)
+
+        def payrolledView = views.html.print.yourIncomeCalculationNew(model)
+
+        doc(payrolledView) must haveParagraphWithText(messages("tai.income.calculation.payrollingBik.message1"))
+        doc(payrolledView) must haveParagraphWithText(messages("tai.income.calculation.payrollingBik.message2"))
+      }
+    }
   }
 
   lazy val defaultPayments = Seq(
@@ -161,9 +202,12 @@ class yourIncomeCalculationNewSpec extends TaiViewSpec {
                                          payments: Seq[PaymentDetailsViewModel] = defaultPayments,
                                          employmentStatus: TaxCodeIncomeSourceStatus = Live,
                                          employmentType: TaxCodeIncomeComponentType = EmploymentIncome,
-                                         totalNotEqualMessage: Option[String] = None) = {
+                                         totalNotEqualMessage: Option[String] = None,
+                                         incomeCalculationMessage: String = "",
+                                         incomeCalculationEstimateMessage: Option[String] = None,
+                                         hasPayrolledBenefit: Boolean = false) = {
 
-    val latestPayment = if (payments.isEmpty) None else Some(LatestPayment(new LocalDate().minusWeeks(4), 400, 50, 25))
+    val latestPayment = if (payments.isEmpty) None else Some(LatestPayment(new LocalDate().minusWeeks(4), 400, 50, 25, Weekly))
     YourIncomeCalculationViewModelNew(
       2,
       "test employment",
@@ -173,7 +217,10 @@ class yourIncomeCalculationNewSpec extends TaiViewSpec {
       latestPayment,
       if (employmentStatus == Ceased) Some(LocalDate.parse("2017-08-08")) else None,
       employmentType == PensionIncome,
-      totalNotEqualMessage
+      totalNotEqualMessage,
+      incomeCalculationMessage,
+      incomeCalculationEstimateMessage,
+      hasPayrolledBenefit
     )
   }
 }
