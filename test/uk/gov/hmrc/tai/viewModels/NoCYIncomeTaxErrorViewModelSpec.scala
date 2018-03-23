@@ -32,20 +32,20 @@ class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec{
       }
       "only one employment is present in the seq but without an end date" in {
         val employment = Employment("test employment", Some("111111"), empStartDateOne,
-          None, Nil, "", "", 2)
+          None, Nil, "", "", 2, None, false)
 
         val sut = createSut(Seq(employment))
         sut.endDate mustBe None
       }
       "multiple employments are present in the seq with no end dates" in {
         val employment = Employment("test employment", Some("111111"), empStartDateOne,
-          None, Nil, "", "", 2)
+          None, Nil, "", "", 2, None, false)
 
         val employment1 = Employment("test employment1", Some("222222"), empStartDateTwo,
-          None, Nil, "", "", 2)
+          None, Nil, "", "", 2, None, false)
 
         val employment2 = Employment("test employment2", Some("333333"), empStartDateThree,
-          None, Nil, "", "", 2)
+          None, Nil, "", "", 2, None, false)
 
         val sut = createSut(Seq(employment, employment1, employment2))
         sut.endDate mustBe None
@@ -55,7 +55,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec{
     "return date of employment" when {
       "only one employment is present in the seq" in {
         val employment = Employment("test employment", Some("111111"), empStartDateOne,
-          Some(empEndDateOne), Nil, "", "", 2)
+          Some(empEndDateOne), Nil, "", "", 2, None, false)
 
         val sut = createSut(Seq(employment))
         sut.endDate mustBe Some(empEndDateOne.toString(dateFormat))
@@ -66,26 +66,26 @@ class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec{
     "return the most recent employment's end date" when {
       "multiple employments are present in the seq with one of them doesnt have end date" in {
         val employment = Employment("test employment", Some("111111"), empStartDateOne,
-          None, Nil, "", "", 2)
+          None, Nil, "", "", 2, None, false)
 
         val employment1 = Employment("test employment1", Some("222222"), empStartDateTwo,
-          Some(empEndDateTwo), Nil, "", "", 2)
+          Some(empEndDateTwo), Nil, "", "", 2, None, false)
 
         val employment2 = Employment("test employment2", Some("333333"), empStartDateThree,
-          Some(empEndDateThree), Nil, "", "", 2)
+          Some(empEndDateThree), Nil, "", "", 2, None, false)
 
         val sut = createSut(Seq(employment, employment1, employment2))
         sut.endDate mustBe Some(empEndDateThree.toString(dateFormat))
       }
       "multiple employments are present in the seq with all of them having end dates" in {
         val employment = Employment("test employment", Some("111111"), empStartDateOne,
-          Some(empEndDateOne), Nil, "", "", 2)
+          Some(empEndDateOne), Nil, "", "", 2, None, false)
 
         val employment1 = Employment("test employment1", Some("222222"), empStartDateTwo,
-          Some(empEndDateTwo), Nil, "", "", 2)
+          Some(empEndDateTwo), Nil, "", "", 2, None, false)
 
         val employment2 = Employment("test employment2", Some("333333"), empStartDateThree,
-          Some(empEndDateThree), Nil, "", "", 2)
+          Some(empEndDateThree), Nil, "", "", 2, None, false)
 
         val sut = createSut(Seq(employment, employment1, employment2))
         sut.endDate mustBe Some(empEndDateThree.toString(dateFormat))

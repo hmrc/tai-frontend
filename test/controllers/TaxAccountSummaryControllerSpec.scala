@@ -100,7 +100,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
 
   val nino = new Generator(new Random).nextNino
 
-  val employment = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1)
+  val employment = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1, None, false)
 
   val taxAccountSummary = TaxAccountSummary(111,222, 333.33, 444.44, 111.11)
 

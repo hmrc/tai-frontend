@@ -560,7 +560,7 @@ class EndEmploymentControllerSpec
   }
 
   def employmentWithAccounts(accounts:List[AnnualAccount]) = Employment("employer", Some("emp123"), new LocalDate(2000, 5, 20),
-    None, accounts, "", "", 8)
+    None, accounts, "", "", 8, None, false)
 
   def paymentOnDate(date: LocalDate) = Payment(
     date = date,
@@ -596,7 +596,7 @@ class EndEmploymentControllerSpec
     when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", manualCorrespondenceInd = false, deceasedIndicator = None)))
 
     when(employmentService.employment(any(), any())(any()))
-      .thenReturn(Future.successful(Some(Employment(employerName, None, new LocalDate(), None, Nil, "", "", 1))))
+      .thenReturn(Future.successful(Some(Employment(employerName, None, new LocalDate(), None, Nil, "", "", 1, None, false))))
 
     when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
   }
