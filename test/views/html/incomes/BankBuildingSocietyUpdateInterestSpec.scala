@@ -40,7 +40,7 @@ class BankBuildingSocietyUpdateInterestSpec extends TaiViewSpec {
         TaxYear().end.toString(dateFormat),
         "£1,000"))
 
-      doc must haveInputLabelWithText("untaxedInterest", messages("tai.bbsi.update.captureInterest.textBox.title"))
+      doc must haveInputLabelWithText("untaxedInterest", messages("tai.bbsi.update.captureInterest.textBox.title") + " " + messages("tai.inPounds") )
       doc must haveParagraphWithText(messages("tai.bbsi.update.captureInterest.para2"))
       doc must haveParagraphWithText(messages("tai.bbsi.update.captureInterest.para3"))
       doc must haveParagraphWithText(messages("tai.bbsi.update.captureInterest.accordion.desc1"))
