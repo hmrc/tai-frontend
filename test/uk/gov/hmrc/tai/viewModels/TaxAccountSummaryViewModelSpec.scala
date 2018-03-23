@@ -455,30 +455,30 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
   )
 
   val employments = Seq(
-    Employment("Employer name1", Some("1ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST1", "PAYE1", 1),
-    Employment("Employer name2", Some("1ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST2", "PAYE2", 2),
-    Employment("Pension name1", Some("3ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST3", "PAYE3", 3),
-    Employment("Pension name2", Some("4ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST4", "PAYE4", 4),
-    Employment("JobSeekerAllowance name1", Some("5ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST5", "PAYE5", 5),
-    Employment("JobSeekerAllowance name2", Some("6ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST6", "PAYE6", 6),
-    Employment("OtherIncome name1", Some("7ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST7", "PAYE7", 7),
-    Employment("OtherIncome name2", Some("8ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST8", "PAYE8", 8),
-    Employment("Employer name3", Some("9ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST9", "PAYE9", 9),
-    Employment("Employer name4", Some("10ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq.empty[AnnualAccount], "DIST10", "PAYE10", 10),
-    Employment("Pension name3", Some("11ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST11", "PAYE11", 11),
-    Employment("Pension name4", Some("12ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq.empty[AnnualAccount], "DIST12", "PAYE12", 12)
+    Employment("Employer name1", Some("1ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST1", "PAYE1", 1, None, false),
+    Employment("Employer name2", Some("1ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST2", "PAYE2", 2, None, false),
+    Employment("Pension name1", Some("3ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST3", "PAYE3", 3, None, false),
+    Employment("Pension name2", Some("4ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST4", "PAYE4", 4, None, false),
+    Employment("JobSeekerAllowance name1", Some("5ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST5", "PAYE5", 5, None, false),
+    Employment("JobSeekerAllowance name2", Some("6ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST6", "PAYE6", 6, None, false),
+    Employment("OtherIncome name1", Some("7ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST7", "PAYE7", 7, None, false),
+    Employment("OtherIncome name2", Some("8ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST8", "PAYE8", 8, None, false),
+    Employment("Employer name3", Some("9ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST9", "PAYE9", 9, None, false),
+    Employment("Employer name4", Some("10ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq.empty[AnnualAccount], "DIST10", "PAYE10", 10, None, false),
+    Employment("Pension name3", Some("11ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST11", "PAYE11", 11, None, false),
+    Employment("Pension name4", Some("12ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq.empty[AnnualAccount], "DIST12", "PAYE12", 12, None, false)
   )
 
   val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live)
   val taxCodeIncomeCeased = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Ceased)
-  val employment = Employment("Employer name", Some("123ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq.empty[AnnualAccount], "DIST123", "PAYE543", 1)
+  val employment = Employment("Employer name", Some("123ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq.empty[AnnualAccount], "DIST123", "PAYE543", 1, None, false)
   val payment = Payment(new LocalDate(), BigDecimal(123.45), BigDecimal(678.90), BigDecimal(123.12), BigDecimal(444.44), BigDecimal(555.55), BigDecimal(666.66), Monthly)
   val annualAccount = AnnualAccount("key", uk.gov.hmrc.tai.model.tai.TaxYear(), Available, Seq(payment), Nil)
-  val ceasedEmployment = Employment("Ceased employer name", Some("123ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq(annualAccount), "DIST123", "PAYE543", 1)
+  val ceasedEmployment = Employment("Ceased employer name", Some("123ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq(annualAccount), "DIST123", "PAYE543", 1, None, false)
 
   val nonMatchedEmployments = Seq(
     ceasedEmployment.copy(sequenceNumber = 998),
-    Employment("Pension name1", Some("3ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST3", "PAYE3", 999)
+    Employment("Pension name1", Some("3ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST3", "PAYE3", 999, None, false)
   )
 
   val emptyTaxCodeIncomes = Seq.empty[TaxCodeIncome]
