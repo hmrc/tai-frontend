@@ -22,6 +22,7 @@ import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.filters.TaxAccountFilter
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.util.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
@@ -43,7 +44,7 @@ case class TaxAccountSummaryViewModel(header: String,
                                       otherIncomeSources: Seq[IncomeSourceViewModel]
                                      )
 
-object TaxAccountSummaryViewModel extends ViewModelHelper with DateFormatConstants {
+object TaxAccountSummaryViewModel extends ViewModelHelper with DateFormatConstants with TaxAccountFilter {
   def apply(taxCodeIncomes: Seq[TaxCodeIncome],
             employments: Seq[Employment],
             taxAccountSummary: TaxAccountSummary,
@@ -83,15 +84,6 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with DateFormatConstan
       IncomeSourceViewModel(nonTaxCodeIncome))
 
   }
-
-  private def liveEmployment(taxCodeIncome: TaxCodeIncome) =
-    taxCodeIncome.componentType == EmploymentIncome && taxCodeIncome.status == Live
-
-  private def livePension(taxCodeIncome: TaxCodeIncome) =
-    taxCodeIncome.componentType == PensionIncome && taxCodeIncome.status == Live
-
-  private def ceasedEmployment(taxCodeIncome: TaxCodeIncome) =
-    taxCodeIncome.componentType == EmploymentIncome && taxCodeIncome.status != Live
 
   private def viewModelsFromMatchingIncomeSources(taxCodeIncomes: Seq[TaxCodeIncome],
                                                   employments: Seq[Employment]): Seq[IncomeSourceViewModel] = {

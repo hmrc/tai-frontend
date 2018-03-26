@@ -17,28 +17,27 @@
 package controllers
 
 import controllers.auth.WithAuthorisedForTaiLite
-import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.service.{CodingComponentService, TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaiService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels._
+import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 
 trait IncomeTaxComparisonController extends TaiBaseController
   with WithAuthorisedForTaiLite {
 
   def taiService: TaiService
-
   def taxAccountService: TaxAccountService
-
   def codingComponentService: CodingComponentService
+  def employmentService: EmploymentService
 
   def onPageLoad(): Action[AnyContent] = authorisedForTai(taiService).async {
     implicit user =>
@@ -54,6 +53,8 @@ trait IncomeTaxComparisonController extends TaiBaseController
             val taxCodeIncomesCYPlusOneFuture = taxAccountService.taxCodeIncomes(nino, nextTaxYear)
             val taxComponentsCYFuture = codingComponentService.taxFreeAmountComponents(nino, currentTaxYear)
             val taxComponentsCYPlusOneFuture = codingComponentService.taxFreeAmountComponents(nino, nextTaxYear)
+            val employmentsCYFuture = employmentService.employments(nino, currentTaxYear)
+            val employmentsCYPlusOneFuture = employmentService.employments(nino, nextTaxYear)
             for {
               taxSummaryCY <- taxSummaryCYFuture
               taxSummaryCyPlusOne <- taxSummaryCYPlusOneFuture
@@ -61,12 +62,17 @@ trait IncomeTaxComparisonController extends TaiBaseController
               taxCodeIncomesForCyPlusOne <- taxCodeIncomesCYPlusOneFuture
               codingComponentsCY <- taxComponentsCYFuture
               codingComponentsCYPlusOne <- taxComponentsCYPlusOneFuture
+              employmentsCY <- employmentsCYFuture
+              employmentsCYPlusOne <- employmentsCYPlusOneFuture
+
             } yield {
               (taxSummaryCY, taxSummaryCyPlusOne, taxCodeIncomesForCy, taxCodeIncomesForCyPlusOne) match {
                 case (TaiSuccessResponseWithPayload(taxAccountSummaryCY: TaxAccountSummary),
                 TaiSuccessResponseWithPayload(taxAccountSummaryCYPlusOne: TaxAccountSummary),
                 TaiSuccessResponseWithPayload(taxCodeIncomesCY: Seq[TaxCodeIncome]),
-                TaiSuccessResponseWithPayload(taxCodeIncomesCYPlusOne: Seq[TaxCodeIncome])) => {
+                TaiSuccessResponseWithPayload(taxCodeIncomesCYPlusOne: Seq[TaxCodeIncome])
+                ) => {
+
                   val cyEstimatedTax = EstimatedIncomeTaxComparisonItem(currentTaxYear, taxAccountSummaryCY.totalEstimatedTax)
                   val cyPlusOneEstimatedTax = EstimatedIncomeTaxComparisonItem(nextTaxYear, taxAccountSummaryCYPlusOne.totalEstimatedTax)
                   val estimatedIncomeTaxComparisonViewModel = EstimatedIncomeTaxComparisonViewModel(Seq(cyEstimatedTax, cyPlusOneEstimatedTax))
@@ -82,8 +88,10 @@ trait IncomeTaxComparisonController extends TaiBaseController
                   val taxFreeAmountComparisonModel = TaxFreeAmountComparisonViewModel(Seq(cyCodingComponents, cyPlusOneTaxComponents),
                     Seq(cyTaxSummary, cyPlusOneTaxSummary))
 
+                  val employmentViewModel = IncomeSourceComparisonViewModel(taxCodeIncomesCY,employmentsCY,taxCodeIncomesCYPlusOne,employmentsCYPlusOne)
+
                   val model = IncomeTaxComparisonViewModel(user.getDisplayName, estimatedIncomeTaxComparisonViewModel,
-                    taxCodeComparisonModel, taxFreeAmountComparisonModel)
+                    taxCodeComparisonModel, taxFreeAmountComparisonModel, employmentViewModel)
                   Ok(views.html.incomeTaxComparison.Main(model))
                 }
                 case _ => throw new RuntimeException("Not able to fetch income tax comparision details")
@@ -91,14 +99,18 @@ trait IncomeTaxComparisonController extends TaiBaseController
             }
           }
   }
+
 }
 
 object IncomeTaxComparisonController extends IncomeTaxComparisonController with AuthenticationConnectors {
   override val taiService = TaiService
   override val taxAccountService = TaxAccountService
   override val codingComponentService = CodingComponentService
+  override val employmentService: EmploymentService = EmploymentService
 
   override implicit def templateRenderer = LocalTemplateRenderer
 
   override implicit def partialRetriever = TaiHtmlPartialRetriever
+
+
 }
