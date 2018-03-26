@@ -22,37 +22,33 @@
 
 @(incomeSourceViewModel:IncomeSourceComparisonViewModel)(implicit messages: Messages)
 
-@{
+
+@incomeSummaryHeading = @{
     (incomeSourceViewModel.employmentIncomeSourceDetail.size > 0, incomeSourceViewModel.pensionIncomeSourceDetail.size > 0) match {
-        case(true,true) => {
-            <h2 id="incomeSummaryHeading"
-                class="heading-large">{messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions")}</h2>
-        }
-        case(true,false) => {
-            <h2 id="incomeSummaryHeading"
-                class="heading-large">{messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment")}</h2>
-        }
-        case(false,true) => {
-            <h2 id="incomeSummaryHeading"
-                class="heading-large">{messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromPrivatePensions")}</h2>
-        }
+        case(true,true) => messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions")
+        case(true,false) => messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment")
+        case(false,true) => messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromPrivatePensions")
         case _ =>
     }
 }
 
 @if(incomeSourceViewModel.employmentIncomeSourceDetail.size > 0 || incomeSourceViewModel.pensionIncomeSourceDetail.size > 0){
-    <table class="table--font-reset flush--bottom" id="incomeSummaryComparisonTable">
 
+    <h2 id="incomeSummaryHeading"
+        class="heading-large">@{incomeSummaryHeading}</h2>
+
+    <table class="table--font-reset flush--bottom" id="incomeSummaryComparisonTable">
+        <caption class="visually-hidden">@{incomeSummaryHeading}</caption>
         <thead id="incomeSummeryComparisonTableHeader">
         <tr class="text--right">
             <th></th>
             <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="text--right">
-                @Html(messages("tai.CurrentTaxYear"))
-                @Html(messages("tai.incomeTaxComparison.incomeTax.column1", incomeSourceViewModel.htmlNonBroken(TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM"))))
+                @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
+                @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM"))))
             </th>
             <th id="taxCodeComparisonTableTableHeaderCol2" scope="col" class="text--right">
-                @Html(messages("tai.NextTaxYear"))
-                @Html(messages("tai.incomeTaxComparison.incomeTax.column2", incomeSourceViewModel.htmlNonBroken(TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY"))))
+                @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))
+                @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY"))))
             </th>
         </tr>
         </thead>
