@@ -38,12 +38,12 @@
         <tr class="text--right">
             <td></td>
             <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="text--right">
-                <div>@messages("tai.CurrentTaxYear")</div>
-                <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader))</div>
+                @Html(messages("tai.CurrentTaxYear"))
+                @Html(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader))
             </th>
             <th id="taxCodeComparisonTableTableHeaderCol2" scope="col" class="text--right">
-                <div>@messages("tai.NextTaxYear")</div>
-                <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader))</div>
+                @Html(messages("tai.NextTaxYear"))
+                @Html(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader))
             </th>
         </tr>
     </thead>

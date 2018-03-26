@@ -36,12 +36,12 @@
             <tr class="text--right">
                 <td></td>
                 <th id="estimatedIncomeTaxComparisonTableHeaderCol1" scope="col" class="text--right">
-                    <div>@messages("tai.CurrentTaxYear")</div>
-                    <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column1", viewmodel.currentTaxYearHeader))</div>
+                    @Html(messages("tai.CurrentTaxYear"))
+                    @Html(messages("tai.incomeTaxComparison.incomeTax.column1", viewmodel.currentTaxYearHeader))
                 </th>
                 <th id="estimatedIncomeTaxComparisonTableHeaderCol2" scope="col" class="text--right">
-                    <div>@messages("tai.NextTaxYear")</div>
-                    <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column2", viewmodel.nextTaxYearHeader))</div>
+                    @Html(messages("tai.NextTaxYear"))
+                    @Html(messages("tai.incomeTaxComparison.incomeTax.column2", viewmodel.nextTaxYearHeader))
                 </th>
             </tr>
         </thead>
