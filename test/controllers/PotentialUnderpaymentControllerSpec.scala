@@ -69,7 +69,7 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
         )
         val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         val doc = Jsoup.parse(contentAsString(res))
-        doc.title() mustBe Messages("tai.iya.tax.you.owe.title")
+        doc.title() must include(Messages("tai.iya.tax.you.owe.title"))
 
       }
     }
@@ -83,7 +83,7 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
         )
         val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         val doc = Jsoup.parse(contentAsString(res))
-        doc.title() mustBe Messages("tai.iya.tax.you.owe.cy-plus-one.title")
+        doc.title() must include(Messages("tai.iya.tax.you.owe.cy-plus-one.title"))
 
       }
     }
@@ -98,7 +98,7 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
       val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(res) mustBe INTERNAL_SERVER_ERROR
       val doc = Jsoup.parse(contentAsString(res))
-      doc.title() mustBe "Sorry, we are experiencing technical difficulties - 500"
+      doc.title() must include("Sorry, we are experiencing technical difficulties - 500")
     }
   }
 

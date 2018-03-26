@@ -40,7 +40,7 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
       val html = views.html.potentialUnderpayment(PotentialUnderpaymentViewModel(tasNoUnderpay, ccs))
       val doc = Jsoup.parseBodyFragment(html.toString)
 
-      doc.title() mustBe Messages("tai.iya.tax.you.owe.cy-plus-one.title")
+      doc.title() must include(Messages("tai.iya.tax.you.owe.cy-plus-one.title"))
       doc must not(haveElementWithId("iya-cy-how-much"))
       doc must not(haveElementWithId("iya-cy-plus-one-how-much"))
       doc must not(haveElementWithId("iya-cy-and-cy-plus-one-how-much"))
@@ -51,7 +51,7 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
       val html = views.html.potentialUnderpayment(PotentialUnderpaymentViewModel(tasCYOnly, ccs))
       val doc = Jsoup.parseBodyFragment(html.toString)
 
-      doc.title() mustBe Messages("tai.iya.tax.you.owe.title")
+      doc.title() must include(Messages("tai.iya.tax.you.owe.title"))
       doc must haveElementWithId("iya-cy-how-much")
       doc must not(haveElementWithId("iya-cy-plus-one-how-much"))
       doc must not(haveElementWithId("iya-cy-and-cy-plus-one-how-much"))
@@ -65,7 +65,7 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
       val html = views.html.potentialUnderpayment(PotentialUnderpaymentViewModel(tasCyPlusOneOnly, ccs))
       val doc = Jsoup.parseBodyFragment(html.toString)
 
-      doc.title() mustBe Messages("tai.iya.tax.you.owe.cy-plus-one.title")
+      doc.title() must include(Messages("tai.iya.tax.you.owe.cy-plus-one.title"))
       doc must not(haveElementWithId("iya-cy-how-much"))
       doc must haveElementWithId("iya-cy-plus-one-how-much")
       doc must not(haveElementWithId("iya-cy-and-cy-plus-one-how-much"))
@@ -75,7 +75,7 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
 
     "display the potential underpayment page configured for both CY and CY+1 when both are present" in {
 
-      doc.title() mustBe Messages("tai.iya.tax.you.owe.cy-plus-one.title")
+      doc.title() must include(Messages("tai.iya.tax.you.owe.cy-plus-one.title"))
       doc must not(haveElementWithId("iya-cy-how-much"))
       doc must not(haveElementWithId("iya-cy-plus-one-how-much"))
       doc must haveElementWithId("iya-cy-and-cy-plus-one-how-much")
