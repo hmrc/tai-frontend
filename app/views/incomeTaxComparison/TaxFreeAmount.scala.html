@@ -36,12 +36,12 @@
         <tr class=" text--right">
             <td></td>
             <th id="taxFreeAmountComparisonTableHeaderCol1" scope="col" class=" text--right">
-                @Html(messages("tai.CurrentTaxYear"))
-                @Html(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader))
+                @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
+                @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
             </th>
             <th id="taxFreeComparisonTableTableHeaderCol2" scope="col" class=" text--right">
-                @Html(messages("tai.NextTaxYear"))
-                @Html(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader))
+                @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
+                @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader)))
             </th>
         </tr>
     </thead>
@@ -66,12 +66,12 @@
         <tr class="text--right">
             <td></td>
             <th scope="col" class="text--right">
-                @Html(messages("tai.CurrentTaxYear"))
-                @Html(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader))
+                @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
+                @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
             </th>
             <th scope="col" class="text--right">
-                @Html(messages("tai.NextTaxYear"))
-                @Html(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader))
+                @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
+                @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader)))
             </th>
         </tr>
     </thead>
@@ -113,12 +113,12 @@
         <tr class="text--right">
             <td></td>
             <th scope="col" class="text--right">
-                @Html(messages("tai.CurrentTaxYear"))
-                @Html(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader))
+                @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
+                @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
             </th>
             <th scope="col" class="text--right">
-                @Html(messages("tai.NextTaxYear"))
-                @Html(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader))
+                @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
+                @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader)))
             </th>
         </tr>
     </thead>
@@ -159,12 +159,12 @@
     <tr class="text--right">
         <td></td>
         <th scope="col">
-            @Html(messages("tai.CurrentTaxYear"))
-            @Html(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader))
+            @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
+            @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
         </th>
         <th scope="col">
-            @Html(messages("tai.NextTaxYear"))
-            @Html(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader))
+            @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
+            @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader)))
         </th>
     </tr>
     </thead>
