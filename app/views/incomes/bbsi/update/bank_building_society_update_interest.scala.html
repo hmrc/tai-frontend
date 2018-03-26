@@ -51,12 +51,14 @@
         <p>@messages("tai.bbsi.update.captureInterest.para3")</p>
 
         @form(action = controllers.income.bbsi.routes.BbsiUpdateAccountController.submitInterest(viewModel.id), args=(Symbol("class"), "subsection")) {
-            @input(
-                field=updateInterestForm("untaxedInterest"),
-                ('_labelClass, "section"),
-                ('_labelTextClass, "form-label-bold" ),
-                ('_label ->  Messages("tai.bbsi.update.captureInterest.textBox.title"))
-            )
+            <div class="section">
+                @includes.forms.input(
+                    field = updateInterestForm("untaxedInterest"),
+                    labelText = Messages("tai.bbsi.update.captureInterest.textBox.title"),
+                    bold = true,
+                    isCurrency = true
+                )
+            </div>
 
             @includes.details_summary(Messages("tai.bbsi.update.captureInterest.accordion.title")) {
             <p >@messages("tai.bbsi.update.captureInterest.accordion.desc1")</p>

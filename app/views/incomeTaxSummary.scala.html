@@ -48,7 +48,7 @@
             <p id="inYearAdjustmentBanner" class="panel-indent panel-indent--info flush--top">
                 <span class="display-block">@Messages("tai.notifications.iya.banner.text")</span>
                 @Link.toInternalPage(
-                    url=routes.CurrentYearPageController.potentialUnderpaymentPage().url,
+                    url=routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url,
                     value=Some(Messages("tai.notifications.iya.linkText")),
                     dataAttributes=Some(Map("journey-click" -> s"link - click:${gaEventActionString}:${Messages("tai.notifications.iya.linkText")}."))
                 ).toHtml

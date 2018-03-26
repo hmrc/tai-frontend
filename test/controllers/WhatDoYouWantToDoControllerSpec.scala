@@ -443,13 +443,13 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
   private def createFakeSessionDataWithPY: SessionData = AuthBuilder.createFakeSessionDataWithPY
 
   private val fakeEmploymentData = Seq(Employment("TEST", Some("12345"), LocalDate.now(), None,
-    List(AnnualAccount("", TaxYear(TaxYearResolver.currentTaxYear), Available, Nil, Nil)), "", "", 2),
+    List(AnnualAccount("", TaxYear(TaxYearResolver.currentTaxYear), Available, Nil, Nil)), "", "", 2, None, false),
     Employment("TEST1", Some("123456"), LocalDate.now(), None,
-      List(AnnualAccount("", TaxYear(TaxYearResolver.currentTaxYear), Unavailable, Nil, Nil)), "", "", 2))
+      List(AnnualAccount("", TaxYear(TaxYearResolver.currentTaxYear), Unavailable, Nil, Nil)), "", "", 2, None, false))
 
   private val nino = new Generator(new Random).nextNino
 
-  private val taxAccountSummary = TaxAccountSummary(111,222, 333)
+  private val taxAccountSummary = TaxAccountSummary(111,222, 333, 444, 111)
 
   private def createSUT(sessionData: Option[SessionData] = None,
                         sessionDataFailure: Option[Throwable] = None,

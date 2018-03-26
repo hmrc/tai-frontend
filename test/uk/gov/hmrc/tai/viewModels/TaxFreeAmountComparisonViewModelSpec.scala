@@ -201,8 +201,8 @@ class TaxFreeAmountComparisonViewModelSpec extends PlaySpec {
     }
 
     "return footer" in {
-      val currentYearComponents = TaxAccountSummaryForYear(currentTaxYear, TaxAccountSummary(100, 100, 100))
-      val nextYearComponents = TaxAccountSummaryForYear(nextTaxYear, TaxAccountSummary(200, 200, 200))
+      val currentYearComponents = TaxAccountSummaryForYear(currentTaxYear, TaxAccountSummary(100, 100, 100, 300, 200))
+      val nextYearComponents = TaxAccountSummaryForYear(nextTaxYear, TaxAccountSummary(200, 200, 200, 200, 0))
 
       val model = TaxFreeAmountComparisonViewModel(Seq.empty[CodingComponentForYear],
         Seq(currentYearComponents, nextYearComponents))

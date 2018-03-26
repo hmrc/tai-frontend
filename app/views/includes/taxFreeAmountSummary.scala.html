@@ -41,7 +41,7 @@
                             @includes.link(
                                 id=Some("estimatedTaxOwedLink"),
                                 copy=Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"),
-                                url = controllers.routes.CurrentYearPageController.potentialUnderpaymentPage.url.toString,
+                                url = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
                                 linkClasses = Seq("link-list__item"),
                                 attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
                             )
@@ -54,8 +54,6 @@
                             id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
                             url = row.link.href,
                             linkClasses = Seq("float--right"),
-                            isButton=true,
-                            isSecondary=true,
                             copy=Messages("tai.updateOrRemove"),
                             altCopy=Some(Messages("tai.updateOrRemove") + " " + row.link.value),
                             attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${row.link.value}")

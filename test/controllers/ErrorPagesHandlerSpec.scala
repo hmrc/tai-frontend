@@ -237,7 +237,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "there are no tax account but employment is available for previous year" in {
         val exceptionController = createSut
-        val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2))
+        val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false))
         val employment = (_: Nino) => Future.successful(employmentDetails)
         val proceed = (_:TaiRoot) => Future.successful(Ok)
 
@@ -269,7 +269,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "there are no tax account for current year but employment is available for previous year" in {
         val exceptionController = createSut
-        val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2))
+        val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false))
         val employment = (_: Nino) => Future.successful(employmentDetails)
         val proceed = (_:TaiRoot) => Future.successful(Ok)
 
@@ -302,7 +302,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "there are no employment for current year but employment is available for previous year" in {
         val exceptionController = createSut
-        val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2))
+        val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false))
         val employment = (_: Nino) => Future.successful(employmentDetails)
         val proceed = (_:TaiRoot) => Future.successful(Ok)
 

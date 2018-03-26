@@ -18,6 +18,7 @@
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
 
 @import includes.ptaHeader
+@import includes.forms.input
 @import uk.gov.hmrc.play.views.html.helpers._
 
 @pageTitle = @{bonusPeriod match {
@@ -46,6 +47,15 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         mainHeadingText = pageTitle,
         preHeadingText = Messages("tai.bonusPaymentsAmount.preHeading"))}
 
+@hint = @{
+    if(bonusPeriod == "year"){
+        Messages("tai.bonusPaymentsAmount.year.message")
+    }
+    else{
+        ""
+    }
+}
+
 @main(
     title = pageTitle,
     articleClasses = Some("full-width"),
@@ -54,24 +64,18 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     employerName = employerName,
     gaCustomTitle = None
     ){
-
-    <section class="section flush--bottom soft--top">
+    <div class="section flush--bottom soft--top">
         @form(action=controllers.routes.IncomeUpdateCalculatorController.handleBonusOvertimeAmount){
-            <fieldset id="bonusOvertimeAmount" class="form-field-group @if(bonusOvertimeAmountForm.hasErrors){error}">
-                <label for="amount" id="bonusOvertimeAmountDescription">
-                    <span class="heading-24">
-                        @pageDesc
-                    </span>
-                </label>
-                @if(bonusPeriod == "year"){
-                    <p id="yearMessage">@Messages("tai.bonusPaymentsAmount.year.message")</p>
-                }
-                @bonusOvertimeAmountForm.errors.map{ error =>
-                    <span class="error-notification">@Messages(error.message)</span>
-                }
-                <input type="text" class="form-control form-field-single" id="amount" name="amount"/>
-            </fieldset>
-            <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
+            @includes.forms.input(
+                field = bonusOvertimeAmountForm("amount"),
+                labelText = pageDesc,
+                bold = true,
+                hintText = hint.toString,
+                hintClass = "body-text",
+                isCurrency = true
+            )
+
+            <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
         }
-    </section>
+    </div>
 }

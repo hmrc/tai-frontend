@@ -41,7 +41,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     gaCustomTitle = None
 ){
 
-    <section class="section--branded hmrc text soft--top">
+    <div class="section--branded hmrc text soft--top">
         <h2 class="h2-heading">@Messages("tai.incomes.edit.howTo.subtitle")</h2>
         <p>@Messages("tai.incomes.edit.howTo.payslip")</p>
         <p>@Messages("tai.incomes.edit.howTo.grossAmount")</p>
@@ -50,9 +50,9 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             <li>@Messages("tai.incomes.edit.howTo.charity")</li>
             <li>@Messages("tai.incomes.edit.howTo.expenses")</li>
         </ul>
-    </section>
+    </div>
 
-    <section class="section--branded hmrc">
+    <div class="section--branded hmrc">
         <h2 class="h2-heading">@Messages("tai.incomes.edit.incomeTax.update.heading")</h2>
         <p>@Messages("tai.incomes.edit.text",s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</p>
         <p>@Messages("tai.enterWholeAndNumericalOnly")</p>
@@ -93,6 +93,6 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
                 <p><input type="submit" class="button" value='@Messages("tai.next")'/></p>
             </div>
         }
-    </section>
+    </div>
 }
 
