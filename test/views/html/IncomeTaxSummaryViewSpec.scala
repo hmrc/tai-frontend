@@ -33,8 +33,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       preHeaderText ="Firstname Surname",
       mainHeaderText = "main heading")
 
-    behave like pageWithBackLink
-
     "display iForms status message when an iForm has not been fully processed" in{
       doc must haveElementWithId("isAnyFormInProgressBanner")
     }
@@ -268,6 +266,9 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
     "display an IForm link to add a missing income source" in {
       doc must haveElementAtPathWithText("#addMissingIncomeSourceSection a", messages("tai.incomeTaxSummary.addMissingIncome.section.otherLink"))
       doc must haveElementAtPathWithAttribute("#addMissingIncomeSourceSection a", "href", ApplicationConfig.otherIncomeLinkUrl)
+    }
+    "display a link to return to income tax summary" in {
+      doc must haveLinkWithUrlWithID("WhatDoYouWantToDoLink", controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
     }
   }
 

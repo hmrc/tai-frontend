@@ -26,7 +26,7 @@
 
 @header = @{
     ptaHeader(
-        displayBackLink = true,
+        displayBackLink = false,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.header,
         preHeadingText = s"${user.taiRoot.firstName} ${user.taiRoot.surname}",
@@ -180,6 +180,17 @@
                 </ul>
 
             </section>
+
+            <div>
+                <p>
+                @Link.toInternalPage(
+                    id=Some("WhatDoYouWantToDoLink"),
+                    url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+                    value=Some(Messages("tai.returnToIncomeTaxSummary")),
+                    cssClasses=Some(""),
+                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToIncomeTaxSummary")}"))).toHtml
+                </p>
+            </div>
 
         </div>
     </div>
