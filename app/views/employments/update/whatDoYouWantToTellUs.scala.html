@@ -14,10 +14,10 @@
  * limitations under the License.
  *@
 
-@import includes.forms.{submit}
+@import includes.forms.{submit, textArea}
 @import includes.{cancelLink, ptaHeader}
 @import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
-@import uk.gov.hmrc.play.views.html.helpers.{form, textArea}
+@import uk.gov.hmrc.play.views.html.helpers.{form}
 @import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 
 
@@ -44,14 +44,12 @@
 
     @form(action = controllers.employments.routes.UpdateEmploymentController.submitUpdateEmploymentDetails(viewmodel.empId), args=(Symbol("class"), "subsection")) {
 
-        @textArea(field=updateEmploymentDetailsForm("employmentDetails"),
-        '_inputClass -> "form-control form-control--full-width",
-        '_divClass -> "char-counter",
-        '_label -> Messages("tai.updateEmployment.whatDoYouWantToTellUs.textarea.text",
-            UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit),
-        '_dataCharCounter -> true,
-        '_dataCharField -> true,
-        '_maxlength -> UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit)
+        @textArea(
+            field=updateEmploymentDetailsForm("employmentDetails"),
+            classes = Seq("form-control form-control--full-width js-char-count"),
+            labelText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.textarea.text", UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit),
+            maxlength = UpdateEmploymentDetailsForm.employmentDetailsCharacterLimit.toString
+        )
 
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")))
     }
