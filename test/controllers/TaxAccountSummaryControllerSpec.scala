@@ -68,7 +68,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
             TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy"),
             TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))
 
-      doc.title() mustBe expectedTitle
+      doc.title() must include(expectedTitle)
     }
 
     "raise an audit event" in {

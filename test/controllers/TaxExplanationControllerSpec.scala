@@ -66,7 +66,7 @@ class TaxExplanationControllerSpec extends PlaySpec with FakeTaiPlayApplication 
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe 200
-      doc.title() mustBe Messages("tai.incomeTax.calculated.heading")
+      doc.title() must include(Messages("tai.incomeTax.calculated.heading"))
     }
   }
 

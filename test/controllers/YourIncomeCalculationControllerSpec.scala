@@ -36,7 +36,6 @@ import uk.gov.hmrc.tai.model.rti.RtiStatus
 import uk.gov.hmrc.tai.service.{ActivityLoggerService, EmploymentService, TaiService}
 import uk.gov.hmrc.tai.model.tai.{AnnualAccount, TaxYear}
 import uk.gov.hmrc.tai.model.{IncomeData, IncomeExplanation, SessionData, TaxSummaryDetails}
-
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
@@ -54,7 +53,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
-      doc.title() mustBe Messages("tai.income.calculation.TaxableIncomeDetails", SUT.sampleEmployment.name)
+      doc.title() must include(Messages("tai.income.calculation.TaxableIncomeDetails", SUT.sampleEmployment.name))
     }
 
     "display the current year with missing data" in {
@@ -68,7 +67,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
-      doc.title() mustBe Messages("tai.income.calculation.TaxableIncomeDetails", SUT.sampleEmployment.name)
+      doc.title() must include(Messages("tai.income.calculation.TaxableIncomeDetails", SUT.sampleEmployment.name))
     }
 
     "display the current year with ceased employments data" in {
@@ -82,7 +81,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
-      doc.title() mustBe Messages("tai.income.calculation.TaxableIncomeDetails", SUT.sampleEmployment.name)
+      doc.title() must include(Messages("tai.income.calculation.TaxableIncomeDetails", SUT.sampleEmployment.name))
     }
 
     "display the current year page with rti down message when Rti is Down" in {
@@ -105,7 +104,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val contents = doc.body()
 
       contents.toString.contains(Messages("tai.income.calculation.rtiUnavailableCurrentYear.message")) mustBe true
-      doc.title() mustBe Messages("tai.income.calculation.TaxableIncomeDetails", SUT.sampleEmployment.name)
+      doc.title() must include(Messages("tai.income.calculation.TaxableIncomeDetails", SUT.sampleEmployment.name))
     }
 
     "call yourIncomeCalculationPage() successfully with an authorised session " in {
@@ -178,7 +177,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
-      doc.title() mustBe Messages("tai.yourIncome.heading")
+      doc.title() must include(Messages("tai.yourIncome.heading"))
     }
 
     "print the current year with missing data" in {
@@ -192,7 +191,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
-      doc.title() mustBe Messages("tai.yourIncome.heading")
+      doc.title() must include(Messages("tai.yourIncome.heading"))
     }
 
     "print the current year with ceased emplployments data" in {
@@ -206,7 +205,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val content = contentAsString(result)
       val doc = Jsoup.parse(content)
 
-      doc.title() mustBe Messages("tai.yourIncome.heading")
+      doc.title() must include(Messages("tai.yourIncome.heading"))
     }
 
     "print the current year page with rti down message when Rti is Down" in {
@@ -226,7 +225,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val contents = doc.body()
 
       contents.toString.contains(Messages("tai.income.calculation.rtiUnavailableCurrentYear.message")) mustBe true
-      doc.title() mustBe Messages("tai.yourIncome.heading")
+      doc.title() must include(Messages("tai.yourIncome.heading"))
     }
 
     "Calling the yourIncomeCalculation for any year" should {
@@ -242,7 +241,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val content = contentAsString(result)
         val doc = Jsoup.parse(content)
 
-        doc.title() mustBe Messages("tai.income.calculation.TaxableIncomeDetails",SUT.sampleEmployment.name)
+        doc.title() must include(Messages("tai.income.calculation.TaxableIncomeDetails",SUT.sampleEmployment.name))
       }
 
       "display the previous year with missing data" in {
@@ -256,7 +255,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val content = contentAsString(result)
         val doc = Jsoup.parse(content)
 
-        doc.title() mustBe Messages("tai.income.calculation.TaxableIncomeDetails",SUT.sampleEmployment.name)
+        doc.title() must include(Messages("tai.income.calculation.TaxableIncomeDetails",SUT.sampleEmployment.name))
       }
 
       "display the previous year with ceased employments data" in {
@@ -270,7 +269,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val content = contentAsString(result)
         val doc = Jsoup.parse(content)
 
-        doc.title() mustBe Messages("tai.income.calculation.TaxableIncomeDetails",SUT.sampleEmployment.name)
+        doc.title() must include(Messages("tai.income.calculation.TaxableIncomeDetails",SUT.sampleEmployment.name))
       }
 
       "call yourIncomeCalculationPreviousYearPage() successfully with an authorised session " in {

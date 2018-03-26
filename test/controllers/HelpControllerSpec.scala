@@ -50,7 +50,7 @@ class HelpControllerSpec extends PlaySpec
       status(result) mustBe 200
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() mustBe messagesApi("tai.getHelp.h1")
+      doc.title() must include(messagesApi("tai.getHelp.h1"))
 
     }
 

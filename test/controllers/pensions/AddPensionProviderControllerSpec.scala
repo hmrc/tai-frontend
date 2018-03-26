@@ -68,7 +68,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.addPensionProvider.addNameForm.title")
+        doc.title() must include(Messages("tai.addPensionProvider.addNameForm.title"))
       }
     }
   }
@@ -96,7 +96,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.addPensionProvider.addNameForm.title")
+        doc.title() must include(Messages("tai.addPensionProvider.addNameForm.title"))
       }
     }
 
@@ -125,7 +125,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.addPensionProvider.firstPay.title", pensionProviderName)
+        doc.title() must include(Messages("tai.addPensionProvider.firstPay.title", pensionProviderName))
       }
     }
   }
@@ -168,7 +168,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.addPensionProvider.firstPay.title", pensionProviderName)
+        doc.title() must include(Messages("tai.addPensionProvider.firstPay.title", pensionProviderName))
       }
     }
     "raise an audit event" when {
@@ -197,7 +197,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.addPensionProvider.startDateForm.title", pensionProviderName)
+        doc.title() must include(Messages("tai.addPensionProvider.startDateForm.title", pensionProviderName))
       }
     }
 
@@ -278,7 +278,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName)
+        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
       }
     }
   }
@@ -353,7 +353,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.addPensionProvider.pensionNumber.title", pensionName)
+        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.title", pensionName))
       }
     }
   }
@@ -367,7 +367,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
     }
   }
@@ -408,7 +408,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
       "there is a form validation error (additional, controller specific constraint)" in {
         val sut = createSUT
@@ -417,13 +417,13 @@ class AddPensionProviderControllerSpec extends PlaySpec
           YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))
         status(tooFewCharsResult) mustBe BAD_REQUEST
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
-        tooFewDoc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
         val tooManyCharsResult = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
         status(tooManyCharsResult) mustBe BAD_REQUEST
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
-        tooManyDoc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
     }
   }
@@ -443,7 +443,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.checkYourAnswers")
+        doc.title() must include(Messages("tai.checkYourAnswers"))
       }
     }
 
@@ -489,7 +489,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
       val result = sut.confirmation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() mustBe Messages("tai.pensionConfirmation.heading")
+      doc.title() must include(Messages("tai.pensionConfirmation.heading"))
     }
   }
 
