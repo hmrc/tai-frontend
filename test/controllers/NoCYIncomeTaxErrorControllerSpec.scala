@@ -51,7 +51,7 @@ class NoCYIncomeTaxErrorControllerSpec
       val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       val doc = Jsoup.parse(contentAsString(result))
       status(result) mustBe OK
-      doc.title() mustBe Messages("tai.noCYIncomeError.heading")
+      doc.title() must include(Messages("tai.noCYIncomeError.heading"))
     }
 
     "call employment service to fetch sequence of employments" in {
@@ -140,7 +140,7 @@ class NoCYIncomeTaxErrorControllerSpec
 
     when(taiService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
 
-    val sampleEmployment = Seq(Employment("empName", None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1))
+    val sampleEmployment = Seq(Employment("empName", None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false))
 
     employmentDataFailure match {
       case None => when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))

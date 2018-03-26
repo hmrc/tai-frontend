@@ -51,7 +51,7 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.bbsi.update.captureInterest.title", "TEST")
+        doc.title() must include(Messages("tai.bbsi.update.captureInterest.title", "TEST"))
       }
     }
 

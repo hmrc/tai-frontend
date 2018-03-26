@@ -70,7 +70,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.closeBankAccount.closeDateForm.title", "Test Bank account name")
+        doc.title() must include(Messages("tai.closeBankAccount.closeDateForm.title", "Test Bank account name"))
       }
     }
 
@@ -247,7 +247,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.closeBankAccount.closingInterest.title")
+        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.title"))
       }
     }
 
@@ -362,7 +362,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.closeBankAccount.closingInterest.title")
+        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.title"))
       }
     }
   }
