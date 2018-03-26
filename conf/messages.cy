@@ -1383,6 +1383,8 @@ tai.typeDecodes.StatePension=WELSHStatePension
 tai.typeDecodes.EmploymentAndSupportAllowance=WELSHEmployment And Support Allowance
 tai.typeDecodes.JobSeekersAllowance=WELSHJob Seekers Allowance
 tai.typeDecodes.IncapacityBenefit=WELSHIncapacity Benefit
+tai.income.details.checkPaymentsReceived=WELSHCheck payments received
+tai.income.calculation.heading=WELSH Income Tax and National Insurance paid from {0} to {1}
 
 language.to=WELSHto
 language.day.singular=WELSHday

@@ -36,7 +36,7 @@ class YourIncomeCalculationHelperSpec extends UnitSpec with FakeTaiPlayApplicati
   val rtiEyu = RtiEyu(None, None, None, date)
   val employerName = "employer"
 
-  "EYU message" should {
+  /*"EYU message" should {
     "have 4 messages" in {
       val rtiEyuList = List(rtiEyuPayDeltaNI, rtiEyuTaxDelta, rtiEyuNI)
       val messages = getEyuMessage(rtiEyuList, employerName)
@@ -90,6 +90,6 @@ class YourIncomeCalculationHelperSpec extends UnitSpec with FakeTaiPlayApplicati
       val messages = getEyuMessage(rtiEyuList, employerName)
       messages should be(Nil)
     }
-  }
+  }*/
 
 }

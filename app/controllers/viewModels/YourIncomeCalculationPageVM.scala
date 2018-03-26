@@ -18,6 +18,7 @@ package controllers.viewModels
 
 import controllers.IncomeViewModelFactory
 import controllers.auth.TaiUser
+import org.joda.time.LocalDate
 import uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel
 import uk.gov.hmrc.tai.model.{TaxCodeIncomeSummary, TaxSummaryDetails}
 import play.api.http.Status
@@ -27,35 +28,50 @@ import uk.gov.hmrc.tai.util.YourIncomeCalculationHelper
 import uk.gov.hmrc.tai.util.TaiConstants._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.{EditableDetails, TaxCodeIncomeSummary, TaxSummaryDetails}
+import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import play.api.i18n.Messages
+
 
 object YourIncomeCalculationPageVM extends IncomeViewModelFactory {
   override type ViewModelType = YourIncomeCalculationViewModel
 
   override def createObject(nino:Nino, details: TaxSummaryDetails, incomeId : Int)(
-    implicit user: TaiUser, hc: HeaderCarrier): YourIncomeCalculationViewModel = {
+    implicit user: TaiUser, hc: HeaderCarrier, messages: Messages): YourIncomeCalculationViewModel = {
     val incomeExplanations = details.incomeData.map(x => x.incomeExplanations)
     val ceased = details.increasesTax.flatMap(_.incomes.flatMap(_.taxCodeIncomes.ceasedEmployments))
     val incs = ceased.map(_.taxCodeIncomes).getOrElse(List[TaxCodeIncomeSummary]())
 
-    val incomeExplanationDetails = incomeExplanations.flatMap{ incomeExpl =>
+    def incomeExplanationDetails(implicit messages: Messages) = incomeExplanations.flatMap{ incomeExpl =>
       incomeExpl.filter(_.incomeId == incomeId).headOption.map{ expl =>
-        val (incomeMsg, incomeEstimateMsg) = YourIncomeCalculationHelper.getIncomeExplanationMessage(expl)
+
+        def incomeEstimateMessages = YourIncomeCalculationHelper.getIncomeExplanationMessage(expl)
         val payrollMsg = YourIncomeCalculationHelper.displayPayrollNumber(expl.hasDuplicateEmploymentNames, expl.worksNumber, expl.isPension)
         val isEditable = incs.filter(_.employmentId == Some(incomeId)).headOption.map(_.isEditable).getOrElse(true)
 
-        (expl.employerName, expl.isPension, incomeMsg, incomeEstimateMsg, payrollMsg, expl.editableDetails.copy(isEditable = isEditable),
+        (expl.employerName, expl.isPension, incomeEstimateMessages._1, incomeEstimateMessages._2, payrollMsg, expl.editableDetails.copy(isEditable = isEditable),
         expl.employmentStatus, expl.endDate)
       }
     }
 
-    val (employerName, isPension, incomeMsg, incomeEstimateMsg, payrollMsg, editableDetails, employmentStatus, endDate) = incomeExplanationDetails match {
-      case Some(incomeExplanationDetails) => (incomeExplanationDetails._1, incomeExplanationDetails._2,
-        incomeExplanationDetails._3, incomeExplanationDetails._4, incomeExplanationDetails._5, incomeExplanationDetails._6,
-        incomeExplanationDetails._7, incomeExplanationDetails._8)
-      case _ => ("", false, None, None, None, EditableDetails(), None, None)
+    //val (employerName, isPension, incomeMsg, incomeEstimateMsg, payrollMsg, editableDetails, employmentStatus, endDate)
+
+    case class IncomeDetails(employerName: String, isPension: Boolean, incomeMsg: Option[String], incomeEstimateMsg: Option[String], payrollMsg: Option[String], editableDetails: EditableDetails, employmentStatus: Option[Int], endDate: Option[LocalDate])
+
+    def incomeDetails(implicit messages: Messages) = {
+      val (employerName, isPension, incomeMsg, incomeEstimateMsg, payrollMsg, editableDetails, employmentStatus, endDate) = incomeExplanationDetails match {
+        case Some(incomeExplanationDetails) => (incomeExplanationDetails._1, incomeExplanationDetails._2,
+          incomeExplanationDetails._3, incomeExplanationDetails._4, incomeExplanationDetails._5, incomeExplanationDetails._6,
+          incomeExplanationDetails._7, incomeExplanationDetails._8)
+        case _ => ("", false, None, None, None, EditableDetails(), None, None)
+      }
+
+      IncomeDetails(employerName, isPension, incomeMsg, incomeEstimateMsg, payrollMsg, editableDetails, employmentStatus, endDate)
     }
 
-    val (employmentPayments, hasPrevious, totalNotEqualMessage) = YourIncomeCalculationHelper.getCurrentYearPayments(details, incomeId)
+    //val (employmentPayments, hasPrevious, totalNotEqualMessage) =
+
+    lazy val test = YourIncomeCalculationHelper.getCurrentYearPayments(details, incomeId)
 
     val rtiStatus = details.accounts.headOption.flatMap{
       accounts => accounts.rtiStatus
@@ -66,23 +82,23 @@ object YourIncomeCalculationPageVM extends IncomeViewModelFactory {
       case _ => false
     }
 
-    val isCeased =  employmentStatus.fold(EmploymentLive)(status => status) == EmploymentCeased
-    val isLive = employmentStatus.fold(EmploymentLive)(status => status) == EmploymentLive
+    def isCeased(implicit messages: Messages) =  incomeDetails.employmentStatus.fold(EmploymentLive)(status => status) == EmploymentCeased
+    def isLive(implicit messages: Messages) = incomeDetails.employmentStatus.fold(EmploymentLive)(status => status) == EmploymentLive
 
     YourIncomeCalculationViewModel(
-      employerName= employerName,
-      isPension = isPension,
-      incomeCalculationMsg = incomeMsg.getOrElse(""),
-      incomeCalculationEstimateMsg = if(!isCeased) incomeEstimateMsg else None,
-      payrollMsg = payrollMsg,
-      employmentPayments = employmentPayments,
+      employerName= incomeDetails.employerName,
+      isPension = incomeDetails.isPension,
+      incomeCalculationMsg = incomeDetails.incomeMsg.getOrElse(""),
+      incomeCalculationEstimateMsg = if(!isCeased) incomeDetails.incomeEstimateMsg else None,
+      payrollMsg = incomeDetails.payrollMsg,
+      employmentPayments = test._1, //employmentPayments,
       empId = incomeId,
-      hasPrevious = hasPrevious,
-      totalNotEqualMessage = if(isLive) totalNotEqualMessage else None,
-      editableDetails = editableDetails,
+      hasPrevious = test._2, //hasPrevious,
+      totalNotEqualMessage = if(isLive) test._3 else None,
+      editableDetails = incomeDetails.editableDetails,
       rtiDown = isRtiDown,
-      employmentStatus = employmentStatus,
-      endDate = endDate
+      employmentStatus = incomeDetails.employmentStatus,
+      endDate = incomeDetails.endDate
     )
   }
 }
