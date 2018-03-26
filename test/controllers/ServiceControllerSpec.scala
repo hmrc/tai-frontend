@@ -59,7 +59,7 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
       status(result) shouldBe 200
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() shouldBe Messages("tai.timeout.title")
+      doc.title() should include(Messages("tai.timeout.title"))
     }
   }
 

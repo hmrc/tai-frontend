@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonViewModel, IncomeSource
 
 class MainSpec extends TaiViewSpec {
   "Cy plus one view" must {
-    behave like pageWithTitle(incomeTaxComparisonViewModel.username + "-" + messages("tai.incomeTaxComparison.heading"))
+    behave like pageWithTitle(messages("tai.incomeTaxComparison.heading"))
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(preHeaderText = incomeTaxComparisonViewModel.username,
       mainHeaderText = messages("tai.incomeTaxComparison.heading"),

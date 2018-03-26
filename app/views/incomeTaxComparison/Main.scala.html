@@ -31,8 +31,8 @@
         preHeadingAccessibleAnnouncement = messages("tai.incomeTaxComparison.preHeading.screenReader"))
 }
 
-@main(title = incomeTaxComparisonViewModel.username + "-" + messages("tai.incomeTaxComparison.heading"),
-    gaCustomTitle = Some(messages("tai.incomeTaxComparison.heading")),
+@main(title = messages("tai.incomeTaxComparison.heading"),
+    gaCustomTitle = None,
     pageHeader = Some(header),
     user = Some(user)) {
 

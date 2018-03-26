@@ -66,7 +66,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.addEmployment.addNameForm.title")
+        doc.title() must include(Messages("tai.addEmployment.addNameForm.title"))
       }
     }
   }
@@ -95,7 +95,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.addEmployment.addNameForm.title")
+        doc.title() must include(Messages("tai.addEmployment.addNameForm.title"))
       }
     }
 
@@ -121,7 +121,7 @@ class AddEmploymentControllerSpec extends PlaySpec
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.addEmployment.startDateForm.title", employmentName)
+        doc.title() must include(Messages("tai.addEmployment.startDateForm.title", employmentName))
       }
     }
 
@@ -235,7 +235,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.addEmployment.employmentFirstPay.title", employmentName)
+        doc.title() must include(Messages("tai.addEmployment.employmentFirstPay.title", employmentName))
       }
     }
   }
@@ -296,7 +296,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.addEmployment.employmentFirstPay.title", employmentName)
+        doc.title() must include(Messages("tai.addEmployment.employmentFirstPay.title", employmentName))
       }
     }
   }
@@ -314,7 +314,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.addEmployment.employmentPayrollNumber.title", employerName)
+        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
       }
     }
   }
@@ -390,7 +390,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.addEmployment.employmentPayrollNumber.title", employerName)
+        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
       }
     }
   }
@@ -404,7 +404,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
     }
   }
@@ -444,7 +444,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
       "there is a form validation error (additional, controller specific constraint)" in {
         val sut = createSUT
@@ -453,13 +453,13 @@ class AddEmploymentControllerSpec extends PlaySpec
           YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))
         status(tooFewCharsResult) mustBe BAD_REQUEST
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
-        tooFewDoc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
         val tooManyCharsResult = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
         status(tooManyCharsResult) mustBe BAD_REQUEST
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
-        tooManyDoc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
     }
   }
@@ -479,7 +479,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.checkYourAnswers")
+        doc.title() must include(Messages("tai.checkYourAnswers"))
       }
     }
   }
@@ -536,7 +536,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         val result = sut.confirmation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.employmentConfirmation.heading")
+        doc.title() must include(Messages("tai.employmentConfirmation.heading"))
       }
     }
   }

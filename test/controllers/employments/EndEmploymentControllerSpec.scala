@@ -71,7 +71,7 @@ class EndEmploymentControllerSpec
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
-      doc.title() mustBe Messages("tai.employment.decision.title", employerName)
+      doc.title() must include(Messages("tai.employment.decision.title", employerName))
     }
 
     "call the Employment service to get the correct employment details" in {
@@ -249,7 +249,7 @@ class EndEmploymentControllerSpec
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
-      doc.title() mustBe Messages("tai.endEmploymentWithinSixWeeksError.heading", new LocalDate().toString("d MMMM yyyy"))
+      doc.title() must include(Messages("tai.endEmploymentWithinSixWeeksError.heading", new LocalDate().toString("d MMMM yyyy")))
     }
 
     "show the irregular payment error page" in {
@@ -261,7 +261,7 @@ class EndEmploymentControllerSpec
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
-      doc.title() mustBe Messages("tai.irregular.preHeadingText")
+      doc.title() must include(Messages("tai.irregular.preHeadingText"))
     }
 
     "submit the details to backend" in {
@@ -289,7 +289,7 @@ class EndEmploymentControllerSpec
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
-      doc.title() mustBe Messages("tai.tellUsAboutEmployment.title")
+      doc.title() must include(Messages("tai.tellUsAboutEmployment.title"))
     }
 
     "call the Employment service to get the correct employment details" in {
@@ -407,7 +407,7 @@ class EndEmploymentControllerSpec
         val doc = Jsoup.parse(contentAsString(result))
 
         status(result) mustBe OK
-        doc.title() mustBe Messages("tai.endEmploymentConfirmAndSend.heading")
+        doc.title() must include(Messages("tai.endEmploymentConfirmAndSend.heading"))
       }
 
       "submit the details to backend" in {
@@ -437,7 +437,7 @@ class EndEmploymentControllerSpec
         val doc = Jsoup.parse(contentAsString(result))
 
         status(result) mustBe OK
-        doc.title() mustBe Messages("tai.employmentConfirmation.heading")
+        doc.title() must include(Messages("tai.employmentConfirmation.heading"))
       }
     }
   }
@@ -452,7 +452,7 @@ class EndEmploymentControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
     }
   }
@@ -497,7 +497,7 @@ class EndEmploymentControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
 
       "there is a form validation error (additional, controller specific constraint)" in {
@@ -511,13 +511,13 @@ class EndEmploymentControllerSpec
           YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))
         status(tooFewCharsResult) mustBe BAD_REQUEST
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
-        tooFewDoc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
         val tooManyCharsResult = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
         status(tooManyCharsResult) mustBe BAD_REQUEST
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
-        tooManyDoc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
     }
   }

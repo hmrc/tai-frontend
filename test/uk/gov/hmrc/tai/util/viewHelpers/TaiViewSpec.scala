@@ -44,7 +44,7 @@ trait TaiViewSpec extends PlaySpec
 
   def pageWithTitle(titleText: String): Unit = {
     "have a static title" in {
-      doc.title mustBe titleText
+      doc.title must include(titleText)
     }
   }
 

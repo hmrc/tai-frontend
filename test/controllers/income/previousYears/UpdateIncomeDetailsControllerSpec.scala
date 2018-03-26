@@ -64,7 +64,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() mustBe Messages("tai.income.previousYears.decision.title")
+      doc.title() must include(Messages("tai.income.previousYears.decision.title"))
     }
   }
 
@@ -110,7 +110,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
         val result = SUT.details()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.updateEmployment.whatDoYouWantToTellUs.title")
+        doc.title() must include(Messages("tai.updateEmployment.whatDoYouWantToTellUs.title"))
       }
     }
   }
@@ -173,7 +173,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
     }
   }
@@ -218,7 +218,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
       "there is a form validation error (additional, controller specific constraint)" in {
         val sut = createSUT
@@ -229,13 +229,13 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
           YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))
         status(tooFewCharsResult) mustBe BAD_REQUEST
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
-        tooFewDoc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
         val tooManyCharsResult = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
         status(tooManyCharsResult) mustBe BAD_REQUEST
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
-        tooManyDoc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
     }
   }
@@ -253,7 +253,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() mustBe Messages("tai.checkYourAnswers")
+      doc.title() must include(Messages("tai.checkYourAnswers"))
     }
   }
 
@@ -313,7 +313,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
         val result = sut.confirmation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.income.previousYears.confirmation.heading")
+        doc.title() must include(Messages("tai.income.previousYears.confirmation.heading"))
       }
     }
   }

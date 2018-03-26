@@ -97,7 +97,7 @@ class WithAuthorisedForTaiSpec extends PlaySpec with FakeTaiPlayApplication with
 
         status(result) mustBe 400
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title mustBe responseBody
+        doc.title must include(responseBody)
         verify(taiService, times(1)).taiSession(any(), any(), any())(any())
       }
     }
