@@ -67,7 +67,8 @@ with I18nSupport {
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() mustBe Messages("tai.incomeTaxComparison.heading")
+      doc.title() must include (Messages("tai.incomeTaxComparison.heading"))
+
       verify(sut.employmentService, times(1)).employments(Matchers.any(),Matchers.eq(TaxYear()))(Matchers.any())
       verify(sut.employmentService, times(1)).employments(Matchers.any(),Matchers.eq(TaxYear().next))(Matchers.any())
 
