@@ -67,7 +67,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.updateEmployment.whatDoYouWantToTellUs.title"))
+        doc.title() must include(Messages("tai.updateEmployment.whatDoYouWantToTellUs.title", employment.name))
       }
     }
 

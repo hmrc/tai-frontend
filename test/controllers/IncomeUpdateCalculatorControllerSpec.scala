@@ -515,7 +515,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.currentYearSummary.heading"))
+        doc.title() must include(Messages("tai.estimatedPay.error.incorrectTaxableIncome.title"))
 
       }
     }

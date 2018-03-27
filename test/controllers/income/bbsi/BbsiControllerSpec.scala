@@ -125,7 +125,7 @@ class BbsiControllerSpec extends PlaySpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(Messages("tai.bbsi.decision.preHeading"))
+      doc.title() must include(Messages("tai.bbsi.decision.title", bankAccount.bankName.getOrElse("")))
     }
 
     "return error" when {
@@ -217,7 +217,7 @@ class BbsiControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bbsi.decision.preHeading"))
+        doc.title() must include(Messages("tai.bbsi.decision.title", bankAccount.bankName.getOrElse("")))
       }
     }
 
@@ -231,7 +231,7 @@ class BbsiControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bbsi.decision.preHeading"))
+        doc.title() must include(Messages("tai.bbsi.decision.title", bankAccount.bankName.getOrElse("")))
       }
     }
 

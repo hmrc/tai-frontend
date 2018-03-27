@@ -28,7 +28,7 @@ class RemoveCompanyBenefitStopDateSpec extends TaiViewSpec{
 
   "stop date" should {
 
-    behave like pageWithTitle(messages("tai.benefits.ended.stopDate.title"))
+    behave like pageWithTitle(messages("tai.benefits.ended.stopDate.heading", benefitType, empName))
     behave like pageWithCombinedHeader(messages("tai.benefits.ended.journey.preHeader"),
       messages("tai.benefits.ended.stopDate.heading",benefitType, empName))
     behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel())

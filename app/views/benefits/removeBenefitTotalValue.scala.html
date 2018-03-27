@@ -41,11 +41,11 @@
 @totalValueField = @{companyBenefitTotalValueForm("totalValue")}
 
 @main(
-    title = Messages("tai.remove.company.benefit.total.value.title"),
+    title = Messages("tai.remove.company.benefit.total.value.heading", vm.benefitName, vm.employerName),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = None) {
+    gaCustomTitle = Some(Messages("tai.remove.company.benefit.total.value.customGaTitle"))) {
         <p>@Messages("tai.remove.company.benefit.total.value.dontKnow")</p>
         <ul class="bullets">
             <li id="totalValueAsk">@Messages("tai.remove.company.benefit.total.value.ask")</li>

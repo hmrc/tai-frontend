@@ -74,7 +74,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val result = SUT.stopDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.benefits.ended.stopDate.title"))
+        doc.title() must include(Messages("tai.benefits.ended.stopDate.heading", "Test", "Test"))
 
         verify(SUT.journeyCacheService, times(1)).currentCache(any())
       }
@@ -141,7 +141,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val result = SUT.totalValueOfBenefit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.remove.company.benefit.total.value.title"))
+        doc.title() must include(Messages("tai.remove.company.benefit.total.value.heading", benefitName, employmentName))
       }
     }
   }

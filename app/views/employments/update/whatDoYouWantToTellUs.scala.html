@@ -36,11 +36,11 @@
 }
 
 @main(
-    title = Messages("tai.updateEmployment.whatDoYouWantToTellUs.title"),
+    title = Messages("tai.updateEmployment.whatDoYouWantToTellUs.title", viewmodel.employerName),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = None) {
+    gaCustomTitle = Some(Messages("tai.updateEmployment.whatDoYouWantToTellUs.customGaTitle"))) {
 
     @form(action = controllers.employments.routes.UpdateEmploymentController.submitUpdateEmploymentDetails(viewmodel.empId), args=(Symbol("class"), "subsection")) {
 

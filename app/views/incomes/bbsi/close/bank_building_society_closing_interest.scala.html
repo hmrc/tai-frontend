@@ -37,11 +37,11 @@
 }
 
 @main(
-    title = Messages("tai.closeBankAccount.closingInterest.title"),
+    title = Messages("tai.closeBankAccount.closingInterest.heading", TaxYearResolver.currentTaxYear.toString),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = None) {
+    gaCustomTitle = Some(Messages("tai.closeBankAccount.closingInterest.customGaTitle"))) {
 
         @form(action = controllers.income.bbsi.routes.BbsiCloseAccountController.submitClosingInterest(id), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {
 

@@ -208,8 +208,8 @@ tai.noCYIncomeError.missingInfo = {0} if you do have taxable income in this tax 
 tai.missingInfo.link.message = Tell us what to change
 
 ##Update or remove employment decision
-tai.employment.decision.title=Update or remove employer - Do you currently work for {0}?
-tai.employment.decision.customGaTitle=Update or remove employer - Do you currently work for this employer?
+tai.employment.decision.title=Do you currently work for {0}?
+tai.employment.decision.customGaTitle=Do you currently work for this employer?
 tai.employment.decision.preHeading=Update or remove employer
 tai.employment.decision.heading=Do you currently work for {0}?
 tai.employment.decision.legend=Do you currently work for this employer?
@@ -219,6 +219,7 @@ tai.employment.decision.radio2=No, I do not work here any more
 ##End Employment Pages
 tai.endEmployment.preHeadingText=Employment ended
 tai.endEmployment.endDateForm.title=When did you finish working for {0}?
+tai.endEmployment.endDateForm.customGaTitle=When did you finish working for this employer?
 tai.endEmployment.endDateForm.label=Enter the date you left {0}
 tai.endEmploymentWithinSixWeeksError.heading=You can not update your details before {0}
 tai.endEmploymentWithinSixWeeksError.employerAndPayDate=Our records show you were last paid by {0} on {1}.
@@ -240,7 +241,8 @@ tai.irregular.option1=contact {0} first
 tai.irregular.option2=update my details now
 
 ##Update Employment Pages
-tai.updateEmployment.whatDoYouWantToTellUs.title=What do you want to tell us?
+tai.updateEmployment.whatDoYouWantToTellUs.title=What do you want to tell us about {0}?
+tai.updateEmployment.whatDoYouWantToTellUs.customGaTitle=What do you want to tell us about this employer?
 tai.updateEmployment.whatDoYouWantToTellUs.heading=What do you want to tell us about {0}?
 tai.updateEmployment.whatDoYouWantToTellUs.preHeading=Update employment
 tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.blank=Enter what you want to tell us about your employment
@@ -313,7 +315,7 @@ tai.closeBankAccount.closeDateForm.title=When did you close the account with {0}
 tai.closeBankAccount.closeDateForm.customGaTitle=When did you close the BBSI account
 tai.closeBankAccount.closeDateForm.label=Enter the date you closed the account
 tai.closeBankAccount.closeDateForm.blankDate=Enter the date you closed your account
-tai.closeBankAccount.closingInterest.title=How much interest did you earn?
+tai.closeBankAccount.closingInterest.customGaTitle=How much interest did you earn?
 tai.closeBankAccount.closingInterest.heading=Do you know how much interest you earned from this account since 6 April {0}?
 tai.closeBankAccount.closingInterest.legend=Do you know how much interest you earned?
 tai.closeBankAccount.closingInterest.label=Amount of interest
@@ -1390,7 +1392,8 @@ tai.bbsi.account.whatHappensNext.desc1=The figures shown, or any update you send
 tai.bbsi.account.whatHappensNext.desc2=Details of the interest you actually received for April {0} to April {1} will be sent to us after 5 April {1}. We will use the actual figures to calculate how much Income Tax you should have paid in that year.
 
 ##BBSI decision
-tai.bbsi.decision.heading=What do you want to tell us about your account with {0}
+tai.bbsi.decision.title=What do you want to tell us about your account with {0}
+tai.bbsi.decision.customGaTitle=What do you want to tell us about your account
 tai.bbsi.decision.preHeading=Update or remove account
 tai.bbsi.decision.error.selectOption=Choose one option
 tai.bbsi.decision.radio1=I want to update the estimated amount of interest
@@ -1515,7 +1518,7 @@ tai.pension.income.details.pensionNumber.screenReader=Your pension number is {0}
 
 ## Update Income Details - Previous Years
 tai.income.previousYears.journey.preHeader=Update income details
-tai.income.previousYears.decision.title=Update income decision
+tai.income.previousYears.decision.customGaTitle=Update income decision
 tai.income.previousYears.decision.header=Update income details for {0}
 tai.income.previousYears.decision.IWantTo=I want to:
 tai.income.previousYears.decision.radio.yes=contact my employer or pension provider first
@@ -1528,13 +1531,14 @@ tai.income.previousYears.details.textarea.error.maximumExceeded=You can only ent
 tai.income.previousYears.details.heading=What do you want to tell us about your income details for {0}?
 tai.income.previousYears.details.preHeading=Update income details
 tai.income.previousYears.details.textarea.text=Enter details about your update (Maximum characters 500)
+tai.income.previousYears.details.customGaTitle=What do you want to tell us about your income details?
 tai.income.previousYears.confirmation.heading=Your update has been received
 tai.income.previousYears.confirmation.back=Return to your income details for previous years
 
 ## Company Benefit Ended
 tai.benefits.ended.journey.preHeader=Company benefit ended
 
-tai.benefits.ended.stopDate.title=When did you stop getting this benefit?
+tai.benefits.ended.stopDate.customGaTitle=When did you stop getting this benefit?
 tai.benefits.ended.stopDate.heading=When did you stop getting {0} benefit from {1}?
 tai.benefits.ended.stopDate.radio.beforeTaxYearEnd=Before {0}
 tai.benefits.ended.stopDate.radio.onOrAfterTaxYearEnd=On or after {0}
@@ -1547,7 +1551,7 @@ tai.benefits.ended.tableHeader={0} benefit from {1}
 tai.noLongerGetBenefit=I no longer get this benefit
 tai.benefits.ended.confirmation.back=Return to your tax free amount page
 
-tai.remove.company.benefit.total.value.title=What was the total value of the benefit?
+tai.remove.company.benefit.total.value.customGaTitle=What was the total value of the benefit?
 tai.remove.company.benefit.total.value.heading=What was the total value of your {0} benefit from {1}?
 
 tai.remove.company.benefit.total.value.dontKnow=If you don’t know the exact amount you can either:
@@ -1563,7 +1567,7 @@ tai.remove.company.benefit.onOrAfterTaxYearEnd=On or after {0}
 
 ## Update Or Remove Company Benefit
 tai.benefits.updateOrRemove.journey.preHeader=Update or remove company benefit
-tai.benefits.updateOrRemove.decision.title=Do you currently receive this company benefit?
+tai.benefits.updateOrRemove.decision.customGaTitle=Do you currently receive this company benefit?
 tai.benefits.updateOrRemove.decision.heading=Do you currently get {0} benefit from {1}?
 tai.benefits.updateOrRemove.decision.radio.yes=Yes, I currently get this benefit
 tai.benefits.updateOrRemove.decision.radio.no=No, I do not get this benefit any more

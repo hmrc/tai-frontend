@@ -34,12 +34,11 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaiRoot
-import uk.gov.hmrc.tai.service.{PreviousYearsIncomeService}
+import uk.gov.hmrc.tai.service._
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, TaiService}
 import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants, UpdateHistoricIncomeChoiceConstants}
 
 import scala.concurrent.Future
@@ -64,7 +63,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(Messages("tai.income.previousYears.decision.title"))
+      doc.title() must include(Messages("tai.income.previousYears.decision.header", TaxPeriodLabelService.taxPeriodLabel(previousTaxYear.year)))
     }
   }
 
@@ -110,7 +109,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
         val result = SUT.details()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.updateEmployment.whatDoYouWantToTellUs.title"))
+        doc.title() must include(Messages("tai.income.previousYears.details.heading", TaxPeriodLabelService.taxPeriodLabel(previousTaxYear.year)))
       }
     }
   }

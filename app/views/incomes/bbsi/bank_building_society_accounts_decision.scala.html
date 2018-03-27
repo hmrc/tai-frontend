@@ -33,17 +33,17 @@
     ptaHeader(
         formForErrorSummary = Some(bankAccountsDecisionForm),
         displayBackLink = true,
-        mainHeadingText = messages("tai.bbsi.decision.heading",viewModel.bankName),
+        mainHeadingText = messages("tai.bbsi.decision.title", viewModel.bankName),
         preHeadingText = messages("tai.bbsi.decision.preHeading")
     )
 }
 
 @main(
-    title = messages("tai.bbsi.decision.preHeading"),
+    title = messages("tai.bbsi.decision.title", viewModel.bankName),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = None
+    gaCustomTitle = Some(Messages("tai.bbsi.decision.customGaTitle"))
 ) {
 
     @form(action=controllers.income.bbsi.routes.BbsiController.handleDecisionPage(viewModel.id), args = Symbol("data-journey-dynamic-radios") -> "") {

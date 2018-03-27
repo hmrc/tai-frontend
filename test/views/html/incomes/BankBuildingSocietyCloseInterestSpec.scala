@@ -28,7 +28,7 @@ class BankBuildingSocietyCloseInterestSpec extends TaiViewSpec with FormValuesCo
   override def view: Html = views.html.incomes.bbsi.close.bank_building_society_closing_interest(id, bankAccountClosingInterestForm)
 
   "Add bank account closing interest page" must {
-    behave like pageWithTitle(messages("tai.closeBankAccount.closingInterest.title"))
+    behave like pageWithTitle(messages("tai.closeBankAccount.closingInterest.heading", TaxYearResolver.currentTaxYear.toString))
     behave like pageWithHeader(messages("tai.closeBankAccount.closingInterest.heading", TaxYearResolver.currentTaxYear.toString))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm(s"/check-income-tax/income/bank-building-society-savings/$id/close/interest")

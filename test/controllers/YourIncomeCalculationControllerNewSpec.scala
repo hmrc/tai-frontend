@@ -56,7 +56,7 @@ class YourIncomeCalculationControllerNewSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.yourIncome.heading"))
+        doc.title() must include(Messages("tai.income.calculation.TaxableIncomeDetails", employment.name))
 
       }
     }
