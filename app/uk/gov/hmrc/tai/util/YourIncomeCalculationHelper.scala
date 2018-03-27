@@ -219,58 +219,6 @@ object YourIncomeCalculationHelper {
     employmentStartDate.exists(startDate => TaxYear(startDate).compare(TaxYear(TaxYear().start)) < 0)
   }
 
-  /*def getPreviousYearPayments(sessionDetails: SessionData, empId: Int)(implicit messages: Messages):
-  (List[RtiPayment], List[String], Option[String], Option[String], Boolean, Html, Boolean) = {
-
-    val taxSummaryDetails = sessionDetails.taxSummaryDetailsCY
-    val employment = taxSummaryDetails.currentYearAccounts.flatMap(_.nps).map(_.incomes).flatMap(_.find(_.employmentId.contains(empId))).toList
-
-    val prevourYearRtiData = taxSummaryDetails.previousYearAccount.flatMap(_.rti)
-    val previousYearRtiEmployments = prevourYearRtiData.map(_.employments).getOrElse(Nil)
-
-    val previousYearEmploymentPayments = employment.flatMap { n =>
-      val filteredRtiEmployments = previousYearRtiEmployments.filter { r =>
-        n.payeRef == r.payeRef &&
-          n.taxDistrict.contains(r.officeRefNo.toInt)
-      } match {
-        case x if x.size > 1 => x.find(_.currentPayId == n.employmentRecord.flatMap(_.worksNumber))
-        case x => x.headOption
-      }
-      filteredRtiEmployments.toList.flatMap(_.payments)
-    }
-
-    val previousYearEmploymentEyu = employment.flatMap { n =>
-      val filteredRtiEmployments = previousYearRtiEmployments.filter { r =>
-        n.payeRef == r.payeRef &&
-          n.taxDistrict.contains(r.officeRefNo.toInt)
-      } match {
-        case x if x.size > 1 => x.find(_.currentPayId == n.employmentRecord.flatMap(_.worksNumber))
-        case x => x.headOption
-      }
-      filteredRtiEmployments.toList.flatMap(_.eyu)
-    }
-
-    val incomeExplanations = taxSummaryDetails.incomeData.map(_.incomeExplanations)
-
-    val (employerName, isPension) = incomeExplanations match {
-      case Some(incomeExplanations) =>
-        val income = incomeExplanations.find(_.incomeId == empId)
-        (income.map(_.employerName), income.map(_.isPension))
-      case _ => (None, None)
-    }
-
-    val iFormLink = formHtml(isPension)
-    val rtiStatus = taxSummaryDetails.previousYearAccount.flatMap(_.rtiStatus)
-
-    val isRtiDown = rtiStatus.map(_.status) match {
-      case Some(Status.INTERNAL_SERVER_ERROR) => true
-      case _ => false
-    }
-
-    (previousYearEmploymentPayments, getEyuMessage(previousYearEmploymentEyu, employerName.getOrElse("")), employerName,
-      getNotMatchingTotalMessage(previousYearEmploymentPayments, isPension), isPension.getOrElse(false), iFormLink, isRtiDown)
-  }*/
-
   private def formHtml(isPension: Option[Boolean])(implicit messages: Messages): Html = {
     Html(messages("tai.income.calculation.detailsWrongIform." + (if (isPension.getOrElse(false)) {
       "pension"
@@ -292,54 +240,6 @@ object YourIncomeCalculationHelper {
       case (false, false) => Some(messages("tai.income.calculation.totalNotMatching.emp.message"))
       case _ => None
     }
-  }
-
-  /*def getEyuMessage(rtiEyu: List[RtiEyu], employerName: String)(implicit messages: Messages) = {
-
-    val lessOrMore = (amount: BigDecimal) => amount.abs.toString + (if(amount > 0) " more" else " less")
-    val eyuObjectList = flattenEyuObject(rtiEyu)
-    var messages = new ListBuffer[String]()
-
-    eyuObjectList.map {
-      eyuObject =>
-        val (eyuProperty, eyuAmount, date) = eyuObject
-        (eyuProperty, eyuAmount, date, eyuObjectList.size) match {
-          case ("TaxablePayDelta", amount, date, 1) =>
-            messages += messages("tai.income.calculation.eyu.single.taxableincome", Dates.formatDate(date), lessOrMore(amount))
-          case ("TotalTaxDelta", amount, date, 1) =>
-            messages += messages("tai.income.calculation.eyu.single.taxPaid", Dates.formatDate(date), lessOrMore(amount))
-          case ("EmpeeContribnsDelta", amount, date, 1) =>
-            messages += messages("tai.income.calculation.eyu.single.nationalInsurance", Dates.formatDate(date), lessOrMore(amount))
-          case ("TaxablePayDelta", amount, date, size) if size > 1 =>
-            messages += messages("tai.income.calculation.eyu.multi.taxableincome", Dates.formatDate(date), lessOrMore(amount))
-          case ("TotalTaxDelta", amount, date, size) if size > 1 =>
-            messages += messages("tai.income.calculation.eyu.multi.taxPaid", Dates.formatDate(date), lessOrMore(amount))
-          case ("EmpeeContribnsDelta", amount, date, size) if size > 1 =>
-            messages += messages("tai.income.calculation.eyu.multi.nationalInsurance", Dates.formatDate(date), lessOrMore(amount))
-          case _ => messages
-        }
-    }
-
-    messages.toList
-  }*/
-
-  private def flattenEyuObject(rtiEyu: List[RtiEyu]): List[(String, BigDecimal, LocalDate)] = {
-
-    var eyuObjectMap = new ListBuffer[(String, BigDecimal, LocalDate)]()
-    val isEligible = (optionalAmount: Option[BigDecimal]) => optionalAmount.isDefined && (optionalAmount.get != 0)
-    rtiEyu.foreach {
-      eyu =>
-        if (isEligible(eyu.totalTaxDelta)) {
-          eyuObjectMap += ((TOTAL_TAX_DELTA, eyu.totalTaxDelta.get, eyu.rcvdDate))
-        }
-        if (isEligible(eyu.taxablePayDelta)) {
-          eyuObjectMap += ((TAXABLE_PAY_DELTA, eyu.taxablePayDelta.get, eyu.rcvdDate))
-        }
-        if (isEligible(eyu.empeeContribnsDelta)) {
-          eyuObjectMap += ((EMPEE_CONTRIBNS_DELTA, eyu.empeeContribnsDelta.get, eyu.rcvdDate))
-        }
-    }
-    eyuObjectMap.toList
   }
 
 }
