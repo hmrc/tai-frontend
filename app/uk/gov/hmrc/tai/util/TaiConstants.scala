@@ -294,4 +294,7 @@ object TaiConstants {
   val ScottishTaxCodePrefix = "S"
 
   val encodedMinusSign = "\u2212"
+
+  val CurrentTaxYear = "currentTaxYear"
+  val CurrentTaxYearPlusOne = "currentTaxYearPlusOne"
 }

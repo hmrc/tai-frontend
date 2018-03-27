@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class UpdateBankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
   "Update BBSI check your answers page" must {
-    behave like pageWithTitle(messages("tai.checkYourAnswers") + "-" + messages("tai.bbsi.update.checkYourAnswers.preHeading"))
+    behave like pageWithTitle(messages("tai.checkYourAnswers"))
     behave like pageWithCombinedHeader(
       messages("tai.bbsi.update.checkYourAnswers.preHeading"),
       messages("tai.checkYourAnswers"))

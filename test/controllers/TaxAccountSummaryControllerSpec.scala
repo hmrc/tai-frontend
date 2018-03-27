@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiT
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.AuditConstants
+import uk.gov.hmrc.tai.util.{AuditConstants, TaiConstants}
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -50,6 +50,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "onPageLoad" must {
+
 
     "display the income tax summary page" in {
       val sut = createSUT
@@ -67,7 +68,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
             TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy"),
             TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))
 
-      doc.title() mustBe expectedTitle
+      doc.title() must include(expectedTitle)
     }
 
     "raise an audit event" in {
@@ -94,15 +95,55 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
+      "a downstream error has occurred in one of the TaiResponse responding service methods due to no found primary employment information" in {
+        val sut = createSUT
+        when(sut.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
+        when(sut.authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
+        when(sut.taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+
+        when(sut.employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+          Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+          Future.successful(TaiSuccessResponseWithPayload[NonTaxCodeIncome](nonTaxCodeIncome))
+        )
+        when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDataAbsentMsg.toLowerCase)))
+
+        val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url)
+
+      }
+      "a downstream error has occurred in one of the TaiResponse responding service methods due to no employments recorded for current tax year" in {
+        val sut = createSUT
+        when(sut.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
+        when(sut.authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
+        when(sut.taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+
+        when(sut.employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+          Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+          Future.successful(TaiSuccessResponseWithPayload[NonTaxCodeIncome](nonTaxCodeIncome))
+        )
+        when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsNoEmploymentForCurrentTaxYear.toLowerCase)))
+
+        val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url)
+
+      }
+
     }
+
   }
 
 
   val nino = new Generator(new Random).nextNino
 
-  val employment = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1)
+  val employment = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1, None, false)
 
-  val taxAccountSummary = TaxAccountSummary(111,222, 333.33)
+  val taxAccountSummary = TaxAccountSummary(111,222, 333.33, 444.44, 111.11)
 
   val taxCodeIncomes = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOperation, Live),

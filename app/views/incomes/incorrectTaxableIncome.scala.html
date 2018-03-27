@@ -28,7 +28,7 @@ user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateR
 @import uk.gov.hmrc.time.TaxYearResolver
 
 @main(
-title = Messages("tai.currentYearSummary.heading",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}"),
+title = Messages("tai.estimatedPay.error.incorrectTaxableIncome.title"),
 articleClasses = Some("full-width text"),
 user = Some(user),
 gaCustomTitle = None

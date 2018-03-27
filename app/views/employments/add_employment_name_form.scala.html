@@ -14,10 +14,9 @@
  * limitations under the License.
  *@
 
-@import includes.{backLink}
-@import includes.forms.submit
-@import includes.{cancelLink, ptaHeader}
-@import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary, input}
+@import includes.forms.{submit,input, errorSummary}
+@import includes.{backLink, cancelLink, ptaHeader}
+@import uk.gov.hmrc.play.views.html.helpers.{form}
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 
 @(nameForm: Form[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever = TaiHtmlPartialRetriever)
@@ -42,10 +41,10 @@
 
   @form(action = controllers.employments.routes.AddEmploymentController.submitEmploymentName()) {
     @input(
-      field=nameForm("employmentName"),
-      ('_labelTextClass, "visually-hidden" ),
-      ('_label ->  Messages("tai.addEmployment.addNameForm.title")),
-      ('_inputClass ->"form-control form-control--full-width")
+      field = nameForm("employmentName"),
+      labelHidden = true,
+      labelText = Messages("tai.addEmployment.addNameForm.title"),
+      classes = Seq("form-control form-control--full-width")
     )
 
     @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing employment"))

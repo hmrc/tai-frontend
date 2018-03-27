@@ -23,63 +23,65 @@
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
 
-@(potentialUnderpaymentDetails:uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+@(viewModel:uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
 
 @gaCallsAdditionalJs = {
-    @if(potentialUnderpaymentDetails.displayCYOnly){
+    @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount <= 0){
         ga('send', 'pageview', '/check-income-tax/underpayment-estimate-current');
     }
 
-    @if(potentialUnderpaymentDetails.displayCYPlusOneOnly){
+    @if(viewModel.iyaCYAmount == 0 && viewModel.iyaCYPlusOneAmount > 0){
         ga('send', 'pageview', '/check-income-tax/underpayment-estimate-next');
     }
 
-    @if(potentialUnderpaymentDetails.displayCYAndCYPlusOneOnly){
+    @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount > 0){
         ga('send', 'pageview', '/check-income-tax/underpayment-estimate-both');
     }
 }
-@title=@{if(potentialUnderpaymentDetails.displayCYOnly){Messages("tai.iya.tax.you.owe.title")}
-    else {Messages("tai.iya.tax.you.owe.cy-plus-one.title")}}
+
 @gaEventActionString = @{"Potential underpayment"}
+
 @header = @{
     ptaHeader(
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText =title,
+        mainHeadingText = viewModel.pageTitle,
         preHeadingText = Messages("tai.iya.tax.you.owe.preHeading")
     )
 }
 
 @main(
-    title = if(potentialUnderpaymentDetails.displayCYOnly){Messages("tai.iya.tax.you.owe.title")} else {Messages("tai.iya.tax.you.owe.cy-plus-one.title")},
+    title = viewModel.pageTitle,
     articleClasses = Some("full-width"),
     user = Some(user),
     pageHeader = Some(header),
     gaCallsAdditionalJs = Some(gaCallsAdditionalJs),
-    gaDimensions = potentialUnderpaymentDetails.gaDimensions,
+    gaDimensions = viewModel.gaDimensions,
     gaCustomTitle = None
 ){
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
                 <h2 class="heading-medium heading--underlined flush--top">@Messages("tai.taxYear",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</h2>
-                @if(potentialUnderpaymentDetails.displayCYOnly){
+
+                @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount <= 0){
                         <section class="section soft--top">
-                            <p  id="iya-cy-how-much">@Messages("tai.iya.paidTooLittle.cy.text", MoneyPounds(potentialUnderpaymentDetails.iyaCYAmount, 2).quantity)</p>
+                            <p id="iya-cy-how-much">@Messages("tai.iya.paidTooLittle.cy.text", MoneyPounds(viewModel.iyaCYAmount, 2).quantity)</p>
                             <p>@Html(
                                Messages("tai.iya.check.your.tax.code.text",
                                Link.toInternalPage(url=routes.YourTaxCodeController.taxCodes.toString,value=Some(Messages("tai.iya.your.tax.code.linkText"))).toHtml
                                ))</p>
                              <p>@Html(
                                 Messages("tai.iya.paidTooLittle.cy.text2",
-                                MoneyPounds(potentialUnderpaymentDetails.iyaCYAmount, 2).quantity,
+                                MoneyPounds(viewModel.iyaCYAmount, 2).quantity,
                                 s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}",
-                                MoneyPounds(potentialUnderpaymentDetails.iyaTaxCodeChangeAmount, 0).quantity)) </p>
+                                MoneyPounds(viewModel.iyaTaxCodeChangeAmount, 0).quantity)) </p>
                         </section>
                 }
-                @if(potentialUnderpaymentDetails.displayCYPlusOneOnly){
+
+                @if(viewModel.iyaCYAmount == 0 && viewModel.iyaCYPlusOneAmount > 0){
                         <section class="section soft--top">
-                            <p   id="iya-cy-plus-one-how-much">@Html(Messages("tai.iya.tax-code-change.cy-plus-one.text1",MoneyPounds(potentialUnderpaymentDetails.iyaCYPlusOneAmount, 2).quantity)) </p>
+                            <p id="iya-cy-plus-one-how-much">@Html(Messages("tai.iya.tax-code-change.cy-plus-one.text1",MoneyPounds(viewModel.iyaCYPlusOneAmount, 2).quantity)) </p>
                             <p>@Html(
                                 Messages("tai.iya.check.your.tax.code.text",
                                 Link.toInternalPage(url=routes.YourTaxCodeController.taxCodes.toString,value=Some(Messages("tai.iya.your.tax.code.linkText"))).toHtml
@@ -88,37 +90,36 @@
                             <p>@Messages("tai.iya.tax-code-change.cy-plus-one.text3", s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</p>
                         </section>
                 }
-                @if(potentialUnderpaymentDetails.displayCYAndCYPlusOneOnly){
+
+                @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount > 0){
                         <section class="section soft--top">
-                            <p>@Messages("tai.iya.paidTooLittle.cy-and-cy-plus-one.text1",MoneyPounds(potentialUnderpaymentDetails.iyaTotalAmount, 2).quantity)</p>
+                            <p>@Messages("tai.iya.paidTooLittle.cy-and-cy-plus-one.text1",MoneyPounds(viewModel.iyaTotalAmount, 2).quantity)</p>
                             <p>@Html(
                                 Messages("tai.iya.check.your.tax.code.text",
                                 Link.toInternalPage(url=routes.YourTaxCodeController.taxCodes.toString,value=Some(Messages("tai.iya.your.tax.code.linkText"))).toHtml
                                 ))</p>
                             <p>@Html(
                                 Messages("tai.iya.paidTooLittle.cy-and-cy-plus-one.text2",
-                                MoneyPounds(potentialUnderpaymentDetails.iyaCYAmount, 2).quantity,
+                                MoneyPounds(viewModel.iyaCYAmount, 2).quantity,
                                 s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}",
-                                MoneyPounds(potentialUnderpaymentDetails.iyaTaxCodeChangeAmount, 0).quantity,
+                                MoneyPounds(viewModel.iyaTaxCodeChangeAmount, 0).quantity,
                                 Link.toInternalPage(url=routes.HelpController.helpPage.toString,value=Some(Messages("tai.iya.paidTooLittle.get.help.linkText"))).toHtml)) </p>
                             <p id="iya-cy-and-cy-plus-one-how-much">@Messages("tai.iya.paidTooLittle.cy-and-cy-plus-one.text3",
-                                MoneyPounds(potentialUnderpaymentDetails.iyaCYPlusOneAmount, 2).quantity,
+                                MoneyPounds(viewModel.iyaCYPlusOneAmount, 2).quantity,
                                 s"${Dates.formatDate(TaxYearResolver.startOfNextTaxYear)}",
                                 s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear.plusYears(1))}")</p>
                         </section>
                 }
-                @if(potentialUnderpaymentDetails.displayNoValues){
-                    <section class="section">
-                        <h3 class="h2-heading">@Messages("tai.potential-underpayment.where.title")</h3>
-                        <p>@Messages("tai.potential-underpayment.none.text")</p>
-                    </section>
-                }
+
             </div>
         </div>
     </div>
-    @if(potentialUnderpaymentDetails.displayCYOnly){
+
+    @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount <= 0){
         <p>@Html(Messages("tai.iya.paidTooLittle.get.help",
-            Link.toInternalPage(url=routes.HelpController.helpPage.toString,value=Some(Messages("tai.iya.paidTooLittle.get.help.linkText"))).toHtml))</p>
+            Link.toInternalPage(url=routes.HelpController.helpPage.toString,
+                                value=Some(Messages("tai.iya.paidTooLittle.get.help.linkText")),
+                                id=Some("getHelpLink")).toHtml))</p>
     }
 
 }

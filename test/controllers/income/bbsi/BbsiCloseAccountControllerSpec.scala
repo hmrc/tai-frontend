@@ -38,7 +38,7 @@ import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.{CloseAccountRequest, TaiRoot}
-import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, TaiService, TaxPeriodLabelService}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.tai.util.{BankAccountClosingInterestConstants, FormValuesConstants, JourneyCacheConstants}
 
@@ -70,7 +70,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.closeBankAccount.closeDateForm.title", "Test Bank account name")
+        doc.title() must include(Messages("tai.closeBankAccount.closeDateForm.title", "Test Bank account name"))
       }
     }
 
@@ -247,7 +247,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.closeBankAccount.closingInterest.title")
+        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.heading", TaxYearResolver.currentTaxYear.toString))
       }
     }
 
@@ -362,7 +362,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.closeBankAccount.closingInterest.title")
+        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.heading", TaxYearResolver.currentTaxYear.toString))
       }
     }
   }

@@ -68,33 +68,10 @@ class CurrentYearPageControllerSpec
 
   "Calling the Current Year Page method" should {
 
-    "call potentialUnderpaymentPage() successfully with an authorised session " in {
-      val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
-      val testController = buildCurrentYearPageController(testTaxSummary)
-      val result = testController.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-      status(result) mustBe OK
-    }
-
-    "raise an audit event" when {
-      "potential underpayment page is displayed" in {
-
-        val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
-        val testController = buildCurrentYearPageController(testTaxSummary)
-        val sessionData = SessionData(nino.nino, Some(TaiRoot(nino.nino)), testTaxSummary)
-
-        val response = testController.getPotentialUnderpaymentPage(nino)(FakeRequest("GET", ""), UserBuilder.apply(), sessionData)
-
-        Await.result(response, 5 seconds)
-
-        verify(testController.auditService, times(1)).createAndSendAuditEvent(Matchers.eq(PotentialUnderpayment_InYearAdjustment),
-          Matchers.eq(Map("nino" -> nino.nino)))(Matchers.any(), Matchers.any())
-      }
-    }
-
     "display service unavailable error page when http response is 403" in {
       val testTaxSummary = TaiData.getPotentialUnderpaymentTaxSummary
       val testCurrentYearPageController = buildCurrentYearPageController(mockTaxSummaryDetails = testTaxSummary, responseStatus = BAD_REQUEST)
-      val result = testCurrentYearPageController.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = testCurrentYearPageController.reliefsPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe BAD_REQUEST
     }
 

@@ -27,7 +27,7 @@
 @(model: YourIncomeCalculationViewModelNew)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
 
 @main(
-    title = Messages("tai.yourIncome.heading"),
+    title = Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName),
     user = Some(user),
     employerName = Some(model.employerName),
     gaCustomTitle = None
@@ -52,7 +52,7 @@
                                 <h2 class="heading-medium">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</h2>
                             }
 
-                            <p class="text">@Messages("tai.income.calculation.potentially.ceased.lede")</p>
+                            <p>@Messages("tai.income.calculation.potentially.ceased.lede")</p>
                         }
 
                         case Ceased => {
@@ -62,7 +62,7 @@
                                 <h2 class="heading-medium">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</h2>
                             }
 
-                            <p class="text">@Messages("tai.income.calculation.rti.ceased.emp",s"${CeasedEmploymentHelper.toDisplayFormat(model.endDate)}")</p>
+                            <p>@Messages("tai.income.calculation.rti.ceased.emp",s"${CeasedEmploymentHelper.toDisplayFormat(model.endDate)}")</p>
                         }
 
                         case _ => {
@@ -76,7 +76,7 @@
                                 <p id="rtiUnavailableCurrentYear">@Messages("tai.income.calculation.rtiUnavailableCurrentYear.message")</p>
                                 <p id="rtiUnavailableCurrentYearContact">@Messages("tai.income.calculation.rtiUnavailableCurrentYear.message.contact")</p>
                             } else {
-
+                                <p id="incomeCalculationMsg@model.empId">@model.incomeCalculationMessage</p>
                             }
                         }
                     }
@@ -85,6 +85,7 @@
                 @if(model.latestPayment.isDefined) {
                     <div class="section soft--top soft--bottom">
                         <table id="taxable-income-table" class="table-section">
+                            <caption class="text--left table__caption table__caption--bottom-border visually-hidden">@Messages("tai.income.calculation.incomeTable.caption")</caption>
                             <thead>
                                 <tr>
                                     <th>@Messages("tai.income.calculation.incomeTable.dateHeader")</th>
@@ -123,27 +124,56 @@
 
                 @model.employmentStatus match {
                     case PotentiallyCeased => {
-
-                    }
-
-                    case Ceased => {
-
-                    }
-
-                    case _ => {
-                        @if(model.isPension){
-                            <p id="pensionUpdateLink" class="text">@Html(Messages(
-                                "tai.income.calculation.update.pension",
-                                Link.toInternalPage(url=routes.IncomeUpdateCalculatorController.howToUpdatePage(model.empId).toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
-                                ))
-                            </p>
-                            <p id="pensionIFormLink" class="text">@Html(Messages(
+                        @if(model.isPension) {
+                            <h4 class="heading-small">@model.incomeCalculationEstimateMessage</h4>
+                            <p>@Html(Messages(
                                 "tai.yourTaxableIncome.otherDetailsWrongPensionIform",
                                 Link.toInternalPage(url=routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url, value=Some(Messages("tai.yourTaxableIncome.otherDetailsWrongIformLink"))).toHtml
                                 ))
                             </p>
                         } else {
-                            <p id="regularUpdateLink" class="text">@Html(Messages(
+                            <h4 class="heading-small">@model.incomeCalculationEstimateMessage</h4>
+                        }
+                    }
+
+                    case Ceased => {
+                        @if(model.incomeCalculationEstimateMessage.isDefined){
+                            <h3 class="heading-small">@model.incomeCalculationEstimateMessage</h3>
+                        }
+
+                        @if(model.hasPayrolledBenefit){
+                            <div class="panel-indent panel-indent--info panel-indent--gutter">
+                                <p id="payrolling1">@Messages("tai.income.calculation.payrollingBik.message1")</p>
+                                <p id="payrolling2">@Messages("tai.income.calculation.payrollingBik.message2")</p>
+                            </div>
+                        }
+                    }
+
+                    case _ => {
+
+                        @if(model.incomeCalculationEstimateMessage.isDefined){
+                            <h3 class="heading-small">@model.incomeCalculationEstimateMessage</h3>
+                        }
+
+                        @if(model.hasPayrolledBenefit){
+                            <div class="panel-indent panel-indent--info panel-indent--gutter">
+                                <p id="payrolling1">@Messages("tai.income.calculation.payrollingBik.message1")</p>
+                                <p id="payrolling2">@Messages("tai.income.calculation.payrollingBik.message2")</p>
+                            </div>
+                        }
+
+                        @if(model.isPension){
+                            <p id="pensionUpdateLink">@Html(Messages(
+                                "tai.income.calculation.update.pension",
+                                Link.toInternalPage(url=routes.IncomeUpdateCalculatorController.howToUpdatePage(model.empId).toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
+                                ))</p>
+                            <p id="pensionIFormLink">@Html(Messages(
+                                "tai.yourTaxableIncome.otherDetailsWrongPensionIform",
+                                Link.toInternalPage(url=routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url, value=Some(Messages("tai.yourTaxableIncome.otherDetailsWrongIformLink"))).toHtml
+                                ))
+                            </p>
+                        } else {
+                            <p id="regularUpdateLink">@Html(Messages(
                                 "tai.income.calculation.update.regular",
                                 Link.toInternalPage(url=routes.IncomeUpdateCalculatorController.howToUpdatePage(model.empId).toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
                                 ))
@@ -151,6 +181,14 @@
                         }
                     }
 
+                }
+
+                @if(!model.isPension){
+                    <p>@Html(Messages(
+                        "tai.yourTaxableIncome.otherDetailsWrongIform",
+                        Link.toInternalPage(url=routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url, value=Some(Messages("tai.yourTaxableIncome.otherDetailsWrongIformLink"))).toHtml
+                        ))
+                    </p>
                 }
 
                 <div class="subsection">

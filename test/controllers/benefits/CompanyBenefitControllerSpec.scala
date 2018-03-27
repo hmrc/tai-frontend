@@ -93,7 +93,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.benefits.updateOrRemove.decision.title")
+        doc.title() must include(Messages("tai.benefits.updateOrRemove.decision.heading", benefitType, empName))
 
         verify(SUT.employmentService, times(1)).employment(any(),any())(any())
         verify(SUT.journeyCacheService, times(1)).currentCache(any())
@@ -177,7 +177,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
   private def createSUT = new SUT
 
   private val employment = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
-    Some(new LocalDate("2016-05-26")), Nil, "", "", 2)
+    Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false)
 
   private class SUT extends CompanyBenefitController {
 

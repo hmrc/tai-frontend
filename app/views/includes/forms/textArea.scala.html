@@ -1,0 +1,45 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(
+        field: Field,
+        fieldErrorsEnabled: Boolean = true,
+        labelText: String = "",
+        hintText: String = "",
+        bold: Boolean = false,
+        classes: Seq[String] = Seq.empty,
+        panel: Boolean = false,
+        jsHidden: Boolean = false,
+        labelHidden: Boolean = false,
+        maxlength: String = "",
+        hintClass: String = "",
+        rows: String = "7"
+)(implicit lang: Lang, m: Messages)
+
+<div class="form-group @if(field.hasErrors){form-group-error} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}">
+    <label class="form-label@if(bold) {-bold}" for="@field.id">
+        @if(labelText.nonEmpty) {
+            @if(labelHidden) { <span class="visuallyhidden">}
+            @Messages(labelText)
+            @if(labelHidden) {</span>}
+        }
+        @if(hintText.nonEmpty) { <span class="form-hint @hintClass" id="@{ field.id }-hint">@Messages(hintText)</span> }
+        @if(fieldErrorsEnabled && field.hasErrors) { <span class="error-message">@field.errors.map(_.message)</span> }
+    </label>
+
+    <textarea name="@field.name" class="form-control @if(fieldErrorsEnabled && field.hasErrors) { form-control-error} @classes.mkString(" ")" id="@field.id"
+        @if(maxlength.nonEmpty) { maxlength="@maxlength" } @if(rows.nonEmpty) { rows="@rows" }>@field.value</textarea>
+</div>

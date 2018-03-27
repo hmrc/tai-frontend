@@ -33,11 +33,11 @@
     )
 }
 
-@main(title = Messages("tai.tellUsAboutEmployment.title"),
+@main(title = Messages("tai.endEmployment.endDateForm.title", viewmodel.employerName),
       user = Some(user),
       pageHeader = Some(header),
       articleClasses = None,
-      gaCustomTitle = None) {
+      gaCustomTitle = Some(Messages("tai.endEmployment.endDateForm.customGaTitle"))) {
 
     @form(action = controllers.employments.routes.EndEmploymentController.handleEndEmploymentPage(viewmodel.empId)) {
         @date(
