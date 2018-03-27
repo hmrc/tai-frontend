@@ -58,7 +58,7 @@ trait TaxAccountService {
     if (taxCodeIncomes.exists(isScottishStandAloneTaxcode)) {
       taxAccountConnector.totalTax(nino, year) map {
         case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
-          totalTax.incomeCategories.flatMap(_.taxBands.map(band => band.code -> band.rate)).toMap
+          totalTax.incomeCategories.flatMap(_.taxBands.map(band => band.bandType -> band.rate)).toMap
         case _ => Map.empty[String, BigDecimal]
       }
     } else {

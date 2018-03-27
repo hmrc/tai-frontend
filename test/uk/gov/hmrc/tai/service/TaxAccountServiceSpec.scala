@@ -99,14 +99,14 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
       "tai connector returns total tax value with tax bands" in {
         val sut = createSut
         val totalTax = TotalTax(1000,
-          List(IncomeCategory(UkDividendsIncomeCategory, 10, 20, 30, List(TaxBand("S", "SD0", 0, 0, None, None, 20),
-            TaxBand("B", "1150L", 10000, 500, Some(5000), Some(20000), 10)))),
+          List(IncomeCategory(UkDividendsIncomeCategory, 10, 20, 30, List(TaxBand("D0", "", 0, 0, None, None, 20),
+            TaxBand("1150L", "1150L", 10000, 500, Some(5000), Some(20000), 10)))),
           None, None, None)
 
         when(sut.taxAccountConnector.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
 
         val result = sut.scottishBandRates(generateNino, TaxYear(), scottishTaxCodeIncomes)
-        Await.result(result, 5 seconds) mustBe Map("SD0" -> 20, "1150L" -> 10)
+        Await.result(result, 5 seconds) mustBe Map("D0" -> 20, "1150L" -> 10)
       }
     }
 
