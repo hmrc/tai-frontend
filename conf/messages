@@ -584,14 +584,14 @@ tai.selectIncome.link.text=Next
 
 ##Income calculator
 tai.howToUpdate.title=Choose how to update your income
-tai.howToUpdate.preHeading=Update you estimated income
+tai.howToUpdate.preHeading=Update your estimated income
 tai.howToUpdate.error.form.incomes.radioButton.mandatory=Choose if you want to use our income calculator or enter an annual figure
 tai.howToUpdate.explanation=You can enter your own annual amount or use our calculator to work it out for you. You’ll need a recent payslip to use our calculator.
 tai.howToUpdate.incomeCalculator=Use our income calculator
 tai.howToUpdate.enterAnnual=Enter an annual figure
 tai.workingHours.title=Your working hours
 tai.workingHours.legend=Your working hours are
-tai.workingHours.preHeading=Update you estimated income
+tai.workingHours.preHeading=Update your estimated income
 tai.workingHours.error.form.incomes.radioButton.mandatory=Select if your working hours are generally the same or very different on each payslip
 tai.workingHours.question=Are your working hours on each payslip generally the same or very different?
 tai.workingHours.same=Generally the same
@@ -1308,9 +1308,9 @@ uk.bandtype.TaxedIncome=Taxed income
 
 #Scottish Band types
 scottish.bandtype.B=Income basic rate
-scottish.bandtype.D0=Income lower rate
-scottish.bandtype.D1=Income medium rate
-scottish.bandtype.D2=Income high rate
+scottish.bandtype.D0=Income intermediate rate
+scottish.bandtype.D1=Income higher rate
+scottish.bandtype.D2=Income top rate
 scottish.bandtype.D3=Income higher2 rate
 scottish.bandtype.D4=Income higher3 rate
 scottish.bandtype.D5=Income higher4 rate
