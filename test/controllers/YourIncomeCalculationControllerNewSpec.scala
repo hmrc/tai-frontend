@@ -56,7 +56,7 @@ class YourIncomeCalculationControllerNewSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.yourIncome.heading")
+        doc.title() must include(Messages("tai.income.calculation.TaxableIncomeDetails", employment.name))
 
       }
     }
@@ -108,7 +108,7 @@ class YourIncomeCalculationControllerNewSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.yourIncome.heading")
+        doc.title() must include(Messages("tai.yourIncome.heading"))
 
       }
     }
@@ -134,17 +134,6 @@ class YourIncomeCalculationControllerNewSpec extends PlaySpec
         val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
-
-
-      "tax code details for passed employment is not present" in {
-        val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-          Future.successful(TaiTaxAccountFailureResponse("Error")))
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-
-        val result = sut.printYourIncomeCalculationPage(3)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
     }
   }
 
@@ -154,7 +143,7 @@ class YourIncomeCalculationControllerNewSpec extends PlaySpec
   val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
   val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.tai.TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
   val employment = Employment("test employment", Some("EMPLOYER1"), LocalDate.now(),
-    None, Seq(annualAccount), "", "", 2)
+    None, Seq(annualAccount), "", "", 2, None, false)
 
   val taxCodeIncomes = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOperation, Live),

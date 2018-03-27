@@ -38,11 +38,11 @@
 
 
 @main(
-title = Messages("tai.benefits.ended.stopDate.title"),
+title = Messages("tai.benefits.ended.stopDate.heading", benefitType, empName),
 user = Some(user),
 pageHeader = Some(header),
 articleClasses = None,
-gaCustomTitle = None){
+gaCustomTitle = Some(Messages("tai.benefits.ended.stopDate.customGaTitle"))){
 
     @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitStopDate(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {
 

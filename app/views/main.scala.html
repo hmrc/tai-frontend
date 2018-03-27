@@ -20,7 +20,8 @@
 @import uk.gov.hmrc.play.views.helpers.AttorneyRegime.standAlone
 @import uk.gov.hmrc.play.views.html.layouts
 @import uk.gov.hmrc.tai.util.TaiConstants
-@import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig}
+@import uk.gov.hmrc.play.language.LanguageUtils
 
 @(title: String,
         sidebarLinks: Option[Html] = None,
@@ -40,6 +41,10 @@
             templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
             partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever
 )
+
+@serviceSuffix = @{
+    s"- ${Messages("tai.service.navTitle")} - GOV.UK"
+}
 
 @mustacheCheck(str: String) = @{
     if(str.trim == "") false else str
@@ -112,7 +117,7 @@
 }
 
 @gaCustomEvent = @{
-    gaCustomTitle.map(gaTitle => s"ga('set', 'title', '${gaTitle}')").getOrElse(false)
+    gaCustomTitle.map(gaTitle => s"ga('set', 'title', '${gaTitle} ${serviceSuffix}')").getOrElse(false)
 }
 
 @inlineScript = {
@@ -155,9 +160,18 @@
     }
 }
 
+
+@isWelshEnabled = @{
+    FeatureTogglesConfig.welshLanguageEnabled
+}
+
+@isWelshActive = @{
+    LanguageUtils.getCurrentLang == Lang("cy")
+}
+
 @mustacheMap = @{
     Map[String, Any](
-        "pageTitle" -> title,
+        "pageTitle" -> s"${title} ${serviceSuffix}",
         "linkElems" -> Map(
             "url" -> controllers.routes.AssetsController.versioned("stylesheets/tai.min.css")
         ),
@@ -180,10 +194,17 @@
         "googleAnalytics" -> googleAnalytics,
         "gaCustomEvent" -> gaCustomEvent,
         "scriptElems" -> Seq(
-            Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai.js"))
+            Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai.js")),
+            Map("url" -> controllers.routes.AssetsController.versioned("javascript/char-count.js"))
         ),
         "inlineScript" -> inlineScript,
-        "assetsPath" -> ApplicationConfig.assetsPath
+        "assetsPath" -> ApplicationConfig.assetsPath,
+
+        "showPropositionLinks" -> isWelshEnabled,
+        "langSelector" -> isWelshEnabled,
+        "enUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("english"),
+        "cyUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("cymraeg"),
+        "isWelsh" -> isWelshActive
     )
 }
 

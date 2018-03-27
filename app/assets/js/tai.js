@@ -11,6 +11,16 @@ $(document).ready(function() {
 
 	// Move focus to error summary
 	$('.error-summary').focus();
+
+
+
+	// Character/Word Count
+      var charCount = new GOVUK.CharCount()
+      charCount.init({
+        selector: 'js-char-count',
+        highlight: true
+      })
+
 });
 
 // re-enable any disabled buttons when navigating back

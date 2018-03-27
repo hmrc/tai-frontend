@@ -31,7 +31,7 @@
         preHeadingAccessibleAnnouncement = messages("tai.incomeTaxComparison.preHeading.screenReader"))
 }
 
-@main(title = incomeTaxComparisonViewModel.username + "-" + messages("tai.incomeTaxComparison.heading"),
+@main(title = messages("tai.incomeTaxComparison.heading"),
     gaCustomTitle = Some(messages("tai.incomeTaxComparison.heading")),
     pageHeader = Some(header),
     user = Some(user)) {
@@ -40,6 +40,10 @@
         <div class="column-two-thirds">
             <section class="section" id="incomeTax" aria-labelledby="incomeTaxHeading">
                 @IncomeTax(incomeTaxComparisonViewModel.estimatedIncomeTaxComparisonViewModel)
+            </section>
+
+            <section class="section" id="incomeSummary" aria-labelledby="incomeSummaryHeading">
+                @IncomeSummary(incomeTaxComparisonViewModel.incomeSourceComparisonViewModel)
             </section>
 
             <section class="section" id="taxCodes" aria-labelledby="taxCodesHeading">

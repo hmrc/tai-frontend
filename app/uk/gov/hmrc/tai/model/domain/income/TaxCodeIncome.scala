@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.model.domain.income
 
+import org.joda.time.LocalDate
 import play.api.libs.json._
 import uk.gov.hmrc.tai.model.domain.TaxComponentType
 import uk.gov.hmrc.tai.util.TaiConstants
@@ -48,8 +49,43 @@ object TaxCodeIncomeSourceStatus{
   }
 }
 
-case class TaxCodeIncome(componentType:TaxComponentType, employmentId:Option[Int], amount:BigDecimal, description:String, taxCode:String,
-                         name: String, basisOperation: BasisOperation, status: TaxCodeIncomeSourceStatus){
+sealed trait IabdUpdateSource
+case object ManualTelephone extends IabdUpdateSource
+case object Letter extends IabdUpdateSource
+case object Email extends IabdUpdateSource
+case object AgentContact extends IabdUpdateSource
+case object OtherForm extends IabdUpdateSource
+case object Internet extends IabdUpdateSource
+case object InformationLetter extends IabdUpdateSource
+
+object IabdUpdateSource extends IabdUpdateSource {
+  implicit val formatIabdUpdateSource = new Format[IabdUpdateSource] {
+    override def reads(json: JsValue): JsSuccess[IabdUpdateSource] = json.as[String] match {
+      case "ManualTelephone" => JsSuccess(ManualTelephone)
+      case "Letter" => JsSuccess(Letter)
+      case "Email" => JsSuccess(Email)
+      case "AgentContact" => JsSuccess(AgentContact)
+      case "OtherForm" => JsSuccess(OtherForm)
+      case "Internet" => JsSuccess(Internet)
+      case "InformationLetter" => JsSuccess(InformationLetter)
+      case _ => throw new RuntimeException("Invalid Iabd Update Source")
+    }
+
+    override def writes(iabdUpdateSource: IabdUpdateSource) = JsString(iabdUpdateSource.toString)
+  }
+}
+
+case class TaxCodeIncome(componentType:TaxComponentType,
+                         employmentId:Option[Int],
+                         amount:BigDecimal,
+                         description:String,
+                         taxCode:String,
+                         name: String,
+                         basisOperation: BasisOperation,
+                         status: TaxCodeIncomeSourceStatus,
+                         iabdUpdateSource: Option[IabdUpdateSource] = None,
+                         updateNotificationDate: Option[LocalDate] = None,
+                         updateActionDate: Option[LocalDate] = None){
   lazy val taxCodeWithEmergencySuffix: String = basisOperation match {
     case Week1Month1BasisOperation => taxCode + TaiConstants.EmergencyTaxCodeSuffix
     case _ => taxCode

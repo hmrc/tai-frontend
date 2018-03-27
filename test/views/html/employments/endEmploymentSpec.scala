@@ -17,14 +17,13 @@
 package views.html.employments
 
 
-import controllers.routes
-import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
-import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
 import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 
 
 class endEmploymentSpec extends TaiViewSpec {
@@ -49,7 +48,7 @@ class endEmploymentSpec extends TaiViewSpec {
 
   "Tell us about your employments page" should {
 
-    behave like pageWithTitle(messages("tai.tellUsAboutEmployment.title"))
+    behave like pageWithTitle(messages("tai.endEmployment.endDateForm.title", employmentName))
 
     behave like pageWithCombinedHeader(
       messages("tai.endEmployment.preHeadingText"),

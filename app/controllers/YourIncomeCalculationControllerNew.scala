@@ -17,6 +17,8 @@
 package controllers
 
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
@@ -24,12 +26,10 @@ import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, TaiService, TaxAccountService}
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModelNew
 
 trait YourIncomeCalculationControllerNew extends TaiBaseController
@@ -70,15 +70,11 @@ trait YourIncomeCalculationControllerNew extends TaiBaseController
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-          taxCodeIncomes.find(_.employmentId.contains(empId)) match {
-            case Some(taxCodeIncome) =>
-              val model = YourIncomeCalculationViewModelNew(taxCodeIncome, employment)
-              if(printPage){
-                Ok(views.html.print.yourIncomeCalculationNew(model))
-              } else {
-                Ok(views.html.incomes.yourIncomeCalculationNew(model))
-              }
-            case _ => throw new RuntimeException("Error while fetching tax code income details")
+          val model = YourIncomeCalculationViewModelNew(taxCodeIncomes.find(_.employmentId.contains(empId)), employment)
+          if (printPage) {
+            Ok(views.html.print.yourIncomeCalculationNew(model))
+          } else {
+            Ok(views.html.incomes.yourIncomeCalculationNew(model))
           }
         case _ => throw new RuntimeException("Error while fetching RTI details")
       }

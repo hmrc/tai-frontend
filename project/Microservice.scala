@@ -35,7 +35,7 @@ trait MicroService {
 
     Seq(
       ScoverageKeys.coverageExcludedPackages := scoverageExcludePatterns.mkString("", ";", ""),
-      ScoverageKeys.coverageMinimum := 74,
+      ScoverageKeys.coverageMinimum := 84,
       ScoverageKeys.coverageFailOnMinimum := false,
       ScoverageKeys.coverageHighlighting := true,
       parallelExecution in Test := false

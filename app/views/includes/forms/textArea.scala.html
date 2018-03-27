@@ -14,36 +14,32 @@
  * limitations under the License.
  *@
 
-@(field: play.api.data.Field, args: (Symbol,Any)*)(implicit messages: Messages)
+@(
+        field: Field,
+        fieldErrorsEnabled: Boolean = true,
+        labelText: String = "",
+        hintText: String = "",
+        bold: Boolean = false,
+        classes: Seq[String] = Seq.empty,
+        panel: Boolean = false,
+        jsHidden: Boolean = false,
+        labelHidden: Boolean = false,
+        maxlength: String = "",
+        hintClass: String = "",
+        rows: String = "7"
+)(implicit lang: Lang, m: Messages)
 
-@import play.api.i18n._
-@import views.html.helper._
-
-@elements = @{ new FieldElements(field.id, field, null, args.toMap, messages) }
-@parentField = @{args.toMap.get('parentField).asInstanceOf[Option[Field]]}
-
-@parentElements = @{parentField.map(pf => new FieldElements(pf.id, pf, null, Map(), messages) )}
-
-@labelAfter = @{ elements.args.get('_labelAfter).getOrElse(false).asInstanceOf[Boolean] }
-
-<div class="form-group @if(elements.hasErrors || (parentElements.isDefined && parentElements.get.hasErrors)) {form-group-error} @elements.args.get('_divClass)">
-    <label for="@elements.field.name">
-        @if(elements.args.contains('_label)) {
-            <span class="form-label@if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) } ">@elements.label</span>
+<div class="form-group @if(field.hasErrors){form-group-error} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}">
+    <label class="form-label@if(bold) {-bold}" for="@field.id">
+        @if(labelText.nonEmpty) {
+            @if(labelHidden) { <span class="visuallyhidden">}
+            @Messages(labelText)
+            @if(labelHidden) {</span>}
         }
-        @if( elements.args.get('_info) ) { <span class="form-hint">@elements.args.get('_info)</span> }
-        @elements.errors.map { error => <span class="error-message">@Messages(error)</span>}
-        @if(parentElements.isDefined) {
-            @parentElements.get.errors.map { error => <span class="error-message">@Messages(error)</span>}
-        }
+        @if(hintText.nonEmpty) { <span class="form-hint @hintClass" id="@{ field.id }-hint">@Messages(hintText)</span> }
+        @if(fieldErrorsEnabled && field.hasErrors) { <span class="error-message">@field.errors.map(_.message)</span> }
     </label>
-    <textarea
-        @if( elements.args.get('_inputClass) ){ class="@elements.args.get('_inputClass)" }
-        name="@elements.field.name"
-        id="@elements.field.name"
-        @if( elements.args.get('_maxlength) ){ maxlength="@elements.args.get('_maxlength)" }>
-        @field.value
-    </textarea>
-    <div @if( elements.args.get('_dataCharField) ){ data-char-field="@elements.args.get('_dataCharField)" }></div>
-    @if(elements.args.contains('_help)) { <span class="font-small">@elements.infos</span> }
 
+    <textarea name="@field.name" class="form-control @if(fieldErrorsEnabled && field.hasErrors) { form-control-error} @classes.mkString(" ")" id="@field.id"
+        @if(maxlength.nonEmpty) { maxlength="@maxlength" } @if(rows.nonEmpty) { rows="@rows" }>@field.value</textarea>
+</div>

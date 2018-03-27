@@ -69,7 +69,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
         status(result) mustBe OK
 
-        doc.title() mustBe Messages("tai.whatDoYouWantToDo.heading")
+        doc.title() must include(Messages("tai.whatDoYouWantToDo.heading"))
         doc.select("fieldset input").size mustBe 3
       }
 
@@ -155,7 +155,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
         val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() mustBe "Sorry, we are experiencing technical difficulties - 500"
+        doc.title() must include("Sorry, we are experiencing technical difficulties - 500")
         doc must haveHeadingWithText(Messages("tai.technical.error.heading"))
         doc must haveParagraphWithText(Messages("tai.technical.error.message"))
       }
@@ -168,7 +168,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe NOT_FOUND
         val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() mustBe "Page not found - 404"
+        doc.title() must include("Page not found - 404")
         doc must haveHeadingWithText(Messages("tai.errorMessage.heading"))
         doc must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message1"))
       }
@@ -178,7 +178,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
         val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() mustBe "Bad request - 400"
+        doc.title() must include("Bad request - 400")
         doc must haveHeadingWithText(Messages("tai.errorMessage.heading"))
         doc must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message1"))
       }
@@ -194,7 +194,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         status(result) mustBe BAD_REQUEST
         verify(testController.employmentService, times(1)).employments(any(), any())(any())
         val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() mustBe "Sorry, there is a problem so you can’t use this service"
+        doc.title() must include("Sorry, there is a problem so you can’t use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem2"))
       }
@@ -217,7 +217,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
         val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() mustBe "Sorry, there is a problem so you can’t use this service"
+        doc.title() must include("Sorry, there is a problem so you can’t use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem2"))
       }
@@ -231,7 +231,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         status(result) mustBe BAD_REQUEST
         verify(testController.employmentService, times(1)).employments(any(), any())(any())
         val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() mustBe "Sorry, there is a problem so you can’t use this service"
+        doc.title() must include("Sorry, there is a problem so you can’t use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem2"))
       }
@@ -252,7 +252,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         status(result) mustBe OK
         verify(testController.employmentService, times(1)).employments(any(), any())(any())
         val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() mustBe Messages("tai.whatDoYouWantToDo.heading")
+        doc.title() must include(Messages("tai.whatDoYouWantToDo.heading"))
       }
 
       "nps tax account hod call has returned a bad request exception, indicating absence of ANY tax account data, " +
@@ -269,7 +269,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         status(result) mustBe OK
         verify(testController.employmentService, times(1)).employments(any(), any())(any())
         val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() mustBe Messages("tai.whatDoYouWantToDo.heading")
+        doc.title() must include(Messages("tai.whatDoYouWantToDo.heading"))
       }
 
       "cy plus one data is not available and cy plus one is enabled" in {
@@ -284,7 +284,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
         status(result) mustBe OK
 
-        doc.title() mustBe Messages("tai.whatDoYouWantToDo.heading")
+        doc.title() must include(Messages("tai.whatDoYouWantToDo.heading"))
         doc.select("fieldset input").size mustBe 2
       }
 
@@ -297,7 +297,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
         status(result) mustBe OK
 
-        doc.title() mustBe Messages("tai.whatDoYouWantToDo.heading")
+        doc.title() must include(Messages("tai.whatDoYouWantToDo.heading"))
         doc.select("fieldset input").size mustBe 2
       }
 
@@ -310,7 +310,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
         status(result) mustBe OK
 
-        doc.title() mustBe Messages("tai.whatDoYouWantToDo.heading")
+        doc.title() must include(Messages("tai.whatDoYouWantToDo.heading"))
         doc.select("fieldset input").size mustBe 2
       }
     }
@@ -443,9 +443,9 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
   private def createFakeSessionDataWithPY: SessionData = AuthBuilder.createFakeSessionDataWithPY
 
   private val fakeEmploymentData = Seq(Employment("TEST", Some("12345"), LocalDate.now(), None,
-    List(AnnualAccount("", TaxYear(TaxYearResolver.currentTaxYear), Available, Nil, Nil)), "", "", 2),
+    List(AnnualAccount("", TaxYear(TaxYearResolver.currentTaxYear), Available, Nil, Nil)), "", "", 2, None, false),
     Employment("TEST1", Some("123456"), LocalDate.now(), None,
-      List(AnnualAccount("", TaxYear(TaxYearResolver.currentTaxYear), Unavailable, Nil, Nil)), "", "", 2))
+      List(AnnualAccount("", TaxYear(TaxYearResolver.currentTaxYear), Unavailable, Nil, Nil)), "", "", 2, None, false))
 
   private val nino = new Generator(new Random).nextNino
 
