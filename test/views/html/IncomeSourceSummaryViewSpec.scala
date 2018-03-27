@@ -38,8 +38,8 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         pensionDoc must havePreHeadingWithText(pensionModel.displayName)
         pensionDoc must haveHeadingWithText(messages("tai.pension.income.details.mainHeading", pensionModel.empOrPensionName,
           pensionModel.startOfCurrentYear.replace(" ", "\u00A0"), pensionModel.endOfCurrentYear.replace(" ", "\u00A0")))
-        pensionDoc.title mustBe messages("tai.pension.income.details.mainHeading", pensionModel.empOrPensionName,
-          pensionModel.startOfCurrentYear, pensionModel.endOfCurrentYear)
+        pensionDoc.title must include( messages("tai.pension.income.details.mainHeading", pensionModel.empOrPensionName,
+          pensionModel.startOfCurrentYear, pensionModel.endOfCurrentYear) )
       }
     }
 

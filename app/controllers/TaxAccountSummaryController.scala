@@ -18,21 +18,20 @@ package controllers
 
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
-import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.AuditConstants
+import uk.gov.hmrc.tai.util.{AuditConstants, TaiConstants}
+import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 
 trait TaxAccountSummaryController extends TaiBaseController
   with DelegationAwareActions
@@ -60,19 +59,26 @@ trait TaxAccountSummaryController extends TaiBaseController
             val employmentsFuture = employmentService.employments(nino, TaxYear())
 
             for {
-              TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) <- taxSummaryFuture
-              TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxCodeIncomesFuture
-              TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome) <- nonTaxCodeIncomeFuture
+              taxSummary <- taxSummaryFuture
+              taxCodeIncomes <- taxCodeIncomesFuture
+              nonTaxCodeIncome <- nonTaxCodeIncomeFuture
               employments <- employmentsFuture
               isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
             } yield {
+              (taxSummary, taxCodeIncomes, nonTaxCodeIncome, employments, isAnyFormInProgress) match {
+                case (TaiTaxAccountFailureResponse(message), _, _, _, _) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
+                  message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear)=>
+                  Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
+                case (TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
+                TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+                TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
+                employments, isAnyFormInProgress) =>
                   val vm = TaxAccountSummaryViewModel(taxCodeIncomes, employments, taxAccountSummary, isAnyFormInProgress, nonTaxCodeIncome)
                   Ok(views.html.incomeTaxSummary(vm))
               }
+            }
           }
   }
-
-
 }
 
 object TaxAccountSummaryController extends TaxAccountSummaryController with AuthenticationConnectors {

@@ -58,7 +58,7 @@ class YourTaxCodeControllerNewSpec extends PlaySpec with FakeTaiPlayApplication 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
       val taxYearSuffix = Messages("tai.taxCode.title.pt2", startOfTaxYear, endOfTaxYear)
-      doc.title() mustBe s"${Messages("tai.taxCode.single.code.title.pt1")} ${taxYearSuffix}"
+      doc.title() must include(s"${Messages("tai.taxCode.single.code.title.pt1")} ${taxYearSuffix}")
     }
 
     "display error when there is TaiFailure in service" in {

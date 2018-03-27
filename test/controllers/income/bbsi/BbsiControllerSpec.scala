@@ -56,7 +56,7 @@ class BbsiControllerSpec extends PlaySpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() mustBe Messages("tai.bbsi.accountDetails.heading")
+      doc.title() must include(Messages("tai.bbsi.accountDetails.heading"))
     }
 
     "show endConfirmation page" in {
@@ -66,7 +66,7 @@ class BbsiControllerSpec extends PlaySpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() mustBe Messages("tai.bbsi.confirmation.heading")
+      doc.title() must include(Messages("tai.bbsi.confirmation.heading"))
     }
 
     "show removeConfirmation page" in {
@@ -76,7 +76,7 @@ class BbsiControllerSpec extends PlaySpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() mustBe Messages("tai.bbsi.confirmation.heading")
+      doc.title() must include(Messages("tai.bbsi.confirmation.heading"))
     }
 
     "show updateConfirmation page" in {
@@ -86,7 +86,7 @@ class BbsiControllerSpec extends PlaySpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() mustBe Messages("tai.bbsi.confirmation.heading")
+      doc.title() must include(Messages("tai.bbsi.confirmation.heading"))
     }
 
     "show overview page" in {
@@ -98,7 +98,7 @@ class BbsiControllerSpec extends PlaySpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() mustBe Messages("tai.bbsi.overview.heading")
+      doc.title() must include(Messages("tai.bbsi.overview.heading"))
     }
 
     "show internal server page" when {
@@ -110,7 +110,7 @@ class BbsiControllerSpec extends PlaySpec
 
         status(result) mustBe INTERNAL_SERVER_ERROR
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("global.error.InternalServerError500.title")
+        doc.title() must include(Messages("global.error.InternalServerError500.title"))
       }
     }
   }
@@ -125,7 +125,7 @@ class BbsiControllerSpec extends PlaySpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() mustBe Messages("tai.bbsi.decision.preHeading")
+      doc.title() must include(Messages("tai.bbsi.decision.preHeading"))
     }
 
     "return error" when {
@@ -217,7 +217,7 @@ class BbsiControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.bbsi.decision.preHeading")
+        doc.title() must include(Messages("tai.bbsi.decision.preHeading"))
       }
     }
 
@@ -231,7 +231,7 @@ class BbsiControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.bbsi.decision.preHeading")
+        doc.title() must include(Messages("tai.bbsi.decision.preHeading"))
       }
     }
 

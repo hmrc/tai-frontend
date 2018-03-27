@@ -61,7 +61,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
         val result = sut.getCompanyCarDetails()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.changeCompanyCar.title")
+        doc.title() must include(Messages("tai.changeCompanyCar.title"))
       }
     }
 
@@ -113,7 +113,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
         val result = sut.getCompanyCarEndDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.companyCar.endDate.title")
+        doc.title() must include(Messages("tai.companyCar.endDate.title"))
       }
     }
 
@@ -162,7 +162,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
         val result = sut.getFuelBenefitEndDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.companyCar.fuelBenefitEndDate.title")
+        doc.title() must include(Messages("tai.companyCar.fuelBenefitEndDate.title"))
       }
     }
 
@@ -173,7 +173,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
         val result = sut.getFuelBenefitEndDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.companyCar.fuelBenefitEndDate.title")
+        doc.title() must include(Messages("tai.companyCar.fuelBenefitEndDate.title"))
         doc.getElementById("dateForm_day").attr("value") mustBe "7"
         doc.getElementById("dateForm_month").attr("value") mustBe "7"
         doc.getElementById("dateForm_year").attr("value") mustBe "2016"
@@ -230,7 +230,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
         val result = sut.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.companyCar.checkAnswers.title")
+        doc.title() must include(Messages("tai.companyCar.checkAnswers.title"))
       }
     }
 
@@ -250,7 +250,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
         val result = sut.confirmation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.companyCar.confirmation.title")
+        doc.title() must include(Messages("tai.companyCar.confirmation.title"))
       }
     }
 
