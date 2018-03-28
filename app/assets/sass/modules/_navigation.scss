@@ -91,7 +91,6 @@
 .bucket-text {
     float: left;
     width: 80%;
-    display: inline-block;
     @media only screen and (min-width: 768px) {
         margin-left: 0px;
         width: 71%;
@@ -134,10 +133,6 @@ ul.four-buckets {
 
 .nav-list li a {
     color: #0B0C0C;
-}
-
-li a span:first-child {
-    text-decoration: underline;
 }
 
 .nav-list li:hover a {

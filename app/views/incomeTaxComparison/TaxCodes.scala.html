@@ -33,38 +33,38 @@
 }
 
 <table class="table--font-reset flush--bottom" id="taxCodeComparisonTable">
-
+    <caption class="visually-hidden">@messages("tai.incomeTaxComparison.taxCodes.subHeading")</caption>
     <thead id="taxCodeComparisonTableHeader">
-    <tr class="text--right">
-        <td></td>
-        <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="text--right">
-            <div>@messages("tai.CurrentTaxYear")</div>
-            <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader))</div>
-        </th>
-        <th id="taxCodeComparisonTableTableHeaderCol2" scope="col" class="text--right">
-            <div>@messages("tai.NextTaxYear")</div>
-            <div>@Html(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader))</div>
-        </th>
-    </tr>
+        <tr class="text--right">
+            <td></td>
+            <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="text--right">
+                @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
+                @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
+            </th>
+            <th id="taxCodeComparisonTableTableHeaderCol2" scope="col" class="text--right">
+                @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
+                @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", model.nextTaxYearHeader)))
+            </th>
+        </tr>
     </thead>
 
     <tbody id="taxCodeComparisonTableBody">
 
         @for(taxCodeDetail <- model.employmentTaxCodes) {
             <tr>
-                <td>@taxCodeDetail.name</td>
-                    @for(taxCode <- taxCodeDetail.taxCodes) {
-                        <td class="text--right">@taxCode</td>
-                    }
+                <th scope="row">@taxCodeDetail.name</th>
+                @for(taxCode <- taxCodeDetail.taxCodes) {
+                    <td class="text--right">@taxCode</td>
+                }
             </tr>
         }
 
         @for(taxCodeDetail <- model.pensionTaxCodes) {
             <tr>
-                <td>@taxCodeDetail.name</td>
-                    @for(taxCode <- taxCodeDetail.taxCodes) {
-                        <td class="text--right">@taxCode</td>
-                    }
+                <th scope="row">@taxCodeDetail.name</th>
+                @for(taxCode <- taxCodeDetail.taxCodes) {
+                    <td class="text--right">@taxCode</td>
+                }
             </tr>
         }
 
