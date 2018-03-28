@@ -58,6 +58,7 @@ tai.CurrentTaxYear=Current tax year
 tai.NextTaxYear=Next tax year
 tai.notKnown.response=I do not know
 tai.returnToIncomeTaxSummary=Return to your Income Tax Summary
+tai.returnToChooseTaxYear=Return to Choose Tax Year
 tai.phoneNumber=Phone number
 tai.whatDoYouWantToTell=What do you want to tell us?
 tai.whatDoYouWantToDo=What do you want to do?
@@ -155,7 +156,7 @@ tai.hmrc.enquiry.url=https://www.gov.uk/government/organisations/hm-revenue-cust
 ##Home page
 
 ##What Do You Want To Do page
-tai.whatDoYouWantToDo.heading=What do you want to do?
+tai.whatDoYouWantToDo.heading=Choose tax year
 tai.whatDoYouWantToDo.chooseOneOption=Choose one option
 tai.whatDoYouWantToDo.iWantToCheck=I want to check:
 tai.WhatDoYouWantToDo.radio1=my taxable income, tax-free allowances and tax codes for the current tax year

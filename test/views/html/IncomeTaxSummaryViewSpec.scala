@@ -268,7 +268,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithAttribute("#addMissingIncomeSourceSection a", "href", ApplicationConfig.otherIncomeLinkUrl)
     }
     "display a link to return to income tax summary" in {
-      doc must haveLinkWithUrlWithID("WhatDoYouWantToDoLink", controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
+      doc must haveLinkWithUrlWithID("returnToChooseTaxYearLink", controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
     }
   }
 

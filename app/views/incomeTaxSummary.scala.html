@@ -180,22 +180,20 @@
                 </ul>
 
             </section>
-
-            <div>
-                <p>
-                @Link.toInternalPage(
-                    id=Some("WhatDoYouWantToDoLink"),
-                    url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-                    value=Some(Messages("tai.returnToIncomeTaxSummary")),
-                    cssClasses=Some(""),
-                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToIncomeTaxSummary")}"))).toHtml
-                </p>
-            </div>
-
         </div>
     </div>
 
 </div>
+    <div>
+        <p>
+        @Link.toInternalPage(
+            id=Some("returnToChooseTaxYearLink"),
+            url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+            value=Some(Messages("tai.returnToChooseTaxYear")),
+            cssClasses=Some(""),
+            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToChooseTaxYear")}"))).toHtml
+        </p>
+    </div>
 
 
 }
