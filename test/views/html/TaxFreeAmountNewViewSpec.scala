@@ -53,71 +53,35 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
         doc must haveElementAtPathWithText("section[id=taxFreeAmountDetail]>h2", messages("tai.taxFreeAmount.detailsection.heading"))
       }
 
-      "contains one html table per summary category view model" in {
-        doc.select("table").size() mustBe 4
-        doc must haveTableWithId("summaryTable1")
-        doc must haveTableWithId("summaryTable2")
-        doc must haveTableWithId("summaryTable3")
-        doc must haveTableWithId("summaryTable4")
+      "contains one group per summary category view model" in {
+        doc.select(".govuk-check-your-answers").size() mustBe 4
+        doc must haveElementWithId("summaryTable1")
+        doc must haveElementWithId("summaryTable2")
+        doc must haveElementWithId("summaryTable3")
+        doc must haveElementWithId("summaryTable4")
       }
 
-      "contains a header row per table" in {
-        doc must haveTableTheadWithId("summaryTable1Head")
-        doc must haveTableThWithIdAndText("summaryTable1Col1Header", "header1")
-        doc must haveTableThWithIdAndText("summaryTable1Col2Header", "header2")
-
-        doc must haveTableTheadWithId("summaryTable2Head")
-        doc must haveTableThWithIdAndText("summaryTable2Col1Header", "header3")
-        doc must haveTableThWithIdAndText("summaryTable2Col2Header", "header4")
-
-        doc must haveTableTheadWithId("summaryTable3Head")
-        doc must haveTableThWithIdAndText("summaryTable3Col1Header", "header5")
-        doc must haveTableThWithIdAndText("summaryTable3Col2Header", "header6")
-
-        doc must haveTableTheadWithId("summaryTable4Head")
-        doc must haveTableThWithIdAndText("summaryTable4Col1Header", "header7")
-        doc must haveTableThWithIdAndText("summaryTable4Col2Header", "header8")
+      "contains a heading per group" in {
+        doc must haveElementAtPathWithText("#summaryTable1Caption", "Personal Allowance base amount")
+        doc must haveElementAtPathWithText("#summaryTable2Caption", "Additions to your Personal Allowance")
+        doc must haveElementAtPathWithText("#summaryTable3Caption", "Deductions from your Personal Allowance")
       }
 
-      "visually hides the table header row, where instructed by the view model" in {
-        doc must not(haveElementAtPathWithAttribute("table[id=summaryTable1] thead", "class", "visuallyhidden"))
-        doc must haveElementAtPathWithAttribute("table[id=summaryTable2] thead", "class", "visuallyhidden")
-        doc must haveElementAtPathWithAttribute("table[id=summaryTable3] thead", "class", "visuallyhidden")
-        doc must haveElementAtPathWithAttribute("table[id=summaryTable4] thead", "class", "visuallyhidden")
-      }
-
-      "contains a caption per table" in {
-        doc must haveTableCaptionWithIdAndText("summaryTable1Caption", "Personal Allowance base amount")
-        doc must haveTableCaptionWithIdAndText("summaryTable2Caption", "Additions to your Personal Allowance")
-        doc must haveTableCaptionWithIdAndText("summaryTable3Caption", "Deductions from your Personal Allowance")
-        doc must haveTableCaptionWithIdAndText("summaryTable4Caption", "Overall")
-      }
-
-      "visually hides the table caption, where instructed by the view model" in {
-        doc must haveElementAtPathWithClass("caption[id=summaryTable1Caption]", "visuallyhidden")
-        doc must not(haveElementAtPathWithClass("caption[id=summaryTable2Caption]", "visuallyhidden"))
-        doc must not(haveElementAtPathWithClass("caption[id=summaryTable3Caption]", "visuallyhidden"))
-        doc must haveElementAtPathWithClass("caption[id=summaryTable4Caption]", "visuallyhidden")
-      }
-
-      "displays a link cell & inner link element within table rows, where present in the view model" in {
-        doc.select("tr[id=summaryTable1Row2] > *").size mustBe 3
-        doc must haveTableTdWithId("summaryTable1Row2ChangeLinkCell")
+      "displays a link & inner link element, where present in the view model" in {
+        doc must haveElementWithId("summaryTable1Row2ChangeLinkCell")
         doc must haveLinkWithUrlWithID("summaryTable1Row2ChangeLink", "/dummy/url2")
         doc must haveElementAtPathWithClass("a[id=summaryTable1Row2ChangeLink] > span", "visually-hidden")
         doc must haveElementAtPathWithText("a[id=summaryTable1Row2ChangeLink] > span", messages("tai.updateOrRemove") + " context2")
       }
 
       "excludes a link cell from table rows, where instructed by the view model" in {
-        doc.select("tr[id=summaryTable1Row3] > *").size mustBe 2
-        doc must not(haveTableTdWithId("summaryTable1Row3ChangeLinkCell"))
+        doc must not(haveElementWithId("summaryTable1Row3ChangeLinkCell"))
       }
 
       "visually formats the final table" when {
         "the corresponding final summary item view model contains only a single row" in {
-          doc.select("table[id=summaryTable4] tbody tr").size() mustBe 1
-          doc must haveElementAtPathWithClass("table[id=summaryTable4]", "table--spaced-top")
-          doc must haveElementAtPathWithClass("table[id=summaryTable4] tbody tr", "table__row--top-border table__footer--highlight highlight")
+          doc.select("#summaryTable4 .cya-question").size() mustBe 1
+          doc must haveElementAtPathWithClass("#summaryTable4 .govuk-check-your-answers", "highlight")
         }
       }
     }

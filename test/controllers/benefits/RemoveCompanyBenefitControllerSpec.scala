@@ -41,9 +41,8 @@ import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, TaiService}
-import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.util.{DateFormatConstants, FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -75,7 +74,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val result = SUT.stopDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.benefits.ended.stopDate.title")
+        doc.title() must include(Messages("tai.benefits.ended.stopDate.heading", "Test", "Test"))
 
         verify(SUT.journeyCacheService, times(1)).currentCache(any())
       }
@@ -142,7 +141,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val result = SUT.totalValueOfBenefit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.remove.company.benefit.total.value.title")
+        doc.title() must include(Messages("tai.remove.company.benefit.total.value.heading", benefitName, employmentName))
       }
     }
   }
@@ -249,7 +248,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
         doc.getElementsByClass("heading-secondary").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
         doc must haveBackLink
         doc.getElementById("cancelLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
@@ -271,7 +270,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val result = SUT.telephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
         doc.getElementsByClass("heading-secondary").text() must endWith(Messages("tai.benefits.ended.journey.preHeader"))
         doc must haveBackLink
         doc.getElementById("cancelLink").attr("href") mustBe controllers.benefits.routes.RemoveCompanyBenefitController.cancel.url
@@ -313,7 +312,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
         status(result) mustBe BAD_REQUEST
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
 
       "there is a form validation error (additional, controller specific constraint)" in {
@@ -325,14 +324,14 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         status(tooFewCharsResult) mustBe BAD_REQUEST
 
         val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
-        tooFewDoc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
         val tooManyCharsResult = SUT.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
         status(tooManyCharsResult) mustBe BAD_REQUEST
 
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
-        tooManyDoc.title() mustBe Messages("tai.canWeContactByPhone.title")
+        tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
 
       }
     }
@@ -351,7 +350,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
       val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() mustBe Messages("tai.checkYourAnswers")
+      doc.title() must include(Messages("tai.checkYourAnswers"))
     }
   }
 
@@ -504,7 +503,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
         val result = sut.confirmation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() mustBe Messages("tai.income.previousYears.confirmation.heading")
+        doc.title() must include(Messages("tai.income.previousYears.confirmation.heading"))
       }
     }
   }

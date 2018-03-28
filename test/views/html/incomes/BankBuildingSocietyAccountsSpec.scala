@@ -29,8 +29,7 @@ class BankBuildingSocietyAccountsSpec extends TaiViewSpec {
     behave like haveReturnToSummaryButtonWithUrl(routes.TaxAccountSummaryController.onPageLoad())
 
     "display heading" in {
-      doc(view) must haveHeadingWithText(messages("tai.bbsi.accountDetails.heading"))
-      doc(view) must haveCaptionWithText(messages("tai.bbsi.account.table.heading", TaxYear().year.toString, TaxYear().next.year.toString))
+      doc(view) must haveElementAtPathWithText("h2", messages("tai.bbsi.account.table.heading", TaxYear().year.toString, TaxYear().next.year.toString))
     }
 
     "display descriptions" in {
@@ -38,24 +37,25 @@ class BankBuildingSocietyAccountsSpec extends TaiViewSpec {
       doc(view) must haveParagraphWithText(messages("tai.bbsi.account.desc2"))
     }
 
-    "display table header" in {
-      doc(view) must haveThWithText(messages("tai.bbsi.account.table.accountDetails"))
-      doc(view) must haveThWithText(messages("tai.bbsi.account.table.amount"))
-      doc(view) must haveThWithText(messages("tai.bbsi.account.table.action"))
-    }
+    "display account information" in {
+      doc(view) must haveElementAtPathWithText(".cya-question h3", bankName1)
+      doc(view) must haveElementAtPathWithText(".cya-question > div", messages("tai.bbsi.account.accountNumber") + " " + accountNumber1)
+      doc(view) must haveElementAtPathWithText(".cya-question > div + div", messages("tai.bbsi.account.sortCode") + " " + bankAccount1.formattedSortCode.getOrElse(""))
 
-    "display table body" in {
-      doc(view) must haveTdWithText(bankName1 + " " + accountNumber1 + " " + bankAccount1.formattedSortCode.getOrElse(""))
-      doc(view) must haveTdWithText(bankName2 + " " + accountNumber2 + " " + bankAccount2.formattedSortCode.getOrElse(""))
-      doc(view) must haveTdWithText("£123.45")
-      doc(view) must haveTdWithText("£456.78")
-      doc(view) must haveTdWithText(messages("tai.bbsi.account.updateOrRemoveLink"))
+      doc(view) must haveElementAtPathWithText(".cya-question h3", bankName2)
+      doc(view) must haveElementAtPathWithText(".cya-question > div", messages("tai.bbsi.account.accountNumber") + " " + accountNumber2)
+      doc(view) must haveElementAtPathWithText(".cya-question > div + div", messages("tai.bbsi.account.sortCode") + " " + bankAccount2.formattedSortCode.getOrElse(""))
+
+      doc(view) must haveElementAtPathWithText(".cya-answer", messages("tai.bbsi.account.table.amount") + " " + "£123.45")
+      doc(view) must haveElementAtPathWithText(".cya-answer", messages("tai.bbsi.account.table.amount") + " " + "£456.78")
+
+      doc(view) must haveElementAtPathWithText(".cya-change a span", messages("tai.bbsi.account.updateOrRemoveLink"))
       doc(view) must haveLinkWithUrlWithID("bbsiAccountDecision1", controllers.income.bbsi.routes.BbsiController.decision(1).url)
     }
 
-    "display table footer" in {
-      doc(view) must haveTdWithText(messages("tai.bbsi.account.table.total"))
-      doc(view) must haveTdWithText("£2,000.00")
+    "display estimated interest total" in {
+      doc(view) must haveElementAtPathWithText(".highlight h3", messages("tai.bbsi.account.table.total"))
+      doc(view) must haveElementAtPathWithText(".highlight .cya-answer", "£2,000.00")
     }
 
     "display total estimated interest in description" in {
@@ -66,9 +66,8 @@ class BankBuildingSocietyAccountsSpec extends TaiViewSpec {
       "account number and sort code has all zeroes" in {
         val view = views.html.incomes.bbsi.bank_building_society_accounts(UntaxedInterest(100,List(bankAccount1, bankAccount3, bankAccount2)))
 
-        val message = s"${messages("tai.bbsi.account.accountDetailsUnavailable")} ${messages("tai.bbsi.account.youToldUsTheAmount")}"
-
-        doc(view) must haveTdWithText(message)
+        doc(view) must haveElementAtPathWithText(".cya-question h3", messages("tai.bbsi.account.accountDetailsUnavailable"))
+        doc(view) must haveElementAtPathWithText(".cya-answer", messages("tai.bbsi.account.youToldUsTheAmount"))
       }
     }
   }

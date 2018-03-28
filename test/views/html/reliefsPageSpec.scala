@@ -54,20 +54,20 @@ class reliefsPageSpec extends TaiViewSpec with DateFormatConstants {
   }
   "Tax reliefs payments table" should {
     "have the correct headings" in {
-      doc must haveThWithText("Payment")
-      doc must haveThWithText("Amount paid (£)")
-      doc must haveThWithText("Tax saving (£)")
+      doc must haveThWithText(Messages("tai.extendedTaxReliefs.payments"))
+      doc.select("#now-pay-tax-on thead th").get(1).html() mustBe Html(Messages("tai.extendedTaxReliefs.source")).toString()
+      doc.select("#now-pay-tax-on thead th").get(2).html() mustBe Html(Messages("tai.extendedTaxReliefs.relief")).toString()
     }
     "not display the gift aid section" when {
       "there are no gift aid payments" in {
-        doc must not(haveSummaryWithText("Gift Aid"))
+        doc must not(haveTdWithText("Gift Aid"))
       }
     }
     "display the gift aid section" when {
       "there are gift aid payments" in {
         val viewWithGiftAid: Html = views.html.reliefs(taxSummaryDetails.copy(extensionReliefs = Some(extensionRelief)))
         val docWithGiftAid: Document = Jsoup.parse(viewWithGiftAid.toString)
-        docWithGiftAid must haveSummaryWithText("Gift Aid")
+        docWithGiftAid must haveTdWithText(Messages("tai.extendedTaxReliefs.giftAid.title") + " " + Messages("tai.extendedTaxReliefs.giftAid.NoTax.description"))
       }
     }
     "display the appropriate tax relief information" when {
@@ -113,7 +113,7 @@ class reliefsPageSpec extends TaiViewSpec with DateFormatConstants {
       "user has no personal pension payments" in {
         val viewWithGiftAid: Html = views.html.reliefs(taxSummaryDetails.copy(extensionReliefs = Some(extensionRelief)))
         val docWithGiftAid: Document = Jsoup.parse(viewWithGiftAid.toString)
-        docWithGiftAid must not(haveSummaryWithText("Personal Pension payments"))
+        docWithGiftAid must not(haveTdWithText("Personal Pension payments"))
       }
     }
     "display PPR messages" when {
@@ -121,9 +121,7 @@ class reliefsPageSpec extends TaiViewSpec with DateFormatConstants {
         val viewWithPPR = views.html.reliefs(taxSummaryDetails.copy(extensionReliefs = Some(ExtensionReliefs(
           personalPension = Some(ExtensionRelief(sourceAmount = BigDecimal(1), reliefAmount = BigDecimal(1)))))))
         val docWithPPR = Jsoup.parse(viewWithPPR.toString)
-        docWithPPR must haveSummaryWithText("Personal Pension payments")
-        docWithPPR must haveParagraphWithText("This is the tax relief you’ve claimed for your Personal Pension payments" +
-          " if you pay higher rate tax. Basic rate tax relief is given at source by your pension provider.")
+        docWithPPR must haveTdWithText(Messages("tai.extendedTaxReliefs.ppr.title") + " " + Messages("tai.extendedTaxReliefs.ppr.description"))
         docWithPPR must haveTdWithText("1")
         docWithPPR must haveTdWithText("1.00")
       }

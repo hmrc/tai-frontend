@@ -24,13 +24,17 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.BankAccountDecisionConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class BankBuildingSocietyAccountsDecisionSpec extends TaiViewSpec
-  with BankAccountDecisionConstants {
+class BankBuildingSocietyAccountsDecisionSpec extends TaiViewSpec with BankAccountDecisionConstants {
+
+  private val id = 1
+  private val bankName = "TestBank1"
+  private lazy val viewModel = BbsiAccountsDecisionViewModel(id, bankName)
+  private lazy val form = BankAccountsDecisionForm.createForm
 
   "bbsi accounts decision view" should {
 
-    behave like pageWithTitle(messages("tai.bbsi.decision.preHeading"))
-    behave like pageWithHeader(messages("tai.bbsi.decision.heading", "TestBank1"))
+    behave like pageWithTitle(messages("tai.bbsi.decision.title", bankName))
+    behave like pageWithHeader(messages("tai.bbsi.decision.title", bankName))
     behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.income.bbsi.routes.BbsiController.accounts())
     behave like pageWithContinueButtonForm("/check-income-tax/income/bank-building-society-savings/accounts/1/decision")
@@ -40,7 +44,6 @@ class BankBuildingSocietyAccountsDecisionSpec extends TaiViewSpec
 
         val formWithError: Form[BankAccountsDecisionFormData] = BankAccountsDecisionForm.createForm.bind(Map(BankAccountDecision -> ""))
 
-        val viewModel = BbsiAccountsDecisionViewModel(id, bankName)
         def view: Html = views.html.incomes.bbsi.bank_building_society_accounts_decision(viewModel, formWithError)
 
         doc(view).select(".error-summary--show > ul > li > #bankAccountDecision-error-summary").text mustBe Messages("tai.bbsi.decision.error.selectOption")
@@ -51,7 +54,6 @@ class BankBuildingSocietyAccountsDecisionSpec extends TaiViewSpec
 
       val formWithError: Form[BankAccountsDecisionFormData] = BankAccountsDecisionForm.createForm.bind(Map(BankAccountDecision -> ""))
 
-      val viewModel = BbsiAccountsDecisionViewModel(id, bankName)
       def view: Html = views.html.incomes.bbsi.bank_building_society_accounts_decision(viewModel, formWithError)
 
       val errorDoc = doc(view)
@@ -67,13 +69,6 @@ class BankBuildingSocietyAccountsDecisionSpec extends TaiViewSpec
       doc(view) must haveInputLabelWithText(s"${BankAccountDecision}-${RemoveAccount}", Messages("tai.bbsi.decision.radio3"))
     }
   }
-
-  private val id = 1
-  private val bankName = "TestBank1"
-
-  private lazy val viewModel = BbsiAccountsDecisionViewModel(id, bankName)
-
-  private lazy val form = BankAccountsDecisionForm.createForm
 
   override def view = views.html.incomes.bbsi.bank_building_society_accounts_decision(viewModel, form)
 }

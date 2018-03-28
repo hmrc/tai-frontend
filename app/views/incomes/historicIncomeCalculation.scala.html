@@ -35,7 +35,7 @@
     )}
 
 @main(
-    title = Messages("tai.yourIncome.heading"),
+    title = Messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName.getOrElse("")),
     user = Some(user),
     pageHeader = Some(header),
     employerName = historicIncomeCalculationViewModel.employerName,

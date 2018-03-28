@@ -60,7 +60,7 @@ class TaxFreeAmountControllerNewSpec extends PlaySpec with FakeTaiPlayApplicatio
             TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy"),
             TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))
 
-      doc.title() mustBe expectedTitle
+      doc.title() must include(expectedTitle)
     }
 
     "display error page" when {

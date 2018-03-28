@@ -33,7 +33,7 @@ class UpdateIncomeDetailsSpec extends TaiViewSpec{
     UpdateIncomeDetailsForm.form)
 
   "UpdateIncomeDetails" must {
-    behave like pageWithTitle(Messages("tai.updateEmployment.whatDoYouWantToTellUs.title"))
+    behave like pageWithTitle(Messages("tai.income.previousYears.details.heading", formattedTaxYear))
     behave like pageWithCombinedHeader(Messages("tai.income.previousYears.details.preHeading"),
       Messages("tai.income.previousYears.details.heading",formattedTaxYear))
     behave like pageWithContinueButtonForm("/check-income-tax/update-income-details/what-do-you-want-to-tell-us")

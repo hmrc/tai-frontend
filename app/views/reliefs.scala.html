@@ -52,24 +52,23 @@
                         <thead>
                             <tr>
                                 <th>@Messages("tai.extendedTaxReliefs.payments")</th>
-                                <th class="text--right">@Messages("tai.extendedTaxReliefs.source")</th>
-                                <th class="text--right">@Messages("tai.extendedTaxReliefs.relief")</th>
+                                <th class="text--right">@Html(Messages("tai.extendedTaxReliefs.source"))</th>
+                                <th class="text--right">@Html(Messages("tai.extendedTaxReliefs.relief"))</th>
                             </tr>
                         </thead>
                         <tbody>
                             @if(TaxSummaryHelper.getGiftAid(taxSummaryDetails)._1 > BigDecimal(0)){
                                 <tr>
                                     <td>
-                                        @includes.details_summary(Messages("tai.extendedTaxReliefs.giftAid.title")){
-                                            @if(TaxSummaryHelper.hasNoTaxableIncome(taxSummaryDetails)){
-                                                @if(TaxSummaryHelper.getGiftAid(taxSummaryDetails)._2 <= BigDecimal(0)){
-                                                    <p>@Messages("tai.extendedTaxReliefs.giftAid.BR.description")</p>
-                                                } else {
-                                                    <p>@Messages("tai.extendedTaxReliefs.giftAid.HR.description")</p>
-                                                }
-                                            }else{
-                                                <p>@Messages("tai.extendedTaxReliefs.giftAid.NoTax.description")</p>
+                                        @Messages("tai.extendedTaxReliefs.giftAid.title")
+                                        @if(TaxSummaryHelper.hasNoTaxableIncome(taxSummaryDetails)){
+                                            @if(TaxSummaryHelper.getGiftAid(taxSummaryDetails)._2 <= BigDecimal(0)){
+                                                <p>@Messages("tai.extendedTaxReliefs.giftAid.BR.description")</p>
+                                            } else {
+                                                <p>@Messages("tai.extendedTaxReliefs.giftAid.HR.description")</p>
                                             }
+                                        }else{
+                                            <p>@Messages("tai.extendedTaxReliefs.giftAid.NoTax.description")</p>
                                         }
                                     </td>
                                     <td class="text--right"> @MoneyPounds(TaxSummaryHelper.getGiftAid(taxSummaryDetails)._1,0).quantity </td>
@@ -80,9 +79,9 @@
                             @if(TaxSummaryHelper.getPPR(taxSummaryDetails)._1 > BigDecimal(0)){
                                 <tr>
                                     <td>
-                                        @includes.details_summary(Messages("tai.extendedTaxReliefs.ppr.title")){
-                                            <p>@Messages("tai.extendedTaxReliefs.ppr.description")</p>
-                                        }
+                                        @Messages("tai.extendedTaxReliefs.ppr.title")
+                                        <p>@Messages("tai.extendedTaxReliefs.ppr.description")</p>
+
                                     </td>
                                     <td class="text--right">@MoneyPounds(TaxSummaryHelper.getPPR(taxSummaryDetails)._1,0).quantity</td>
                                     <td class="text--right">@MoneyPounds(TaxSummaryHelper.getPPR(taxSummaryDetails)._2,2).quantity</td>

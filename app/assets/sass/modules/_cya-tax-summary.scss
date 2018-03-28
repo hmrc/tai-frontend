@@ -1,0 +1,34 @@
+.govuk-check-your-answers--tax-summary .cya-question {
+    font-weight: normal;
+}
+
+@media screen and (max-width: 768px){
+    .govuk-check-your-answers--tax-summary .cya-question {
+        display: table-row;
+    }
+    .govuk-check-your-answers--tax-summary > * {
+        display: table;
+        border-spacing: 0.25em;
+        width: 100%;
+        padding: 1em 0;
+    }
+    .govuk-check-your-answers--tax-summary .cya-change {
+        position: relative;
+        text-align: left;
+        display: table-footer-group;
+    }
+    .govuk-check-your-answers--tax-summary .cya-answer {
+        display: table-row;
+    }
+}
+
+@media screen and (min-width: 769px){
+    .govuk-check-your-answers--tax-summary .cya-answer {
+        text-align: right;
+    }
+    .govuk-check-your-answers--tax-summary .cya-question,
+    .govuk-check-your-answers--tax-summary .cya-change,
+    .govuk-check-your-answers--tax-summary .cya-answer {
+        vertical-align: middle;
+    }
+}

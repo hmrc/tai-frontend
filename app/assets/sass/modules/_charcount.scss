@@ -1,0 +1,63 @@
+@import '../base/_conditionals';
+@import '../base/_colours';
+
+.govuk-c-charcount__highlight.form-control-error{
+  border-width: 2px !important; // force this one as the validation overwrites it
+}
+textarea{
+  overflow: auto;
+}
+.govuk-c-charcount{
+  width: 100%;
+  border-width: 2px;
+  position: relative;
+  background: transparent;
+  z-index: 2;
+  margin: 0; //implicit margin creates problems on safari
+}
+.govuk-c-charcount__message{
+  // text-align: right;
+  margin-top: 0;
+  padding: 6px 0 0;
+}
+.govuk-c-charcount__message--disabled{
+  visibility: hidden;
+}
+// Highlights
+.govuk-c-charcount__wrapper{
+  position: relative;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border-left: 4px solid transparent;
+  padding-left: 10px;
+  margin-left: -14px;
+  @include media(tablet) {
+    border-left: 5px solid transparent;
+    padding-left: 15px;
+    margin-left: -20px;
+  }
+}
+.govuk-c-charcount__wrapper-error{
+  border-color: $error-colour;
+}
+.govuk-c-charcount__highlight-input, .govuk-c-charcount__highlight{
+  z-index: 1;
+  position: absolute;
+  width: 100%;
+  white-space: pre-wrap;
+	word-wrap: break-word;
+	color: transparent;
+  overflow: auto;
+  display: block;
+  vertical-align: middle;
+  border-color: transparent;
+  mark {
+    color: transparent;
+    background-color: $error-colour;
+    opacity: .2;
+  }
+}
+.govuk-c-charcount__highlight-input{
+  white-space: nowrap;
+}

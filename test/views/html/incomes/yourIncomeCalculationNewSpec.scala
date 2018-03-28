@@ -32,7 +32,7 @@ class yourIncomeCalculationNewSpec extends TaiViewSpec {
 
   "YourIncomeCalculationView" must {
 
-    behave like pageWithTitle(messages("tai.yourIncome.heading"))
+    behave like pageWithTitle(messages("tai.income.calculation.TaxableIncomeDetails", model.employerName))
     behave like haveHeadingWithText(messages("tai.income.calculation.TaxableIncomeDetails", model.employerName))
 
     "show return to summary link" in {
