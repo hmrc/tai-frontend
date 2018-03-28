@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package model.viewModels
+package uk.gov.hmrc.tai.viewModels
 
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
-import uk.gov.hmrc.tai.viewModels.TaxCodeViewModel
 import uk.gov.hmrc.urls.Link
 
 import scala.collection.immutable.ListMap
+import scala.concurrent.Future
 
 class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
 
@@ -207,9 +208,93 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
     }
   }
 
-  val taxCodeIncomes1 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live)
-  val taxCodeIncomes2 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "BR", "employer2", Week1Month1BasisOperation, Live)
+  "standAloneTaxCodeExplanation" must {
+    "return the correct message" when {
+      "tax code has 0T" in {
+        TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription("S0T", OtherBasisOperation, Map.empty[String, BigDecimal])) mustBe
+          ListMap("0T" -> Messages(s"tai.taxCode.0T"))
+      }
 
-  def sut(taxCodeIncomes: Seq[TaxCodeIncome]) = TaxCodeViewModel(taxCodeIncomes)
+      "tax code has BR" in {
+        val taxCode = "BR"
+        TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, Map.empty[String, BigDecimal])) mustBe
+          ListMap(taxCode -> Messages(s"tai.taxCode.BR"))
+      }
+
+      "tax code has D0" in {
+        val taxCode = "D0"
+        TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, Map.empty[String, BigDecimal])) mustBe
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 0))
+      }
+
+      "tax code has D1" in {
+        val taxCode = "D1"
+        TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, Map.empty[String, BigDecimal])) mustBe
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 0))
+      }
+
+      "tax code has NT" in {
+        val taxCode = "NT"
+        TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, Map.empty[String, BigDecimal])) mustBe
+          ListMap(taxCode -> Messages(s"tai.taxCode.NT"))
+      }
+
+      "tax code has D2" in {
+        val taxCode = "D2"
+        val scottishTaxRate: Map[String, BigDecimal] = Map(taxCode -> 10.0)
+        TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, scottishTaxRate)) mustBe
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 10))
+      }
+
+      "tax code has D3" in {
+        val taxCode = "D3"
+        val scottishTaxRate: Map[String, BigDecimal] = Map(taxCode -> 10.0)
+        TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, scottishTaxRate)) mustBe
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 10))
+      }
+
+      "tax code has D4" in {
+        val taxCode = "D4"
+        val scottishTaxRate: Map[String, BigDecimal] = Map(taxCode -> 10.0)
+        TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, scottishTaxRate)) mustBe
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 10))
+      }
+
+      "tax code has D5" in {
+        val taxCode = "D5"
+        val scottishTaxRate: Map[String, BigDecimal] = Map(taxCode -> 10.0)
+        TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, scottishTaxRate)) mustBe
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 10))
+      }
+
+      "tax code has D6" in {
+        val taxCode = "D6"
+        val scottishTaxRate: Map[String, BigDecimal] = Map(taxCode -> 10.0)
+        TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, scottishTaxRate)) mustBe
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 10))
+      }
+
+      "tax code has D7" in {
+        val taxCode = "D7"
+        val scottishTaxRate: Map[String, BigDecimal] = Map(taxCode -> 10.0)
+        TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, scottishTaxRate)) mustBe
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 10))
+      }
+
+      "tax code has D8" in {
+        val taxCode = "D8"
+        val scottishTaxRate: Map[String, BigDecimal] = Map(taxCode -> 10.0)
+        TaxCodeDescriptor.standAloneTaxCodeExplanation(TaxCodeDescription(taxCode, OtherBasisOperation, scottishTaxRate)) mustBe
+          ListMap(taxCode -> Messages(s"tai.taxCode.DX", 10))
+      }
+    }
+  }
+
+  private val taxCodeIncomes1 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live)
+  private val taxCodeIncomes2 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "BR", "employer2", Week1Month1BasisOperation, Live)
+  private val nino = new Generator().nextNino
+  private val scottishTaxRateBands = Map.empty[String, BigDecimal]
+
+  def sut(taxCodeIncomes: Seq[TaxCodeIncome]) = TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands)
 
 }

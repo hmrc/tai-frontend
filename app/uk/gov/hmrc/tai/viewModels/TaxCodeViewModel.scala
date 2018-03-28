@@ -16,39 +16,42 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import uk.gov.hmrc.tai.viewModels.TaxCodeDescriptor._
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.domain.income.{TaxCodeIncome, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
 import uk.gov.hmrc.tai.util.{DateFormatConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.viewModels.TaxCodeDescriptor._
 import uk.gov.hmrc.urls.Link
 
 import scala.collection.immutable.ListMap
+import scala.concurrent.Future
 
 case class TaxCodeViewModel(title: String,
                             mainHeading: String,
                             ledeMessage: String,
                             taxCodeDetails: Seq[DescriptionListViewModel])
 
+case class TaxCodeDescription(taxCode: String, basisOperation: BasisOperation, scottishTaxRateBands: Map[String, BigDecimal])
+
 object TaxCodeViewModel extends ViewModelHelper with DateFormatConstants {
 
-  def apply(taxCodeIncomes: Seq[TaxCodeIncome]): TaxCodeViewModel = {
+  def apply(taxCodeIncomes: Seq[TaxCodeIncome], scottishTaxRateBands: Map[String, BigDecimal]): TaxCodeViewModel = {
+
+    val explanationRules: Seq[TaxCodeDescription => ListMap[String, String]] = Seq(scottishTaxCodeExplanation,
+      untaxedTaxCodeExplanation,
+      fetchTaxCodeExplanation,
+      emergencyTaxCodeExplanation)
 
     val descriptionListViewModels = taxCodeIncomes.map { taxCodeIncome =>
       val taxCode = taxCodeIncome.taxCodeWithEmergencySuffix
-      val explanationRules: Seq[TaxCodeIncome => ListMap[String, String]] = Seq(scottishTaxCodeExplanation,
-        untaxedTaxCodeExplanation,
-        fetchTaxCodeExplanation,
-        emergencyTaxCodeExplanation)
-
-      val explanation = explanationRules.foldLeft(ListMap[String, String]())((expl, rule) => expl ++ rule(taxCodeIncome))
+      val taxDescription = TaxCodeDescription(taxCodeIncome.taxCode, taxCodeIncome.basisOperation, scottishTaxRateBands)
+      val explanation = explanationRules.foldLeft(ListMap[String, String]())((expl, rule) => expl ++ rule(taxDescription))
       DescriptionListViewModel(Messages("tai.taxCode.subheading", taxCodeIncome.name, taxCode), explanation)
     }
 
-    val taxYear = uk.gov.hmrc.tai.model.tai.TaxYear()
     val taxCodesPrefix = if (taxCodeIncomes.size > 1) Messages("tai.taxCode.multiple.code.title.pt1") else Messages("tai.taxCode.single.code.title.pt1")
 
     val title = s"$taxCodesPrefix ${currentTaxYearRange(DateWithYearFormat)}"
@@ -65,9 +68,9 @@ object TaxCodeDescriptor {
   val TaxAmountFactor = 10
   val EmergencyTaxCode = "X"
 
-  val scottishTaxCodeExplanation = (taxCodeIncome: TaxCodeIncome) => {
+  val scottishTaxCodeExplanation = (taxCodeDescription: TaxCodeDescription) => {
     val scottishRegex = "^S".r
-    val taxCode = taxCodeIncome.taxCode
+    val taxCode = taxCodeDescription.taxCode
     scottishRegex.findFirstIn(taxCode) match {
       case Some(code) => ListMap(code -> Messages(s"tai.taxCode.$code",
         Link.toExternalPage(url = ApplicationConfig.scottishRateIncomeTaxUrl, value=Some(Messages("tai.taxCode.scottishIncomeText.link"))).toHtml))
@@ -75,9 +78,9 @@ object TaxCodeDescriptor {
     }
   }
 
-  val untaxedTaxCodeExplanation = (taxCodeIncome: TaxCodeIncome) => {
+  val untaxedTaxCodeExplanation = (taxCodeDescription: TaxCodeDescription) => {
     val untaxedRegex = "K".r
-    val taxCode = taxCodeIncome.taxCode
+    val taxCode = taxCodeDescription.taxCode
     untaxedRegex.findFirstIn(taxCode) match {
       case Some(code) =>
         val amount = taxAmount(taxCode)
@@ -88,28 +91,30 @@ object TaxCodeDescriptor {
     }
   }
 
-  val fetchTaxCodeExplanation = (taxCodeIncome: TaxCodeIncome) => {
-    val codeExplanation = suffixTaxCodeExplanation(taxCodeIncome)
+  val fetchTaxCodeExplanation = (taxCodeDescription: TaxCodeDescription) => {
+    val codeExplanation = suffixTaxCodeExplanation(taxCodeDescription)
 
     if (codeExplanation.isEmpty)
-      standAloneTaxCodeExplanation(taxCodeIncome)
+      standAloneTaxCodeExplanation(taxCodeDescription)
     else
       codeExplanation
   }
 
-  val standAloneTaxCodeExplanation = (taxCodeIncome: TaxCodeIncome) => {
-    val standAloneRegex = "0T|BR|D0|D1|NT".r
-    val taxCode = taxCodeIncome.taxCode
-    standAloneRegex.findFirstIn(taxCode) match {
-      case Some(code) =>
-        ListMap(code -> Messages(s"tai.taxCode.$code"))
+  val standAloneTaxCodeExplanation = (taxCodeDescription: TaxCodeDescription) => {
+    val standAloneRegex = "0T|BR|NT".r
+    val scottishStandAloneRegex = "D0|D1|D2|D3|D4|D5|D6|D7|D8".r
+
+    val taxCode = taxCodeDescription.taxCode
+    (standAloneRegex.findFirstIn(taxCode), scottishStandAloneRegex.findFirstIn(taxCode)) match {
+      case (Some(code), None) => ListMap(code -> Messages(s"tai.taxCode.$code"))
+      case (None, Some(code)) => ListMap(code -> Messages(s"tai.taxCode.DX", taxCodeDescription.scottishTaxRateBands.getOrElse(code, BigDecimal(0))))
       case _ => ListMap[String, String]()
     }
   }
 
-  val suffixTaxCodeExplanation = (taxCodeIncome: TaxCodeIncome) => {
+  val suffixTaxCodeExplanation = (taxCodeDescription: TaxCodeDescription) => {
     val suffixRegex = """L|M|\d[0-9]*N|\d[1-9]T|\d+0T|[1-9]T""".r
-    val taxCode = taxCodeIncome.taxCode
+    val taxCode = taxCodeDescription.taxCode
     suffixRegex.findFirstIn(taxCode) match {
       case Some(code) =>
         val amount = taxAmount(taxCode)
@@ -126,8 +131,8 @@ object TaxCodeDescriptor {
     amount.map(_.toInt).getOrElse(0)
   }
 
-  val emergencyTaxCodeExplanation = (taxCodeIncome: TaxCodeIncome) => {
-    taxCodeIncome.basisOperation match {
+  val emergencyTaxCodeExplanation = (taxCodeDescription: TaxCodeDescription) => {
+    taxCodeDescription.basisOperation match {
       case Week1Month1BasisOperation => ListMap(EmergencyTaxCode -> Messages("tai.taxCode.X"))
       case _ => ListMap[String, String]()
     }
