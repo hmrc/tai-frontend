@@ -36,7 +36,6 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
     behave like pageWithCombinedHeader(
       messages("tai.paye.lastTaxYear.preHeading"),
       messages("tai.paye.heading"))
-    behave like pageWithBackLink
 
     "contain correct pre header and header" in {
       val taxYear = cyMinusOneTaxYear
@@ -285,6 +284,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
 
         doc.select(".grid-layout__column--1-3").size() mustBe 0
       }
+    }
+    "display a link to return to choose tax year page" in {
+      doc must haveLinkWithUrlWithID("returnToChooseTaxYearLink", controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
     }
   }
 

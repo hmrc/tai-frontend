@@ -28,7 +28,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
     ptaHeader(
         mainHeadingText = Messages("tai.paye.heading"),
         preHeadingText = Messages("tai.paye.lastTaxYear.preHeading"),
-        displayBackLink = true,
+        displayBackLink = false,
         backLinkGaEventAction = Some(gaEventActionString)
     )}
 
@@ -102,9 +102,17 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                         )
                     </div>
                 }
-
             </div>
-
         </div>
+    </div>
+    <div>
+        <p>
+            @Link.toInternalPage(
+            id=Some("returnToChooseTaxYearLink"),
+            url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+            value=Some(Messages("tai.returnToChooseTaxYear")),
+            cssClasses=Some(""),
+            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToChooseTaxYear")}"))).toHtml
+        </p>
     </div>
 }
