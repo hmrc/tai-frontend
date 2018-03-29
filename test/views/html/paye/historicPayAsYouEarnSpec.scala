@@ -47,6 +47,10 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
       newDoc.body.text must include(messages("tai.paye.heading"))
     }
 
+    "display a link to return to choose tax year page" in {
+      doc must haveLinkWithUrlWithID("returnToChooseTaxYearLink", controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
+    }
+
     "not show employments" when {
 
       "the viewmodel contains zero employments" in {
@@ -284,9 +288,6 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
 
         doc.select(".grid-layout__column--1-3").size() mustBe 0
       }
-    }
-    "display a link to return to choose tax year page" in {
-      doc must haveLinkWithUrlWithID("returnToChooseTaxYearLink", controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
     }
   }
 
