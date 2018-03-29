@@ -22,16 +22,17 @@
   backLinkGaEventAction: Option[String] = None,
   mainHeadingText: String,
   preHeadingText: String,
-  preHeadingAccessibleAnnouncement: String = "")(implicit m: Messages)
+  preHeadingAccessibleAnnouncement: String = "",
+  backLinkContent: Option[Html] = None
+)(implicit m: Messages)
 
 @preHeadingHidden = @{
     if(preHeadingAccessibleAnnouncement=="") Messages("tai.ptaHeader.accessible.preHeading") else preHeadingAccessibleAnnouncement
 }
 
 @if(displayBackLink) {
-    @backLink(
-        gaEventAction = backLinkGaEventAction
-    )
+    @backLinkContent.map(identity).getOrElse(backLink(gaEventAction = backLinkGaEventAction))
+
 }
 <div class="grid-row">
   <div class="column-two-thirds">
