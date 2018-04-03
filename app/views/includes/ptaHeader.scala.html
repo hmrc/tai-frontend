@@ -23,7 +23,7 @@
   mainHeadingText: String,
   preHeadingText: String,
   preHeadingAccessibleAnnouncement: String = "",
-  backLinkContent: Option[Html] = None
+  customBackLinkContent: Option[Html] = None
 )(implicit m: Messages)
 
 @preHeadingHidden = @{
@@ -31,7 +31,7 @@
 }
 
 @if(displayBackLink) {
-    @backLinkContent.map(identity).getOrElse(backLink(gaEventAction = backLinkGaEventAction))
+    @customBackLinkContent.map(identity).getOrElse(backLink(gaEventAction = backLinkGaEventAction))
 
 }
 <div class="grid-row">
