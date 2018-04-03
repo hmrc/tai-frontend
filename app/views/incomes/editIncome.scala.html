@@ -35,15 +35,15 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 @main(
     title = Messages("tai.incomes.edit.heading"),
-    articleClasses = Some("full-width"),
     user = Some(user),
     pageHeader = Some(header),
+    articleClasses = Some(""),
     employerName = income("name").value,
     webChat = webChat,
     gaCustomTitle = None
 ){
 
-    <div class="section--branded hmrc text soft--top">
+    <div class="section--branded hmrc soft--top">
         <h2 class="h2-heading">@Messages("tai.incomes.edit.howTo.subtitle")</h2>
         <p>@Messages("tai.incomes.edit.howTo.payslip")</p>
         <p>@Messages("tai.incomes.edit.howTo.grossAmount")</p>

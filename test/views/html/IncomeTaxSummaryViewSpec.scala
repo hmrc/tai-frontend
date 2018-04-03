@@ -33,7 +33,9 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       preHeaderText ="Firstname Surname",
       mainHeaderText = "main heading")
 
-    behave like pageWithBackLink
+    "display a link to return to choose tax year page" in {
+      doc must haveLinkWithUrlWithID("returnToChooseTaxYearLink", controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
+    }
 
     "display iForms status message when an iForm has not been fully processed" in{
       doc must haveElementWithId("isAnyFormInProgressBanner")

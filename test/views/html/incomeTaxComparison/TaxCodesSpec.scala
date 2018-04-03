@@ -37,11 +37,11 @@ class TaxCodesSpec extends TaiViewSpec {
     }
 
     "display tax code comparision table" in {
-      doc must haveTdWithText("EMPLOYER")
+      doc must haveThWithText("EMPLOYER")
       doc must haveTdWithText("1115L")
       doc must haveTdWithText("S975L")
 
-      doc must haveTdWithText("PENSION")
+      doc must haveThWithText("PENSION")
       doc must haveTdWithText("1150L")
       doc must haveTdWithText("1250L")
     }

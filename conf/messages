@@ -58,6 +58,7 @@ tai.CurrentTaxYear=Current tax year
 tai.NextTaxYear=Next tax year
 tai.notKnown.response=I do not know
 tai.returnToIncomeTaxSummary=Return to your Income Tax Summary
+tai.returnToChooseTaxYear=Choose tax year
 tai.phoneNumber=Phone number
 tai.whatDoYouWantToTell=What do you want to tell us?
 tai.whatDoYouWantToDo=What do you want to do?
@@ -155,7 +156,7 @@ tai.hmrc.enquiry.url=https://www.gov.uk/government/organisations/hm-revenue-cust
 ##Home page
 
 ##What Do You Want To Do page
-tai.whatDoYouWantToDo.heading=What do you want to do?
+tai.whatDoYouWantToDo.heading=Choose tax year
 tai.whatDoYouWantToDo.chooseOneOption=Choose one option
 tai.whatDoYouWantToDo.iWantToCheck=I want to check:
 tai.WhatDoYouWantToDo.radio1=my taxable income, tax-free allowances and tax codes for the current tax year
@@ -376,8 +377,8 @@ tai.extendedTaxReliefs=Your estimate includes any <a href="{0}">tax relief</a> y
 tai.extendedTaxReliefs.heading=Your tax relief payments
 tai.extendedTaxReliefs.description=Tax relief means you pay less tax to take account of money you’ve spent on Gift Aid donations or personal pension payments.
 tai.extendedTaxReliefs.payments=Payment
-tai.extendedTaxReliefs.source=Amount paid (£)
-tai.extendedTaxReliefs.relief=Tax saving (£)
+tai.extendedTaxReliefs.source=Amount&nbsp;paid (£)
+tai.extendedTaxReliefs.relief=Tax&nbsp;saving (£)
 tai.extendedTaxReliefs.ppr.title=Personal Pension payments
 tai.extendedTaxReliefs.ppr.description=This is the tax relief you’ve claimed for your Personal Pension payments if you pay higher rate tax. Basic rate tax relief is given at source by your pension provider.
 tai.extendedTaxReliefs.giftAid.title=Gift Aid
@@ -1065,9 +1066,8 @@ tai.taxCode.S=Your income or pension is taxed using the rates in Scotland. {0}
 tai.taxCode.K=You have untaxed income which is more than your tax-free allowance. The amount needs to be added to your pay or pension so the extra tax can be collected.
 tai.taxCode.0T=Your Personal Allowance has been used up, or you’ve started a new job and your employer doesn’t have the details they need to give you a tax code.
 tai.taxCode.BR=All your income from this job or pension is taxed at the basic rate of 20% (usually used if you’ve got more than one job or pension).
-tai.taxCode.D0=All your income from this job or pension is taxed at the higher rate of 40% (usually used if you’ve got more than one job or pension).
-tai.taxCode.D1=All your income from this job or pension is taxed at the additional rate 45% (usually used if you’ve got more than one job or pension).
 tai.taxCode.NT=You are not paying any tax on this income.
+tai.taxCode.DX=All your income from this job or pension is taxed at {0}% (usually used if you’ve got more than one job or pension).
 tai.taxCode.amount=Your tax-free income for this employer is £{0}.
 tai.taxCode.untaxedAmount=£{0} needs to be added to your pay or pension so the extra tax can be collected.
 tai.taxCode.scottishIncomeText.link=Read more about Scottish Income Tax on GOV.UK
@@ -1378,6 +1378,8 @@ tai.bbsi.account.desc1=We are told only about the amount of interest. We do not 
 tai.bbsi.account.desc2=You should update these details if they are wrong or you may pay the wrong amount of tax.
 tai.bbsi.account.table.heading=Estimated interest on savings between 6 April {0} and 5 April {1}
 tai.bbsi.account.table.accountDetails=Account details
+tai.bbsi.account.sortCode=Sort-code
+tai.bbsi.account.accountNumber=Account number
 tai.bbsi.account.table.amount=Interest amount
 tai.bbsi.account.table.action=Action
 tai.bbsi.account.table.total=Total estimated interest

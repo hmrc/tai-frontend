@@ -24,13 +24,26 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
 
 @gaEventActionString = @{"Your Pay As You Earn Income Tax"}
 
+@backLinkToChooseTaxYear = {
+<p>
+    @Link.toInternalPage(
+    id=Some("returnToChooseTaxYearLink"),
+    url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+    value=Some(Messages("tai.returnToChooseTaxYear")),
+    cssClasses=Some("link-back"),
+    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToChooseTaxYear")}"))
+    ).toHtml
+</p>
+}
+
 @header = @{
     ptaHeader(
         mainHeadingText = Messages("tai.paye.heading"),
         preHeadingText = Messages("tai.paye.lastTaxYear.preHeading"),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString)
-    )}
+        backLinkGaEventAction = Some(gaEventActionString),
+        customBackLinkContent = Some(backLinkToChooseTaxYear))
+}
 
 @main(
     title = Messages("tai.paye.heading"),
@@ -61,30 +74,23 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                             @Messages("tai.paye.lastTaxYear.heading")
                             <br/> @{TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)}</h3>
 
-                        <table id="last-tax-year-table" class="flush--bottom">
-                            <thead>
-                                <tr>
-                                    <th>@Messages("tai.paye.lastTaxYear.table.headingOne")</th>
-                                    <th class="text--right">@Messages("tai.paye.lastTaxYear.table.headingTwo")</th>
-                                    <th>@Messages("tai.paye.lastTaxYear.table.headingThree")</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <div id="last-tax-year-table" class="flush--bottom">
+                            <ul class="govuk-check-your-answers cya-questions-short govuk-check-your-answers--tax-summary">
                                 @for(employment <- viewModel.employments){
-                                    <tr>
-                                        <td>@employment.name</td>
-                                        <td class="text--right">£@{f"${employment.taxablePayYTD}%,.2f"}</td>
-                                        <td>@Link.toInternalPage(
+                                    <li>
+                                        <div class="cya-question">@employment.name</div>
+                                        <div class="cya-answer">£@{f"${employment.taxablePayYTD}%,.2f"}</div>
+                                        <div class="cya-change">@Link.toInternalPage(
                                             url =
                                             routes.YourIncomeCalculationController.yourIncomeCalculation(viewModel.taxYear,
                                             employment.id).toString(),
                                             value = Some(Messages("tai.paye.lastTaxYear.table.link"))
                                             ).toHtml
-                                        </td>
-                                    </tr>
+                                        </div>
+                                    </li>
                                 }
-                            </tbody>
-                        </table>
+                            </ul>
+                        </div>
                     </section>
             }
 
@@ -109,9 +115,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                         )
                     </div>
                 }
-
             </div>
-
         </div>
     </div>
 }

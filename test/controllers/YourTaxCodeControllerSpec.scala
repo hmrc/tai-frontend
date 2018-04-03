@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.service.{TaiService, TaxAccountService}
 import scala.concurrent.Future
 import scala.util.Random
 
-class YourTaxCodeControllerNewSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
+class YourTaxCodeControllerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   private implicit val hc = HeaderCarrier()
@@ -53,6 +53,7 @@ class YourTaxCodeControllerNewSpec extends PlaySpec with FakeTaiPlayApplication 
       val taxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L",
         "employment", OtherBasisOperation, Live))
       when(SUT.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
+      when(SUT.taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map.empty[String, BigDecimal]))
       val result = SUT.taxCodes()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe OK
