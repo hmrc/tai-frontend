@@ -32,7 +32,7 @@ import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
@@ -166,7 +166,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: PartialRetriever = MockPartialRetriever
+    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
     when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))

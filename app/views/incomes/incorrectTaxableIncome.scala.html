@@ -15,7 +15,7 @@
  *@
 
 @( payYTD: BigDecimal = 0, payDate: org.joda.time.LocalDate, id: Int)(implicit request: Request[_], messages: Messages,
-user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import org.joda.time.{DateTime, LocalDate}

@@ -39,7 +39,7 @@ import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
@@ -216,7 +216,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
 
     override implicit def templateRenderer: TemplateRenderer = MockTemplateRenderer
 
-    override implicit def partialRetriever: PartialRetriever = MockPartialRetriever
+    override implicit def partialRetriever: FormPartialRetriever = MockPartialRetriever
 
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
 

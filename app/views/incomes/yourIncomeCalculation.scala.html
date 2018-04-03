@@ -20,7 +20,7 @@
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
 
-@(incomeCalcDetails: uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel, empId: Int)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+@(incomeCalcDetails: uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel, empId: Int)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
     title = Messages("tai.income.calculation.TaxableIncomeDetails", incomeCalcDetails.employerName),

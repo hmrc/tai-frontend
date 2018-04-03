@@ -24,7 +24,7 @@ import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever, WSHttpProxy}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.service.TaiService
@@ -71,7 +71,7 @@ trait HelpController  extends TaiBaseController
 object HelpController extends HelpController with AuthenticationConnectors {
   override val taiService = TaiService
   override implicit def templateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override val httpGet = WSHttpProxy
   override val webChatURL = ApplicationConfig.webchatAvailabilityUrl
 }

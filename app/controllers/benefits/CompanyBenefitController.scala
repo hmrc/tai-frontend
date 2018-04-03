@@ -24,7 +24,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
@@ -129,7 +129,7 @@ object CompanyBenefitController extends CompanyBenefitController with Authentica
   override val taiService: TaiService = TaiService
   override val auditService: AuditService = AuditService
   override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override val employmentService: EmploymentService = EmploymentService
   override val journeyCacheService: JourneyCacheService = JourneyCacheService(EndCompanyBenefit_JourneyKey)
   override val trackingJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)

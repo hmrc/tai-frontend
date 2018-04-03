@@ -22,7 +22,7 @@ import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.language.{LanguageController, LanguageUtils}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
@@ -74,6 +74,6 @@ object TaiLanguageController extends TaiLanguageController with AuthenticationCo
 
   override def taiService: TaiService = TaiService
   override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
 

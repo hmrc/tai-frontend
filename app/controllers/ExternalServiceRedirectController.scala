@@ -20,7 +20,7 @@ import controllers.auth.WithAuthorisedForTaiLite
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.service.{AuditService, SessionService, TaiService}
@@ -52,7 +52,7 @@ trait ExternalServiceRedirectController extends TaiBaseController
 object ExternalServiceRedirectController extends ExternalServiceRedirectController with AuthenticationConnectors {
   override implicit def templateRenderer = LocalTemplateRenderer
 
-  override implicit def partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
   override val taiService = TaiService
   override val auditService = AuditService

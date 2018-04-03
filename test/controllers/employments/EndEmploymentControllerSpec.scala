@@ -36,7 +36,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
 import uk.gov.hmrc.tai.model.TaiRoot
@@ -579,7 +579,7 @@ class EndEmploymentControllerSpec
     override val auditService: AuditService = mock[AuditService]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
-    override implicit val partialRetriever: PartialRetriever = mock[PartialRetriever]
+    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override val employmentService: EmploymentService = mock[EmploymentService]
     override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]

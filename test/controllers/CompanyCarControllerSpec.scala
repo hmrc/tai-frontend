@@ -38,7 +38,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, SessionKeys}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaiRoot
@@ -380,7 +380,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: PartialRetriever = MockPartialRetriever
+    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
     when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))

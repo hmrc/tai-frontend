@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(workingHoursForm: Form[uk.gov.hmrc.tai.forms.HoursWorkedForm], id: Int, employerName : Option[String] = None)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+@(workingHoursForm: Form[uk.gov.hmrc.tai.forms.HoursWorkedForm], id: Int, employerName : Option[String] = None)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers._

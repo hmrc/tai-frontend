@@ -15,7 +15,7 @@
  *@
 
 @(payslipForm: Form[uk.gov.hmrc.tai.forms.PayslipForm], payPeriod: String, id: Int, employerName : Option[String] = None)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
 @import includes.forms.input

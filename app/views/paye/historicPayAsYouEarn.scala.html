@@ -20,7 +20,7 @@
 @import uk.gov.hmrc.urls.Link
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, noOfPreviousYearsToShow: Int)(implicit request: Request[_], user: controllers.auth.TaiUser,
-messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your Pay As You Earn Income Tax"}
 

@@ -25,7 +25,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
@@ -217,6 +217,6 @@ object UpdateIncomeDetailsController extends UpdateIncomeDetailsController with 
   override val journeyCacheService: JourneyCacheService = JourneyCacheService(UpdatePreviousYearsIncome_JourneyKey)
   override val trackingJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
   override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override def previousYearsIncomeService: PreviousYearsIncomeService = PreviousYearsIncomeService
 }

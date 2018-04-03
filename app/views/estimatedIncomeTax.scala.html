@@ -23,7 +23,7 @@
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.EstimatedIncomeViewModel, webChat: Boolean = false, iFormLinks: Html)(implicit
-        request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+        request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your PAYE Income Tax estimate"}
 

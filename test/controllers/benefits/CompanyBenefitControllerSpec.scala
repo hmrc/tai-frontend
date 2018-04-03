@@ -33,7 +33,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment}
@@ -185,7 +185,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
     override val auditService: AuditService = mock[AuditService]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: PartialRetriever = mock[PartialRetriever]
+    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val employmentService: EmploymentService = mock[EmploymentService]

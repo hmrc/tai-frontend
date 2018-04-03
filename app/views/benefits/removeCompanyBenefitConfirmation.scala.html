@@ -18,7 +18,7 @@
 @import includes.confirmation_summary
 @import uk.gov.hmrc.tai.model.tai.TaxYear
 
-@()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+@()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
 title = Messages("tai.income.previousYears.confirmation.heading"),

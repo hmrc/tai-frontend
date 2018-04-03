@@ -25,7 +25,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -75,5 +75,5 @@ object NoCYIncomeTaxErrorController extends NoCYIncomeTaxErrorController with Au
 
   override implicit def templateRenderer = LocalTemplateRenderer
 
-  override implicit def partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }

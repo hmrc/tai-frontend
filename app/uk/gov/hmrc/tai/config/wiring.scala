@@ -56,7 +56,7 @@ object WSHttpProxy extends WSHttpProxy {
   override lazy val auditConnector = AuditConnector
 }
 
-object TaiHtmlPartialRetriever extends PartialRetriever {
+object TaiHtmlPartialRetriever extends FormPartialRetriever {
 
   override val httpGet = WSHttp
 
@@ -75,6 +75,7 @@ object TaiHtmlPartialRetriever extends PartialRetriever {
     Await.result(httpGet.GET[HtmlPartial](url).recover(HtmlPartial.connectionExceptionsAsHtmlPartialFailure), partialRetrievalTimeout)
   }
 
+  override def crypto: String => String = ???
 }
 
 object FrontendAuthConnector extends AuthConnector with ServicesConfig {

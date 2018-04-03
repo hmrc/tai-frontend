@@ -33,7 +33,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
@@ -539,7 +539,7 @@ class IncomeControllerNewSpec extends PlaySpec
     override val taiService: TaiService = mock[TaiService]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
-    override implicit val partialRetriever: PartialRetriever = mock[PartialRetriever]
+    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override val employmentService: EmploymentService = mock[EmploymentService]
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]

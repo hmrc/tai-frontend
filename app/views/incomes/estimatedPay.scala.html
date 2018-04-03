@@ -16,7 +16,7 @@
 
 @(payBeforeTax: Option[BigDecimal], payTaxOn: Option[BigDecimal], id: Int, bonusOvertime : Boolean = false, annual : Option[BigDecimal],
 startDate : Option[org.joda.time.LocalDate], same : Boolean = false, employerName : Option[String] = None)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import org.joda.time.{DateTime, LocalDate}

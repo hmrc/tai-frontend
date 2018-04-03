@@ -34,7 +34,7 @@ import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain._
@@ -466,7 +466,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     override val taiService: TaiService = mock[TaiService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override val employmentService: EmploymentService = mock[EmploymentService]
-    override implicit val partialRetriever: PartialRetriever = mock[PartialRetriever]
+    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
