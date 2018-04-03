@@ -22,14 +22,12 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
-import uk.gov.hmrc.tai.util.{DateFormatConstants, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.TaxCodeDescriptor._
 import uk.gov.hmrc.tai.model.domain.income.{TaxCodeIncome, Week1Month1BasisOperation}
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.urls.Link
 
 import scala.collection.immutable.ListMap
-import scala.concurrent.Future
 
 case class TaxCodeViewModel(title: String,
                             mainHeading: String,
@@ -56,8 +54,8 @@ object TaxCodeViewModel extends ViewModelHelper {
 
     val taxCodesPrefix = if (taxCodeIncomes.size > 1) Messages("tai.taxCode.multiple.code.title.pt1") else Messages("tai.taxCode.single.code.title.pt1")
 
-    val title = s"$taxCodesPrefix ${currentTaxYearRange}"
-    val mainHeading = s"$taxCodesPrefix ${currentTaxYearRangeHtmlNonBreak}"
+    val title = s"$taxCodesPrefix $currentTaxYearRange"
+    val mainHeading = s"$taxCodesPrefix $currentTaxYearRangeHtmlNonBreak"
     val ledeMessage = if (taxCodeIncomes.size > 1) Messages("tai.taxCode.multiple.info") else Messages("tai.taxCode.single.info")
 
     TaxCodeViewModel(title, mainHeading, ledeMessage, descriptionListViewModels)
@@ -94,10 +92,10 @@ object TaxCodeDescriptor {
   }
 
   def fetchTaxCodeExplanation(implicit messages: Messages) = (taxCodeDescription: TaxCodeDescription) => {
-    val codeExplanation = suffixTaxCodeExplanation(taxCodeDescription)
+    val codeExplanation = suffixTaxCodeExplanation(messages)(taxCodeDescription)
 
     if (codeExplanation.isEmpty)
-      standAloneTaxCodeExplanation(taxCodeDescription)
+      standAloneTaxCodeExplanation(messages)(taxCodeDescription)
     else
       codeExplanation
   }
