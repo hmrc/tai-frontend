@@ -24,13 +24,26 @@
 
 @gaEventActionString = @{"Your PAYE Income Tax summary"}
 
+@backLinkToChooseTaxYear = {
+    <p>
+        @Link.toInternalPage(
+            id=Some("returnToChooseTaxYearLink"),
+            url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+            value=Some(Messages("tai.returnToChooseTaxYear")),
+            cssClasses=Some("link-back"),
+            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToChooseTaxYear")}"))
+        ).toHtml
+    </p>
+}
+
 @header = @{
     ptaHeader(
-        displayBackLink = false,
+        displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.header,
         preHeadingText = s"${user.taiRoot.firstName} ${user.taiRoot.surname}",
-        preHeadingAccessibleAnnouncement = "This section is the income tax summary for")
+        preHeadingAccessibleAnnouncement = "This section is the income tax summary for",
+        customBackLinkContent = Some(backLinkToChooseTaxYear))
 }
 
 @main(
@@ -39,6 +52,8 @@
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = Some("full-width")){
+
+
 
 <div class="grid-row">
 
@@ -184,16 +199,4 @@
     </div>
 
 </div>
-    <div>
-        <p>
-        @Link.toInternalPage(
-            id=Some("returnToChooseTaxYearLink"),
-            url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-            value=Some(Messages("tai.returnToChooseTaxYear")),
-            cssClasses=Some(""),
-            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToChooseTaxYear")}"))).toHtml
-        </p>
-    </div>
-
-
 }

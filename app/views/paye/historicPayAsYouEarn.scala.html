@@ -24,13 +24,26 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
 
 @gaEventActionString = @{"Your Pay As You Earn Income Tax"}
 
+@backLinkToChooseTaxYear = {
+<p>
+    @Link.toInternalPage(
+    id=Some("returnToChooseTaxYearLink"),
+    url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+    value=Some(Messages("tai.returnToChooseTaxYear")),
+    cssClasses=Some("link-back"),
+    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToChooseTaxYear")}"))
+    ).toHtml
+</p>
+}
+
 @header = @{
     ptaHeader(
         mainHeadingText = Messages("tai.paye.heading"),
         preHeadingText = Messages("tai.paye.lastTaxYear.preHeading"),
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString)
-    )}
+        backLinkGaEventAction = Some(gaEventActionString),
+        customBackLinkContent = Some(backLinkToChooseTaxYear))
+}
 
 @main(
     title = Messages("tai.paye.heading"),
@@ -102,9 +115,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                         )
                     </div>
                 }
-
             </div>
-
         </div>
     </div>
 }
