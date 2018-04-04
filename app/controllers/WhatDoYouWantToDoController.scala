@@ -18,7 +18,6 @@ package controllers
 
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
-import play.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc._
@@ -28,12 +27,11 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -70,53 +68,15 @@ trait WhatDoYouWantToDoController extends TaiBaseController
                 prevYearEmployments <- prevYearEmploymentsFuture
               } yield {
 
-                taxAccountSummary match {
-                  case TaiTaxAccountFailureResponse(msg) if msg.contains(TaiConstants.NpsTaxAccountDeceasedMsg) => {
-                    Logger.warn(s"<Deceased response received from nps tax account> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
-                    Some(Redirect(routes.DeceasedController.deceased()))
-                  }
-                  case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsTaxAccountCYDataAbsentMsg) => {
-                    prevYearEmployments match {
-                      case Nil => {
-                        Logger.warn(s"<No current year data returned from nps tax account, and subsequent nps employment check also empty> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
-                        Some(BadRequest(views.html.error_no_primary()))
-                      }
-                      case _ => {
-                        Logger.info(s"<No current year data returned from nps tax account, but nps employment data is present> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
-                        None
-                      }
-                    }
-                  }
-                  case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) => {
-                    prevYearEmployments match {
-                      case Nil => {
-                        Logger.warn(s"<No data returned from nps tax account, and subsequent nps employment check also empty> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
-                        Some(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
-                      }
-                      case _ => {
-                        Logger.warn(s"<No data returned from nps tax account, but nps employment data is present> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
-                        None
-                      }
-                    }
-                  }
-                  case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentsRecorded) => {
-                    Logger.warn(s"<No data returned from nps employments> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
-                    Some(BadRequest(views.html.error_no_primary()))
-                  }
-                  case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) => {
-                    prevYearEmployments match {
-                      case Nil => {
-                        Logger.warn(s"<No data returned from nps tax account, and subsequent nps employment check also empty> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
-                        Some(BadRequest(views.html.error_no_primary()))
-                      }
-                      case _ => {
-                        Logger.info(s"<No data returned from nps tax account, but nps employment data is present> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
-                        None
-                      }
-                    }
-                  }
-                  case _ => None
-                }
+                val npsFailureResponsePf: PartialFunction[TaiResponse, Option[Result]] =
+                  npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments) orElse
+                  npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments) orElse
+                  npsNoEmploymentForCYResult(prevYearEmployments) orElse
+                  npsNoEmploymentResult orElse
+                  npsTaxAccountDeceasedResult orElse
+                  {case _=> None}
+
+                npsFailureResponsePf(taxAccountSummary)
               }
 
               possibleRedirectFuture.flatMap(
