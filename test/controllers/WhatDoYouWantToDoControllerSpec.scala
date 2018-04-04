@@ -447,7 +447,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     "supply employment data where data is found" in {
       implicit val hc = HeaderCarrier()
       val testController = createSUT()
-      val employments = Await.result(testController.previousYearEmployments.apply(nino), 5 seconds)
+      val employments = Await.result(testController.previousYearEmployments(nino), 5 seconds)
       employments mustBe fakeEmploymentData
     }
 
@@ -456,7 +456,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       val testController = createSUT()
       when(testController.employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
         .thenReturn(Future.failed((new NotFoundException("no data found"))))
-      val employments = Await.result(testController.previousYearEmployments.apply(nino), 5 seconds)
+      val employments = Await.result(testController.previousYearEmployments(nino), 5 seconds)
       employments mustBe Nil
     }
   }
