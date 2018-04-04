@@ -244,19 +244,19 @@ trait ErrorPagesHandler {
 
   def hodInternalErrorResult(implicit request: Request[AnyContent], user: TaiUser, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e @ (_:InternalServerException | _:HttpException) =>
-      Logger.warn(s"<Exception returned from HOD call for nino ${user.getNino} @${rl.getName} with exception: ${e.printStackTrace()} \nstackTrace: ${e.printStackTrace()}")
+      Logger.warn(s"<Exception returned from HOD call for nino ${user.getNino} @${rl.getName} with exception: ${e.getClass()}", e)
       Future.successful(InternalServerError(error5xxFromNps(Messages("tai.technical.error.message"))))
   }
 
   def hodBadRequestResult(implicit request: Request[AnyContent], user: TaiUser, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e:BadRequestException =>
-      Logger.warn(s"<Bad request exception returned from HOD call for nino ${user.getNino} @${rl.getName} with exception: ${e.printStackTrace()} \nstackTrace: ${e.printStackTrace()}")
+      Logger.warn(s"<Bad request exception returned from HOD call for nino ${user.getNino} @${rl.getName} with exception: ${e.getClass}", e)
       Future.successful(BadRequest(error4xxPageWithLink(Messages("global.error.badRequest400.title"))))
   }
 
   def hodAnyErrorResult(implicit request: Request[AnyContent], user: TaiUser, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e =>
-      Logger.warn(s"<Exception returned from HOD call for nino ${user.getNino} @${rl.getName} with exception: ${e.printStackTrace()} \nstackTrace: ${e.printStackTrace()}")
+      Logger.warn(s"<Exception returned from HOD call for nino ${user.getNino} @${rl.getName} with exception: ${e.getClass()}", e)
       Future.successful(InternalServerError(error5xxFromNps(Messages("tai.technical.error.message"))))
   }
 }

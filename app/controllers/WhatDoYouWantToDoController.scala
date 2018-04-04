@@ -18,8 +18,10 @@ package controllers
 
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
+import play.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.Results.Redirect
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,12 +29,13 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.model.{SessionData, TaiRoot}
 import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -55,9 +58,45 @@ trait WhatDoYouWantToDoController extends TaiBaseController
       implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            sessionData(user).flatMap( _ => requestedPage.apply(taiRoot) ) recoverWith hodStatusRedirect
-          }
 
+        //    sessionData(user).flatMap( _ => requestedPage.apply(taiRoot) ) //recoverWith hodStatusRedirect
+
+            val taxAccountSummaryFuture = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear())
+            val employmentsFuture = employmentService.employments(Nino(user.getNino), TaxYear())
+            val prevYearEmploymentsFuture = previousYearEmployments.apply(Nino(user.getNino))
+
+            val possibleRedirectFuture =
+              for {
+                taxAccountSummary <- taxAccountSummaryFuture
+                _ <- employmentsFuture
+                prevYearEmployments <- prevYearEmploymentsFuture
+              } yield {
+
+                taxAccountSummary match {
+                  case TaiTaxAccountFailureResponse(msg) if msg.contains(TaiConstants.NpsTaxAccountDeceasedMsg) => {
+                    Logger.warn(s"<Deceased response received from nps tax account> - for nino ${user.getNino} @${"blah"}")
+                    Some(Redirect(routes.DeceasedController.deceased()))
+                  }
+                  case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsTaxAccountCYDataAbsentMsg) => {
+                    prevYearEmployments match {
+                      case Nil => {
+                        Logger.warn(s"<No current year data returned from nps tax account, and subsequent nps employment check also empty> - for nino ${user.getNino} @${""}")
+                        Some(BadRequest(views.html.error_no_primary()))
+                      }
+                      case _ => {
+                        Logger.info(s"<No current year data returned from nps tax account, but nps employment data is present> - for nino ${user.getNino} @${""}")
+                        None
+                      }
+                    }
+                  }
+                  case _ => None
+                }
+              }
+
+              possibleRedirectFuture.flatMap(
+                _.map(Future.successful(_)).getOrElse( requestedPage.apply(taiRoot) )
+              )
+          } recoverWith hodStatusRedirect
   }
 
   def handleWhatDoYouWantToDoPage(): Action[AnyContent] = authorisedForTai(taiService).async {
@@ -116,7 +155,6 @@ trait WhatDoYouWantToDoController extends TaiBaseController
     npsNoEmploymentForCYResult(previousYearEmployments, requestedPage) orElse
     npsNoEmploymentResult orElse
     npsTaxAccountDeceasedResult orElse
-    rtiDataAbsentResult orElse
     hodBadRequestResult orElse
     hodInternalErrorResult
   }

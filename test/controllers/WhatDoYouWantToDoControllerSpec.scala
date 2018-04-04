@@ -22,6 +22,7 @@ import data.TaiData
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mock.MockitoSugar
@@ -36,7 +37,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.PartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.model.{SessionData, TaiRoot, TaxSummaryDetails}
@@ -112,8 +113,12 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
     "redirect to deceased page" when {
 
-      "a 500 response is returned from nps tax account call (as part of session data retrieval)" in {
-        val testController = createSUT(sessionDataFailure = Some(new InternalServerException("deceased")))
+      "a deceased response is returned from nps tax account call" in {
+        val testController = createSUT()
+
+        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDeceasedMsg)))
+
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).getOrElse("") mustBe "/check-income-tax/deceased"
@@ -163,18 +168,10 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
     "return a 400 error page" when {
 
-      "a not found exception is returned from the RTI hod call" in {
-        val testController = createSUT(sessionDataFailure = Some(new NotFoundException("a no data response from rti")))
-        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe NOT_FOUND
-        val doc = Jsoup.parse( contentAsString(result) )
-        doc.title() must include("Page not found - 404")
-        doc must haveHeadingWithText(Messages("tai.errorMessage.heading"))
-        doc must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message1"))
-      }
+      "a general bad request exception is returned from any HOD call" in {
+        val testController = createSUT()
+        when(testController.employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new BadRequestException("bad request")))
 
-      "a bad request exception is returned from any HOD call" in {
-        val testController = createSUT(sessionDataFailure = Some(new BadRequestException("an example bad request response")))
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
         val doc = Jsoup.parse( contentAsString(result) )
@@ -184,15 +181,21 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       }
     }
 
-    "return the 'you can't use this service page" when {
-      "nps tax account hod call has returned a not found exception, indicating no current year data is present, " +
+    "return the 'you can't use this service page' (no primary)" when {
+      "nps tax account hod call has returned a not found exception ('no tax account information found'), indicating no current year data is present, " +
         "and no previous year employment data is present" in {
-        val testController = createSUT(
-          sessionDataFailure = Some(new NotFoundException(TaiConstants.NpsTaxAccountCYDataAbsentMsg)),
-          employmentDataFailure = Some(new NotFoundException("no data found")))
+        val testController = createSUT()
+
+        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+          .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountCYDataAbsentMsg)))
+        when(testController.employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
+          .thenReturn(Future.successful(fakeEmploymentData))
+        when(testController.employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
+          .thenReturn(Future.failed((new NotFoundException("no data found"))))
+
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
-        verify(testController.employmentService, times(1)).employments(any(), any())(any())
+        verify(testController.employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
         val doc = Jsoup.parse( contentAsString(result) )
         doc.title() must include("Sorry, there is a problem so you can’t use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
@@ -237,7 +240,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       }
     }
 
-    "display of the WDYWTD page (not redirect)" when {
+    "display the WDYWTD page (not redirect)" when {
       "nps tax account hod call has returned a not found exception, indicating no current year data is present, " +
         "but previous year employment data IS present" in {
         val testController = createSUT(
@@ -491,5 +494,10 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     }
     when(taiService.personDetails(any())(any())).thenReturn(Future.successful(sd.taiRoot.get))
     when(auditService.sendUserEntryAuditEvent(any(), any())(any())).thenReturn(Future.successful(AuditResult.Success))
+
+    when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+      Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary))
+    )
+    when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Nil))
   }
 }
