@@ -21,7 +21,7 @@ import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import play.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.Results.Redirect
+import play.api.mvc.Results.{BadRequest, Redirect}
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -85,6 +85,34 @@ trait WhatDoYouWantToDoController extends TaiBaseController
                       }
                       case _ => {
                         Logger.info(s"<No current year data returned from nps tax account, but nps employment data is present> - for nino ${user.getNino} @${""}")
+                        None
+                      }
+                    }
+                  }
+                  case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) => {
+                    prevYearEmployments match {
+                      case Nil => {
+                        Logger.warn(s"<No data returned from nps tax account, and subsequent nps employment check also empty> - for nino ${user.getNino} @${""}")
+                        Some(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
+                      }
+                      case _ => {
+                        Logger.warn(s"<No data returned from nps tax account, but nps employment data is present> - for nino ${user.getNino} @${""}")
+                        None
+                      }
+                    }
+                  }
+                  case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentsRecorded) => {
+                    Logger.warn(s"<No data returned from nps employments> - for nino ${user.getNino} @${""}")
+                    Some(BadRequest(views.html.error_no_primary()))
+                  }
+                  case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) => {
+                    prevYearEmployments match {
+                      case Nil => {
+                        Logger.warn(s"<No data returned from nps tax account, and subsequent nps employment check also empty> - for nino ${user.getNino} @${""}")
+                        Some(BadRequest(views.html.error_no_primary()))
+                      }
+                      case _ => {
+                        Logger.info(s"<No data returned from nps tax account, but nps employment data is present> - for nino ${user.getNino} @${""}")
                         None
                       }
                     }
