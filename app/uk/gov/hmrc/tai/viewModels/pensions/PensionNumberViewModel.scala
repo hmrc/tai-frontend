@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels.pensions
 
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants}
 
 case class PensionNumberViewModel(pensionProviderName: String,
@@ -23,7 +24,7 @@ case class PensionNumberViewModel(pensionProviderName: String,
 
 object PensionNumberViewModel extends JourneyCacheConstants with FormValuesConstants {
 
-  def apply(cache: Map[String, String]): PensionNumberViewModel = {
+  def apply(cache: Map[String, String])(implicit messages: Messages): PensionNumberViewModel = {
     val pensionProviderName = cache.getOrElse(AddPensionProvider_NameKey, "")
     val firstPayChoice = cache.get(AddPensionProvider_StartDateWithinSixWeeks) match {
       case Some(YesValue) => true

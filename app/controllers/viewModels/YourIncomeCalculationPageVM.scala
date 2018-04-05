@@ -18,6 +18,7 @@ package controllers.viewModels
 
 import controllers.IncomeViewModelFactory
 import controllers.auth.TaiUser
+import org.joda.time.LocalDate
 import uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel
 import uk.gov.hmrc.tai.model.{TaxCodeIncomeSummary, TaxSummaryDetails}
 import play.api.http.Status
@@ -27,17 +28,21 @@ import uk.gov.hmrc.tai.util.YourIncomeCalculationHelper
 import uk.gov.hmrc.tai.util.TaiConstants._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.{EditableDetails, TaxCodeIncomeSummary, TaxSummaryDetails}
+import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import play.api.i18n.Messages
+
 
 object YourIncomeCalculationPageVM extends IncomeViewModelFactory {
   override type ViewModelType = YourIncomeCalculationViewModel
 
   override def createObject(nino:Nino, details: TaxSummaryDetails, incomeId : Int)(
-    implicit user: TaiUser, hc: HeaderCarrier): YourIncomeCalculationViewModel = {
+    implicit user: TaiUser, hc: HeaderCarrier, messages: Messages): YourIncomeCalculationViewModel = {
     val incomeExplanations = details.incomeData.map(x => x.incomeExplanations)
     val ceased = details.increasesTax.flatMap(_.incomes.flatMap(_.taxCodeIncomes.ceasedEmployments))
     val incs = ceased.map(_.taxCodeIncomes).getOrElse(List[TaxCodeIncomeSummary]())
 
-    val incomeExplanationDetails = incomeExplanations.flatMap{ incomeExpl =>
+    def incomeExplanationDetails(implicit messages: Messages) = incomeExplanations.flatMap{ incomeExpl =>
       incomeExpl.filter(_.incomeId == incomeId).headOption.map{ expl =>
         val (incomeMsg, incomeEstimateMsg) = YourIncomeCalculationHelper.getIncomeExplanationMessage(expl)
         val payrollMsg = YourIncomeCalculationHelper.displayPayrollNumber(expl.hasDuplicateEmploymentNames, expl.worksNumber, expl.isPension)

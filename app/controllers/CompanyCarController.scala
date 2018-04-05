@@ -32,7 +32,7 @@ import uk.gov.hmrc.tai.service.{JourneyCacheService, SessionService, TaiService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.time.TaxYearResolver
@@ -212,5 +212,5 @@ object CompanyCarController extends CompanyCarController with AuthenticationConn
   override val sessionService: SessionService = SessionService
   override val journeyCacheService : JourneyCacheService = JourneyCacheService(CompanyCar_JourneyKey)
   override implicit val templateRenderer: TemplateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }

@@ -20,7 +20,7 @@ import controllers.viewModels.TupleFormats
 import hmrc.nps2.TaxBand
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.model.TaxComponent
-import uk.gov.hmrc.tai.util.{DateFormatConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.ViewModelHelper
 
 case class EstimatedIncomeViewModel (
                                      increasesTax: Boolean = false,
@@ -43,7 +43,7 @@ case class EstimatedIncomeViewModel (
                                      hasSSR: Boolean = false,
                                      hasPSA: Boolean = false,
                                      taxRegion: String
-) extends ViewModelHelper with DateFormatConstants {
+) extends ViewModelHelper {
 
   lazy val ssrValue: BigDecimal = newGraph.bands find { _.bandType == "SR" } map { _.income } getOrElse 0
   lazy val psaValue: BigDecimal = newGraph.bands find { _.bandType == "PSR" } map { _.income } getOrElse 0

@@ -126,10 +126,6 @@ trait AuditConstants {
   val AddPension_CantAddPensionProvider = "cantAddPensionProvider"
 }
 
-trait DatePatternConstants {
-  val datePatternWithFullMonthName = "dd MMMM yyyy"
-}
-
 trait AddEmploymentPayrollNumberConstants {
   val PayrollNumberChoice = "payrollNumberChoice"
   val PayrollNumberEntry = "payrollNumberEntry"
@@ -193,11 +189,6 @@ trait BandTypesConstants {
 trait TaxRegionConstants {
   val UkTaxRegion = "UK"
   val ScottishTaxRegion = "SCOTTISH"
-}
-
-trait DateFormatConstants {
-  val DateWithoutYearFormat = "d MMMM"
-  val DateWithYearFormat = "d MMMM yyyy"
 }
 
 trait UpdateOrRemoveCompanyBenefitDecisionConstants{

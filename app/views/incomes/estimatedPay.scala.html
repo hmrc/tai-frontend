@@ -16,7 +16,7 @@
 
 @(payBeforeTax: Option[BigDecimal], payTaxOn: Option[BigDecimal], id: Int, bonusOvertime : Boolean = false, annual : Option[BigDecimal],
 startDate : Option[org.joda.time.LocalDate], same : Boolean = false, employerName : Option[String] = None)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import org.joda.time.{DateTime, LocalDate}
@@ -26,15 +26,17 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @import uk.gov.hmrc.play.views.html.layouts.loginStatus
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.play.views.helpers._
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.time.TaxYearResolver
 
- @gaEventActionString = @{"Your estimated pay for the year"}
+@gaEventActionString = @{"Your estimated pay for the year"}
 
- @header = @{
-     ptaHeader(
-         displayBackLink = true,
-         backLinkGaEventAction = Some(gaEventActionString),
-         mainHeadingText = Messages("tai.estimatedPay.title"),
-         preHeadingText = Messages("tai.estimatedPay.preHeading"))}
+@header = @{
+ ptaHeader(
+     displayBackLink = true,
+     backLinkGaEventAction = Some(gaEventActionString),
+     mainHeadingText = Messages("tai.estimatedPay.title"),
+     preHeadingText = Messages("tai.estimatedPay.preHeading"))}
 
 @main(
 title = Messages("tai.estimatedPay.title"),
@@ -53,7 +55,7 @@ gaCustomTitle = None
         @startDate.map{startDate =>
             @annual.map{annual =>
                 @includes.details_summary(Messages("tai.estimatedPay.whyLower.title"),Some("flush--bottom")){
-                    @Messages("tai.estimatedPay.whyLower.message",startDate.toString("d MMMM yyyy"), uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("MMMM yyyy"),uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("MMMM yyyy"),MoneyPounds(annual,0).quantity)
+                    @Messages("tai.estimatedPay.whyLower.message",Dates.formatDate(startDate),Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear),Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear),MoneyPounds(annual,0).quantity)
                 }
             }
         }

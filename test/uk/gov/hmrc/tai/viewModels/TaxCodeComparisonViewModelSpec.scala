@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
+import play.api.i18n.Messages.Implicits._
 
-class TaxCodeComparisonViewModelSpec extends PlaySpec {
+class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
   "Tax code comparison view model" must {
     "return Live income and pension sources tax codes" when {

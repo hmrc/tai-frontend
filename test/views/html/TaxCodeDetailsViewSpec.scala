@@ -46,14 +46,14 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
       doc must haveDescriptionListWithId("descriptionList2")
       doc must haveH2HeadingWithIdAndText("descriptionList2Heading", "Your tax code for employer2: D0")
       doc must haveDescriptionTermWithIdAndText("descriptionTerm_2_1", "D0")
-      doc must haveTermDescriptionWithIdAndText("descriptionText_2_1", messages("tai.taxCode.D0"))
+      doc must haveTermDescriptionWithIdAndText("descriptionText_2_1", messages("tai.taxCode.DX", 40))
       doc must haveDescriptionTermWithIdAndText("descriptionTerm_2_2", "K")
       doc must haveTermDescriptionWithIdAndText("descriptionText_2_2", messages("tai.taxCode.BR"))
     }
   }
 
   val taxCodeDescription1 = DescriptionListViewModel("Your tax code for employer1: BR", ListMap("K" -> messages("tai.taxCode.BR")))
-  val taxCodeDescription2 = DescriptionListViewModel("Your tax code for employer2: D0", ListMap( ("D0" -> messages("tai.taxCode.D0")),("K" -> messages("tai.taxCode.BR")) ))
+  val taxCodeDescription2 = DescriptionListViewModel("Your tax code for employer2: D0", ListMap( "D0" -> messages("tai.taxCode.DX", 40), "K" -> messages("tai.taxCode.BR") ))
 
   val viewModel: TaxCodeViewModel = TaxCodeViewModel("main heading", "main heading", "lede message", Seq(taxCodeDescription1, taxCodeDescription2))
 

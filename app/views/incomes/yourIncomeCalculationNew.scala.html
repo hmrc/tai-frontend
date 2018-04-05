@@ -21,8 +21,10 @@
 @import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.tai.model.domain.income._
 @import uk.gov.hmrc.tai.model.domain._
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.time.TaxYearResolver
 
-@(model: YourIncomeCalculationViewModelNew)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+@(model: YourIncomeCalculationViewModelNew)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
     title = Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName),
@@ -30,8 +32,6 @@
     employerName = Some(model.employerName),
     gaCustomTitle = None
 ){
-
-@defining("d MMMM yyyy") { dateFormatPattern =>
 
     <div style="float: right;">
         @Link.toInternalPage(url=routes.YourIncomeCalculationController.printYourIncomeCalculationPage(Some(model.empId)).toString,value=Some(Messages("tai.label.print"))).toHtml
@@ -47,9 +47,9 @@
                     @model.employmentStatus match {
                         case PotentiallyCeased => {
                             @if(model.latestPayment.isDefined) {
-                                <h2 class="heading-medium">@Messages("tai.income.calculation.heading.withRti", model.latestPayment.get.date.toString(dateFormatPattern))</h2>
+                                <h2 class="heading-medium">@Messages("tai.income.calculation.heading.withRti", Dates.formatDate(model.latestPayment.get.date))</h2>
                             } else {
-                                <h2 class="heading-medium">@Messages("tai.income.calculation.heading",s"${TaxYearResolver.startOfCurrentTaxYear.toString(dateFormatPattern)}",s"${TaxYearResolver.endOfCurrentTaxYear.toString(dateFormatPattern)}")</h2>
+                                <h2 class="heading-medium">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</h2>
                             }
 
                             <p>@Messages("tai.income.calculation.potentially.ceased.lede")</p>
@@ -57,9 +57,9 @@
 
                         case Ceased => {
                             @if(model.latestPayment.isDefined) {
-                                <h2 class="heading-medium">@Messages("tai.income.calculation.ceased.heading", model.latestPayment.get.date.toString(dateFormatPattern))</h2>
+                                <h2 class="heading-medium">@Messages("tai.income.calculation.ceased.heading", Dates.formatDate(model.latestPayment.get.date))</h2>
                             } else {
-                                <h2 class="heading-medium">@Messages("tai.income.calculation.heading",s"${TaxYearResolver.startOfCurrentTaxYear.toString(dateFormatPattern)}",s"${TaxYearResolver.endOfCurrentTaxYear.toString(dateFormatPattern)}")</h2>
+                                <h2 class="heading-medium">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</h2>
                             }
 
                             <p>@Messages("tai.income.calculation.rti.ceased.emp",s"${CeasedEmploymentHelper.toDisplayFormat(model.endDate)}")</p>
@@ -67,9 +67,9 @@
 
                         case _ => {
                             @if(model.latestPayment.isDefined) {
-                                <h2 class="heading-medium">@Messages("tai.income.calculation.heading.withRti", model.latestPayment.get.date.toString(dateFormatPattern))</h2>
+                                <h2 class="heading-medium">@Messages("tai.income.calculation.heading.withRti", Dates.formatDate(model.latestPayment.get.date))</h2>
                             } else {
-                                <h2 class="heading-medium">@Messages("tai.income.calculation.heading",s"${TaxYearResolver.startOfCurrentTaxYear.toString(dateFormatPattern)}",s"${TaxYearResolver.endOfCurrentTaxYear.toString(dateFormatPattern)}")</h2>
+                                <h2 class="heading-medium">@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</h2>
                             }
 
                             @if(model.rtiStatus == TemporarilyUnavailable) {
@@ -105,7 +105,7 @@
                             <tbody>
                                 @for(payment <- model.payments){
                                     <tr class="pension-contributions-data">
-                                        <td>@payment.date.toString(dateFormatPattern)</td>
+                                        <td>@Dates.formatDate(payment.date)</td>
                                         <td class="text--right">@{f"${payment.taxableIncome}%,.2f"}</td>
                                         <td class="text--right">@{f"${payment.taxAmount}%,.2f"}</td>
                                         <td class="text--right">@{f"${payment.nationalInsuranceAmount}%,.2f"}</td>
@@ -203,5 +203,4 @@
             </div>
         </div>
     </div>
-}
 }

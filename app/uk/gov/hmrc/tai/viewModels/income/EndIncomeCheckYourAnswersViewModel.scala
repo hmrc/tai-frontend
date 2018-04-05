@@ -20,8 +20,7 @@ import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import uk.gov.hmrc.tai.util.DatePatternConstants
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 case class EndIncomeCheckYourAnswersViewModel(preHeading: String,
                                               employmentName: String,
@@ -29,12 +28,12 @@ case class EndIncomeCheckYourAnswersViewModel(preHeading: String,
                                               employmentEndDate: String,
                                               contactableByPhone: String,
                                               phoneNumber: Option[String],
-                                              backLinkUrl: String) extends DatePatternConstants {
+                                              backLinkUrl: String) {
 
-  def journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
+  def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
     val mandatoryLines = Seq(
-      CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q2"), readable(employmentEndDate), controllers.employments.routes.EndEmploymentController.endEmploymentPage(employmentId).url),
+      CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q2"), Dates.formatDate(new LocalDate(employmentEndDate)), controllers.employments.routes.EndEmploymentController.endEmploymentPage(employmentId).url),
       CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q4"), contactableByPhone, controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url)
     )
 
@@ -43,9 +42,5 @@ case class EndIncomeCheckYourAnswersViewModel(preHeading: String,
     }
 
     if(optionalPhoneNoLine.isDefined) mandatoryLines ++ optionalPhoneNoLine.get else mandatoryLines
-  }
-
-  private def readable(isoDateString: String) : String = {
-    LocalDate.parse(isoDateString).toString(datePatternWithFullMonthName)
   }
 }

@@ -1035,11 +1035,6 @@ tai.taxcode.K=K means that you have untaxed income which is more than your tax-f
 tai.taxcode.BR=BR means that all your income from this job or pension is taxed at the basic rate of {0}%.
 tai.taxcode.NT=NT means no tax will be taken off this income.
 tai.taxcode.0T=0T means there is no tax-free allowance for this job or pension.
-tai.taxcode.D0=D0 means all your income from this job or pension is taxed at the higher rate of {0}%.
-tai.taxcode.D1=D1 means all your income from this job or pension is taxed at the additional rate of {0}%.
-tai.taxcode.D2=D2 means all your income from this job or pension is taxed at the additional rate of {0}%.
-tai.taxcode.D3=D3 means all your income from this job or pension is taxed at the additional rate of {0}%.
-tai.taxcode.D4=D4 means all your income from this job or pension is taxed at the additional rate of {0}%.
 tai.taxcode.M=M means you have received a transfer of 10% of your partner’s Personal Allowance.
 tai.taxcode.N=N means you have transferred 10% of your Personal Allowance to your partner.
 tai.taxcode.X=X means your tax is based only on what you are paid in the current pay period, not the whole year. This may also be shown as a wk1/mth 1 or week1/month 1 on your pension or wage slip.
@@ -1547,7 +1542,6 @@ tai.benefits.ended.stopDate.radio.onOrAfterTaxYearEnd=On or after {0}
 tai.benefits.ended.stopDate.panel=This benefit will be removed from your record for the tax year {0} to {1}.
 tai.benefits.ended.stopDate.legend=When did you stop getting {0} benefit?
 
-tai.benefits.ended.confirmation.back=Return to your tax free amount page
 tai.benefits.ended.tableHeader={0} benefit from {1}
 
 tai.noLongerGetBenefit=I no longer get this benefit
@@ -1618,3 +1612,37 @@ tai.taxCollected.atSource.otherIncome.description=Tax on other income not collec
 tai.taxCollected.byPAYE.title=Tax collected through your tax code
 tai.taxCollected.byPAYE.description=Pay As You Earn (PAYE) does not include tax paid elsewhere. The tax you’ll pay through PAYE is £{0}.
 
+# NonTaxCodeIncomeComponentType display decodes..
+tai.typeDecodes.NonCodedIncome=Non Coded Income
+tai.typeDecodes.Commission=Commission
+tai.typeDecodes.OtherIncomeEarned=Other Income Earned
+tai.typeDecodes.OtherIncomeNotEarned=Other Income Not Earned
+tai.typeDecodes.PartTimeEarnings=Part Time Earnings
+tai.typeDecodes.Tips=Tips
+tai.typeDecodes.OtherEarnings=Other EarningsF
+tai.typeDecodes.CasualEarnings=Casual Earnings
+tai.typeDecodes.PersonalPensionAnnuity=Personal Pension Annuity
+tai.typeDecodes.ForeignPropertyIncome=Foreign Property Income
+tai.typeDecodes.Profit=Profit
+tai.typeDecodes.OccupationalPension=Occupational Pension
+tai.typeDecodes.PublicServicesPension=Public Services Pension
+tai.typeDecodes.ForcesPension=ForcesPension
+tai.typeDecodes.UntaxedInterestIncome=Untaxed Interest Income
+tai.typeDecodes.ForeignDividendIncome=Foreign Dividend Income
+tai.typeDecodes.ForeignInterestAndOtherSavings=Foreign Interest And Other Savings
+tai.typeDecodes.ForeignPensionsAndOtherIncome=Foreign Pensions And Other Income
+tai.typeDecodes.BankOrBuildingSocietyInterest=Bank Or Building Society Interest
+tai.typeDecodes.UkDividend=Uk Dividend
+tai.typeDecodes.UnitTrust=Unit Trust
+tai.typeDecodes.StockDividend=Stock Dividend
+tai.typeDecodes.NationalSavings=National Savings
+tai.typeDecodes.SavingsBond=SavingsBond
+tai.typeDecodes.PurchasedLifeAnnuities=Purchased Life Annuities
+tai.typeDecodes.StatePension=StatePension
+tai.typeDecodes.EmploymentAndSupportAllowance=Employment And Support Allowance
+tai.typeDecodes.JobSeekersAllowance=Job Seekers Allowance
+tai.typeDecodes.IncapacityBenefit=Incapacity Benefit
+
+language.to=to
+language.day.singular=day
+language.day.plural=days

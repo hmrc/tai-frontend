@@ -29,7 +29,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.TaiRoot
@@ -141,7 +141,7 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
     override val taiService: TaiService = mock[TaiService]
     override val bbsiService: BbsiService = mock[BbsiService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: PartialRetriever = mock[PartialRetriever]
+    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override val journeyCache: JourneyCacheService = mock[JourneyCacheService]

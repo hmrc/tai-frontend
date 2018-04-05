@@ -24,7 +24,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
@@ -469,6 +469,6 @@ object IncomeUpdateCalculatorController extends IncomeUpdateCalculatorController
 
   override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
 
-  override implicit def partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
 }

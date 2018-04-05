@@ -16,10 +16,12 @@
 
 @(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm], hasMultipleIncomes: Boolean, employmentId: Int, payToDate: String = "0", payDate: Option[org.joda.time.LocalDate] = None,
 webChat: Boolean = false)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.time.TaxYearResolver
 
 @gaEventActionString = @{"Update your annual taxable pay"}
 
@@ -54,7 +56,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
     <div class="section--branded hmrc">
         <h2 class="h2-heading">@Messages("tai.incomes.edit.incomeTax.update.heading")</h2>
-        <p>@Messages("tai.incomes.edit.text",s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</p>
+        <p>@Messages("tai.incomes.edit.text",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</p>
         <p>@Messages("tai.enterWholeAndNumericalOnly")</p>
 
         @form(action = controllers.routes.IncomeControllerNew.editRegularIncome){

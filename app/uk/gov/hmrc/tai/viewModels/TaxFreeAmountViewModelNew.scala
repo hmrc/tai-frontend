@@ -18,27 +18,27 @@ package uk.gov.hmrc.tai.viewModels
 
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.{AllowanceComponentType, PersonalAllowancePA}
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.util.{DateFormatConstants, TaxAccountCalculator, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{TaxAccountCalculator, ViewModelHelper}
 
 case class TaxFreeAmountViewModelNew(header: String,
                                      title: String,
                                      annualTaxFreeAmount: String,
                                      summaryItems: Seq[TaxFreeAmountSummaryCategoryViewModel])
 
-object TaxFreeAmountViewModelNew extends TaxAccountCalculator with ViewModelHelper with DateFormatConstants {
+object TaxFreeAmountViewModelNew extends TaxAccountCalculator with ViewModelHelper {
 
-  def apply(codingComponents: Seq[CodingComponent], employmentName: Map[Int, String], companyCarBenefits: Seq[CompanyCarBenefit]): TaxFreeAmountViewModelNew = {
+  def apply(codingComponents: Seq[CodingComponent], employmentName: Map[Int, String], companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages): TaxFreeAmountViewModelNew = {
 
     val taxFreeAmountMsg = Messages("tai.taxFreeAmount.heading.pt1")
 
-    val headerWithAdditionalMarkup = s"""$taxFreeAmountMsg ${currentTaxYearRangeHtmlNonBreak(DateWithYearFormat)}"""
-    val title = s"$taxFreeAmountMsg ${currentTaxYearRange(DateWithYearFormat)}"
+    val headerWithAdditionalMarkup = s"""$taxFreeAmountMsg ${currentTaxYearRangeHtmlNonBreak}"""
+    val title = s"$taxFreeAmountMsg ${currentTaxYearRange}"
 
     val taxFreeAmountTotal: BigDecimal = taxFreeAmount(codingComponents)
 
@@ -52,7 +52,7 @@ object TaxFreeAmountViewModelNew extends TaxAccountCalculator with ViewModelHelp
     TaxFreeAmountViewModelNew(headerWithAdditionalMarkup, title, withPoundPrefixAndSign(MoneyPounds(taxFreeAmountTotal, 0)), vmList)
   }
 
-  private def personalAllowanceVM(codingComponents: Seq[CodingComponent]) = {
+  private def personalAllowanceVM(codingComponents: Seq[CodingComponent])(implicit messages: Messages) = {
 
     val personalAllowance: Seq[CodingComponent] = codingComponents.filter(isPersonalAllowanceComponent)
     val personalAllowanceSum = personalAllowance match {
@@ -77,7 +77,7 @@ object TaxFreeAmountViewModelNew extends TaxAccountCalculator with ViewModelHelp
   }
 
   private def additionsVM(codingComponents: Seq[CodingComponent], employmentName: Map[Int, String],
-                          companyCarBenefits: Seq[CompanyCarBenefit]) = TaxFreeAmountSummaryCategoryViewModel(
+                          companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages) = TaxFreeAmountSummaryCategoryViewModel(
     Messages("tai.taxFreeAmount.table.columnOneHeader"),
     Messages("tai.taxFreeAmount.table.columnTwoHeader"),
     hideHeaders = true,
@@ -87,7 +87,7 @@ object TaxFreeAmountViewModelNew extends TaxAccountCalculator with ViewModelHelp
   )
 
   private def additionRows(codingComponents: Seq[CodingComponent], employmentName: Map[Int, String],
-                           companyCarBenefits: Seq[CompanyCarBenefit]): Seq[TaxFreeAmountSummaryRowViewModel] = {
+                           companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages): Seq[TaxFreeAmountSummaryRowViewModel] = {
 
     val additionComponents: Seq[CodingComponent] = codingComponents.collect {
       case cc @ CodingComponent(_: AllowanceComponentType, _, _, _, _) if !isPersonalAllowanceComponent(cc) => cc
@@ -111,7 +111,7 @@ object TaxFreeAmountViewModelNew extends TaxAccountCalculator with ViewModelHelp
   }
 
   private def deductionsVM(codingComponents: Seq[CodingComponent], employmentName: Map[Int, String],
-                           companyCarBenefits: Seq[CompanyCarBenefit]) = TaxFreeAmountSummaryCategoryViewModel(
+                           companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages) = TaxFreeAmountSummaryCategoryViewModel(
     Messages("tai.taxFreeAmount.table.columnOneHeader"),
     Messages("tai.taxFreeAmount.table.columnTwoHeader"),
     hideHeaders = true,
@@ -121,7 +121,7 @@ object TaxFreeAmountViewModelNew extends TaxAccountCalculator with ViewModelHelp
   )
 
   private def deductionRows(codingComponents: Seq[CodingComponent], employmentName: Map[Int, String],
-                            companyCarBenefits: Seq[CompanyCarBenefit]): Seq[TaxFreeAmountSummaryRowViewModel] = {
+                            companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages): Seq[TaxFreeAmountSummaryRowViewModel] = {
     val deductionComponents: Seq[CodingComponent] = codingComponents.filter({_.componentType match{
       case _: AllowanceComponentType => false
       case _ => true
@@ -144,7 +144,7 @@ object TaxFreeAmountViewModelNew extends TaxAccountCalculator with ViewModelHelp
     }
   }
 
-  private def totalRow(taxFreeAmountTotal: BigDecimal) = {
+  private def totalRow(taxFreeAmountTotal: BigDecimal)(implicit messages: Messages) = {
 
     val totalAmountFormatted = withPoundPrefixAndSign(MoneyPounds(taxFreeAmountTotal, 0))
 

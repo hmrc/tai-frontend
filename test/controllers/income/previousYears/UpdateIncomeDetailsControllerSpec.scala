@@ -31,7 +31,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.service._
@@ -332,7 +332,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
     override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
     override val trackingJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: PartialRetriever = mock[PartialRetriever]
+    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
     override val previousYearsIncomeService: PreviousYearsIncomeService = mock[PreviousYearsIncomeService]

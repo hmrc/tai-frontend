@@ -17,8 +17,8 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
 import play.api.i18n.Messages
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.{CarFuelBenefit, _}
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
@@ -36,13 +36,13 @@ case class IncomeSourceSummaryViewModel(empId: Int,
                                         isPension: Boolean,
                                         benefits: Seq[CompanyBenefitViewModel] = Seq.empty[CompanyBenefitViewModel],
                                         displayAddCompanyCarLink: Boolean = true) extends ViewModelHelper {
-  val startOfCurrentYear: String = TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")
+  def startOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)
 
-  val endOfCurrentYear: String = TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")
+  def endOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)
 }
 
 object IncomeSourceSummaryViewModel {
-  def apply(empId: Int, displayName: String, taxCodeIncomeSources: Seq[TaxCodeIncome], employment: Employment, benefits: Benefits): IncomeSourceSummaryViewModel = {
+  def apply(empId: Int, displayName: String, taxCodeIncomeSources: Seq[TaxCodeIncome], employment: Employment, benefits: Benefits)(implicit messages: Messages): IncomeSourceSummaryViewModel = {
     val amountYearToDate = for {
       latestAnnualAccount <- employment.latestAnnualAccount
       latestPayment <- latestAnnualAccount.latestPayment
@@ -66,7 +66,7 @@ object IncomeSourceSummaryViewModel {
       displayAddCompanyCar)
   }
 
-  private def companyBenefitViewModels(empId: Int, benefits: Benefits): Seq[CompanyBenefitViewModel] = {
+  private def companyBenefitViewModels(empId: Int, benefits: Benefits)(implicit messages: Messages): Seq[CompanyBenefitViewModel] = {
     val ccBenVMs = benefits.companyCarBenefits collect {
       case CompanyCarBenefit(`empId`, grossAmount, _, _) =>
         val changeUrl = controllers.routes.CompanyCarController.redirectCompanyCarSelection(empId).url

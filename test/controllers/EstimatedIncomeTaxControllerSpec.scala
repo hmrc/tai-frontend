@@ -32,7 +32,7 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.{HtmlPartial, PartialRetriever}
+import uk.gov.hmrc.play.partials.{HtmlPartial, FormPartialRetriever}
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.{SessionData, TaiRoot, TaxSummaryDetails}
 
@@ -90,7 +90,7 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
 
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
 
-    override implicit val partialRetriever: PartialRetriever = mock[PartialRetriever]
+    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
 
     override val auditConnector: AuditConnector = mock[AuditConnector]
 

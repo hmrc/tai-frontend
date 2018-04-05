@@ -15,7 +15,7 @@
  *@
 
 @(income: uk.gov.hmrc.tai.forms.EditIncomeForm, employerName : Option[String] = None, fromIncomeCalculation: Boolean = false)(implicit
-request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 
 @import uk.gov.hmrc.play.views.formatting.Money._
@@ -26,6 +26,8 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
 @import org.joda.time.DateTime
 @import uk.gov.hmrc.play.views.html.layouts.loginStatus
 @import uk.gov.hmrc.tai.util.FormHelper
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.time.TaxYearResolver
 
 @main(
     title = Messages("tai.incomes.confirm.save.title"),
@@ -41,7 +43,7 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
-                <h2 class="heading-medium heading--underlined flush--top">@Messages("tai.taxYear",s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</h2>
+                <h2 class="heading-medium heading--underlined flush--top">@Messages("tai.taxYear",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</h2>
 
 
                 @if(income.toEmploymentAmount().newAmount == 0){

@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import play.api.i18n.Messages.Implicits._
 
-class TaxFreeAmountComparisonViewModelSpec extends PlaySpec {
+class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
   "Tax Free Amount comparison view model" must {
     "return empty model" when {

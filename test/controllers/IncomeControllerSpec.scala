@@ -33,7 +33,7 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.model._
@@ -243,7 +243,7 @@ class IncomeControllerSpec extends PlaySpec with FakeTaiPlayApplication with Moc
     override def taiService: TaiService = taiSvc
     override def activityLoggerService: ActivityLoggerService = activityLoggerSvc
     override implicit def templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit def partialRetriever: PartialRetriever = MockPartialRetriever
+    override implicit def partialRetriever: FormPartialRetriever = MockPartialRetriever
     override protected def delegationConnector: DelegationConnector = delegationConn
     override implicit def authConnector: AuthConnector = authConn
     override def auditConnector: AuditConnector = auditConn

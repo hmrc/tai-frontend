@@ -21,6 +21,7 @@ import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.{SessionData, TaxCalculation, TaxSummaryDetails}
+import play.api.i18n.Messages
 
 trait ViewModelFactory {
   type ViewModelType
@@ -40,13 +41,13 @@ object ViewModelFactory {
 trait IncomeViewModelFactory {
   type ViewModelType
 
-  def createObject(nino: Nino, details: TaxSummaryDetails, incomeId: Int)(implicit user: TaiUser, hc: HeaderCarrier): ViewModelType
+  def createObject(nino: Nino, details: TaxSummaryDetails, incomeId: Int)(implicit user: TaiUser, hc: HeaderCarrier, messages: Messages): ViewModelType
 }
 
 object IncomeViewModelFactory {
 
   def create(viewModelFactory: IncomeViewModelFactory, nino: Nino, details: TaxSummaryDetails, incomeId: Int)
-            (implicit user: TaiUser, hc: HeaderCarrier): viewModelFactory.ViewModelType = {
+            (implicit user: TaiUser, hc: HeaderCarrier, messages: Messages): viewModelFactory.ViewModelType = {
     viewModelFactory.createObject(nino, details, incomeId)
   }
 }

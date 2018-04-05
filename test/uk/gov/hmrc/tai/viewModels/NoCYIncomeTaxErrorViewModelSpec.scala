@@ -16,12 +16,15 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.tai
+import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
-class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec{
+class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
   "NoCYIncomeTaxErrorViewModel" should {
 
@@ -58,7 +61,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec{
           Some(empEndDateOne), Nil, "", "", 2, None, false)
 
         val sut = createSut(Seq(employment))
-        sut.endDate mustBe Some(empEndDateOne.toString(dateFormat))
+        sut.endDate mustBe Some(Dates.formatDate(empEndDateOne))
       }
 
     }
@@ -75,7 +78,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec{
           Some(empEndDateThree), Nil, "", "", 2, None, false)
 
         val sut = createSut(Seq(employment, employment1, employment2))
-        sut.endDate mustBe Some(empEndDateThree.toString(dateFormat))
+        sut.endDate mustBe Some(Dates.formatDate(empEndDateThree))
       }
       "multiple employments are present in the seq with all of them having end dates" in {
         val employment = Employment("test employment", Some("111111"), empStartDateOne,
@@ -88,7 +91,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec{
           Some(empEndDateThree), Nil, "", "", 2, None, false)
 
         val sut = createSut(Seq(employment, employment1, employment2))
-        sut.endDate mustBe Some(empEndDateThree.toString(dateFormat))
+        sut.endDate mustBe Some(Dates.formatDate(empEndDateThree))
       }
     }
   }
@@ -104,8 +107,6 @@ class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec{
 
   private val empStartDateThree = cyMinusOneTaxYear.start.plusMonths(5)
   private val empEndDateThree = cyMinusOneTaxYear.start.plusMonths(9)
-
-  private val dateFormat = NoCYIncomeTaxErrorViewModel.dateFormat
 
   private def createSut(employments: Seq[Employment]) = NoCYIncomeTaxErrorViewModel(employments)
 }

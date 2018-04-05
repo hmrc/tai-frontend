@@ -21,7 +21,7 @@ import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.service.TaiService
@@ -45,5 +45,5 @@ trait DeceasedController extends TaiBaseController
 object DeceasedController extends DeceasedController with AuthenticationConnectors {
   override val taiService = TaiService
   override implicit def templateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
