@@ -143,6 +143,7 @@ GET         /your-tax-free-amount                                               
 
 GET         /tax-codes                                                                 controllers.YourTaxCodeController.taxCodes
 GET         /paye-income-tax-estimate                                                  controllers.EstimatedIncomeTaxController.estimatedIncomeTax
+GET         /paye-income-tax-estimate-new                                               controllers.EstimatedIncomeTaxControllerNew.estimatedIncomeTax
 
 
 GET         /income-tax-comparison                                                     controllers.IncomeTaxComparisonController.onPageLoad

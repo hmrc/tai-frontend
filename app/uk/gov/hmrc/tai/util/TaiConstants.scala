@@ -184,6 +184,10 @@ trait UpdateHistoricIncomeChoiceConstants {
 trait BandTypesConstants {
   val UkBands = "uk.bandtype"
   val ScottishBands = "scottish.bandtype"
+  val TaxFreeAllowanceBand = "pa"
+  val StarterSavingsRate = "SR"
+  val PersonalSavingsRate = "PSR"
+  val DividendZeroRate = "SDR"
 }
 
 trait TaxRegionConstants {
@@ -306,4 +310,6 @@ object TaiConstants {
 
   val CurrentTaxYear = "currentTaxYear"
   val CurrentTaxYearPlusOne = "currentTaxYearPlusOne"
+
+  val HigherRateBandIncome = 150000
 }
