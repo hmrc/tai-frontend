@@ -67,8 +67,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
                 _ <- employmentsFuture
                 prevYearEmployments <- prevYearEmploymentsFuture
               } yield {
-
-                val npsFailureResponsePf: PartialFunction[TaiResponse, Option[Result]] =
+                val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
                   npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments) orElse
                   npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments) orElse
                   npsNoEmploymentForCYResult(prevYearEmployments) orElse
@@ -76,12 +75,13 @@ trait WhatDoYouWantToDoController extends TaiBaseController
                   npsTaxAccountDeceasedResult orElse
                   {case _=> None}
 
-                npsFailureResponsePf(taxAccountSummary)
+                npsFailureHandlingPf(taxAccountSummary)
               }
 
-              possibleRedirectFuture.flatMap(
-                _.map(Future.successful(_)).getOrElse( requestedPage )
-              )
+            possibleRedirectFuture.flatMap(
+              _.map(Future.successful(_)).getOrElse( allowWhatDoYouWantToDo )
+            )
+
           } recoverWith (hodBadRequestResult orElse hodInternalErrorResult)
   }
 
@@ -114,7 +114,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
           )
   }
 
-  private def requestedPage(implicit request: Request[AnyContent], user: TaiUser): Future[Result] = {
+  private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: TaiUser): Future[Result] = {
     auditService.sendUserEntryAuditEvent(Nino(user.getNino), request.headers.get("Referer").getOrElse("NA"))
     trackingService.isAnyIFormInProgress(user.getNino) flatMap { trackingResponse =>
       if(cyPlusOneEnabled){
