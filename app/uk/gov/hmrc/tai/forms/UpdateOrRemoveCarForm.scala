@@ -20,19 +20,17 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
 
 
 case class UpdateOrRemoveCarForm(whatDoYouWantToDo: Option[String])
 
 object UpdateOrRemoveCarForm {
-  def userChoiceValidation: Constraint[Option[String]] = Constraint[Option[String]]("Choose an option"){
-    case Some(txt) => Valid
+  def userChoiceValidation(implicit messages: Messages): Constraint[Option[String]] = Constraint[Option[String]]("Choose an option"){
+    case Some(_) => Valid
     case _ => Invalid(Messages("tai.changeCompanyCar.error.selectOption"))
   }
 
-  val createForm: Form[UpdateOrRemoveCarForm] = {
+  def createForm(implicit messages: Messages): Form[UpdateOrRemoveCarForm] = {
     Form[UpdateOrRemoveCarForm](
       mapping(
         "userChoice" -> optional(text).verifying(userChoiceValidation)
