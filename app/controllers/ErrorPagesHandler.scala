@@ -164,12 +164,6 @@ trait ErrorPagesHandler {
       }
   }
 
-//  def npsTaxAccountDeceasedResult(implicit request: Request[AnyContent], user: TaiUser, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
-//    case e:InternalServerException if e.getMessage.toLowerCase.contains(NpsTaxAccountDeceasedMsg) =>
-//      Logger.warn(s"<Deceased response received from nps tax account> - for nino ${user.getNino} @${rl.getName}")
-//      Future.successful(Redirect(routes.DeceasedController.deceased()))
-//  }
-
   def npsEmploymentAbsentResult(implicit request: Request[AnyContent], user: TaiUser, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e:NotFoundException if e.getMessage.toLowerCase.contains(NpsAppStatusMsg) =>
       Logger.warn(s"<Not found response received from NPS> - for nino ${user.getNino} @${rl.getName}")
@@ -181,66 +175,6 @@ trait ErrorPagesHandler {
       Logger.warn(s"<Not found response received from rti> - for nino ${user.getNino} @${rl.getName}")
       Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
   }
-
-  def rtiDataAbsentResult(implicit request: Request[AnyContent], user: TaiUser, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
-    case e:NotFoundException if e.getMessage.toLowerCase.contains(RtiPaymentDataAbsentMsg) =>
-      Logger.warn(s"<Data not found response received from rti payments> - for nino ${user.getNino} @${rl.getName}")
-      Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
-  }
-
-//  def npsTaxAccountCYAbsentResult_withEmployCheck(employments: Nino => Future[Seq[Employment]],
-//                                                  proceed: TaiRoot => Future[Result])
-//                                                 (implicit request: Request[AnyContent], user: TaiUser, ec: ExecutionContext, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
-//    case e:NotFoundException if e.getMessage.toLowerCase.contains(NpsTaxAccountCYDataAbsentMsg) =>
-//      employments(Nino(user.getNino)) flatMap {
-//        case Nil => {
-//          Logger.warn(s"<No current year data returned from nps tax account, and subsequent nps employment check also empty> - for nino ${user.getNino} @${rl.getName}")
-//          Future.successful(BadRequest(views.html.error_no_primary()))
-//        }
-//        case _ => {
-//          Logger.info(s"<No current year data returned from nps tax account, but nps employment data is present> - for nino ${user.getNino} @${rl.getName}")
-//          proceed(user.taiRoot)
-//        }
-//      }
-//  }
-
-//  def npsTaxAccountAbsentResult_withEmployCheck(employments: Nino => Future[Seq[Employment]],
-//                                                proceed: TaiRoot => Future[Result])
-//                                               (implicit request: Request[AnyContent], user: TaiUser, ec: ExecutionContext, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
-//    case e:BadRequestException if e.getMessage.toLowerCase.contains(NpsTaxAccountDataAbsentMsg) && request.method == "GET" =>
-//      employments(Nino(user.getNino)) flatMap {
-//        case Nil => {
-//          Logger.warn(s"<No data returned from nps tax account, and subsequent nps employment check also empty> - for nino ${user.getNino} @${rl.getName}")
-//          Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
-//        }
-//        case _ => {
-//          Logger.info(s"<No data returned from nps tax account, but nps employment data is present> - for nino ${user.getNino} @${rl.getName}")
-//          proceed(user.taiRoot)
-//        }
-//      }
-//  }
-
-//  def npsNoEmploymentForCYResult(employments: Nino => Future[Seq[Employment]],
-//                                                proceed: TaiRoot => Future[Result])
-//                                               (implicit request: Request[AnyContent], user: TaiUser, ec: ExecutionContext, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
-//    case e:BadRequestException if e.getMessage.toLowerCase.contains(NpsNoEmploymentForCurrentTaxYear) && request.method == "GET" =>
-//      employments(Nino(user.getNino)) flatMap {
-//        case Nil => {
-//          Logger.warn(s"<No data returned from nps tax account, and subsequent nps employment check also empty> - for nino ${user.getNino} @${rl.getName}")
-//          Future.successful(BadRequest(views.html.error_no_primary()))
-//        }
-//        case _ => {
-//          Logger.info(s"<No data returned from nps tax account, but nps employment data is present> - for nino ${user.getNino} @${rl.getName}")
-//          proceed(user.taiRoot)
-//        }
-//      }
-//  }
-
-//  def npsNoEmploymentResult(implicit request: Request[AnyContent], user: TaiUser, ec: ExecutionContext, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
-//    case e:BadRequestException if e.getMessage.toLowerCase.contains(NpsNoEmploymentsRecorded) && request.method == "GET" =>
-//      Logger.warn(s"<No data returned from nps employments> - for nino ${user.getNino} @${rl.getName}")
-//      Future.successful(BadRequest(views.html.error_no_primary()))
-//  }
 
   def hodInternalErrorResult(implicit request: Request[AnyContent], user: TaiUser, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e @ (_:InternalServerException | _:HttpException) =>
@@ -260,16 +194,9 @@ trait ErrorPagesHandler {
       Future.successful(InternalServerError(error5xxFromNps(Messages("tai.technical.error.message"))))
   }
 
-
-
-
-
-
-
-
   def npsTaxAccountDeceasedResult(implicit request: Request[AnyContent], user: TaiUser, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
     case TaiTaxAccountFailureResponse(msg) if msg.contains(TaiConstants.NpsTaxAccountDeceasedMsg) => {
-      Logger.warn(s"<Deceased response received from nps tax account> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
+      Logger.warn(s"<Deceased response received from nps tax account> - for nino ${user.getNino} @${rl.getName}")
       Some(Redirect(routes.DeceasedController.deceased()))
     }
   }
@@ -277,11 +204,11 @@ trait ErrorPagesHandler {
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsTaxAccountCYDataAbsentMsg) => {
       prevYearEmployments match {
         case Nil => {
-          Logger.warn(s"<No current year data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
+          Logger.warn(s"<No current year data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino ${user.getNino} @${rl.getName}")
           Some(BadRequest(views.html.error_no_primary()))
         }
         case _ => {
-          Logger.info(s"<No current year data returned from nps tax account, but nps previous year employment data is present> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
+          Logger.info(s"<No current year data returned from nps tax account, but nps previous year employment data is present> - for nino ${user.getNino} @${rl.getName}")
           None
         }
       }
@@ -292,11 +219,11 @@ trait ErrorPagesHandler {
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) => {
       prevYearEmployments match {
         case Nil => {
-          Logger.warn(s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
+          Logger.warn(s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino ${user.getNino} @${rl.getName}")
           Some(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
         }
         case _ => {
-          Logger.warn(s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
+          Logger.warn(s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino ${user.getNino} @${rl.getName}")
           None
         }
       }
@@ -305,7 +232,7 @@ trait ErrorPagesHandler {
 
   def npsNoEmploymentResult(implicit request: Request[AnyContent], user: TaiUser, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentsRecorded) => {
-      Logger.warn(s"<No data returned from nps employments> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
+      Logger.warn(s"<No data returned from nps employments> - for nino ${user.getNino} @${rl.getName}")
       Some(BadRequest(views.html.error_no_primary()))
     }
   }
@@ -314,16 +241,16 @@ trait ErrorPagesHandler {
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) => {
       prevYearEmployments match {
         case Nil => {
-          Logger.warn(s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
+          Logger.warn(s"<No data returned from nps tax account, and subsequent nps previous year employment check also empty> - for nino ${user.getNino} @${rl.getName}")
           Some(BadRequest(views.html.error_no_primary()))
         }
         case _ => {
-          Logger.info(s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino ${user.getNino} @${classOf[WhatDoYouWantToDoController]}")
+          Logger.info(s"<No data returned from nps tax account, but nps previous year employment data is present> - for nino ${user.getNino} @${rl.getName}")
           None
         }
       }
     }
   }
 
-  }
+}
 
