@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.service.{BbsiService, TaiService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.model.domain.BankAccount
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnector, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.util.BankAccountDecisionConstants
@@ -149,5 +149,5 @@ object BbsiController extends BbsiController {
   override protected val delegationConnector = FrontEndDelegationConnector
   override protected val authConnector = FrontendAuthConnector
   override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }

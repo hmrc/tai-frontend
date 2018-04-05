@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
 import uk.gov.hmrc.tai.model.tai
@@ -26,7 +27,7 @@ case class HistoricPayAsYouEarnViewModel(taxYear: tai.TaxYear, employments: Seq[
 
 object HistoricPayAsYouEarnViewModel {
 
-  def apply(taxYear: tai.TaxYear, employments: Seq[Employment]): HistoricPayAsYouEarnViewModel = {
+  def apply(taxYear: tai.TaxYear, employments: Seq[Employment])(implicit messages: Messages): HistoricPayAsYouEarnViewModel = {
     val employmentVMs: Seq[EmploymentViewModel] = filterEmployments(taxYear, employments) sortBy(_.id)
     HistoricPayAsYouEarnViewModel(taxYear, employmentVMs, employments.nonEmpty)
   }

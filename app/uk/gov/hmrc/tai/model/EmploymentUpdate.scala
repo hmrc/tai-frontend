@@ -18,10 +18,9 @@ package uk.gov.hmrc.tai.model
 
 import org.joda.time.LocalDate
 import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
-case class EmploymentUpdate(employmentId: Int, name: String, endDate: LocalDate){
-  val date: String = endDate.toString("d MMMM yyyy")
-}
+case class EmploymentUpdate(employmentId: Int, name: String, endDate: LocalDate)
 
 object EmploymentUpdate {
   implicit val employmentUpdateFormat: Format[EmploymentUpdate] = Json.format[EmploymentUpdate]

@@ -29,7 +29,7 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.EmploymentIncome
@@ -89,7 +89,7 @@ class YourTaxCodeControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
     override val authConnector: AuthConnector = mock[AuthConnector]
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: PartialRetriever = MockPartialRetriever
+    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino))))

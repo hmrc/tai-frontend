@@ -26,7 +26,7 @@ import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.urls.Link
@@ -38,7 +38,7 @@ import uk.gov.hmrc.http.{ BadRequestException, HttpException, InternalServerExce
 trait ErrorPagesHandler {
 
   implicit def templateRenderer: TemplateRenderer
-  implicit def partialRetriever: PartialRetriever
+  implicit def partialRetriever: FormPartialRetriever
 
   type RecoveryLocation = Class[_]
 

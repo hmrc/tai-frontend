@@ -20,13 +20,12 @@ import controllers.income.bbsi.routes
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+
 import uk.gov.hmrc.play.views.formatting.Money
-import uk.gov.hmrc.tai.util.DatePatternConstants
 
-case class BbsiUpdateInterestViewModel(id: Int, interestAmount: String, bankName: String) extends DatePatternConstants {
+case class BbsiUpdateInterestViewModel(id: Int, interestAmount: String, bankName: String) {
 
-  def journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
+  def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
     val updateLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.whatYouToldUs"),

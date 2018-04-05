@@ -34,7 +34,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.TaiRoot
@@ -43,7 +44,7 @@ import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, TaiService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
-import uk.gov.hmrc.tai.util.{DateFormatConstants, FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
+import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
@@ -56,7 +57,6 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
   with FormValuesConstants
   with JourneyCacheConstants
   with RemoveCompanyBenefitStopDateConstants
-  with DateFormatConstants
   with JsoupMatchers {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -514,7 +514,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
   def generateNino: Nino = new Generator(new Random).nextNino
 
-  val startOfTaxYear = TaxYearResolver.startOfCurrentTaxYear.toString(DateWithYearFormat)
+  val startOfTaxYear = Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   private def createSUT = new SUT
@@ -526,7 +526,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
     override val trackingJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: PartialRetriever = mock[PartialRetriever]
+    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val benefitsService: BenefitsService = mock[BenefitsService]

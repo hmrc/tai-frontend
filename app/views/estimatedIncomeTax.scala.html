@@ -20,14 +20,15 @@
 @import uk.gov.hmrc.tai.util.TaxSummaryHelper
 @import includes.ptaHeader
 @import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.EstimatedIncomeViewModel, webChat: Boolean = false, iFormLinks: Html)(implicit
-        request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+        request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your PAYE Income Tax estimate"}
 
 @taxYearRangeString = @{
-    viewModel.currentTaxYearRangeHtmlNonBreak(viewModel.DateWithYearFormat)
+    viewModel.currentTaxYearRangeHtmlNonBreak
 }
 
 @header = @{
@@ -68,7 +69,7 @@
                             </p>
 
                             @includes.details_summary(Messages("tai.estimatedIncome.whyEstimate.link")){
-                                <p>@Messages("tai.estimatedIncome.whyEstimate.desc", uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))</p>
+                                <p>@Messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))</p>
                             }
                         </section>
 

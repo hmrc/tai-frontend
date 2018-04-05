@@ -41,6 +41,8 @@ class YourIncomeCalculationPageVMSpec
     with FakeTaiPlayApplication with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val user = UserBuilder.apply()
+  implicit val hc = HeaderCarrier()
 
   val nino = new Generator().nextNino
 
@@ -50,8 +52,7 @@ class YourIncomeCalculationPageVMSpec
       val sd = TaiData.getCurrentYearTaxSummaryDetails
       val incomeId = sd.incomeData.get.incomeExplanations.head.incomeId
 
-      val res = YourIncomeCalculationPageVM.createObject(nino,sd, incomeId)(UserBuilder.apply(),
-        HeaderCarrier())
+      val res = YourIncomeCalculationPageVM.createObject(nino,sd, incomeId)
 
       val employerName = "employer1"
 
@@ -66,8 +67,7 @@ class YourIncomeCalculationPageVMSpec
       val sd = TaiData.getCurrentYearTaxSummaryDetails
       val incomeId = sd.incomeData.get.incomeExplanations.head.incomeId
 
-      val res = YourIncomeCalculationPageVM.createObject(nino,sd, incomeId)(UserBuilder.apply(),
-        HeaderCarrier())
+      val res = YourIncomeCalculationPageVM.createObject(nino,sd, incomeId)
 
       val ed = EditableDetails(true)
 
@@ -274,95 +274,6 @@ class YourIncomeCalculationPageVMSpec
 
       employerName shouldBe true
       totalNotEqualMessage shouldBe Some(Messages("tai.income.calculation.totalNotMatching.pension.message"))
-    }
-  }
-
-
-  "getPreviousYearPayments " should {
-    val sessionData = TaiData.getSessionDataWithCYPYRtiData
-    "return previous year rti payments for the selected first pension " in {
-
-      val (rtiPayments, eyuMessages, employerName, totalNotEqualMessage, isPension, iFormLink, rtiDown) =
-        YourIncomeCalculationHelper.getPreviousYearPayments(sessionData, 1)
-
-      rtiPayments.size shouldBe 2
-      rtiPayments(0).paidOn shouldBe (new LocalDate(2015, 4, 26))
-      rtiPayments(0).taxed shouldBe 269.75
-      rtiPayments(0).taxablePay shouldBe 2135.41
-      rtiPayments(0).nicPaid shouldBe Some(500.55)
-
-      rtiPayments(1).paidOn shouldBe (new LocalDate(2016, 2, 28))
-      rtiPayments(1).taxed shouldBe 269.75
-      rtiPayments(1).taxedYTD shouldBe 539.5
-      rtiPayments(1).taxablePayYTD shouldBe 100000.00
-      rtiPayments(1).taxablePay shouldBe 2135.41
-      rtiPayments(1).nicPaid shouldBe None
-      rtiPayments(1).nicPaidYTD shouldBe Some(500.55)
-
-      employerName shouldBe Some("employer1")
-      totalNotEqualMessage shouldBe Some(Messages("tai.income.calculation.totalNotMatching.pension.message"))
-      isPension shouldBe true
-
-      iFormLink shouldBe Html((Messages("tai.income.calculation.detailsWrongIform.pension", Link.toInternalPage(url = "/forms/form/tell-us-about-income-from-employment-or-pension/guide",
-        value = Some(Messages("tai.income.calculation.detailsWrongIformLink")),
-        dataAttributes = Some(Map("journey-click" -> "check-income-tax:Outbound Link:wrong-other-income-iform"))).toHtml)))
-    }
-
-    "return previous year rti payments for the selected second pension " in {
-
-      val (rtiPayments, eyuMessages, employerName, totalNotEqualMessage, isPension, iFormLink, rtiDown) =
-        YourIncomeCalculationHelper.getPreviousYearPayments(sessionData, 8)
-
-      rtiPayments.size shouldBe 2
-      rtiPayments(0).paidOn shouldBe (new LocalDate(2015, 4, 26))
-      rtiPayments(0).taxed shouldBe 427.8
-      rtiPayments(0).taxablePay shouldBe 2135.41
-      rtiPayments(0).nicPaid shouldBe Some(1000.00)
-
-      rtiPayments(1).paidOn shouldBe (new LocalDate(2015, 5, 31))
-      rtiPayments(1).taxed shouldBe 166.66
-      rtiPayments(1).taxedYTD shouldBe 333.33
-      rtiPayments(1).taxablePayYTD shouldBe 999.66
-      rtiPayments(1).taxablePay shouldBe 833.33
-      rtiPayments(1).nicPaid shouldBe Some(2000.00)
-      rtiPayments(1).nicPaidYTD shouldBe Some(3000.00)
-
-      employerName shouldBe Some("employer2")
-      totalNotEqualMessage shouldBe Some(Messages("tai.income.calculation.totalNotMatching.pension.message"))
-      isPension shouldBe true
-      iFormLink shouldBe Html((Messages("tai.income.calculation.detailsWrongIform.pension",
-        Link.toInternalPage(url = "/forms/form/tell-us-about-income-from-employment-or-pension/guide",
-        value = Some(Messages("tai.income.calculation.detailsWrongIformLink")),
-        dataAttributes = Some(Map("journey-click" -> "check-income-tax:Outbound Link:wrong-other-income-iform"))).toHtml)))
-    }
-
-    "return no rti payments but correct employer name and Iform link for employment if there is no rti data " +
-      "for Previous Year amd current year in the session " in {
-      val sessionData = TaiData.getSessionDataWithNoPYRtiData
-
-      val (rtiPayments, eyuMessages, employerName, totalNotEqualMessage, isPension, iFormLink, rtiDown) =
-        YourIncomeCalculationHelper.getPreviousYearPayments(sessionData, 8)
-
-      rtiPayments.size shouldBe 0
-      employerName shouldBe Some("employer2")
-      totalNotEqualMessage shouldBe None
-      rtiPayments.size shouldBe 0
-      employerName shouldBe Some("employer2")
-      totalNotEqualMessage shouldBe None
-      isPension shouldBe false
-      iFormLink shouldBe Html((Messages("tai.income.calculation.detailsWrongIform.emp",
-        Link.toInternalPage(url = "/forms/form/tell-us-about-income-from-employment-or-pension/guide",
-        value = Some(Messages("tai.income.calculation.detailsWrongIformLink")),
-        dataAttributes = Some(Map("journey-click" -> "check-income-tax:Outbound Link:wrong-other-income-iform"))).toHtml)))
-    }
-
-    "return rti down set to true when internal server error received " in {
-      val sessionData = SessionData("", taxSummaryDetailsCY = TaxSummaryDetails(nino = "", version = 1, accounts = Seq(AnnualAccount(year = TaxYear(2016), rtiStatus = Some(RtiStatus(500, "Internal Server Error"))))))
-
-      val (rtiPayments, eyuMessages, employerName, totalNotEqualMessage, isPension, iFormLink, rtiDown) =
-        YourIncomeCalculationHelper.getPreviousYearPayments(sessionData, 8)
-
-      rtiDown shouldBe true
     }
   }
 
@@ -774,7 +685,7 @@ class YourIncomeCalculationPageVMSpec
 
     val assertResult = (incomeId: Int, employmentStatus: Int, endDate: Option[LocalDate], taxSummary: TaxSummaryDetails) => {
       val res: YourIncomeCalculationViewModel =
-        YourIncomeCalculationPageVM.createObject(nino, taxSummary, incomeId)(UserBuilder.apply(), HeaderCarrier())
+        YourIncomeCalculationPageVM.createObject(nino, taxSummary, incomeId)
       res.employmentStatus shouldBe Some(employmentStatus)
       res.endDate shouldBe endDate
     }

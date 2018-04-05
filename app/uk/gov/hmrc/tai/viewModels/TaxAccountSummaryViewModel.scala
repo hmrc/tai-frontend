@@ -20,14 +20,13 @@ import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.filters.TaxAccountFilter
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.util.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
-import uk.gov.hmrc.tai.util.{DateFormatConstants, ViewModelHelper}
-import uk.gov.hmrc.tai.viewModels.benefit.CompanyCarCheckAnswersViewModel.datePatternWithFullMonthName
+import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.time.TaxYearResolver
 
 
@@ -44,15 +43,15 @@ case class TaxAccountSummaryViewModel(header: String,
                                       otherIncomeSources: Seq[IncomeSourceViewModel]
                                      )
 
-object TaxAccountSummaryViewModel extends ViewModelHelper with DateFormatConstants with TaxAccountFilter {
+object TaxAccountSummaryViewModel extends ViewModelHelper with TaxAccountFilter {
   def apply(taxCodeIncomes: Seq[TaxCodeIncome],
             employments: Seq[Employment],
             taxAccountSummary: TaxAccountSummary,
             isAnyFormInProgress: Boolean,
-            nonTaxCodeIncome: NonTaxCodeIncome): TaxAccountSummaryViewModel = {
+            nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
-    val header = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak(DateWithYearFormat)
-    val title = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRange(DateWithYearFormat)
+    val header = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak
+    val title = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRange
 
     val taxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
     val estimatedIncomeTaxAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))
@@ -68,7 +67,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with DateFormatConstan
       viewModelsFromMatchingIncomeSources(ceasedEmploymentTaxCodeIncomes, employments) ++
       viewModelsFromNonMatchingCeasedEmployments(taxCodeIncomes, employments)
 
-    val lastTaxYearEnd = TaxYearResolver.endOfCurrentTaxYear.minusYears(1).toString("d MMMM yyyy")
+    val lastTaxYearEnd = Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear.minusYears(1))
 
     TaxAccountSummaryViewModel(
       header,
@@ -86,7 +85,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with DateFormatConstan
   }
 
   private def viewModelsFromMatchingIncomeSources(taxCodeIncomes: Seq[TaxCodeIncome],
-                                                  employments: Seq[Employment]): Seq[IncomeSourceViewModel] = {
+                                                  employments: Seq[Employment])(implicit messages: Messages): Seq[IncomeSourceViewModel] = {
     taxCodeIncomes.flatMap {
       (t: TaxCodeIncome) =>
         t.employmentId.flatMap {
@@ -96,7 +95,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with DateFormatConstan
   }
 
   private def viewModelsFromNonMatchingCeasedEmployments(taxCodeIncomes: Seq[TaxCodeIncome],
-                                                         employments: Seq[Employment]): Seq[IncomeSourceViewModel] = {
+                                                         employments: Seq[Employment])(implicit messages: Messages): Seq[IncomeSourceViewModel] = {
     val unmatchedCeased = employments
       .withFilter(emp => !taxCodeIncomes.exists(tci => tci.employmentId.isDefined && tci.employmentId.get == emp.sequenceNumber))
       .withFilter(_.endDate.isDefined)
@@ -119,7 +118,7 @@ case class IncomeSourceViewModel(name: String,
 
 object IncomeSourceViewModel extends ViewModelHelper {
 
-  def apply(employment: Employment): IncomeSourceViewModel = {
+  def apply(employment: Employment)(implicit messages: Messages): IncomeSourceViewModel = {
 
     val amountNumeric: BigDecimal = (
       for {
@@ -131,8 +130,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
     val amountString = if(amountNumeric != BigDecimal(0)) withPoundPrefixAndSign(MoneyPounds(amountNumeric, 0)) else ""
 
-    val endDate: Option[String] = employment.endDate.map(
-      new LocalDate(_).toString(DateTimeFormat.forPattern(datePatternWithFullMonthName)))
+    val endDate: Option[String] = employment.endDate.map( Dates.formatDate(_) )
 
     IncomeSourceViewModel(
       employment.name,
@@ -149,10 +147,9 @@ object IncomeSourceViewModel extends ViewModelHelper {
   }
 
   def apply(taxCodeIncome: TaxCodeIncome,
-            employment: Employment): IncomeSourceViewModel = {
+            employment: Employment)(implicit messages: Messages): IncomeSourceViewModel = {
 
-    val endDate: Option[String] = employment.endDate.map(
-      new LocalDate(_).toString(DateTimeFormat.forPattern(datePatternWithFullMonthName)))
+    val endDate: Option[String] = employment.endDate.map( Dates.formatDate(_) )
     val detailsLinkLabel = taxCodeIncome.componentType match {
       case EmploymentIncome if taxCodeIncome.status == Live => Messages("tai.incomeTaxSummary.employmentAndBenefits.link")
       case EmploymentIncome if taxCodeIncome.status != Live => Messages("tai.incomeTaxSummary.employment.link")
@@ -179,11 +176,11 @@ object IncomeSourceViewModel extends ViewModelHelper {
       incomeSourceSummaryUrl)
   }
 
-  def apply(nonTaxCodeIncome: NonTaxCodeIncome): Seq[IncomeSourceViewModel] = {
+  def apply(nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): Seq[IncomeSourceViewModel] = {
 
     val untaxedInterest = nonTaxCodeIncome.untaxedInterest.map(u =>
       IncomeSourceViewModel(
-        u.description,
+        Messages("tai.typeDecodes." + u.incomeComponentType.toString),
         withPoundPrefixAndSign(MoneyPounds(u.amount, 0)),
         "",
         displayTaxCode = false,
@@ -198,8 +195,9 @@ object IncomeSourceViewModel extends ViewModelHelper {
     )
 
     val otherIncomeSources = nonTaxCodeIncome.otherNonTaxCodeIncomes.map(otherNonTaxCodeIncome => {
+
       val model = IncomeSourceViewModel(
-        otherNonTaxCodeIncome.description,
+        Messages("tai.typeDecodes." + otherNonTaxCodeIncome.incomeComponentType.toString),
         withPoundPrefixAndSign(MoneyPounds(otherNonTaxCodeIncome.amount, 0)),
         "",
         displayTaxCode = false,

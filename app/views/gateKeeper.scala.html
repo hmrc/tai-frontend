@@ -14,13 +14,15 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+@()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 @main(
-    title = Messages("tai.gatekeeper.heading", s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}", s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}"),
+    title = Messages("tai.gatekeeper.heading", s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}", s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}"),
     articleClasses = Some("full-width"),
     user = Some(user),
     gaCustomTitle = None
@@ -29,15 +31,15 @@
         <h1 id="gatekeeper-title" class="flush--bottom">@Messages("tai.gatekeeper.heading")</h1>
     </header>
 
-    <h2 class="heading--underlined">@Messages("tai.taxYear",s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</h2>
+    <h2 class="heading--underlined">@Messages("tai.taxYear",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</h2>
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
                 <section class="flush--bottom hard--bottom">
-                    <p>@Messages("tai.gateKeeper.description.p1", s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}")</p>
+                    <p>@Messages("tai.gateKeeper.description.p1", s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}")</p>
                     <p>@Messages("tai.gateKeeper.description.p2")</p>
                     <ul class="bullets">
-                        <li>@Messages("tai.gateKeeper.description.p2.1", s"${uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</li>
+                        <li>@Messages("tai.gateKeeper.description.p2.1", s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</li>
                     </ul>
                     <p>@Messages("tai.gatekeeper.contact")</p>
                     <ul class="bullets">

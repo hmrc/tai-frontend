@@ -16,15 +16,16 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import uk.gov.hmrc.tai.util.TaiConstants.ScottishTaxCodePrefix
-import uk.gov.hmrc.tai.util.{DateFormatConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.ViewModelHelper
 
 case class TaxCodeComparisonViewModel(employmentTaxCodes: Seq[TaxCodeDetail], pensionTaxCodes: Seq[TaxCodeDetail])
-  extends ViewModelHelper with DateFormatConstants {
-  lazy val currentTaxYearHeader: String = currentTaxYearHeaderHtmlNonBreak(DateWithoutYearFormat)
-  lazy val nextTaxYearHeader: String = nextTaxYearHeaderHtmlNonBreak(DateWithYearFormat)
+  extends ViewModelHelper {
+  def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
+  def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
 
   private val employmentHasNotScottishTaxCodeCurrentYear = !employmentTaxCodes.exists(_.taxCodes.head.startsWith(ScottishTaxCodePrefix))
   private val employmentHasScottishTaxCodeNextYear = employmentTaxCodes.exists(_.taxCodes.last.startsWith(ScottishTaxCodePrefix))
@@ -38,7 +39,7 @@ case class TaxCodeComparisonViewModel(employmentTaxCodes: Seq[TaxCodeDetail], pe
 }
 
 object TaxCodeComparisonViewModel {
-  def apply(taxCodeForYears: Seq[TaxCodeForYear]): TaxCodeComparisonViewModel = {
+  def apply(taxCodeForYears: Seq[TaxCodeForYear])(implicit messages: Messages): TaxCodeComparisonViewModel = {
 
     val employmentTaxCodes = taxCodeDetails(taxCodeForYears, EmploymentIncome)
     val pensionTaxCodes = taxCodeDetails(taxCodeForYears, PensionIncome)

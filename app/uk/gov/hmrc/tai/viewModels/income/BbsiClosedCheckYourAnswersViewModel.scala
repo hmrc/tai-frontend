@@ -22,14 +22,13 @@ import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.time.TaxYearResolver
-import uk.gov.hmrc.tai.util.DatePatternConstants
 
-case class BbsiClosedCheckYourAnswersViewModel(id: Int, closeBankAccountDate: String, closeBankAccountName: Option[String], closeBankAccountInterest: Option[String]) extends DatePatternConstants {
+case class BbsiClosedCheckYourAnswersViewModel(id: Int, closeBankAccountDate: String, closeBankAccountName: Option[String], closeBankAccountInterest: Option[String]) {
 
-  def journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
+  def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
     val confirmationLines = Seq(CheckYourAnswersConfirmationLine(
         Messages("tai.checkYourAnswers.whatYouToldUs"),
@@ -37,7 +36,7 @@ case class BbsiClosedCheckYourAnswersViewModel(id: Int, closeBankAccountDate: St
         routes.BbsiController.decision(id)toString),
       CheckYourAnswersConfirmationLine(
         Messages("tai.bbsi.end.checkYourAnswers.rowTwo.question"),
-        convertToDateWithFullMonthName(closeBankAccountDate),
+        Dates.formatDate(new LocalDate(closeBankAccountDate)),
         routes.BbsiCloseAccountController.captureCloseDate(id).toString))
 
     if (bankAccountClosedInCurrentTaxYear) {
@@ -53,8 +52,4 @@ case class BbsiClosedCheckYourAnswersViewModel(id: Int, closeBankAccountDate: St
 
   val bankAccountClosedInCurrentTaxYear: Boolean = TaxYearResolver.fallsInThisTaxYear(LocalDate.parse(closeBankAccountDate))
 
-  private def convertToDateWithFullMonthName(date: String): String = {
-    val datePattern = DateTimeFormat.forPattern(datePatternWithFullMonthName)
-    LocalDate.parse(date).toString(datePattern)
-  }
 }

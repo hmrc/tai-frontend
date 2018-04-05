@@ -28,7 +28,7 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
@@ -158,7 +158,7 @@ class YourIncomeCalculationControllerNewSpec extends PlaySpec
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override val authConnector: AuthConnector = mock[AuthConnector]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: PartialRetriever = MockPartialRetriever
+    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override val employmentService: EmploymentService = mock[EmploymentService]
 

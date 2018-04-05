@@ -19,6 +19,8 @@ package uk.gov.hmrc.tai.viewModels.benefit
 import controllers.FakeTaiPlayApplication
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
+import play.api.i18n.Messages.Implicits._
+
 
 class CompanyBenefitDecisionVMSpec extends UnitSpec with FakeTaiPlayApplication
 {

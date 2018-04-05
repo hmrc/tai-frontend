@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import includes.taxFreeAmountSummary
 
-@(viewModel: TaxFreeAmountViewModelNew)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+@(viewModel: TaxFreeAmountViewModelNew)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax free amount"}
 

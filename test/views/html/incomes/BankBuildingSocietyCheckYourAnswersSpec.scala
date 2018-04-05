@@ -108,7 +108,7 @@ class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
 
   val date = TaxYearResolver.startOfCurrentTaxYear
   val formattedDate = date.toString("yyyy-MM-dd")
-  val displayedDate = date.toString("dd MMMM yyyy")
+  val displayedDate = date.toString("d MMMM yyyy")
 
   val viewModel = BbsiClosedCheckYourAnswersViewModel(0, formattedDate, Some(account), None)
   override def view: Html = views.html.incomes.bbsi.close.bank_building_society_check_your_answers(viewModel)

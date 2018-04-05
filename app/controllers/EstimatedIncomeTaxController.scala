@@ -26,7 +26,7 @@ import play.api.mvc.{AnyContent, Request, Result}
 import play.twirl.api.Html
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.auth.ConfigProperties
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.{LocalTemplateRenderer, PreferencesFrontendConnector}
@@ -81,7 +81,7 @@ object EstimatedIncomeTaxController extends EstimatedIncomeTaxController with Au
   lazy val taxPlatformTaiRootLandingPageUri: String =
     s"${ConfigProperties.taxPlatformTaiRootUri}${routes.TaxAccountSummaryController.onPageLoad().url}"
   override implicit def templateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override val estimatedIncomePageVM: EstimatedIncomePageVMBuilder = EstimatedIncomePageVM
   override val partialService: HasFormPartialService = HasFormPartialService
 }

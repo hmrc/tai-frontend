@@ -21,7 +21,7 @@ import controllers.auth.TaiUser
 import uk.gov.hmrc.tai.model.SessionData
 import play.api.mvc.Result
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.model.{SessionData, TaiRoot, TaxSummaryDetails}
 import uk.gov.hmrc.tai.util.{CeasedEmploymentHelper, TaiConstants}
 
@@ -63,7 +63,7 @@ object ServiceChecks {
 object SimpleServiceCheck extends ServiceChecks {
 
   override implicit def templateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
   override def runServiceChecks(either: Either[String,TaxSummaryDetails])
                                (custom: Option[CustomRule])
@@ -80,7 +80,7 @@ object SimpleServiceCheck extends ServiceChecks {
 object ServiceCheckLite extends TaiBaseController {
 
   override implicit def templateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
   def personDetailsCheck(proceed: Future[Result])(implicit taiRoot: TaiRoot): Future[Result] = {
     if (taiRoot.deceasedIndicator.getOrElse(false)) {

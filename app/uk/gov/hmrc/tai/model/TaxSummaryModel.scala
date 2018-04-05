@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.tai.{AnnualAccount, TaxYear}
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.rti._
 import uk.gov.hmrc.tai.model.tai.{AnnualAccount, TaxYear}
-import uk.gov.hmrc.tai.util.{DateFormatConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.ViewModelHelper
 
 case class TaxBand(income: Option[BigDecimal] = None, tax: Option[BigDecimal] = None,
                    lowerBand: Option[BigDecimal] = None, upperBand: Option[BigDecimal] = None,
@@ -418,7 +418,7 @@ case class TaxSummaryDetails(nino: String,
                              cyPlusOneSummary: Option[TaxSummaryDetails] = None,
                              accounts: Seq[AnnualAccount] = Nil,
                              ceasedEmploymentDetail: Option[CeasedEmploymentDetails] = None
-                            ) extends ViewModelHelper with DateFormatConstants {
+                            ) extends ViewModelHelper {
   def currentYearAccounts: Option[AnnualAccount] = accounts.find { annualAccounts =>
     annualAccounts.year == TaxYear()
   }

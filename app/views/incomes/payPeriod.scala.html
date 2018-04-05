@@ -15,7 +15,7 @@
  *@
 
 @(payPeriodForm: Form[uk.gov.hmrc.tai.forms.PayPeriodForm], id: Int, isNotDaysError : Boolean = true, employerName : Option[String] = None)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 
 @import includes.ptaHeader

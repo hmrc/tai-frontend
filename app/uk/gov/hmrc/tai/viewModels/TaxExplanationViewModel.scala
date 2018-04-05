@@ -18,12 +18,12 @@ package uk.gov.hmrc.tai.viewModels
 
 import hmrc.nps2.{TaxBand, TaxObject}
 import uk.gov.hmrc.tai.model.TaxSummaryDetails
-import uk.gov.hmrc.tai.util.{BandTypesConstants, DateFormatConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{BandTypesConstants, ViewModelHelper}
 
 import scala.language.postfixOps
 
 case class TaxExplanationViewModel(nonSavings: Seq[TaxBand], savings: Seq[TaxBand], dividends: Seq[TaxBand], bandType: String)
-  extends ViewModelHelper with DateFormatConstants {
+  extends ViewModelHelper {
   val totalTax: BigDecimal = List(nonSavings, savings, dividends).flatten.map(_.tax).sum
 }
 

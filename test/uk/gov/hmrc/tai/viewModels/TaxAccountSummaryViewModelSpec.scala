@@ -143,7 +143,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
       "has the other income sources with links" when {
         "other income sources with untaxed interest are available and bank accounts are not available" in {
-          val otherIncomeSourceViewModel1 = otherIncomeSourceViewModel.copy(name = "Untaxed Interest", amount = "£100",
+          val otherIncomeSourceViewModel1 = otherIncomeSourceViewModel.copy(name = Messages("tai.typeDecodes.UntaxedInterestIncome"), amount = "£100",
             detailsLinkLabel = Messages("tai.bbsi.viewDetails"), detailsLinkUrl = controllers.income.bbsi.routes.BbsiController.untaxedInterestDetails().url,
             displayDetailsLink = false)
           val otherIncomeSourceViewModel2 = otherIncomeSourceViewModel.copy(name = "Profit", amount = "£100", detailsLinkLabel = Messages("tai.updateOrRemove"),
@@ -156,7 +156,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         }
 
         "other income sources with untaxed interest are available and bank accounts are also available" in {
-          val otherIncomeSourceViewModel1 = otherIncomeSourceViewModel.copy(name = "Untaxed Interest", amount = "£100",
+          val otherIncomeSourceViewModel1 = otherIncomeSourceViewModel.copy(name = Messages("tai.typeDecodes.UntaxedInterestIncome"), amount = "£100",
             detailsLinkLabel = Messages("tai.bbsi.viewDetails"), detailsLinkUrl = controllers.income.bbsi.routes.BbsiController.untaxedInterestDetails().url,
             displayDetailsLink = true)
           val otherIncomeSourceViewModel2 = otherIncomeSourceViewModel.copy(name = "Profit", amount = "£100", detailsLinkLabel = Messages("tai.updateOrRemove"),
@@ -186,16 +186,16 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         }
 
         "multiple other income with untaxed interest are present" in {
-          val otherIncomeSourceViewModel1 = otherIncomeSourceViewModel.copy(name = "Untaxed Interest", amount = "£100",
+          val otherIncomeSourceViewModel1 = otherIncomeSourceViewModel.copy(name = Messages("tai.typeDecodes.UntaxedInterestIncome"), amount = "£100",
             detailsLinkLabel = Messages("tai.bbsi.viewDetails"), detailsLinkUrl = controllers.income.bbsi.routes.BbsiController.untaxedInterestDetails().url,
             displayDetailsLink = true)
           val otherIncomeSourceViewModel2 = otherIncomeSourceViewModel.copy(name = "Tips", amount = "£100", detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url)
-          val otherIncomeSourceViewModel3 = otherIncomeSourceViewModel.copy(name = "OccupationalPension", amount = "£100",
+          val otherIncomeSourceViewModel3 = otherIncomeSourceViewModel.copy(name = Messages("tai.typeDecodes.OccupationalPension"), amount = "£100",
             detailsLinkLabel = Messages("tai.updateOrRemove"), detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url)
-          val otherIncomeSourceViewModel4 = otherIncomeSourceViewModel.copy(name = "UkDividend", amount = "£100",
+          val otherIncomeSourceViewModel4 = otherIncomeSourceViewModel.copy(name = Messages("tai.typeDecodes.UkDividend"), amount = "£100",
             detailsLinkLabel = Messages("tai.updateOrRemove"), detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(InvestIncomeIform).url)
-          val otherIncomeSourceViewModel5 = otherIncomeSourceViewModel.copy(name = "JobSeekersAllowance", amount = "£100",
+          val otherIncomeSourceViewModel5 = otherIncomeSourceViewModel.copy(name = Messages("tai.typeDecodes.JobSeekersAllowance"), amount = "£100",
             detailsLinkLabel = Messages("tai.updateOrRemove"), detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(StateBenefitsIform).url)
 
           val bankAccounts = Seq(BankAccount(1, Some("ACCNo"), None, None, 100, None))
