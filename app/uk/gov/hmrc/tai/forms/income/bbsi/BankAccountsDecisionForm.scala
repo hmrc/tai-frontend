@@ -21,20 +21,18 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.util.BankAccountDecisionConstants
 
 
 case class BankAccountsDecisionFormData(bankAccountsDecision: Option[String])
 
 object BankAccountsDecisionForm extends BankAccountDecisionConstants {
-  def bankAccountsDecisionValidation: Constraint[Option[String]] = Constraint[Option[String]](Messages("tai.choice.validationText")){
-    case Some(txt) => Valid
+  def bankAccountsDecisionValidation(implicit messages: Messages): Constraint[Option[String]] = Constraint[Option[String]](Messages("tai.choice.validationText")){
+    case Some(_) => Valid
     case _ => Invalid(Messages("tai.error.chooseOneOption"))
   }
 
-  val createForm: Form[BankAccountsDecisionFormData] = {
+  def createForm(implicit messages: Messages): Form[BankAccountsDecisionFormData] = {
     Form[BankAccountsDecisionFormData](
       mapping(
         BankAccountDecision -> optional(text).verifying(bankAccountsDecisionValidation)
