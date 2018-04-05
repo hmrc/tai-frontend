@@ -17,22 +17,22 @@
 package controllers
 
 import controllers.auth.WithAuthorisedForTaiLite
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
+import play.twirl.api.Html
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
+import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaiService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.EstimatedIncomeTaxViewModel
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import play.twirl.api.Html
-import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 
 trait EstimatedIncomeTaxControllerNew extends TaiBaseController
   with DelegationAwareActions
@@ -81,7 +81,7 @@ trait EstimatedIncomeTaxControllerNew extends TaiBaseController
 
 object EstimatedIncomeTaxControllerNew extends EstimatedIncomeTaxControllerNew with AuthenticationConnectors {
   override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
   override val taiService = TaiService
   override val partialService: HasFormPartialService = HasFormPartialService

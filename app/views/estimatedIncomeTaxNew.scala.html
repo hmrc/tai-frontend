@@ -23,12 +23,12 @@
 @import uk.gov.hmrc.time.TaxYearResolver
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.EstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
-request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your PAYE Income Tax estimate"}
 
 @taxYearRangeString = @{
-    viewModel.currentTaxYearRangeHtmlNonBreak(viewModel.DateWithYearFormat)
+    viewModel.currentTaxYearRangeHtmlNonBreak
 }
 
 @header = @{

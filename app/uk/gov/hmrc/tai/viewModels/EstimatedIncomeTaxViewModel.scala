@@ -59,7 +59,7 @@ case class EstimatedIncomeTaxViewModel(
                                         psrValue: Option[BigDecimal],
                                         dividendsMessage: Option[String],
                                         taxRegion: String
-                                      ) extends ViewModelHelper with DateFormatConstants
+                                      ) extends ViewModelHelper
 
 object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants {
 
@@ -238,7 +238,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
   private def getBandValues(nonZeroBands: List[TaxBand]) = {
     if (nonZeroBands.size > 1) {
       (Link.toInternalPage(
-        url = routes.TaxExplanationController.taxExplanationPage().toString,
+        url = routes.TaxExplanationControllerNew.taxExplanationPage().toString,
         value = Some(Messages("tai.mergedTaxBand.description")),
         id = Some("taxExplanation")
       ).toHtml.body, Messages("tai.taxedIncome.desc"), nonZeroBands.map(_.income).sum)
