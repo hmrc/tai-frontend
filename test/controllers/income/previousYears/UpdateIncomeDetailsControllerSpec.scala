@@ -103,7 +103,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
     "show 'What Do You Want To Tell Us' Page" when {
       "the request has an authorised session with Tax Year" in {
         val SUT = createSUT
-        val taxYear = "2016"
+        val taxYear = TaxYear().prev.year.toString
         val cache = Map(UpdatePreviousYearsIncome_TaxYearKey -> taxYear)
         when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         val result = SUT.details()(RequestBuilder.buildFakeRequestWithAuth("GET"))
