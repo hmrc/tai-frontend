@@ -20,7 +20,7 @@
 @import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 @import includes.forms.inputRadioGroupNewStyling
 
-@(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData], model: WhatDoYouWantToDoViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+@(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData], model: WhatDoYouWantToDoViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @radioSequence = @{
     val mandatory = Seq(("currentTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio1")), ("lastTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio2")) )

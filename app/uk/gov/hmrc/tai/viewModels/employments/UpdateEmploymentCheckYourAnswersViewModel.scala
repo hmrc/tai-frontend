@@ -19,14 +19,14 @@ package uk.gov.hmrc.tai.viewModels.employments
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+
 
 case class UpdateEmploymentCheckYourAnswersViewModel(id: Int,
                                                      employerName: String,
                                                      whatYouToldUs: String,
                                                      contactByPhone: String,
                                                      phoneNumber: Option[String]) {
-  def journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
+  def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
     val currentlyWorkHereLine = CheckYourAnswersConfirmationLine(
       Messages("tai.updateEmployment.cya.currentlyWorkHere"),
       Messages("tai.label.yes"),

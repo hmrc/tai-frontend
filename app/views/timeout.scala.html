@@ -18,7 +18,7 @@
 @import play.api.i18n.Messages.Implicits._
 @import play.api.Play.current
 
-@()(implicit request: Request[_], messages: MessagesApi, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+@()(implicit request: Request[_], messages: MessagesApi, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 @import uk.gov.hmrc.urls.Link
 @main(
     title = Messages("tai.timeout.title"),

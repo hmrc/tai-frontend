@@ -21,14 +21,14 @@ import hmrc.nps2
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.twirl.api.Html
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.{IabdSummary, TaxComponent}
-import uk.gov.hmrc.tai.util.DateFormatConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{AdditionalTaxRow, Band, BandedGraph, EstimatedIncomeViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 
-class estimatedIncomeTaxPageSpec extends TaiViewSpec with DateFormatConstants {
+class estimatedIncomeTaxPageSpec extends TaiViewSpec {
 
   "EstimatedIncomeTax Page" should {
 
@@ -253,8 +253,8 @@ class estimatedIncomeTaxPageSpec extends TaiViewSpec with DateFormatConstants {
       val doc = Jsoup.parseBodyFragment(views.html.estimatedIncomeTax(viewModel, iFormLinks = Html("")).toString())
 
       val expectedTaxYearString =  Messages("tai.taxYear",
-        nonBreakable(TaxYearResolver.startOfCurrentTaxYear.toString(DateWithYearFormat)),
-        nonBreakable(TaxYearResolver.endOfCurrentTaxYear.toString(DateWithYearFormat)) )
+        nonBreakable(Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)),
+        nonBreakable(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)) )
 
       doc.select("#estimatedIncomeDesc").text() mustBe Messages("tai.estimatedIncome.desc",
         "£100",
@@ -268,8 +268,8 @@ class estimatedIncomeTaxPageSpec extends TaiViewSpec with DateFormatConstants {
       accessiblePreHeading.text mustBe Messages("tai.estimatedIncome.accessiblePreHeading")
 
       val expectedTaxYearString =  Messages("tai.taxYear",
-        nonBreakable(TaxYearResolver.startOfCurrentTaxYear.toString(DateWithYearFormat)),
-        nonBreakable(TaxYearResolver.endOfCurrentTaxYear.toString(DateWithYearFormat)) )
+        nonBreakable(Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)),
+        nonBreakable(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)) )
 
       val preHeading = doc.select("header p")
       preHeading.text mustBe s"${Messages("tai.estimatedIncome.accessiblePreHeading")} ${expectedTaxYearString}"

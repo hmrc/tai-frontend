@@ -17,13 +17,13 @@
 package controllers
 
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 
 trait TaiBaseController extends FrontendController with ErrorPagesHandler {
 
   implicit def templateRenderer: TemplateRenderer
-  implicit def partialRetriever: PartialRetriever
+  implicit def partialRetriever: FormPartialRetriever
 
 }
 

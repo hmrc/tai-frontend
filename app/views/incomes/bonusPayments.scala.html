@@ -16,7 +16,7 @@
 
 @(bonusPaymentsForm: Form[uk.gov.hmrc.tai.forms.BonusPaymentsForm], id: Int, paySlipDeductions : Boolean = false, bonusPaymentSelected : Boolean = false,
 employerName : Option[String] = None)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers._

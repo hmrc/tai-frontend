@@ -16,10 +16,7 @@
 
 package uk.gov.hmrc.tai.config
 
-import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
-
-import play.api.mvc.RequestHeader
 import uk.gov.hmrc.play.audit.http.HttpAuditing
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
 import uk.gov.hmrc.play.config.{AppName, RunMode, ServicesConfig}
@@ -29,7 +26,8 @@ import uk.gov.hmrc.http.hooks.HttpHooks
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.ws._
 import uk.gov.hmrc.play.partials._
-import uk.gov.hmrc.http.{ HttpDelete, HttpGet, HttpPost, HttpPut }
+import uk.gov.hmrc.http.{HttpDelete, HttpGet, HttpPost, HttpPut}
+import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
 
 object AuditConnector extends Auditing with AppName with RunMode {
   override lazy val auditingConfig = LoadAuditingConfig(s"$env.auditing")
@@ -56,25 +54,9 @@ object WSHttpProxy extends WSHttpProxy {
   override lazy val auditConnector = AuditConnector
 }
 
-object TaiHtmlPartialRetriever extends PartialRetriever {
-
+object TaiHtmlPartialRetriever extends FormPartialRetriever {
   override val httpGet = WSHttp
-
-  override protected def loadPartial(url: String)(implicit request: RequestHeader): HtmlPartial =
-    try {
-    fetchPartial(url) match {
-      case s: HtmlPartial.Success => s
-      case s: HtmlPartial.Failure => throw new RuntimeException("Could not load partial")
-    }
-  }catch {
-    case e: Exception => throw new RuntimeException("Could not load partial")
-  }
-
-  private def fetchPartial(url: String): HtmlPartial = {
-    implicit val hc = HeaderCarrier()
-    Await.result(httpGet.GET[HtmlPartial](url).recover(HtmlPartial.connectionExceptionsAsHtmlPartialFailure), partialRetrievalTimeout)
-  }
-
+  override def crypto: String => String = SessionCookieCryptoFilter.encrypt
 }
 
 object FrontendAuthConnector extends AuthConnector with ServicesConfig {

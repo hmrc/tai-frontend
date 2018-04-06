@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.tai.model.tai.TaxYear
 @import uk.gov.hmrc.play.views.formatting.Money._
 
-@(untaxedInterest: UntaxedInterest)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever = TaiHtmlPartialRetriever)
+@(untaxedInterest: UntaxedInterest)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
 
 @header = @{
     ptaHeader(

@@ -28,7 +28,7 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.service.{AuditService, SessionService, TaiService}
@@ -71,7 +71,7 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
 
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
 
-    override implicit val partialRetriever: PartialRetriever = MockPartialRetriever
+    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
 
     override protected val authConnector: AuthConnector = mock[AuthConnector]
 

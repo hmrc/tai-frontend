@@ -28,7 +28,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.RequestHeader
 import play.api.test.Helpers.status
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.TaiService
 import play.api.test.Helpers.{status, _}
@@ -99,7 +99,7 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
   private class SUT(welshEnabled: Boolean = true) extends TaiLanguageController {
     override val taiService: TaiService = mock[TaiService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: PartialRetriever = MockPartialRetriever
+    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
     override val authConnector: AuthConnector = mock[AuthConnector]
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override val isWelshEnabled = welshEnabled

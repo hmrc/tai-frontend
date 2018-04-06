@@ -39,7 +39,7 @@
             implicit request: Request[_],
             messages: Messages,
             templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-            partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever
+            partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
 )
 
 @serviceSuffix = @{
@@ -194,7 +194,7 @@
         "googleAnalytics" -> googleAnalytics,
         "gaCustomEvent" -> gaCustomEvent,
         "scriptElems" -> Seq(
-            Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai.js")),
+            Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai-new.js")),
             Map("url" -> controllers.routes.AssetsController.versioned("javascript/char-count.js"))
         ),
         "inlineScript" -> inlineScript,

@@ -33,7 +33,7 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.{SessionData, TaiRoot, TaxSummaryDetails}
 
@@ -122,7 +122,7 @@ class WithAuthorisedForTaiSpec extends PlaySpec with FakeTaiPlayApplication with
 
     override implicit def templateRenderer: TemplateRenderer = MockTemplateRenderer
 
-    override implicit def partialRetriever: PartialRetriever = MockPartialRetriever
+    override implicit def partialRetriever: FormPartialRetriever = MockPartialRetriever
 
     override def delegationConnector: DelegationConnector = mock[DelegationConnector]
 

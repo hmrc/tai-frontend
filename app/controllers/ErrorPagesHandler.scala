@@ -25,7 +25,7 @@ import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -38,7 +38,7 @@ import scala.concurrent.Future
 trait ErrorPagesHandler {
 
   implicit def templateRenderer: TemplateRenderer
-  implicit def partialRetriever: PartialRetriever
+  implicit def partialRetriever: FormPartialRetriever
 
   type RecoveryLocation = Class[_]
 

@@ -27,6 +27,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.tai.model.EditableDetails
 import uk.gov.hmrc.tai.util.CeasedEmploymentHelper
 import uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel
+import play.api.i18n.Messages.Implicits._
 
 class YourIncomeCalculationSpec
   extends UnitSpec

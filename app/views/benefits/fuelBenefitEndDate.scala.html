@@ -21,7 +21,7 @@
 @import includes.cancelLink
 @import includes.ptaHeader
 
-@(dateForm: Form[LocalDate])(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever)
+@(dateForm: Form[LocalDate])(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{Messages("tai.companyCar.fuelBenefitEndDate.title")}
 

@@ -22,12 +22,12 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.{ExtensionRelief, ExtensionReliefs, IncreasesTax, TaxSummaryDetails}
-import uk.gov.hmrc.tai.util.DateFormatConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.time.TaxYearResolver
 
-class reliefsPageSpec extends TaiViewSpec with DateFormatConstants {
+class reliefsPageSpec extends TaiViewSpec {
 
   "Releifs" should {
     behave like pageWithTitle("Your tax relief payments")
@@ -40,8 +40,8 @@ class reliefsPageSpec extends TaiViewSpec with DateFormatConstants {
     accessiblePreHeading.text mustBe Messages("tai.estimatedIncome.accessiblePreHeading")
 
     val expectedTaxYearString =  Messages("tai.taxYear",
-      nonBreakable(TaxYearResolver.startOfCurrentTaxYear.toString(DateWithYearFormat)),
-      nonBreakable(TaxYearResolver.endOfCurrentTaxYear.toString(DateWithYearFormat)) )
+      nonBreakable(Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)),
+      nonBreakable(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)) )
 
     val preHeading = doc.select("header p")
     preHeading.text mustBe s"${Messages("tai.estimatedIncome.accessiblePreHeading")} ${expectedTaxYearString}"

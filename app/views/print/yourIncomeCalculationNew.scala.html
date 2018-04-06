@@ -21,6 +21,8 @@
 @import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.tai.model.domain.income._
 @import uk.gov.hmrc.tai.model.domain._
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.time.TaxYearResolver
 
 @(model: YourIncomeCalculationViewModelNew)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser)
@@ -35,9 +37,9 @@ messages: Messages, user: controllers.auth.TaiUser)
             @model.employmentStatus match {
                 case PotentiallyCeased => {
                     @if(model.latestPayment.isDefined) {
-                        <strong>@Messages("tai.income.calculation.heading.withRti", model.latestPayment.get.date.toString("d MMMM yyyy"))</strong>
+                        <strong>@Messages("tai.income.calculation.heading.withRti", Dates.formatDate(model.latestPayment.get.date))</strong>
                     } else {
-                        <strong>@Messages("tai.income.calculation.heading",s"${TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</strong>
+                        <strong>@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</strong>
                     }
 
                     <p>@Messages("tai.income.calculation.potentially.ceased.lede")</p>
@@ -45,9 +47,9 @@ messages: Messages, user: controllers.auth.TaiUser)
 
                 case Ceased => {
                     @if(model.latestPayment.isDefined) {
-                        <strong>@Messages("tai.income.calculation.ceased.heading", model.latestPayment.get.date.toString("d MMMM yyyy"))</strong>
+                        <strong>@Messages("tai.income.calculation.ceased.heading", Dates.formatDate(model.latestPayment.get.date))</strong>
                     } else {
-                        <strong>@Messages("tai.income.calculation.heading",s"${TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</strong>
+                        <strong>@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</strong>
                     }
 
                     <p>@Messages("tai.income.calculation.rti.ceased.emp",s"${CeasedEmploymentHelper.toDisplayFormat(model.endDate)}")</p>
@@ -55,9 +57,9 @@ messages: Messages, user: controllers.auth.TaiUser)
 
                 case _ => {
                     @if(model.latestPayment.isDefined) {
-                       <strong>@Messages("tai.income.calculation.heading.withRti", model.latestPayment.get.date.toString("d MMMM yyyy"))</strong>
+                       <strong>@Messages("tai.income.calculation.heading.withRti", Dates.formatDate(model.latestPayment.get.date))</strong>
                     } else {
-                        <strong>@Messages("tai.income.calculation.heading",s"${TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")}",s"${TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")}")</strong>
+                        <strong>@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</strong>
                     }
 
                     @if(model.rtiStatus == TemporarilyUnavailable) {
@@ -84,7 +86,7 @@ messages: Messages, user: controllers.auth.TaiUser)
                 <tbody>
                     @for(payment <- model.payments){
                         <tr class="print-pension-contributions-data">
-                            <td>@payment.date.toString("d MMM yyyy")</td>
+                            <td>@Dates.formatDateAbbrMonth(payment.date)</td>
                             <td class="print-text--right">£ @{f"${payment.taxableIncome}%,.2f"}</td>
                             <td class="print-text--right">£ @{f"${payment.taxAmount}%,.2f"}</td>
                             <td class="print-text--right">£ @{f"${payment.nationalInsuranceAmount}%,.2f"}</td>

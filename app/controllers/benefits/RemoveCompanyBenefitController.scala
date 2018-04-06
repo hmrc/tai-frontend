@@ -25,7 +25,8 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
@@ -51,8 +52,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
   with JourneyCacheConstants
   with AuditConstants
   with FormValuesConstants
-  with RemoveCompanyBenefitStopDateConstants
-  with DateFormatConstants {
+  with RemoveCompanyBenefitStopDateConstants {
 
   def taiService: TaiService
   def auditService: AuditService
@@ -78,6 +78,9 @@ trait RemoveCompanyBenefitController extends TaiBaseController
     implicit user =>
       implicit taiRoot =>
         implicit request =>
+
+          val startOfTaxYear = Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)
+
           RemoveCompanyBenefitStopDateForm.form.bindFromRequest.fold(
             formWithErrors => {
               journeyCacheService.mandatoryValues(EndCompanyBenefit_BenefitNameKey,EndCompanyBenefit_EmploymentNameKey) map  {
@@ -274,8 +277,6 @@ trait RemoveCompanyBenefitController extends TaiBaseController
     )
   }
 
-  val startOfTaxYear = TaxYearResolver.startOfCurrentTaxYear.toString(DateWithYearFormat)
-
 }
 
 object RemoveCompanyBenefitController extends RemoveCompanyBenefitController with AuthenticationConnectors {
@@ -284,6 +285,6 @@ object RemoveCompanyBenefitController extends RemoveCompanyBenefitController wit
   override val journeyCacheService: JourneyCacheService = JourneyCacheService(EndCompanyBenefit_JourneyKey)
   override val trackingJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
   override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override def benefitsService: BenefitsService = BenefitsService
 }

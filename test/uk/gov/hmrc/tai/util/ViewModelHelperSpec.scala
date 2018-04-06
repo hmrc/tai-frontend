@@ -19,8 +19,11 @@ package uk.gov.hmrc.tai.util
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import TaiConstants.encodedMinusSign
+import controllers.FakeTaiPlayApplication
+import uk.gov.hmrc.time.TaxYearResolver
+import play.api.i18n.Messages.Implicits._
 
-class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with DateFormatConstants {
+class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlayApplication {
 
   "withPoundPrefixAndSign" must {
     "return the string representation of the provided MoneyPounds with a pound symbol prefix" when {
@@ -57,13 +60,13 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with DateFormatC
 
   "currentTaxYearHeaderForHtml" must {
     "return the date in passed format" in {
-      currentTaxYearHeaderHtmlNonBreak(DateWithoutYearFormat) mustBe "5 April".replace(" ", "\u00A0")
+      currentTaxYearHeaderHtmlNonBreak mustBe TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM y").replace(" ", "\u00A0")
     }
   }
 
   "nextTaxYearHeaderForHtml" must {
     "return the date in passed format" in {
-      nextTaxYearHeaderHtmlNonBreak(DateWithoutYearFormat) mustBe "6 April".replace(" ", "\u00A0")
+      nextTaxYearHeaderHtmlNonBreak mustBe TaxYearResolver.startOfNextTaxYear.toString("d MMMM y").replace(" ", "\u00A0")
     }
   }
 

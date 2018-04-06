@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.service.{AuditService, TaiService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.{SessionData, TaiRoot, TaxSummaryDetails}
 
@@ -72,7 +72,7 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
 
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
 
-    override implicit val partialRetriever: PartialRetriever = MockPartialRetriever
+    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
 
     override protected val authConnector: AuthConnector = mock[AuthConnector]
 

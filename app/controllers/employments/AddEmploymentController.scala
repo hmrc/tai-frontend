@@ -27,7 +27,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.partials.PartialRetriever
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
@@ -60,17 +60,17 @@ trait AddEmploymentController extends TaiBaseController
 
   def successfulJourneyCacheService: JourneyCacheService
 
-  lazy val telephoneNumberViewModel: CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
-    Messages("tai.addEmployment.cya.preHeading"),
-    Messages("tai.canWeContactByPhone.title"),
+  def telephoneNumberViewModel(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
+    messages("tai.addEmployment.cya.preHeading"),
+    messages("tai.canWeContactByPhone.title"),
     controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url,
     controllers.employments.routes.AddEmploymentController.submitTelephoneNumber().url,
     controllers.routes.TaxAccountSummaryController.onPageLoad().url
   )
 
-  lazy val telephoneNumberSizeConstraint: Constraint[String] =
+  def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
     Constraint[String]((textContent: String) => textContent match {
-      case txt if txt.length < 8 || txt.length > 30 => Invalid(Messages("tai.canWeContactByPhone.telephone.invalid"))
+      case txt if txt.length < 8 || txt.length > 30 => Invalid(messages("tai.canWeContactByPhone.telephone.invalid"))
       case _ => Valid
     })
 
@@ -284,7 +284,7 @@ object AddEmploymentController extends AddEmploymentController with Authenticati
   override val taiService: TaiService = TaiService
   override val auditService: AuditService = AuditService
   override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: PartialRetriever = TaiHtmlPartialRetriever
+  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override val employmentService = EmploymentService
   override val journeyCacheService = JourneyCacheService(AddEmployment_JourneyKey)
   override val successfulJourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)

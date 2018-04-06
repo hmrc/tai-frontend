@@ -21,8 +21,10 @@
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.tai.model.tai.TaxYear
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.time.TaxYearResolver
 
-@(interest: BigDecimal)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.PartialRetriever = TaiHtmlPartialRetriever)
+@(interest: BigDecimal)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
 
 @header = @{
     ptaHeader(
@@ -39,22 +41,22 @@
     articleClasses = None,
     gaCustomTitle = None
 ) {
-    @defining("d MMMM yyyy") { dateFormatPattern =>
+
         <div class="section flush--bottom">
             <p>@Messages("tai.bbsi.overview.para1")</p>
             <p class="flush--bottom">@Messages("tai.bbsi.overview.para2")</p>
             <p>
                 <span class="display-block bold-large">@pounds(interest)</span>
-                @Messages("tai.bbsi.overview.interest.year.desc", TaxYear().start.toString(dateFormatPattern), TaxYear().end.toString(dateFormatPattern))
+                @Messages("tai.bbsi.overview.interest.year.desc", Dates.formatDate(TaxYear().start), Dates.formatDate(TaxYear().end))
             </p>
-            <p>@Messages("tai.bbsi.overview.interest.estimate.desc", TaxYear().prev.start.toString(dateFormatPattern), TaxYear().prev.end.toString(dateFormatPattern))</p>
+            <p>@Messages("tai.bbsi.overview.interest.estimate.desc", Dates.formatDate(TaxYear().prev.start), Dates.formatDate(TaxYear().prev.end))</p>
         </div>
 
         <div class="section flush--bottom">
             <h2 class="heading-medium">@Messages("tai.bbsi.overview.whatYouMustDo.title")</h2>
             <p>@Messages("tai.bbsi.overview.whatYouMustDo.desc")</p>
             <ul class="list-bullet">
-                <li>@Messages("tai.bbsi.overview.whatYouMustDo.point1", TaxYear().start.toString(dateFormatPattern), TaxYear().end.toString(dateFormatPattern))</li>
+                <li>@Messages("tai.bbsi.overview.whatYouMustDo.point1", Dates.formatDate(TaxYear().start), Dates.formatDate(TaxYear().end))</li>
                 <li>@Messages("tai.bbsi.overview.whatYouMustDo.point2")</li>
             </ul>
          </div>
@@ -75,5 +77,4 @@
             url = controllers.income.bbsi.routes.BbsiController.accounts().url.toString,
             isButton=true
         )
-    }
 }
