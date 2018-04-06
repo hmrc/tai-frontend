@@ -407,8 +407,8 @@
           "incomeId": 1,
           "hasDuplicateEmploymentNames": false,
           "worksNumber": "",
-          "notificationDate": "2017-05-05",
-          "updateActionDate": "2017-05-05",
+          "notificationDate": "$PREVIOUSTY-05-05",
+          "updateActionDate": "$PREVIOUSTY-05-05",
           "startDate": "2007-04-06",
           "employmentStatus": 1,
           "employmentType": 1,
@@ -429,8 +429,8 @@
           "incomeId": 8,
           "hasDuplicateEmploymentNames": false,
           "worksNumber": "",
-          "notificationDate": "2017-05-05",
-          "updateActionDate": "2017-05-05",
+          "notificationDate": "$PREVIOUSTY-05-05",
+          "updateActionDate": "$PREVIOUSTY-05-05",
           "startDate": "2007-04-06",
           "employmentStatus": 1,
           "employmentType": 1,
@@ -451,8 +451,8 @@
           "incomeId": 8,
           "hasDuplicateEmploymentNames": false,
           "worksNumber": "",
-          "notificationDate": "2017-05-05",
-          "updateActionDate": "2017-05-05",
+          "notificationDate": "$PREVIOUSTY-05-05",
+          "updateActionDate": "$PREVIOUSTY-05-05",
           "startDate": "2007-04-06",
           "employmentStatus": 1,
           "employmentType": 1,
@@ -472,7 +472,7 @@
     },
     "accounts": [
       {
-        "year": 2017,
+        "year": $PREVIOUSTY,
         "nps": {
           "date": "10/12/2015",
           "totalEstTax": 1360.6,
@@ -751,7 +751,7 @@
                       },
                       {
                         "payFreq": "M1",
-                        "pmtDate": "2017-02-28",
+                        "pmtDate": "$PREVIOUSTY-02-28",
                         "rcvdDate": "2016-05-17",
                         "mandatoryMonetaryAmount": [
                           {
