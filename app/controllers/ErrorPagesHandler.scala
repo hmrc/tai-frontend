@@ -237,7 +237,7 @@ trait ErrorPagesHandler {
     }
   }
 
-  def npsNoEmploymentForCYResult(prevYearEmployments: Seq[Employment])(implicit request: Request[AnyContent], user: TaiUser, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
+  def npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments: Seq[Employment])(implicit request: Request[AnyContent], user: TaiUser, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {
     case TaiTaxAccountFailureResponse(msg) if msg.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) => {
       prevYearEmployments match {
         case Nil => {

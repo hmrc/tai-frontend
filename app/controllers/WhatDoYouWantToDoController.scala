@@ -70,7 +70,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
                 val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
                   npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments) orElse
                   npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments) orElse
-                  npsNoEmploymentForCYResult(prevYearEmployments) orElse
+                  npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments) orElse
                   npsNoEmploymentResult orElse
                   npsTaxAccountDeceasedResult orElse
                   {case _=> None}
