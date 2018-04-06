@@ -155,7 +155,7 @@ object TaiData {
   def getEverything = getTaxSummary(everything)
   def getCurrentYearTaxSummaryDetails = getTaxSummary(currentYearTaxSummaryDetails)
   def getSessionDataWithCYPYRtiData = {
-    val transform: String => String = fileContent => fileContent.replaceAll("\\$PREVIOUSTY", "2018")   // replaceAll("\\$NINO", nino.nino)
+    val transform: String => String = fileContent => fileContent.replaceAll("\\$PREVIOUSTY", "2018")
     getSessionData(sessionDataWithCYPYRtiData, Some(transform))
   }
   def getSessionDataWithNoPYRtiData = getSessionData(sessionDataWithNoPYRtiData)
