@@ -97,6 +97,7 @@ trait FeatureTogglesConfig extends ServicesConfig {
   val previousEmploymentUpdateToggle = configuration.getBoolean("tai.feature.previousEmploymentUpdate.enabled").getOrElse(false)
   val welshLanguageEnabled =  configuration.getBoolean("tai.feature.welshLanguage.enabled").getOrElse(false)
   val cyApdNewPageEnabled = configuration.getBoolean("tai.feature.cyApdNewPage.enabled").getOrElse(false)
+  val companyCarForceRedirectEnabled = configuration.getBoolean("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
 }
 
 object FeatureTogglesConfig extends FeatureTogglesConfig

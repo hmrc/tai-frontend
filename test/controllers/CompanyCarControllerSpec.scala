@@ -79,15 +79,34 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
     }
 
     "Redirect to the company car end date view" when {
-      "POST'ing to the handleUserJourneyChoice endpoint with a 'removeCar' user choice" in {
-        val sut = createSUT()
-        val request = FakeRequest("POST", "").withFormUrlEncodedBody("userChoice" -> "removeCar").withSession(
-          SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
-        )
-        val result = sut.handleUserJourneyChoice()(request)
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe routes.CompanyCarController.getCompanyCarEndDate().url
-        Mockito.verify(sut.sessionService, Mockito.never()).invalidateCache()(any())
+      "POST'ing to the handleUserJourneyChoice endpoint with a 'removeCar' user choice" when {
+        "the companyCarForceRedirect feature toggle is off" in {
+          val sut = createSUT(isCompanyCarForceRedirectEnabled = false)
+          val request = FakeRequest("POST", "").withFormUrlEncodedBody("userChoice" -> "removeCar").withSession(
+            SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
+          )
+          val result = sut.handleUserJourneyChoice()(request)
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result).get mustBe routes.CompanyCarController.getCompanyCarEndDate().url
+          Mockito.verify(sut.sessionService, Mockito.never()).invalidateCache()(any())
+        }
+      }
+    }
+
+    "Redirect to the company car service landing page" when {
+      "POST'ing to the handleUserJourneyChoice endpoint with a 'removeCar' user choice" when {
+        "the companyCarForceRedirect feature toggle is on" in {
+          val sut = createSUT(isCompanyCarForceRedirectEnabled = true)
+          val request = FakeRequest("POST", "").withFormUrlEncodedBody("userChoice" -> "removeCar").withSession(
+            SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
+          )
+          when(sut.sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
+
+          val result = sut.handleUserJourneyChoice()(request)
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result).get mustBe ApplicationConfig.companyCarServiceUrl
+          Mockito.verify(sut.sessionService, Mockito.times(1)).invalidateCache()(any())
+        }
       }
     }
 
@@ -368,9 +387,9 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
   val fakeTaiRoot = TaiRoot(fakeNino.nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", false, Some(false))
 
-  def createSUT() = new SUT()
+  def createSUT(isCompanyCarForceRedirectEnabled: Boolean = false) = new SUT(isCompanyCarForceRedirectEnabled)
 
-  class SUT() extends CompanyCarController {
+  class SUT(isCompanyCarForceRedirectEnabled: Boolean) extends CompanyCarController {
 
     override val taiService: TaiService = mock[TaiService]
     override val sessionService: SessionService = mock[SessionService]
@@ -381,6 +400,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
+    override val companyCarForceRedirectEnabled: Boolean = isCompanyCarForceRedirectEnabled
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
     when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
