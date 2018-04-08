@@ -105,7 +105,7 @@ class YourIncomeCalculationViewModelNewSpec extends PlaySpec with FakeTaiPlayApp
       "tax code income is present and frequency is monthly" in {
         val model = incomeCalculationViewModel(payments = Seq(firstPayment))
 
-        model.incomeCalculationMessage mustBe Messages("tai.income.calculation.rti.midYear.weekly", LocalDate.now().toString("d MMMM yyyy"),
+        model.incomeCalculationMessage mustBe Messages("tai.income.calculation.rti.midYear.weekly", uk.gov.hmrc.tai.model.tai.TaxYear().start.plusDays(1).toString("d MMMM yyyy"),
           firstPayment.date.toString("d MMMM yyyy"), MoneyPounds(firstPayment.amountYearToDate, 2).quantity)
         model.incomeCalculationEstimateMessage mustBe Some(Messages("tai.income.calculation.rti.emp.estimate", 1111))
       }
@@ -140,7 +140,7 @@ class YourIncomeCalculationViewModelNewSpec extends PlaySpec with FakeTaiPlayApp
                                          hasTaxCodeIncome : Boolean = true,
                                          cessationPay: Option[BigDecimal] = None) = {
     val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.tai.TaxYear(), realTimeStatus, payments, Nil)
-    val employment = Employment("test employment", Some("EMPLOYER1"), LocalDate.now(),
+    val employment = Employment("test employment", Some("EMPLOYER1"), uk.gov.hmrc.tai.model.tai.TaxYear().start.plusDays(1),
       if(employmentStatus == Ceased) Some(LocalDate.parse("2017-08-08")) else None, Seq(annualAccount), "", "", 2, cessationPay, false)
     val taxCodeIncome = if(hasTaxCodeIncome){
       Some(TaxCodeIncome(employmentType, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, employmentStatus))
