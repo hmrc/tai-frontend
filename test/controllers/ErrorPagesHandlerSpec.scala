@@ -197,7 +197,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
     implicit val request = FakeRequest("GET", "/")
     implicit val user = UserBuilder()
-    implicit val rl = classOf[SUT]
+    implicit val recoveryLocation = classOf[SUT]
 
     "Identify nps tax account failures, and generate an appropriate redirect" when {
 
@@ -299,16 +299,15 @@ class ErrorPagesHandlerSpec extends PlaySpec
   }
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  implicit val tl = MockTemplateRenderer
-  implicit val pr = MockPartialRetriever
-
+  implicit val testTemplateRenderer = MockTemplateRenderer
+  implicit val testPartialRetriever = MockPartialRetriever
   val nino = new Generator().nextNino
 
   val createSut = new SUT
 
   class SUT extends ErrorPagesHandler {
-    override implicit def templateRenderer = tl
-    override implicit def partialRetriever = pr
+    override implicit def templateRenderer = testTemplateRenderer
+    override implicit def partialRetriever = testPartialRetriever
 
     val recoveryLocation:RecoveryLocation = classOf[SUT]
   }

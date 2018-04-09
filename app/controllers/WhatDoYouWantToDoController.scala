@@ -49,7 +49,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
   def trackingService: TrackingService
   def taxAccountService: TaxAccountService
 
-  implicit val rl:RecoveryLocation = classOf[WhatDoYouWantToDoController]
+  implicit val recoveryLocation:RecoveryLocation = classOf[WhatDoYouWantToDoController]
 
   def whatDoYouWantToDoPage(): Action[AnyContent] = authorisedForTai(taiService).async {
     implicit user =>
