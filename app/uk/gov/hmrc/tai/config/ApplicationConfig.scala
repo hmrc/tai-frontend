@@ -60,7 +60,7 @@ object ApplicationConfig extends ServicesConfig {
   lazy val mainContentHeaderPartialUrl = s"${fetchUrl("header-service")}/personal-account/integration/main-content-header"
   lazy val sa16UpliftUrl = s"${fetchUrl("identity-verification-frontend")}/mdtp/uplift"
   lazy val taiFrontendServiceUrl = s"$taiServiceUrl/income-tax"
-  lazy val taxYouPaidStatus = s"${fetchUrl("taxcalc-frontend")}/tax-you-paid/$statusRange/status"
+  lazy val taxYouPaidStatus = s"${fetchUrl("taxcalc-frontend")}/tax-you-paid/status"
   lazy val gg_web_context = configuration.getString(s"$env.external-url.gg.web-context").getOrElse("gg")
   lazy val ida_web_context = configuration.getString(s"$env.external-url.ida.web-context").getOrElse("ida")
   lazy val hardshipHelpBase = configuration.getString(s"govuk-tax.$env.external-url.hardship-help.host").getOrElse("")
@@ -97,6 +97,7 @@ trait FeatureTogglesConfig extends ServicesConfig {
   val previousEmploymentUpdateToggle = configuration.getBoolean("tai.feature.previousEmploymentUpdate.enabled").getOrElse(false)
   val welshLanguageEnabled =  configuration.getBoolean("tai.feature.welshLanguage.enabled").getOrElse(false)
   val cyApdNewPageEnabled = configuration.getBoolean("tai.feature.cyApdNewPage.enabled").getOrElse(false)
+  val companyCarForceRedirectEnabled = configuration.getBoolean("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
 }
 
 object FeatureTogglesConfig extends FeatureTogglesConfig

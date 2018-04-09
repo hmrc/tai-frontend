@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
+import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.tai.util.CommonVMHelper._
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
@@ -45,7 +45,8 @@ trait CompanyCarController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
-  with JourneyCacheConstants {
+  with JourneyCacheConstants
+  with FeatureTogglesConfig{
 
   def taiService: TaiService
   def companyCarService: CompanyCarService
@@ -90,12 +91,13 @@ trait CompanyCarController extends TaiBaseController
               }
             },
             formData => {
-              formData.whatDoYouWantToDo match {
-                case Some("removeCar") => Future.successful(Redirect(controllers.routes.CompanyCarController.getCompanyCarEndDate()))
-                case _ =>
-                  sessionService.invalidateCache() map (_ => Redirect(ApplicationConfig.companyCarServiceUrl))
+                formData.whatDoYouWantToDo match {
+                  case Some("removeCar") if !companyCarForceRedirectEnabled =>
+                    Future.successful(Redirect(controllers.routes.CompanyCarController.getCompanyCarEndDate()))
+                  case _ =>
+                    sessionService.invalidateCache() map (_ => Redirect(ApplicationConfig.companyCarServiceUrl))
+                }
               }
-            }
           )
   }
 
