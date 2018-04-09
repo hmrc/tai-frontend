@@ -258,7 +258,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     val underPaymentFromPreviousYear = codingComponent.find(_.componentType == UnderPaymentFromPreviousYear).map(_.amount)
     val underPaymentRow = createAdditionalTaxRow(underPaymentFromPreviousYear, Messages("tai.taxCalc.UnderpaymentPreviousYear.title"), None)
 
-    val inYearAdjustment = codingComponent.find(_.componentType == InYearAdjustment).map(_.amount)
+    val inYearAdjustment = codingComponent.find(_.componentType == EstimatedTaxYouOweThisYear).map(_.amount)
     val inYearRow = createAdditionalTaxRow(inYearAdjustment, Messages("tai.taxcode.deduction.type-45"),
       Some(routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url))
 
@@ -361,7 +361,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
       Messages("tai.taxCollected.atSource.marriageAllowance.title"))
   }
 
-  private def incomeTaxReducedToZeroMessage(hasTaxReducedToZero: Boolean): Option[String] = {
+  def incomeTaxReducedToZeroMessage(hasTaxReducedToZero: Boolean): Option[String] = {
     Option(hasTaxReducedToZero).collect{
       case true => Messages("tai.estimatedIncome.reductionsTax.incomeTaxReducedToZeroMessage")
     }
@@ -381,7 +381,6 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
 
       if (ukDivTotalIncome <= taxFreeDividend) {
         Some(Messages("tai.estimatedIncome.ukdividends.lessThanOrEqualToBasic", MoneyPounds(taxFreeDividend, 0).quantity))
-
       } else if ((ukDivTotalIncome > taxFreeDividend) && higherTaxRates.nonEmpty) {
         Some(Messages("tai.estimatedIncome.ukdividends.moreThanBasic", dividendsAllowanceRates(higherTaxRates.toList),
           MoneyPounds(taxFreeDividend, 0).quantity))
