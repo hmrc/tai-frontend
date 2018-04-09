@@ -1,4 +1,4 @@
-.govuk-check-your-answers--tax-summary div.cya-question {
+.govuk-check-your-answers--tax-summary .cya-question {
     font-weight: normal;
 }
 
@@ -23,6 +23,10 @@
 }
 
 @media screen and (min-width: 769px){
+    ul.govuk-check-your-answers--tax-summary {
+        border-top: 1px solid #bfc1c3;
+        padding-top: 10px;
+    }
     .govuk-check-your-answers--tax-summary .cya-answer {
         text-align: right;
     }
