@@ -18,6 +18,10 @@
 
 @(items: Seq[uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryCategoryViewModel], gaEventActionString: String)(implicit m: Messages)
 
+@oneOrMoreLinksPresent = @{
+    items.flatMap(item => item.rows.map(row => row.link.isDisplayed).filter(_ == true)).nonEmpty
+}
+
 @for((item, itemIdx) <- items zip (Stream from 1)) {
 
     @if(item.rows.nonEmpty) {
@@ -27,7 +31,7 @@
                 <ul id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx==items.length && item.rows.length==1){highlight}" role="list">
                     @for((row, rowIdx) <- item.rows zip (Stream from 1)) {
                         <li id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}">
-                            <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" class="cya-question">
+                            <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" class="cya-question break-word">
                                 @row.label
                                 @if(row.label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
                                     @includes.link(
@@ -40,6 +44,8 @@
                                 }
                             </div>
 
+                            <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ValueCell" class="cya-answer @if(!oneOrMoreLinksPresent){soft--right}">@row.value</div>
+
                             @if(row.link.isDisplayed) {
                             <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ChangeLinkCell" class="cya-change">
                                 @includes.link(
@@ -50,10 +56,10 @@
                                     attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${row.link.value}")
                                 )
                             </div>
-                            } else {
+                            } else @{if(oneOrMoreLinksPresent) {
                                 <div class="cya-change"></div>
-                            }
-                            <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ValueCell" class="cya-answer">@row.value</div>
+                            }}
+
                         </li>
                     }
                 </ul>
