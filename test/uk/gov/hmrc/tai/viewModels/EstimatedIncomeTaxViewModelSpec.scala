@@ -594,7 +594,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(700, otherTaxDue)), None, None)
         val codingComponents = Seq(
           CodingComponent(UnderPaymentFromPreviousYear, None, 100, ""),
-          CodingComponent(EstimatedTaxYouOweThisYear, None, 50, ""),
+          CodingComponent(EstimatedTaxYouOweThisYear, None, 0, "", Some(50)),
           CodingComponent(OutstandingDebt, None, 150, "")
         )
 
