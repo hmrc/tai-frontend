@@ -76,6 +76,16 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                     <section>
                         @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion)
 
+                        @if(viewModel.hasTaxRelief){
+                            <h3 id="tax-relief-title" class="heading-medium">@Messages("tai.estimatedIncome.taxrelief.title")</h3>
+                            <p id="tax-relief-message">@Html(Messages(
+                                "tai.estimatedIncome.taxRelief",
+                                Link.toInternalPage(
+                                    url=routes.CurrentYearPageController.reliefsPage().toString,
+                                    value=Some("tai.estimatedIncome.taxRelief.link")
+                                ).toHtml
+                                ))</p>
+                        }
 
                         @if(viewModel.hasPotentialUnderPayment){
                             <div class="panel-indent panel-indent--info panel-indent--gutter">

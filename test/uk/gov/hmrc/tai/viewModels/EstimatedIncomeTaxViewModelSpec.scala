@@ -804,6 +804,23 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
     }
   }
 
+  "hasTaxRelief" must {
+    "return true" when {
+      "tax relief components are present" in {
+        val totalTax = TotalTax(100, Seq.empty[IncomeCategory], None, None, None, None,
+          Some(tax.TaxAdjustment(100, Seq(TaxAdjustmentComponent(tax.PersonalPensionPayment, 100)))))
+        EstimatedIncomeTaxViewModel.hasTaxRelief(totalTax) mustBe true
+      }
+    }
+
+    "return false" when {
+      "tax relief components are not present" in {
+        val totalTax = TotalTax(100, Seq.empty[IncomeCategory], None, None, None, None, None)
+        EstimatedIncomeTaxViewModel.hasTaxRelief(totalTax) mustBe false
+      }
+    }
+  }
+
   private lazy val taxExplanationLink = Link.toInternalPage(
     url = routes.TaxExplanationControllerNew.taxExplanationPage().toString,
     value = Some(Messages("tai.mergedTaxBand.description")),

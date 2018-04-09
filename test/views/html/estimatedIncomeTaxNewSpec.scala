@@ -107,6 +107,14 @@ class estimatedIncomeTaxNewSpec extends TaiViewSpec {
     "show iform links" in {
       doc.select("#iForms").text() mustBe "Test"
     }
+
+    "show tax relief section" in {
+      doc.select("#tax-relief-title").text() mustBe Messages("tai.estimatedIncome.taxrelief.title")
+      doc.select("#tax-relief-message").html() mustBe Html(Messages("tai.estimatedIncome.taxRelief", Link.toInternalPage(
+        url = routes.CurrentYearPageController.reliefsPage().toString,
+        value = Some("tai.estimatedIncome.taxRelief.link")
+      ).toHtml)).body
+    }
   }
 
 
@@ -115,7 +123,7 @@ class estimatedIncomeTaxNewSpec extends TaiViewSpec {
   def createViewModel(hasCurrentIncome: Boolean, additionalRows: Seq[AdditionalTaxDetailRow],
                       reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
     EstimatedIncomeTaxViewModel(hasCurrentIncome, 100, 100, 100, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
-      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, Some(100), Some(100), Some("Test"), "uk")
+      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, Some(100), Some(100), Some("Test"), "uk", true)
   }
 
   val viewModel = createViewModel(true, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])

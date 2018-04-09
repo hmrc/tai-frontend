@@ -58,7 +58,8 @@ case class EstimatedIncomeTaxViewModel(
                                         ssrValue: Option[BigDecimal],
                                         psrValue: Option[BigDecimal],
                                         dividendsMessage: Option[String],
-                                        taxRegion: String
+                                        taxRegion: String,
+                                        hasTaxRelief: Boolean = false
                                       ) extends ViewModelHelper
 
 object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants {
@@ -94,7 +95,12 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
       ssrValue,
       psrValue,
       dividends,
-      taxRegion)
+      taxRegion,
+      hasTaxRelief(totalTax))
+  }
+
+  def hasTaxRelief(totalTax: TotalTax): Boolean = {
+    totalTax.taxReliefComponent.isDefined
   }
 
   def findTaxRegion(taxCodeIncomes: Seq[TaxCodeIncome]): String = {
