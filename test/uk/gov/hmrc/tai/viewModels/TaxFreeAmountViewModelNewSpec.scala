@@ -142,7 +142,7 @@ class TaxFreeAmountViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication
                 Messages("tai.taxFreeAmount.table.allowances.caption"),
                 Seq(
                   TaxFreeAmountSummaryRowViewModel(
-                    Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA"),
+                    Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
                     "£11,500",
                     ChangeLinkViewModel(isDisplayed = false)
                   ))),
@@ -372,7 +372,7 @@ class TaxFreeAmountViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication
             Messages("tai.taxFreeAmount.table.allowances.caption"),
             Seq(
               TaxFreeAmountSummaryRowViewModel(
-                Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA"),
+                Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
                 "£7,500",
                 ChangeLinkViewModel(isDisplayed = false)
               )))
@@ -464,7 +464,7 @@ class TaxFreeAmountViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication
     Messages("tai.taxFreeAmount.table.allowances.caption"),
     Seq(
       TaxFreeAmountSummaryRowViewModel(
-        Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA"),
+        Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
         "£0",
         ChangeLinkViewModel(isDisplayed = false)
       )))

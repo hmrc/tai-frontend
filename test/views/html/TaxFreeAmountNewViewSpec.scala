@@ -61,8 +61,7 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
         doc must haveElementWithId("summaryTable4")
       }
 
-      "contains a heading per group" in {
-        doc must haveElementAtPathWithText("#summaryTable1Caption", "Personal Allowance base amount")
+      "contains a heading for the addition and deduction group" in {
         doc must haveElementAtPathWithText("#summaryTable2Caption", "Additions to your Personal Allowance")
         doc must haveElementAtPathWithText("#summaryTable3Caption", "Deductions from your Personal Allowance")
       }
