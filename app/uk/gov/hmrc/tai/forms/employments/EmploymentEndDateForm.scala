@@ -71,7 +71,7 @@ case class EmploymentEndDateForm(employerName: String) {
     Form(localDateMapping)
   }
 
-  val EmploymentFormDay = "tellUsAboutEmploymelntForm_day"
+  val EmploymentFormDay = "tellUsAboutEmploymentForm_day"
   val EmploymentFormMonth = "tellUsAboutEmploymentForm_month"
   val EmploymentFormYear = "tellUsAboutEmploymentForm_year"
 }

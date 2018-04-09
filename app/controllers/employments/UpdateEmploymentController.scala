@@ -48,9 +48,9 @@ trait UpdateEmploymentController extends TaiBaseController
   with AuditConstants
   with FormValuesConstants {
 
-  lazy val telephoneNumberSizeConstraint: Constraint[String] =
+  def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
     Constraint[String]((textContent: String) => textContent match {
-      case txt if txt.length < 8 || txt.length > 30 => Invalid(Messages("tai.canWeContactByPhone.telephone.invalid"))
+      case txt if txt.length < 8 || txt.length > 30 => Invalid(messages("tai.canWeContactByPhone.telephone.invalid"))
       case _ => Valid
     })
 
