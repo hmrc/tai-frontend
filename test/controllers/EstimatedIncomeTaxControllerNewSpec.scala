@@ -62,7 +62,7 @@ class EstimatedIncomeTaxControllerNewSpec extends PlaySpec with MockitoSugar wit
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(
             Seq.empty[TaxCodeIncome]
           )))
-        when(sut.partialService.getIncomeTaxPartial(any())).thenReturn(Future.successful[HtmlPartial]
+        when(sut.partialService.getIncomeTaxPartial(any())) .thenReturn(Future.successful[HtmlPartial]
           (HtmlPartial.Success(Some("title"), Html("<title/>"))))
 
         val result = sut.estimatedIncomeTax()(RequestBuilder.buildFakeRequestWithAuth("GET"))
