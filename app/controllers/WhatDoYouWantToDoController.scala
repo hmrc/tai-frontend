@@ -27,11 +27,10 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.model.{SessionData, TaiRoot}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import uk.gov.hmrc.time.TaxYearResolver
@@ -50,14 +49,40 @@ trait WhatDoYouWantToDoController extends TaiBaseController
   def trackingService: TrackingService
   def taxAccountService: TaxAccountService
 
+  implicit val recoveryLocation:RecoveryLocation = classOf[WhatDoYouWantToDoController]
+
   def whatDoYouWantToDoPage(): Action[AnyContent] = authorisedForTai(taiService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            sessionData(user).flatMap( _ => requestedPage.apply(taiRoot) ) recoverWith hodStatusRedirect
-          }
 
+            val taxAccountSummaryFuture = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear())
+            val employmentsFuture = employmentService.employments(Nino(user.getNino), TaxYear())
+            val prevYearEmploymentsFuture = previousYearEmployments(Nino(user.getNino))
+
+            val possibleRedirectFuture =
+              for {
+                taxAccountSummary <- taxAccountSummaryFuture
+                _ <- employmentsFuture
+                prevYearEmployments <- prevYearEmploymentsFuture
+              } yield {
+                val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
+                  npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments) orElse
+                  npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments) orElse
+                  npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments) orElse
+                  npsNoEmploymentResult orElse
+                  npsTaxAccountDeceasedResult orElse
+                  {case _=> None}
+
+                npsFailureHandlingPf(taxAccountSummary)
+              }
+
+            possibleRedirectFuture.flatMap(
+              _.map(Future.successful(_)).getOrElse( allowWhatDoYouWantToDo )
+            )
+
+          } recoverWith (hodBadRequestResult orElse hodInternalErrorResult)
   }
 
   def handleWhatDoYouWantToDoPage(): Action[AnyContent] = authorisedForTai(taiService).async {
@@ -89,45 +114,24 @@ trait WhatDoYouWantToDoController extends TaiBaseController
           )
   }
 
-  private def requestedPage(implicit request: Request[AnyContent], user: TaiUser): TaiRoot => Future[Result] = {
-    _ => {
-      auditService.sendUserEntryAuditEvent(Nino(user.getNino), request.headers.get("Referer").getOrElse("NA"))
-      trackingService.isAnyIFormInProgress(user.getNino) flatMap { trackingResponse =>
-        if(cyPlusOneEnabled){
-          taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear().next) map {
-            case TaiSuccessResponseWithPayload(_) =>
-              Ok(views.html.whatDoYouWantToDo(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled)))
-            case _ =>
-              Ok(views.html.whatDoYouWantToDo(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, isCyPlusOneEnabled = false)))
-          }
-        } else {
-          Future.successful(Ok(views.html.whatDoYouWantToDo(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled))))
+  private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: TaiUser): Future[Result] = {
+    auditService.sendUserEntryAuditEvent(Nino(user.getNino), request.headers.get("Referer").getOrElse("NA"))
+    trackingService.isAnyIFormInProgress(user.getNino) flatMap { trackingResponse =>
+      if(cyPlusOneEnabled){
+        taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear().next) map {
+          case TaiSuccessResponseWithPayload(_) =>
+            Ok(views.html.whatDoYouWantToDo(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled)))
+          case _ =>
+            Ok(views.html.whatDoYouWantToDo(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, isCyPlusOneEnabled = false)))
         }
+      } else {
+        Future.successful(Ok(views.html.whatDoYouWantToDo(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled))))
       }
     }
   }
 
-  def hodStatusRedirect(implicit request: Request[AnyContent], user: TaiUser, taiRoot: TaiRoot): PartialFunction[Throwable, Future[Result]] = {
-
-    implicit val rl:RecoveryLocation = classOf[WhatDoYouWantToDoController]
-
-    npsTaxAccountAbsentResult_withEmployCheck(previousYearEmployments, requestedPage) orElse
-    npsTaxAccountCYAbsentResult_withEmployCheck(previousYearEmployments, requestedPage) orElse
-    npsNoEmploymentForCYResult(previousYearEmployments, requestedPage) orElse
-    npsNoEmploymentResult orElse
-    npsTaxAccountDeceasedResult orElse
-    rtiDataAbsentResult orElse
-    hodBadRequestResult orElse
-    hodInternalErrorResult
-  }
-
-  private def sessionData(user: TaiUser)(implicit hc: HeaderCarrier) : Future[SessionData] = {
-    val taiAccount = user.authContext.principal.accounts.paye.getOrElse(throw new IllegalArgumentException("Cannot find tai user authority"))
-    taiService.taiSession(Nino(user.getNino),TaxYearResolver.currentTaxYear,taiAccount.link)
-  }
-
-  private[controllers] def previousYearEmployments(implicit hc: HeaderCarrier): Nino => Future[Seq[Employment]] = {
-    nino => employmentService.employments(nino, TaxYear(TaxYearResolver.currentTaxYear-1)) recover {
+  private[controllers] def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
+    employmentService.employments(nino, TaxYear(TaxYearResolver.currentTaxYear-1)) recover {
       case _ => Nil
     }
   }
