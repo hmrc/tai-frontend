@@ -79,8 +79,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
     }
 
     "Redirect to the company car end date view" when {
-      "POST'ing to the handleUserJourneyChoice endpoint with a 'removeCar' user choice" when {
-        "the companyCarForceRedirect feature toggle is off" in {
+      "POST'ing to the handleUserJourneyChoice endpoint with a 'removeCar' user choice and the companyCarForceRedirect feature toggle is off" in {
           val sut = createSUT(isCompanyCarForceRedirectEnabled = false)
           val request = FakeRequest("POST", "").withFormUrlEncodedBody("userChoice" -> "removeCar").withSession(
             SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
@@ -90,7 +89,6 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
           redirectLocation(result).get mustBe routes.CompanyCarController.getCompanyCarEndDate().url
           Mockito.verify(sut.sessionService, Mockito.never()).invalidateCache()(any())
         }
-      }
     }
 
     "Redirect to the company car service landing page" when {
