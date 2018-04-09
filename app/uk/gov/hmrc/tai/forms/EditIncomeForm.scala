@@ -18,11 +18,11 @@ package uk.gov.hmrc.tai.forms
 
 import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
 import org.joda.time.LocalDate
-import play.api.Play.current
+//import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
+//import play.api.i18n.Messages.Implicits._
 import play.api.libs.json.Json
 import play.api.mvc.Request
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
@@ -62,7 +62,7 @@ case class EditIncomeForm(name : String, description : String,
 object EditIncomeForm {
   implicit val formats = Json.format[EditIncomeForm]
 
-  def create(preFillData: EmploymentAmount, hasMultipleIncomes: Boolean=false, taxablePayYTD: BigDecimal=BigDecimal(0)) = {
+  def create(preFillData: EmploymentAmount, hasMultipleIncomes: Boolean=false, taxablePayYTD: BigDecimal=BigDecimal(0))(implicit messages: Messages) = {
 
     val newAmount = if (preFillData.oldAmount != preFillData.newAmount) {
       Some(preFillData.newAmount.toString)
@@ -104,10 +104,10 @@ object EditIncomeForm {
       payToDate)
   }
 
-  def bind(implicit request: Request[_], taxablePayYTD: BigDecimal = BigDecimal(0), payDate: Option[LocalDate] = None,
-           errMessage: Option[String] = None) = createForm(taxablePayYTD, payDate, errMessage).bindFromRequest
+  def bind(taxablePayYTD: BigDecimal = BigDecimal(0), payDate: Option[LocalDate] = None,
+           errMessage: Option[String] = None)(implicit request: Request[_], messages: Messages) = createForm(taxablePayYTD, payDate, errMessage).bindFromRequest
 
-  private def createForm (taxablePayYTD: BigDecimal, payDate: Option[LocalDate] = None, errMessage: Option[String] = None) :Form[EditIncomeForm] = {
+  private def createForm (taxablePayYTD: BigDecimal, payDate: Option[LocalDate] = None, errMessage: Option[String] = None)(implicit messages: Messages) :Form[EditIncomeForm] = {
     val date = if(payDate.isDefined) payDate.get.monthOfYear.getAsText() else ""
     val errMsg = errMessage.getOrElse("error.tai.updateDataEmployment.enterLargerValue")
     Form[EditIncomeForm](
