@@ -27,11 +27,9 @@ class NoCYIncomeTaxErrorPageSpec extends TaiViewSpec {
 
   "noCYIncomeTaxErrorPage" should {
     behave like pageWithTitle(messages("tai.noCYIncomeError.heading"))
-    behave like pageWithHeader(messages("tai.noCYIncomeError.heading"))
-
-    "have subheading" in {
-      doc must haveHeadingH2WithText(messages("tai.noCYIncomeError.sub-heading") + " " + TaxPeriodLabelService.longFormCurrentTaxPeriodLabel)
-    }
+    behave like pageWithCombinedHeader(
+      preHeaderText ="Current tax year",
+      mainHeaderText = "Your Pay As You Earn Income Tax")
 
     "display no income message" when {
       "name and end date of employer is not present" in {
@@ -56,8 +54,8 @@ class NoCYIncomeTaxErrorPageSpec extends TaiViewSpec {
     }
 
     "have a back link" in {
-      doc.select("#backLink").text() mustBe messages("tai.back-link.upper")
-      doc.select("#backLink").attr("href") mustBe routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().toString
+      doc.select("#returnToChooseTaxYearLink").text() mustBe messages("tai.returnToChooseTaxYear")
+      doc.select("#returnToChooseTaxYearLink").attr("href") mustBe routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().toString
     }
   }
 
