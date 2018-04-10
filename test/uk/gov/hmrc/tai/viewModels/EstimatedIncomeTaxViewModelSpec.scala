@@ -313,7 +313,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       val bands = List(Band("TaxFree", 10.00, "0%", 3200, 0, "pa"),
         Band("Band", 50.00, "20%", 16000, 5000, "B"))
 
-      val nextBandMessage = Some("You can have £12,800 more before your income reaches the next tax band.")
+      val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 12800))
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 3200)
       dataF mustBe BandedGraph("taxGraph", bands, 0, 32000, 19200, 10.00, 3200, 60.00, 5000, nextBandMessage)
@@ -332,7 +332,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         Band("Band", 30.00, taxExplanationLink, 45000, 15000, "TaxedIncome")
       )
 
-      val nextBandMessage = Some("You can have £102,000 more before your income reaches the next tax band.")
+      val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 102000))
       val links = Map("taxExplanationScreen" -> taxExplanationLink)
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 3000)
       dataF mustBe BandedGraph("taxGraph", bands, 0, 150000, 48000, 2.00, 3000, 32.00, 15000, nextBandMessage)
@@ -352,8 +352,8 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         Band("Band", 97.5, taxExplanationLink, 195000, 65250, "TaxedIncome")
       )
 
-      val links = Map("taxExplanationScreen" -> taxExplanationLink)
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 5000)
+
       dataF mustBe BandedGraph("taxGraph", bands, 0, 200000, 200000, 2.5, 5000, 100, 65250)
     }
 
@@ -403,7 +403,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         TaxBand("D0", "", income = 91500, tax = 36600, lowerBand = Some(33500), upperBand = Some(150000), rate = 40)
       )
 
-      val nextBandMessage = Some("You can have £25,000 more before your income reaches the next tax band.")
+      val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 25000))
 
       val bands = List(
         Band("Band", 22.33, "20%", 33500, 6700, "B"),
@@ -428,7 +428,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         Band("Band", 41.66, "20%", 15000, 3000, "D0")
       )
 
-      val nextBandMessage = Some("You can have £13,000 more before your income reaches the next tax band.")
+      val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 13000))
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 4000)
       dataF mustBe BandedGraph("taxGraph", bands, 0, 36000, 23000, 22.22, 8000, 63.88, 3000, nextBandMessage)
@@ -482,7 +482,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         Band("TaxFree", 34.88, "0%", 15000, 0, "SDR")
       )
 
-      val nextBandMessage = Some("You can have £14,000 more before your income reaches the next tax band.")
+      val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 14000))
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 11000)
       dataF mustBe BandedGraph("taxGraph", bands, 0, 43000, 29000, 67.43, 29000, 67.43, 0, nextBandMessage)
@@ -524,7 +524,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         Band("Band", 36.36, taxExplanationLink, 40000, 6750, "TaxedIncome")
       )
 
-      val nextBandMessage = Some("You can have £50,000 more before your income reaches the next tax band.")
+      val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 50000))
 
       val links = Map("taxExplanationScreen" -> taxExplanationLink)
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 10000)
@@ -548,7 +548,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         Band("Band", 47.61, taxExplanationLink, 100000, 9750, "TaxedIncome")
       )
 
-      val nextBandMessage = Some("You can have £90,000 more before your income reaches the next tax band.")
+      val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 90000))
 
       val links = Map("taxExplanationScreen" -> taxExplanationLink)
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 10000)
@@ -573,7 +573,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         Band("Band", 47.61, taxExplanationLink, 100000, 9750, "TaxedIncome")
       )
 
-      val nextBandMessage = Some("You can have £90,000 more before your income reaches the next tax band.")
+      val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 90000))
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(EstimatedIncomeTaxViewModel.retrieveTaxBands(taxBand), taxFreeAllowanceBandSum = 10000)
       dataF mustBe BandedGraph("taxGraph", bands, 0, 210000, 120000, 9.52, 20000, 57.13, 9750, nextBandMessage)

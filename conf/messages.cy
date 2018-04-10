@@ -1440,3 +1440,47 @@ tai.income.previousYears.decision.customGaTitle=WELSHUpdate income decision
 tai.income.previousYears.details.customGaTitle=WELSHWhat do you want to tell us about your income details?
 tai.remove.company.benefit.total.value.customGaTitle=WELSHWhat was the total value of the benefit?
 tai.updateEmployment.whatDoYouWantToTellUs.customGaTitle=WELSHWhat do you want to tell us about this employer?
+
+##Estimated Income Tax Graph
+tai.taxCalc.nextTaxBand=WELSHYou can have £{0} more before your income reaches the next tax band.
+tai.taxedIncome.desc=WELSHTaxedIncome
+tai.taxCalc.UnderpaymentPreviousYear.title=WELSHUnderpayment from previous years
+tai.taxCalc.OutstandingDebt.title=WELSHOutstanding debt from previous year
+tai.taxCalc.childBenefit.title=WELSHChild Benefit
+
+tai.taxCalc.excessGiftAidTax.title=WELSHExcess Gift Aid Tax
+tai.taxCalc.excessWidowsAndOrphans.title=WELSHExcess Widows And Orphans
+tai.taxCalc.pensionPaymentsAdjustment.title=WELSHPension Payments Adjustment
+
+#Tax paid elsewhere
+tai.taxCollected.atSource.title=WELSHReductions
+tai.taxCollected.atSource.description=WELSHNot all of the tax in your estimate is collected through PAYE using your tax code(s). The tax you won’t pay through PAYE includes:
+tai.taxCollected.atSource.heading.tax=WELSHTax
+tai.taxCollected.atSource.heading.amount=WELSHAmount (£)
+
+tai.taxCollected.atSource.dividends.title=WELSHTax on dividends
+tai.taxCollected.atSource.dividends.description=WELSHInterest from company dividends is taxed at the dividend ordinary rate ({0}%) before it is paid to you.
+
+tai.taxCollected.atSource.marriageAllowance.title=WELSHMarried Couples Allowance
+tai.taxCollected.atSource.marriageAllowance.description=WELSHMarried Couples Allowance reduces the amount of tax you pay. You will get tax relief at 10% of your Married Couples Allowance of £{0}. The amount shown in your {1} calculation may appear to be different to make sure you get the right amount for your tax rate.
+tai.taxCollected.atSource.marriageAllowance.description.linkText=WELSHtax code
+
+tai.taxCollected.atSource.maintenancePayments.title=WELSHMaintenance Payments
+tai.taxCollected.atSource.maintenancePayments.description=WELSHTax relief on maintenance payments to your ex-spouse or partner until your child is 21.
+tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title=WELSHEnterprise Investment Scheme Relief
+tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description=WELSHTax relief for your qualifying investment shares
+
+tai.taxCollected.atSource.concessionalRelief.title=WELSHConcessional Relief
+tai.taxCollected.atSource.concessionalRelief.description=WELSHTax relief for your qualifying scheme
+
+tai.taxCollected.atSource.doubleTaxationRelief.title=WELSHDouble Taxation Relief
+tai.taxCollected.atSource.doubleTaxationRelief.description=WELSHTax Relief given for the tax you’ve paid abroad on foreign income.
+
+tai.taxCollected.atSource.bank.title=WELSHTax on interest from savings and investments
+tai.taxCollected.atSource.bank.description=WELSHThis is the interest that has been taxed by the basic rate of {0}% by your bank, building society or financial institution before it is paid to you.
+
+tai.taxCollected.atSource.otherIncome.title=WELSHTax on other income
+tai.taxCollected.atSource.otherIncome.description=WELSHTax on other income not collected through your tax code, for example tax paid through Self Assessment.
+
+tai.taxCollected.byPAYE.title=WELSHTax collected through your tax code
+tai.taxCollected.byPAYE.description=WELSHPay As You Earn (PAYE) does not include tax paid elsewhere. The tax you’ll pay through PAYE is £{0}.
