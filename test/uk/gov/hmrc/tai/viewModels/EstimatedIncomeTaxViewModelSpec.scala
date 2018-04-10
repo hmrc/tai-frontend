@@ -593,7 +593,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         )
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(700, otherTaxDue)), None, None)
         val codingComponents = Seq(
-          CodingComponent(UnderPaymentFromPreviousYear, None, 100, ""),
+          CodingComponent(UnderPaymentFromPreviousYear, None, 100, "", Some(10)),
           CodingComponent(EstimatedTaxYouOweThisYear, None, 0, "", Some(50)),
           CodingComponent(OutstandingDebt, None, 150, "")
         )
@@ -601,7 +601,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         val result = EstimatedIncomeTaxViewModel.createAdditionalTaxTable(codingComponents, totalTax)
 
         result mustBe Seq(
-          AdditionalTaxDetailRow(Messages("tai.taxCalc.UnderpaymentPreviousYear.title"), 100, None),
+          AdditionalTaxDetailRow(Messages("tai.taxCalc.UnderpaymentPreviousYear.title"), 10, None),
           AdditionalTaxDetailRow(Messages("tai.taxcode.deduction.type-45"), 50, Some(routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url)),
           AdditionalTaxDetailRow(Messages("tai.taxCalc.OutstandingDebt.title"), 150, None),
           AdditionalTaxDetailRow(Messages("tai.taxCalc.childBenefit.title"), 300, None),

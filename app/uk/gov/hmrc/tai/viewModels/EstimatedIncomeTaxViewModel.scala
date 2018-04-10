@@ -266,7 +266,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
 
   def createAdditionalTaxTable(codingComponent: Seq[CodingComponent], totalTax: TotalTax): Seq[AdditionalTaxDetailRow] = {
 
-    val underPaymentFromPreviousYear = codingComponent.find(_.componentType == UnderPaymentFromPreviousYear).map(_.amount)
+    val underPaymentFromPreviousYear = codingComponent.find(_.componentType == UnderPaymentFromPreviousYear).flatMap(_.inputAmount)
     val underPaymentRow = createAdditionalTaxRow(underPaymentFromPreviousYear, Messages("tai.taxCalc.UnderpaymentPreviousYear.title"), None)
 
     val inYearAdjustment = codingComponent.find(_.componentType == EstimatedTaxYouOweThisYear).flatMap(_.inputAmount)
