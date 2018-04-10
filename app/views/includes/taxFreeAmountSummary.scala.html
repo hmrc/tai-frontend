@@ -32,6 +32,7 @@
                 <h3 class="heading-small section--narrow flush" id="summaryTable@{itemIdx.toString}Caption">@item.caption</h3>
                 }
 
+                @if(item.rows.length>1) {
                 <ul id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx==items.length && item.rows.length==1){subsection highlight} else {flush}" role="list">
                     @for((row, rowIdx) <- item.rows zip (Stream from 1)) {
                         <li id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}">
@@ -52,11 +53,12 @@
                                         attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
                                     )
                                 }
-                                @if(item.caption==Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption==Messages("tai.taxFreeAmount.table.totals.caption")){
-                                </h3>
-                                } else {
-                                </div>
-                                }
+
+                            @if(item.caption==Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption==Messages("tai.taxFreeAmount.table.totals.caption")){
+                            </h3>
+                            } else {
+                            </div>
+                            }
 
                             <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ValueCell" class="cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
                                 @if(item.caption==Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption==Messages("tai.taxFreeAmount.table.totals.caption")){
@@ -82,6 +84,59 @@
                         </li>
                     }
                 </ul>
+                } else {@if(item.rows.length==1) {
+
+                <div class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx==items.length && item.rows.length==1){subsection highlight heading-small} else {flush}">
+                    <div id="summaryTable@{itemIdx.toString}Row1">
+
+                        @if(item.caption==Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption==Messages("tai.taxFreeAmount.table.totals.caption")){
+                        <h3 id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word ">
+                        } else {
+                        <div id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word">
+                        }
+
+                            @item.rows(0).label
+                            @if(item.rows(0).label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
+                                @includes.link(
+                                    id=Some("estimatedTaxOwedLink"),
+                                    copy=Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"),
+                                    url = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
+                                    linkClasses = Seq("link-list__item"),
+                                    attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
+                                )
+                            }
+
+                        @if(item.caption==Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption==Messages("tai.taxFreeAmount.table.totals.caption")){
+                        </h3>
+                        } else {
+                        </div>
+                        }
+
+                        <div id="summaryTable@{itemIdx.toString}Row1ValueCell" class="cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
+                            @if(item.caption==Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption==Messages("tai.taxFreeAmount.table.totals.caption")){
+                            <span class="visuallyhidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix")</span>
+                            }
+                            @item.rows(0).value
+                        </div>
+
+                        @if(item.rows(0).link.isDisplayed) {
+                        <div id="summaryTable@{itemIdx.toString}Row1ChangeLinkCell" class="cya-change">
+                            @includes.link(
+                            id = Some(s"summaryTable${itemIdx.toString}Row1ChangeLink"),
+                            url = item.rows(0).link.href,
+                            copy=Messages("tai.updateOrRemove"),
+                            altCopy=Some(Messages("tai.updateOrRemove") + " " + item.rows(0).link.value),
+                            attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${item.rows(0).link.value}")
+                            )
+                        </div>
+                        } else @{if(oneOrMoreLinksPresent) {
+                        <div class="cya-change"></div>
+                        }}
+
+                    </div>
+                </div>
+
+                }}
 
             </div>
 
