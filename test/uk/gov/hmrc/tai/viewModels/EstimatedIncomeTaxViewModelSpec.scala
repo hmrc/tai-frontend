@@ -24,13 +24,13 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxAdjustmentComponent, TaxBand, TotalTax}
-import uk.gov.hmrc.tai.util.TaxRegionConstants
+import uk.gov.hmrc.tai.util.{BandTypesConstants, TaxRegionConstants}
 import uk.gov.hmrc.urls.Link
 
 import scala.collection.immutable.Seq
 import scala.language.postfixOps
 
-class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with TaxRegionConstants {
+class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with TaxRegionConstants with BandTypesConstants {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -818,6 +818,58 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         val totalTax = TotalTax(100, Seq.empty[IncomeCategory], None, None, None, None, None)
         EstimatedIncomeTaxViewModel.hasTaxRelief(totalTax) mustBe false
       }
+    }
+  }
+
+  "fetchIncome" must {
+    "return income of PSR" in {
+      val bankIntTaxBand: List[TaxBand] = List(
+        TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        TaxBand("SR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
+
+      val untaxedTaxBand: List[TaxBand] = List(
+        TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        TaxBand("SDR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0))
+
+      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
+
+      val income = EstimatedIncomeTaxViewModel.fetchIncome(taxBands, PersonalSavingsRate)
+
+      income mustBe Some(10000)
+
+    }
+
+    "return income of SR" in {
+      val bankIntTaxBand: List[TaxBand] = List(
+        TaxBand("SR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
+
+      val untaxedTaxBand: List[TaxBand] = List(
+        TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0)
+      )
+      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
+
+      val income = EstimatedIncomeTaxViewModel.fetchIncome(taxBands, StarterSavingsRate)
+
+      income mustBe Some(5000)
+    }
+
+    "return None" in {
+      val bankIntTaxBand: List[TaxBand] = List(
+        TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        TaxBand("SDR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
+
+      val untaxedTaxBand: List[TaxBand] = List(
+        TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        TaxBand("SDR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0))
+
+      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
+
+      val income = EstimatedIncomeTaxViewModel.fetchIncome(taxBands, StarterSavingsRate)
+
+      income mustBe None
     }
   }
 

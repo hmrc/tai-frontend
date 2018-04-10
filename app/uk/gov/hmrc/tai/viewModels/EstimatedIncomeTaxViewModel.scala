@@ -69,15 +69,16 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     val taxBands = totalTax.incomeCategories.flatMap(_.taxBands)
     val personalAllowance = personalAllowanceAmount(codingComponents)
     val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
-    val graph = createBandedGraph(retrieveTaxBands(taxBands.toList :+ paBand), personalAllowance, taxAccountSummary.taxFreeAllowance)
+    val mergedTaxBands = retrieveTaxBands(taxBands.toList :+ paBand)
+    val graph = createBandedGraph(mergedTaxBands, personalAllowance, taxAccountSummary.taxFreeAllowance)
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
     val additionalTaxTableTotal = additionalTaxTable.map(_.amount).sum
     val reductionTaxTable = createReductionsTable(codingComponents, totalTax)
     val reductionTaxTableTotal = reductionTaxTable.map(_.amount).sum
     val incomeTaxReducedToZero = incomeTaxReducedToZeroMessage(taxAccountSummary.totalEstimatedTax <= 0 && reductionTaxTable.nonEmpty)
     val hasPotentialUnderPayment = taxAccountSummary.totalInYearAdjustmentIntoCY <= 0 && taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne > 0
-    val ssrValue = taxBands.find(band => band.bandType == StarterSavingsRate && band.income > 0).map(_.income)
-    val psrValue = taxBands.find(band => band.bandType == PersonalSavingsRate && band.income > 0).map(_.income)
+    val ssrValue = fetchIncome(mergedTaxBands, StarterSavingsRate)
+    val psrValue = fetchIncome(mergedTaxBands, PersonalSavingsRate)
     val dividends = dividendsMessage(nonTaxCodeIncome, totalTax)
     val taxRegion = findTaxRegion(taxCodeIncomes)
 
@@ -97,6 +98,10 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
       dividends,
       taxRegion,
       hasTaxRelief(totalTax))
+  }
+
+  def fetchIncome(mergedTaxBands: List[TaxBand], bandType: String): Option[BigDecimal] = {
+    mergedTaxBands.find(band => band.bandType == bandType && band.income > 0).map(_.income)
   }
 
   def hasTaxRelief(totalTax: TotalTax): Boolean = {
