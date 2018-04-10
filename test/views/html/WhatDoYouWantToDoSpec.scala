@@ -63,10 +63,10 @@ class WhatDoYouWantToDoSpec extends TaiViewSpec {
     }
 
     "have two radio buttons with relevant text" in {
-      doc must haveElementAtPathWithId("form fieldset input", "taxYears-currenttaxyear")
-      doc must haveElementAtPathWithText("form fieldset label[for=taxYears-currenttaxyear]", Messages("tai.WhatDoYouWantToDo.radio1"))
       doc must haveElementAtPathWithId("form fieldset input", "taxYears-lasttaxyear")
-      doc must haveElementAtPathWithText("form fieldset label[for=taxYears-lasttaxyear]", Messages("tai.WhatDoYouWantToDo.radio2"))
+      doc must haveElementAtPathWithText("form fieldset label[for=taxYears-lasttaxyear]", Messages("tai.WhatDoYouWantToDo.radio3"))
+      doc must haveElementAtPathWithId("form fieldset input", "taxYears-currenttaxyear")
+      doc must haveElementAtPathWithText("form fieldset label[for=taxYears-currenttaxyear]", Messages("tai.WhatDoYouWantToDo.radio2"))
     }
 
     "have error message with the radio buttons" in {
@@ -86,7 +86,7 @@ class WhatDoYouWantToDoSpec extends TaiViewSpec {
         val nextYearDoc = doc(nextYearView)
 
         nextYearDoc must haveElementAtPathWithId("form fieldset input", "taxYears-nexttaxyear")
-        nextYearDoc must haveElementAtPathWithText("form fieldset label[for=taxYears-nexttaxyear]", Messages("tai.WhatDoYouWantToDo.radio3"))
+        nextYearDoc must haveElementAtPathWithText("form fieldset label[for=taxYears-nexttaxyear]", Messages("tai.WhatDoYouWantToDo.radio1"))
       }
     }
 

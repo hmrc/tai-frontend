@@ -23,10 +23,11 @@
 @(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData], model: WhatDoYouWantToDoViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @radioSequence = @{
-    val mandatory = Seq(("currentTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio1")), ("lastTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio2")) )
-    if(model.isCyPlusOneEnabled) { mandatory :+ ("nextTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio3")) } else { mandatory }
+    val mandatory = Seq(("currentTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio2")), ("lastTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio3")) )
+    if(model.isCyPlusOneEnabled) { ("nextTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio1")) +: mandatory  } else { mandatory }
 }
-
+    @*"nextTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio1"*@
+    @*"lastTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio3"*@
 @main(
     title = Messages("tai.whatDoYouWantToDo.heading"),
     user = Some(user),
@@ -59,9 +60,9 @@
                         ('_legendClass, "subsection"),
                         ('_legendSpanClass, "heading-medium display-block flush--top"),
                         ('_fieldsetAttributes, "id=taxYears" ),
-                        ('_radioOption1Attributes, Html("""data-journey-click="radio - select:What do you want to do?:I want to check my taxable income, tax free allowances and tax codes for the current tax year" data-journey-val="I want to check my taxable income, tax free allowances and tax codes for the current tax year"""") ),
-                        ('_radioOption2Attributes, Html("""data-journey-click="radio - select:What do you want to do?:I want to check how much tax I paid last year" data-journey-val="I want to check how much tax I paid last year"""") ),
-                        ('_radioOption3Attributes, Html("""data-journey-click="radio - select:What do you want to do?:I want to check how much tax I will pay next year" data-journey-val="I want to check how much tax I will pay next year"""") )
+                        ('_radioOption1Attributes, Html("""data-journey-click="radio - select:What do you want to do?:next year" data-journey-val="next year"""") ),
+                        ('_radioOption2Attributes, Html("""data-journey-click="radio - select:What do you want to do?:current tax year, 2017 to 2018" data-journey-val="current tax year, 2017 to 2018"""") ),
+                        ('_radioOption3Attributes, Html("""data-journey-click="radio - select:What do you want to do?:earlier" data-journey-val="earlier"""") )
                     )}
 
                     <p class="subsection">
