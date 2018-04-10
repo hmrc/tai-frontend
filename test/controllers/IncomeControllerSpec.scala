@@ -25,6 +25,7 @@ import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Nino
@@ -41,9 +42,10 @@ import uk.gov.hmrc.tai.service.{ActivityLoggerService, TaiService}
 
 import scala.concurrent.Future
 
-class IncomeControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
+class IncomeControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
 
   implicit val hc = HeaderCarrier()
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   val fakeRequest1 = FakeRequest("POST", "").withFormUrlEncodedBody(
     "name" -> "test1", "description" -> "description",
@@ -195,26 +197,26 @@ class IncomeControllerSpec extends PlaySpec with FakeTaiPlayApplication with Moc
 
 
     "create editIncomeForm with errors having less new amount  " in {
-      val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
       val paymentDate = None
       val pensionYTD = 1700
-      val testForm = EditIncomeForm.bind(RequestBuilder.buildFakeRequestWithAuth("POST"), pensionYTD, paymentDate, Some("error.tai.updateDataPension.enterLargerValue"))
+      implicit val request = RequestBuilder.buildFakeRequestWithAuth("POST")
+      val testForm = EditIncomeForm.bind(pensionYTD, paymentDate, Some("error.tai.updateDataPension.enterLargerValue"))
       testForm.fold(formWithErrors=>true, income=>false) mustBe true
     }
 
     "create editIncomeForm with no errors having large new amount  " in {
-      val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
       val paymentDate = None
       val pensionYTD = 10
-      val testForm = EditIncomeForm.bind(RequestBuilder.buildFakeRequestWithAuth("POST"), pensionYTD, paymentDate, Some("error.tai.updateDataPension.enterLargerValue"))
+      implicit val request = RequestBuilder.buildFakeRequestWithAuth("POST")
+      val testForm = EditIncomeForm.bind(pensionYTD, paymentDate, Some("error.tai.updateDataPension.enterLargerValue"))
       testForm.fold(formWithErrors=>true, income=>false) mustBe false
     }
 
     "create editIncomeForm with no errors having same new amount  " in {
-      val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
       val paymentDate = None
       val pensionYTD = 1675
-      val testForm = EditIncomeForm.bind(RequestBuilder.buildFakeRequestWithAuth("POST"), pensionYTD, paymentDate, Some("error.tai.updateDataPension.enterLargerValue"))
+      implicit val request = RequestBuilder.buildFakeRequestWithAuth("POST")
+      val testForm = EditIncomeForm.bind(pensionYTD, paymentDate, Some("error.tai.updateDataPension.enterLargerValue"))
       testForm.fold(formWithErrors=>true, income=>false) mustBe false
     }
   }
