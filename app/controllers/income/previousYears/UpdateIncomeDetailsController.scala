@@ -56,9 +56,9 @@ trait UpdateIncomeDetailsController extends TaiBaseController
   def trackingJourneyCacheService: JourneyCacheService
   def previousYearsIncomeService: PreviousYearsIncomeService
 
-  def telephoneNumberViewModel(taxYear: Int): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
-    Messages("tai.income.previousYears.journey.preHeader"),
-    Messages("tai.canWeContactByPhone.title"),
+  def telephoneNumberViewModel(taxYear: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
+    messages("tai.income.previousYears.journey.preHeader"),
+    messages("tai.canWeContactByPhone.title"),
     controllers.income.previousYears.routes.UpdateIncomeDetailsController.details.url,
     controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitTelephoneNumber().url,
     controllers.routes.PayeControllerHistoric.payePage(TaxYear(taxYear)).url

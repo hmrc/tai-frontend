@@ -20,16 +20,15 @@ import TestConnectors.FakeAuthConnector
 import builders.{RequestBuilder, UserBuilder}
 import data.TaiData
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
-import org.jsoup.Jsoup
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.tai.service.{ActivityLoggerService, TaiService}
-import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
@@ -41,9 +40,10 @@ import uk.gov.hmrc.tai.service.{ActivityLoggerService, TaiService}
 
 import scala.concurrent.Future
 
-class IncomeControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
+class IncomeControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport {
 
   implicit val hc = HeaderCarrier()
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   val fakeRequest1 = FakeRequest("POST", "").withFormUrlEncodedBody(
     "name" -> "test1", "description" -> "description",
@@ -67,7 +67,6 @@ class IncomeControllerSpec extends PlaySpec with FakeTaiPlayApplication with Moc
       val employment = employments.get.taxCodeIncomes(0)
 
       val SUT = new TestIncomeController()
-      val requestData = IabdEditDataRequest(version = 1, newAmount = 1123)
       val fakeRequest = FakeRequest("POST", "").withFormUrlEncodedBody(
         "version" -> "1",
         "newAmounts[0].name" -> "test1",
@@ -80,13 +79,10 @@ class IncomeControllerSpec extends PlaySpec with FakeTaiPlayApplication with Moc
 
     "throw validation if amount entered is more than 9 digits" in {
       val testTaxSummary = TaiData.getEditableCeasedAndIncomeTaxSummary
-
       val employments = testTaxSummary.increasesTax.flatMap(_.incomes.flatMap(_.taxCodeIncomes.employments))
       employments.isDefined mustBe true
-      val employment = employments.get.taxCodeIncomes(0)
 
       val SUT = new TestIncomeController()
-      val requestData = IabdEditDataRequest(version = 1, newAmount = 1123)
       val fakeRequest = FakeRequest("POST", "").withFormUrlEncodedBody(
         "name" -> "test1", "description" -> "description",
         "employmentId" -> "14",
@@ -119,15 +115,10 @@ class IncomeControllerSpec extends PlaySpec with FakeTaiPlayApplication with Moc
       "isOccupationalPension" -> "false",
       "hasMultipleIncomes" -> "false")
 
-
-
-
     "show the correct step for confirmation page for income" in {
       val testTaxSummary = TaiData.getBasicRateTaxSummary
-
       val employments = testTaxSummary.increasesTax.flatMap(_.incomes.flatMap(_.taxCodeIncomes.employments))
       employments.isDefined mustBe true
-      val employment = employments.get.taxCodeIncomes(0)
 
       val SUT = createSUTwithProgrammedDeps()
 
@@ -137,13 +128,10 @@ class IncomeControllerSpec extends PlaySpec with FakeTaiPlayApplication with Moc
 
     "show the correct step for confirmation page for multiple-incomes" in {
       val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
-
       val employments = testTaxSummary.increasesTax.flatMap(_.incomes.flatMap(_.taxCodeIncomes.employments))
       employments.isDefined mustBe true
-      val employment = employments.get.taxCodeIncomes(0)
 
       val SUT = createSUTwithProgrammedDeps()
-      val fakeRequest = FakeRequest("POST", "").withFormUrlEncodedBody()
 
       val result = SUT.updateIncomesForNino(nino)(fakeRequest1, UserBuilder.apply(),createMockSessionData(testTaxSummary))
       status(result) mustBe 200
@@ -193,28 +181,27 @@ class IncomeControllerSpec extends PlaySpec with FakeTaiPlayApplication with Moc
       nextURL.contains("/gg/sign-in") mustBe true
     }
 
-
     "create editIncomeForm with errors having less new amount  " in {
-      val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
       val paymentDate = None
       val pensionYTD = 1700
-      val testForm = EditIncomeForm.bind(RequestBuilder.buildFakeRequestWithAuth("POST"), pensionYTD, paymentDate, Some("error.tai.updateDataPension.enterLargerValue"))
+      implicit val request = RequestBuilder.buildFakeRequestWithAuth("POST")
+      val testForm = EditIncomeForm.bind(pensionYTD, paymentDate, Some("error.tai.updateDataPension.enterLargerValue"))
       testForm.fold(formWithErrors=>true, income=>false) mustBe true
     }
 
     "create editIncomeForm with no errors having large new amount  " in {
-      val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
       val paymentDate = None
       val pensionYTD = 10
-      val testForm = EditIncomeForm.bind(RequestBuilder.buildFakeRequestWithAuth("POST"), pensionYTD, paymentDate, Some("error.tai.updateDataPension.enterLargerValue"))
+      implicit val request = RequestBuilder.buildFakeRequestWithAuth("POST")
+      val testForm = EditIncomeForm.bind(pensionYTD, paymentDate, Some("error.tai.updateDataPension.enterLargerValue"))
       testForm.fold(formWithErrors=>true, income=>false) mustBe false
     }
 
     "create editIncomeForm with no errors having same new amount  " in {
-      val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
       val paymentDate = None
       val pensionYTD = 1675
-      val testForm = EditIncomeForm.bind(RequestBuilder.buildFakeRequestWithAuth("POST"), pensionYTD, paymentDate, Some("error.tai.updateDataPension.enterLargerValue"))
+      implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("POST")
+      val testForm = EditIncomeForm.bind(pensionYTD, paymentDate, Some("error.tai.updateDataPension.enterLargerValue"))
       testForm.fold(formWithErrors=>true, income=>false) mustBe false
     }
   }
