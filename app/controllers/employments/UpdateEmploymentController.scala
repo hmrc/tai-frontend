@@ -62,9 +62,9 @@ trait UpdateEmploymentController extends TaiBaseController
 
   def successfulJourneyCacheService: JourneyCacheService
 
-  def telephoneNumberViewModel(id: Int): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
-    Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
-    Messages("tai.canWeContactByPhone.title"),
+  def telephoneNumberViewModel(id: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
+    messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
+    messages("tai.canWeContactByPhone.title"),
     controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(id).url,
     controllers.employments.routes.UpdateEmploymentController.submitTelephoneNumber().url,
     controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url
