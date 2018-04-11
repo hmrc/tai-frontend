@@ -67,7 +67,7 @@ object TaxSummaryHelper {
 
   def hasNoTaxableIncome(taxSummaryDetails: TaxSummaryDetails): Boolean = {
     taxSummaryDetails.increasesTax.map(_.total).getOrElse(BigDecimal(0)) > taxSummaryDetails.decreasesTax.map(_.total).getOrElse(BigDecimal(0))
-  }
+  }// totalIncome from income categories > allowances
 
 
   def getPPR(taxSummaryDetails: TaxSummaryDetails): (BigDecimal, BigDecimal) = {

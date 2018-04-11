@@ -1,0 +1,95 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(model: uk.gov.hmrc.tai.viewModels.TaxReliefViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@import uk.gov.hmrc.play.views.helpers.MoneyPounds
+@import uk.gov.hmrc.urls.Link
+@import includes.ptaHeader
+
+@gaEventActionString = @{"Your tax relief payments"}
+
+@taxYearRangeString = @{
+    model.currentTaxYearRangeHtmlNonBreak
+}
+
+@header = @{
+    ptaHeader(
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.extendedTaxReliefs.heading"),
+        preHeadingText = taxYearRangeString,
+        preHeadingAccessibleAnnouncement = Messages("tai.estimatedIncome.accessiblePreHeading")
+    )
+}
+
+@main(title = Messages("tai.extendedTaxReliefs.heading"),
+    articleClasses = Some("full-width"),
+    user = Some(user),
+    pageHeader = Some(header),
+    gaCustomTitle = None
+){
+    <div class="grid-row">
+        <div class="grid grid-2-3">
+            <div class="inner-block">
+                <section class="section soft--ends">
+                    <p>@Messages("tai.extendedTaxReliefs.description")</p>
+                    <table id="now-pay-tax-on" class="table-section">
+                        <thead>
+                            <tr>
+                                <th>@Messages("tai.extendedTaxReliefs.payments")</th>
+                                <th class="text--right">@Html(Messages("tai.extendedTaxReliefs.source"))</th>
+                                <th class="text--right">@Html(Messages("tai.extendedTaxReliefs.relief"))</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(model.hasGiftAid){
+                                <tr>
+                                    <td>
+                                        @Messages("tai.extendedTaxReliefs.giftAid.title")
+                                        @if(model.hasNoTaxableIncome){
+                                            @if(model.giftAidRelief <= BigDecimal(0)){
+                                                <p>@Messages("tai.extendedTaxReliefs.giftAid.BR.description")</p>
+                                            } else {
+                                                <p>@Messages("tai.extendedTaxReliefs.giftAid.HR.description")</p>
+                                            }
+                                        }else{
+                                            <p>@Messages("tai.extendedTaxReliefs.giftAid.NoTax.description")</p>
+                                        }
+                                    </td>
+                                    <td class="text--right"> @MoneyPounds(model.giftAid,0).quantity </td>
+                                    <td class="text--right"> @MoneyPounds(model.giftAidRelief,2).quantity </td>
+                                </tr>
+                            }
+
+                            @if(model.hasPersonalPension){
+                                <tr>
+                                    <td>
+                                        @Messages("tai.extendedTaxReliefs.ppr.title")
+                                        <p>@Messages("tai.extendedTaxReliefs.ppr.description")</p>
+
+                                    </td>
+                                    <td class="text--right">@MoneyPounds(model.personalPension,0).quantity</td>
+                                    <td class="text--right">@MoneyPounds(model.personalPensionPaymentRelief,2).quantity</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </div>
+    </div>
+}
