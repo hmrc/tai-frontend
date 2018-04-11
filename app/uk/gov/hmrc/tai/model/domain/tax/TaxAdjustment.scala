@@ -23,6 +23,7 @@ sealed trait TaxAdjustmentType
 trait ReliefsGivingBackTax extends TaxAdjustmentType
 trait OtherTaxDue extends TaxAdjustmentType
 trait AlreadyTaxedAtSource extends TaxAdjustmentType
+trait TaxReliefComponent extends TaxAdjustmentType
 
 case object EnterpriseInvestmentSchemeRelief extends ReliefsGivingBackTax
 case object ConcessionalRelief extends ReliefsGivingBackTax
@@ -39,6 +40,11 @@ case object TaxOnBankBSInterest extends AlreadyTaxedAtSource
 case object TaxCreditOnUKDividends extends AlreadyTaxedAtSource
 case object TaxCreditOnForeignInterest extends AlreadyTaxedAtSource
 case object TaxCreditOnForeignIncomeDividends extends AlreadyTaxedAtSource
+
+case object PersonalPensionPayment extends TaxReliefComponent
+case object PersonalPensionPaymentRelief extends TaxReliefComponent
+case object GiftAidPayments extends TaxReliefComponent
+case object GiftAidPaymentsRelief extends TaxReliefComponent
 
 
 object TaxAdjustmentType {
@@ -60,6 +66,10 @@ object TaxAdjustmentType {
         case "TaxCreditOnUKDividends" => JsSuccess(TaxCreditOnUKDividends)
         case "TaxCreditOnForeignInterest" => JsSuccess(TaxCreditOnForeignInterest)
         case "TaxCreditOnForeignIncomeDividends" => JsSuccess(TaxCreditOnForeignIncomeDividends)
+        case "PersonalPensionPayment" => JsSuccess(PersonalPensionPayment)
+        case "PersonalPensionPaymentRelief" => JsSuccess(PersonalPensionPaymentRelief)
+        case "GiftAidPayments" => JsSuccess(GiftAidPayments)
+        case "GiftAidPaymentsRelief" => JsSuccess(GiftAidPaymentsRelief)
         case _ => throw new IllegalArgumentException("Invalid income category type")
       }
     }

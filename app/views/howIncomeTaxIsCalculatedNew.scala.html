@@ -16,10 +16,10 @@
 
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.urls.Link
-@import uk.gov.hmrc.tai.viewModels.TaxExplanationViewModel
+@import uk.gov.hmrc.tai.viewModels.TaxExplanationViewModelNew
 @import includes.ptaHeader
 
-@(taxExplanationViewModel: TaxExplanationViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(taxExplanationViewModel: TaxExplanationViewModelNew)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"How your PAYE Income Tax is calculated"}
 
@@ -64,7 +64,7 @@
                             @for(taxBand <- taxExplanationViewModel.nonSavings.sortBy(_.rate)){
                                 <tr>
                                     <td>@MoneyPounds(taxBand.income,0).quantity</td>
-                                    <td>@taxBand.bandType.map(label => Messages(s"${taxExplanationViewModel.bandType}.$label"))</td>
+                                    <td>@Messages(s"${taxExplanationViewModel.bandType}.${taxBand.bandType}")</td>
                                     <td class="text--right">@taxBand.rate%</td>
                                     <td class="text--right">@MoneyPounds(taxBand.tax,2).quantity</td>
                                 </tr>
@@ -72,7 +72,7 @@
                             @for(taxBand <- taxExplanationViewModel.savings.sortBy(_.rate)){
                                 <tr>
                                     <td>@MoneyPounds(taxBand.income,0).quantity</td>
-                                    <td>@taxBand.bandType.map(label => Messages(s"${taxExplanationViewModel.bandType}.$label"))</td>
+                                    <td>@Messages(s"${taxExplanationViewModel.bandType}.${taxBand.bandType}")</td>
                                     <td class="text--right">@taxBand.rate%</td>
                                     <td class="text--right">@MoneyPounds(taxBand.tax,2).quantity</td>
                                 </tr>
@@ -80,7 +80,7 @@
                             @for(taxBand <- taxExplanationViewModel.dividends.sortBy(_.rate)){
                                 <tr>
                                     <td>@MoneyPounds(taxBand.income,0).quantity</td>
-                                    <td>@taxBand.bandType.map(label => Messages(s"${taxExplanationViewModel.bandType}.$label"))</td>
+                                    <td>@Messages(s"${taxExplanationViewModel.bandType}.${taxBand.bandType}")</td>
                                     <td class="text--right">@taxBand.rate%</td>
                                     <td class="text--right">@MoneyPounds(taxBand.tax,2).quantity</td>
                                 </tr>
