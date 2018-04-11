@@ -22,9 +22,11 @@ import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.config
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.time.TaxYearResolver
 
 
 class WhatDoYouWantToDoSpec extends TaiViewSpec {
@@ -62,7 +64,7 @@ class WhatDoYouWantToDoSpec extends TaiViewSpec {
       doc must haveElementAtPathWithId("form fieldset input", "taxYears-lasttaxyear")
       doc must haveElementAtPathWithText("form fieldset label[for=taxYears-lasttaxyear]", Messages("tai.WhatDoYouWantToDo.radio3"))
       doc must haveElementAtPathWithId("form fieldset input", "taxYears-currenttaxyear")
-      doc must haveElementAtPathWithText("form fieldset label[for=taxYears-currenttaxyear]", Messages("tai.WhatDoYouWantToDo.radio2"))
+      doc must haveElementAtPathWithText("form fieldset label[for=taxYears-currenttaxyear]", Messages("tai.WhatDoYouWantToDo.radio2", s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}" ))
     }
 
     "have error message with the radio buttons" in {

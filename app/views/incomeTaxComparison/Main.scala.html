@@ -92,12 +92,5 @@
                 </ul>
             </section>
         </div>
-
-        <aside class="column-one-third">
-            <h2 class="heading-medium heading-section flush--top">@messages("tai.incomeTaxComparison.sidebar.subHeading")</h2>
-
-            <p>@Link.toInternalPage(url = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
-                value = Some("tai.incomeTaxSummary.link"), id = Some("taxAccountSummaryLink")).toHtml</p>
-        </aside>
     </div>
 }

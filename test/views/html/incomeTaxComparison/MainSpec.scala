@@ -34,7 +34,7 @@ class MainSpec extends TaiViewSpec {
       doc(view) must haveSectionWithId("incomeTax")
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.more", "£100"))
     }
-    
+
     "display a link to return to choose tax year page" in {
       doc must haveLinkWithUrlWithID("returnToChooseTaxYearLink", controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
     }
@@ -78,16 +78,6 @@ class MainSpec extends TaiViewSpec {
 
     "have the tell us about a change text" in {
       doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.tellAboutChange.description"))
-    }
-
-    "have the sidebar heading" in {
-      doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.sidebar.subHeading"))
-    }
-
-    "have a sidebar with the correct link" in {
-      doc(view) must haveLinkElement(id = "taxAccountSummaryLink",
-        href = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
-        text = messages("tai.incomeTaxSummary.link"))
     }
 
   }
