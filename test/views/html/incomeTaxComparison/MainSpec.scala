@@ -26,7 +26,6 @@ import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonViewModel, IncomeSource
 class MainSpec extends TaiViewSpec {
   "Cy plus one view" must {
     behave like pageWithTitle(messages("tai.incomeTaxComparison.heading"))
-    behave like pageWithBackLink
     behave like pageWithCombinedHeader(preHeaderText = incomeTaxComparisonViewModel.username,
       mainHeaderText = messages("tai.incomeTaxComparison.heading"),
       preHeaderAnnouncementText = Some(messages("tai.incomeTaxComparison.preHeading.screenReader")))
@@ -35,6 +34,11 @@ class MainSpec extends TaiViewSpec {
       doc(view) must haveSectionWithId("incomeTax")
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.more", "£100"))
     }
+    
+    "display a link to return to choose tax year page" in {
+      doc must haveLinkWithUrlWithID("returnToChooseTaxYearLink", controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
+    }
+
 
     "show the tax codes section" in {
       doc(view) must haveSectionWithId("taxCodes")
