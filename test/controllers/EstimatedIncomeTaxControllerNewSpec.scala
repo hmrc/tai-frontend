@@ -98,6 +98,39 @@ class EstimatedIncomeTaxControllerNewSpec extends PlaySpec with MockitoSugar wit
     }
   }
 
+
+  "Tax Relief" must {
+    "return Ok" when {
+      "loading the tax relief page" in {
+        val sut = createSUT
+        when(sut.taxAccountService.totalTax(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
+            TotalTax(0 , Seq.empty[IncomeCategory], None, None, None)
+          )))
+        when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).
+          thenReturn(Future.successful(Seq.empty[CodingComponent]))
+
+        val result = sut.taxRelief()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+      }
+    }
+
+    "return error" when {
+      "failed to fetch details" in {
+        val sut = createSUT
+        when(sut.taxAccountService.totalTax(any(), any())(any())).
+          thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+        when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).
+          thenReturn(Future.successful(Seq.empty[CodingComponent]))
+
+        val result = sut.taxRelief()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
   val nino: Nino = new Generator(new Random).nextNino
   private def createSUT = new SUT
 

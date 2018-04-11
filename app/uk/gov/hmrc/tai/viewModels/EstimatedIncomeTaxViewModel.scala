@@ -17,15 +17,12 @@
 package uk.gov.hmrc.tai.viewModels
 
 import controllers.routes
-import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.{TaxAdjustment, TaxAdjustmentType, TaxBand, TotalTax}
-import uk.gov.hmrc.tai.model.nps2.DeductionType.InYearAdjustment
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.urls.Link
 
@@ -65,7 +62,7 @@ case class EstimatedIncomeTaxViewModel(
 object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants {
 
   def apply(codingComponents: Seq[CodingComponent], taxAccountSummary: TaxAccountSummary,
-            totalTax: TotalTax, nonTaxCodeIncome: NonTaxCodeIncome, taxCodeIncomes: Seq[TaxCodeIncome]): EstimatedIncomeTaxViewModel = {
+            totalTax: TotalTax, nonTaxCodeIncome: NonTaxCodeIncome, taxCodeIncomes: Seq[TaxCodeIncome])(implicit messages: Messages): EstimatedIncomeTaxViewModel = {
     val taxBands = totalTax.incomeCategories.flatMap(_.taxBands)
     val personalAllowance = personalAllowanceAmount(codingComponents)
     val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
@@ -100,19 +97,19 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
       hasTaxRelief(totalTax))
   }
 
-  def fetchIncome(mergedTaxBands: List[TaxBand], bandType: String): Option[BigDecimal] = {
+  def fetchIncome(mergedTaxBands: List[TaxBand], bandType: String)(implicit messages: Messages): Option[BigDecimal] = {
     mergedTaxBands.find(band => band.bandType == bandType && band.income > 0).map(_.income)
   }
 
-  def hasTaxRelief(totalTax: TotalTax): Boolean = {
+  def hasTaxRelief(totalTax: TotalTax)(implicit messages: Messages): Boolean = {
     totalTax.taxReliefComponent.isDefined
   }
 
-  def findTaxRegion(taxCodeIncomes: Seq[TaxCodeIncome]): String = {
+  def findTaxRegion(taxCodeIncomes: Seq[TaxCodeIncome])(implicit messages: Messages): String = {
     if(taxCodeIncomes.exists(_.taxCode.startsWith("S"))) ScottishTaxRegion else UkTaxRegion
   }
 
-  private def personalAllowanceAmount(codingComponents: Seq[CodingComponent]) = {
+  private def personalAllowanceAmount(codingComponents: Seq[CodingComponent])(implicit messages: Messages) = {
     codingComponents.find { component =>
       component.componentType match {
         case compType if compType == PersonalAllowancePA || compType == PersonalAllowanceAgedPAA || compType == PersonalAllowanceElderlyPAE => true
@@ -121,18 +118,18 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     }.map(_.amount)
   }
 
-  private def createPABand(taxFreeAllowance: BigDecimal) = {
+  private def createPABand(taxFreeAllowance: BigDecimal)(implicit messages: Messages) = {
     TaxBand(TaxFreeAllowanceBand, "", taxFreeAllowance, 0, Some(0), None, 0)
   }
 
-  def retrieveTaxBands(taxBands: List[TaxBand]): List[TaxBand] = {
+  def retrieveTaxBands(taxBands: List[TaxBand])(implicit messages: Messages): List[TaxBand] = {
     val mergedPsaBands = mergeAllowanceTaxBands(taxBands, PersonalSavingsRate)
     val mergedSrBands = mergeAllowanceTaxBands(mergedPsaBands, StarterSavingsRate)
     val bands = mergeAllowanceTaxBands(mergedSrBands, TaxFreeAllowanceBand)
     bands.filter(_.income > 0).sortBy(_.rate)
   }
 
-  private def mergeAllowanceTaxBands(taxBands: List[TaxBand], bandType:  String) = {
+  private def mergeAllowanceTaxBands(taxBands: List[TaxBand], bandType:  String)(implicit messages: Messages) = {
     val (bands, remBands) = taxBands.partition(_.bandType == bandType)
     bands match {
       case Nil => remBands
@@ -147,14 +144,16 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
   }
 
 
-  def createBandedGraph(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None, taxFreeAllowanceBandSum: BigDecimal = 0): BandedGraph = {
+  def createBandedGraph(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None,
+                        taxFreeAllowanceBandSum: BigDecimal = 0)(implicit messages: Messages): BandedGraph = {
     taxBands match {
       case Nil => BandedGraph("taxGraph")
       case taxbands => createGraph(taxbands, personalAllowance, taxFreeAllowanceBandSum)
     }
   }
 
-  private def createGraph(taxbands: List[TaxBand], personalAllowance: Option[BigDecimal] = None, taxFreeAllowanceBandSum: BigDecimal = 0): BandedGraph = {
+  private def createGraph(taxbands: List[TaxBand], personalAllowance: Option[BigDecimal] = None,
+                          taxFreeAllowanceBandSum: BigDecimal = 0)(implicit messages: Messages): BandedGraph = {
     val (individualBand: List[Band], mergedBand: Option[Band])  = {
       if(taxbands.exists(_.rate == 0)){
         (individualBands(taxbands, personalAllowance, taxFreeAllowanceBandSum), mergedBands(taxbands, personalAllowance, taxFreeAllowanceBandSum))
@@ -185,16 +184,19 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     )
   }
 
-  def individualBands(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None, taxFreeAllowanceBandSum: BigDecimal = 0): List[Band] =
+  def individualBands(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None,
+                      taxFreeAllowanceBandSum: BigDecimal = 0)(implicit messages: Messages): List[Band] =
     for (taxBand <- taxBands.filter(_.rate == 0)) yield Band("TaxFree", calcBarPercentage(taxBand.income, taxBands, personalAllowance, taxFreeAllowanceBandSum),
       "0%", taxBand.income, taxBand.tax, taxBand.bandType)
 
-  def individualOtherRateBands(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None, taxFreeAllowanceBandSum: BigDecimal = 0): List[Band] =
+  def individualOtherRateBands(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None,
+                               taxFreeAllowanceBandSum: BigDecimal = 0)(implicit messages: Messages): List[Band] =
     for (taxBand <- taxBands) yield Band("Band", calcBarPercentage(taxBand.income, taxBands, personalAllowance, taxFreeAllowanceBandSum),
       s"${taxBand.rate}%", taxBand.income, taxBand.tax, taxBand.bandType)
 
 
-  def getUpperBand(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None, taxFreeAllowanceBandSum: BigDecimal = 0): BigDecimal = {
+  def getUpperBand(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None,
+                   taxFreeAllowanceBandSum: BigDecimal = 0)(implicit messages: Messages): BigDecimal = {
     taxBands match  {
       case Nil => BigDecimal(0)
       case _ =>
@@ -221,7 +223,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
   }
 
   def calcBarPercentage(incomeBand: BigDecimal, taxBands: List[TaxBand],
-                        personalAllowance: Option[BigDecimal] = None, taxFreeAllowanceBandSum: BigDecimal = 0): BigDecimal = {
+                        personalAllowance: Option[BigDecimal] = None, taxFreeAllowanceBandSum: BigDecimal = 0)(implicit messages: Messages): BigDecimal = {
     taxBands match {
       case Nil => BigDecimal(0)
       case _ =>
@@ -230,7 +232,8 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     }
   }
 
-  def mergedBands(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None, taxFreeAllowanceBandSum: BigDecimal = 0): Option[Band] = {
+  def mergedBands(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None,
+                  taxFreeAllowanceBandSum: BigDecimal = 0)(implicit messages: Messages): Option[Band] = {
     val nonZeroBands = taxBands.filter(_.rate != 0)
 
     Option(nonZeroBands.nonEmpty).collect {
@@ -246,25 +249,25 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     }
   }
 
-  private def getBandValues(nonZeroBands: List[TaxBand]) = {
+  private def getBandValues(nonZeroBands: List[TaxBand])(implicit messages: Messages) = {
     if (nonZeroBands.size > 1) {
       (Link.toInternalPage(
         url = routes.TaxExplanationControllerNew.taxExplanationPage().toString,
         value = Some(Messages("tai.mergedTaxBand.description")),
         id = Some("taxExplanation")
-      ).toHtml.body, Messages("tai.taxedIncome.desc"), nonZeroBands.map(_.income).sum)
+      ).toHtml.body, "TaxedIncome", nonZeroBands.map(_.income).sum)
     } else {
       nonZeroBands.map(otherBand => (otherBand.rate.toString() + "%", otherBand.bandType, otherBand.income)).head
     }
   }
 
-  private def createNextBandMessage(amount: BigDecimal): Option[String] = {
+  private def createNextBandMessage(amount: BigDecimal)(implicit messages: Messages): Option[String] = {
     Option(amount > 0).collect {
       case true => Messages("tai.taxCalc.nextTaxBand", MoneyPounds(amount, 0).quantity)
     }
   }
 
-  def createAdditionalTaxTable(codingComponent: Seq[CodingComponent], totalTax: TotalTax): Seq[AdditionalTaxDetailRow] = {
+  def createAdditionalTaxTable(codingComponent: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages): Seq[AdditionalTaxDetailRow] = {
 
     val underPaymentFromPreviousYear = codingComponent.find(_.componentType == UnderPaymentFromPreviousYear).flatMap(_.inputAmount)
     val underPaymentRow = createAdditionalTaxRow(underPaymentFromPreviousYear, Messages("tai.taxCalc.UnderpaymentPreviousYear.title"), None)
@@ -301,7 +304,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     row.map(amount => AdditionalTaxDetailRow(description, amount, url))
   }
 
-  def createReductionsTable(codingComponents: Seq[CodingComponent], totalTax: TotalTax): Seq[ReductionTaxRow] = {
+  def createReductionsTable(codingComponents: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages): Seq[ReductionTaxRow] = {
     val nonCodedIncome = totalTax.taxOnOtherIncome
     val nonCodedIncomeRow = createReductionTaxRow(nonCodedIncome, Messages("tai.taxCollected.atSource.otherIncome.description"),
       Messages("tai.taxCollected.atSource.otherIncome.title"))
@@ -344,7 +347,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     ).flatten
   }
 
-  private def createMarriageAllowanceRow(codingComponents: Seq[CodingComponent], totalTax: TotalTax) = {
+  private def createMarriageAllowanceRow(codingComponents: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages) = {
     val marriageAllowance = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MarriedCouplesAllowance)
     val marriageAllowanceNpsComponent = codingComponents.find { component =>
       component.componentType match {
@@ -362,7 +365,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
       Messages("tai.taxCollected.atSource.marriageAllowance.title"))
   }
 
-  private def createMaintenancePaymentRow(codingComponents: Seq[CodingComponent], totalTax: TotalTax) = {
+  private def createMaintenancePaymentRow(codingComponents: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages) = {
     val maintenancePayment = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MaintenancePayments)
     val maintenancePaymentGross = codingComponents.find(_.componentType == MaintenancePayments).map(_.amount).getOrElse(BigDecimal(0))
 
@@ -372,17 +375,17 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
       Messages("tai.taxCollected.atSource.marriageAllowance.title"))
   }
 
-  def incomeTaxReducedToZeroMessage(hasTaxReducedToZero: Boolean): Option[String] = {
+  def incomeTaxReducedToZeroMessage(hasTaxReducedToZero: Boolean)(implicit messages: Messages): Option[String] = {
     Option(hasTaxReducedToZero).collect{
       case true => Messages("tai.estimatedIncome.reductionsTax.incomeTaxReducedToZeroMessage")
     }
   }
 
-  private def createReductionTaxRow(row: Option[BigDecimal], description: String, title: String) = {
+  private def createReductionTaxRow(row: Option[BigDecimal], description: String, title: String)(implicit messages: Messages) = {
     row.map(amount => ReductionTaxRow(description, amount, title))
   }
 
-  def dividendsMessage(nonTaxCodeIncome: NonTaxCodeIncome, totalTax: TotalTax): Option[String] = {
+  def dividendsMessage(nonTaxCodeIncome: NonTaxCodeIncome, totalTax: TotalTax)(implicit messages: Messages): Option[String] = {
     val ukDividend = nonTaxCodeIncome.otherNonTaxCodeIncomes.find(_.incomeComponentType == UkDividend).map(_.amount)
 
     ukDividend flatMap { ukDivTotalIncome =>

@@ -32,15 +32,18 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaiService, TaxAccountService}
-import uk.gov.hmrc.tai.viewModels.EstimatedIncomeTaxViewModel
+import uk.gov.hmrc.tai.viewModels.{EstimatedIncomeTaxViewModel, TaxReliefViewModel}
 
 trait EstimatedIncomeTaxControllerNew extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
 
   def taiService: TaiService
+
   def partialService: HasFormPartialService
+
   def codingComponentService: CodingComponentService
+
   def taxAccountService: TaxAccountService
 
 
@@ -67,11 +70,33 @@ trait EstimatedIncomeTaxControllerNew extends TaiBaseController
               (taxSummary, totalTax, nonTaxCode, taxCodeIncomes) match {
                 case (TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
                 TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax),
-                  TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
+                TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
                 TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
                   val model = EstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, totalTaxDetails, nonTaxCodeIncome, taxCodeIncomes)
                   Ok(views.html.estimatedIncomeTaxNew(model, iFormLinks successfulContentOrElse Html("")))
                 case _ => throw new RuntimeException("Failed to get tax summary details")
+              }
+            }
+          }
+  }
+
+  def taxRelief(): Action[AnyContent] = authorisedForTai(taiService).async {
+    implicit user =>
+      implicit taiRoot =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            val nino = Nino(user.getNino)
+            val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
+            val codingComponentFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
+            for {
+              codingComponents <- codingComponentFuture
+              totalTax <- totalTaxFuture
+            } yield {
+              totalTax match {
+                case TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax) =>
+                  val model = TaxReliefViewModel(codingComponents, totalTaxDetails)
+                  Ok(views.html.reliefsNew(model))
+                case _ => throw new RuntimeException("Failed to get total tax details")
               }
             }
           }
