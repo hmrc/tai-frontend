@@ -251,6 +251,11 @@
     }
 
     // Update message
+
+    if (options && options.language) {
+        // placeholder - pending welsh translation - will be a string of either "en" or "cy"
+    }
+
     var charVerb = 'remaining'
     var charNoun = 'character'
     var displayNumber = remainingNumber
