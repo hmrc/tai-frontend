@@ -19,11 +19,13 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 @import includes.forms.inputRadioGroupNewStyling
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.time.TaxYearResolver
 
 @(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData], model: WhatDoYouWantToDoViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @radioSequence = @{
-    val mandatory = Seq(("currentTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio2")), ("lastTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio3")) )
+    val mandatory = Seq(("currentTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio2",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")), ("lastTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio3")) )
     if(model.isCyPlusOneEnabled) { ("nextTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio1")) +: mandatory  } else { mandatory }
 }
     @*"nextTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio1"*@
@@ -54,8 +56,8 @@
                     @{inputRadioGroupNewStyling(
                         field=wdywtdForm("taxYears"),
                         radioOptions=radioSequence,
-                        legend=Messages("tai.whatDoYouWantToDo.chooseOneOption"),
-                        legendHint=Some(Messages("tai.whatDoYouWantToDo.iWantToCheck")),
+                        legend=Messages("tai.whatDoYouWantToDo.legend"),
+                        legendHint=None,
                         ('_groupDivClass, "form-group" ),
                         ('_legendClass, "subsection"),
                         ('_legendSpanClass, "heading-medium display-block flush--top"),

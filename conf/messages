@@ -157,8 +157,7 @@ tai.hmrc.enquiry.url=https://www.gov.uk/government/organisations/hm-revenue-cust
 
 ##What Do You Want To Do page
 tai.whatDoYouWantToDo.heading=Choose tax year
-tai.whatDoYouWantToDo.chooseOneOption=Choose one option
-tai.whatDoYouWantToDo.iWantToCheck=I want to check:
+tai.whatDoYouWantToDo.legend=View PAYE Income Tax details for:
 tai.WhatDoYouWantToDo.radio1=next year
 tai.WhatDoYouWantToDo.radio2=current tax year, 2017 to 2018
 tai.WhatDoYouWantToDo.radio3=earlier 

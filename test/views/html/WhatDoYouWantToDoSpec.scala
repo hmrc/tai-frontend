@@ -55,13 +55,9 @@ class WhatDoYouWantToDoSpec extends TaiViewSpec {
     }
 
     "have 'choose one option' legend" in {
-      doc must haveElementAtPathWithText("legend span[id=radioGroupLegendMain", Messages("tai.whatDoYouWantToDo.chooseOneOption"))
+      doc must haveElementAtPathWithText("legend span[id=radioGroupLegendMain", Messages("tai.whatDoYouWantToDo.legend"))
     }
-
-    "have 'I want to check:' legend hint" in {
-      doc must haveElementAtPathWithText("legend span[id=radioGroupLegendHint", Messages("tai.whatDoYouWantToDo.iWantToCheck"))
-    }
-
+    
     "have two radio buttons with relevant text" in {
       doc must haveElementAtPathWithId("form fieldset input", "taxYears-lasttaxyear")
       doc must haveElementAtPathWithText("form fieldset label[for=taxYears-lasttaxyear]", Messages("tai.WhatDoYouWantToDo.radio3"))
