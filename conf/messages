@@ -1280,7 +1280,7 @@ tai.income.calculation.rtiUnavailableCurrentYear.message.contact=You do not need
 #Side Menu Bar
 
 #print pages
-tai.label.print=Print
+tai.label.print=Print this page
 tai.label.paye=Taxable Income
 tai.label.back=Back
 

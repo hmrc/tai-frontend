@@ -32,7 +32,8 @@
         @Link.toInternalPage(
             id=Some("printLink"),
             url=routes.YourIncomeCalculationController.printYourIncomeCalculation(historicIncomeCalculationViewModel.taxYear, historicIncomeCalculationViewModel.employmentId).toString,
-            value=Some(Messages("tai.label.print"))).toHtml
+            value=Some(Messages("tai.label.print")),
+            cssClasses=Some("tai-print-link")).toHtml
     </p>
 }
 

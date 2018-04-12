@@ -32,7 +32,8 @@
     <p class="flush--bottom">
     @Link.toInternalPage(
         url=routes.YourIncomeCalculationController.printYourIncomeCalculationPage(Some(model.empId)).toString,
-        value=Some(Messages("tai.label.print"))).toHtml
+        value=Some(Messages("tai.label.print")),
+        cssClasses=Some("tai-print-link")).toHtml
     </p>
 }
 
