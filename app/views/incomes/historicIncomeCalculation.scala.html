@@ -27,17 +27,22 @@
 
 @gaEventActionString = @{"Your Income Tax"}
 
+@printLink= {
+    <p class="flush--bottom">
+        @Link.toInternalPage(
+            id=Some("printLink"),
+            url=routes.YourIncomeCalculationController.printYourIncomeCalculation(historicIncomeCalculationViewModel.taxYear, historicIncomeCalculationViewModel.employmentId).toString,
+            value=Some(Messages("tai.label.print"))).toHtml
+    </p>
+}
+
 @header = @{
     ptaHeader(
         mainHeadingText = Messages("tai.income.calculation.TaxableIncomeDetails", historicIncomeCalculationViewModel.employerName.getOrElse("")),
         preHeadingText = Messages("tai.yourIncome.preHeading"),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        additionalTopLinkContent = Some(Link.toInternalPage(
-                                        id=Some("printLink"),
-                                        url=routes.YourIncomeCalculationController.printYourIncomeCalculation(historicIncomeCalculationViewModel.taxYear, historicIncomeCalculationViewModel.employmentId).toString,
-                                        value=Some(Messages("tai.label.print")),
-                                        cssClasses=Some("tai-print-link")).toHtml)
+        additionalTopLinkContent = Some(printLink)
     )}
 
 @main(

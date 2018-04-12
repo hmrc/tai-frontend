@@ -23,7 +23,7 @@
 @(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
 @gaEventActionString = @{"Income Tax comparison: current and next tax years"}
 @backLinkToChooseTaxYear = {
-    <p>
+    <p class="flush--bottom">
     @Link.toInternalPage(
         id=Some("returnToChooseTaxYearLink"),
         url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
