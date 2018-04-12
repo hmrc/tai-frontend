@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.viewModels
 import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import play.api.i18n.Messages.Implicits._
@@ -51,15 +52,21 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
         val taxCodeDetails = TaxCodeComparisonViewModel(Seq(nextYearDetails, currentYearDetails))
 
-        taxCodeDetails.employmentTaxCodes mustBe Seq(
-          TaxCodeDetail("employer2", Seq("BR", "NBR")),
+        taxCodeDetails.employmentTaxCodes must contain{
+          TaxCodeDetail("employer2", Seq("BR", "NBR"))
+        }
+        taxCodeDetails.employmentTaxCodes must contain{
           TaxCodeDetail("employer1", Seq("1150L", "1250L"))
-        )
+        }
 
-        taxCodeDetails.pensionTaxCodes mustBe Seq(
-          TaxCodeDetail("pension2", Seq("BR", "PBR")),
+        taxCodeDetails.pensionTaxCodes must contain{
+          TaxCodeDetail("pension2", Seq("BR", "PBR"))
+        }
+
+        taxCodeDetails.pensionTaxCodes must contain{
           TaxCodeDetail("pension1", Seq("1150L", "1250L"))
-        )
+        }
+
       }
     }
 
@@ -70,15 +77,19 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
         val taxCodeDetails = TaxCodeComparisonViewModel(Seq(nextYearDetails, currentYearDetails))
 
-        taxCodeDetails.employmentTaxCodes mustBe Seq(
-          TaxCodeDetail("employer2", Seq("BR", "NBR")),
-          TaxCodeDetail("employer1", Seq("1150L", "Not applicable"))
-        )
-
-        taxCodeDetails.pensionTaxCodes mustBe Seq(
-          TaxCodeDetail("pension2", Seq("BR", "PBR")),
+        taxCodeDetails.employmentTaxCodes must contain{
+          TaxCodeDetail("employer2", Seq("BR", "NBR"))
+        }
+        taxCodeDetails.employmentTaxCodes must contain{
+          TaxCodeDetail("employer1", Seq("1150L", "tai.taxCode.comparision.noCode"))
+        }
+        taxCodeDetails.pensionTaxCodes must contain{
+          TaxCodeDetail("pension2", Seq("BR", "PBR"))
+        }
+        taxCodeDetails.pensionTaxCodes must contain{
           TaxCodeDetail("pension1", Seq("1150L", "1250L"))
-        )
+        }
+
       }
 
       "multiple tax years are requested, but there is a missing income source record for the later tax year" in {
@@ -87,15 +98,18 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
         val taxCodeDetails = TaxCodeComparisonViewModel(Seq(nextYearDetails, currentYearDetails))
 
-        taxCodeDetails.employmentTaxCodes mustBe Seq(
-          TaxCodeDetail("employer2", Seq("BR", "NBR")),
-          TaxCodeDetail("employer1", Seq("Not applicable", "1250L"))
-        )
-
-        taxCodeDetails.pensionTaxCodes mustBe Seq(
-          TaxCodeDetail("pension2", Seq("BR", "PBR")),
+        taxCodeDetails.employmentTaxCodes must contain{
+          TaxCodeDetail("employer2", Seq("BR", "NBR"))
+        }
+        taxCodeDetails.employmentTaxCodes must contain{
+          TaxCodeDetail("employer1", Seq("tai.taxCode.comparision.noCode", "1250L"))
+        }
+        taxCodeDetails.pensionTaxCodes must contain{
+          TaxCodeDetail("pension2", Seq("BR", "PBR"))
+        }
+        taxCodeDetails.pensionTaxCodes must contain{
           TaxCodeDetail("pension1", Seq("1150L", "1250L"))
-        )
+        }
       }
     }
 

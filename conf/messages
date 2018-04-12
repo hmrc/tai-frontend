@@ -1051,6 +1051,9 @@ tai.taxCode.subheading=Your tax code for {0}: {1}
 tai.taxCode.sideBar.heading=Understand your tax
 tai.taxCode.taxableIncome.link=View your taxable income
 
+## Tax code comparison message
+tai.taxCode.comparision.noCode = not applicable
+
 ## New tax code explanations
 tai.taxCode.L=You are entitled to the basic tax-free Personal Allowance. Your tax code will be updated automatically if the tax-free Personal Allowances change.
 tai.taxCode.M=Marriage Allowance: you’ve received a transfer of 10% of your partner’s Personal Allowance.
