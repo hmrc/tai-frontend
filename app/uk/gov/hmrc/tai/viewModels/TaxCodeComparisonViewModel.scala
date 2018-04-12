@@ -19,8 +19,11 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.TaiConstants.ScottishTaxCodePrefix
 import uk.gov.hmrc.tai.util.ViewModelHelper
+
+import scala.collection.immutable.ListMap
 
 case class TaxCodeComparisonViewModel(employmentTaxCodes: Seq[TaxCodeDetail], pensionTaxCodes: Seq[TaxCodeDetail])
   extends ViewModelHelper {
@@ -48,19 +51,37 @@ object TaxCodeComparisonViewModel {
   }
 
   private def taxCodeDetails(taxCodeForYears: Seq[TaxCodeForYear], taxComponentType: TaxComponentType) = {
-    val taxCodeIncomeSources = taxCodeForYears.sortBy(_.year)
-      .flatMap(_.taxCodeIncomeSources.filter(taxCodeIncomeSource =>
-        taxCodeIncomeSource.componentType == taxComponentType && taxCodeIncomeSource.status == Live))
 
-    val empIdNameAndTaxCodes = taxCodeIncomeSources.map(incomeSource =>
-      (incomeSource.employmentId.getOrElse(-1), incomeSource.name, incomeSource.taxCode))
+    val sortedTaxYearMap: Map[TaxYear, Seq[TaxCodeIncome]] = {
+      val mapSeq = taxCodeForYears map { tcfy =>
+        (tcfy.year -> tcfy.taxCodeIncomeSources.filter(tci => tci.componentType == taxComponentType && tci.status == Live))
+      }
+      ListMap(mapSeq.sortBy(_._1): _*)
+    }
+    val uniqueIncomeSourceNames = sortedTaxYearMap.values.flatMap(_.map(_.name)).toSet
+    uniqueIncomeSourceNames map { isn =>
+      val taxCodesInYearOrder =
+        sortedTaxYearMap map {case (ty, incomes) =>
+          incomes.find({_.name == isn}).headOption.map(_.taxCode).getOrElse("Not applicable")
+        }
+      TaxCodeDetail(isn, taxCodesInYearOrder.toList)
+    } toList
 
-    val groupByEmpId = empIdNameAndTaxCodes.groupBy(_._1)
-    val groupByName = groupByEmpId.values.flatMap(_.groupBy(_._2))
 
-    groupByName.toSeq.map(incomeDetails => {
-      TaxCodeDetail(incomeDetails._1, incomeDetails._2.map(_._3))
-    })
+
+//    val taxCodeIncomeSources = taxCodeForYears.sortBy(_.year)
+//      .flatMap(_.taxCodeIncomeSources.filter(taxCodeIncomeSource =>
+//        taxCodeIncomeSource.componentType == taxComponentType && taxCodeIncomeSource.status == Live))
+//
+//    val empIdNameAndTaxCodes = taxCodeIncomeSources.map(incomeSource =>
+//      (incomeSource.employmentId.getOrElse(-1), incomeSource.name, incomeSource.taxCode))
+//
+//    val groupByEmpId = empIdNameAndTaxCodes.groupBy(_._1)
+//    val groupByName = groupByEmpId.values.flatMap(_.groupBy(_._2))
+//
+//    groupByName.toSeq.map(incomeDetails => {
+//      TaxCodeDetail(incomeDetails._1, incomeDetails._2.map(_._3))
+//    })
   }
 }
 
