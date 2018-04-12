@@ -18,8 +18,11 @@ package uk.gov.hmrc.tai.forms
 
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
+import play.api.i18n.Messages
 
 class WhatDoYouWantToDoFormSpec extends PlaySpec with FakeTaiPlayApplication {
+  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+
   "calling the WhatDoYouWantToDoForm" should {
     "return the form with errors" when {
       "the taxYears field has an empty string" in {

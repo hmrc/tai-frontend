@@ -85,7 +85,7 @@ trait IncomeControllerNew extends TaiBaseController
           journeyCacheService.collectedValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey), Seq(UpdateIncome_DateKey)) flatMap tupled {
             (mandatorySeq, optionalSeq) => {
               val date = optionalSeq.head.map(date => LocalDate.parse(date))
-              EditIncomeForm.bind(request, BigDecimal(mandatorySeq.head), date).fold(
+              EditIncomeForm.bind(BigDecimal(mandatorySeq.head), date).fold(
                 formWithErrors => {
                   val webChat = true
                   Future.successful(BadRequest(views.html.incomes.editIncome(formWithErrors,
@@ -178,7 +178,7 @@ trait IncomeControllerNew extends TaiBaseController
           journeyCacheService.collectedValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey), Seq(UpdateIncome_DateKey)) flatMap tupled {
             (mandatorySeq, optionalSeq) => {
               val date = optionalSeq.head.map(date => LocalDate.parse(date))
-              EditIncomeForm.bind(request, BigDecimal(mandatorySeq.head), date).fold(
+              EditIncomeForm.bind(BigDecimal(mandatorySeq.head), date).fold(
                 formWithErrors => {
                   val webChat = true
                   Future.successful(BadRequest(views.html.incomes.editPension(formWithErrors,

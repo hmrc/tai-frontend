@@ -17,13 +17,11 @@
 package uk.gov.hmrc.tai.forms.constaints
 
 import play.api.data.validation.{Constraint, Invalid, Valid}
-import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 
 object TelephoneNumberConstraint {
 
-  val telephoneNumberSizeConstraint: Constraint[String] =
+  def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
     Constraint[String]((textContent: String) => textContent match {
       case txt if txt.length < 8 || txt.length > 30 => Invalid(Messages("tai.canWeContactByPhone.telephone.invalid"))
       case _ => Valid

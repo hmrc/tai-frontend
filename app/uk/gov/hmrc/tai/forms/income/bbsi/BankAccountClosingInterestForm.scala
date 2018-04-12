@@ -16,12 +16,10 @@
 
 package uk.gov.hmrc.tai.forms.income.bbsi
 
-import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.hmrc.tai.util.FormHelper.isValidCurrency
 import uk.gov.voa.play.form.ConditionalMappings._
@@ -32,12 +30,12 @@ case class BankAccountClosingInterestForm(closingBankAccountInterestChoice: Opti
 
 object BankAccountClosingInterestForm extends BankAccountClosingInterestConstants with FormValuesConstants {
 
-  private def yesNoChoiceValidation = Constraint[Option[String]]("") {
+  private def yesNoChoiceValidation(implicit messages: Messages) = Constraint[Option[String]]("") {
     case Some(txt) if txt == YesValue || txt == NoValue => Valid
     case _ => Invalid(Messages("tai.closeBankAccount.closingInterest.error.selectOption"))
   }
 
-  def form = Form[BankAccountClosingInterestForm](
+  def form(implicit messages: Messages) = Form[BankAccountClosingInterestForm](
     mapping(
       ClosingInterestChoice -> optional(text).verifying(yesNoChoiceValidation),
       ClosingInterestEntry -> mandatoryIfEqual(ClosingInterestChoice,

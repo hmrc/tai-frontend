@@ -16,18 +16,16 @@
 
 package uk.gov.hmrc.tai.forms.benefits
 
-import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.hmrc.tai.util.FormHelper.isValidCurrency
 
 object CompanyBenefitTotalValueForm {
 
-  val form: Form[String] = Form(
+  def form(implicit messages: Messages): Form[String] = Form(
     single(
       "totalValue" ->
         text.verifying(StopOnFirstFail(
