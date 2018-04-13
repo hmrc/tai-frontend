@@ -16,15 +16,13 @@
 
 package uk.gov.hmrc.tai.forms.pensions
 
-import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 
 object PensionProviderNameForm {
 
-  val form: Form[String] = Form(
+  def form(implicit messages: Messages): Form[String] = Form(
     single(
       "pensionProviderName" ->
         text.verifying(Messages("tai.pensionProviderName.error.blank"), {!_.isEmpty}))

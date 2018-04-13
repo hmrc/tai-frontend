@@ -60,7 +60,7 @@ with Auditable {
         activityLoggerService.updateIncome(nino)
       }
 
-      EditIncomeForm.bind(request).fold(
+      EditIncomeForm.bind().fold(
         formWithErrors => {
           val webChat = true
           Future.successful(

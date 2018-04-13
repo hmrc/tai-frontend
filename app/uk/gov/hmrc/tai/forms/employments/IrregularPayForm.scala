@@ -16,19 +16,17 @@
 
 package uk.gov.hmrc.tai.forms.employments
 
-import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.util.IrregularPayConstants
 
 
 case class IrregularPayFormData(irregularPayDecision: Option[String])
 
 object IrregularPayForm extends IrregularPayConstants {
-  val createForm: Form[IrregularPayFormData] = {
+  def createForm(implicit messages: Messages): Form[IrregularPayFormData] = {
     Form[IrregularPayFormData](
       mapping(
         IrregularPayDecision -> optional(text).verifying(irregularPayDecisionValidation)
@@ -36,7 +34,7 @@ object IrregularPayForm extends IrregularPayConstants {
     )
   }
 
-  def irregularPayDecisionValidation: Constraint[Option[String]] = Constraint[Option[String]](Messages("tai.choice.validationText")) {
+  def irregularPayDecisionValidation(implicit messages: Messages): Constraint[Option[String]] = Constraint[Option[String]](Messages("tai.choice.validationText")) {
     case Some(_) => Valid
     case _ => Invalid(Messages("tai.error.chooseOneOption"))
   }
