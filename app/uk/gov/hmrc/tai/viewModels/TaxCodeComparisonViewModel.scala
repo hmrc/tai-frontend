@@ -50,7 +50,7 @@ object TaxCodeComparisonViewModel {
     TaxCodeComparisonViewModel(employmentTaxCodes, pensionTaxCodes)
   }
 
-  private def taxCodeDetails(taxCodeForYears: Seq[TaxCodeForYear], taxComponentType: TaxComponentType) = {
+  private def taxCodeDetails(taxCodeForYears: Seq[TaxCodeForYear], taxComponentType: TaxComponentType)(implicit messages: Messages) = {
 
     val sortedTaxYearMap: Map[TaxYear, Seq[TaxCodeIncome]] = {
       val mapSeq = taxCodeForYears map { tcfy =>
@@ -63,7 +63,7 @@ object TaxCodeComparisonViewModel {
     uniqueIncomeSourceNames map { isn =>
       val taxCodesInYearOrder =
         sortedTaxYearMap map {case (ty, incomes) =>
-          incomes.find({_.name == isn}).headOption.map(_.taxCode).getOrElse("tai.taxCode.comparision.noCode")
+          incomes.find({_.name == isn}).headOption.map(_.taxCode).getOrElse(Messages("tai.incomeTaxComparison.incomeSourceAbsent"))
         }
       TaxCodeDetail(isn, taxCodesInYearOrder.toList)
     } toList

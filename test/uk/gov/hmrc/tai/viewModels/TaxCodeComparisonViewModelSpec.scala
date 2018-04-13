@@ -81,7 +81,7 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
           TaxCodeDetail("employer2", Seq("BR", "NBR"))
         }
         taxCodeDetails.employmentTaxCodes must contain{
-          TaxCodeDetail("employer1", Seq("1150L", "tai.taxCode.comparision.noCode"))
+          TaxCodeDetail("employer1", Seq("1150L", Messages("tai.incomeTaxComparison.incomeSourceAbsent")))
         }
         taxCodeDetails.pensionTaxCodes must contain{
           TaxCodeDetail("pension2", Seq("BR", "PBR"))
@@ -102,7 +102,7 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
           TaxCodeDetail("employer2", Seq("BR", "NBR"))
         }
         taxCodeDetails.employmentTaxCodes must contain{
-          TaxCodeDetail("employer1", Seq("tai.taxCode.comparision.noCode", "1250L"))
+          TaxCodeDetail("employer1", Seq(Messages("tai.incomeTaxComparison.incomeSourceAbsent"), "1250L"))
         }
         taxCodeDetails.pensionTaxCodes must contain{
           TaxCodeDetail("pension2", Seq("BR", "PBR"))
