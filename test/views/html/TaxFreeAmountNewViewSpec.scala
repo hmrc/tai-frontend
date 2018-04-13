@@ -62,19 +62,38 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
       }
 
       "contains a heading for the addition and deduction group" in {
-        doc must haveElementAtPathWithText("#summaryTable2Caption", "Additions to your Personal Allowance")
-        doc must haveElementAtPathWithText("#summaryTable3Caption", "Deductions from your Personal Allowance")
+        doc must haveElementAtPathWithText("h3#summaryTable2Caption", "Additions to your Personal Allowance")
+        doc must haveElementAtPathWithText("h3#summaryTable3Caption", "Deductions from your Personal Allowance")
+      }
+
+      "does not contain a stand alone heading for the personal allowance and total groups (which are of length 1)" in {
+        doc must not(haveElementAtPathWithId("h3", "summaryTable1Caption"))
+        doc must not(haveElementAtPathWithId("h3", "summaryTable4Caption"))
+      }
+
+      "contains an inline heading for the personal allowance and total groups (which are of length 1)" in {
+        doc must haveElementAtPathWithText("h3#summaryTable1Row1-header", "Personal Allowance")
+        doc must haveElementAtPathWithText("h3#summaryTable4Row1-header", "Your total tax-free amount")
+      }
+
+      "displays a group with multiple rows as an unordered list of items" in {
+        doc must haveElementAtPathWithId("#taxFreeAmountDetail ul", "summaryTable2Body")
+      }
+
+      "displays a group with a single row as a plain div" in {
+        doc must not(haveElementAtPathWithId("#taxFreeAmountDetail ul", "summaryTable3Body"))
+        doc must haveElementAtPathWithId("#taxFreeAmountDetail div", "summaryTable3Body")
       }
 
       "displays a link & inner link element, where present in the view model" in {
-        doc must haveElementWithId("summaryTable1Row2ChangeLinkCell")
-        doc must haveLinkWithUrlWithID("summaryTable1Row2ChangeLink", "/dummy/url2")
-        doc must haveElementAtPathWithClass("a[id=summaryTable1Row2ChangeLink] > span", "visually-hidden")
-        doc must haveElementAtPathWithText("a[id=summaryTable1Row2ChangeLink] > span", messages("tai.updateOrRemove") + " context2")
+        doc must haveElementWithId("summaryTable2Row1ChangeLinkCell")
+        doc must haveLinkWithUrlWithID("summaryTable2Row1ChangeLink", "/dummy/url1")
+        doc must haveElementAtPathWithClass("a[id=summaryTable2Row1ChangeLink] > span", "visually-hidden")
+        doc must haveElementAtPathWithText("a[id=summaryTable2Row1ChangeLink] > span", messages("tai.updateOrRemove") + " context1")
       }
 
       "excludes a link cell from table rows, where instructed by the view model" in {
-        doc must not(haveElementWithId("summaryTable1Row3ChangeLinkCell"))
+        doc must not(haveElementWithId("summaryTable2Row3ChangeLinkCell"))
       }
 
       "visually formats the final table" when {
@@ -105,15 +124,15 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
   }
 
   val rowViewModels: Seq[TaxFreeAmountSummaryRowViewModel] = Seq(
-    TaxFreeAmountSummaryRowViewModel("Personal Allowance", "£11,500", ChangeLinkViewModel(true, "context1", "/dummy/url1")),
+    TaxFreeAmountSummaryRowViewModel("An example addition benefit", "£11,500", ChangeLinkViewModel(true, "context1", "/dummy/url1")),
     TaxFreeAmountSummaryRowViewModel("Some Other Allowance", "£12,322", ChangeLinkViewModel(true, "context2", "/dummy/url2")),
     TaxFreeAmountSummaryRowViewModel("Blah Blah Random Extra Row Content", "£11,111", ChangeLinkViewModel(false))
   )
   val summaryItemViewModels: Seq[TaxFreeAmountSummaryCategoryViewModel] = Seq(
-    TaxFreeAmountSummaryCategoryViewModel("header1", "header2", false, true, "Personal Allowance base amount", rowViewModels),
+    TaxFreeAmountSummaryCategoryViewModel("header1", "header2", false, true, messages("tai.taxFreeAmount.table.allowances.caption"), Seq(TaxFreeAmountSummaryRowViewModel("Personal Allowance" , "£11,500", ChangeLinkViewModel(false)))),
     TaxFreeAmountSummaryCategoryViewModel("header3", "header4", true, false, "Additions to your Personal Allowance", rowViewModels),
-    TaxFreeAmountSummaryCategoryViewModel("header5", "header6", true, false, "Deductions from your Personal Allowance", rowViewModels),
-    TaxFreeAmountSummaryCategoryViewModel("header7", "header8", true, true, "Overall", Seq(TaxFreeAmountSummaryRowViewModel("Your total tax-free amount", "£11,500", ChangeLinkViewModel(false))))
+    TaxFreeAmountSummaryCategoryViewModel("header5", "header6", true, false, "Deductions from your Personal Allowance", Seq(TaxFreeAmountSummaryRowViewModel("An example single deduction benefit", "£12,300", ChangeLinkViewModel(true, "context1", "/dummy/url1")))),
+    TaxFreeAmountSummaryCategoryViewModel("header7", "header8", true, true, messages("tai.taxFreeAmount.table.totals.caption"), Seq(TaxFreeAmountSummaryRowViewModel("Your total tax-free amount", "£11,500", ChangeLinkViewModel(false))))
   )
   val viewModel: TaxFreeAmountViewModelNew = TaxFreeAmountViewModelNew("main heading", "main heading", "£2020", summaryItemViewModels)
 

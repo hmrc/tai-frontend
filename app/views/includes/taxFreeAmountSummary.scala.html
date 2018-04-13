@@ -76,7 +76,7 @@
                 </ul>
                 } else {@if(item.rows.length == 1) {
 
-                <div class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight heading-small} else {flush}">
+                <div id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight heading-small} else {flush}">
                     <div id="summaryTable@{itemIdx.toString}Row1">
 
                         @if(item.caption==Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption==Messages("tai.taxFreeAmount.table.totals.caption")){
