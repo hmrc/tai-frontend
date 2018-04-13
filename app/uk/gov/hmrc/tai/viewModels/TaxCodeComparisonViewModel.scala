@@ -42,7 +42,7 @@ case class TaxCodeComparisonViewModel(employmentTaxCodes: Seq[TaxCodeDetail], pe
 }
 
 object TaxCodeComparisonViewModel {
-  def apply(taxCodeForYears: Seq[TaxCodeForYear])(implicit messages: Messages): TaxCodeComparisonViewModel = {
+  def apply(taxCodeForYears: Seq[TaxCodeIncomesForYear])(implicit messages: Messages): TaxCodeComparisonViewModel = {
 
     val employmentTaxCodes = taxCodeDetails(taxCodeForYears, EmploymentIncome)
     val pensionTaxCodes = taxCodeDetails(taxCodeForYears, PensionIncome)
@@ -50,28 +50,42 @@ object TaxCodeComparisonViewModel {
     TaxCodeComparisonViewModel(employmentTaxCodes, pensionTaxCodes)
   }
 
-  private def taxCodeDetails(taxCodeForYears: Seq[TaxCodeForYear], taxComponentType: TaxComponentType)(implicit messages: Messages) = {
+  private def taxCodeDetails(taxCodeForYears: Seq[TaxCodeIncomesForYear], taxComponentType: TaxComponentType)(implicit messages: Messages): Seq[TaxCodeDetail] = {
 
-    val sortedTaxYearMap: Map[TaxYear, Seq[TaxCodeIncome]] = {
-      val mapSeq = taxCodeForYears map { tcfy =>
-        (tcfy.year -> tcfy.taxCodeIncomeSources.filter(tci => tci.componentType == taxComponentType && tci.status == Live))
-      }
-      ListMap(mapSeq.sortBy(_._1): _*)
+    val filteredTaxCodeIncomes = filterTaxCodeIncomesForYear(taxCodeForYears, taxComponentType)
+    val sortedTaxCodeIncomes = filteredTaxCodeIncomes.sortWith(_.year < _.year)
+    val uniqueIncomeSourceNames = sortedTaxCodeIncomes.flatMap(_.taxCodeIncomeSources.map(_.name)).distinct
 
+    for{
+      incomeSourceName <- uniqueIncomeSourceNames
+    } yield {
+      TaxCodeDetail(incomeSourceName,
+        taxCodesForIncomeSource(sortedTaxCodeIncomes, incomeSourceName))
     }
-    val uniqueIncomeSourceNames = sortedTaxYearMap.values.flatMap(_.map(_.name)).toSet
-    uniqueIncomeSourceNames map { isn =>
-      val taxCodesInYearOrder =
-        sortedTaxYearMap map {case (ty, incomes) =>
-          incomes.find({_.name == isn}).headOption.map(_.taxCode).getOrElse(Messages("tai.incomeTaxComparison.incomeSourceAbsent"))
-        }
-      TaxCodeDetail(isn, taxCodesInYearOrder.toList)
-    } toList
-
-
   }
+
+  private def taxCodesForIncomeSource(taxCodeForYears: Seq[TaxCodeIncomesForYear], incomeSourceName:String)(implicit messages: Messages) = {
+    for {
+      taxYear: TaxCodeIncomesForYear <- taxCodeForYears
+    } yield {
+      val incomeSources: Option[TaxCodeIncome] = taxYear.taxCodeIncomeSources.find(_.name == incomeSourceName)
+      incomeSources.map(_.taxCode).getOrElse(Messages("tai.incomeTaxComparison.incomeSourceAbsent"))
+    }
+  }
+
+  private def filterTaxCodeIncomesForYear(taxCodeForYears: Seq[TaxCodeIncomesForYear], taxComponentType: TaxComponentType): Seq[TaxCodeIncomesForYear] = {
+    taxCodeForYears map { taxCodeForYear =>
+      TaxCodeIncomesForYear(taxCodeForYear.year, taxCodeForYear.taxCodeIncomeSources.filter(
+        incomeSource => filterIncomeSources(incomeSource, taxComponentType))
+      )
+    }
+  }
+
+  private def filterIncomeSources(incomeSource:TaxCodeIncome, taxComponentType: TaxComponentType): Boolean =
+    incomeSource.componentType == taxComponentType && incomeSource.status == Live
+
 }
 
-case class TaxCodeForYear(year: uk.gov.hmrc.tai.model.tai.TaxYear, taxCodeIncomeSources: Seq[TaxCodeIncome])
+case class TaxCodeIncomesForYear(year: uk.gov.hmrc.tai.model.tai.TaxYear, taxCodeIncomeSources: Seq[TaxCodeIncome])
 
 case class TaxCodeDetail(name: String, taxCodes: Seq[String])
