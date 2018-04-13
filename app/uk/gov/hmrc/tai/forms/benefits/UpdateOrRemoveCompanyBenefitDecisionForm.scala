@@ -16,15 +16,13 @@
 
 package uk.gov.hmrc.tai.forms.benefits
 
-import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.util.UpdateOrRemoveCompanyBenefitDecisionConstants
 
 object UpdateOrRemoveCompanyBenefitDecisionForm extends UpdateOrRemoveCompanyBenefitDecisionConstants{
-  val form: Form[Option[String]] = Form[Option[String]](
+  def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
     single(DecisionChoice -> optional(text).verifying(Messages("tai.error.chooseOneOption"), {_.isDefined}))
   )
 }

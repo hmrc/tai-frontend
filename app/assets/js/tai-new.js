@@ -12,14 +12,27 @@ $(document).ready(function() {
 	// Move focus to error summary
 	$('.error-summary').focus();
 
-
+    // Determine play language setting
+    GOVUK.playLanguage = (function() {
+        var playCookieName = encodeURIComponent("PLAY_LANG") + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) === ' ')
+                c = c.substring(1, c.length);
+            if (c.indexOf(playCookieName) === 0)
+                return decodeURIComponent(c.substring(playCookieName.length, c.length));
+        }
+        return "en";
+    }());
 
 	// Character/Word Count
-      var charCount = new GOVUK.CharCount()
-      charCount.init({
-        selector: 'js-char-count',
-        highlight: true
-      })
+    var charCount = new GOVUK.CharCount()
+    charCount.init({
+      selector: 'js-char-count',
+      highlight: true,
+      language: GOVUK.playLanguage
+    })
 
 });
 

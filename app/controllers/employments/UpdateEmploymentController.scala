@@ -48,9 +48,9 @@ trait UpdateEmploymentController extends TaiBaseController
   with AuditConstants
   with FormValuesConstants {
 
-  lazy val telephoneNumberSizeConstraint: Constraint[String] =
+  def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
     Constraint[String]((textContent: String) => textContent match {
-      case txt if txt.length < 8 || txt.length > 30 => Invalid(Messages("tai.canWeContactByPhone.telephone.invalid"))
+      case txt if txt.length < 8 || txt.length > 30 => Invalid(messages("tai.canWeContactByPhone.telephone.invalid"))
       case _ => Valid
     })
 
@@ -62,9 +62,9 @@ trait UpdateEmploymentController extends TaiBaseController
 
   def successfulJourneyCacheService: JourneyCacheService
 
-  def telephoneNumberViewModel(id: Int): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
-    Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
-    Messages("tai.canWeContactByPhone.title"),
+  def telephoneNumberViewModel(id: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
+    messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
+    messages("tai.canWeContactByPhone.title"),
     controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(id).url,
     controllers.employments.routes.UpdateEmploymentController.submitTelephoneNumber().url,
     controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url

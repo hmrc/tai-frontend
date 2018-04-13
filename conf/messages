@@ -1567,6 +1567,49 @@ tai.benefits.updateOrRemove.decision.heading=Do you currently get {0} benefit fr
 tai.benefits.updateOrRemove.decision.radio.yes=Yes, I currently get this benefit
 tai.benefits.updateOrRemove.decision.radio.no=No, I do not get this benefit any more
 
+##Estimated Income Tax Graph
+tai.taxCalc.nextTaxBand=You can have £{0} more before your income reaches the next tax band.
+tai.taxedIncome.desc=TaxedIncome
+tai.taxCalc.UnderpaymentPreviousYear.title=Underpayment from previous years
+tai.taxCalc.OutstandingDebt.title=Outstanding debt from previous year
+tai.taxCalc.childBenefit.title=Child Benefit
+
+tai.taxCalc.excessGiftAidTax.title=Excess Gift Aid Tax
+tai.taxCalc.excessWidowsAndOrphans.title=Excess Widows And Orphans
+tai.taxCalc.pensionPaymentsAdjustment.title=Pension Payments Adjustment
+
+#Tax paid elsewhere
+tai.taxCollected.atSource.title=Reductions
+tai.taxCollected.atSource.description=Not all of the tax in your estimate is collected through PAYE using your tax code(s). The tax you won’t pay through PAYE includes:
+tai.taxCollected.atSource.heading.tax=Tax
+tai.taxCollected.atSource.heading.amount=Amount (£)
+
+tai.taxCollected.atSource.dividends.title=Tax on dividends
+tai.taxCollected.atSource.dividends.description=Interest from company dividends is taxed at the dividend ordinary rate ({0}%) before it is paid to you.
+
+tai.taxCollected.atSource.marriageAllowance.title=Married Couples Allowance
+tai.taxCollected.atSource.marriageAllowance.description=Married Couples Allowance reduces the amount of tax you pay. You will get tax relief at 10% of your Married Couples Allowance of £{0}. The amount shown in your {1} calculation may appear to be different to make sure you get the right amount for your tax rate.
+tai.taxCollected.atSource.marriageAllowance.description.linkText=tax code
+
+tai.taxCollected.atSource.maintenancePayments.title=Maintenance Payments
+tai.taxCollected.atSource.maintenancePayments.description=Tax relief on maintenance payments to your ex-spouse or partner until your child is 21.
+tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title=Enterprise Investment Scheme Relief
+tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description=Tax relief for your qualifying investment shares
+
+tai.taxCollected.atSource.concessionalRelief.title=Concessional Relief
+tai.taxCollected.atSource.concessionalRelief.description=Tax relief for your qualifying scheme
+
+tai.taxCollected.atSource.doubleTaxationRelief.title=Double Taxation Relief
+tai.taxCollected.atSource.doubleTaxationRelief.description=Tax Relief given for the tax you’ve paid abroad on foreign income.
+
+tai.taxCollected.atSource.bank.title=Tax on interest from savings and investments
+tai.taxCollected.atSource.bank.description=This is the interest that has been taxed by the basic rate of {0}% by your bank, building society or financial institution before it is paid to you.
+
+tai.taxCollected.atSource.otherIncome.title=Tax on other income
+tai.taxCollected.atSource.otherIncome.description=Tax on other income not collected through your tax code, for example tax paid through Self Assessment.
+
+tai.taxCollected.byPAYE.title=Tax collected through your tax code
+tai.taxCollected.byPAYE.description=Pay As You Earn (PAYE) does not include tax paid elsewhere. The tax you’ll pay through PAYE is £{0}.
 
 # NonTaxCodeIncomeComponentType display decodes..
 tai.typeDecodes.NonCodedIncome=Non Coded Income

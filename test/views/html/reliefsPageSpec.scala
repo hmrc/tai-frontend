@@ -16,15 +16,13 @@
 
 package views.html
 
-import controllers.routes
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.tai.model.{ExtensionRelief, ExtensionReliefs, IncreasesTax, TaxSummaryDetails}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.TaxReliefViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
 class reliefsPageSpec extends TaiViewSpec {
@@ -65,61 +63,56 @@ class reliefsPageSpec extends TaiViewSpec {
     }
     "display the gift aid section" when {
       "there are gift aid payments" in {
-        val viewWithGiftAid: Html = views.html.reliefs(taxSummaryDetails.copy(extensionReliefs = Some(extensionRelief)))
+        val viewWithGiftAid: Html = views.html.reliefsNew(model.copy(hasGiftAid = true))
         val docWithGiftAid: Document = Jsoup.parse(viewWithGiftAid.toString)
         docWithGiftAid must haveTdWithText(Messages("tai.extendedTaxReliefs.giftAid.title") + " " + Messages("tai.extendedTaxReliefs.giftAid.NoTax.description"))
       }
     }
     "display the appropriate tax relief information" when {
       "the user is a basic rate tax payer" in {
-        val higherRateTaxSummaryDetails = taxSummaryDetails.copy(
-          increasesTax = Some(IncreasesTax(total = 1)),
-          extensionReliefs = Some(ExtensionReliefs(Some(ExtensionRelief(
-            sourceAmount = BigDecimal(1), reliefAmount = BigDecimal(0))))))
-        val viewHigherRate = views.html.reliefs(higherRateTaxSummaryDetails)
-        val docHigherRate = Jsoup.parse(viewHigherRate.toString)
+        val basicRate = TaxReliefViewModel(true, false, 1, 0, 0, 0, true)
+        val viewBasicRate = views.html.reliefsNew(basicRate)
+        val docHigherRate = Jsoup.parse(viewBasicRate.toString)
         docHigherRate must haveParagraphWithText("As a basic rate tax payer you don’t get tax relief on donations" +
           " to charity or to community amateur sports clubs (CASCs). If you start to pay higher rate tax you may get " +
           "tax relief on them.")
       }
       "the user is a higher rate tax payer" in {
-        val higherRateTaxSummaryDetails = taxSummaryDetails.copy(
-          increasesTax = Some(IncreasesTax(total = 1)),
-          extensionReliefs = Some(extensionRelief))
-        val viewHigherRate = views.html.reliefs(higherRateTaxSummaryDetails)
+        val higherRate = TaxReliefViewModel(true, false, 1, 0, 1, 0, true)
+        val viewHigherRate = views.html.reliefsNew(higherRate)
         val docHigherRate = Jsoup.parse(viewHigherRate.toString)
         docHigherRate must haveParagraphWithText("Your donations to charity or to community amateur sports clubs" +
           " (CASCs) are tax-free. As we expect you to pay some higher rate tax you’ll be entitled to relief on your" +
           " donations to charity.")
       }
       "the user's income is too low to pay tax" in {
-        val viewWithLowIncome: Html = views.html.reliefs(taxSummaryDetails.copy(extensionReliefs = Some(extensionRelief)))
+        val higherRate = TaxReliefViewModel(true, false, 1, 0, 1, 0, false)
+        val viewWithLowIncome: Html = views.html.reliefsNew(higherRate)
         val docWithLowIncome: Document = Jsoup.parse(viewWithLowIncome.toString)
         docWithLowIncome must haveParagraphWithText("You can’t get tax relief on these payments as your income is too " +
           "low to pay Income Tax.")
       }
     }
     "display the correct gift aid source amount" in {
-      val viewWithGiftAid: Html = views.html.reliefs(taxSummaryDetails.copy(extensionReliefs = Some(extensionRelief)))
+      val viewWithGiftAid: Html = views.html.reliefsNew(TaxReliefViewModel(true, false, 1, 0, 1, 0, false))
       val docWithGiftAid: Document = Jsoup.parse(viewWithGiftAid.toString)
       docWithGiftAid must haveTdWithText("1")
     }
     "display the correct gift aid relief amount" in {
-      val viewWithGiftAid: Html = views.html.reliefs(taxSummaryDetails.copy(extensionReliefs = Some(extensionRelief)))
+      val viewWithGiftAid: Html = views.html.reliefsNew(TaxReliefViewModel(true, false, 1, 0, 1, 0, false))
       val docWithGiftAid: Document = Jsoup.parse(viewWithGiftAid.toString)
       docWithGiftAid must haveTdWithText("1.00")
     }
     "not display PPR messages" when {
       "user has no personal pension payments" in {
-        val viewWithGiftAid: Html = views.html.reliefs(taxSummaryDetails.copy(extensionReliefs = Some(extensionRelief)))
+        val viewWithGiftAid: Html = views.html.reliefsNew(TaxReliefViewModel(true, false, 1, 0, 1, 0, false))
         val docWithGiftAid: Document = Jsoup.parse(viewWithGiftAid.toString)
         docWithGiftAid must not(haveTdWithText("Personal Pension payments"))
       }
     }
     "display PPR messages" when {
       "user has personal pension payments" in {
-        val viewWithPPR = views.html.reliefs(taxSummaryDetails.copy(extensionReliefs = Some(ExtensionReliefs(
-          personalPension = Some(ExtensionRelief(sourceAmount = BigDecimal(1), reliefAmount = BigDecimal(1)))))))
+        val viewWithPPR = views.html.reliefsNew(TaxReliefViewModel(false, true, 1, 1, 1, 1, false))
         val docWithPPR = Jsoup.parse(viewWithPPR.toString)
         docWithPPR must haveTdWithText(Messages("tai.extendedTaxReliefs.ppr.title") + " " + Messages("tai.extendedTaxReliefs.ppr.description"))
         docWithPPR must haveTdWithText("1")
@@ -128,9 +121,6 @@ class reliefsPageSpec extends TaiViewSpec {
     }
   }
 
-  def view: Html = views.html.reliefs(taxSummaryDetails)
-  val nino = new Generator().nextNino
-  val taxSummaryDetails = TaxSummaryDetails(nino.nino, 1)
-  val extensionRelief = ExtensionReliefs(Some(ExtensionRelief(sourceAmount = BigDecimal(1), reliefAmount = BigDecimal(1))))
-
+  val model = TaxReliefViewModel(false, false, 0, 0, 0, 0, false)
+  def view: Html = views.html.reliefsNew(model)
 }

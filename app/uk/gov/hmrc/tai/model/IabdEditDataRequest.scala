@@ -20,9 +20,7 @@ import org.joda.time.LocalDate
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
-import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 /**
   * Created by dev01 on 09/10/14.
   */
@@ -57,7 +55,7 @@ case class EmploymentAmount(name: String, description: String,
 
 object EmploymentAmount {
   implicit val formats = Json.format[EmploymentAmount]
-  def apply(taxCodeIncome: TaxCodeIncome, employment: Employment): EmploymentAmount = {
+  def apply(taxCodeIncome: TaxCodeIncome, employment: Employment)(implicit messages: Messages): EmploymentAmount = {
     val description = taxCodeIncome.componentType match {
       case EmploymentIncome if taxCodeIncome.status == Live => s"${Messages("tai.incomes.status-1")} ${Messages(s"tai.incomes.type-0")}"
       case EmploymentIncome => s"${Messages("tai.incomes.status-2")} ${Messages(s"tai.incomes.type-0")}"

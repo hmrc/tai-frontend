@@ -16,19 +16,17 @@
 
 package uk.gov.hmrc.tai.forms.employments
 
-import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 object UpdateEmploymentDetailsForm {
 
   val employmentDetailsCharacterLimit = 500
 
-  val form: Form[String] = Form(
+  def form(implicit messages: Messages): Form[String] = Form(
 
     single(
       "employmentDetails" ->
@@ -40,14 +38,14 @@ object UpdateEmploymentDetailsForm {
           )))
   )
 
-  def nonEmptyText(requiredErrMsg : String): Constraint[String] = {
+  def nonEmptyText(requiredErrMsg : String)(implicit messages: Messages): Constraint[String] = {
     Constraint[String]("required") {
       case textValue:String if textValue.trim.nonEmpty => Valid
       case _ => Invalid(requiredErrMsg)
     }
   }
 
-  def textExceedsCharacterLimit(exceedErrorMsg : String): Constraint[String] = {
+  def textExceedsCharacterLimit(exceedErrorMsg : String)(implicit messages: Messages): Constraint[String] = {
     Constraint[String]("characterLimitExceeded") {
       case textValue if textValue.trim.length <= employmentDetailsCharacterLimit => Valid
       case _ => Invalid(exceedErrorMsg)

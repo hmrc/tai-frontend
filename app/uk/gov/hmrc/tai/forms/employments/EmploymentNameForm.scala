@@ -16,16 +16,13 @@
 
 package uk.gov.hmrc.tai.forms.employments
 
-import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-
 
 object EmploymentNameForm {
 
-  val form: Form[String] = Form(
+  def form(implicit messages: Messages): Form[String] = Form(
     single(
       "employmentName" ->
         text.verifying(Messages("tai.employmentName.error.blank"), {!_.isEmpty}))
