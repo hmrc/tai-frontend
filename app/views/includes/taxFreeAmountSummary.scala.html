@@ -26,23 +26,18 @@
 
     @if(item.rows.nonEmpty) {
 
-            <div id="summaryTable@{itemIdx.toString}" class="tai-tax-summary-table @if(itemIdx==1){subsection--wide flush--bottom}">
+            <div id="summaryTable@{itemIdx.toString}" class="tai-tax-summary-table @if(itemIdx == 1){subsection--wide flush--bottom}">
 
-                @if(item.caption!=Messages("tai.taxFreeAmount.table.allowances.caption") && item.caption!=Messages("tai.taxFreeAmount.table.totals.caption")){
+                @if(item.caption != Messages("tai.taxFreeAmount.table.allowances.caption") && item.caption!=Messages("tai.taxFreeAmount.table.totals.caption")){
                 <h3 class="heading-small section--narrow flush" id="summaryTable@{itemIdx.toString}Caption">@item.caption</h3>
                 }
 
                 @if(item.rows.length>1) {
-                <ul id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx==items.length && item.rows.length==1){subsection highlight} else {flush}" role="list">
+                <ul id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight} else {flush}" role="list">
                     @for((row, rowIdx) <- item.rows zip (Stream from 1)) {
                         <li id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}">
 
-                            @if(item.caption==Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption==Messages("tai.taxFreeAmount.table.totals.caption")){
-                            <h3 id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" class="cya-question break-word ">
-                            } else {
                             <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" class="cya-question break-word">
-                            }
-
                                 @row.label
                                 @if(row.label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
                                     @includes.link(
@@ -53,15 +48,10 @@
                                         attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
                                     )
                                 }
-
-                            @if(item.caption==Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption==Messages("tai.taxFreeAmount.table.totals.caption")){
-                            </h3>
-                            } else {
                             </div>
-                            }
 
                             <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ValueCell" class="cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
-                                @if(item.caption==Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption==Messages("tai.taxFreeAmount.table.totals.caption")){
+                                @if(item.caption == Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption == Messages("tai.taxFreeAmount.table.totals.caption")){
                                     <span class="visuallyhidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix")</span>
                                 }
                                 @row.value
@@ -84,9 +74,9 @@
                         </li>
                     }
                 </ul>
-                } else {@if(item.rows.length==1) {
+                } else {@if(item.rows.length == 1) {
 
-                <div class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx==items.length && item.rows.length==1){subsection highlight heading-small} else {flush}">
+                <div class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight heading-small} else {flush}">
                     <div id="summaryTable@{itemIdx.toString}Row1">
 
                         @if(item.caption==Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption==Messages("tai.taxFreeAmount.table.totals.caption")){
@@ -106,14 +96,14 @@
                                 )
                             }
 
-                        @if(item.caption==Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption==Messages("tai.taxFreeAmount.table.totals.caption")){
+                        @if(item.caption == Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption == Messages("tai.taxFreeAmount.table.totals.caption")){
                         </h3>
                         } else {
                         </div>
                         }
 
                         <div id="summaryTable@{itemIdx.toString}Row1ValueCell" class="cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
-                            @if(item.caption==Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption==Messages("tai.taxFreeAmount.table.totals.caption")){
+                            @if(item.caption == Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption == Messages("tai.taxFreeAmount.table.totals.caption")){
                             <span class="visuallyhidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix")</span>
                             }
                             @item.rows(0).value

@@ -3,15 +3,21 @@
     border-top: 1px solid #bfc1c3;
     padding-top: 10px;
 
-    &:not(.highlight) .cya-question {
+    .cya-question {
          font-weight: normal;
     }
+
+     &.highlight .cya-question {
+        font-weight: bold;
+     }
+
 }
 
 @media screen and (max-width: 768px){
 
-    .tai-tax-summary-table:not(:first-of-type) {
+    .tai-tax-summary-table {
         padding-top: 40px;
+        margin-top: 0;
     }
     .govuk-check-your-answers--tax-summary .cya-question {
         display: table-row;
