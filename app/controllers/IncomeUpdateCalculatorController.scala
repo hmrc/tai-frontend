@@ -84,7 +84,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         } else {
           incomeService.singularIncomeId(taxCodeIncomes) match {
             case Some(incomeId) => Ok(views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), incomeId))
-            case None => Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None))
+            case None => throw new RuntimeException("Employment id not present")
           }
         }
       }

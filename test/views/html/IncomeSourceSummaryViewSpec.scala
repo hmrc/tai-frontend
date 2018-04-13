@@ -83,7 +83,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         doc must haveParagraphWithText(messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear)))
         doc must haveSpanWithText("£" + model.incomeReceivedToDate)
         doc must haveLinkWithUrlWithID("viewIncomeReceivedToDate",
-          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(model.empId)).url)
+          controllers.routes.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(model.empId).url)
       }
 
       "income source is pension" in {
@@ -91,7 +91,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
         pensionDoc must haveParagraphWithText(messages("tai.income.details.incomeReceivedToDate.desc", model.htmlNonBroken(model.startOfCurrentYear)))
         pensionDoc must haveSpanWithText("£" + pensionModel.incomeReceivedToDate)
         pensionDoc must haveLinkWithUrlWithID("viewIncomeReceivedToDate",
-          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(pensionModel.empId)).url)
+          controllers.routes.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(pensionModel.empId).url)
       }
     }
 

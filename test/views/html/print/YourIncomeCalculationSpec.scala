@@ -34,7 +34,7 @@ class YourIncomeCalculationSpec
     "show the necessary back and print buttons" in {
       val incomeCalcViewModel = YourIncomeCalculationViewModel(employerName = "test", employmentPayments= Nil ,isPension = true, incomeCalculationMsg = "", empId = 2, hasPrevious = true,
         editableDetails = EditableDetails(payRollingBiks = false,isEditable = true), rtiDown = false, employmentStatus = Some(1), endDate = None)
-      val doc = Jsoup.parse(views.html.print.yourIncomeCalculation(incomeCalcViewModel, empId = 2)(request = FakeRequest("GET", routes.YourIncomeCalculationController.printYourIncomeCalculationPage(None).url), messages = play.api.i18n.Messages.Implicits.applicationMessages, user = builders.UserBuilder.apply()).toString())
+      val doc = Jsoup.parse(views.html.print.yourIncomeCalculation(incomeCalcViewModel, empId = 2)(request = FakeRequest("GET", routes.YourIncomeCalculationControllerNew.printYourIncomeCalculationPage(1).url), messages = play.api.i18n.Messages.Implicits.applicationMessages, user = builders.UserBuilder.apply()).toString())
       doc.getElementsByClass("back-link").toString should include("/check-income-tax/your-income-calculation")
       doc.getElementsByClass("print-button").toString should include("javascript:window.print()")
       doc.getElementsByClass("title").toString should include("Taxable Income")

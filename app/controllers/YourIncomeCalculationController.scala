@@ -48,34 +48,34 @@ trait YourIncomeCalculationController extends TaiBaseController
   def activityLoggerService: ActivityLoggerService
 
   def employmentService: EmploymentService
-
-  def yourIncomeCalculationPage(empId: Option[Int] = None): Action[AnyContent] = authorisedForTai(redirectToOrigin = true)(taiService).async {
-    implicit user =>
-      implicit sessionData =>
-        implicit request =>
-          if(cyApdNewPageEnabled){
-            empId match {
-              case Some(id) => Future.successful(Redirect(routes.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(id)))
-              case _ => throw new RuntimeException("Employment id not present")
-            }
-          } else{
-            showIncomeCalculationPageForCurrentYear(nino = Nino(user.getNino), empId = empId)
-          }
-  }
-
-  def printYourIncomeCalculationPage(empId: Option[Int] = None): Action[AnyContent] = authorisedForTai(redirectToOrigin = true)(taiService).async {
-    implicit user =>
-      implicit sessionData =>
-        implicit request =>
-          if(cyApdNewPageEnabled){
-            empId match {
-              case Some(id) => Future.successful(Redirect(routes.YourIncomeCalculationControllerNew.printYourIncomeCalculationPage(empId.getOrElse(-1))))
-              case _ => throw new RuntimeException("Employment id not present")
-            }
-          }else {
-            showIncomeCalculationPageForCurrentYear(nino = Nino(user.getNino), empId = empId, printPage = true)
-          }
-  }
+//
+//  def yourIncomeCalculationPage(empId: Option[Int] = None): Action[AnyContent] = authorisedForTai(redirectToOrigin = true)(taiService).async {
+//    implicit user =>
+//      implicit sessionData =>
+//        implicit request =>
+//          if(cyApdNewPageEnabled){
+//            empId match {
+//              case Some(id) => Future.successful(Redirect(routes.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(id)))
+//              case _ => throw new RuntimeException("Employment id not present")
+//            }
+//          } else{
+//            showIncomeCalculationPageForCurrentYear(nino = Nino(user.getNino), empId = empId)
+//          }
+//  }
+//
+//  def printYourIncomeCalculationPage(empId: Option[Int] = None): Action[AnyContent] = authorisedForTai(redirectToOrigin = true)(taiService).async {
+//    implicit user =>
+//      implicit sessionData =>
+//        implicit request =>
+//          if(cyApdNewPageEnabled){
+//            empId match {
+//              case Some(id) => Future.successful(Redirect(routes.YourIncomeCalculationControllerNew.printYourIncomeCalculationPage(empId.getOrElse(-1))))
+//              case _ => throw new RuntimeException("Employment id not present")
+//            }
+//          }else {
+//            showIncomeCalculationPageForCurrentYear(nino = Nino(user.getNino), empId = empId, printPage = true)
+//          }
+//  }
 
   def showIncomeCalculationPageForCurrentYear(nino: Nino, empId: Option[Int], printPage: Boolean = false)
                                              (implicit request: Request[AnyContent], user: TaiUser,
