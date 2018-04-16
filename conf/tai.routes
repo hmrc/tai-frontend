@@ -137,9 +137,9 @@ POST        /end-company-car/check-your-answers                                 
 GET         /end-company-car/success                                                   controllers.CompanyCarController.confirmation
 
 ## New Income and Tax Codes page
-GET         /tax-free-allowance                                                        controllers.TaxFreeAmountControllerNew.taxFreeAmount
-GET         /taxable-income                                                            controllers.TaxFreeAmountControllerNew.taxFreeAmount
-GET         /your-tax-free-amount                                                      controllers.TaxFreeAmountControllerNew.taxFreeAmount
+GET         /tax-free-allowance                                                        controllers.TaxFreeAmountController.taxFreeAmount
+GET         /taxable-income                                                            controllers.TaxFreeAmountController.taxFreeAmount
+GET         /your-tax-free-amount                                                      controllers.TaxFreeAmountController.taxFreeAmount
 
 GET         /tax-codes                                                                 controllers.YourTaxCodeController.taxCodes
 GET         /paye-income-tax-estimate                                                  controllers.EstimatedIncomeTaxController.estimatedIncomeTax
@@ -233,7 +233,7 @@ POST        /update-income-details/submit-your-answers                          
 GET         /update-income-details/success                                             controllers.income.previousYears.UpdateIncomeDetailsController.confirmation
 
 ## Used by external services
-GET         /income                                                                    controllers.TaxFreeAmountControllerNew.taxFreeAmount
+GET         /income                                                                    controllers.TaxFreeAmountController.taxFreeAmount
 GET         /income-tax-refresh                                                        controllers.TaxAccountSummaryController.onPageLoad
 
 GET         /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.decision

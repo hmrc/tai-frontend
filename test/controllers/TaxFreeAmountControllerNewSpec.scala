@@ -38,7 +38,7 @@ import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 
-class TaxFreeAmountControllerNewSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
+class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "taxFreeAmount" must {
@@ -78,7 +78,7 @@ class TaxFreeAmountControllerNewSpec extends PlaySpec with FakeTaiPlayApplicatio
   val codingComponents = Seq(CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
     CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description"))
 
-  private class SUT() extends TaxFreeAmountControllerNew {
+  private class SUT() extends TaxFreeAmountController {
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val authConnector: AuthConnector = mock[AuthConnector]
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]

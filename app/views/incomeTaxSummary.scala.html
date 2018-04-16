@@ -136,7 +136,7 @@
                 <p class="flush--top">
                     @Link.toInternalPage(
                         id=Some("taxFreeAmountLink"),
-                        url=routes.TaxFreeAmountControllerNew.taxFreeAmount.toString,
+                        url=routes.TaxFreeAmountController.taxFreeAmount.toString,
                         value=Some(Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeLink")),
                         cssClasses=Some(""),
                         dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeLink")}"))).toHtml

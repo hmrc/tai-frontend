@@ -32,7 +32,7 @@ import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaiService}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModelNew
 
-trait TaxFreeAmountControllerNew extends TaiBaseController
+trait TaxFreeAmountController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
@@ -65,7 +65,7 @@ trait TaxFreeAmountControllerNew extends TaiBaseController
   }
 }
 
-object TaxFreeAmountControllerNew extends TaxFreeAmountControllerNew with AuthenticationConnectors {
+object TaxFreeAmountController extends TaxFreeAmountController with AuthenticationConnectors {
   override val taiService: TaiService = TaiService
   override val codingComponentService: CodingComponentService = CodingComponentService
   override val employmentService: EmploymentService = EmploymentService
