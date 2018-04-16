@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.viewModels.TaxExplanationViewModelNew
+import uk.gov.hmrc.tai.viewModels.TaxExplanationViewModel
 
 trait TaxExplanationController extends TaiBaseController
 with DelegationAwareActions
@@ -55,7 +55,7 @@ with WithAuthorisedForTaiLite {
               (totalTax, taxCodeIncomes) match {
                 case (TaiSuccessResponseWithPayload(totalTax: TotalTax),
                 TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
-                  val model = TaxExplanationViewModelNew(totalTax, taxCodeIncomes)
+                  val model = TaxExplanationViewModel(totalTax, taxCodeIncomes)
                   Ok(views.html.howIncomeTaxIsCalculatedNew(model))
                 case _ => throw new RuntimeException("Failed to fetch total tax details")
               }
