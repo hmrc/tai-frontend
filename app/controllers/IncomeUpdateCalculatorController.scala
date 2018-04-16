@@ -89,7 +89,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
       }
       case (false, false, _) => Redirect(routes.TaxAccountSummaryController.onPageLoad())
-      case _ => Redirect(routes.IncomeControllerNew.pensionIncome())
+      case _ => Redirect(routes.IncomeController.pensionIncome())
     }
   }
 
@@ -109,7 +109,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           formData => {
             formData.howToUpdate match {
               case Some("incomeCalculator") => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.workingHoursPage()))
-              case _ => Future.successful(Redirect(routes.IncomeControllerNew.viewIncomeForEdit()))
+              case _ => Future.successful(Redirect(routes.IncomeController.viewIncomeForEdit()))
             }
           }
         )
@@ -443,7 +443,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           netAmount <- journeyCacheService.currentValue(UpdateIncome_NetAnnualPayKey)
         } yield {
           val newAmount = income.copy(newAmount = netAmount.map(_.toInt).getOrElse(income.oldAmount))
-          Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = newAmount).get, Some(employerName), true))
+          Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = newAmount).get))
         }
   }
 

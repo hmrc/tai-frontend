@@ -48,7 +48,7 @@ trait YourIncomeCalculationController extends TaiBaseController
   def activityLoggerService: ActivityLoggerService
 
   def employmentService: EmploymentService
-//
+
 //  def yourIncomeCalculationPage(empId: Option[Int] = None): Action[AnyContent] = authorisedForTai(redirectToOrigin = true)(taiService).async {
 //    implicit user =>
 //      implicit sessionData =>
@@ -62,7 +62,7 @@ trait YourIncomeCalculationController extends TaiBaseController
 //            showIncomeCalculationPageForCurrentYear(nino = Nino(user.getNino), empId = empId)
 //          }
 //  }
-//
+
 //  def printYourIncomeCalculationPage(empId: Option[Int] = None): Action[AnyContent] = authorisedForTai(redirectToOrigin = true)(taiService).async {
 //    implicit user =>
 //      implicit sessionData =>

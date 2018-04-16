@@ -59,7 +59,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         <p>@Messages("tai.incomes.edit.text",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</p>
         <p>@Messages("tai.enterWholeAndNumericalOnly")</p>
 
-        @form(action = controllers.routes.IncomeControllerNew.editRegularIncome){
+        @form(action = controllers.routes.IncomeController.editRegularIncome){
             <input type="hidden" name="payToDate" value="@payToDate">
             <div class="form-field-group @if(income.hasErrors) {error}">
                 <table id="income-table" class="table-section">

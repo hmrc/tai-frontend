@@ -62,7 +62,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
       val result = sut.howToUpdatePage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.IncomeControllerNew.pensionIncome().url)
+      redirectLocation(result) mustBe Some(routes.IncomeController.pensionIncome().url)
     }
   }
 
@@ -77,7 +77,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
           TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome]))(RequestBuilder.buildFakeRequestWithAuth("GET"), UserBuilder.apply())
 
         result.header.status mustBe SEE_OTHER
-        result.header.headers.get(LOCATION) mustBe Some(routes.IncomeControllerNew.pensionIncome().url)
+        result.header.headers.get(LOCATION) mustBe Some(routes.IncomeController.pensionIncome().url)
       }
 
       "employment amount is not occupation income" in {
@@ -147,7 +147,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val sut = createSut
         val result = sut.handleChooseHowToUpdate()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("howToUpdate" -> "income"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.IncomeControllerNew.viewIncomeForEdit().url)
+        redirectLocation(result) mustBe Some(routes.IncomeController.viewIncomeForEdit().url)
       }
     }
 

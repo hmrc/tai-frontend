@@ -14,265 +14,548 @@
  * limitations under the License.
  */
 
-/*
- * Copyright 2018 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package controllers
 
-import TestConnectors.FakeAuthConnector
-import builders.{RequestBuilder, UserBuilder}
-import data.TaiData
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import builders.{AuthBuilder, RequestBuilder}
+import mocks.MockTemplateRenderer
+import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers._
-import org.mockito.Mockito._
+import org.mockito.Matchers
+import org.mockito.Matchers.any
+import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.tai.service.{ActivityLoggerService, TaiService}
-import uk.gov.hmrc.domain.{Generator, Nino}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.libs.json.Json
+import play.api.test.Helpers.{contentAsString, status, _}
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
-import uk.gov.hmrc.tai.model._
-import uk.gov.hmrc.tai.service.{ActivityLoggerService, TaiService}
+import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
+import uk.gov.hmrc.tai.model.{EmploymentAmount, TaiRoot}
+import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.util.JourneyCacheConstants
 
 import scala.concurrent.Future
+import scala.util.Random
 
-class IncomeControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
+class IncomeControllerSpec extends PlaySpec
+  with MockitoSugar
+  with JourneyCacheConstants
+  with FakeTaiPlayApplication
+  with I18nSupport {
 
-  implicit val hc = HeaderCarrier()
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  val fakeRequest1 = FakeRequest("POST", "").withFormUrlEncodedBody(
-    "name" -> "test1", "description" -> "description",
-    "employmentId" -> "14",
-    "newAmount" -> "1675",
-    "oldAmount" -> "11",
-    "worksNumber" -> "",
-    "startDate" -> "2013-08-03",
-    "endDate" -> "",
-    "isLive" -> "true",
-    "isOccupationalPension" -> "false",
-    "hasMultipleIncomes" -> "true")
+  "regularIncome" must {
+    "return OK with regular income view" when {
+      "valid inputs are passed" in {
+        val sut = createSUT
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
+        when(sut.incomeService.employmentAmount(any(), any())(any())).thenReturn(Future.successful(employmentAmount))
+        when(sut.incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(Some(payment)))
+        when(sut.incomeService.cachePaymentForRegularIncome(any())(any())).thenReturn(Map.empty[String, String])
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-  "Edit Incomes" should {
+        val result = sut.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
 
-    "throw validation if less than zero" in {
-      val testTaxSummary = TaiData.getBasicRateTaxSummary
-
-      val employments = testTaxSummary.increasesTax.flatMap(_.incomes.flatMap(_.taxCodeIncomes.employments))
-      employments.isDefined mustBe true
-      val employment = employments.get.taxCodeIncomes(0)
-
-      val SUT = new TestIncomeController()
-      val requestData = IabdEditDataRequest(version = 1, newAmount = 1123)
-      val fakeRequest = FakeRequest("POST", "").withFormUrlEncodedBody(
-        "version" -> "1",
-        "newAmounts[0].name" -> "test1",
-        "newAmounts[0].employmentId" -> employment.employmentId.get.toString,
-        "newAmounts[0].newAmount" -> "-100")
-
-      val result = SUT.updateIncomesForNino(nino)(fakeRequest, UserBuilder.apply(),createMockSessionData(testTaxSummary))
-      status(result) mustBe 400
-    }
-
-    "throw validation if amount entered is more than 9 digits" in {
-      val testTaxSummary = TaiData.getEditableCeasedAndIncomeTaxSummary
-
-      val employments = testTaxSummary.increasesTax.flatMap(_.incomes.flatMap(_.taxCodeIncomes.employments))
-      employments.isDefined mustBe true
-      val employment = employments.get.taxCodeIncomes(0)
-
-      val SUT = new TestIncomeController()
-      val requestData = IabdEditDataRequest(version = 1, newAmount = 1123)
-      val fakeRequest = FakeRequest("POST", "").withFormUrlEncodedBody(
-        "name" -> "test1", "description" -> "description",
-        "employmentId" -> "14",
-        "newAmount" -> "1000000000000000",
-        "oldAmount" -> "11",
-        "worksNumber" -> "",
-        "startDate" -> "2013-08-03",
-        "endDate" -> "",
-        "isLive" -> "true",
-        "isOccupationalPension" -> "false",
-        "hasMultipleIncomes" -> "true")
-
-      val result = SUT.updateIncomesForNino(nino)(fakeRequest, UserBuilder.apply(), createMockSessionData(testTaxSummary))
-      status(result) mustBe 400
-    }
-
-  }
-
-  "Update Income flow" should {
-
-    val singleIncomeRequest = FakeRequest("POST", "").withFormUrlEncodedBody(
-      "name" -> "test1", "description" -> "description",
-      "employmentId" -> "14",
-      "newAmount" -> "1675",
-      "oldAmount" -> "11",
-      "worksNumber" -> "",
-      "startDate" -> "2013-08-03",
-      "endDate" -> "",
-      "isLive" -> "true",
-      "isOccupationalPension" -> "false",
-      "hasMultipleIncomes" -> "false")
-
-
-
-
-    "show the correct step for confirmation page for income" in {
-      val testTaxSummary = TaiData.getBasicRateTaxSummary
-
-      val employments = testTaxSummary.increasesTax.flatMap(_.incomes.flatMap(_.taxCodeIncomes.employments))
-      employments.isDefined mustBe true
-      val employment = employments.get.taxCodeIncomes(0)
-
-      val SUT = createSUTwithProgrammedDeps()
-
-      val result = SUT.updateIncomesForNino(nino)(singleIncomeRequest, UserBuilder.apply(),createMockSessionData(testTaxSummary))
-      status(result) mustBe 200
-    }
-
-    "show the correct step for confirmation page for multiple-incomes" in {
-      val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
-
-      val employments = testTaxSummary.increasesTax.flatMap(_.incomes.flatMap(_.taxCodeIncomes.employments))
-      employments.isDefined mustBe true
-      val employment = employments.get.taxCodeIncomes(0)
-
-      val SUT = createSUTwithProgrammedDeps()
-      val fakeRequest = FakeRequest("POST", "").withFormUrlEncodedBody()
-
-      val result = SUT.updateIncomesForNino(nino)(fakeRequest1, UserBuilder.apply(),createMockSessionData(testTaxSummary))
-      status(result) mustBe 200
-    }
-
-
-    "should be allowed to call updateIncomes() with an authorised session  " in {
-      val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
-      val SUT = createSUTwithProgrammedDeps(sessionData = createMockSessionData(testTaxSummary))
-      val result = SUT.updateIncomes()(RequestBuilder.buildFakeRequestWithAuth("POST"))
-      status(result) mustBe 200
-    }
-
-    "should be allowed to call updateIncomes() with an unAuthorised session and should be directed to gg login " in {
-      val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
-      val SUT = createSUTwithProgrammedDeps(sessionData = createMockSessionData(testTaxSummary))
-      val result = SUT.updateIncomes()(RequestBuilder.buildFakeRequestWithoutAuth("POST"))
-
-      status(result) mustBe 303
-      val nextURL = redirectLocation(result) match {
-        case Some(s: String) => s
-        case _ => "" +
-          ""
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.incomes.edit.heading"))
       }
-      nextURL.contains("/gg/sign-in") mustBe true
     }
 
+     "return Internal Server Error" when {
+      "employment doesn't present" in {
+        val sut = createSUT
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+          thenReturn(Future.successful(1))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
+        when(sut.employmentService.employment(any(), any())(any())).
+          thenReturn(Future.successful(Some(employment)))
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-    "call updateIncomes() successfully with an authorised session  " in {
-      val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
-      val SUT = createSUTwithProgrammedDeps(sessionData = createMockSessionData(testTaxSummary))
-      val result = SUT.updateIncomes()(RequestBuilder.buildFakeRequestWithAuth("POST"))
-      status(result) mustBe 200
-    }
+        val result = sut.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-    "call updateIncomes() unsuccessfully with an unAuthorised session and be directed to the gg login  " in {
-      val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
-      val SUT = createSUTwithProgrammedDeps(sessionData = createMockSessionData(testTaxSummary))
-      val result = SUT.updateIncomes()(RequestBuilder.buildFakeRequestWithoutAuth("POST"))
-
-      status(result) mustBe 303
-      val nextURL = redirectLocation(result) match {
-        case Some(s: String) => s
-        case _ => "" +
-          ""
+        status(result) mustBe INTERNAL_SERVER_ERROR
       }
-      nextURL.contains("/gg/sign-in") mustBe true
-    }
 
+       "tax code incomes return failure" in {
+         val sut = createSUT
+         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+         val employment = employmentWithAccounts(List(annualAccount))
+         when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+           thenReturn(Future.successful(1))
+         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+         when(sut.employmentService.employment(any(), any())(any())).
+           thenReturn(Future.successful(Some(employment)))
+         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-    "create editIncomeForm with errors having less new amount  " in {
-      val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
-      val paymentDate = None
-      val pensionYTD = 1700
-      val testForm = EditIncomeForm.bind(RequestBuilder.buildFakeRequestWithAuth("POST"), pensionYTD, paymentDate, Some("error.tai.updateDataPension.enterLargerValue"))
-      testForm.fold(formWithErrors=>true, income=>false) mustBe true
-    }
+         val result = sut.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-    "create editIncomeForm with no errors having large new amount  " in {
-      val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
-      val paymentDate = None
-      val pensionYTD = 10
-      val testForm = EditIncomeForm.bind(RequestBuilder.buildFakeRequestWithAuth("POST"), pensionYTD, paymentDate, Some("error.tai.updateDataPension.enterLargerValue"))
-      testForm.fold(formWithErrors=>true, income=>false) mustBe false
-    }
+         status(result) mustBe INTERNAL_SERVER_ERROR
+       }
 
-    "create editIncomeForm with no errors having same new amount  " in {
-      val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
-      val paymentDate = None
-      val pensionYTD = 1675
-      val testForm = EditIncomeForm.bind(RequestBuilder.buildFakeRequestWithAuth("POST"), pensionYTD, paymentDate, Some("error.tai.updateDataPension.enterLargerValue"))
-      testForm.fold(formWithErrors=>true, income=>false) mustBe false
+       "employment return None" in {
+         val sut = createSUT
+         when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+           thenReturn(Future.successful(1))
+         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+         when(sut.employmentService.employment(any(), any())(any())).
+           thenReturn(Future.successful(None))
+         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+         val result = sut.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+         status(result) mustBe INTERNAL_SERVER_ERROR
+       }
     }
   }
 
-  val nino = new Generator().nextNino
+  "editRegularIncome" must {
+    "redirect to confirm regular income page" when {
+      "valid input is passed" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(Seq("100", "1"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
+        when(sut.journeyCacheService.cache(any(), any())(any())).
+          thenReturn(Future.successful(Map.empty[String, String]))
+        val editIncomeForm = sut.editIncomeForm.copy(newAmount = Some("200"))
+        val formData = Json.toJson(editIncomeForm)
 
-  def createSUTwithProgrammedDeps(authConnector: AuthConnector = FakeAuthConnector,
-                                  sessionData: SessionData = mock[SessionData]) = {
+        val result = sut.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
-    val mockIabdUpdEmpResp = mock[IabdUpdateEmploymentsResponse]
-    val mockTaiSvc = mock[TaiService]
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.IncomeController.confirmRegularIncome().url
+      }
+    }
 
-    when(mockTaiSvc.taiSession(any(), any(), any())(any())).thenReturn(Future.successful(sessionData))
-    when(mockTaiSvc.updateIncome(any(), any(), any(), any())(any(), any())).thenReturn(Future.successful(mockIabdUpdEmpResp))
-    when(mockTaiSvc.updateTaiSession(any())(any())).thenReturn(Future.successful(mock[SessionData]))
+    "return Bad request" when {
+      "new amount is blank" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(Seq("100", "1"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
+        when(sut.journeyCacheService.cache(any(), any())(any())).
+          thenReturn(Future.successful(Map.empty[String, String]))
+        val editIncomeForm = sut.editIncomeForm.copy(newAmount = Some(""))
+        val formData = Json.toJson(editIncomeForm)
 
-    new TestIncomeController(taiSvc = mockTaiSvc, authConn = authConnector)
+        val result = sut.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+
+        status(result) mustBe BAD_REQUEST
+      }
+    }
   }
 
-  class TestIncomeController(taiSvc: TaiService = mock[TaiService],
-                             activityLoggerSvc: ActivityLoggerService = mock[ActivityLoggerService],
-                             delegationConn: DelegationConnector = mock[DelegationConnector],
-                             authConn: AuthConnector = mock[AuthConnector],
-                             auditConn: AuditConnector = mock[AuditConnector]) extends IncomeController {
+  "confirmRegularIncome" must {
+    "return OK" when {
+      "valid values are present in cache" in {
+        val sut = createSUT
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
+        when(sut.journeyCacheService.mandatoryValues(any())(any())).
+        thenReturn(Future.successful(Seq("1", "200")))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(sut.employmentService.employment(any(), any())(any())).
+          thenReturn(Future.successful(Some(employment)))
 
-    override def taiService: TaiService = taiSvc
-    override def activityLoggerService: ActivityLoggerService = activityLoggerSvc
-    override implicit def templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit def partialRetriever: FormPartialRetriever = MockPartialRetriever
-    override protected def delegationConnector: DelegationConnector = delegationConn
-    override implicit def authConnector: AuthConnector = authConn
-    override def auditConnector: AuditConnector = auditConn
+        val result = sut.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+      }
+    }
+
+    "return Internal Server Error" when {
+      "employment doesn't present" in {
+        val sut = createSUT
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+          thenReturn(Future.successful(1))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
+        when(sut.employmentService.employment(any(), any())(any())).
+          thenReturn(Future.successful(Some(employment)))
+
+        val result = sut.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+
+      "tax code incomes return failure" in {
+        val sut = createSUT
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+          thenReturn(Future.successful(1))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+        when(sut.employmentService.employment(any(), any())(any())).
+          thenReturn(Future.successful(Some(employment)))
+
+        val result = sut.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+
+      "employment return None" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+          thenReturn(Future.successful(1))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+        when(sut.employmentService.employment(any(), any())(any())).
+          thenReturn(Future.successful(None))
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+        val result = sut.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
   }
 
-  def createMockSessionData(taxSummaryDets: TaxSummaryDetails, editIncomeForm: Option[EditIncomeForm] = Some(mock[EditIncomeForm])): SessionData = {
-    val msd = mock[SessionData]
-    when(msd.taxSummaryDetailsCY).thenReturn(taxSummaryDets)
-    when(msd.taiRoot).thenReturn(None)
-    when(msd.nino).thenReturn(taxSummaryDets.nino)
-    when(msd.taiRoot).thenReturn(Some(TaiRoot(taxSummaryDets.nino+"A")))
-    when(msd.editIncomeForm).thenReturn(editIncomeForm)
-    msd
+  "updateEstimatedIncome" must {
+    "return OK" when {
+      "income is successfully updated" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(Seq("200", "1"), Seq(Some("TEST"))))
+        when(sut.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponse))
+
+        val result = sut.updateEstimatedIncome()(RequestBuilder.buildFakeRequestWithAuth("POST"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.incomes.updated.check.title"))
+      }
+    }
+
+    "return OK" when {
+      "income is successfully updated with comma separated values input" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(Seq("200,000", "1"), Seq(Some("TEST"))))
+        when(sut.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponse))
+
+        val result = sut.updateEstimatedIncome()(RequestBuilder.buildFakeRequestWithAuth("POST"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.incomes.updated.check.title"))
+      }
+    }
+
+    "return Internal Server Error" when {
+      "update is failed" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.mandatoryValues(any())(any())).
+          thenReturn(Future.successful(Seq("200", "1", "TEST")))
+        when(sut.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
+          thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+
+        val result = sut.updateEstimatedIncome()(RequestBuilder.buildFakeRequestWithAuth("POST"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  "pension" must {
+    "return OK with regular income view" when {
+      "valid inputs are passed" in {
+        val sut = createSUT
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
+        when(sut.incomeService.employmentAmount(any(), any())(any())).thenReturn(Future.successful(employmentAmount))
+        when(sut.incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(Some(payment)))
+        when(sut.incomeService.cachePaymentForRegularIncome(any())(any())).thenReturn(Map.empty[String, String])
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+        val result = sut.pensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.incomes.pension.heading"))
+      }
+    }
+
+    "return Internal Server Error" when {
+      "employment doesn't present" in {
+        val sut = createSUT
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+          thenReturn(Future.successful(1))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
+        when(sut.employmentService.employment(any(), any())(any())).
+          thenReturn(Future.successful(Some(employment)))
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+        val result = sut.pensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+
+      "tax code incomes return failure" in {
+        val sut = createSUT
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+          thenReturn(Future.successful(1))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+        when(sut.employmentService.employment(any(), any())(any())).
+          thenReturn(Future.successful(Some(employment)))
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+        val result = sut.pensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+
+      "employment return None" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+          thenReturn(Future.successful(1))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+        when(sut.employmentService.employment(any(), any())(any())).
+          thenReturn(Future.successful(None))
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+        val result = sut.pensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  "editPensionIncome" must {
+    "redirect to confirm regular income page" when {
+      "valid input is passed" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(Seq("100", "1"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
+        when(sut.journeyCacheService.cache(any(), any())(any())).
+          thenReturn(Future.successful(Map.empty[String, String]))
+        val editIncomeForm = sut.editIncomeForm.copy(newAmount = Some("200"))
+        val formData = Json.toJson(editIncomeForm)
+
+        val result = sut.editPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.IncomeController.confirmPensionIncome().url
+      }
+    }
+
+    "return Bad request" when {
+      "new amount is blank" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(Seq("100", "1"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
+        when(sut.journeyCacheService.cache(any(), any())(any())).
+          thenReturn(Future.successful(Map.empty[String, String]))
+        val editIncomeForm = sut.editIncomeForm.copy(newAmount = Some(""))
+        val formData = Json.toJson(editIncomeForm)
+
+        val result = sut.editPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+
+        status(result) mustBe BAD_REQUEST
+      }
+    }
+  }
+
+  "confirmPensionIncome" must {
+    "return OK" when {
+      "valid values are present in cache" in {
+        val sut = createSUT
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
+        when(sut.journeyCacheService.mandatoryValues(any())(any())).
+          thenReturn(Future.successful(Seq("1", "200")))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(sut.employmentService.employment(any(), any())(any())).
+          thenReturn(Future.successful(Some(employment)))
+
+        val result = sut.confirmPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+      }
+    }
+
+    "return Internal Server Error" when {
+      "employment doesn't present" in {
+        val sut = createSUT
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+          thenReturn(Future.successful(1))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
+        when(sut.employmentService.employment(any(), any())(any())).
+          thenReturn(Future.successful(Some(employment)))
+
+        val result = sut.confirmPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+
+      "tax code incomes return failure" in {
+        val sut = createSUT
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+          thenReturn(Future.successful(1))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+        when(sut.employmentService.employment(any(), any())(any())).
+          thenReturn(Future.successful(Some(employment)))
+
+        val result = sut.confirmPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+
+      "employment return None" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+          thenReturn(Future.successful(1))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+        when(sut.employmentService.employment(any(), any())(any())).
+          thenReturn(Future.successful(None))
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+        val result = sut.confirmPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  "viewIncomeForEdit" must {
+    "redirect user" when {
+      "employment is live and is not occupational pension" in {
+        val sut = createSUT
+
+        val employmentAmount = EmploymentAmount("employment","(Current employer)",1,11,11,None,None,None,None,true,false)
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
+        when(sut.incomeService.employmentAmount(any(), any())(any())).thenReturn(Future.successful(employmentAmount))
+
+        val result = sut.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.IncomeController.regularIncome().url
+      }
+
+      "employment is not live and is not occupational pension" in {
+        val sut = createSUT
+
+        val employmentAmount = EmploymentAmount("employment","(Current employer)",1,11,11,None,None,None,None,false,false)
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
+        when(sut.incomeService.employmentAmount(any(), any())(any())).thenReturn(Future.successful(employmentAmount))
+
+        val result = sut.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.TaxAccountSummaryController.onPageLoad().url
+      }
+
+      "employment is not live and is occupational pension" in {
+        val sut = createSUT
+
+        val employmentAmount = EmploymentAmount("employment","(Current employer)",1,11,11,None,None,None,None,false, true)
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
+        when(sut.incomeService.employmentAmount(any(), any())(any())).thenReturn(Future.successful(employmentAmount))
+
+        val result = sut.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe routes.IncomeController.pensionIncome().url
+      }
+    }
+  }
+
+  val nino = new Generator(new Random).nextNino
+
+  def employmentWithAccounts(accounts:List[AnnualAccount]) = Employment("ABCD", Some("ABC123"), new LocalDate(2000, 5, 20),
+    None, accounts, "", "", 8, None, false)
+
+  def paymentOnDate(date: LocalDate) = Payment(
+    date = date,
+    amountYearToDate = 2000,
+    taxAmountYearToDate = 200,
+    nationalInsuranceAmountYearToDate = 100,
+    amount = 1000,
+    taxAmount = 100,
+    nationalInsuranceAmount = 50,
+    payFrequency = Monthly)
+
+  val taxCodeIncomes = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOperation, Live)
+  )
+
+
+  private implicit val hc: HeaderCarrier = HeaderCarrier()
+
+  val employmentAmount = EmploymentAmount("employment","(Current employer)",1,1111,1111,
+    None,None,Some(new LocalDate(2000, 5, 20)),None,true,false)
+
+  private def createSUT = new SUT
+  private class SUT extends IncomeController {
+    override implicit def templateRenderer: MockTemplateRenderer.type = MockTemplateRenderer
+
+    override val taiService: TaiService = mock[TaiService]
+    override protected val authConnector: AuthConnector = mock[AuthConnector]
+    override val auditConnector: AuditConnector = mock[AuditConnector]
+    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
+    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
+    override val employmentService: EmploymentService = mock[EmploymentService]
+    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
+    override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+    override val incomeService: IncomeService = mock[IncomeService]
+
+    val editIncomeForm = EditIncomeForm("Test", "Test", 1, None, 10, None, None, None, None)
+
+    val employmentStartDateForm = EmploymentAddDateForm("employer")
+    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino)))
+    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
+
+    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+
   }
 
 }
+
+

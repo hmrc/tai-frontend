@@ -16,124 +16,247 @@
 
 package controllers
 
-import controllers.ServiceChecks._
 import controllers.audit.Auditable
-import controllers.auth.{TaiUser, WithAuthorisedForTai}
+import controllers.auth.WithAuthorisedForTaiLite
+import org.joda.time.LocalDate
 import play.api.Play.current
-import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{AnyContent, Request, Result}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
-import uk.gov.hmrc.tai.model.SessionData
-import uk.gov.hmrc.tai.service.TaiService.IncomeIDPage
-import uk.gov.hmrc.tai.service.{ActivityLoggerService, TaiService}
-import uk.gov.hmrc.tai.util.TaxSummaryHelper
-import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.model.EmploymentAmount
+import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.util.{AuditConstants, FormHelper, FormValuesConstants, JourneyCacheConstants}
 
+import scala.Function.tupled
 import scala.concurrent.Future
 
-
 trait IncomeController extends TaiBaseController
-with DelegationAwareActions
-with WithAuthorisedForTai
-with Auditable {
+  with DelegationAwareActions
+  with WithAuthorisedForTaiLite
+  with JourneyCacheConstants
+  with AuditConstants
+  with FormValuesConstants
+  with Auditable {
 
   def taiService: TaiService
-  def activityLoggerService: ActivityLoggerService
 
+  def journeyCacheService: JourneyCacheService
 
-  def updateIncomes() = authorisedForTai(redirectToOrigin = true)(taiService).async {
-    implicit user => implicit sessionData => implicit request =>
-      updateIncomesForNino(Nino(user.getNino.toString))
+  def taxAccountService: TaxAccountService
+
+  def employmentService: EmploymentService
+
+  def incomeService: IncomeService
+
+  def regularIncome(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          for {
+            id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+            employmentAmount <- incomeService.employmentAmount(Nino(user.getNino), id)
+            latestPayment <- incomeService.latestPayment(Nino(user.getNino), id)
+            cacheData = incomeService.cachePaymentForRegularIncome(latestPayment)
+            _ <- journeyCacheService.cache(cacheData)
+          } yield {
+            val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
+            Ok(views.html.incomes.editIncome(EditIncomeForm.create(employmentAmount), false,
+              employmentAmount.employmentId, amountYearToDate.toString))
+          }
+        }
   }
 
-  def updateIncomesForNino(nino: Nino)(implicit request: Request[AnyContent], user: TaiUser, sessionData: SessionData): Future[Result] = {
+  def editRegularIncome(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          sendActingAttorneyAuditEvent("handleRegularIncomeUpdateForEdit")
 
-    val rule: CustomRule = details => {
-      sendActingAttorneyAuditEvent("updateIncomesForNino")
-      if (user.authContext.isDelegating) {
-        activityLoggerService.updateIncome(nino)
-      }
-
-      EditIncomeForm.bind(request).fold(
-        formWithErrors => {
-          val webChat = true
-          Future.successful(
-            BadRequest(
-              views.html.incomes.editIncome(
-                formWithErrors,
-                TaxSummaryHelper.hasMultipleIncomes(details),
-                formWithErrors("employmentId").value.getOrElse("0").toInt,
-                webChat = webChat
+          journeyCacheService.collectedValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey), Seq(UpdateIncome_DateKey)) flatMap tupled {
+            (mandatorySeq, optionalSeq) => {
+              val date = optionalSeq.head.map(date => LocalDate.parse(date))
+              EditIncomeForm.bind(request, BigDecimal(mandatorySeq.head), date).fold(
+                formWithErrors => {
+                  val webChat = true
+                  Future.successful(BadRequest(views.html.incomes.editIncome(formWithErrors,
+                    false,
+                    mandatorySeq(1).toInt,
+                    mandatorySeq.head, webChat = webChat)))
+                },
+                income => {
+                  journeyCacheService.cache(UpdateIncome_NewAmountKey, income.newAmount.getOrElse("0")).map { x =>
+                    Redirect(routes.IncomeController.confirmRegularIncome())
+                  }
+                }
               )
-            )
-          )
-        },
-        incomes => {
-          taiService.updateIncome(nino, TaxYearResolver.currentTaxYear,details.version, incomes.toEmploymentAmount) map {
-            response =>
-              Ok(views.html.incomes.editSuccess(response, incomes, TaxSummaryHelper.hasMultipleIncomes(details), Some(incomes.name)))
+            }
           }
+
         }
-      )
-    }
-    ServiceChecks.executeWithServiceChecks(nino, SimpleServiceCheck, sessionData) {
-      Some(rule)
-    }
-
-  } recoverWith handleErrorResponse("updateIncomesForNino", nino)
-
-
-  def viewIncomeForEdit() = authorisedForTai(redirectToOrigin = true)(taiService).async {
-    implicit user => implicit sessionData => implicit request =>
-      val page:IncomeIDPage = (id, name) => getIncomeForEdit(Nino(user.taiRoot.nino), id)
-      moveToPageWithIncomeID(page)
   }
-  def getIncomeForEdit(nino: Nino, incomeId: Int)(implicit request: Request[AnyContent], user: TaiUser, sessionData : SessionData): Future[Result] = {
 
+  def confirmRegularIncome(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          sendActingAttorneyAuditEvent("confirmRegularIncome")
+          for {
+            cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey)
+            id = cachedData.head.toInt
+            taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
+            employmentDetails <- employmentService.employment(Nino(user.getNino), id)
+          } yield {
 
-    val rule: CustomRule = details => {
-      val incomeToEdit = taiService.incomeForEdit(details, incomeId)
-      incomeToEdit match {
-        case Some(employmentAmount) => {
-          (employmentAmount.isLive, employmentAmount.isOccupationalPension) match {
-            //ToDo - Put Calculator back in
-            //case (true, false) => Ok(views.html.incomes.incomeCalculator(CalculateIncomeForm.create(details)))
-            case (true, false) => Future.successful(Redirect(routes.IncomeControllerNew.regularIncome()))
-            case (false, false) => Future.successful(Redirect(routes.TaxAccountSummaryController.onPageLoad()))
-            case _ => Future.successful(Redirect(routes.IncomeControllerNew.pensionIncome()))
+            (taxCodeIncomeDetails, employmentDetails) match {
+              case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
+                taxCodeIncomes.find(_.employmentId.contains(cachedData.head.toInt)) match {
+                  case Some(taxCodeIncome) =>
+                    val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
+                    val (_, date) = retrieveAmountAndDate(employment)
+                    val form = EditIncomeForm(employmentAmount, cachedData(1), date.map(_.toString()))
+                    Ok(views.html.incomes.confirm_save_Income(form))
+                  case _ => throw new RuntimeException(s"Not able to found employment with id $id")
+                }
+              case _ => throw new RuntimeException("Exception while reading employment and tax code details")
+            }
+          }
+
+        }
+  }
+
+  def updateEstimatedIncome(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          for {
+            (mandatoryData, optionalData) <- journeyCacheService.collectedValues(Seq(UpdateIncome_NewAmountKey, UpdateIncome_IdKey), Seq(UpdateIncome_NameKey))
+            response <- taxAccountService.updateEstimatedIncome(Nino(user.getNino), FormHelper.stripNumber(mandatoryData.head).toInt, TaxYear(), mandatoryData(1).toInt)
+          } yield {
+            response match {
+              case TaiSuccessResponse =>
+                Ok(views.html.incomes.editSuccess_new(optionalData.head))
+              case _ => throw new RuntimeException("Failed to update estimated income")
+            }
           }
         }
-        case _ => Future.successful(BadRequest(views.html.error_template(Messages("tai.technical.error.title"), Messages("tai.technical.error.heading"),
-          Messages("tai.technical.error.message"))))
-      }
+  }
 
-    }
-    ServiceChecks.executeWithServiceChecks(nino, SimpleServiceCheck, sessionData) {
-      Some(rule)
-    }
+  def pensionIncome(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          for {
+            id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+            employmentAmount <- incomeService.employmentAmount(Nino(user.getNino), id)
+            latestPayment <- incomeService.latestPayment(Nino(user.getNino), id)
+            cacheData = incomeService.cachePaymentForRegularIncome(latestPayment)
+            _ <- journeyCacheService.cache(cacheData)
+          } yield {
+            val amountYearToDate: BigDecimal = latestPayment.map(_.amountYearToDate).getOrElse(0)
+            Ok(views.html.incomes.editPension(EditIncomeForm.create(employmentAmount), false,
+              employmentAmount.employmentId, amountYearToDate.toString()))
+          }
+        }
+  }
 
-  } recoverWith handleErrorResponse("getIncomes", nino)
+  def editPensionIncome(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          sendActingAttorneyAuditEvent("handlePensionIncomeUpdateForEdit")
 
+          journeyCacheService.collectedValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey), Seq(UpdateIncome_DateKey)) flatMap tupled {
+            (mandatorySeq, optionalSeq) => {
+              val date = optionalSeq.head.map(date => LocalDate.parse(date))
+              EditIncomeForm.bind(request, BigDecimal(mandatorySeq.head), date).fold(
+                formWithErrors => {
+                  val webChat = true
+                  Future.successful(BadRequest(views.html.incomes.editPension(formWithErrors,
+                    false,
+                    mandatorySeq(1).toInt,
+                    mandatorySeq.head, webChat = webChat)))
+                },
+                income => {
+                  journeyCacheService.cache(UpdateIncome_NewAmountKey, income.newAmount.getOrElse("0")).map { x =>
+                    Redirect(routes.IncomeController.confirmPensionIncome())
+                  }
+                }
+              )
+            }
+          }
 
-  def moveToPageWithIncomeID(page:IncomeIDPage )(implicit user: TaiUser,request: Request[AnyContent], sessionData : SessionData): Future[Result] =  {
-    sessionData.editIncomeForm.map(x => (x.employmentId, x.name)).map { income =>
-      page(income._1, income._2)
-    }
-  }.getOrElse(Future.successful(BadRequest(views.html.error_template(Messages("tai.technical.error.title"), Messages("tai.technical.error.heading"),
-    Messages("tai.technical.error.message")))))
+        }
+  }
 
+  def confirmPensionIncome(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          sendActingAttorneyAuditEvent("confirmIncomeUpdatesForEdit")
+          for {
+            cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey)
+            id = cachedData.head.toInt
+            taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
+            employmentDetails <- employmentService.employment(Nino(user.getNino), id)
+          } yield {
+
+            (taxCodeIncomeDetails, employmentDetails) match {
+              case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
+                taxCodeIncomes.find(_.employmentId.contains(cachedData.head.toInt)) match {
+                  case Some(taxCodeIncome) =>
+                    val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
+                    val (_, date) = retrieveAmountAndDate(employment)
+                    val form = EditIncomeForm(employmentAmount, cachedData(1), date.map(_.toString()))
+                    Ok(views.html.incomes.confirm_save_Income(form))
+                  case _ => throw new RuntimeException(s"Not able to found employment with id $id")
+                }
+              case _ => throw new RuntimeException("Exception while reading employment and tax code details")
+            }
+          }
+
+        }
+  }
+
+  def viewIncomeForEdit: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          for {
+            id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+            employmentAmount <- incomeService.employmentAmount(Nino(user.getNino), id)
+          } yield {
+            (employmentAmount.isLive, employmentAmount.isOccupationalPension) match {
+              case (true, false) => Redirect(routes.IncomeController.regularIncome())
+              case (false, false) => Redirect(routes.TaxAccountSummaryController.onPageLoad())
+              case _ => Redirect(routes.IncomeController.pensionIncome())
+            }
+          }
+        }
+  }
+
+  private def retrieveAmountAndDate(employment: Employment): (BigDecimal, Option[LocalDate]) = {
+    val amountAndDate = for {
+      latestAnnualAccount <- employment.latestAnnualAccount
+      latestPayment <- latestAnnualAccount.latestPayment
+    } yield Tuple2(latestPayment.amountYearToDate, Some(latestPayment.date))
+    amountAndDate.getOrElse(0, None)
+  }
 }
-
 
 object IncomeController extends IncomeController with AuthenticationConnectors {
   override val taiService = TaiService
-  override val activityLoggerService = ActivityLoggerService
+  override val taxAccountService = TaxAccountService
   override implicit def templateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
+  override implicit def partialRetriever = TaiHtmlPartialRetriever
+  override val journeyCacheService: JourneyCacheService = JourneyCacheService(UpdateIncome_JourneyKey)
+  override val employmentService: EmploymentService = EmploymentService
+  override val incomeService: IncomeService = IncomeService
 }
