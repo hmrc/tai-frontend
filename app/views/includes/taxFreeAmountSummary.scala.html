@@ -23,7 +23,7 @@
 }
 
 @for((item, itemIdx) <- items zip (Stream from 1);
-      isAllowanceOrTotalItem = item.caption==Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption==Messages("tai.taxFreeAmount.table.totals.caption") ) {
+      isAllowanceOrTotalItem = item.caption == Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption == Messages("tai.taxFreeAmount.table.totals.caption") ) {
 
     @if(item.rows.nonEmpty) {
 
