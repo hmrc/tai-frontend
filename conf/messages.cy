@@ -1443,10 +1443,10 @@ tai.remove.company.benefit.total.value.customGaTitle=WELSHWhat was the total val
 tai.updateEmployment.whatDoYouWantToTellUs.customGaTitle=WELSHWhat do you want to tell us about this employer?
 
 ##Estimated Income Tax Graph
-tai.taxCalc.nextTaxBand=Gallwch gael £{0} yn fwy cyn i'ch incwm gyrraedd yr haen treth nesaf.
-tai.taxedIncome.desc=Incwm wedi'i drethu
+tai.taxCalc.nextTaxBand=Gallwch gael £{0} yn fwy cyn i''ch incwm gyrraedd yr haen treth nesaf.
+tai.taxedIncome.desc=Incwm wedi''i drethu
 tai.taxCalc.UnderpaymentPreviousYear.title=Tandaliad o flynyddoedd blaenorol
-tai.taxCalc.OutstandingDebt.title=Dyled sydd heb ei thalu o'r flwyddyn flaenorol
+tai.taxCalc.OutstandingDebt.title=Dyled sydd heb ei thalu o''r flwyddyn flaenorol
 tai.taxCalc.childBenefit.title=Budd-dal Plant
 
 tai.taxCalc.excessGiftAidTax.title=Treth Rhodd Cymorth ychwanegol
@@ -1455,19 +1455,19 @@ tai.taxCalc.pensionPaymentsAdjustment.title=Addasiad Taliadau Pensiwn
 
 #Tax paid elsewhere
 tai.taxCollected.atSource.title=Gostyngiadau
-tai.taxCollected.atSource.description=Nid yw'r holl dreth yn eich amcangyfrif yn cael ei gasglu drwy TWE gan ddefnyddio'ch cod(au) treth. Mae'r dreth na fyddwch yn ei thalu drwy TWE yn cynnwys y canlynol:
+tai.taxCollected.atSource.description=Nid yw''r holl dreth yn eich amcangyfrif yn cael ei gasglu drwy TWE gan ddefnyddio''ch cod(au) treth. Mae''r dreth na fyddwch yn ei thalu drwy TWE yn cynnwys y canlynol:
 tai.taxCollected.atSource.heading.tax=Treth
 tai.taxCollected.atSource.heading.amount=Swm (£)
 
 tai.taxCollected.atSource.dividends.title=Treth ar ddifidendau
-tai.taxCollected.atSource.dividends.description=Mae llog o ddifidendau cwmni'n cael ei drethu ar y gyfradd gyffredin difidend ({0}%) cyn ei fod yn cael ei dalu i chi.
+tai.taxCollected.atSource.dividends.description=Mae llog o ddifidendau cwmni''n cael ei drethu ar y gyfradd gyffredin difidend ({0}%) cyn ei fod yn cael ei dalu i chi.
 
 tai.taxCollected.atSource.marriageAllowance.title=Lwfans Pâr Priod
-tai.taxCollected.atSource.marriageAllowance.description=Mae Lwfans Pâr Priod yn gostwng y dreth a dalwch. Byddwch yn cael rhyddhad treth ar 10% o'ch Lwfans Pâr Priod o £{0}. Efallai y bydd y swm a ddangosir yn eich cyfrifiad {1} yn wahanol er mwyn sicrhau eich bod yn cael y swm cywir ar gyfer eich cyfradd dreth.
+tai.taxCollected.atSource.marriageAllowance.description=Mae Lwfans Pâr Priod yn gostwng y dreth a dalwch. Byddwch yn cael rhyddhad treth ar 10% o''ch Lwfans Pâr Priod o £{0}. Efallai y bydd y swm a ddangosir yn eich cyfrifiad {1} yn wahanol er mwyn sicrhau eich bod yn cael y swm cywir ar gyfer eich cyfradd dreth.
 tai.taxCollected.atSource.marriageAllowance.description.linkText=cod treth
 
 tai.taxCollected.atSource.maintenancePayments.title=Taliadau cynhaliaeth
-tai.taxCollected.atSource.maintenancePayments.description=Rhyddhad treth ar daliadau cynhaliaeth i'ch cyn-briod neu'ch cyn-bartner nes bod eich plentyn yn 21.
+tai.taxCollected.atSource.maintenancePayments.description=Rhyddhad treth ar daliadau cynhaliaeth i''ch cyn-briod neu''ch cyn-bartner nes bod eich plentyn yn 21.
 tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title=Rhyddhad Cynllun Buddsoddiad Menter
 tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description=Rhyddhad treth ar eich cyfranddaliadau buddsoddi cymwys
 
@@ -1475,13 +1475,13 @@ tai.taxCollected.atSource.concessionalRelief.title=Rhyddhad consesiynol
 tai.taxCollected.atSource.concessionalRelief.description=Rhyddhad treth ar eich cynllun cymwys
 
 tai.taxCollected.atSource.doubleTaxationRelief.title=Rhyddhad Trethiant Dwbl
-tai.taxCollected.atSource.doubleTaxationRelief.description=Rhyddhad treth a roddir ar gyfer y dreth rydych wedi'i thalu y tu allan i'r DU ar incwm tramor.
+tai.taxCollected.atSource.doubleTaxationRelief.description=Rhyddhad treth a roddir ar gyfer y dreth rydych wedi''i thalu y tu allan i''r DU ar incwm tramor.
 
 tai.taxCollected.atSource.bank.title=Treth ar log o gynilion a buddsoddiadau
-tai.taxCollected.atSource.bank.description=Dyma'r llog sydd wedi'i drethu gan y gyfradd sylfaenol o {0}% gan eich banc, cymdeithas adeiladu neu sefydliad ariannol cyn iddo gael ei dalu i chi.
+tai.taxCollected.atSource.bank.description=Dyma''r llog sydd wedi''i drethu gan y gyfradd sylfaenol o {0}% gan eich banc, cymdeithas adeiladu neu sefydliad ariannol cyn iddo gael ei dalu i chi.
 
 tai.taxCollected.atSource.otherIncome.title=Treth ar incwm arall
-tai.taxCollected.atSource.otherIncome.description=Treth ar incwm arall nad yw'n cael ei chasglu drwy'ch cod treth, er enghraifft treth sy'n cael ei thalu drwy Hunanasesiad.
+tai.taxCollected.atSource.otherIncome.description=Treth ar incwm arall nad yw''n cael ei chasglu drwy''ch cod treth, er enghraifft treth sy''n cael ei thalu drwy Hunanasesiad.
 
-tai.taxCollected.byPAYE.title=Treth sy'n cael ei chasglu drwy'ch cod treth
-tai.taxCollected.byPAYE.description=Nid yw Talu Wrth Ennill (TWE) yn cynnwys treth sy'n cael ei thalu mewn man arall. Y dreth y byddwch yn ei thalu drwy TWE yw £{0}.
+tai.taxCollected.byPAYE.title=Treth sy''n cael ei chasglu drwy''ch cod treth
+tai.taxCollected.byPAYE.description=Nid yw Talu Wrth Ennill (TWE) yn cynnwys treth sy''n cael ei thalu mewn man arall. Y dreth y byddwch yn ei thalu drwy TWE yw £{0}.

@@ -251,23 +251,26 @@
     }
 
     // Update message
-
-    if (options && options.language) {
-        // placeholder - pending welsh translation - will be a string of either "en" or "cy"
+    var prefixClause, countVerb, countNoun
+    var displayNumber = Math.abs(remainingNumber) // postive count of numbers
+    if (options && options.language && options.language==='cy') {      // if set, will be a string of either "en" or "cy"
+        prefixClause = "Mae gennych "
+        countVerb = (remainingNumber < 0) ? 'yn ormod' : 'yn weddill'
+        if (options && options.wordCount) {
+            countNoun = ((remainingNumber === -1 || remainingNumber === 1) ? 'gair' : 'geiriau')
+        } else {
+            countNoun = ((remainingNumber === -1 || remainingNumber === 1) ? 'cymeriad' : 'o gymeriadau')
+        }
+    } else {
+        prefixClause = "You have "
+        countVerb = (remainingNumber < 0) ? 'too many' : 'remaining'
+        if (options && options.wordCount) {
+            countNoun = ((remainingNumber === -1 || remainingNumber === 1) ? 'word' : 'words')
+        } else {
+            countNoun = ((remainingNumber === -1 || remainingNumber === 1) ? 'character' : 'characters')
+        }
     }
-
-    var charVerb = 'remaining'
-    var charNoun = 'character'
-    var displayNumber = remainingNumber
-    if (options && options.wordCount) {
-      charNoun = 'word'
-    }
-    charNoun = charNoun + ((remainingNumber === -1 || remainingNumber === 1) ? '' : 's')
-
-    charVerb = (remainingNumber < 0) ? 'too many' : 'remaining'
-    displayNumber = Math.abs(remainingNumber) // postive count of numbers
-
-    countMessage.innerHTML = 'You have ' + displayNumber + ' ' + charNoun + ' ' + charVerb
+    countMessage.innerHTML = prefixClause + displayNumber + ' ' + countNoun + ' ' + countVerb
 
     // Update Highlight
     if (countHighlight) {
