@@ -39,6 +39,7 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.TaiConstants
@@ -342,12 +343,14 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
         TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
       )
+      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
 
       val result = Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
 
       result.header.status mustBe OK
 
-      verify(testController.auditService, times(1)).sendUserEntryAuditEvent(any(), any())(any())
+      verify(testController.auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
     }
   }
 
@@ -492,7 +495,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
     when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
-    when(auditService.sendUserEntryAuditEvent(any(), any())(any())).thenReturn(Future.successful(AuditResult.Success))
+    when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any())(any())).thenReturn(Future.successful(AuditResult.Success))
 
     when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
       Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary))
