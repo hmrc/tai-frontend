@@ -21,19 +21,17 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
 
 
 case class WhatDoYouWantToDoFormData(whatDoYouWantToDo: Option[String])
 
 object WhatDoYouWantToDoForm {
-  def whatDoYouWantToDoValidation: Constraint[Option[String]] = Constraint[Option[String]]("Choose an option"){
-    case Some(txt) => Valid
+  def whatDoYouWantToDoValidation(implicit messages: Messages): Constraint[Option[String]] = Constraint[Option[String]]("Choose an option"){
+    case Some(_) => Valid
     case _ => Invalid(Messages("tai.whatDoYouWantToDo.error.selectOption"))
   }
 
-  val createForm: Form[WhatDoYouWantToDoFormData] = {
+  def createForm(implicit messages: Messages): Form[WhatDoYouWantToDoFormData] = {
     Form[WhatDoYouWantToDoFormData](
       mapping(
         "taxYears" -> optional(text).verifying(whatDoYouWantToDoValidation)

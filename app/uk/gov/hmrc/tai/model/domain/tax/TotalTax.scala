@@ -71,7 +71,9 @@ case class TotalTax(amount: BigDecimal,
                     incomeCategories: Seq[IncomeCategory],
                     reliefsGivingBackTax: Option[TaxAdjustment],
                     otherTaxDue: Option[TaxAdjustment],
-                    alreadyTaxedAtSource: Option[TaxAdjustment])
+                    alreadyTaxedAtSource: Option[TaxAdjustment],
+                    taxOnOtherIncome: Option[BigDecimal] = None,
+                    taxReliefComponent: Option[TaxAdjustment] = None)
 
 object TotalTax{
   implicit val formats = Json.format[TotalTax]

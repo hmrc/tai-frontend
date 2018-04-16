@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.service
 
 import org.joda.time.LocalDate
+import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaiConnector
@@ -40,7 +41,7 @@ trait IncomeService extends JourneyCacheConstants {
 
   def taiConnector: TaiConnector
 
-  def employmentAmount(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[EmploymentAmount] = {
+  def employmentAmount(nino: Nino, id: Int)(implicit hc: HeaderCarrier, messages: Messages): Future[EmploymentAmount] = {
     for {
       taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
       employmentDetails <- employmentService.employment(nino, id)
@@ -48,8 +49,7 @@ trait IncomeService extends JourneyCacheConstants {
       (taxCodeIncomeDetails, employmentDetails) match {
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
           taxCodeIncomes.find(_.employmentId.contains(id)) match {
-            case Some(taxCodeIncome) =>
-              EmploymentAmount(taxCodeIncome, employment)
+            case Some(taxCodeIncome) => EmploymentAmount(taxCodeIncome, employment)
             case _ => throw new RuntimeException(s"Not able to found employment with id $id")
           }
         case _ => throw new RuntimeException("Exception while reading employment and tax code details")

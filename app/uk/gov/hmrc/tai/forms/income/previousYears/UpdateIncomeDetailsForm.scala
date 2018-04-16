@@ -21,14 +21,12 @@ import play.api.data.Forms.{single, text}
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
 
 object UpdateIncomeDetailsForm {
 
   val historicEmploymentDetailsCharLimit = 500
 
-  val form: Form[String] = Form(
+  def form(implicit messages: Messages): Form[String] = Form(
 
     single(
       "employmentDetails" ->

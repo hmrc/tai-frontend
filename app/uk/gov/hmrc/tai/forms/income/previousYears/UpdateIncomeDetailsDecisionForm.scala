@@ -16,16 +16,14 @@
 
 package uk.gov.hmrc.tai.forms.income.previousYears
 
-import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.util.UpdateHistoricIncomeChoiceConstants
 
 object UpdateIncomeDetailsDecisionForm extends UpdateHistoricIncomeChoiceConstants {
 
-  val form: Form[Option[String]] = Form[Option[String]](
+  def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
     single(
       UpdateIncomeChoice ->
         optional(text).verifying(Messages("tai.error.chooseOneOption"), {_.isDefined}))

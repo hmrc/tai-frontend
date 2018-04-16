@@ -56,10 +56,10 @@ trait AddPensionProviderController extends TaiBaseController
   def successfulJourneyCacheService: JourneyCacheService
   def pensionProviderService: PensionProviderService
 
-  lazy val contactPhonePensionProvider: CanWeContactByPhoneViewModel = {
+  private def contactPhonePensionProvider(implicit messages: Messages): CanWeContactByPhoneViewModel = {
     CanWeContactByPhoneViewModel(
-      Messages("tai.addPensionProvider.preHeadingText"),
-      Messages("tai.canWeContactByPhone.title"),
+      messages("tai.addPensionProvider.preHeadingText"),
+      messages("tai.canWeContactByPhone.title"),
       controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url,
       controllers.pensions.routes.AddPensionProviderController.submitTelephoneNumber().url,
       controllers.routes.TaxAccountSummaryController.onPageLoad().url

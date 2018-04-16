@@ -16,15 +16,13 @@
 
 package uk.gov.hmrc.tai.forms.employments
 
-import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.util.EmploymentDecisionConstants
 
 object UpdateRemoveEmploymentForm extends EmploymentDecisionConstants {
-  val form: Form[Option[String]] = Form[Option[String]](
+  def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](
     single(EmploymentDecision ->
       optional(text).verifying(error = Messages("tai.error.chooseOneOption"), constraint = !_.isEmpty))
   )

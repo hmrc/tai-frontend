@@ -22,6 +22,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.i18n.{I18nSupport, Messages}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaiConnector
@@ -38,6 +39,8 @@ import scala.concurrent.{Await, Future}
 import scala.util.Random
 
 class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with JourneyCacheConstants {
+
+  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
   "employmentAmount" must {
     "return employment amount" when {
