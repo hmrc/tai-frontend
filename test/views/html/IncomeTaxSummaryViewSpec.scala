@@ -253,7 +253,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithText("#annualAmountsSummarySection p", s"${messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxPara")}")
       doc must haveElementAtPathWithText(("#annualAmountsSummarySection p"), s"${messages("tai.incomeTaxSummary.generalAmount.prefix")} ${vm.estimatedIncomeTaxAmount}")
       doc must haveElementAtPathWithText("#annualAmountsSummarySection a", messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink"))
-      doc must haveElementAtPathWithAttribute("#annualAmountsSummarySection a", "href", controllers.routes.EstimatedIncomeTaxControllerNew.estimatedIncomeTax().url)
+      doc must haveElementAtPathWithAttribute("#annualAmountsSummarySection a", "href", controllers.routes.EstimatedIncomeTaxController.estimatedIncomeTax().url)
     }
   }
 

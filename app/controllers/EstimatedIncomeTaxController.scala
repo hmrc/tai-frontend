@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaiService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{EstimatedIncomeTaxViewModel, TaxReliefViewModel}
 
-trait EstimatedIncomeTaxControllerNew extends TaiBaseController
+trait EstimatedIncomeTaxController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
 
@@ -104,7 +104,7 @@ trait EstimatedIncomeTaxControllerNew extends TaiBaseController
 
 }
 
-object EstimatedIncomeTaxControllerNew extends EstimatedIncomeTaxControllerNew with AuthenticationConnectors {
+object EstimatedIncomeTaxController extends EstimatedIncomeTaxController with AuthenticationConnectors {
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 

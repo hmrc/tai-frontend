@@ -87,7 +87,7 @@ POST        /update-employment/check-your-answers                               
 GET         /update-employment/success                                                 controllers.employments.UpdateEmploymentController.confirmation
 
 GET         /underpayment-estimate                                                     controllers.PotentialUnderpaymentController.potentialUnderpaymentPage
-GET         /tax-relief                                                                controllers.EstimatedIncomeTaxControllerNew.taxRelief
+GET         /tax-relief                                                                controllers.EstimatedIncomeTaxController.taxRelief
 
 ## GET         /income                                                                    controllers.YourTaxableIncomeController.externalServiceLink
 
@@ -142,7 +142,7 @@ GET         /taxable-income                                                     
 GET         /your-tax-free-amount                                                      controllers.TaxFreeAmountControllerNew.taxFreeAmount
 
 GET         /tax-codes                                                                 controllers.YourTaxCodeController.taxCodes
-GET         /paye-income-tax-estimate                                                  controllers.EstimatedIncomeTaxControllerNew.estimatedIncomeTax
+GET         /paye-income-tax-estimate                                                  controllers.EstimatedIncomeTaxController.estimatedIncomeTax
 
 
 GET         /income-tax-comparison                                                     controllers.IncomeTaxComparisonController.onPageLoad
