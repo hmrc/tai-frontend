@@ -69,7 +69,7 @@ object TaxFreeAmountViewModelNew extends TaxAccountCalculator with ViewModelHelp
       hideCaption = true,
       Messages("tai.taxFreeAmount.table.allowances.caption"),
       Seq(TaxFreeAmountSummaryRowViewModel(
-        Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA"),
+        Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
         personalAllowanceSumFormatted,
         ChangeLinkViewModel(false, "", "")
       ))
