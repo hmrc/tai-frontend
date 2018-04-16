@@ -241,7 +241,7 @@ tai.cancel.noSave=Canslo - Ni chaiff eich newidiadau eu cadw
 tai.pension.income.details.mainHeading=Eich pensiwn o {0} {1} i {2}
 tai.estimatedIncome.DIV.title=Lwfans Difidend
 label.how_to_contact_us=Dulliau eraill o gysylltu â ni
-tai.taxFreeAmount.table.deductions.caption=Didyniadau o''ch Lwfans Personol
+tai.taxFreeAmount.table.deductions.caption=Didyniadau
 tai.iabdSummary.type-15=Lwfans Personol Sylfaenol a gafwyd oddi wrth briod neu bartner sifil
 tai.incomes.workNumber=Rhif y cyflogai:
 tai.iabdSummary.employmentBenefit.type-42=Gwesteia ar gyfer {0}
@@ -259,7 +259,7 @@ tai.iabdSummary.description-41=Gwerth yr hyfforddiant allanol a ddarperir gan ei
 tai.iabdSummary.description-76=O 6 Ebrill 2016 ymlaen, mae hyd at £5,000 o''r incwm difidend hwn yn rhydd o dreth. Ar symiau dros £5,000, mae treth yn daladwy ar 7.5%, 32.5% neu 38.1% yn dibynnu ar eich haen treth. Mae''ch cod treth yn cael ei addasu i gasglu unrhyw dreth ychwanegol sy''n ddyledus.
 tai.incomes.type-1=(Pensiwn)
 tai.iabdSummary.type-40=Asedion sydd wedi''u trosglwyddo
-tai.taxFreeAmount.table.deductions.noDeduction=Nid oes gennych unrhyw ddidyniadau o''ch lwfans personol
+tai.taxFreeAmount.table.deductions.noDeduction=Nid oes gennych unrhyw ddidyniadau
 tai.taxcode.NT=Mae NT yn golygu na fydd unrhyw dreth yn cael ei chymryd oddi ar yr incwm hwn.
 tai.estimatedIncome.accessiblePreHeading=Yr adran hon yw''ch amcangyfrif o''r Dreth Incwm ar gyfer
 tai.iabdSummary.employmentBenefit.type-45=Costau adleoli anghymwys ar gyfer {0}
@@ -424,7 +424,7 @@ tai.iabdSummary.description-118=Y swm y gallwch ei ennill cyn y bydd yn rhaid i 
 tai.hmrc.enquiry.text=Cysylltwch â Chyllid a Thollau EM
 tai.income.calculation.rti.pension.estimate=Gan ddefnyddio''r ffigurau a roddwyd gan ddarparwr eich pensiwn, rydym yn amcangyfrif mai £{0} fydd eich incwm trethadwy blynyddol ganddo.
 tai.bonusPaymentsAmount.week.description=Faint o daliadau bonws neu oramser gawsoch chi yr wythnos hon?
-tai.taxFreeAmount.table.additions.noAddition=Nid oes gennych unrhyw ychwanegiadau at eich swm rhydd o dreth
+tai.taxFreeAmount.table.additions.noAddition=Nid oes gennych unrhyw ychwanegiadau
 tai.taxcode.K=Mae K yn golygu bod gennych incwm heb ei drethu sy''n fwy na''ch lwfans rhydd o dreth. Mae angen ei ychwanegu at eich cyflog neu bensiwn fel y gellir casglu''r dreth ychwanegol.
 tai.income.previousYears.details.textarea.text=Rhowch fanylion eich diweddariad (Uchafswm o 500 o gymeriadau)
 tai.incomes.seeChanges.text=Gallwch weld y newidiadau rydych wedi''u gwneud drwy edrych ar eich cyfrifiad newydd.
@@ -930,7 +930,7 @@ tai.pensionProviderName.error.blank=Rhowch enw darparwr eich pensiwn
 tai.iabdSummary.type-69=Pensiwn y Lluoedd Arfog
 tai.incomes.confirm.same=Mae hyn yr un peth â''r swm sydd gennym eisoes ar gyfer {0}, felly does dim rhaid diweddaru''ch incwm.
 tai.bbsi.update.checkYourAnswers.rowTwo=Eich swm llog wedi''i ddiweddaru
-tai.taxFreeAmount.table.additions.caption=Ychwanegiadau i''ch Lwfans Personol
+tai.taxFreeAmount.table.additions.caption=Ychwanegiadau
 tai.iabdSummary.type-102=Rhyddhad ar golledion
 tai.getHelp.webchat.available.p1=Defnyddiwch y gwasanaeth sgwrsio dros y we i {0}.
 tai.iabdSummary.type-82=Llog heb ei drethu ar gynilion a buddsoddiadau
@@ -1443,45 +1443,45 @@ tai.remove.company.benefit.total.value.customGaTitle=WELSHWhat was the total val
 tai.updateEmployment.whatDoYouWantToTellUs.customGaTitle=WELSHWhat do you want to tell us about this employer?
 
 ##Estimated Income Tax Graph
-tai.taxCalc.nextTaxBand=WELSHYou can have £{0} more before your income reaches the next tax band.
-tai.taxedIncome.desc=WELSHTaxedIncome
-tai.taxCalc.UnderpaymentPreviousYear.title=WELSHUnderpayment from previous years
-tai.taxCalc.OutstandingDebt.title=WELSHOutstanding debt from previous year
-tai.taxCalc.childBenefit.title=WELSHChild Benefit
+tai.taxCalc.nextTaxBand=Gallwch gael £{0} yn fwy cyn i'ch incwm gyrraedd yr haen treth nesaf.
+tai.taxedIncome.desc=Incwm wedi'i drethu
+tai.taxCalc.UnderpaymentPreviousYear.title=Tandaliad o flynyddoedd blaenorol
+tai.taxCalc.OutstandingDebt.title=Dyled sydd heb ei thalu o'r flwyddyn flaenorol
+tai.taxCalc.childBenefit.title=Budd-dal Plant
 
-tai.taxCalc.excessGiftAidTax.title=WELSHExcess Gift Aid Tax
-tai.taxCalc.excessWidowsAndOrphans.title=WELSHExcess Widows And Orphans
-tai.taxCalc.pensionPaymentsAdjustment.title=WELSHPension Payments Adjustment
+tai.taxCalc.excessGiftAidTax.title=Treth Rhodd Cymorth ychwanegol
+tai.taxCalc.excessWidowsAndOrphans.title=Gweddwon a Phlant Amddifad ychwanegol
+tai.taxCalc.pensionPaymentsAdjustment.title=Addasiad Taliadau Pensiwn
 
 #Tax paid elsewhere
-tai.taxCollected.atSource.title=WELSHReductions
-tai.taxCollected.atSource.description=WELSHNot all of the tax in your estimate is collected through PAYE using your tax code(s). The tax you won’t pay through PAYE includes:
-tai.taxCollected.atSource.heading.tax=WELSHTax
-tai.taxCollected.atSource.heading.amount=WELSHAmount (£)
+tai.taxCollected.atSource.title=Gostyngiadau
+tai.taxCollected.atSource.description=Nid yw'r holl dreth yn eich amcangyfrif yn cael ei gasglu drwy TWE gan ddefnyddio'ch cod(au) treth. Mae'r dreth na fyddwch yn ei thalu drwy TWE yn cynnwys y canlynol:
+tai.taxCollected.atSource.heading.tax=Treth
+tai.taxCollected.atSource.heading.amount=Swm (£)
 
-tai.taxCollected.atSource.dividends.title=WELSHTax on dividends
-tai.taxCollected.atSource.dividends.description=WELSHInterest from company dividends is taxed at the dividend ordinary rate ({0}%) before it is paid to you.
+tai.taxCollected.atSource.dividends.title=Treth ar ddifidendau
+tai.taxCollected.atSource.dividends.description=Mae llog o ddifidendau cwmni'n cael ei drethu ar y gyfradd gyffredin difidend ({0}%) cyn ei fod yn cael ei dalu i chi.
 
-tai.taxCollected.atSource.marriageAllowance.title=WELSHMarried Couples Allowance
-tai.taxCollected.atSource.marriageAllowance.description=WELSHMarried Couples Allowance reduces the amount of tax you pay. You will get tax relief at 10% of your Married Couples Allowance of £{0}. The amount shown in your {1} calculation may appear to be different to make sure you get the right amount for your tax rate.
-tai.taxCollected.atSource.marriageAllowance.description.linkText=WELSHtax code
+tai.taxCollected.atSource.marriageAllowance.title=Lwfans Pâr Priod
+tai.taxCollected.atSource.marriageAllowance.description=Mae Lwfans Pâr Priod yn gostwng y dreth a dalwch. Byddwch yn cael rhyddhad treth ar 10% o'ch Lwfans Pâr Priod o £{0}. Efallai y bydd y swm a ddangosir yn eich cyfrifiad {1} yn wahanol er mwyn sicrhau eich bod yn cael y swm cywir ar gyfer eich cyfradd dreth.
+tai.taxCollected.atSource.marriageAllowance.description.linkText=cod treth
 
-tai.taxCollected.atSource.maintenancePayments.title=WELSHMaintenance Payments
-tai.taxCollected.atSource.maintenancePayments.description=WELSHTax relief on maintenance payments to your ex-spouse or partner until your child is 21.
-tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title=WELSHEnterprise Investment Scheme Relief
-tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description=WELSHTax relief for your qualifying investment shares
+tai.taxCollected.atSource.maintenancePayments.title=Taliadau cynhaliaeth
+tai.taxCollected.atSource.maintenancePayments.description=Rhyddhad treth ar daliadau cynhaliaeth i'ch cyn-briod neu'ch cyn-bartner nes bod eich plentyn yn 21.
+tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title=Rhyddhad Cynllun Buddsoddiad Menter
+tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description=Rhyddhad treth ar eich cyfranddaliadau buddsoddi cymwys
 
-tai.taxCollected.atSource.concessionalRelief.title=WELSHConcessional Relief
-tai.taxCollected.atSource.concessionalRelief.description=WELSHTax relief for your qualifying scheme
+tai.taxCollected.atSource.concessionalRelief.title=Rhyddhad consesiynol
+tai.taxCollected.atSource.concessionalRelief.description=Rhyddhad treth ar eich cynllun cymwys
 
-tai.taxCollected.atSource.doubleTaxationRelief.title=WELSHDouble Taxation Relief
-tai.taxCollected.atSource.doubleTaxationRelief.description=WELSHTax Relief given for the tax you’ve paid abroad on foreign income.
+tai.taxCollected.atSource.doubleTaxationRelief.title=Rhyddhad Trethiant Dwbl
+tai.taxCollected.atSource.doubleTaxationRelief.description=Rhyddhad treth a roddir ar gyfer y dreth rydych wedi'i thalu y tu allan i'r DU ar incwm tramor.
 
-tai.taxCollected.atSource.bank.title=WELSHTax on interest from savings and investments
-tai.taxCollected.atSource.bank.description=WELSHThis is the interest that has been taxed by the basic rate of {0}% by your bank, building society or financial institution before it is paid to you.
+tai.taxCollected.atSource.bank.title=Treth ar log o gynilion a buddsoddiadau
+tai.taxCollected.atSource.bank.description=Dyma'r llog sydd wedi'i drethu gan y gyfradd sylfaenol o {0}% gan eich banc, cymdeithas adeiladu neu sefydliad ariannol cyn iddo gael ei dalu i chi.
 
-tai.taxCollected.atSource.otherIncome.title=WELSHTax on other income
-tai.taxCollected.atSource.otherIncome.description=WELSHTax on other income not collected through your tax code, for example tax paid through Self Assessment.
+tai.taxCollected.atSource.otherIncome.title=Treth ar incwm arall
+tai.taxCollected.atSource.otherIncome.description=Treth ar incwm arall nad yw'n cael ei chasglu drwy'ch cod treth, er enghraifft treth sy'n cael ei thalu drwy Hunanasesiad.
 
-tai.taxCollected.byPAYE.title=WELSHTax collected through your tax code
-tai.taxCollected.byPAYE.description=WELSHPay As You Earn (PAYE) does not include tax paid elsewhere. The tax you’ll pay through PAYE is £{0}.
+tai.taxCollected.byPAYE.title=Treth sy'n cael ei chasglu drwy'ch cod treth
+tai.taxCollected.byPAYE.description=Nid yw Talu Wrth Ennill (TWE) yn cynnwys treth sy'n cael ei thalu mewn man arall. Y dreth y byddwch yn ei thalu drwy TWE yw £{0}.
