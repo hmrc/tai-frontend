@@ -95,7 +95,7 @@ trait EstimatedIncomeTaxController extends TaiBaseController
               totalTax match {
                 case TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax) =>
                   val model = TaxReliefViewModel(codingComponents, totalTaxDetails)
-                  Ok(views.html.reliefsNew(model))
+                  Ok(views.html.reliefs(model))
                 case _ => throw new RuntimeException("Failed to get total tax details")
               }
             }
