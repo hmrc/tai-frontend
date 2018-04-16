@@ -588,7 +588,6 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(taiService.taiSession(any(), any(), any())(any())).thenReturn(Future.successful(AuthBuilder.createFakeSessionDataWithPY))
     when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
 
     when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(SampleId))

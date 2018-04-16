@@ -25,9 +25,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -95,9 +93,6 @@ class TaxFreeAmountControllerNewSpec extends PlaySpec with FakeTaiPlayApplicatio
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
     when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
-
-    val sd = AuthBuilder.createFakeSessionDataWithPY
-    when(taiService.taiSession(any(), any(), any())(any())).thenReturn(Future.successful(sd))
   }
 
 }

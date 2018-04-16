@@ -445,7 +445,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     }
   }
 
-  "employments retrieval for CY-1" should {
+  "employments retrieval for CY-1" must {
 
     "supply employment data where data is found" in {
       implicit val hc = HeaderCarrier()
