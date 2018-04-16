@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.viewModels.TaxExplanationViewModelNew
 
-trait TaxExplanationControllerNew extends TaiBaseController
+trait TaxExplanationController extends TaiBaseController
 with DelegationAwareActions
 with WithAuthorisedForTaiLite {
 
@@ -65,7 +65,7 @@ with WithAuthorisedForTaiLite {
 
 }
 
-object TaxExplanationControllerNew extends TaxExplanationControllerNew with AuthenticationConnectors {
+object TaxExplanationController extends TaxExplanationController with AuthenticationConnectors {
   override val taiService: TaiService = TaiService
   override val taxAccountService: TaxAccountService = TaxAccountService
   override implicit val templateRenderer: TemplateRenderer = LocalTemplateRenderer

@@ -7,7 +7,7 @@ GET         /income-tax/no-info                                                 
 GET         /last-year-paye                                                            controllers.PayeControllerHistoric.lastYearPaye()
 GET         /historic-paye/:taxYear                                                    controllers.PayeControllerHistoric.payePage(taxYear: uk.gov.hmrc.tai.model.tai.TaxYear)
 
-GET         /tax-explanation                                                           controllers.TaxExplanationControllerNew.taxExplanationPage
+GET         /tax-explanation                                                           controllers.TaxExplanationController.taxExplanationPage
 
 GET         /timeout                                                                   controllers.ServiceController.timeoutPage
 GET         /signout                                                                   controllers.ServiceController.serviceSignout
