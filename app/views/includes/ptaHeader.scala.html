@@ -16,6 +16,7 @@
 
 @import includes.forms.errorSummary
 @import includes.backLink
+@import uk.gov.hmrc.urls.Link
 
 @(formForErrorSummary: Option[Form[_]] = None,
   displayBackLink: Boolean = false,
@@ -23,7 +24,8 @@
   mainHeadingText: String,
   preHeadingText: String,
   preHeadingAccessibleAnnouncement: String = "",
-  customBackLinkContent: Option[Html] = None
+  customBackLinkContent: Option[Html] = None,
+  additionalTopLinkContent: Option[Html] = None
 )(implicit m: Messages)
 
 @preHeadingHidden = @{
@@ -31,8 +33,19 @@
 }
 
 @if(displayBackLink) {
-    @customBackLinkContent.map(identity).getOrElse(backLink(gaEventAction = backLinkGaEventAction))
 
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            @customBackLinkContent.map(identity).getOrElse(backLink(gaEventAction = backLinkGaEventAction))
+        </div>
+
+        @if(additionalTopLinkContent.isDefined){
+        <div class="column-one-third text--right">
+            @additionalTopLinkContent.get
+        </div>
+        }
+
+    </div>
 }
 <div class="grid-row">
   <div class="column-two-thirds">
@@ -41,7 +54,7 @@
       @errorSummary(Messages("tai.income.error.form.summary"), formForErrorSummary.get, Seq("flush"))
     }
 
-    <header class="page-heading">
+    <header class="page-heading soft--top">
       <h1 class="heading-xlarge">@{mainHeadingText}</h1>
       <p class="heading-secondary"><span class="visuallyhidden">@preHeadingHidden </span>@{preHeadingText}</p>
     </header>

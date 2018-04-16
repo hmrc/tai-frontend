@@ -27,9 +27,8 @@ import uk.gov.hmrc.tai.viewModels.{CompanyBenefitViewModel, IncomeSourceSummaryV
 class IncomeSourceSummaryViewSpec extends TaiViewSpec {
   "Income details spec" must {
     behave like pageWithCombinedHeader(model.displayName,
-      messages("tai.employment.income.details.mainHeading", model.empOrPensionName,
-        model.startOfCurrentYear.replace(" ", "\u00A0"), model.endOfCurrentYear.replace(" ", "\u00A0")))
-    behave like pageWithBackLink
+    messages("tai.employment.income.details.mainHeading", model.empOrPensionName,
+    model.startOfCurrentYear.replace(" ", "\u00A0"), model.endOfCurrentYear.replace(" ", "\u00A0")))
     behave like pageWithTitle(messages("tai.employment.income.details.mainHeading", model.empOrPensionName,
       model.startOfCurrentYear, model.endOfCurrentYear))
 

@@ -34,10 +34,7 @@ class yourIncomeCalculationNewSpec extends TaiViewSpec {
 
     behave like pageWithTitle(messages("tai.income.calculation.TaxableIncomeDetails", model.employerName))
     behave like haveHeadingWithText(messages("tai.income.calculation.TaxableIncomeDetails", model.employerName))
-
-    "show return to summary link" in {
-      doc(view) must haveReturnToSummaryButtonWithUrl(routes.TaxAccountSummaryController.onPageLoad.url)
-    }
+    behave like pageWithBackLink
 
     "show details for potentially ceased employment" when {
       "payments are empty" in {
