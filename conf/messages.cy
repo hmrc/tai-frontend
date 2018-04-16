@@ -1419,6 +1419,7 @@ tai.inPounds=WELSH in pounds.
 tai.noLongerGetBenefit=WELSHI no longer get this benefit
 tai.payPeriod.legend=WELSHYou get paid
 tai.payslipDeductions.legend=WELSHDoes your payslip show any deductions?
+tai.incomeTaxComparison.incomeSourceAbsent=Ddim ar gael
 
 tai.remove.company.benefit.beforeTaxYearEnd=WELSHBefore {0}
 tai.remove.company.benefit.onOrAfterTaxYearEnd=WELSHOn or after {0}

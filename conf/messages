@@ -1484,6 +1484,7 @@ tai.incomeTaxComparison.tellAboutChange.investmentIncomeText=investment income
 tai.incomeTaxComparison.tellAboutChange.stateBenefitsText=state benefits
 tai.incomeTaxComparison.tellAboutChange.otherIncomeText=other income
 tai.incomeTaxComparison.sidebar.subHeading=Go to the current tax year
+tai.incomeTaxComparison.incomeSourceAbsent=Not available
 
 ##Income Details
 tai.employment.income.details.mainHeading=Your employment with {0} {1} to {2}
