@@ -442,7 +442,7 @@ tai.taxFreeAmount.summarysection.taxFreeExplanation=Your tax-free amount is how 
 tai.taxFreeAmount.summarysection.heading=Your annual tax-free amount is
 tai.taxFreeAmount.summarysection.p2=It can be:
 tai.taxFreeAmount.summarysection.bullet1=increased if you qualify for certain allowances or tax reliefs
-tai.taxFreeAmount.summarysection.bullet2=decreased to collect tax due for things like company benefits, rental income or bank and building society interest
+tai.taxFreeAmount.summarysection.bullet2=decreased to collect tax due for company benefits or income from other sources
 tai.taxFreeAmount.detailsection.heading=How your tax-free amount is calculated
 tai.taxFreeAmount.table.allowances.caption=Personal Allowance base amount
 tai.taxFreeAmount.table.additions.caption=Additions
@@ -574,8 +574,9 @@ tai.taxFreeAmount.table.taxComponent.UnderpaymentRestriction=Underpayment restri
 tai.taxFreeAmount.table.taxComponent.HigherPersonalAllowanceRestriction=Higher personal allowance restriction
 tai.taxFreeAmount.table.taxComponent.AdjustmentToRateBand=Adjustment to rate band
 tai.taxFreeAmount.table.taxComponent.from.employment=from {0}
-tai.taxFreeAmount.missing.section.addition=Add a missing allowance or addition
-tai.taxFreeAmount.missing.section.deduction=Add a missing company benefit or deduction
+tai.taxFreeAmount.missing.section.addition=Add a missing allowance or tax relief
+tai.taxFreeAmount.missing.section.benefit=Add a missing company benefit
+tai.taxFreeAmount.missing.section.income=Add a missing income from another source
 
 ##Your Tax Free Allowance Page
 tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear = What does this mean?

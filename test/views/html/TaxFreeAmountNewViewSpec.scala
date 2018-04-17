@@ -131,8 +131,11 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
       "includes a link to add a missing allowance or addition" in {
           doc must haveLinkWithUrlWithID("addMissingAddition", ApplicationConfig.taxFreeAllowanceLinkUrl)
         }
-      "includes a link to add a missing deduction" in {
+      "includes a link to add a missing company benefit" in {
         doc must haveLinkWithUrlWithID("addMissingDeduction", ApplicationConfig.companyBenefitsLinkUrl)
+        }
+      "includes a link to add a missing income" in {
+        doc must haveLinkWithUrlWithID("addMissingIncome", ApplicationConfig.otherIncomeLinkUrl)
         }
       }
     }
