@@ -16,15 +16,12 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import play.api.Logger
-import play.api.http.Status._
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{CoreDelete, CoreGet, CorePost, CorePut, _}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.tai.config.WSHttp
 import uk.gov.hmrc.tai.model._
-import uk.gov.hmrc.tai.model.tai.AnnualAccount
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

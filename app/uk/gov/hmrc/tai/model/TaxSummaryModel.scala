@@ -16,13 +16,10 @@
 
 package uk.gov.hmrc.tai.model
 
-import uk.gov.hmrc.tai.forms.EditIncomeForm
-import uk.gov.hmrc.tai.model.BasisOperation.BasisOperation
 import org.joda.time.LocalDate
 import play.api.libs.json.{Format, _}
+import uk.gov.hmrc.tai.model.BasisOperation.BasisOperation
 import uk.gov.hmrc.tai.model.rti._
-import uk.gov.hmrc.tai.model.tai.{AnnualAccount, TaxYear}
-import uk.gov.hmrc.tai.util.ViewModelHelper
 
 case class TaxBand(income: Option[BigDecimal] = None, tax: Option[BigDecimal] = None,
                    lowerBand: Option[BigDecimal] = None, upperBand: Option[BigDecimal] = None,
@@ -400,24 +397,4 @@ case class CYPlusOneChange(
 
 object CYPlusOneChange {
   implicit val formats: Format[CYPlusOneChange] = Json.format[CYPlusOneChange]
-}
-
-case class TaxSummaryDetails(nino: String,
-                             version: Int,
-                             increasesTax: Option[IncreasesTax] = None,
-                             decreasesTax: Option[DecreasesTax] = None,
-                             totalLiability: Option[TotalLiability] = None,
-                             adjustedNetIncome: BigDecimal = BigDecimal(0),
-                             extensionReliefs: Option[ExtensionReliefs] = None,
-                             gateKeeper: Option[GateKeeper] = None,
-                             taxCodeDetails: Option[TaxCodeDetails] = None,
-                             incomeData: Option[IncomeData] = None,
-                             cyPlusOneChange: Option[CYPlusOneChange] = None,
-                             cyPlusOneSummary: Option[TaxSummaryDetails] = None,
-                             accounts: Seq[AnnualAccount] = Nil,
-                             ceasedEmploymentDetail: Option[CeasedEmploymentDetails] = None
-                            ) extends ViewModelHelper
-
-object TaxSummaryDetails {
-  implicit val formats: Format[TaxSummaryDetails] = Json.format[TaxSummaryDetails]
 }
