@@ -16,30 +16,23 @@
 
 package uk.gov.hmrc.tai.service
 
-import org.joda.time.LocalDate
-
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
-import scala.language.postfixOps
-import scala.util.Random
-import builders.UserBuilder
-import uk.gov.hmrc.tai.connectors.TaiConnector
 import controllers.FakeTaiPlayApplication
-import controllers.auth.TaiUser
-import uk.gov.hmrc.tai.forms.{BonusOvertimeAmountForm, PayPeriodForm, PayslipForm, TaxablePayslipForm}
-import uk.gov.hmrc.tai.model._
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.TaiConnector
+import uk.gov.hmrc.tai.forms.{BonusOvertimeAmountForm, PayPeriodForm, PayslipForm, TaxablePayslipForm}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.util.TaiConstants
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
+import scala.language.postfixOps
+import scala.util.Random
 
 
 class TaiServiceSpec extends PlaySpec
@@ -57,81 +50,6 @@ class TaiServiceSpec extends PlaySpec
         val nino = generateNino
         val expectedResult = nino.nino.take(TaiConstants.NinoWithoutSuffixLength)
         createSut.withoutSuffix(nino) mustBe expectedResult
-      }
-    }
-  }
-
-  "getIncome" should {
-    "return None" when {
-      "Increases Tax doesn't have any incomes" in {
-        val sut = createSut
-        val taxSummaryDetails = basicTaxSummaryDetails.copy(increasesTax = Some(IncreasesTax(total = 0)))
-        sut.getIncome(taxSummaryDetails, 1) mustBe None
-      }
-
-      "TaxCode incomes has only taxable state benefit income with the same employment id provided" in {
-        val sut = createSut
-
-        val taxCodeIncomes: TaxCodeIncomes = basicTaxCodeIncomes.copy(
-          taxableStateBenefitIncomes = Some(basicTaxCodeIncomeTotal.copy(
-            taxCodeIncomes = List(basicTaxCodeIncomeSummary.copy(employmentId = Some(employmentId)))
-          ))
-        )
-        val taxSummaryDetails = taxSummaryDetailsWithTaxCodeIncomes(taxCodeIncomes)
-        sut.getIncome(taxSummaryDetails, employmentId) mustBe None
-      }
-
-      "TaxCode incomes has employments with different employment id" in {
-        val sut = createSut
-
-        val taxCodeIncomeSummary = basicTaxCodeIncomeSummary.copy(employmentId = Some(employmentId + 1))
-        val employments = Some(basicTaxCodeIncomeTotal.copy(taxCodeIncomes = List(taxCodeIncomeSummary)))
-
-        val taxCodeIncomes: TaxCodeIncomes = basicTaxCodeIncomes.copy(employments = employments)
-        val taxSummaryDetails = taxSummaryDetailsWithTaxCodeIncomes(taxCodeIncomes)
-
-        sut.getIncome(taxSummaryDetails, employmentId) mustBe None
-      }
-    }
-
-    "return Tax code income summary" when {
-      "TaxCode incomes has employment with matching employment id" in {
-        val sut = createSut
-
-        val taxCodeIncomeSummaryMatched = basicTaxCodeIncomeSummary.copy(employmentId = Some(employmentId))
-        val taxCodeIncomeSummaryNotMatched = basicTaxCodeIncomeSummary.copy(employmentId = Some(employmentId + 1))
-        val employments = Some(basicTaxCodeIncomeTotal.copy(taxCodeIncomes = List(taxCodeIncomeSummaryMatched, taxCodeIncomeSummaryNotMatched)))
-
-        val taxCodeIncomes: TaxCodeIncomes = basicTaxCodeIncomes.copy(employments = employments)
-        val taxSummaryDetails = taxSummaryDetailsWithTaxCodeIncomes(taxCodeIncomes)
-
-        sut.getIncome(taxSummaryDetails, employmentId) mustBe Some(taxCodeIncomeSummaryMatched)
-      }
-
-      "TaxCode incomes has occupationalPension with matching employment id" in {
-        val sut = createSut
-
-        val taxCodeIncomeSummaryMatched = basicTaxCodeIncomeSummary.copy(employmentId = Some(employmentId))
-        val taxCodeIncomeSummaryNotMatched = basicTaxCodeIncomeSummary.copy(employmentId = Some(employmentId + 1))
-        val occupationalPensions = Some(basicTaxCodeIncomeTotal.copy(taxCodeIncomes = List(taxCodeIncomeSummaryMatched, taxCodeIncomeSummaryNotMatched)))
-
-        val taxCodeIncomes: TaxCodeIncomes = basicTaxCodeIncomes.copy(occupationalPensions = occupationalPensions)
-        val taxSummaryDetails = taxSummaryDetailsWithTaxCodeIncomes(taxCodeIncomes)
-
-        sut.getIncome(taxSummaryDetails, employmentId) mustBe Some(taxCodeIncomeSummaryMatched)
-      }
-
-      "TaxCode incomes has ceasedEmployment with matching employment id" in {
-        val sut = createSut
-
-        val taxCodeIncomeSummaryMatched = basicTaxCodeIncomeSummary.copy(employmentId = Some(employmentId))
-        val taxCodeIncomeSummaryNotMatched = basicTaxCodeIncomeSummary.copy(employmentId = Some(employmentId + 1))
-        val ceasedEmployments = Some(basicTaxCodeIncomeTotal.copy(taxCodeIncomes = List(taxCodeIncomeSummaryMatched, taxCodeIncomeSummaryNotMatched)))
-
-        val taxCodeIncomes: TaxCodeIncomes = basicTaxCodeIncomes.copy(ceasedEmployments = ceasedEmployments)
-        val taxSummaryDetails = taxSummaryDetailsWithTaxCodeIncomes(taxCodeIncomes)
-
-        sut.getIncome(taxSummaryDetails, employmentId) mustBe Some(taxCodeIncomeSummaryMatched)
       }
     }
   }
@@ -177,29 +95,6 @@ class TaiServiceSpec extends PlaySpec
         val taxCodeIncomeSummary = basicTaxCodeIncomeSummary.copy(employmentId = Some(2), income = Some(3000), isLive = true)
         val expectedEmploymentAmount = EmploymentAmount("", " ", 2, 3000, 3000, None, None, None, None, true, false)
         sut.createEmploymentAmount(taxCodeIncomeSummary) mustBe expectedEmploymentAmount
-      }
-    }
-  }
-
-  "incomeForEdit" should {
-    "return None" when {
-      "getIncome returns None" in {
-        val sut = createSut
-        val taxSummaryDetails = basicTaxSummaryDetails.copy(increasesTax = Some(IncreasesTax(total = 0)))
-        sut.incomeForEdit(taxSummaryDetails, 1) mustBe None
-      }
-    }
-
-    "return EmploymentAmount" when {
-      "getIncome returns some TaxCodeIncomeSummary" in {
-        val sut = createSut
-
-        val taxCodeIncomeSummary = basicTaxCodeIncomeSummary.copy(employmentId = Some(employmentId))
-        val employments = Some(basicTaxCodeIncomeTotal.copy(taxCodeIncomes = List(taxCodeIncomeSummary)))
-        val taxCodeIncomes: TaxCodeIncomes = basicTaxCodeIncomes.copy(employments = employments)
-        val taxSummaryDetails = taxSummaryDetailsWithTaxCodeIncomes(taxCodeIncomes)
-        val expectedEmploymentAmount = EmploymentAmount("", " ", employmentId, 0, 0, None, None, None, None, false, false)
-        sut.incomeForEdit(taxSummaryDetails, employmentId) mustBe Some(expectedEmploymentAmount)
       }
     }
   }

@@ -41,38 +41,6 @@ trait TaiConnector extends RawResponseReads{
   val STATUS_OK = 200
   val STATUS_EMAIL_RESPONSE = 201
 
-  def taxSummary(nino : Nino, year : Int)(implicit hc: HeaderCarrier): Future[TaxSummaryDetails] = {
-    http.GET[HttpResponse](url = url(s"/tai/$nino/tax-summary-full/$year")) map {
-      response =>
-        response.status match {
-          case OK => {
-            response.json.as[TaxSummaryDetails]
-          }
-          case NOT_FOUND => {
-            Logger.warn(s"TaxForCitizens:Frontend -  No taxSummary Data can be found")
-            throw new NotFoundException(Json.stringify(response.json))
-          }
-          case BAD_REQUEST => {
-            Logger.warn(s"TaxForCitizens:Frontend -  Bad Request")
-            throw new BadRequestException(Json.stringify(response.json))
-          }
-          case SERVICE_UNAVAILABLE => {
-            Logger.warn(s"TaxForCitizens:Frontend -  Service Unavailable")
-            throw new ServiceUnavailableException(Json.stringify(response.json))
-          }
-
-          case INTERNAL_SERVER_ERROR => {
-            Logger.warn(s"TaxForCitizens:Frontend -  Internal System Error")
-            throw new InternalServerException(Json.stringify(response.json))
-          }
-          case _ => {
-            Logger.warn(s"TaxForCitizens:Frontend -  Unsuccessful return of data for Unknown Reason")
-            throw new HttpException(Json.stringify(response.json), response.status)
-          }
-        }
-    }
-  }
-
   def root(rootUri: String)(implicit hc: HeaderCarrier): Future[TaiRoot] = {
     http.GET[TaiRoot](url = url(rootUri.replace("paye","tai")))
   }

@@ -16,37 +16,13 @@
 
 package controllers
 
-import controllers.auth.TaiUser
 import play.api.mvc.Result
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.model.{TaiRoot, TaxSummaryDetails}
+import uk.gov.hmrc.tai.model.TaiRoot
 
 import scala.concurrent.Future
-
-trait ServiceChecks extends TaiBaseController {
-  type CustomRule = (TaxSummaryDetails) => Future[Result]
-  def runServiceChecks(e:Either[String,TaxSummaryDetails])(custom: Option[CustomRule])(implicit user: TaiUser, hc: HeaderCarrier) : Future[Result]
-}
-
-object SimpleServiceCheck extends ServiceChecks {
-
-  override implicit def templateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-
-  override def runServiceChecks(either: Either[String,TaxSummaryDetails])
-                               (custom: Option[CustomRule])
-                               (implicit user: TaiUser, hc: HeaderCarrier): Future[Result] = {
-    either match {
-      case Left("deceased") => Future.successful(Redirect(routes.DeceasedController.deceased()))
-      case Left("mci") => Future.successful(Redirect(routes.ServiceController.gateKeeper()))
-      case Left("ceased") => Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()))
-      case Right(details:TaxSummaryDetails) => custom.getOrElse(throw new Exception("Method not defined"))(details)
-    }
-  }
-}
 
 object ServiceCheckLite extends TaiBaseController {
 

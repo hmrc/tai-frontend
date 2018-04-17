@@ -41,20 +41,6 @@ trait TaiService {
 
   private[service] def withoutSuffix(nino: Nino): String = nino.value.take(TaiConstants.NinoWithoutSuffixLength)
 
-
-
-  def getIncome(taxDetails: TaxSummaryDetails, employmentId: Int)(implicit hc: HeaderCarrier): Option[TaxCodeIncomeSummary] = {
-    val taxCodeIncomes: Option[TaxCodeIncomes] = taxDetails.increasesTax.flatMap(_.incomes.map(_.taxCodeIncomes))
-    val incomesList: Seq[TaxCodeIncomeSummary] = taxCodeIncomes.flatMap(_.employments.map(_.taxCodeIncomes)).getOrElse(Nil) :::
-      taxCodeIncomes.flatMap(_.occupationalPensions.map(_.taxCodeIncomes)).getOrElse(Nil) :::
-      taxCodeIncomes.flatMap(_.ceasedEmployments.map(_.taxCodeIncomes)).getOrElse(Nil)
-
-    incomesList.find(income => income.employmentId.contains(employmentId))
-  }
-
-  def incomeForEdit(taxDetails: TaxSummaryDetails, employmentId: Int)(implicit hc: HeaderCarrier): Option[EmploymentAmount] =
-    getIncome(taxDetails, employmentId).map(createEmploymentAmount)
-
   private[service] def createEmploymentAmount(income: TaxCodeIncomeSummary) = new EmploymentAmount(
     description = employmentDescriptionFromIncome(income),
     name = income.name, employmentId = income.employmentId.getOrElse(0),
