@@ -20,8 +20,6 @@ import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.model.BasisOperation.BasisOperation
 import org.joda.time.LocalDate
 import play.api.libs.json.{Format, _}
-import uk.gov.hmrc.tai.model.tai.{AnnualAccount, TaxYear}
-import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.rti._
 import uk.gov.hmrc.tai.model.tai.{AnnualAccount, TaxYear}
 import uk.gov.hmrc.tai.util.ViewModelHelper
@@ -418,15 +416,7 @@ case class TaxSummaryDetails(nino: String,
                              cyPlusOneSummary: Option[TaxSummaryDetails] = None,
                              accounts: Seq[AnnualAccount] = Nil,
                              ceasedEmploymentDetail: Option[CeasedEmploymentDetails] = None
-                            ) extends ViewModelHelper {
-  def currentYearAccounts: Option[AnnualAccount] = accounts.find { annualAccounts =>
-    annualAccounts.year == TaxYear()
-  }
-
-  def previousYearAccount: Option[AnnualAccount] = accounts.find { annualAccounts =>
-    annualAccounts.year == TaxYear().prev
-  }
-}
+                            ) extends ViewModelHelper
 
 object TaxSummaryDetails {
   implicit val formats: Format[TaxSummaryDetails] = Json.format[TaxSummaryDetails]

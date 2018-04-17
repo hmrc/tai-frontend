@@ -16,13 +16,11 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import uk.gov.hmrc.tai.model._
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{Json, Reads}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{CoreDelete, CoreGet, CorePost, CorePut}
-import uk.gov.hmrc.tai.model.tai.AnnualAccount
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.tai.model._
@@ -75,10 +73,6 @@ trait TaiConnector extends RawResponseReads{
           }
         }
     }
-  }
-
-  def rtiData(nino : Nino, year : Int)(implicit hc: HeaderCarrier): Future[AnnualAccount] = {
-    http.GET[AnnualAccount](url = url(s"/tai/$nino/rti-data/$year"))
   }
 
   def root(rootUri: String)(implicit hc: HeaderCarrier): Future[TaiRoot] = {
