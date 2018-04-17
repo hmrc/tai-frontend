@@ -157,11 +157,10 @@ tai.hmrc.enquiry.url=https://www.gov.uk/government/organisations/hm-revenue-cust
 
 ##What Do You Want To Do page
 tai.whatDoYouWantToDo.heading=Choose tax year
-tai.whatDoYouWantToDo.chooseOneOption=Choose one option
-tai.whatDoYouWantToDo.iWantToCheck=I want to check:
-tai.WhatDoYouWantToDo.radio1=my taxable income, tax-free allowances and tax codes for the current tax year
-tai.WhatDoYouWantToDo.radio2=how much tax I paid in previous years
-tai.WhatDoYouWantToDo.radio3=how much tax I will pay next year
+tai.whatDoYouWantToDo.legend=View PAYE Income Tax details for:
+tai.WhatDoYouWantToDo.radio1=next year
+tai.WhatDoYouWantToDo.radio2=current tax year, {0} to {1}
+tai.WhatDoYouWantToDo.radio3=earlier 
 tai.WhatDoYouWantToDo.submit=Continue
 tai.whatDoYouWantToDo.error.selectOption=Choose what you want to do.
 tai.whatDoYouWantToDo.iformPanel.p1=You recently updated your details.
@@ -446,12 +445,12 @@ tai.taxFreeAmount.summarysection.bullet1=increased if you qualify for certain al
 tai.taxFreeAmount.summarysection.bullet2=decreased to collect tax due for things like company benefits, rental income or bank and building society interest
 tai.taxFreeAmount.detailsection.heading=How your tax-free amount is calculated
 tai.taxFreeAmount.table.allowances.caption=Personal Allowance base amount
-tai.taxFreeAmount.table.additions.caption=Additions to your Personal Allowance
+tai.taxFreeAmount.table.additions.caption=Additions
 tai.taxFreeAmount.table.additions.total=Total additions
-tai.taxFreeAmount.table.additions.noAddition=You do not have any additions to your tax free amount
-tai.taxFreeAmount.table.deductions.caption=Deductions from your Personal Allowance
+tai.taxFreeAmount.table.additions.noAddition=You do not have any additions
+tai.taxFreeAmount.table.deductions.caption=Deductions
 tai.taxFreeAmount.table.deductions.total=Total deductions
-tai.taxFreeAmount.table.deductions.noDeduction=You do not have any deductions from your personal allowance
+tai.taxFreeAmount.table.deductions.noDeduction=You do not have any deductions
 tai.taxFreeAmount.table.totals.caption=Overall
 tai.taxFreeAmount.table.totals.label=Your total tax-free amount
 tai.taxFreeAmount.table.taxComponent.GiftAidPayments=Gift Aid Payments
@@ -1281,7 +1280,7 @@ tai.income.calculation.rtiUnavailableCurrentYear.message.contact=You do not need
 #Side Menu Bar
 
 #print pages
-tai.label.print=Print
+tai.label.print=Print this page
 tai.label.paye=Taxable Income
 tai.label.back=Back
 
@@ -1484,6 +1483,7 @@ tai.incomeTaxComparison.tellAboutChange.investmentIncomeText=investment income
 tai.incomeTaxComparison.tellAboutChange.stateBenefitsText=state benefits
 tai.incomeTaxComparison.tellAboutChange.otherIncomeText=other income
 tai.incomeTaxComparison.sidebar.subHeading=Go to the current tax year
+tai.incomeTaxComparison.incomeSourceAbsent=Not available
 
 ##Income Details
 tai.employment.income.details.mainHeading=Your employment with {0} {1} to {2}
@@ -1505,7 +1505,7 @@ tai.income.details.incomeReceivedToDate.screenReader=The income you have receive
 tai.income.details.checkPaymentsReceived=Check payments received
 tai.income.details.checkPaymentsReceived.screenReader=Check payments received from {0}.
 tai.income.details.yourTaxCode=Your tax code is {0}.
-tai.income.details.taxCode.linkText=Understanding your tax code
+tai.income.details.taxCode.linkText=Understand your tax code
 tai.income.details.addMissingCompanyBenefit=Add a missing company benefit
 tai.income.details.addMissingCompanyCar=Add a missing company car
 tai.income.details.companyuBenefitsHeading=Your company benefits from {0}

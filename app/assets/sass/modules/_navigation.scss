@@ -252,7 +252,7 @@ ul.four-buckets {
   text-transform: none;
   font-size: 14px;
   line-height: 1.1428571429;
-  margin-top: 15px;
+  margin: 0;
   padding-left: 14px;
   color: #0b0c0c;
   text-decoration: none;
@@ -283,6 +283,33 @@ ul.four-buckets {
     left: 0;
     top: 50%;
     margin-top: -6px;
+  }
+
+  @media(min-width: 641px) {
+    font-size:16px;
+    line-height:1.25;
+  }
+}
+
+.tai-print-link {
+  display: -moz-inline-stack;
+  display: inline-block;
+  position: relative;
+  font-family: "nta", Arial, sans-serif;
+  font-weight: 400;
+  text-transform: none;
+  font-size: 14px;
+  line-height: 1.1428571429;
+  margin: 0;
+  color: #0b0c0c;
+  text-decoration: none;
+  border-bottom: 1px solid #0b0c0c;
+
+  &:link,
+  &:visited,
+  &:hover,
+  &:active {
+    color: #0b0c0c;
   }
 
   @media(min-width: 641px) {

@@ -48,6 +48,16 @@
         messages("tai.employment.income.details.mainHeading.gaTitle", model.startOfCurrentYear, model.endOfCurrentYear)
     }
 }
+@backLinkToTaxAccountSummary= {
+    <p class="flush--bottom">
+    @Link.toInternalPage(
+        id=Some("taxableIncomeLink"),
+        url=routes.TaxAccountSummaryController.onPageLoad.url,
+        value=Some(Messages("tai.returnToIncomeTaxSummary")),
+        cssClasses=Some("link-back"),
+        dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToIncomeTaxSummary")}"))).toHtml
+    </p>
+    }
 
 @header = @{
     ptaHeader(
@@ -55,6 +65,7 @@
         displayBackLink = true,
         backLinkGaEventAction = None,
         mainHeadingText = mainHeading,
+        customBackLinkContent = Some(backLinkToTaxAccountSummary),
         preHeadingText = model.displayName)
 }
 
@@ -209,16 +220,4 @@
 
     </section>
     }
-
-    <div>
-        <p>
-            @Link.toInternalPage(
-            id=Some("taxableIncomeLink"),
-            url=routes.TaxAccountSummaryController.onPageLoad.url,
-            value=Some(Messages("tai.returnToIncomeTaxSummary")),
-            cssClasses=Some(""),
-            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToIncomeTaxSummary")}"))).toHtml
-        </p>
-    </div>
-
 }

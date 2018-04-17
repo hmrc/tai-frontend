@@ -17,20 +17,22 @@
 package controllers
 
 import controllers.audit.Auditable
-import controllers.auth.WithAuthorisedForTaiLite
+import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
 import play.api.Play.current
+import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.model.EmploymentAmount
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.{AuditConstants, FormHelper, FormValuesConstants, JourneyCacheConstants}
@@ -83,7 +85,7 @@ trait IncomeController extends TaiBaseController
           journeyCacheService.collectedValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey), Seq(UpdateIncome_DateKey)) flatMap tupled {
             (mandatorySeq, optionalSeq) => {
               val date = optionalSeq.head.map(date => LocalDate.parse(date))
-              EditIncomeForm.bind(request, BigDecimal(mandatorySeq.head), date).fold(
+              EditIncomeForm.bind(BigDecimal(mandatorySeq.head), date).fold(
                 formWithErrors => {
                   val webChat = true
                   Future.successful(BadRequest(views.html.incomes.editIncome(formWithErrors,
@@ -176,7 +178,7 @@ trait IncomeController extends TaiBaseController
           journeyCacheService.collectedValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey), Seq(UpdateIncome_DateKey)) flatMap tupled {
             (mandatorySeq, optionalSeq) => {
               val date = optionalSeq.head.map(date => LocalDate.parse(date))
-              EditIncomeForm.bind(request, BigDecimal(mandatorySeq.head), date).fold(
+              EditIncomeForm.bind(BigDecimal(mandatorySeq.head), date).fold(
                 formWithErrors => {
                   val webChat = true
                   Future.successful(BadRequest(views.html.incomes.editPension(formWithErrors,

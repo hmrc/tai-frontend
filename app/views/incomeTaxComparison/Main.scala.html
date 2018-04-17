@@ -21,14 +21,27 @@
 @import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{IncomeTaxComparisonViewModel, EstimatedIncomeTaxComparisonViewModel}
 
 @(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
-
+@gaEventActionString = @{"Income Tax comparison: current and next tax years"}
+@backLinkToChooseTaxYear = {
+    <p class="flush--bottom">
+    @Link.toInternalPage(
+        id=Some("returnToChooseTaxYearLink"),
+        url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+        value=Some(Messages("tai.returnToChooseTaxYear")),
+        cssClasses=Some("link-back"),
+        dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToChooseTaxYear")}"))
+    ).toHtml
+    </p>
+}
 @header = @{
     ptaHeader(
         displayBackLink = true,
         backLinkGaEventAction = None,
         mainHeadingText = messages("tai.incomeTaxComparison.heading"),
         preHeadingText = incomeTaxComparisonViewModel.username,
-        preHeadingAccessibleAnnouncement = messages("tai.incomeTaxComparison.preHeading.screenReader"))
+        preHeadingAccessibleAnnouncement = messages("tai.incomeTaxComparison.preHeading.screenReader"),
+        customBackLinkContent = Some(backLinkToChooseTaxYear))
+
 }
 
 @main(title = messages("tai.incomeTaxComparison.heading"),
@@ -79,12 +92,5 @@
                 </ul>
             </section>
         </div>
-
-        <aside class="column-one-third">
-            <h2 class="heading-medium heading-section flush--top">@messages("tai.incomeTaxComparison.sidebar.subHeading")</h2>
-
-            <p>@Link.toInternalPage(url = controllers.routes.TaxAccountSummaryController.onPageLoad().url,
-                value = Some("tai.incomeTaxSummary.link"), id = Some("taxAccountSummaryLink")).toHtml</p>
-        </aside>
     </div>
 }

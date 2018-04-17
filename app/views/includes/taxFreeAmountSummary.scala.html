@@ -18,16 +18,28 @@
 
 @(items: Seq[uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryCategoryViewModel], gaEventActionString: String)(implicit m: Messages)
 
-@for((item, itemIdx) <- items zip (Stream from 1)) {
+@oneOrMoreLinksPresent = @{
+    items.flatMap(item => item.rows.map(row => row.link.isDisplayed).filter(_ == true)).nonEmpty
+}
+
+@for((item, itemIdx) <- items zip (Stream from 1);
+      isAllowanceOrTotalItem = item.caption == Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption == Messages("tai.taxFreeAmount.table.totals.caption") ) {
 
     @if(item.rows.nonEmpty) {
 
-            <div id="summaryTable@{itemIdx.toString}" class="row">
-                <h3 class="heading-medium" id="summaryTable@{itemIdx.toString}Caption">@item.caption</h3>
-                <ul id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx==items.length && item.rows.length==1){highlight}" role="list">
+            <div id="summaryTable@{itemIdx.toString}" class="tai-tax-summary-table @if(itemIdx == 1){subsection--wide flush--bottom}">
+
+                @if(!isAllowanceOrTotalItem){
+                <h3 class="heading-small section--narrow flush" id="summaryTable@{itemIdx.toString}Caption">@item.caption</h3>
+                }
+
+                @if(item.rows.length>1) {
+                <ul id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight} else {flush}" role="list">
+
                     @for((row, rowIdx) <- item.rows zip (Stream from 1)) {
                         <li id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}">
-                            <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" class="cya-question">
+
+                            <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" class="cya-question break-word">
                                 @row.label
                                 @if(row.label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
                                     @includes.link(
@@ -40,6 +52,10 @@
                                 }
                             </div>
 
+                            <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ValueCell" class="cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
+                                @row.value
+                            </div>
+
                             @if(row.link.isDisplayed) {
                             <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ChangeLinkCell" class="cya-change">
                                 @includes.link(
@@ -50,16 +66,68 @@
                                     attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${row.link.value}")
                                 )
                             </div>
-                            } else {
+                            } else @{if(oneOrMoreLinksPresent) {
                                 <div class="cya-change"></div>
-                            }
-                            <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ValueCell" class="cya-answer">@row.value</div>
+                            }}
+
                         </li>
                     }
                 </ul>
+                } else {@if(item.rows.length == 1) {
+
+                <div id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight heading-small} else {flush}">
+                    <div id="summaryTable@{itemIdx.toString}Row1">
+
+                        @if(isAllowanceOrTotalItem){
+                        <h3 id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word ">
+                        } else {
+                        <div id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word">
+                        }
+
+                            @item.rows(0).label
+                            @if(item.rows(0).label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
+                                @includes.link(
+                                    id=Some("estimatedTaxOwedLink"),
+                                    copy=Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"),
+                                    url = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
+                                    linkClasses = Seq("link-list__item"),
+                                    attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
+                                )
+                            }
+
+                        @if(isAllowanceOrTotalItem){
+                        </h3>
+                        } else {
+                        </div>
+                        }
+
+                        <div id="summaryTable@{itemIdx.toString}Row1ValueCell" class="cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
+                            @if(isAllowanceOrTotalItem){
+                            <span class="visuallyhidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix")</span>
+                            }
+                            @item.rows(0).value
+                        </div>
+
+                        @if(item.rows(0).link.isDisplayed) {
+                        <div id="summaryTable@{itemIdx.toString}Row1ChangeLinkCell" class="cya-change">
+                            @includes.link(
+                            id = Some(s"summaryTable${itemIdx.toString}Row1ChangeLink"),
+                            url = item.rows(0).link.href,
+                            copy=Messages("tai.updateOrRemove"),
+                            altCopy=Some(Messages("tai.updateOrRemove") + " " + item.rows(0).link.value),
+                            attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${item.rows(0).link.value}")
+                            )
+                        </div>
+                        } else @{if(oneOrMoreLinksPresent) {
+                        <div class="cya-change"></div>
+                        }}
+
+                    </div>
+                </div>
+
+                }}
+
             </div>
 
-
     }
-
 }

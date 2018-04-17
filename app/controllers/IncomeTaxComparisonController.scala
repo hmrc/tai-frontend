@@ -77,8 +77,8 @@ trait IncomeTaxComparisonController extends TaiBaseController
                   val cyPlusOneEstimatedTax = EstimatedIncomeTaxComparisonItem(nextTaxYear, taxAccountSummaryCYPlusOne.totalEstimatedTax)
                   val estimatedIncomeTaxComparisonViewModel = EstimatedIncomeTaxComparisonViewModel(Seq(cyEstimatedTax, cyPlusOneEstimatedTax))
 
-                  val cyTaxCodeIncomeSources = TaxCodeForYear(currentTaxYear, taxCodeIncomesCY)
-                  val cyPlusOneTaxCodeIncomeSources = TaxCodeForYear(nextTaxYear, taxCodeIncomesCYPlusOne)
+                  val cyTaxCodeIncomeSources = TaxCodeIncomesForYear(currentTaxYear, taxCodeIncomesCY)
+                  val cyPlusOneTaxCodeIncomeSources = TaxCodeIncomesForYear(nextTaxYear, taxCodeIncomesCYPlusOne)
                   val taxCodeComparisonModel = TaxCodeComparisonViewModel(Seq(cyTaxCodeIncomeSources, cyPlusOneTaxCodeIncomeSources))
 
                   val cyCodingComponents = CodingComponentForYear(currentTaxYear, codingComponentsCY)

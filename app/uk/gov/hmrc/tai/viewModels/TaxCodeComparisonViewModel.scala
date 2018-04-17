@@ -19,8 +19,11 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.TaiConstants.ScottishTaxCodePrefix
 import uk.gov.hmrc.tai.util.ViewModelHelper
+
+import scala.collection.immutable.ListMap
 
 case class TaxCodeComparisonViewModel(employmentTaxCodes: Seq[TaxCodeDetail], pensionTaxCodes: Seq[TaxCodeDetail])
   extends ViewModelHelper {
@@ -39,7 +42,7 @@ case class TaxCodeComparisonViewModel(employmentTaxCodes: Seq[TaxCodeDetail], pe
 }
 
 object TaxCodeComparisonViewModel {
-  def apply(taxCodeForYears: Seq[TaxCodeForYear])(implicit messages: Messages): TaxCodeComparisonViewModel = {
+  def apply(taxCodeForYears: Seq[TaxCodeIncomesForYear])(implicit messages: Messages): TaxCodeComparisonViewModel = {
 
     val employmentTaxCodes = taxCodeDetails(taxCodeForYears, EmploymentIncome)
     val pensionTaxCodes = taxCodeDetails(taxCodeForYears, PensionIncome)
@@ -47,23 +50,42 @@ object TaxCodeComparisonViewModel {
     TaxCodeComparisonViewModel(employmentTaxCodes, pensionTaxCodes)
   }
 
-  private def taxCodeDetails(taxCodeForYears: Seq[TaxCodeForYear], taxComponentType: TaxComponentType) = {
-    val taxCodeIncomeSources = taxCodeForYears.sortBy(_.year)
-      .flatMap(_.taxCodeIncomeSources.filter(taxCodeIncomeSource =>
-        taxCodeIncomeSource.componentType == taxComponentType && taxCodeIncomeSource.status == Live))
+  private def taxCodeDetails(taxCodeForYears: Seq[TaxCodeIncomesForYear], taxComponentType: TaxComponentType)(implicit messages: Messages): Seq[TaxCodeDetail] = {
 
-    val empIdNameAndTaxCodes = taxCodeIncomeSources.map(incomeSource =>
-      (incomeSource.employmentId.getOrElse(-1), incomeSource.name, incomeSource.taxCode))
+    val filteredTaxCodeIncomes = filterTaxCodeIncomesForYear(taxCodeForYears, taxComponentType)
+    val sortedTaxCodeIncomes = filteredTaxCodeIncomes.sortWith(_.year < _.year)
+    val uniqueIncomeSourceNames = sortedTaxCodeIncomes.flatMap(_.taxCodeIncomeSources.map(_.name)).distinct
 
-    val groupByEmpId = empIdNameAndTaxCodes.groupBy(_._1)
-    val groupByName = groupByEmpId.values.flatMap(_.groupBy(_._2))
-
-    groupByName.toSeq.map(incomeDetails => {
-      TaxCodeDetail(incomeDetails._1, incomeDetails._2.map(_._3))
-    })
+    for{
+      incomeSourceName <- uniqueIncomeSourceNames
+    } yield {
+      TaxCodeDetail(incomeSourceName,
+        taxCodesForIncomeSource(sortedTaxCodeIncomes, incomeSourceName))
+    }
   }
+
+  private def taxCodesForIncomeSource(taxCodeForYears: Seq[TaxCodeIncomesForYear], incomeSourceName:String)(implicit messages: Messages) = {
+    for {
+      taxYear: TaxCodeIncomesForYear <- taxCodeForYears
+    } yield {
+      val incomeSources: Option[TaxCodeIncome] = taxYear.taxCodeIncomeSources.find(_.name == incomeSourceName)
+      incomeSources.map(_.taxCode).getOrElse(Messages("tai.incomeTaxComparison.incomeSourceAbsent"))
+    }
+  }
+
+  private def filterTaxCodeIncomesForYear(taxCodeForYears: Seq[TaxCodeIncomesForYear], taxComponentType: TaxComponentType): Seq[TaxCodeIncomesForYear] = {
+    taxCodeForYears map { taxCodeForYear =>
+      TaxCodeIncomesForYear(taxCodeForYear.year, taxCodeForYear.taxCodeIncomeSources.filter(
+        incomeSource => filterIncomeSources(incomeSource, taxComponentType))
+      )
+    }
+  }
+
+  private def filterIncomeSources(incomeSource:TaxCodeIncome, taxComponentType: TaxComponentType): Boolean =
+    incomeSource.componentType == taxComponentType && incomeSource.status == Live
+
 }
 
-case class TaxCodeForYear(year: uk.gov.hmrc.tai.model.tai.TaxYear, taxCodeIncomeSources: Seq[TaxCodeIncome])
+case class TaxCodeIncomesForYear(year: uk.gov.hmrc.tai.model.tai.TaxYear, taxCodeIncomeSources: Seq[TaxCodeIncome])
 
 case class TaxCodeDetail(name: String, taxCodes: Seq[String])
