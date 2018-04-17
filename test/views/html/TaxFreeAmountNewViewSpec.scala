@@ -17,7 +17,7 @@
 package views.html
 
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryRowViewModel, TaxFreeAmountViewModelNew}
+import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryRowViewModel, TaxFreeAmountViewModel}
 
 class TaxFreeAmountNewViewSpec extends TaiViewSpec {
 
@@ -97,7 +97,7 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
         TaxFreeAmountSummaryRowViewModel("Estimated tax you owe this year", "£11,500", ChangeLinkViewModel(false)))
       val svm :Seq[TaxFreeAmountSummaryCategoryViewModel] = Seq(
         TaxFreeAmountSummaryCategoryViewModel("header1", "header2", true, false, "Deductions from your Personal Allowance", vm))
-      val viewModel: TaxFreeAmountViewModelNew = TaxFreeAmountViewModelNew("main heading", "main heading", "£2020", svm)
+      val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", svm)
 
       val document = doc(views.html.taxFreeAmountNew(viewModel))
 
@@ -116,7 +116,7 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
     TaxFreeAmountSummaryCategoryViewModel("header5", "header6", true, false, "Deductions from your Personal Allowance", rowViewModels),
     TaxFreeAmountSummaryCategoryViewModel("header7", "header8", true, true, "Overall", Seq(TaxFreeAmountSummaryRowViewModel("Your total tax-free amount", "£11,500", ChangeLinkViewModel(false))))
   )
-  val viewModel: TaxFreeAmountViewModelNew = TaxFreeAmountViewModelNew("main heading", "main heading", "£2020", summaryItemViewModels)
+  val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", summaryItemViewModels)
 
   override def view = views.html.taxFreeAmountNew(viewModel)
 }

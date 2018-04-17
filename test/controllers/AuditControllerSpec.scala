@@ -18,7 +18,6 @@ package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
-import uk.gov.hmrc.tai.model.SessionData
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -26,11 +25,10 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.service.{AuditService, TaiService}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.{SessionData, TaiRoot, TaxSummaryDetails}
+import uk.gov.hmrc.tai.model.{TaiRoot, TaxSummaryDetails}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -42,7 +40,6 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
       "triggered from any page" which {
         "redirects to appropriate url " in {
           val sut = createSut
-          when(sut.taiService.taiSession(any(), any(), any())(any())).thenReturn(Future.successful(sessionData))
           when(sut.auditService.sendAuditEventAndGetRedirectUri(any(), any())(any(), any())).thenReturn(Future.successful(redirectUri))
 
           val result = Await.result(sut.auditLinksToIForm("any-iform")(RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" ->
@@ -57,10 +54,7 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
   }
 
   private val nino = AuthBuilder.nino.nino
-  private val taxSummaryDetails = TaxSummaryDetails(nino = nino, version = 0)
   private val taiRoot = TaiRoot(nino = nino)
-  private val sessionData = SessionData(nino = nino, taxSummaryDetailsCY = taxSummaryDetails, taiRoot = Some(taiRoot))
-
   private val redirectUri = "redirectUri"
 
   def createSut = new SUT
