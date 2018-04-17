@@ -88,12 +88,6 @@ package object nps2 {
   implicit val formatIabdList: Format[List[Iabd]] =
     JsonExtra.bodgeList[Iabd]
 
-  implicit val formatComponent: Format[Component] = (
-    (__ \ "amount").format[BigDecimal] and
-      (__ \ "sourceAmount").formatNullable[BigDecimal] and
-      (__ \ "iabdSummaries").format[Seq[Iabd]]
-    )(Component.apply, unlift(Component.unapply))
-
   implicit val formatliabilityMap: Format[Map[TaxObjectType, TaxDetail]] = {
 
     val fieldNames: Map[TaxObject.Type.Value,String] =
@@ -218,42 +212,5 @@ package object nps2 {
       (__ \ "incomeSources").formatNullable[Seq[Income]].
         inmap[Seq[Income]](_.getOrElse(Nil), Some(_))
     )(TaxAccount.apply, unlift(TaxAccount.unapply))
-
-  implicit val formatHon = enumerationNumFormat(NpsPerson.Honorific)
-
-  implicit val formatPersonName: Format[NpsPerson.Name] = (
-    (__ \ "title").formatNullable[NpsPerson.Honorific.Value] and
-      (__ \ "firstForenameOrInitial").format[String] and
-      (__ \ "secondForenameOrInitial").formatNullable[String] and
-      (__ \ "surname").format[String] and
-      (__ \ "start").format[LocalDate] and
-      (__ \ "end").formatNullable[LocalDate]
-    )(NpsPerson.Name.apply, unlift(NpsPerson.Name.unapply))
-
-  implicit val formatGender = enumerationFormat(NpsPerson.Gender)
-
-  implicit val formatNameSeq: Format[Seq[NpsPerson.Name]] = Format(
-    new Reads[Seq[NpsPerson.Name]] {
-      def reads(j: JsValue) = j match {
-        case o: JsObject => JsSuccess(o.values.map{_.as[NpsPerson.Name]}.toList)
-        case JsArray(v) => JsSuccess(v.map{_.as[NpsPerson.Name]})
-        case a => JsError(s"Expecting JsObject or JsArray - found $a")
-      }
-    },
-    new Writes[Seq[NpsPerson.Name]] {
-      def writes(ps: Seq[NpsPerson.Name]) = JsObject(
-        ps.zipWithIndex.map{ case (a,b) =>
-          (b.toString, Json.toJson(a))
-        })
-    }
-  )
-
-  implicit val formatPerson: Format[NpsPerson] = (
-    (__ \ "nino").format[String] and
-      (__ \ "names").format[Seq[NpsPerson.Name]] and
-      (__ \ "sex").format[NpsPerson.Gender.Value] and
-      (__ \ "dateOfBirth").format[LocalDate] and
-      (__ \ "dateOfDeath").formatNullable[LocalDate]
-    )(NpsPerson.apply, unlift(NpsPerson.unapply))
 
 }
