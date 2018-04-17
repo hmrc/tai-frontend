@@ -26,5 +26,4 @@ package object tai {
     }
     override def writes(v: TaxYear): JsValue = JsNumber(v.year)
   }
-  implicit val formats = Json.format[AnnualAccount]
 }
