@@ -16,48 +16,19 @@
 
 package controllers
 
-import controllers.ServiceChecks.CustomRule
 import controllers.auth.TaiUser
-import uk.gov.hmrc.tai.model.SessionData
 import play.api.mvc.Result
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.model.{SessionData, TaiRoot, TaxSummaryDetails}
-import uk.gov.hmrc.tai.util.{CeasedEmploymentHelper, TaiConstants}
-
-import scala.concurrent.Future
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.model.{TaiRoot, TaxSummaryDetails}
+
+import scala.concurrent.Future
 
 trait ServiceChecks extends TaiBaseController {
-  def runServiceChecks(e:Either[String,TaxSummaryDetails])(custom: Option[CustomRule])(implicit user: TaiUser, hc: HeaderCarrier) : Future[Result]
-}
-
-object ServiceChecks {
-
   type CustomRule = (TaxSummaryDetails) => Future[Result]
-  def executeWithServiceChecks(nino: Nino, checkType: ServiceChecks, sessionData: SessionData, ignore: Boolean = false)
-                              (custom: Option[CustomRule])
-                              (implicit user: TaiUser, hc: HeaderCarrier): Future[Result] = {
-    val ceasedStatus = CeasedEmploymentHelper.getEmploymentCeasedStatus(sessionData.taxSummaryDetailsCY.ceasedEmploymentDetail)
-    val details = sessionData.taxSummaryDetailsCY
-    val mcIndicator = CeasedEmploymentHelper.isMCI(sessionData.taiRoot)
-    val isDeceased = CeasedEmploymentHelper.isDeceased(sessionData.taiRoot)
-    val anyStatus: Either[String, TaxSummaryDetails] = {
-      (ignore, ceasedStatus, mcIndicator, isDeceased) match {
-        case (_, _, _, true) => Left("deceased")
-        case (_, _, true, _) => Left("mci")
-        case (true, _, _, _) => Right(details)
-        case (_, Some(TaiConstants.CEASED_MINUS_TWO), _, _) => Left("ceased")
-        case (_, Some(TaiConstants.CEASED_MINUS_ONE), _, _) => Left("ceased")
-        case (_, _, _, _) => Right(details)
-      }
-    }
-    checkType.runServiceChecks(anyStatus) {
-      custom
-    }
-  }
+  def runServiceChecks(e:Either[String,TaxSummaryDetails])(custom: Option[CustomRule])(implicit user: TaiUser, hc: HeaderCarrier) : Future[Result]
 }
 
 object SimpleServiceCheck extends ServiceChecks {

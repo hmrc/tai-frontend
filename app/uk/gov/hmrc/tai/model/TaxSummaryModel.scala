@@ -421,17 +421,3 @@ case class TaxSummaryDetails(nino: String,
 object TaxSummaryDetails {
   implicit val formats: Format[TaxSummaryDetails] = Json.format[TaxSummaryDetails]
 }
-
-
-case class SessionData(
-                        nino: String,
-                        taiRoot: Option[TaiRoot] = None,
-                        taxSummaryDetailsCY: TaxSummaryDetails,
-                        editIncomeForm: Option[EditIncomeForm] = None,
-                        incomeCalculation: Option[IncomeCalculation] = None
-                      )
-
-object SessionData {
-
-  implicit val formats: Format[SessionData] = Json.format[SessionData]
-}

@@ -41,9 +41,7 @@ trait TaiService {
 
   private[service] def withoutSuffix(nino: Nino): String = nino.value.take(TaiConstants.NinoWithoutSuffixLength)
 
-  def taiSession(nino: Nino, year: Int, rootUri: String)(implicit hc: HeaderCarrier): Future[SessionData] = taiClient.getTaiData(nino)
 
-  def updateTaiSession(sessionData: SessionData)(implicit hc: HeaderCarrier): Future[SessionData] = taiClient.updateTaiData(sessionData)
 
   def getIncome(taxDetails: TaxSummaryDetails, employmentId: Int)(implicit hc: HeaderCarrier): Option[TaxCodeIncomeSummary] = {
     val taxCodeIncomes: Option[TaxCodeIncomes] = taxDetails.increasesTax.flatMap(_.incomes.map(_.taxCodeIncomes))
@@ -74,18 +72,6 @@ trait TaiService {
     }
     val employmentTypeMessage = Messages(s"tai.incomes.type-${income.incomeType.getOrElse(TaiConstants.IncomeTypeDummy)}")
     s"$employmentStatusMessage $employmentTypeMessage"
-  }
-
-  def updateIncome(nino: Nino, taxYear: Int, version: Int, income: EmploymentAmount)
-                  (implicit hc: HeaderCarrier, user: TaiUser): Future[IabdUpdateEmploymentsResponse] = {
-    val taiAccount = user.authContext.principal.accounts.paye.getOrElse(throw new IllegalArgumentException("Cannot find tai user authority"))
-
-    for {
-      update <- taiClient.updateEmployments(nino, taxYear, IabdUpdateEmploymentsRequest(version, List(income)))
-      _ <- taiSession(nino, TaxYearResolver.currentTaxYear, taiAccount.link)
-    } yield {
-      update
-    }
   }
 
 

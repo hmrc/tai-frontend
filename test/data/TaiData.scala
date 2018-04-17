@@ -21,7 +21,7 @@ import java.io.File
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.model.rti.RtiData
-import uk.gov.hmrc.tai.model.{IncomeData, SessionData, TaiRoot, TaxSummaryDetails}
+import uk.gov.hmrc.tai.model.{IncomeData, TaiRoot, TaxSummaryDetails}
 import uk.gov.hmrc.tai.viewModels.EstimatedIncomeViewModel
 
 import scala.io.BufferedSource
@@ -49,8 +49,6 @@ object TaiData {
   private lazy val taxCodeDetails = "TaxCodeDetails/TaxSummary.json"
   private lazy val everything = "Everything/TaxSummary.json"
   private lazy val currentYearTaxSummaryDetails = "SessionDetails/CurrentYearTaxSummaryDetails.json"
-  private lazy val sessionDataWithCYPYRtiData = "SessionDetails/SessionDataWithCYPYRTIData.json"
-  private lazy val sessionDataWithNoPYRtiData = "SessionDetails/SessionDataWithNoPYRTIData.json"
   private lazy val currentYearCeasedTaxSummaryDetails = "SessionDetails/CurrentYearCeasedTaxSummaryDetails.json"
   private lazy val currentYearMultipleCeasedTaxSummaryDetails = "SessionDetails/CurrentYearMultipleCeasedTaxSummaryDetails.json"
   private lazy val currentYearMultiplePotentialCeasedTaxSummaryDetails = "SessionDetails/CurrentYearMultiplePotentialCeasedTaxSummaryDetails.json"
@@ -74,18 +72,6 @@ object TaiData {
     val source:BufferedSource = scala.io.Source.fromFile(file)
     val jsVal = Json.parse(source.mkString("").replaceAll("\\$NINO", nino.nino.take(8)))
     val result = Json.fromJson[TaxSummaryDetails](jsVal)
-    result.get
-  }
-
-  private def getSessionData(fileName: String, transformer: Option[String => String] = None): SessionData = {
-    val jsonFilePath = basePath + fileName
-    val file : File = new File(jsonFilePath)
-    val nino = new Generator(new Random).nextNino
-    val source:BufferedSource = scala.io.Source.fromFile(file)
-    val stringContent = source.mkString("").replaceAll("\\$NINO", nino.nino)
-    val transformedString = transformer.map(fn => fn(stringContent)).getOrElse(stringContent)
-    val jsVal = Json.parse(transformedString)
-    val result = Json.fromJson[SessionData](jsVal)
     result.get
   }
 
@@ -154,11 +140,6 @@ object TaiData {
   def getTaxCodeTaxSummary = getTaxSummary(taxCodeDetails)
   def getEverything = getTaxSummary(everything)
   def getCurrentYearTaxSummaryDetails = getTaxSummary(currentYearTaxSummaryDetails)
-  def getSessionDataWithCYPYRtiData = {
-    val transform: String => String = fileContent => fileContent.replaceAll("\\$PREVIOUSTY", "2018")
-    getSessionData(sessionDataWithCYPYRtiData, Some(transform))
-  }
-  def getSessionDataWithNoPYRtiData = getSessionData(sessionDataWithNoPYRtiData)
   def getEverythingJson = getJson(everything)
   def getEstimatedIncome = getEstimatedIncomeViewModel(estimatedIncomeViewModel)
   def getCurrentYearCeasedTaxSummaryDetails = getTaxSummary(currentYearCeasedTaxSummaryDetails)

@@ -20,16 +20,14 @@ import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{Json, Reads}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{CoreDelete, CoreGet, CorePost, CorePut}
+import uk.gov.hmrc.http.{CoreDelete, CoreGet, CorePost, CorePut, _}
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.tai.config.WSHttp
 import uk.gov.hmrc.tai.model._
-import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.tai.model.tai.AnnualAccount
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http._
-import uk.gov.hmrc.tai.config.WSHttp
 
 trait TaiConnector extends RawResponseReads{
   def http: CoreGet with CorePost with CorePut with CoreDelete
@@ -89,47 +87,6 @@ trait TaiConnector extends RawResponseReads{
   def calculateEstimatedPay(payDetails : PayDetails)(implicit hc: HeaderCarrier): Future[CalculatedPay] = {
     val postUrl = url(s"/tai/calculator/calculate-estimated-pay")
     http.POST(postUrl, payDetails).map(responseTo[CalculatedPay](postUrl))
-  }
-
-  def getTaiData(nino: Nino)(implicit hc: HeaderCarrier): Future[SessionData] = {
-    val getUrl = url(s"/tai/$nino/tai-data")
-    http.GET[HttpResponse](getUrl) map {
-      response =>
-        response.status match {
-          case OK =>
-            response.json.as[SessionData]
-          case NOT_FOUND =>
-            Logger.warn(s"TaxForCitizens:Frontend -  No taxSummary Data can be found")
-            throw new NotFoundException(Json.stringify(response.json))
-          case BAD_REQUEST =>
-            Logger.warn(s"TaxForCitizens:Frontend -  Bad Request")
-            throw new BadRequestException(Json.stringify(response.json))
-          case SERVICE_UNAVAILABLE =>
-            Logger.warn(s"TaxForCitizens:Frontend -  Service Unavailable")
-            throw new ServiceUnavailableException(Json.stringify(response.json))
-          case INTERNAL_SERVER_ERROR =>
-            Logger.warn(s"TaxForCitizens:Frontend -  Internal System Error")
-            throw new InternalServerException(Json.stringify(response.json))
-          case _ =>
-            Logger.warn(s"TaxForCitizens:Frontend -  Unsuccessful return of data for Unknown Reason")
-            throw new HttpException(Json.stringify(response.json), response.status)
-        }
-    }
-  }
-
-  def updateTaiData(sessionData: SessionData)(implicit hc: HeaderCarrier): Future[SessionData] = {
-
-    val putUrl = url(s"/tai/${sessionData.nino}/tai-data")
-
-    http.PUT(putUrl, sessionData).map(resp => {
-      resp.status match {
-        case OK => sessionData
-        case _ => {
-          Logger.warn(s"Update of tai data failed with response code ${resp.status}")
-          throw new HttpException(Json.stringify(resp.json), resp.status)
-        }
-      }
-    })
   }
 }
 

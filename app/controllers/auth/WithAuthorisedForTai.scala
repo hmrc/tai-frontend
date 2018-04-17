@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.frontend.auth._
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.tai.auth.ConfigProperties
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.{SessionData, TaiRoot}
+import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.service.TaiService
 import uk.gov.hmrc.tai.util.Tools
 import uk.gov.hmrc.time.TaxYearResolver
@@ -71,50 +71,6 @@ object TaiAuthenticationProvider extends AnyAuthenticationProvider {
   override def redirectToLogin(implicit request: Request[_]) = ggRedirect
 
   override def login: String = throw new RuntimeException("Unused")
-}
-
-trait WithAuthorisedForTai extends DelegationAwareActions { this: ErrorPagesHandler =>
-
-  private type PlayRequest = (Request[AnyContent] => Result)
-  private type AsyncPlayRequest = (Request[AnyContent] => Future[Result])
-  private type TaiUserRequest = TaiUser => PlayRequest
-  private type AsyncTaiUserRequest = TaiUser => SessionData => AsyncPlayRequest
-
-  implicit private def createHeaderCarrier(implicit request: Request[_]) = fromHeadersAndSession(request.headers,Some(request.session))
-
-  def authorisedForTai(redirectToOrigin: Boolean = false)(implicit taiService: TaiService) = {
-    new AuthorisedByTai(AuthorisedFor(TaiRegime, TaiConfidenceLevelPredicate), taiService)
-  }
-
-  class AuthorisedByTai(authedBy: AuthenticatedBy, taiService: TaiService) {
-
-    def apply(action: TaiUserRequest) = authedBy.async {
-      authContext => implicit request =>
-        resolveLoggedInTaiUser(authContext => sessionData => implicit request => Future.successful(action.apply(authContext).apply(request)), authContext)
-    }
-
-    def async(action: AsyncTaiUserRequest) = authedBy.async {
-      authContext => implicit request =>
-        resolveLoggedInTaiUser(authContext => implicit request => action(authContext)(request), authContext)
-    }
-
-    private def resolveLoggedInTaiUser(body: AsyncTaiUserRequest, authContext: AuthContext) (implicit request: Request[AnyContent]): Future[Result] = {
-      val taiAccount = authContext.principal.accounts.paye.getOrElse(throw new IllegalArgumentException("Cannot find tai user authority"))
-      for {
-        sessionData <- taiService.taiSession(taiAccount.nino,TaxYearResolver.currentTaxYear,taiAccount.link)
-        taiUser <- getTaiUser(authContext, taiAccount.nino, sessionData.taiRoot.get)
-        result <- body(taiUser)(sessionData)(request)
-      } yield result
-    }.recoverWith{
-      implicit val user = TaiUser(authContext,TaiRoot())
-      handleErrorResponse("resolveLoggedInTaiUser",authContext.principal.accounts.paye
-        .getOrElse(throw new IllegalArgumentException("Cannot find tai user authority")).nino)
-    }
-
-    def getTaiUser(authContext: AuthContext, nino: Nino, taiRoot: TaiRoot)(implicit request: Request[_]): Future[TaiUser] = {
-        Future.successful(TaiUser(authContext, taiRoot).getAuthContext(taiRoot.firstName + " " + taiRoot.surname))
-    }
-  }
 }
 
 trait WithAuthorisedForTaiLite extends DelegationAwareActions { this: ErrorPagesHandler =>
