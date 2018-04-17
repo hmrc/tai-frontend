@@ -17,7 +17,6 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import data.TaiData
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers

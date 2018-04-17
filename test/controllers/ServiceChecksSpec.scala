@@ -17,7 +17,6 @@
 package controllers
 
 import builders.UserBuilder
-import data.TaiData
 import org.scalatestplus.play.PlaySpec
 import play.api.http.Status._
 import play.api.mvc.Results.Ok
@@ -25,7 +24,6 @@ import play.api.test.Helpers.{defaultAwaitTimeout, redirectLocation, status}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.{CeasedEmploymentDetails, TaiRoot}
-import uk.gov.hmrc.tai.util.TaiConstants.CEASED_MINUS_TWO
 
 import scala.concurrent.Future
 
@@ -35,8 +33,6 @@ class ServiceChecksSpec extends PlaySpec with FakeTaiPlayApplication {
   implicit val user = UserBuilder.apply()
 
   val nino = new Generator().nextNino
-
-  val testTaxSummary = TaiData.getHigherRateTaxSummary.copy(ceasedEmploymentDetail = Some(CeasedEmploymentDetails(None, None, Some(CEASED_MINUS_TWO), None)))
 
   val defineTaiRoot = (mci:Boolean, di: Option[Boolean]) => TaiRoot(manualCorrespondenceInd = mci, deceasedIndicator = di)
 

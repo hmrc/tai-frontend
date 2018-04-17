@@ -21,7 +21,6 @@ import java.util.UUID
 import uk.gov.hmrc.tai.service.TaiService
 import builders.{AuthBuilder, RequestBuilder}
 import uk.gov.hmrc.tai.connectors._
-import data.TaiData
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
@@ -35,7 +34,6 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.tai.config.{ApplicationConfig, WSHttp}
@@ -50,7 +48,6 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
 
   implicit val hc = HeaderCarrier()
 
-  val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
   "Time Out page" should {
     "return page when called" in  {
       val fakeRequest = FakeRequest("POST", "").withFormUrlEncodedBody()
@@ -101,7 +98,6 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
   class TestTaiConnector extends TaiConnector {
     override def http = WSHttp
     override def serviceUrl: String = "test/tai"
-    val mockDetails = TaiData.getIncomesAndPensionsTaxSummary
 
     def get(key: String)(implicit hc: HeaderCarrier) =
       Future.successful(Some(JsArray()))
