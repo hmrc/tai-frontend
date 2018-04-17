@@ -161,7 +161,6 @@ class TaiServiceSpec extends PlaySpec
   val testTimeout = 5 seconds
   val employmentId = 21
 
-  val basicTaxSummaryDetails = TaxSummaryDetails(generateNino.nino, 1)
   val basicTaxCodeIncomes = TaxCodeIncomes(
     hasDuplicateEmploymentNames = false,
     totalIncome = 100,
@@ -182,17 +181,6 @@ class TaiServiceSpec extends PlaySpec
     totalTaxableIncome = 0
   )
   val basicEmploymentAmount = EmploymentAmount("", " ", 0, 0, 0)
-
-  def taxSummaryDetailsWithTaxCodeIncomes(taxCodeIncomes: TaxCodeIncomes): TaxSummaryDetails = basicTaxSummaryDetails.copy(
-    increasesTax = Some(IncreasesTax(
-      total = 0,
-      incomes = Some(Incomes(
-        taxCodeIncomes = taxCodeIncomes,
-        noneTaxCodeIncomes = basicNoneTaxCodeIncomes,
-        total = 0
-      ))
-    ))
-  )
 
   def generateNino: Nino = new Generator(new Random).nextNino
 

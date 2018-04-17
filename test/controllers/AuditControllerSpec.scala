@@ -23,12 +23,12 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.service.{AuditService, TaiService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.{TaiRoot, TaxSummaryDetails}
+import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.service.{AuditService, TaiService}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

@@ -31,7 +31,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.tai.config.WSHttpProxy
-import uk.gov.hmrc.tai.model.{TaiRoot, TaxSummaryDetails}
+import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.service.TaiService
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
@@ -145,5 +145,4 @@ class HelpControllerSpec extends PlaySpec
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
-  val testTaxSummary: TaxSummaryDetails = TaiData.getEverything
 }

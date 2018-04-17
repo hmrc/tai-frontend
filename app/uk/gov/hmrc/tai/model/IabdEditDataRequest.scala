@@ -90,12 +90,6 @@ object IabdUpdateEmploymentsRequest {
   implicit val formats = Json.format[IabdUpdateEmploymentsRequest]
 }
 
-case class IabdUpdateEmploymentsWithoutSavingRequest(iabdUpdateRequest: IabdUpdateEmploymentsRequest, currentTaxSummaryDetails: TaxSummaryDetails)
-
-object IabdUpdateEmploymentsWithoutSavingRequest {
-  implicit val format = Json.format[IabdUpdateEmploymentsWithoutSavingRequest]
-}
-
 case class PayAnnualisationRequest(amountYearToDate: BigDecimal, employmentStartDate: LocalDate, paymentDate: LocalDate)
 
 object PayAnnualisationRequest {

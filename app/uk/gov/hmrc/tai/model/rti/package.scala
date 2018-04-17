@@ -32,8 +32,6 @@ package object rti {
 
   implicit val freqFormat = JsonExtra.enumerationFormat(PayFrequency)
 
-  implicit val stringMapFormat = JsonExtra.mapFormat[String,BigDecimal]("type", "amount")
-
   implicit val formatLocalDate: Format[LocalDate] = Format(
     new Reads[LocalDate]{
       val dateRegex = """^(\d\d\d\d)-(\d\d)-(\d\d)$""".r
