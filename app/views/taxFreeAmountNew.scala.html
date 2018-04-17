@@ -60,7 +60,6 @@
                         <li>@Messages("tai.taxFreeAmount.summarysection.bullet1")</li>
                         <li>@Messages("tai.taxFreeAmount.summarysection.bullet2")</li>
                     </ul>
-
                 </section>
 
                 <section id="taxFreeAmountDetail" class="section">
@@ -69,6 +68,26 @@
                     @taxFreeAmountSummary(viewModel.summaryItems, gaEventActionString)
 
                 </section>
+
+                <h2 id="addSomethingMissingHeading" class="heading">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
+
+                <p class="icon icon-plus display-block">
+                    @Link.toInternalPage(
+                    id=Some("addMissingAddition"),
+                    url=ApplicationConfig.taxFreeAllowanceLinkUrl,
+                    value=Some(Messages("tai.taxFreeAmount.missing.section.addition")),
+                    cssClasses=Some(""),
+                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.missing.section.addition")}"))).toHtml
+                </p>
+
+                <p class="icon icon-plus display-block">
+                    @Link.toInternalPage(
+                    id=Some("addMissingDeduction"),
+                    url=ApplicationConfig.companyBenefitsLinkUrl,
+                    value=Some(Messages("tai.taxFreeAmount.missing.section.deduction")),
+                    cssClasses=Some(""),
+                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.missing.section.deduction")}"))).toHtml
+                </p>
 
             </div>
         </div>

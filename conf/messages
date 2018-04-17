@@ -574,6 +574,8 @@ tai.taxFreeAmount.table.taxComponent.UnderpaymentRestriction=Underpayment restri
 tai.taxFreeAmount.table.taxComponent.HigherPersonalAllowanceRestriction=Higher personal allowance restriction
 tai.taxFreeAmount.table.taxComponent.AdjustmentToRateBand=Adjustment to rate band
 tai.taxFreeAmount.table.taxComponent.from.employment=from {0}
+tai.taxFreeAmount.missing.section.addition=Add a missing allowance or addition
+tai.taxFreeAmount.missing.section.deduction=Add a missing company benefit or deduction
 
 ##Your Tax Free Allowance Page
 tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear = What does this mean?
