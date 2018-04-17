@@ -16,11 +16,13 @@
 
 package controllers
 
+import controllers.ServiceChecks.CustomRule
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
@@ -30,9 +32,11 @@ import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, TaiService, TaxAccountService}
-import uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModelNew
+import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModelNew}
 
-trait YourIncomeCalculationControllerNew extends TaiBaseController
+import scala.concurrent.Future
+
+trait YourIncomeCalculationController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
 
@@ -80,9 +84,46 @@ trait YourIncomeCalculationControllerNew extends TaiBaseController
       }
     }
   }
+
+  def yourIncomeCalculationPreviousYearPage(year: TaxYear, empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+    implicit user =>
+      implicit taiRoot =>
+        implicit request => {
+          ServiceCheckLite.personDetailsCheck {
+            if (year <= TaxYear().prev) {
+              showHistoricIncomeCalculation(Nino(user.getNino), empId, year = year)
+            } else {
+              throw new RuntimeException(s"Doesn't support year $year")
+            }
+          }
+        }
+  }
+
+  def printYourIncomeCalculationPreviousYearPage(empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+    implicit user =>
+      implicit taiRoot =>
+        implicit request => {
+          showHistoricIncomeCalculation(Nino(user.getNino), empId, printPage = true)
+        }
+  }
+
+  private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean = false, year: TaxYear = TaxYear().prev)
+                                   (implicit request: Request[AnyContent], user: TaiUser, taiRoot: TaiRoot): Future[Result] = {
+    for {
+        employment <- employmentService.employments(nino, year)
+      } yield {
+        val historicIncomeCalculationViewModel = HistoricIncomeCalculationViewModel(employment, empId, year)
+        if (printPage) {
+          Ok(views.html.print.historicIncomeCalculation(historicIncomeCalculationViewModel))
+        } else {
+          Ok(views.html.incomes.historicIncomeCalculation(historicIncomeCalculationViewModel))
+        }
+      }
+    }
+
 }
 
-object YourIncomeCalculationControllerNew extends YourIncomeCalculationControllerNew with AuthenticationConnectors {
+object YourIncomeCalculationController extends YourIncomeCalculationController with AuthenticationConnectors {
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 

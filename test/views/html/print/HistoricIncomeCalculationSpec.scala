@@ -43,7 +43,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
 
     "have a back link" in {
       val backLink: Element = doc.getElementById("backLink")
-      backLink must haveLinkURL(controllers.routes.YourIncomeCalculationController.yourIncomeCalculation(TaxYear().prev, 1).url)
+      backLink must haveLinkURL(controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPreviousYearPage(TaxYear().prev, 1).url)
       doc must haveLinkWithText(messages("tai.label.back"))
     }
 

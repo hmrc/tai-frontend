@@ -39,7 +39,7 @@
 )(implicit request: Request[_], messages: MessagesApi, user: controllers.auth.TaiUser)
 
 @printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
-<a id="backLink" href="@controllers.routes.YourIncomeCalculationController.yourIncomeCalculation(historicIncomeCalculationViewModel.taxYear, historicIncomeCalculationViewModel.employmentId)">@Messages("tai.label.back")</a>
+<a id="backLink" href="@controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPreviousYearPage(historicIncomeCalculationViewModel.taxYear, historicIncomeCalculationViewModel.employmentId)">@Messages("tai.label.back")</a>
 }{
 
 

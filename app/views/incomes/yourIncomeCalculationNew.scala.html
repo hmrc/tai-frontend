@@ -34,7 +34,7 @@
 ){
 
     <div style="float: right;">
-        @Link.toInternalPage(url=routes.YourIncomeCalculationControllerNew.printYourIncomeCalculationPage(model.empId).toString,value=Some(Messages("tai.label.print"))).toHtml
+        @Link.toInternalPage(url=routes.YourIncomeCalculationController.printYourIncomeCalculationPage(model.empId).toString,value=Some(Messages("tai.label.print"))).toHtml
     </div>
     <header class="page-header">
         <h1 class="heading-xlarge flush--bottom" id="currentYearTitle">@Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName)</h1>

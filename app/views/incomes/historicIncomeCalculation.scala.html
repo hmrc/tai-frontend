@@ -44,7 +44,7 @@
 ){
 
 
-    <div style="float: right;">@Link.toInternalPage(id=Some("printLink"), url=routes.YourIncomeCalculationController.printYourIncomeCalculation(historicIncomeCalculationViewModel.taxYear, historicIncomeCalculationViewModel.employmentId).toString,value=Some(Messages("tai.label.print"))).toHtml</div>
+    <div style="float: right;">@Link.toInternalPage(id=Some("printLink"), url=routes.YourIncomeCalculationController.printYourIncomeCalculationPreviousYearPage(historicIncomeCalculationViewModel.employmentId).toString,value=Some(Messages("tai.label.print"))).toHtml</div>
 
     <div class="grid-row">
         <div class="grid grid-2-3">
