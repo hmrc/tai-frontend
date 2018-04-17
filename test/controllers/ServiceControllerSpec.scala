@@ -39,7 +39,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.tai.config.{ApplicationConfig, WSHttp}
-import uk.gov.hmrc.tai.model.{SessionData, TaiRoot, UserDetails}
+import uk.gov.hmrc.tai.model.{TaiRoot, UserDetails}
 import uk.gov.hmrc.tai.util.TaiConstants
 
 import scala.concurrent.Future
@@ -69,7 +69,6 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
 
       when(sut.userDetailsConnector.userDetails(any[AuthContext](any()))).thenReturn(Future.successful(UserDetails("GovernmentGateway")))
 
-      when(sut.taiService.taiSession(any(), any(), any())(any())).thenReturn(Future.successful(SessionData(nino, Some(TaiData.getPerson), TaiData.getIncomesAndPensionsTaxSummary, None, None)))
 
       val result = sut.serviceSignout()(authorisedRequest)
 
@@ -81,8 +80,6 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
 
       when(sut.userDetailsConnector.userDetails(any[AuthContext])(any()))
         .thenReturn(Future.successful(UserDetails("Verify")))
-
-      when(sut.taiService.taiSession(any(), any(), any())(any())).thenReturn(Future.successful(SessionData(nino, Some(TaiData.getPerson), TaiData.getIncomesAndPensionsTaxSummary, None, None)))
 
       val result = sut.serviceSignout()(authorisedRequest)
 

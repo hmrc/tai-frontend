@@ -61,21 +61,6 @@ class TaiServiceSpec extends PlaySpec
     }
   }
 
-  "updateSessionData" should {
-    "update the cache from provided session data" in {
-      
-      val sut = createSut
-      val nino = generateNino
-      val taxSummaryDetails = TaxSummaryDetails(nino.nino, 1)
-      val sessionData = SessionData(nino = nino.nino, taxSummaryDetailsCY = taxSummaryDetails)
-      when(sut.taiClient.updateTaiData(any())(any())).thenReturn(Future.successful(sessionData))
-
-      val result = Await.result(sut.updateTaiSession(sessionData), testTimeout)
-      result mustBe sessionData
-      verify(sut.taiClient, times(1)).updateTaiData(any())(any())
-    }
-  }
-
   "getIncome" should {
     "return None" when {
       "Increases Tax doesn't have any incomes" in {
@@ -215,67 +200,6 @@ class TaiServiceSpec extends PlaySpec
         val taxSummaryDetails = taxSummaryDetailsWithTaxCodeIncomes(taxCodeIncomes)
         val expectedEmploymentAmount = EmploymentAmount("", " ", employmentId, 0, 0, None, None, None, None, false, false)
         sut.incomeForEdit(taxSummaryDetails, employmentId) mustBe Some(expectedEmploymentAmount)
-      }
-    }
-  }
-
-  "updateIncome" should {
-    "throw IllegalArgumentException" when {
-      "there is no paye account" in {
-        val sut = createSut
-        val userBuilt = UserBuilder()
-        val accountWithoutPaye: Accounts = userBuilt.authContext.principal.accounts.copy(paye = None)
-        implicit val user: TaiUser = userBuilt.copy(authContext = userBuilt.authContext.copy(principal = userBuilt.authContext.principal.copy(accounts = accountWithoutPaye)))
-        val thrown = the[IllegalArgumentException] thrownBy sut.updateIncome(generateNino, 2017, 1, basicEmploymentAmount)
-        thrown.getMessage mustBe "Cannot find tai user authority"
-      }
-    }
-
-    "return IabdUpdateEmploymentsResponse" when {
-      "provided with TaiUser, employmentAmount, nino, version and taxyear" in {
-        val sut = createSut
-        implicit val user = UserBuilder()
-
-        val nino = generateNino
-        val Year = 2017
-        val taxSummaryDetails = TaxSummaryDetails(nino.nino, 1)
-        val sessionData = SessionData(nino = nino.nino, taxSummaryDetailsCY = taxSummaryDetails)
-        val iabdUpdateEmploymentsResponse = IabdUpdateEmploymentsResponse(TransactionId(""), 1, 1, Nil)
-
-        when(sut.taiClient.updateEmployments(any(), any(), any())(any())).thenReturn(Future.successful(iabdUpdateEmploymentsResponse))
-        when(sut.taiClient.taxSummary(any(), any())(any())).thenReturn(Future.successful(taxSummaryDetails))
-        when(sut.taiClient.root(any())(any())).thenReturn(Future.successful(TaiRoot()))
-        when(sut.taiClient.getTaiData(any())(any())).thenReturn(Future.successful(SessionData("", None, taxSummaryDetails, None, None)))
-
-        val result = Await.result(sut.updateIncome(nino, Year, 1, basicEmploymentAmount), testTimeout)
-
-        result mustBe iabdUpdateEmploymentsResponse
-        verify(sut.taiClient, times(1)).getTaiData(any())(any())
-      }
-    }
-
-    "return future failure and should not save data to the session " when {
-      "updateEmployments fails" in {
-        val sut = createSut
-        implicit val user = UserBuilder()
-
-        val nino = generateNino
-        val Year = 2017
-        val taxSummaryDetails = TaxSummaryDetails(nino.nino, 1)
-        val sessionData = SessionData(nino = nino.nino, taxSummaryDetailsCY = taxSummaryDetails)
-        val exceptionMessage = "fake exception"
-
-        when(sut.taiClient.updateEmployments(any(), any(), any())(any())).thenReturn(Future.failed(exception = new RuntimeException(exceptionMessage)))
-
-        when(sut.taiClient.taxSummary(any(), any())(any())).thenReturn(Future.successful(taxSummaryDetails))
-        when(sut.taiClient.root(any())(any())).thenReturn(Future.successful(TaiRoot()))
-
-        val result = sut.updateIncome(generateNino, 2017, 1, basicEmploymentAmount)
-        ScalaFutures.whenReady(result.failed) {
-          e => e.getMessage mustBe exceptionMessage
-        }
-
-        verify(sut.taiClient, never).taxSummary(any(), any())(any())
       }
     }
   }
