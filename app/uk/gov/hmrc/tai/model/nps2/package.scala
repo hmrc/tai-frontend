@@ -22,7 +22,6 @@ import org.slf4j._
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.tai.model.nps2.TaxDetail
 
 import scala.language.implicitConversions
 
@@ -71,7 +70,7 @@ package object nps2 {
     (__ \ "rate").format[BigDecimal]
   )(TaxBand.apply, unlift(TaxBand.unapply))
 
-  implicit val formatliabilityMap: Format[Map[TaxObjectType, TaxDetail]] = {
+  /*implicit val formatliabilityMap: Format[Map[TaxObjectType, TaxDetail]] = {
 
     val fieldNames: Map[TaxObject.Type.Value,String] =
       TaxObject.Type.values.toSeq.map{ x =>
@@ -101,6 +100,6 @@ package object nps2 {
         })
     }
 
-  }
+  }*/
 
 }
