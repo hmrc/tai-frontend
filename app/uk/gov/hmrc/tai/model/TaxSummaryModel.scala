@@ -47,62 +47,10 @@ object EditableDetails {
   implicit val formats: Format[EditableDetails] = Json.format[EditableDetails]
 }
 
-case class IncomeExplanation(employerName: String,
-                             incomeId: Int = 0,
-                             hasDuplicateEmploymentNames: Boolean = false,
-                             worksNumber: Option[String] = None,
-                             paymentDate: Option[LocalDate] = None,
-                             notificationDate: Option[LocalDate] = None,
-                             updateActionDate: Option[LocalDate] = None,
-                             startDate: Option[LocalDate] = None,
-                             endDate: Option[LocalDate] = None,
-                             employmentStatus: Option[Int] = None,
-                             employmentType: Option[Int] = None,
-                             isPension: Boolean = false,
-                             iabdSource: Option[Int] = None,
-                             payToDate: BigDecimal = BigDecimal(0),
-                             calcAmount: Option[BigDecimal] = None,
-                             grossAmount: Option[BigDecimal] = None,
-                             payFrequency: Option[PayFrequency.Value] = None,
-                             cessationPay: Option[BigDecimal] = None,
-                             editableDetails: EditableDetails = EditableDetails())
-
-object IncomeExplanation {
-  implicit val formats: Format[IncomeExplanation] = Json.format[IncomeExplanation]
-}
-
 case class CeasedEmploymentDetails(endDate: Option[LocalDate], isPension: Option[Boolean], ceasedStatus: Option[String], employmentStatus: Option[Int])
 
 object CeasedEmploymentDetails {
   implicit val formats = Json.format[CeasedEmploymentDetails]
-}
-
-case class RtiCalc(employmentType: Int,
-                   employmentStatus: Int,
-                   employerName: String,
-                   totalPayToDate: BigDecimal,
-                   calculationResult: Option[BigDecimal],
-                   startDate: LocalDate,
-                   isIrregular: Boolean,
-                   inYear: Boolean,
-                   isMonthly: Boolean = false)
-
-object RtiCalc {
-  implicit val format: Format[RtiCalc] = Json.format[RtiCalc]
-}
-
-
-case class RtiData(rtiCalcs: List[RtiCalc])
-
-object RtiData {
-  implicit val format: Format[RtiData] = Json.format[RtiData]
-}
-
-
-case class IncomeData(incomeExplanations: List[IncomeExplanation])
-
-object IncomeData {
-  implicit val format: Format[IncomeData] = Json.format[IncomeData]
 }
 
 case class TaxCodeComponent(
@@ -139,18 +87,6 @@ case class TaxCodeDescription(taxCode: String, name: String, taxCodeDescriptors:
 
 object TaxCodeDescription {
   implicit val format: Format[TaxCodeDescription] = Json.format[TaxCodeDescription]
-}
-
-case class TaxCodeDetails(employment: Option[List[Employments]],
-                          taxCode: Option[List[TaxCode]],
-                          taxCodeDescriptions: Option[List[TaxCodeDescription]] = None,
-                          deductions: Option[List[TaxCodeComponent]],
-                          allowances: Option[List[TaxCodeComponent]],
-                          splitAllowances: Option[Boolean] = None,
-                          total: BigDecimal = BigDecimal(0))
-
-object TaxCodeDetails {
-  implicit val formats: Format[TaxCodeDetails] = Json.format[TaxCodeDetails]
 }
 
 case class Tax(totalIncome: Option[BigDecimal] = None,
@@ -249,14 +185,6 @@ object Incomes {
   implicit val formats: Format[Incomes] = Json.format[Incomes]
 }
 
-case class IncreasesTax(incomes: Option[Incomes] = None,
-                        benefitsFromEmployment: Option[TaxComponent] = None,
-                        total: BigDecimal)
-
-object IncreasesTax {
-  implicit val formats: Format[IncreasesTax] = Json.format[IncreasesTax]
-}
-
 case class DecreasesTax(personalAllowance: Option[BigDecimal] = None,
                         personalAllowanceSourceAmount: Option[BigDecimal] = None,
                         blindPerson: Option[TaxComponent] = None,
@@ -310,49 +238,6 @@ case class LiabilityReductions(marriageAllowance: Option[MarriageAllowance] = No
 
 object LiabilityReductions {
   implicit val formats: Format[LiabilityReductions] = Json.format[LiabilityReductions]
-}
-
-case class LiabilityAdditions(excessGiftAidTax: Option[Adjustment] = None,
-                              excessWidowsAndOrphans: Option[Adjustment] = None,
-                              pensionPaymentsAdjustment: Option[Adjustment] = None)
-
-object LiabilityAdditions {
-  implicit val formats: Format[LiabilityAdditions] = Json.format[LiabilityAdditions]
-}
-
-
-case class TotalLiability(
-                          nonCodedIncome: Option[Tax] = None,
-                          totalTax: BigDecimal,
-                          underpaymentPreviousYear: BigDecimal = BigDecimal(0),
-                          inYearAdjustment: Option[BigDecimal] = None,
-                          outstandingDebt: BigDecimal = BigDecimal(0),
-                          childBenefitAmount: BigDecimal = BigDecimal(0),
-                          childBenefitTaxDue: BigDecimal = BigDecimal(0),
-                          taxOnBankBSInterest: Option[BigDecimal] = None,
-                          taxCreditOnUKDividends: Option[BigDecimal] = None,
-                          taxCreditOnForeignInterest: Option[BigDecimal] = None,
-                          taxCreditOnForeignIncomeDividends: Option[BigDecimal] = None,
-                          liabilityReductions: Option[LiabilityReductions] = None,
-                          liabilityAdditions: Option[LiabilityAdditions] = None)
-
-object TotalLiability {
-  implicit val formats: Format[TotalLiability] = Json.format[TotalLiability]
-}
-
-
-case class GateKeeperRule(gateKeeperType: Int, id: Int, description: String)
-
-object GateKeeperRule {
-  implicit val formats: Format[GateKeeperRule] = Json.format[GateKeeperRule]
-}
-
-
-case class GateKeeper(gateKeepered: Boolean = false,
-                      gateKeeperResults: List[GateKeeperRule])
-
-object GateKeeper {
-  implicit val formats: Format[GateKeeper] = Json.format[GateKeeper]
 }
 
 case class Change[A, B](currentYear: A, currentYearPlusOne: B)
