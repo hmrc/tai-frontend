@@ -16,10 +16,7 @@
 
 package uk.gov.hmrc.tai.model.tai
 
-import org.slf4j.Logger
 import play.api.libs.json._
-
-import scala.util._
 
 object JsonExtra {
   def mapFormat[K,V](keyLabel: String, valueLabel: String)
@@ -41,29 +38,4 @@ object JsonExtra {
         case x => JsError(s"Expected JsArray(...), found $x")
       }
     }
-
-  def enumerationFormat(a: Enumeration) = new Format[a.Value] {
-    def reads(json: JsValue) = JsSuccess(a.withName(json.as[String]))
-    def writes(v: a.Value) = JsString(v.toString)
-  }
-
-  def bodgeList[T](implicit f: Format[T], log: Logger) = new Format[List[T]] {
-    override def reads(j: JsValue): JsResult[List[T]] = j match {
-      case JsArray(xs) => JsSuccess(xs.map{x => Try(x.as[T])}.map {
-        case Success(r) => Some(r)
-        case Failure(e) => {
-          log.warn("unable to parse json - omitting element\n" +
-            e.getLocalizedMessage )
-          None
-        }
-      }.flatten.toList)
-      case e => {
-        log.warn(s"Expected a JsArray, found $e, fudging a Nil", e)
-        JsSuccess(Nil)
-      }
-    }
-    override def writes(rs: List[T]): JsValue = {
-      JsArray(rs.map{x => Json.toJson(x)})
-    }
-  }
 }

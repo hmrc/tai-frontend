@@ -83,21 +83,3 @@ case class IabdUpdateEmploymentsResponse(transaction: TransactionId, version: In
 object IabdUpdateEmploymentsResponse {
   implicit val format = Json.format[IabdUpdateEmploymentsResponse]
 }
-
-case class IabdUpdateEmploymentsRequest(version: Int, newAmounts: List[EmploymentAmount])
-
-object IabdUpdateEmploymentsRequest {
-  implicit val formats = Json.format[IabdUpdateEmploymentsRequest]
-}
-
-case class PayAnnualisationRequest(amountYearToDate: BigDecimal, employmentStartDate: LocalDate, paymentDate: LocalDate)
-
-object PayAnnualisationRequest {
-  implicit val format = Json.format[PayAnnualisationRequest]
-}
-
-case class PayAnnualisationResponse(annualisedAmount: BigDecimal)
-
-object PayAnnualisationResponse {
-  implicit val format = Json.format[PayAnnualisationResponse]
-}
