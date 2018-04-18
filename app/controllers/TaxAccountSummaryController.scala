@@ -33,6 +33,8 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.{AuditConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 
+import scala.concurrent.Future
+
 trait TaxAccountSummaryController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
@@ -53,23 +55,26 @@ trait TaxAccountSummaryController extends TaiBaseController
 
             val nino = Nino(user.getNino)
             auditService.createAndSendAuditEvent(TaxAccountSummary_UserEntersSummaryPage, Map("nino" -> user.getNino))
-            for {
-              taxSummary <- taxAccountService.taxAccountSummary(nino, TaxYear())
-              taxCodeIncomes <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-              nonTaxCodeIncome <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
-              employments <- employmentService.employments(nino, TaxYear())
-              isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
-            } yield {
-              (taxSummary, taxCodeIncomes, nonTaxCodeIncome) match {
-                case (TaiTaxAccountFailureResponse(message), _, _) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
-                  message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear)=>
-                  Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
-                case (TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
-                TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
-                TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)) =>
-                  val vm = TaxAccountSummaryViewModel(taxCodeIncomes, employments, taxAccountSummary, isAnyFormInProgress, nonTaxCodeIncome)
-                  Ok(views.html.incomeTaxSummary(vm))
-              }
+            taxAccountService.taxAccountSummary(nino, TaxYear()).flatMap {
+              case (TaiTaxAccountFailureResponse(message)) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
+                message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
+                Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
+              case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
+                for {
+                  taxCodeIncomes <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+                  nonTaxCodeIncome <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
+                  employments <- employmentService.employments(nino, TaxYear())
+                  isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
+                } yield {
+                  (taxCodeIncomes, nonTaxCodeIncome) match {
+                    case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+                    TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)) =>
+                      val vm = TaxAccountSummaryViewModel(taxCodeIncomes, employments, taxAccountSummary, isAnyFormInProgress, nonTaxCodeIncome)
+                      Ok(views.html.incomeTaxSummary(vm))
+                    case _ => throw new RuntimeException("Failed to fetch income details")
+                  }
+                }
+              case _ => throw new RuntimeException("Failed to fetch tax account summary details")
             }
           }
   }
