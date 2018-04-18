@@ -60,14 +60,13 @@ trait TaxAccountSummaryController extends TaiBaseController
               employments <- employmentService.employments(nino, TaxYear())
               isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
             } yield {
-              (taxSummary, taxCodeIncomes, nonTaxCodeIncome, employments, isAnyFormInProgress) match {
-                case (TaiTaxAccountFailureResponse(message), _, _, _, _) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
+              (taxSummary, taxCodeIncomes, nonTaxCodeIncome) match {
+                case (TaiTaxAccountFailureResponse(message), _, _) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
                   message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear)=>
                   Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
                 case (TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
                 TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
-                TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
-                employments, isAnyFormInProgress) =>
+                TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)) =>
                   val vm = TaxAccountSummaryViewModel(taxCodeIncomes, employments, taxAccountSummary, isAnyFormInProgress, nonTaxCodeIncome)
                   Ok(views.html.incomeTaxSummary(vm))
               }
