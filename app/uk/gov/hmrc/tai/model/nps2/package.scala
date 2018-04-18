@@ -22,8 +22,7 @@ import org.slf4j._
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import uk.gov.hmrc.tai.model.nps2.{TaxDetail, IabdUpdateSource}
-import uk.gov.hmrc.tai.model.tai.JsonExtra
+import uk.gov.hmrc.tai.model.nps2.TaxDetail
 
 import scala.language.implicitConversions
 
@@ -71,21 +70,6 @@ package object nps2 {
     (__ \ "upperBand").formatNullable[BigDecimal] and
     (__ \ "rate").format[BigDecimal]
   )(TaxBand.apply, unlift(TaxBand.unapply))
-
-  implicit val formatIabd: Format[Iabd] = (
-    (__ \ "grossAmount").format[BigDecimal] and
-      (__ \ "type").format[Int].
-        inmap[IabdType](IabdType(_), _.code) and
-      (__ \ "source").format[Int].
-        inmap[IabdUpdateSource](IabdUpdateSource(_), _.code) and
-      (__ \ "typeDescription").formatNullable[String].inmap[String](
-        _.getOrElse(""), Some(_)
-      ) and
-      (__ \ "employmentSequenceNumber").formatNullable[Int]
-    )(Iabd.apply, unlift(Iabd.unapply))
-
-  implicit val formatIabdList: Format[List[Iabd]] =
-    JsonExtra.bodgeList[Iabd]
 
   implicit val formatliabilityMap: Format[Map[TaxObjectType, TaxDetail]] = {
 
