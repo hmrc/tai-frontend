@@ -86,7 +86,7 @@ class CompanyCarCheckYourAnswersSpec extends TaiViewSpec {
     "display a cancel button" in {
       val cancelButton = doc.select("#cancelLink")
       cancelButton.size > 0
-      cancelButton.get(0).attributes.get("href") mustBe routes.TaxFreeAmountController.taxFreeAmount().url
+      cancelButton.get(0).attributes.get("href") mustBe routes.TaxFreeAmountControllerNew.taxFreeAmount().url
     }
   }
 

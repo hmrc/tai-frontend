@@ -65,6 +65,7 @@ object ApplicationConfig extends ServicesConfig {
   lazy val ida_web_context = configuration.getString(s"$env.external-url.ida.web-context").getOrElse("ida")
   lazy val hardshipHelpBase = configuration.getString(s"govuk-tax.$env.external-url.hardship-help.host").getOrElse("")
   lazy val hardshipHelpUrl = s"$hardshipHelpBase/forms/form/tell-us-how-you-want-to-pay-estimated-tax/guide"
+  lazy val isTaiCy3Enabled = configuration.getBoolean("tai.cy3.enabled").getOrElse(false)
   private val contactHost = configuration.getString(s"govuk-tax.$env.services.contact-frontend.host").getOrElse("")
   lazy val companyAuthFrontendSignOutUrl = s"$companyAuthUrl/gg/sign-out?continue=$feedbackSurveyUrl"
   lazy val citizenAuthFrontendSignOutUrl = citizenAuthHost + "/ida/signout"
@@ -84,12 +85,18 @@ object ApplicationConfig extends ServicesConfig {
     }
   }
 
-  lazy val isTaiCy3Enabled = configuration.getBoolean("tai.cy3.enabled").getOrElse(false)
-  }
+  val iformEndEmploymentJourneyEnabled = configuration.getBoolean("tai.iformEndEmploymentJourney.enabled").getOrElse(false)
+  val iformAddEmploymentJourneyEnabled = configuration.getBoolean("tai.iformAddEmploymentJourney.enabled").getOrElse(false)
+  val bbsiRemoveBankAccountJourneyEnabled = configuration.getBoolean("tai.bbsiRemoveBankAccountJourney.enabled").getOrElse(false)
+
+}
 
 trait FeatureTogglesConfig extends ServicesConfig {
+  val scottishTaxRateEnabled = configuration.getBoolean("tai.scottishTaxRate.enabled").getOrElse(false)
   val cyPlusOneEnabled = configuration.getBoolean("tai.cyPlusOne.enabled").getOrElse(false)
+  val previousEmploymentUpdateToggle = configuration.getBoolean("tai.feature.previousEmploymentUpdate.enabled").getOrElse(false)
   val welshLanguageEnabled =  configuration.getBoolean("tai.feature.welshLanguage.enabled").getOrElse(false)
+  val cyApdNewPageEnabled = configuration.getBoolean("tai.feature.cyApdNewPage.enabled").getOrElse(false)
   val companyCarForceRedirectEnabled = configuration.getBoolean("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
 }
 

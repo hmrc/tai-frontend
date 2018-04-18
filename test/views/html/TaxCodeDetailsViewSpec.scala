@@ -33,7 +33,7 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
     }
 
     "display navigational links to other pages in the service" in {
-      doc must haveLinkElement("taxFreeAmountLink", controllers.routes.TaxFreeAmountController.taxFreeAmount.url, messages("tai.incomeTax.taxFree.link"))
+      doc must haveLinkElement("taxFreeAmountLink", controllers.routes.TaxFreeAmountControllerNew.taxFreeAmount.url, messages("tai.incomeTax.taxFree.link"))
       doc must haveLinkElement("taxableIncomeLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("tai.incomeTaxSummary.link"))
     }
 

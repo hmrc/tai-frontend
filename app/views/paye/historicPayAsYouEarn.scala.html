@@ -82,7 +82,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                                         <div class="cya-answer">£@{f"${employment.taxablePayYTD}%,.2f"}</div>
                                         <div class="cya-change">@Link.toInternalPage(
                                             url =
-                                            routes.YourIncomeCalculationController.yourIncomeCalculationPreviousYearPage(viewModel.taxYear,
+                                            routes.YourIncomeCalculationController.yourIncomeCalculation(viewModel.taxYear,
                                             employment.id).toString(),
                                             value = Some(Messages("tai.paye.lastTaxYear.table.link"))
                                             ).toHtml

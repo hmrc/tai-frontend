@@ -243,7 +243,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         endDate = "21 April 2018",
         displayEndDate = true,
         detailsLinkLabel = Messages("tai.incomeTaxSummary.employment.link"),
-        detailsLinkUrl = controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(998).url,
+        detailsLinkUrl = controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(998)).url,
         true)
     }
   }
@@ -356,7 +356,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         "income source type is employment" in {
           val sut = IncomeSourceViewModel(taxCodeIncomeCeased, ceasedEmployment)
           sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.employment.link")
-          sut.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(1).url
+          sut.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(1)).url
         }
       }
       "has details link with pension label" when {
@@ -433,7 +433,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
       "has details link with employment only label " in {
         val sut = IncomeSourceViewModel(ceasedEmployment)
         sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.employment.link")
-        sut.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(1).url
+        sut.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(1)).url
       }
     }
   }

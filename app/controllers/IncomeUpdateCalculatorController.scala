@@ -84,12 +84,12 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         } else {
           incomeService.singularIncomeId(taxCodeIncomes) match {
             case Some(incomeId) => Ok(views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), incomeId))
-            case None => throw new RuntimeException("Employment id not present")
+            case None => Redirect(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None))
           }
         }
       }
       case (false, false, _) => Redirect(routes.TaxAccountSummaryController.onPageLoad())
-      case _ => Redirect(routes.IncomeController.pensionIncome())
+      case _ => Redirect(routes.IncomeControllerNew.pensionIncome())
     }
   }
 
@@ -109,7 +109,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           formData => {
             formData.howToUpdate match {
               case Some("incomeCalculator") => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.workingHoursPage()))
-              case _ => Future.successful(Redirect(routes.IncomeController.viewIncomeForEdit()))
+              case _ => Future.successful(Redirect(routes.IncomeControllerNew.viewIncomeForEdit()))
             }
           }
         )
@@ -416,7 +416,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
           if (calculatedPay.grossAnnualPay.get > payYearToDate) {
             val cache = Map(UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
-              UpdateIncome_NewAmountKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
+              UpdateIncome_NetAnnualPayKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
             val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
 
             journeyCacheService.cache(cache).map { _ =>
@@ -438,11 +438,12 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         sendActingAttorneyAuditEvent("processCalculationResult")
         for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
           income <- incomeService.employmentAmount(Nino(user.getNino), id)
-          netAmount <- journeyCacheService.currentValue(UpdateIncome_NewAmountKey)
+          netAmount <- journeyCacheService.currentValue(UpdateIncome_NetAnnualPayKey)
         } yield {
           val newAmount = income.copy(newAmount = netAmount.map(_.toInt).getOrElse(income.oldAmount))
-          Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = newAmount).get))
+          Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = newAmount).get, Some(employerName), true))
         }
   }
 

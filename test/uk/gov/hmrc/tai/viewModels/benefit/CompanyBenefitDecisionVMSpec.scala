@@ -17,29 +17,34 @@
 package uk.gov.hmrc.tai.viewModels.benefit
 
 import controllers.FakeTaiPlayApplication
-import org.scalatestplus.play.PlaySpec
+import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import play.api.i18n.Messages.Implicits._
 
 
-class CompanyBenefitDecisionVMSpec extends PlaySpec with FakeTaiPlayApplication
+class CompanyBenefitDecisionVMSpec extends UnitSpec with FakeTaiPlayApplication
 {
 
-  "CompanyBenefitDecisionViewModel" must {
+  "CompanyBenefitDecisionViewModel" should {
     "show the word benefit once when the word benefit is part of the benefit name " in {
+
       val benefitType = "NonCashBenefit"
       val formattedBenefitName = "Non-cash"
+
       val viewModel = CompanyBenefitDecisionViewModel(benefitType,employerName,UpdateOrRemoveCompanyBenefitDecisionForm.form)
 
-      viewModel.benefitName mustBe formattedBenefitName
+      viewModel.benefitName shouldBe formattedBenefitName
+
     }
 
     "show the word benefit once when the word benefits is part of the benefit name " in {
+
       val benefitType = "ServiceBenefit"
       val formattedBenefitName = "Service"
+
       val viewModel = CompanyBenefitDecisionViewModel(benefitType,employerName,UpdateOrRemoveCompanyBenefitDecisionForm.form)
 
-      viewModel.benefitName mustBe formattedBenefitName
+      viewModel.benefitName shouldBe formattedBenefitName
 
     }
 

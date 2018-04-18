@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIn
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.util.BandTypesConstants
 
-class TaxExplanationViewModelSpec extends PlaySpec with BandTypesConstants {
+class TaxExplanationViewModelNewSpec extends PlaySpec with BandTypesConstants {
 
   "TaxExplanationViewModel" must {
     "return tax bands from all categories" in {
@@ -37,7 +37,7 @@ class TaxExplanationViewModelSpec extends PlaySpec with BandTypesConstants {
       )
       val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
 
-      val model = TaxExplanationViewModel(totalTax, Seq.empty[TaxCodeIncome])
+      val model = TaxExplanationViewModelNew(totalTax, Seq.empty[TaxCodeIncome])
 
       model.nonSavings mustBe taxBand
       model.savings mustBe  taxBand ++ taxBand ++ taxBand
@@ -57,7 +57,7 @@ class TaxExplanationViewModelSpec extends PlaySpec with BandTypesConstants {
         )
         val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
 
-        val model = TaxExplanationViewModel(totalTax, Seq.empty[TaxCodeIncome])
+        val model = TaxExplanationViewModelNew(totalTax, Seq.empty[TaxCodeIncome])
 
         model.nonSavings mustBe Seq.empty[TaxBand]
         model.savings mustBe  Seq.empty[TaxBand]
@@ -76,7 +76,7 @@ class TaxExplanationViewModelSpec extends PlaySpec with BandTypesConstants {
         )
         val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
 
-        val model = TaxExplanationViewModel(totalTax, Seq.empty[TaxCodeIncome])
+        val model = TaxExplanationViewModelNew(totalTax, Seq.empty[TaxCodeIncome])
 
         model.nonSavings mustBe Seq.empty[TaxBand]
         model.savings mustBe  Seq.empty[TaxBand]
@@ -91,7 +91,7 @@ class TaxExplanationViewModelSpec extends PlaySpec with BandTypesConstants {
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "1150L", "employer", OtherBasisOperation, Live)
         )
 
-        val model = TaxExplanationViewModel(TotalTax(100, Seq.empty[IncomeCategory], None, None, None), taxCodeIncomes)
+        val model = TaxExplanationViewModelNew(TotalTax(100, Seq.empty[IncomeCategory], None, None, None), taxCodeIncomes)
 
         model.bandType mustBe ScottishBands
       }
@@ -102,7 +102,7 @@ class TaxExplanationViewModelSpec extends PlaySpec with BandTypesConstants {
           TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "1150L", "employer", OtherBasisOperation, Live)
         )
 
-        val model = TaxExplanationViewModel(TotalTax(100, Seq.empty[IncomeCategory], None, None, None), taxCodeIncomes)
+        val model = TaxExplanationViewModelNew(TotalTax(100, Seq.empty[IncomeCategory], None, None, None), taxCodeIncomes)
 
         model.bandType mustBe UkBands
       }
