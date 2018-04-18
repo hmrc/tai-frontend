@@ -414,9 +414,6 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           val payYearToDate: BigDecimal = payment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
           val paymentDate: Option[LocalDate] = payment.map(_.date)
 
-          println(calculatedPay)
-          println(payYearToDate)
-
           if (calculatedPay.grossAnnualPay.get > payYearToDate) {
             val cache = Map(UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
               UpdateIncome_NewAmountKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
