@@ -16,12 +16,14 @@
 
 package views.html
 
+import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryRowViewModel, TaxFreeAmountViewModelNew}
 
 class TaxFreeAmountNewViewSpec extends TaiViewSpec {
 
-  "Tax code view page" must {
+  "Tax free amount view page" must {
 
     behave like pageWithTitle("main heading")
     behave like pageWithCombinedHeader(messages("tai.taxCode.preHeader"), "main heading")
@@ -110,10 +112,10 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
       doc must haveLinkElement("taxableIncomeLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("tai.incomeTaxSummary.link"))
     }
 
-    "display navigational link to underpayment page if EstimatedTaxYouOweThisYear is present"in{
+    "display navigational link to underpayment page if EstimatedTaxYouOweThisYear is present" in {
       val vm: Seq[TaxFreeAmountSummaryRowViewModel] = Seq(
         TaxFreeAmountSummaryRowViewModel("Estimated tax you owe this year", "£11,500", ChangeLinkViewModel(false)))
-      val svm :Seq[TaxFreeAmountSummaryCategoryViewModel] = Seq(
+      val svm: Seq[TaxFreeAmountSummaryCategoryViewModel] = Seq(
         TaxFreeAmountSummaryCategoryViewModel("header1", "header2", true, false, "Deductions from your Personal Allowance", vm))
       val viewModel: TaxFreeAmountViewModelNew = TaxFreeAmountViewModelNew("main heading", "main heading", "£2020", svm)
 
@@ -121,7 +123,23 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
 
       document must haveLinkElement("estimatedTaxOwedLink", controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url, messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"))
     }
-  }
+
+    "display a 'something missing' section" which {
+      "contains a heading" in {
+        doc must haveElementAtPathWithText("h2", messages("tai.incomeTaxSummary.addMissingIncome.section.heading"))
+      }
+      "includes a link to add a missing allowance or addition" in {
+          doc must haveLinkWithUrlWithID("addMissingAddition", ApplicationConfig.taxFreeAllowanceLinkUrl)
+        }
+      "includes a link to add a missing company benefit" in {
+        doc must haveLinkWithUrlWithID("addMissingDeduction", ApplicationConfig.companyBenefitsLinkUrl)
+        }
+      "includes a link to add a missing income" in {
+        doc must haveLinkWithUrlWithID("addMissingIncome", ApplicationConfig.otherIncomeLinkUrl)
+        }
+      }
+    }
+
 
   val rowViewModels: Seq[TaxFreeAmountSummaryRowViewModel] = Seq(
     TaxFreeAmountSummaryRowViewModel("An example addition benefit", "£11,500", ChangeLinkViewModel(true, "context1", "/dummy/url1")),
