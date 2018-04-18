@@ -203,14 +203,4 @@ package object nps2 {
       (__ \ "startDate").format[LocalDate]
     )(NpsEmployment.apply, unlift(NpsEmployment.unapply))
 
-  implicit val formatTaxAccount: Format[TaxAccount] = (
-    (__ \ "taxAcccountId").formatNullable[Long] and
-      (__ \ "date").formatNullable[LocalDate] and
-      (__ \ "totalEstTax").formatNullable[BigDecimal].
-        inmap[BigDecimal](_.getOrElse(0), Some(_)) and
-      (__ \ "totalLiability").format[Map[TaxObjectType, TaxDetail]] and
-      (__ \ "incomeSources").formatNullable[Seq[Income]].
-        inmap[Seq[Income]](_.getOrElse(Nil), Some(_))
-    )(TaxAccount.apply, unlift(TaxAccount.unapply))
-
 }
