@@ -21,26 +21,6 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import play.api.i18n.Messages
-/**
-  * Created by dev01 on 09/10/14.
-  */
-case class TransactionId(oid: String)
-
-object TransactionId {
-  implicit val formats = Json.format[TransactionId]
-}
-
-case class IabdEditDataRequest(version: Int, newAmount: Int)
-
-object IabdEditDataRequest {
-  implicit val formats = Json.format[IabdEditDataRequest]
-}
-
-case class IabdUpdateResponse(transaction: TransactionId, version: Int, iabdType: Int, newAmount: Int)
-
-object IabdUpdateResponse {
-  implicit val format = Json.format[IabdUpdateResponse]
-}
 
 case class EmploymentAmount(name: String, description: String,
                             employmentId: Int,
@@ -76,10 +56,4 @@ object EmploymentAmount {
       taxCodeIncome.componentType == PensionIncome
     )
   }
-}
-
-case class IabdUpdateEmploymentsResponse(transaction: TransactionId, version: Int, iabdType: Int, newAmounts: List[EmploymentAmount])
-
-object IabdUpdateEmploymentsResponse {
-  implicit val format = Json.format[IabdUpdateEmploymentsResponse]
 }
