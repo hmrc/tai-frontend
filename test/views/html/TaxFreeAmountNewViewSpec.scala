@@ -19,7 +19,7 @@ package views.html
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryRowViewModel, TaxFreeAmountViewModel}
+import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryRowViewModel, TaxFreeAmountViewModelNew}
 
 class TaxFreeAmountNewViewSpec extends TaiViewSpec {
 
@@ -117,7 +117,7 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
         TaxFreeAmountSummaryRowViewModel("Estimated tax you owe this year", "£11,500", ChangeLinkViewModel(false)))
       val svm: Seq[TaxFreeAmountSummaryCategoryViewModel] = Seq(
         TaxFreeAmountSummaryCategoryViewModel("header1", "header2", true, false, "Deductions from your Personal Allowance", vm))
-      val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", svm)
+      val viewModel: TaxFreeAmountViewModelNew = TaxFreeAmountViewModelNew("main heading", "main heading", "£2020", svm)
 
       val document = doc(views.html.taxFreeAmountNew(viewModel))
 
@@ -152,7 +152,7 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
     TaxFreeAmountSummaryCategoryViewModel("header5", "header6", true, false, "Deductions from your Personal Allowance", Seq(TaxFreeAmountSummaryRowViewModel("An example single deduction benefit", "£12,300", ChangeLinkViewModel(true, "context1", "/dummy/url1")))),
     TaxFreeAmountSummaryCategoryViewModel("header7", "header8", true, true, messages("tai.taxFreeAmount.table.totals.caption"), Seq(TaxFreeAmountSummaryRowViewModel("Your total tax-free amount", "£11,500", ChangeLinkViewModel(false))))
   )
-  val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", summaryItemViewModels)
+  val viewModel: TaxFreeAmountViewModelNew = TaxFreeAmountViewModelNew("main heading", "main heading", "£2020", summaryItemViewModels)
 
   override def view = views.html.taxFreeAmountNew(viewModel)
 }

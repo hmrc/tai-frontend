@@ -26,13 +26,14 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.i18n.MessagesApi
 import play.api.test.Helpers._
+import uk.gov.hmrc.tai.service.TaiService
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.tai.config.WSHttpProxy
-import uk.gov.hmrc.tai.model.{TaiRoot, TaxSummaryDetails}
-import uk.gov.hmrc.tai.service.TaiService
+import uk.gov.hmrc.tai.model.{SessionData, TaiRoot, TaxSummaryDetails}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
 import scala.concurrent.Future

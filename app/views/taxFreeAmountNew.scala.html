@@ -14,14 +14,14 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
+@import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModelNew
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import includes.taxFreeAmountSummary
 
-@(viewModel: TaxFreeAmountViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: TaxFreeAmountViewModelNew)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax free amount"}
 

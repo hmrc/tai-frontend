@@ -25,9 +25,6 @@ import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.play.config.AppName
 import uk.gov.hmrc.tai.config.{ApplicationConfig, AuditConnector}
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.util.TaiConstants._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -67,19 +64,16 @@ trait AuditService {
     ))
   }
 
-  def sendUserEntryAuditEvent(nino: Nino, path: String, employments: Seq[Employment], taxCodes: TaiResponse)(implicit hc: HeaderCarrier): Future[AuditResult] = {
-    val noOfTaxCodes = taxCodes match {
-      case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) => taxCodeIncomes.size.toString
-      case _ => "0"
-    }
-
-    val details = Map(
-      "authProviderId" -> authProviderId(hc),
-      "nino" -> nino.nino,
-      "noOfCurrentYearEmployments" -> employments.size.toString,
-      "noOfTaxCodes" -> noOfTaxCodes
-    )
-    createAndSendAuditEvent(userEnterEvent, path, details)
+  def sendUserEntryAuditEvent(nino: Nino, path: String)(implicit hc: HeaderCarrier): Future[AuditResult] = {
+    taiService.taiSession(nino, TaxYear().year, "") flatMap (sessionData => {
+      val details = Map(
+        "authProviderId" -> authProviderId(hc),
+        "nino" -> nino.nino,
+        "noOfCurrentYearEmployments" -> sessionData.taxSummaryDetailsCY.taxCodeDetails.flatMap(_.employment).getOrElse(Nil).size.toString,
+        "noOfTaxCodes" -> sessionData.taxSummaryDetailsCY.taxCodeDetails.flatMap(_.taxCode).getOrElse(Nil).size.toString
+      )
+      createAndSendAuditEvent(userEnterEvent, path, details)
+    })
   }
 
   def sendEndCompanyCarAuditEvent(nino: String,

@@ -20,7 +20,7 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.util.{BandTypesConstants, ViewModelHelper}
 
-case class TaxExplanationViewModel(
+case class TaxExplanationViewModelNew(
                                        nonSavings: Seq[TaxBand],
                                        savings: Seq[TaxBand],
                                        dividends: Seq[TaxBand],
@@ -29,8 +29,8 @@ case class TaxExplanationViewModel(
   val totalTax: BigDecimal = List(nonSavings, savings, dividends).flatten.map(_.tax).sum
 }
 
-object TaxExplanationViewModel extends BandTypesConstants {
-  def apply(totalTax: TotalTax, taxCodeIncomes: Seq[TaxCodeIncome]): TaxExplanationViewModel = {
+object TaxExplanationViewModelNew extends BandTypesConstants {
+  def apply(totalTax: TotalTax, taxCodeIncomes: Seq[TaxCodeIncome]): TaxExplanationViewModelNew = {
     val nonSavings = totalTax.incomeCategories.filter(_.incomeCategoryType == NonSavingsIncomeCategory).
       flatMap(_.taxBands).filter(_.income > 0).filterNot(_.rate == 0)
 
@@ -46,7 +46,7 @@ object TaxExplanationViewModel extends BandTypesConstants {
 
     val bandType = if(taxCodeIncomes.exists(_.taxCode.startsWith("S"))) ScottishBands else UkBands
 
-    TaxExplanationViewModel(
+    TaxExplanationViewModelNew(
       nonSavings,
       savings,
       dividends,

@@ -874,7 +874,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
   }
 
   private lazy val taxExplanationLink = Link.toInternalPage(
-    url = routes.TaxExplanationController.taxExplanationPage().toString,
+    url = routes.TaxExplanationControllerNew.taxExplanationPage().toString,
     value = Some(Messages("tai.mergedTaxBand.description")),
     id = Some("taxExplanation")
   ).toHtml.body

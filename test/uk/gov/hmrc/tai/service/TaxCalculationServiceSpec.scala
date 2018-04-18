@@ -33,7 +33,7 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.tai.config.WSHttp
 import uk.gov.hmrc.tai.metrics.Metrics
-import uk.gov.hmrc.tai.model.TaxCalculation
+import uk.gov.hmrc.tai.model.{SessionData, TaxCalculation, TaxSummaryDetails}
 
 import scala.concurrent.Future
 import scala.math.BigDecimal
@@ -184,6 +184,7 @@ class TaxCalculationServiceSpec extends PlaySpec with MockitoSugar with I18nSupp
   private implicit val user: TaiUser = UserBuilder.apply()
   private val nino = new Generator().nextNino
   private val taxYear: Int = DateTime.now().getYear
+  private val sessionData: SessionData = SessionData("", taxSummaryDetailsCY = TaxSummaryDetails("", 0))
 
   private def createSUT(taxCalculation: TaxCalculation,
                         taxCalculationUrl: String = "") = new TaxCalculationServiceTest(taxCalculation, taxCalculationUrl)

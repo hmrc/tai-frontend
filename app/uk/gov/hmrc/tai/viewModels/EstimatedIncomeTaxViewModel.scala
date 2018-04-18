@@ -252,7 +252,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
   private def getBandValues(nonZeroBands: List[TaxBand])(implicit messages: Messages) = {
     if (nonZeroBands.size > 1) {
       (Link.toInternalPage(
-        url = routes.TaxExplanationController.taxExplanationPage().toString,
+        url = routes.TaxExplanationControllerNew.taxExplanationPage().toString,
         value = Some(Messages("tai.mergedTaxBand.description")),
         id = Some("taxExplanation")
       ).toHtml.body, "TaxedIncome", nonZeroBands.map(_.income).sum)

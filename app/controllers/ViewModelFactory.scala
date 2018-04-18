@@ -17,10 +17,11 @@
 package controllers
 
 import controllers.auth.TaiUser
-import play.api.i18n.Messages
+import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.TaxSummaryDetails
+import uk.gov.hmrc.tai.model.{SessionData, TaxCalculation, TaxSummaryDetails}
+import play.api.i18n.Messages
 
 trait ViewModelFactory {
   type ViewModelType
@@ -48,5 +49,21 @@ object IncomeViewModelFactory {
   def create(viewModelFactory: IncomeViewModelFactory, nino: Nino, details: TaxSummaryDetails, incomeId: Int)
             (implicit user: TaiUser, hc: HeaderCarrier, messages: Messages): viewModelFactory.ViewModelType = {
     viewModelFactory.createObject(nino, details, incomeId)
+  }
+}
+
+
+trait SessionViewModelFactory {
+  type ViewModelType
+
+  def createObject(nino: Nino, session: SessionData, taxCalc: Option[TaxCalculation] = None)(implicit user: TaiUser, hc: HeaderCarrier): ViewModelType
+}
+
+object SessionViewModelFactory {
+
+  def create(viewModelFactory: SessionViewModelFactory, nino: Nino, session: SessionData,
+             taxCalc: Option[TaxCalculation] = None)(implicit user: TaiUser, hc: HeaderCarrier):
+  viewModelFactory.ViewModelType = {
+    viewModelFactory.createObject(nino, session, taxCalc)
   }
 }

@@ -16,105 +16,105 @@
 
 package uk.gov.hmrc.tai.util
 
-import org.scalatestplus.play.PlaySpec
+import uk.gov.hmrc.play.test.UnitSpec
 
-class FormHelperSpec extends PlaySpec {
+class FormHelperSpec extends UnitSpec {
 
-  "Strip Number" must {
+  "Strip Number" should {
 
     "return none if string is none" in {
-      FormHelper.stripNumber(None).isDefined mustBe false
+      FormHelper.stripNumber(None).isDefined shouldBe false
     }
 
     "return original string if only has numbers" in {
-      FormHelper.stripNumber(Some("90")) mustBe Some("90")
+      FormHelper.stripNumber(Some("90")) shouldBe Some("90")
     }
 
     "return striped decimal value" in {
-      FormHelper.stripNumber(Some("9999.99")) mustBe Some("9999")
+      FormHelper.stripNumber(Some("9999.99")) shouldBe Some("9999")
     }
     "return striped number without pound symbol" in {
-      FormHelper.stripNumber(Some("£90")) mustBe Some("90")
+      FormHelper.stripNumber(Some("£90")) shouldBe Some("90")
     }
 
     "return striped number without commas" in {
-      FormHelper.stripNumber(Some("999,999")) mustBe Some("999999")
+      FormHelper.stripNumber(Some("999,999")) shouldBe Some("999999")
     }
   }
 
 
 
-  "New Strip Number" must {
+  "New Strip Number" should {
 
     "return original string if only has numbers" in {
-      FormHelper.stripNumber("90") mustBe "90"
+      FormHelper.stripNumber("90") shouldBe "90"
     }
 
     "return striped decimal value" in {
-      FormHelper.stripNumber("9999.99") mustBe "9999"
+      FormHelper.stripNumber("9999.99") shouldBe "9999"
     }
     "return striped number without pound symbol" in {
-      FormHelper.stripNumber("£90") mustBe "90"
+      FormHelper.stripNumber("£90") shouldBe "90"
     }
 
     "return striped number without commas" in {
-      FormHelper.stripNumber("999,999") mustBe "999999"
+      FormHelper.stripNumber("999,999") shouldBe "999999"
     }
   }
 
-  "isCurrency " must {
+  "isCurrency " should {
     "not allow numbers with multiple pound symbols" in {
-      FormHelper.isCurrency("9£9,99£9", isWholeNumRequired = false) mustBe false
+      FormHelper.isCurrency("9£9,99£9", isWholeNumRequired = false) shouldBe false
     }
 
     " allow if pound symbol is at the start of the form" in {
-      FormHelper.isCurrency("£99,999", isWholeNumRequired = false) mustBe true
-      FormHelper.isCurrency("£99,999.00", isWholeNumRequired = false) mustBe true
-      FormHelper.isCurrency("£99,999,999.00", isWholeNumRequired = false) mustBe true
+      FormHelper.isCurrency("£99,999", isWholeNumRequired = false) shouldBe true
+      FormHelper.isCurrency("£99,999.00", isWholeNumRequired = false) shouldBe true
+      FormHelper.isCurrency("£99,999,999.00", isWholeNumRequired = false) shouldBe true
     }
 
     " allowed plain positive number with only 2 decimal places when whole Number required is false " in {
-      FormHelper.isCurrency("110000", isWholeNumRequired = false) mustBe true
-      FormHelper.isCurrency("110000.00", isWholeNumRequired = false) mustBe true
-      FormHelper.isCurrency("110000.99", isWholeNumRequired = false) mustBe true
+      FormHelper.isCurrency("110000", isWholeNumRequired = false) shouldBe true
+      FormHelper.isCurrency("110000.00", isWholeNumRequired = false) shouldBe true
+      FormHelper.isCurrency("110000.99", isWholeNumRequired = false) shouldBe true
 
-      FormHelper.isCurrency("110000.9", isWholeNumRequired = false) mustBe false
-      FormHelper.isCurrency("110000.999", isWholeNumRequired = false) mustBe false
-      FormHelper.isCurrency("-110000", isWholeNumRequired = false) mustBe false
-      FormHelper.isCurrency("-110000.00", isWholeNumRequired = false) mustBe false
+      FormHelper.isCurrency("110000.9", isWholeNumRequired = false) shouldBe false
+      FormHelper.isCurrency("110000.999", isWholeNumRequired = false) shouldBe false
+      FormHelper.isCurrency("-110000", isWholeNumRequired = false) shouldBe false
+      FormHelper.isCurrency("-110000.00", isWholeNumRequired = false) shouldBe false
     }
 
     " allow only positive whole Number when wholeNumberRequired is true " in {
-      FormHelper.isCurrency("110000", isWholeNumRequired = true) mustBe true
-      FormHelper.isCurrency("110000.9", isWholeNumRequired = true) mustBe false
-      FormHelper.isCurrency("110000.99", isWholeNumRequired = true) mustBe false
-      FormHelper.isCurrency("110000.999", isWholeNumRequired = true) mustBe false
-      FormHelper.isCurrency("-110000", isWholeNumRequired = false) mustBe false
-      FormHelper.isCurrency("-110000.00", isWholeNumRequired = false) mustBe false
+      FormHelper.isCurrency("110000", isWholeNumRequired = true) shouldBe true
+      FormHelper.isCurrency("110000.9", isWholeNumRequired = true) shouldBe false
+      FormHelper.isCurrency("110000.99", isWholeNumRequired = true) shouldBe false
+      FormHelper.isCurrency("110000.999", isWholeNumRequired = true) shouldBe false
+      FormHelper.isCurrency("-110000", isWholeNumRequired = false) shouldBe false
+      FormHelper.isCurrency("-110000.00", isWholeNumRequired = false) shouldBe false
     }
 
     "fail if value entered is not a number" in {
-      FormHelper.isCurrency("99.paul", isWholeNumRequired = true) mustBe false
-      FormHelper.isCurrency("9.!!", isWholeNumRequired = false) mustBe false
+      FormHelper.isCurrency("99.paul", isWholeNumRequired = true) shouldBe false
+      FormHelper.isCurrency("9.!!", isWholeNumRequired = false) shouldBe false
     }
   }
 
-  "isValidCurrency " must {
+  "isValidCurrency " should {
 
     "not allow number with when pound symbol is not at the start" in {
-      FormHelper.isValidCurrency(Some("9£9,999")) mustBe false
+      FormHelper.isValidCurrency(Some("9£9,999")) shouldBe false
     }
 
     "allow whole Numbers " in {
-      FormHelper.isValidCurrency(Some("99999"), true) mustBe true
+      FormHelper.isValidCurrency(Some("99999"), true) shouldBe true
     }
 
     "allow fractions when whole number flag is not passed " in {
-      FormHelper.isValidCurrency(Some("99999.90")) mustBe true
+      FormHelper.isValidCurrency(Some("99999.90")) shouldBe true
     }
 
     "allow None as a currency" in {
-      FormHelper.isValidCurrency(None) mustBe true
+      FormHelper.isValidCurrency(None) shouldBe true
     }
   }
 

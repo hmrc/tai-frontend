@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.util
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
+import uk.gov.hmrc.play.test.UnitSpec
 
 class CommonVMHelperSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport{
 

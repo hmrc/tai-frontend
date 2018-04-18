@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaiService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{EstimatedIncomeTaxViewModel, TaxReliefViewModel}
 
-trait EstimatedIncomeTaxController extends TaiBaseController
+trait EstimatedIncomeTaxControllerNew extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
 
@@ -95,7 +95,7 @@ trait EstimatedIncomeTaxController extends TaiBaseController
               totalTax match {
                 case TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax) =>
                   val model = TaxReliefViewModel(codingComponents, totalTaxDetails)
-                  Ok(views.html.reliefs(model))
+                  Ok(views.html.reliefsNew(model))
                 case _ => throw new RuntimeException("Failed to get total tax details")
               }
             }
@@ -104,7 +104,7 @@ trait EstimatedIncomeTaxController extends TaiBaseController
 
 }
 
-object EstimatedIncomeTaxController extends EstimatedIncomeTaxController with AuthenticationConnectors {
+object EstimatedIncomeTaxControllerNew extends EstimatedIncomeTaxControllerNew with AuthenticationConnectors {
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 

@@ -136,7 +136,7 @@
                 <p class="flush--top">
                     @Link.toInternalPage(
                         id=Some("taxFreeAmountLink"),
-                        url=routes.TaxFreeAmountController.taxFreeAmount.toString,
+                        url=routes.TaxFreeAmountControllerNew.taxFreeAmount.toString,
                         value=Some(Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeLink")),
                         cssClasses=Some(""),
                         dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.incomeTaxSummary.annualAmounts.section.taxFreeLink")}"))).toHtml
@@ -150,7 +150,7 @@
                 <p class="flush--top">
                     @Link.toInternalPage(
                         id=Some("estimatedIncomeTaxLink"),
-                        url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.toString,
+                        url=routes.EstimatedIncomeTaxControllerNew.estimatedIncomeTax.toString,
                         value=Some(Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink")),
                         cssClasses=Some(""),
                         dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.incomeTaxSummary.annualAmounts.section.incomeTaxLink")}"))).toHtml

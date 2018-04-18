@@ -22,7 +22,7 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.TaxExplanationViewModel
+import uk.gov.hmrc.tai.viewModels.TaxExplanationViewModelNew
 import uk.gov.hmrc.time.TaxYearResolver
 
 class howIncomeTaxIsCalculatedSpec extends TaiViewSpec with BandTypesConstants {
@@ -61,7 +61,7 @@ class howIncomeTaxIsCalculatedSpec extends TaiViewSpec with BandTypesConstants {
         TaxBand("B", "", 32010, 6402, None, None, 20),
         TaxBand("D0", "", 36466, 36466, None, None, 40)
       )
-      val viewWithSavings: Html = views.html.howIncomeTaxIsCalculatedNew(TaxExplanationViewModel(nonSavings, Seq.empty[TaxBand], Seq.empty[TaxBand], UkBands))
+      val viewWithSavings: Html = views.html.howIncomeTaxIsCalculatedNew(TaxExplanationViewModelNew(nonSavings, Seq.empty[TaxBand], Seq.empty[TaxBand], UkBands))
       doc(viewWithSavings) must haveTdWithText("32,010")
       doc(viewWithSavings) must haveTdWithText(messages("uk.bandtype.B"))
       doc(viewWithSavings) must haveTdWithText("20%")
@@ -77,7 +77,7 @@ class howIncomeTaxIsCalculatedSpec extends TaiViewSpec with BandTypesConstants {
         TaxBand("B", "", 32010, 6402, None, None, 20),
         TaxBand("D0", "", 36466, 36466, None, None, 40)
       )
-      val viewWithSavings: Html = views.html.howIncomeTaxIsCalculatedNew(TaxExplanationViewModel(nonSavings, Seq.empty[TaxBand], Seq.empty[TaxBand], ScottishBands))
+      val viewWithSavings: Html = views.html.howIncomeTaxIsCalculatedNew(TaxExplanationViewModelNew(nonSavings, Seq.empty[TaxBand], Seq.empty[TaxBand], ScottishBands))
       doc(viewWithSavings) must haveTdWithText("32,010")
       doc(viewWithSavings) must haveTdWithText(messages("scottish.bandtype.B"))
       doc(viewWithSavings) must haveTdWithText("20%")
@@ -93,7 +93,7 @@ class howIncomeTaxIsCalculatedSpec extends TaiViewSpec with BandTypesConstants {
         TaxBand("LSR", "", 32010, 6402, None, None, 20),
         TaxBand("HSR1", "", 36466, 36466, None, None, 40)
       )
-      val viewWithSavings: Html = views.html.howIncomeTaxIsCalculatedNew(TaxExplanationViewModel(Seq.empty[TaxBand], savings, Seq.empty[TaxBand], UkBands))
+      val viewWithSavings: Html = views.html.howIncomeTaxIsCalculatedNew(TaxExplanationViewModelNew(Seq.empty[TaxBand], savings, Seq.empty[TaxBand], UkBands))
       doc(viewWithSavings) must haveTdWithText("32,010")
       doc(viewWithSavings) must haveTdWithText(messages("uk.bandtype.LSR"))
       doc(viewWithSavings) must haveTdWithText("20%")
@@ -109,7 +109,7 @@ class howIncomeTaxIsCalculatedSpec extends TaiViewSpec with BandTypesConstants {
         TaxBand("LSR", "", 32010, 6402, None, None, 20),
         TaxBand("HSR1", "", 36466, 36466, None, None, 40)
       )
-      val viewWithSavings: Html = views.html.howIncomeTaxIsCalculatedNew(TaxExplanationViewModel(Seq.empty[TaxBand], savings, Seq.empty[TaxBand], ScottishBands))
+      val viewWithSavings: Html = views.html.howIncomeTaxIsCalculatedNew(TaxExplanationViewModelNew(Seq.empty[TaxBand], savings, Seq.empty[TaxBand], ScottishBands))
       doc(viewWithSavings) must haveTdWithText("32,010")
       doc(viewWithSavings) must haveTdWithText(messages("scottish.bandtype.LSR"))
       doc(viewWithSavings) must haveTdWithText("20%")
@@ -125,7 +125,7 @@ class howIncomeTaxIsCalculatedSpec extends TaiViewSpec with BandTypesConstants {
         TaxBand("LDR", "", 32010, 6402, None, None, 20),
         TaxBand("HDR1", "", 36466, 36466, None, None, 40)
       )
-      val viewWithSavings: Html = views.html.howIncomeTaxIsCalculatedNew(TaxExplanationViewModel(Seq.empty[TaxBand], Seq.empty[TaxBand], dividends, UkBands))
+      val viewWithSavings: Html = views.html.howIncomeTaxIsCalculatedNew(TaxExplanationViewModelNew(Seq.empty[TaxBand], Seq.empty[TaxBand], dividends, UkBands))
       doc(viewWithSavings) must haveTdWithText("32,010")
       doc(viewWithSavings) must haveTdWithText(messages("uk.bandtype.LDR"))
       doc(viewWithSavings) must haveTdWithText("20%")
@@ -141,7 +141,7 @@ class howIncomeTaxIsCalculatedSpec extends TaiViewSpec with BandTypesConstants {
         TaxBand("LDR", "", 32010, 6402, None, None, 20),
         TaxBand("HDR1", "", 36466, 36466, None, None, 40)
       )
-      val viewWithSavings: Html = views.html.howIncomeTaxIsCalculatedNew(TaxExplanationViewModel(Seq.empty[TaxBand], Seq.empty[TaxBand], dividends, UkBands))
+      val viewWithSavings: Html = views.html.howIncomeTaxIsCalculatedNew(TaxExplanationViewModelNew(Seq.empty[TaxBand], Seq.empty[TaxBand], dividends, UkBands))
       doc(viewWithSavings) must haveTdWithText("32,010")
       doc(viewWithSavings) must haveTdWithText(messages("scottish.bandtype.LDR"))
       doc(viewWithSavings) must haveTdWithText("20%")
@@ -153,5 +153,5 @@ class howIncomeTaxIsCalculatedSpec extends TaiViewSpec with BandTypesConstants {
     }
 
   }
-  override def view: Html = views.html.howIncomeTaxIsCalculatedNew(TaxExplanationViewModel(Seq.empty[TaxBand], Seq.empty[TaxBand], Seq.empty[TaxBand], ""))
+  override def view: Html = views.html.howIncomeTaxIsCalculatedNew(TaxExplanationViewModelNew(Seq.empty[TaxBand], Seq.empty[TaxBand], Seq.empty[TaxBand], ""))
 }

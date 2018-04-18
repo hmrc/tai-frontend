@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.util
 
 import java.util.NoSuchElementException
 
+import uk.gov.hmrc.tai.model.{SessionData, TaxSummaryDetails}
 import org.joda.time.LocalDate
 import play.api.http.Status
 import play.api.Play.current
@@ -27,13 +28,15 @@ import uk.gov.hmrc.tai.model.nps2.{EmploymentStatus, IabdUpdateSource}
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.{IncomeExplanation, TaxSummaryDetails}
+import uk.gov.hmrc.tai.model.{IncomeExplanation, SessionData, TaxSummaryDetails}
 import uk.gov.hmrc.tai.model.rti.PayFrequency._
-import uk.gov.hmrc.tai.model.rti.RtiPayment
+import uk.gov.hmrc.tai.model.rti.{RtiEyu, RtiPayment}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 import uk.gov.hmrc.tai.util.TaiConstants._
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
+
+import scala.collection.mutable.ListBuffer
 
 object YourIncomeCalculationHelper {
 

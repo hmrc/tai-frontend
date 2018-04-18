@@ -81,7 +81,7 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                             <p id="tax-relief-message">@Html(Messages(
                                 "tai.estimatedIncome.taxRelief",
                                 Link.toInternalPage(
-                                    url=routes.EstimatedIncomeTaxController.taxRelief().toString,
+                                    url=routes.EstimatedIncomeTaxControllerNew.taxRelief().toString,
                                     value=Some("tai.estimatedIncome.taxRelief.link")
                                 ).toHtml
                                 ))</p>

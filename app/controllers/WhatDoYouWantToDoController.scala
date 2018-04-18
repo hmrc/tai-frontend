@@ -79,7 +79,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
               }
 
             possibleRedirectFuture.flatMap(
-              _.map(Future.successful).getOrElse( allowWhatDoYouWantToDo )
+              _.map(Future.successful(_)).getOrElse( allowWhatDoYouWantToDo )
             )
 
           } recoverWith (hodBadRequestResult orElse hodInternalErrorResult)
@@ -115,17 +115,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
   }
 
   private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: TaiUser): Future[Result] = {
-
-    val nino = Nino(user.getNino)
-    val currentTaxYearEmployments = employmentService.employments(nino, TaxYear())
-    val currentTaxYearTaxCodes = taxAccountService.taxCodeIncomes(nino, TaxYear())
-    for {
-      employments <- currentTaxYearEmployments
-      taxCodes <- currentTaxYearTaxCodes
-    } yield {
-      auditService.sendUserEntryAuditEvent(nino, request.headers.get("Referer").getOrElse("NA"), employments, taxCodes)
-    }
-
+    auditService.sendUserEntryAuditEvent(Nino(user.getNino), request.headers.get("Referer").getOrElse("NA"))
     trackingService.isAnyIFormInProgress(user.getNino) flatMap { trackingResponse =>
       if(cyPlusOneEnabled){
         taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear().next) map {
