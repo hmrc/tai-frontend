@@ -41,26 +41,6 @@ trait TaiService {
 
   private[service] def withoutSuffix(nino: Nino): String = nino.value.take(TaiConstants.NinoWithoutSuffixLength)
 
-  private[service] def createEmploymentAmount(income: TaxCodeIncomeSummary) = new EmploymentAmount(
-    description = employmentDescriptionFromIncome(income),
-    name = income.name, employmentId = income.employmentId.getOrElse(0),
-    newAmount = income.income.map(_.intValue()).getOrElse(0),
-    oldAmount = income.income.map(_.intValue()).getOrElse(0),
-    startDate = income.startDate, endDate = income.endDate,
-    isLive = income.isLive,
-    isOccupationalPension = income.isOccupationalPension
-  )
-
-  private[service] def employmentDescriptionFromIncome(income: TaxCodeIncomeSummary) = {
-    val employmentStatusMessage = income.incomeType match {
-      case Some(TaiConstants.IncomeTypeEmployment) => Messages(s"tai.incomes.status-${income.employmentStatus.getOrElse(1)}")
-      case _ => ""
-    }
-    val employmentTypeMessage = Messages(s"tai.incomes.type-${income.incomeType.getOrElse(TaiConstants.IncomeTypeDummy)}")
-    s"$employmentStatusMessage $employmentTypeMessage"
-  }
-
-
   def calculateEstimatedPay(incomeCalculation: IncomeCalculation, startDate: Option[LocalDate])(implicit hc: HeaderCarrier): Future[CalculatedPay] = {
 
     val paymentFrequency = incomeCalculation.payPeriodForm.map(_.payPeriod.getOrElse("")).getOrElse("")

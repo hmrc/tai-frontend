@@ -54,51 +54,6 @@ class TaiServiceSpec extends PlaySpec
     }
   }
 
-  "employmentDescriptionFromIncomeType" should {
-    "return description with empty employment status" when {
-      "Income Type Employment is None" in {
-        val sut = createSut
-        val expectedResult = " " + Messages(s"tai.incomes.type-${TaiConstants.IncomeTypeDummy}")
-        sut.employmentDescriptionFromIncome(basicTaxCodeIncomeSummary) mustBe expectedResult
-      }
-
-      "Income Type Employment is not 0" in {
-        val sut = createSut
-        val expectedResult = " " + Messages(s"tai.incomes.type-${TaiConstants.IncomeTypeDummy}")
-        val incomeTaxSummary = basicTaxCodeIncomeSummary.copy(incomeType = Some(TaiConstants.IncomeTypeDummy))
-        sut.employmentDescriptionFromIncome(incomeTaxSummary) mustBe expectedResult
-      }
-    }
-
-    "return description with correct employment status" when {
-      "Income Type Employment is 0" in {
-        val sut = createSut
-        val employmentStatus = 0
-        val expectedResult = Messages(s"tai.incomes.status-$employmentStatus") +
-          " " + Messages(s"tai.incomes.type-${TaiConstants.IncomeTypeEmployment}")
-        val incomeTaxSummary = basicTaxCodeIncomeSummary.copy(incomeType = Some(TaiConstants.IncomeTypeEmployment), employmentStatus = Some(employmentStatus))
-        sut.employmentDescriptionFromIncome(incomeTaxSummary) mustBe expectedResult
-      }
-    }
-  }
-
-  "createEmploymentAmount" should {
-    "return Employment Amount instance" when {
-      "basic TaxCodeIncomeSummary(with minimum fields) is provided" in {
-        val sut = createSut
-        val expectedEmploymentAmount = EmploymentAmount("", " ", 0, 0, 0, None, None, None, None, false, false)
-        sut.createEmploymentAmount(basicTaxCodeIncomeSummary) mustBe expectedEmploymentAmount
-      }
-
-      "TaxCodeIncomeSummary with income, employment id" in {
-        val sut = createSut
-        val taxCodeIncomeSummary = basicTaxCodeIncomeSummary.copy(employmentId = Some(2), income = Some(3000), isLive = true)
-        val expectedEmploymentAmount = EmploymentAmount("", " ", 2, 3000, 3000, None, None, None, None, true, false)
-        sut.createEmploymentAmount(taxCodeIncomeSummary) mustBe expectedEmploymentAmount
-      }
-    }
-  }
-
   "calculateEstimatedPay" should {
     "return calculate pay and call calculateEstimatedPay with valid PayDetails" when {
       "basic income calculation(with minimum fields) is provided" in {

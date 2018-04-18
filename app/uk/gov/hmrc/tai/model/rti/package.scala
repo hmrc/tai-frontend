@@ -189,7 +189,7 @@ package object rti {
   implicit val formatRtiEyuList: Format[List[RtiEyu]] =
     JsonExtra.bodgeList[RtiEyu]
 
-  implicit val formatRtiEmployment: Format[RtiEmployment] = (
+  /*implicit val formatRtiEmployment: Format[RtiEmployment] = (
     (__ \ "empRefs" \ "officeNo").format[String] and
       (__ \ "empRefs" \ "payeRef").format[String] and
       (__ \ "empRefs" \ "aoRef").format[String] and
@@ -205,9 +205,9 @@ package object rti {
       and
       (__ \ "currentPayId").formatNullable[String] and
       (__ \ "sequenceNumber").format[Int]
-    )(RtiEmployment.apply, unlift(RtiEmployment.unapply))
+    )(RtiEmployment.apply, unlift(RtiEmployment.unapply))*/
 
-  implicit val formatRtiData: Format[RtiData] =
+  /*implicit val formatRtiData: Format[RtiData] =
     ( (__ \ "request" \ "nino").format[String] and
       (__ \ "request" \ "relatedTaxYear").format[String].inmap[TaxYear](
         o => TaxYear(o),
@@ -216,5 +216,5 @@ package object rti {
       (__ \ "request" \ "requestId").format[String] and
       (__ \ "individual" \ "employments" \ "employment").
         format[List[RtiEmployment]]
-      )(RtiData.apply, unlift(RtiData.unapply))
+      )(RtiData.apply, unlift(RtiData.unapply))*/
 }

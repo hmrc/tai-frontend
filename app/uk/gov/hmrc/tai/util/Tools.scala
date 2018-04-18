@@ -16,9 +16,6 @@
 
 package uk.gov.hmrc.tai.util
 
-/**
-  * Created by shailesh on 03/03/16.
-  */
 import java.net.URLEncoder
 
 object Tools {
