@@ -204,7 +204,11 @@
         "langSelector" -> isWelshEnabled,
         "enUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("english"),
         "cyUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("cymraeg"),
-        "isWelsh" -> isWelshActive
+        "isWelsh" -> isWelshActive,
+        "optimizely" -> Map(
+            "audience" -> "Other user",
+            "projectId" -> "8461600066"
+        )
     )
 }
 
