@@ -414,9 +414,12 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           val payYearToDate: BigDecimal = payment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
           val paymentDate: Option[LocalDate] = payment.map(_.date)
 
+          println(calculatedPay)
+          println(payYearToDate)
+
           if (calculatedPay.grossAnnualPay.get > payYearToDate) {
             val cache = Map(UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
-              UpdateIncome_NetAnnualPayKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
+              UpdateIncome_NewAmountKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
             val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
 
             journeyCacheService.cache(cache).map { _ =>
@@ -438,9 +441,8 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         sendActingAttorneyAuditEvent("processCalculationResult")
         for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
           income <- incomeService.employmentAmount(Nino(user.getNino), id)
-          netAmount <- journeyCacheService.currentValue(UpdateIncome_NetAnnualPayKey)
+          netAmount <- journeyCacheService.currentValue(UpdateIncome_NewAmountKey)
         } yield {
           val newAmount = income.copy(newAmount = netAmount.map(_.toInt).getOrElse(income.oldAmount))
           Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = newAmount).get))

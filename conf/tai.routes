@@ -148,7 +148,7 @@ GET         /your-income-calculation-details/:id                                
 GET         /print-your-income-calculation-details/:id                                 controllers.YourIncomeCalculationController.printYourIncomeCalculationPage(id: Int)
 
 GET         /your-income-calculation-previous-year/:year/:empId                        controllers.YourIncomeCalculationController.yourIncomeCalculationPreviousYearPage(year: uk.gov.hmrc.tai.model.tai.TaxYear, empId: Int)
-GET         /print-your-income-calculation-previous-year/:empId                        controllers.YourIncomeCalculationController.printYourIncomeCalculationPreviousYearPage(empId: Int)
+GET         /print-your-income-calculation-previous-year/:year/:empId                  controllers.YourIncomeCalculationController.printYourIncomeCalculationPreviousYearPage(year: uk.gov.hmrc.tai.model.tai.TaxYear, empId: Int)
 
 
 

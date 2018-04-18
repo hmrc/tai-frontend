@@ -99,15 +99,15 @@ trait YourIncomeCalculationController extends TaiBaseController
         }
   }
 
-  def printYourIncomeCalculationPreviousYearPage(empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def printYourIncomeCalculationPreviousYearPage(year: TaxYear,empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request => {
-          showHistoricIncomeCalculation(Nino(user.getNino), empId, printPage = true)
+          showHistoricIncomeCalculation(Nino(user.getNino), empId, printPage = true, year = year)
         }
   }
 
-  private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean = false, year: TaxYear = TaxYear().prev)
+  private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean = false, year: TaxYear)
                                    (implicit request: Request[AnyContent], user: TaiUser, taiRoot: TaiRoot): Future[Result] = {
     for {
         employment <- employmentService.employments(nino, year)

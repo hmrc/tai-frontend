@@ -526,7 +526,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
 
         when(sut.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
-        when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NetAnnualPayKey))(any())).thenReturn(Future.successful(Some("100")))
+        when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NewAmountKey))(any())).thenReturn(Future.successful(Some("100")))
 
         val result = sut.handleCalculationResult()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -540,7 +540,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
 
         when(sut.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
-        when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NetAnnualPayKey))(any())).thenReturn(Future.successful(None))
+        when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NewAmountKey))(any())).thenReturn(Future.successful(None))
 
         val result = sut.handleCalculationResult()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
