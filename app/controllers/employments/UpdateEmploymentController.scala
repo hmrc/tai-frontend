@@ -127,7 +127,7 @@ trait UpdateEmploymentController extends TaiBaseController
             }
           },
           form => {
-            val mandatoryData = Map(UpdateEmployment_TelephoneQuestionKey -> form.yesNoChoice.getOrElse(NoValue))
+            val mandatoryData = Map(UpdateEmployment_TelephoneQuestionKey -> Messages(s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))
             val dataForCache = form.yesNoChoice match {
               case Some(yn) if yn == YesValue => mandatoryData ++ Map(UpdateEmployment_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
               case _ => mandatoryData ++ Map(UpdateEmployment_TelephoneNumberKey -> "")

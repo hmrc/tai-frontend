@@ -203,7 +203,7 @@ trait AddPensionProviderController extends TaiBaseController
             Future.successful(BadRequest(views.html.can_we_contact_by_phone(contactPhonePensionProvider, formWithErrors)))
           },
           form => {
-            val mandatoryData = Map(AddPensionProvider_TelephoneQuestionKey -> form.yesNoChoice.getOrElse(NoValue))
+            val mandatoryData = Map(AddPensionProvider_TelephoneQuestionKey -> Messages(s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))
             val dataForCache = form.yesNoChoice match {
               case Some(yn) if yn == YesValue => mandatoryData ++ Map(AddPensionProvider_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
               case _ => mandatoryData ++ Map(AddPensionProvider_TelephoneNumberKey -> "")
