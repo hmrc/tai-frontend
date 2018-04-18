@@ -21,7 +21,6 @@ import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.data.validation._
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.util.FormHelper
 
@@ -75,7 +74,7 @@ trait BaseValidator extends DateValidator {
   def isValidMaxLength(maxLength: Int)(value: Option[String]): Boolean = value.getOrElse("").length <= maxLength
 
   def validateNewAmounts(nonEmptyError: String, validateCurrencyError: String, validateCurrencyLengthError: String,
-                         netSalary: Option[String] = None) : Mapping[Option[String]] = {
+                         netSalary: Option[String] = None)(implicit messages: Messages) : Mapping[Option[String]] = {
     val INCOME_MAX_LENGTH = 9
 
     optional(text).verifying(StopOnFirstFail(
@@ -86,7 +85,7 @@ trait BaseValidator extends DateValidator {
     ))
   }
 
-  def validateNetGrossSalary( netSalary: Option[String] = None):  Constraint[Option[String]] = {
+  def validateNetGrossSalary( netSalary: Option[String] = None)(implicit messages: Messages):  Constraint[Option[String]] = {
       val netSalaryValue = BigDecimal(netSalary.getOrElse("0"))
 
       val displayNetSalary = MoneyPounds(netSalaryValue, 0, roundUp = true).quantity
@@ -94,7 +93,7 @@ trait BaseValidator extends DateValidator {
       Constraint[Option[String]]("taxablePay") {
         case taxablePay if BigDecimal(FormHelper.stripNumber(taxablePay).getOrElse("0")) <= netSalaryValue => Valid
         case _ if netSalary.isDefined =>
-          Invalid(Messages("tai.taxablePayslip.error.form.payTooHigh", displayNetSalary))
+          Invalid(messages("tai.taxablePayslip.error.form.payTooHigh", displayNetSalary))
         case _ => Valid
       }
   }
