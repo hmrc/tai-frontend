@@ -16,7 +16,6 @@
 
 package hmrc
 
-import hmrc.nps2.Income.{EmploymentStatus, IncomeType}
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import org.slf4j._
@@ -119,88 +118,5 @@ package object nps2 {
     }
 
   }
-
-  implicit val formatIncome: Format[Income] = Format(
-    new Reads[Income]{
-      def reads(json: JsValue) = {
-        val iType = (
-          (json \ "jsaIndicator").asOpt[Boolean].getOrElse(false),
-          (json \ "pensionIndicator").asOpt[Boolean].getOrElse(false),
-          (json \ "otherIncomeSourceIndicator").asOpt[Boolean].getOrElse(false)
-          ) match {
-          case (true,  false, _) => IncomeType.JobSeekersAllowance
-          case (false, true , _) => IncomeType.Pension
-          case (false, false, true ) => IncomeType.OtherIncome
-          case (false, false, false) => IncomeType.Employment
-          case (jsa,pen,oth) => throw new IllegalArgumentException(
-            s"Unknown Income Type (jsa:$jsa, pension:$pen, other:$oth)")
-        }
-
-        JsSuccess{Income(
-          (json \ "employmentId").asOpt[Int],
-          (json \ "employmentType").as[Int] == 1,
-          iType,
-          (json \ "employmentStatus").asOpt[Int] match {
-            case Some(1) => EmploymentStatus.Live
-            case Some(2) => EmploymentStatus.Ceased
-            case Some(3) => EmploymentStatus.PotentiallyCeased
-          },
-          (json \ "employmentTaxDistrictNumber").asOpt[Int],
-          (json \ "employmentPayeRef").asOpt[String].getOrElse(""),
-          (json \ "name").asOpt[String].getOrElse(""),
-          (json \ "worksNumber").asOpt[String],
-          (json \ "taxCode").asOpt[String].getOrElse(""),
-          (json \ "potentialUnderpayment").asOpt[BigDecimal].getOrElse(0),
-          (json \ "employmentRecord").asOpt[NpsEmployment]
-        )}
-      }
-    },
-    new Writes[Income]{
-      def writes(v: Income) = JsObject(Seq(
-        "employmentId" -> v.employmentId.map{
-          x => JsNumber(x)
-        }.getOrElse{JsNull},
-        "employmentType" -> JsNumber(if (v.isPrimary) 1 else 2),
-        "employmentStatus" -> JsNumber(v.status.code),
-        "employmentTaxDistrictNumber" -> v.taxDistrict.map(x =>
-          JsNumber(x)).getOrElse(JsNull),
-        "employmentPayeRef" -> JsString(v.payeRef),
-        "pensionIndicator" -> JsBoolean(v.incomeType == IncomeType.Pension),
-        "jsaIndicator" -> JsBoolean(
-          v.incomeType == IncomeType.JobSeekersAllowance),
-        "otherIncomeSourceIndicator" -> JsBoolean(
-          v.incomeType == IncomeType.OtherIncome),
-        "name" -> JsString(v.name),
-        "endDate" -> (v.status match {
-          case Income.EmploymentStatus.Ceased => Json.toJson(Income.EmploymentStatus.Ceased.code)
-          case _ => JsNull
-        }),
-        "worksNumber" -> v.worksNumber.map{JsString}.getOrElse{JsNull},
-        "taxCode" -> JsString(v.taxCode),
-        "potentialUnderpayment" -> JsNumber(v.potentialUnderpayment),
-        "employmentRecord" -> v.employmentRecord.map{
-          x => Json.toJson(x)
-        }.getOrElse{JsNull}
-      ))
-    }
-  )
-
-  implicit val formatNpsEmployment: Format[NpsEmployment] = (
-    (__ \ "employerName").formatNullable[String] and
-      (__ \ "employmentType").format[Int].inmap[Boolean](
-        _ == 1,
-        x => if (x) 1 else 2
-      ) and
-      (__ \ "sequenceNumber").format[Int] and
-      (__ \ "worksNumber").formatNullable[String] and
-      (__ \ "taxDistrictNumber").format[String].inmap[Int](
-        a =>  a.toInt,
-        x => x.toString
-      ) and
-      (__ \ "iabds").formatNullable[List[Iabd]].
-        inmap[List[Iabd]](_.getOrElse(Nil), Some(_)) and
-      (__ \ "cessationPayThisEmployment").formatNullable[BigDecimal] and
-      (__ \ "startDate").format[LocalDate]
-    )(NpsEmployment.apply, unlift(NpsEmployment.unapply))
 
 }
