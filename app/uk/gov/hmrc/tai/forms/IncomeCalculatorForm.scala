@@ -33,16 +33,22 @@ object HowToUpdateForm{
 
   def bind(implicit request: Request[_]) = createForm().bindFromRequest
 
-  def create(howToUpdateForm: HowToUpdateForm) = {
-    createForm.fill(howToUpdateForm)
-  }
+//  def create(howToUpdateForm: HowToUpdateForm) = {
+//    createForm.fill(howToUpdateForm)
+//  }
 
-  def howToUpdateValidation = Constraint[Option[String]]("Choose how to update"){
-    case Some(txt) => Valid
-    case _ => Invalid(Messages("tai.howToUpdate.error.form.incomes.radioButton.mandatory"))
-  }
+//  def howToUpdateValidation = Constraint[Option[String]]("Choose how to update"){
+//    case Some(txt) => Valid
+//    case _ => Invalid(Messages("tai.howToUpdate.error.form.incomes.radioButton.mandatory"))
+//  }
 
-  def createForm(): Form[HowToUpdateForm] = {
+  def createForm()(implicit messages: Messages): Form[HowToUpdateForm] = {
+
+    val howToUpdateValidation = Constraint[Option[String]]("Choose how to update"){
+      case Some(txt) => Valid
+      case _ => Invalid(messages("tai.howToUpdate.error.form.incomes.radioButton.mandatory"))
+    }
+
     Form[HowToUpdateForm](
       mapping(
         "howToUpdate" -> optional(text).verifying(howToUpdateValidation)
@@ -58,9 +64,9 @@ object HoursWorkedForm{
 
   def bind(implicit request: Request[_]) = createForm().bindFromRequest
 
-  def create(hoursWorkedForm: HoursWorkedForm) = {
-    createForm.fill(hoursWorkedForm)
-  }
+//  def create(hoursWorkedForm: HoursWorkedForm) = {
+//    createForm.fill(hoursWorkedForm)
+//  }
 
   def hoursWorkedValidation = Constraint[Option[String]]("Your working hours"){
     case Some(txt) => Valid
@@ -84,10 +90,10 @@ object PayPeriodForm{
 
   def bind(implicit request: Request[_]) = createForm(None).bindFromRequest
 
-  def create(payPeriodForm: PayPeriodForm) = {
-
-    createForm(None).fill(payPeriodForm)
-  }
+//  def create(payPeriodForm: PayPeriodForm) = {
+//
+//    createForm(None).fill(payPeriodForm)
+//  }
 
 
   def payPeriodValidation = Constraint[Option[String]]("Please select a period"){
@@ -127,9 +133,9 @@ object PayslipForm{
 
   def bind(implicit request: Request[_]) = createForm().bindFromRequest
 
-  def create(payslipForm: PayslipForm) = {
-    createForm.fill(payslipForm)
-  }
+//  def create(payslipForm: PayslipForm) = {
+//    createForm.fill(payslipForm)
+//  }
 
   def createForm(): Form[PayslipForm] = {
     Form[PayslipForm](
@@ -149,9 +155,9 @@ object PayslipDeductionsForm{
 
   def bind(implicit request: Request[_]) = createForm().bindFromRequest
 
-  def create(payslipDeductions: PayslipDeductionsForm) = {
-    createForm.fill(payslipDeductions)
-  }
+//  def create(payslipDeductions: PayslipDeductionsForm) = {
+//    createForm.fill(payslipDeductions)
+//  }
 
   def payslipDeductionsValidation = Constraint[Option[String]]("Your working hours"){
     case Some(txt) => Valid
@@ -174,9 +180,9 @@ object TaxablePayslipForm{
 
   def bind(implicit request: Request[_]) = createForm().bindFromRequest
 
-  def create(taxablePayslipForm: TaxablePayslipForm) = {
-    createForm().fill(taxablePayslipForm)
-  }
+//  def create(taxablePayslipForm: TaxablePayslipForm) = {
+//    createForm().fill(taxablePayslipForm)
+//  }
 
   def createForm(netSalary: Option[String] = None): Form[TaxablePayslipForm] = {
     Form[TaxablePayslipForm](
@@ -218,9 +224,9 @@ object BonusPaymentsForm{
     }
   }
 
-  def create(bonusPayments: BonusPaymentsForm) = {
-    createForm().fill(bonusPayments)
-  }
+//  def create(bonusPayments: BonusPaymentsForm) = {
+//    createForm().fill(bonusPayments)
+//  }
   def createForm(bonusPayments : Option[String]= None): Form[BonusPaymentsForm] = {
     Form[BonusPaymentsForm](
       mapping("bonusPayments" -> optional(text).verifying(bonusPaymentsValidation),
@@ -239,9 +245,9 @@ object BonusOvertimeAmountForm{
 
   def bind(period:Option[String])(implicit request: Request[_]) = createForm(nonEmptyMessage=None, notAnAmountMessage=None).bindFromRequest
 
-  def create(bonusOvertimeAmountForm: BonusOvertimeAmountForm, nonEmptyMessage:Option[String]=None, notAnAmountMessage:Option[String]=None) = {
-    createForm(nonEmptyMessage=nonEmptyMessage, notAnAmountMessage=notAnAmountMessage).fill(bonusOvertimeAmountForm)
-  }
+//  def create(bonusOvertimeAmountForm: BonusOvertimeAmountForm, nonEmptyMessage:Option[String]=None, notAnAmountMessage:Option[String]=None) = {
+//    createForm(nonEmptyMessage=nonEmptyMessage, notAnAmountMessage=notAnAmountMessage).fill(bonusOvertimeAmountForm)
+//  }
 
   def createForm(nonEmptyMessage: Option[String]=None, notAnAmountMessage: Option[String]=None): Form[BonusOvertimeAmountForm] = {
     Form[BonusOvertimeAmountForm](
