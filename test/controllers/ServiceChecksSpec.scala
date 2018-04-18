@@ -23,7 +23,7 @@ import play.api.mvc.Results.Ok
 import play.api.test.Helpers.{defaultAwaitTimeout, redirectLocation, status}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.{CeasedEmploymentDetails, TaiRoot}
+import uk.gov.hmrc.tai.model.TaiRoot
 
 import scala.concurrent.Future
 
