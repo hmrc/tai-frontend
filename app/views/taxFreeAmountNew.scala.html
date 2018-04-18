@@ -69,7 +69,8 @@
 
                 </section>
 
-                <h2 id="addSomethingMissingHeading" class="heading">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
+                <section id="addSomethingMissingSection" class="section">
+                <h2 id="addSomethingMissingHeading">@Messages("tai.incomeTaxSummary.addMissingIncome.section.heading")</h2>
 
                 <p class="icon icon-plus display-block">
                     @Link.toInternalPage(
@@ -97,6 +98,7 @@
                     cssClasses=Some(""),
                     dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.missing.section.income")}"))).toHtml
                 </p>
+                </section>
 
             </div>
         </div>
