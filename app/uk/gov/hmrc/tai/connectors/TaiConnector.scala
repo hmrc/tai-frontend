@@ -42,13 +42,6 @@ trait TaiConnector extends RawResponseReads{
     http.GET[TaiRoot](url = url(rootUri.replace("paye","tai")))
   }
 
-  def updateEmployments(nino: Nino, year: Int, editIadb :IabdUpdateEmploymentsRequest )
-                       (implicit hc: HeaderCarrier): Future[IabdUpdateEmploymentsResponse] = {
-
-    val postUrl = url(s"/tai/$nino/incomes/$year/update")
-    http.POST(postUrl, editIadb).map(responseTo[IabdUpdateEmploymentsResponse](postUrl))
-  }
-
   def calculateEstimatedPay(payDetails : PayDetails)(implicit hc: HeaderCarrier): Future[CalculatedPay] = {
     val postUrl = url(s"/tai/calculator/calculate-estimated-pay")
     http.POST(postUrl, payDetails).map(responseTo[CalculatedPay](postUrl))
@@ -57,8 +50,6 @@ trait TaiConnector extends RawResponseReads{
 
 object TaiConnector extends TaiConnector with ServicesConfig {
 
-
   lazy val serviceUrl = baseUrl("tai")
   override def http = WSHttp
-
 }

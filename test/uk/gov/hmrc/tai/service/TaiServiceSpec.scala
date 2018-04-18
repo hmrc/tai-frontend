@@ -25,9 +25,7 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaiConnector
-import uk.gov.hmrc.tai.forms.{BonusOvertimeAmountForm, PayPeriodForm, PayslipForm, TaxablePayslipForm}
 import uk.gov.hmrc.tai.model._
-import uk.gov.hmrc.tai.util.TaiConstants
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -44,62 +42,6 @@ class TaiServiceSpec extends PlaySpec
 
   private implicit val hc = HeaderCarrier()
 
-  "withoutSuffix" should {
-    "fetch the string value of nino without suffix" when {
-      "a valid nino is provided" in {
-        val nino = generateNino
-        val expectedResult = nino.nino.take(TaiConstants.NinoWithoutSuffixLength)
-        createSut.withoutSuffix(nino) mustBe expectedResult
-      }
-    }
-  }
-
-  "calculateEstimatedPay" should {
-    "return calculate pay and call calculateEstimatedPay with valid PayDetails" when {
-      "basic income calculation(with minimum fields) is provided" in {
-        val sut = createSut
-        val calculatedPay = CalculatedPay(Some(0), Some(0))
-        val expectedPayDetails = PayDetails("", Some(0), None, Some(0))
-
-        when(sut.taiClient.calculateEstimatedPay(any())(any())).thenReturn(Future.successful(calculatedPay))
-        val result = sut.calculateEstimatedPay(IncomeCalculation(), None)
-
-        Await.result(result, testTimeout) mustBe calculatedPay
-        verify(sut.taiClient, times(1)).calculateEstimatedPay(expectedPayDetails)(hc)
-      }
-
-      "full income calculation is provided" in {
-        val sut = createSut
-        val Amount = 100
-        val fakePeriod = "fakePeriod"
-        val otherInDays = 1
-
-        val incomeCalculation = IncomeCalculation(
-          payPeriodForm = Some(PayPeriodForm(Some(fakePeriod), Some(otherInDays))),
-          payslipForm = Some(PayslipForm(Some(Amount.toString))),
-          taxablePayslipForm = Some(TaxablePayslipForm(Some(Amount.toString))),
-          bonusOvertimeAmountForm = Some(BonusOvertimeAmountForm(Some(Amount.toString)))
-        )
-
-        val calculatedPay = CalculatedPay(Some(0), Some(0))
-        val expectedPayDetails = PayDetails(
-          paymentFrequency = fakePeriod,
-          pay = Some(Amount),
-          taxablePay = Some(Amount),
-          days = Some(otherInDays),
-          bonus = Some(Amount),
-          startDate = None
-        )
-
-        when(sut.taiClient.calculateEstimatedPay(any())(any())).thenReturn(Future.successful(calculatedPay))
-        val result = sut.calculateEstimatedPay(incomeCalculation, None)
-
-        Await.result(result, testTimeout) mustBe calculatedPay
-        verify(sut.taiClient, times(1)).calculateEstimatedPay(expectedPayDetails)(hc)
-      }
-    }
-  }
-
   "personDetails" should {
     "expose core customer details in TaiRoot form" in {
       val sut = createSut
@@ -114,28 +56,6 @@ class TaiServiceSpec extends PlaySpec
   }
 
   val testTimeout = 5 seconds
-  val employmentId = 21
-
-  val basicTaxCodeIncomes = TaxCodeIncomes(
-    hasDuplicateEmploymentNames = false,
-    totalIncome = 100,
-    totalTaxableIncome = 100,
-    totalTax = 100
-  )
-  val basicNoneTaxCodeIncomes = NoneTaxCodeIncomes(totalIncome = 0)
-
-  val basicTaxCodeIncomeSummary = TaxCodeIncomeSummary(
-    name = "",
-    taxCode = "",
-    tax = Tax()
-  )
-  val basicTaxCodeIncomeTotal = TaxCodeIncomeTotal(
-    taxCodeIncomes = Nil,
-    totalIncome = 0,
-    totalTax = 0,
-    totalTaxableIncome = 0
-  )
-  val basicEmploymentAmount = EmploymentAmount("", " ", 0, 0, 0)
 
   def generateNino: Nino = new Generator(new Random).nextNino
 
