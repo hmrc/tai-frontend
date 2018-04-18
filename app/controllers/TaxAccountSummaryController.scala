@@ -52,17 +52,12 @@ trait TaxAccountSummaryController extends TaiBaseController
           ServiceCheckLite.personDetailsCheck {
 
             val nino = Nino(user.getNino)
-            val taxSummaryFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
-            val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
-            val nonTaxCodeIncomeFuture = taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
             auditService.createAndSendAuditEvent(TaxAccountSummary_UserEntersSummaryPage, Map("nino" -> user.getNino))
-            val employmentsFuture = employmentService.employments(nino, TaxYear())
-
             for {
-              taxSummary <- taxSummaryFuture
-              taxCodeIncomes <- taxCodeIncomesFuture
-              nonTaxCodeIncome <- nonTaxCodeIncomeFuture
-              employments <- employmentsFuture
+              taxSummary <- taxAccountService.taxAccountSummary(nino, TaxYear())
+              taxCodeIncomes <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+              nonTaxCodeIncome <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
+              employments <- employmentService.employments(nino, TaxYear())
               isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
             } yield {
               (taxSummary, taxCodeIncomes, nonTaxCodeIncome, employments, isAnyFormInProgress) match {
