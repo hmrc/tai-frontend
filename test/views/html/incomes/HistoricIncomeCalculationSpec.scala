@@ -39,7 +39,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
 
     "have a print link" in {
       val printLink = doc.getElementById("printLink")
-      printLink must haveLinkURL(controllers.routes.YourIncomeCalculationController.printYourIncomeCalculationPreviousYearPage(1).url)
+      printLink must haveLinkURL(controllers.routes.YourIncomeCalculationController.printYourIncomeCalculationPreviousYearPage(TaxYear().prev, 1).url)
       doc.getElementsByTag("a").toString must include(messages("tai.label.print"))
     }
 
