@@ -22,6 +22,7 @@ import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
@@ -32,6 +33,8 @@ import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.{AuditConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
+
+import scala.concurrent.Future
 
 trait TaxAccountSummaryController extends TaiBaseController
   with DelegationAwareActions
@@ -52,32 +55,34 @@ trait TaxAccountSummaryController extends TaiBaseController
           ServiceCheckLite.personDetailsCheck {
 
             val nino = Nino(user.getNino)
-            val taxSummaryFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
-            val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
-            val nonTaxCodeIncomeFuture = taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
             auditService.createAndSendAuditEvent(TaxAccountSummary_UserEntersSummaryPage, Map("nino" -> user.getNino))
-            val employmentsFuture = employmentService.employments(nino, TaxYear())
-
-            for {
-              taxSummary <- taxSummaryFuture
-              taxCodeIncomes <- taxCodeIncomesFuture
-              nonTaxCodeIncome <- nonTaxCodeIncomeFuture
-              employments <- employmentsFuture
-              isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
-            } yield {
-              (taxSummary, taxCodeIncomes, nonTaxCodeIncome, employments, isAnyFormInProgress) match {
-                case (TaiTaxAccountFailureResponse(message), _, _, _, _) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
-                  message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear)=>
-                  Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
-                case (TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
-                TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
-                TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
-                employments, isAnyFormInProgress) =>
-                  val vm = TaxAccountSummaryViewModel(taxCodeIncomes, employments, taxAccountSummary, isAnyFormInProgress, nonTaxCodeIncome)
+            taxAccountService.taxAccountSummary(nino, TaxYear()).flatMap {
+              case (TaiTaxAccountFailureResponse(message)) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
+                message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
+                Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
+              case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
+                taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
                   Ok(views.html.incomeTaxSummary(vm))
-              }
+                }
+              case _ => throw new RuntimeException("Failed to fetch tax account summary details")
             }
           }
+  }
+
+  private def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(implicit hc: HeaderCarrier) = {
+    for {
+      taxCodeIncomes <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+      nonTaxCodeIncome <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
+      employments <- employmentService.employments(nino, TaxYear())
+      isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
+    } yield {
+      (taxCodeIncomes, nonTaxCodeIncome) match {
+        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+        TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)) =>
+          TaxAccountSummaryViewModel(taxCodeIncomes, employments, taxAccountSummary, isAnyFormInProgress, nonTaxCodeIncome)
+        case _ => throw new RuntimeException("Failed to fetch income details")
+      }
+    }
   }
 }
 

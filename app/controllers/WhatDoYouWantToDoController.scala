@@ -56,16 +56,11 @@ trait WhatDoYouWantToDoController extends TaiBaseController
       implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-
-            val taxAccountSummaryFuture = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear())
-            val employmentsFuture = employmentService.employments(Nino(user.getNino), TaxYear())
-            val prevYearEmploymentsFuture = previousYearEmployments(Nino(user.getNino))
-
             val possibleRedirectFuture =
               for {
-                taxAccountSummary <- taxAccountSummaryFuture
-                _ <- employmentsFuture
-                prevYearEmployments <- prevYearEmploymentsFuture
+                taxAccountSummary <- taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear())
+                _ <- employmentService.employments(Nino(user.getNino), TaxYear())
+                prevYearEmployments <- previousYearEmployments(Nino(user.getNino))
               } yield {
                 val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
                   npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments) orElse
