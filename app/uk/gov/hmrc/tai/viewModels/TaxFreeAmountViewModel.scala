@@ -26,14 +26,14 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.util.{TaxAccountCalculator, ViewModelHelper}
 
-case class TaxFreeAmountViewModelNew(header: String,
+case class TaxFreeAmountViewModel(header: String,
                                      title: String,
                                      annualTaxFreeAmount: String,
                                      summaryItems: Seq[TaxFreeAmountSummaryCategoryViewModel])
 
-object TaxFreeAmountViewModelNew extends TaxAccountCalculator with ViewModelHelper {
+object TaxFreeAmountViewModel extends TaxAccountCalculator with ViewModelHelper {
 
-  def apply(codingComponents: Seq[CodingComponent], employmentName: Map[Int, String], companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages): TaxFreeAmountViewModelNew = {
+  def apply(codingComponents: Seq[CodingComponent], employmentName: Map[Int, String], companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages): TaxFreeAmountViewModel = {
 
     val taxFreeAmountMsg = Messages("tai.taxFreeAmount.heading.pt1")
 
@@ -49,7 +49,7 @@ object TaxFreeAmountViewModelNew extends TaxAccountCalculator with ViewModelHelp
 
     val vmList = Seq(personalAllowance, additions, deductions, total)
 
-    TaxFreeAmountViewModelNew(headerWithAdditionalMarkup, title, withPoundPrefixAndSign(MoneyPounds(taxFreeAmountTotal, 0)), vmList)
+    TaxFreeAmountViewModel(headerWithAdditionalMarkup, title, withPoundPrefixAndSign(MoneyPounds(taxFreeAmountTotal, 0)), vmList)
   }
 
   private def personalAllowanceVM(codingComponents: Seq[CodingComponent])(implicit messages: Messages) = {
