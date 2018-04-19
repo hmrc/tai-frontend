@@ -7,7 +7,7 @@ GET         /income-tax/no-info                                                 
 GET         /last-year-paye                                                            controllers.PayeControllerHistoric.lastYearPaye()
 GET         /historic-paye/:taxYear                                                    controllers.PayeControllerHistoric.payePage(taxYear: uk.gov.hmrc.tai.model.tai.TaxYear)
 
-GET         /tax-explanation                                                           controllers.TaxExplanationControllerNew.taxExplanationPage
+GET         /tax-explanation                                                           controllers.TaxExplanationController.taxExplanationPage
 
 GET         /timeout                                                                   controllers.ServiceController.timeoutPage
 GET         /signout                                                                   controllers.ServiceController.serviceSignout
@@ -87,11 +87,7 @@ POST        /update-employment/check-your-answers                               
 GET         /update-employment/success                                                 controllers.employments.UpdateEmploymentController.confirmation
 
 GET         /underpayment-estimate                                                     controllers.PotentialUnderpaymentController.potentialUnderpaymentPage
-GET         /tax-relief                                                                controllers.EstimatedIncomeTaxControllerNew.taxRelief
-
-## GET         /income                                                                    controllers.YourTaxableIncomeController.externalServiceLink
-
-## GET         /income-tax-refresh                                                        controllers.CurrentYearPageController.externalServiceLink
+GET         /tax-relief                                                                controllers.EstimatedIncomeTaxController.taxRelief
 
 
 ## Savings Income
@@ -137,28 +133,24 @@ POST        /end-company-car/check-your-answers                                 
 GET         /end-company-car/success                                                   controllers.CompanyCarController.confirmation
 
 ## New Income and Tax Codes page
-GET         /tax-free-allowance                                                        controllers.TaxFreeAmountControllerNew.taxFreeAmount
-GET         /taxable-income                                                            controllers.TaxFreeAmountControllerNew.taxFreeAmount
-GET         /your-tax-free-amount                                                      controllers.TaxFreeAmountControllerNew.taxFreeAmount
+GET         /tax-free-allowance                                                        controllers.TaxFreeAmountController.taxFreeAmount
+GET         /taxable-income                                                            controllers.TaxFreeAmountController.taxFreeAmount
+GET         /your-tax-free-amount                                                      controllers.TaxFreeAmountController.taxFreeAmount
 
 GET         /tax-codes                                                                 controllers.YourTaxCodeController.taxCodes
-GET         /paye-income-tax-estimate                                                  controllers.EstimatedIncomeTaxControllerNew.estimatedIncomeTax
+GET         /paye-income-tax-estimate                                                  controllers.EstimatedIncomeTaxController.estimatedIncomeTax
 
 
 GET         /income-tax-comparison                                                     controllers.IncomeTaxComparisonController.onPageLoad
 
-GET         /your-income-calculation                                                   controllers.YourIncomeCalculationController.yourIncomeCalculationPage(id: Option[Int])
-GET         /print-your-income-calculation                                             controllers.YourIncomeCalculationController.printYourIncomeCalculationPage(id: Option[Int])
 
-GET         /your-income-calculation-details/:id                                       controllers.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(id: Int)
-GET         /print-your-income-calculation-details/:id                                 controllers.YourIncomeCalculationControllerNew.printYourIncomeCalculationPage(id: Int)
+GET         /your-income-calculation-details/:id                                       controllers.YourIncomeCalculationController.yourIncomeCalculationPage(id: Int)
+GET         /print-your-income-calculation-details/:id                                 controllers.YourIncomeCalculationController.printYourIncomeCalculationPage(id: Int)
 
-GET         /your-income-calculation-previous-year/:empId                              controllers.YourIncomeCalculationController.yourIncomeCalculationPreviousYearPage(empId: Int)
-GET         /print-your-income-calculation-previous-year/:empId                        controllers.YourIncomeCalculationController.printYourIncomeCalculationPreviousYearPage(empId: Int)
+GET         /your-income-calculation-previous-year/:year/:empId                        controllers.YourIncomeCalculationController.yourIncomeCalculationPreviousYearPage(year: uk.gov.hmrc.tai.model.tai.TaxYear, empId: Int)
+GET         /print-your-income-calculation-previous-year/:year/:empId                  controllers.YourIncomeCalculationController.printYourIncomeCalculationPreviousYearPage(year: uk.gov.hmrc.tai.model.tai.TaxYear, empId: Int)
 
 
-GET         /your-income-calculation/:year/:empId                                      controllers.YourIncomeCalculationController.yourIncomeCalculation(year: uk.gov.hmrc.tai.model.tai.TaxYear, empId: Int)
-GET         /print-your-income/:year/:empId                                            controllers.YourIncomeCalculationController.printYourIncomeCalculation(year: uk.gov.hmrc.tai.model.tai.TaxYear,empId: Int)
 
 ## Income calculator URIs
 GET         /update-income/how-to-update-income/:empId                                 controllers.IncomeUpdateCalculatorController.howToUpdatePage(empId: Int)
@@ -193,28 +185,24 @@ GET         /update-income/calculation-unavailable                              
 
 
 ## Regular Income URIs
-GET         /update-income/select-taxable-pay                                          controllers.IncomeControllerNew.viewIncomeForEdit
+GET         /update-income/select-taxable-pay                                          controllers.IncomeController.viewIncomeForEdit
 
-GET         /update-income/edit-taxable-pay                                            controllers.IncomeControllerNew.regularIncome
-POST        /update-income/edit-taxable-pay                                            controllers.IncomeControllerNew.editRegularIncome
+GET         /update-income/edit-taxable-pay                                            controllers.IncomeController.regularIncome
+POST        /update-income/edit-taxable-pay                                            controllers.IncomeController.editRegularIncome
 
-## Ceased Income URIs
-##GET         /update-income/edit-total-pay                                              controllers.IncomeController.viewCeasedIncomeForEdit
-##POST        /update-income/edit-total-pay                                              controllers.IncomeController.handleCeasedIncomeForEdit
 
 ## Pension Income URIs
-GET         /update-income/edit-pension                                                controllers.IncomeControllerNew.pensionIncome
-POST        /update-income/edit-pension                                                controllers.IncomeControllerNew.editPensionIncome
+GET         /update-income/edit-pension                                                controllers.IncomeController.pensionIncome
+POST        /update-income/edit-pension                                                controllers.IncomeController.editPensionIncome
 
 
-GET         /update-income/income/check-save                                           controllers.IncomeControllerNew.confirmRegularIncome
+GET         /update-income/income/check-save                                           controllers.IncomeController.confirmRegularIncome
 
-GET         /update-income/pension/check-save                                          controllers.IncomeControllerNew.confirmPensionIncome
+GET         /update-income/pension/check-save                                          controllers.IncomeController.confirmPensionIncome
 
-##GET         /update-income/ceased/check-save                                           controllers.IncomeController.confirmCeased
 
-POST        /update-income/success-page                                                 controllers.IncomeControllerNew.updateEstimatedIncome
-POST        /update-income/success                                                     controllers.IncomeController.updateIncomes
+POST        /update-income/success-page                                                controllers.IncomeController.updateEstimatedIncome
+
 
 ## Get Help Pages
 GET         /get-help                                                                  controllers.HelpController.helpPage
@@ -239,7 +227,7 @@ POST        /update-income-details/submit-your-answers                          
 GET         /update-income-details/success                                             controllers.income.previousYears.UpdateIncomeDetailsController.confirmation
 
 ## Used by external services
-GET         /income                                                                    controllers.TaxFreeAmountControllerNew.taxFreeAmount
+GET         /income                                                                    controllers.TaxFreeAmountController.taxFreeAmount
 GET         /income-tax-refresh                                                        controllers.TaxAccountSummaryController.onPageLoad
 
 GET         /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.decision

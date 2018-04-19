@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.service.{TaiService, TaxAccountService}
 import scala.concurrent.Future
 import scala.util.Random
 
-class TaxExplanationControllerNewSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
+class TaxExplanationControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
 
   "Tax Explanation Controller" must {
     "return OK" when {
@@ -77,7 +77,7 @@ class TaxExplanationControllerNewSpec extends PlaySpec with MockitoSugar with Fa
   val nino: Nino = new Generator(new Random).nextNino
   private def createSUT = new SUT
 
-  class SUT extends TaxExplanationControllerNew {
+  class SUT extends TaxExplanationController {
     override val taiService: TaiService = mock[TaiService]
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
