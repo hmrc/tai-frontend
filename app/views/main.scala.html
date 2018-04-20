@@ -117,7 +117,7 @@
 }
 
 @gaCustomEvent = @{
-    gaCustomTitle.map(gaTitle => s"ga('set', 'title', '${gaTitle} ${serviceSuffix}')").getOrElse(false)
+    gaCustomTitle.map(gaTitle => s"""ga('set', 'title', "${gaTitle} ${serviceSuffix}")""").getOrElse(false)
 }
 
 @inlineScript = {

@@ -222,7 +222,7 @@ trait AddEmploymentController extends TaiBaseController
               Future.successful(BadRequest(views.html.can_we_contact_by_phone(telephoneNumberViewModel, formWithErrors)))
           },
           form => {
-            val mandatoryData = Map(AddEmployment_TelephoneQuestionKey -> form.yesNoChoice.getOrElse(NoValue))
+            val mandatoryData = Map(AddEmployment_TelephoneQuestionKey -> Messages(s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))
             val dataForCache = form.yesNoChoice match {
               case Some(yn) if yn==YesValue => mandatoryData ++ Map(AddEmployment_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
               case _ => mandatoryData ++ Map(AddEmployment_TelephoneNumberKey -> "")
