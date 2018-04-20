@@ -28,7 +28,7 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.play.views.helpers._
 @import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-@import play.api.i18n.Messages.Implicits._
+
 @import play.api.Play.current
 @import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
 @import uk.gov.hmrc.tai.model.domain.{TemporarilyUnavailable, Unavailable, Available}
@@ -36,7 +36,7 @@
 @import uk.gov.hmrc.time.TaxYearResolver
 
 @(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel
-)(implicit request: Request[_], messages: MessagesApi, user: controllers.auth.TaiUser)
+)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser)
 
 @printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
 <a id="backLink" href="@controllers.routes.YourIncomeCalculationController.yourIncomeCalculation(historicIncomeCalculationViewModel.taxYear, historicIncomeCalculationViewModel.employmentId)">@Messages("tai.label.back")</a>

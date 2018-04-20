@@ -18,7 +18,8 @@ package controllers
 
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.Messages
+//import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
@@ -63,6 +64,8 @@ trait YourIncomeCalculationControllerNew extends TaiBaseController
   private def incomeCalculationPage(empId: Int, printPage: Boolean)(implicit request: Request[AnyContent], user: TaiUser, taiRoot: TaiRoot) = {
     val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
     val employmentFuture = employmentService.employment(Nino(user.getNino), empId)
+
+    implicit val messages = Messages.Implicits.applicationMessages
 
     for {
       taxCodeIncomeDetails <- taxCodeIncomesFuture
