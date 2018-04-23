@@ -35,8 +35,6 @@
 messages: Messages, user: controllers.auth.TaiUser)
 
 @printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
-    <a id="backLink" href="@controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(empId))">@Messages("tai.label.back")</a>
-}{
 
     <br><strong><p>@user.getDisplayName</p></strong>
     <section class="section soft--top"><h2>@Messages("tai.income.calculation.TaxableIncomeDetails", incomeCalcDetails.employerName)</h2></section>
