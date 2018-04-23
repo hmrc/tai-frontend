@@ -83,7 +83,7 @@ trait YourIncomeCalculationController extends TaiBaseController
     }
   }
 
-  def yourIncomeCalculationPreviousYearPage(year: TaxYear, empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request => {
@@ -91,21 +91,27 @@ trait YourIncomeCalculationController extends TaiBaseController
             if (year <= TaxYear().prev) {
               showHistoricIncomeCalculation(Nino(user.getNino), empId, year = year)
             } else {
-              throw new RuntimeException(s"Doesn't support year $year")
+              Future.failed(throw new BadRequestException(s"Doesn't support year $year"))
             }
           }
         }
   }
 
-  def printYourIncomeCalculationPreviousYearPage(empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def printYourIncomeCalculationHistoricYears(year: TaxYear,empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request => {
-          showHistoricIncomeCalculation(Nino(user.getNino), empId, printPage = true)
+          ServiceCheckLite.personDetailsCheck {
+            if (year <= TaxYear().prev) {
+              showHistoricIncomeCalculation(Nino(user.getNino), empId, printPage = true, year = year)
+            } else {
+              Future.failed(throw new BadRequestException(s"Doesn't support year $year"))
+            }
+          }
         }
   }
 
-  private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean = false, year: TaxYear = TaxYear().prev)
+  private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean = false, year: TaxYear)
                                    (implicit request: Request[AnyContent], user: TaiUser, taiRoot: TaiRoot): Future[Result] = {
     for {
         employment <- employmentService.employments(nino, year)

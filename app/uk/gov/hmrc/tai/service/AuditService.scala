@@ -67,17 +67,12 @@ trait AuditService {
     ))
   }
 
-  def sendUserEntryAuditEvent(nino: Nino, path: String, employments: Seq[Employment], taxCodes: TaiResponse)(implicit hc: HeaderCarrier): Future[AuditResult] = {
-    val noOfTaxCodes = taxCodes match {
-      case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) => taxCodeIncomes.size.toString
-      case _ => "0"
-    }
-
+  def sendUserEntryAuditEvent(nino: Nino, path: String, numberOfEmployments: Seq[Employment], numberOfTaxCodeIncomes: Seq[TaxCodeIncome])(implicit hc: HeaderCarrier): Future[AuditResult] = {
     val details = Map(
       "authProviderId" -> authProviderId(hc),
       "nino" -> nino.nino,
-      "noOfCurrentYearEmployments" -> employments.size.toString,
-      "noOfTaxCodes" -> noOfTaxCodes
+      "noOfCurrentYearEmployments" -> numberOfEmployments.size.toString,
+      "noOfTaxCodes" -> numberOfTaxCodeIncomes.size.toString
     )
     createAndSendAuditEvent(userEnterEvent, path, details)
   }

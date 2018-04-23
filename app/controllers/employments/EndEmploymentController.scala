@@ -256,7 +256,7 @@ trait EndEmploymentController extends TaiBaseController
                 }
               },
               form => {
-                val mandatoryData = Map(EndEmployment_TelephoneQuestionKey -> form.yesNoChoice.getOrElse(NoValue))
+                val mandatoryData = Map(EndEmployment_TelephoneQuestionKey -> Messages(s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))
                 val dataForCache = form.yesNoChoice match {
                   case Some(YesValue) => mandatoryData ++ Map(EndEmployment_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
                   case _ => mandatoryData ++ Map(EndEmployment_TelephoneNumberKey -> "")

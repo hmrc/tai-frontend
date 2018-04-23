@@ -103,7 +103,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
       "historic data has been passed" in {
         val sut = createSUT
         when(sut.employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
-        val result = sut.yourIncomeCalculationPreviousYearPage(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -118,7 +118,38 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
       "next year has been passed" in {
         val sut = createSUT
 
-        val result = sut.yourIncomeCalculationPreviousYearPage(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.yourIncomeCalculationHistoricYears(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+
+      }
+    }
+
+  }
+
+
+  "print Your income calculation" should {
+
+    "show historic data" when {
+      "historic data has been passed" in {
+        val sut = createSUT
+        when(sut.employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
+        val result = sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val content = contentAsString(result)
+        val doc = Jsoup.parse(content)
+
+        doc.select("#backLink").text() mustBe Messages("tai.back-link.upper")
+      }
+    }
+
+    "throw bad request" when {
+      "next year has been passed" in {
+        val sut = createSUT
+
+        val result = sut.printYourIncomeCalculationHistoricYears(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
 

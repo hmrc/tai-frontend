@@ -251,23 +251,22 @@
     }
 
     // Update message
+    var prefixClause, countVerb, countNoun,
+        displayNumber = Math.abs(remainingNumber), // postive count of numbers
+        isWordCount = options && options.wordCount,
+        isSingular = remainingNumber === -1 || remainingNumber === 1,
+        isWelshRequested = options && options.language && options.language==='cy' // if set, will be a string of either "en" or "cy"
 
-    if (options && options.language) {
-        // placeholder - pending welsh translation - will be a string of either "en" or "cy"
+    if (isWelshRequested) {
+        prefixClause = "Mae gennych "
+        countVerb = (remainingNumber < 0) ? 'yn ormod' : 'yn weddill'
+        countNoun = isWordCount ? (isSingular ? 'gair' : 'geiriau') : (isSingular ? 'cymeriad' : 'o gymeriadau')
+    } else {
+        prefixClause = "You have "
+        countVerb = (remainingNumber < 0) ? 'too many' : 'remaining'
+        countNoun = isWordCount ? (isSingular ? 'word' : 'words') : (isSingular ? 'character' : 'characters')
     }
-
-    var charVerb = 'remaining'
-    var charNoun = 'character'
-    var displayNumber = remainingNumber
-    if (options && options.wordCount) {
-      charNoun = 'word'
-    }
-    charNoun = charNoun + ((remainingNumber === -1 || remainingNumber === 1) ? '' : 's')
-
-    charVerb = (remainingNumber < 0) ? 'too many' : 'remaining'
-    displayNumber = Math.abs(remainingNumber) // postive count of numbers
-
-    countMessage.innerHTML = 'You have ' + displayNumber + ' ' + charNoun + ' ' + charVerb
+    countMessage.innerHTML = prefixClause + displayNumber + ' ' + countNoun + ' ' + countVerb
 
     // Update Highlight
     if (countHighlight) {

@@ -18,8 +18,11 @@ package controllers
 
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
+import play.Logger
 import play.api.Play.current
+import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.Results.InternalServerError
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,6 +33,7 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
@@ -56,16 +60,11 @@ trait WhatDoYouWantToDoController extends TaiBaseController
       implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-
-            val taxAccountSummaryFuture = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear())
-            val employmentsFuture = employmentService.employments(Nino(user.getNino), TaxYear())
-            val prevYearEmploymentsFuture = previousYearEmployments(Nino(user.getNino))
-
             val possibleRedirectFuture =
               for {
-                taxAccountSummary <- taxAccountSummaryFuture
-                _ <- employmentsFuture
-                prevYearEmployments <- prevYearEmploymentsFuture
+                taxAccountSummary <- taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear())
+                _ <- employmentService.employments(Nino(user.getNino), TaxYear())
+                prevYearEmployments <- previousYearEmployments(Nino(user.getNino))
               } yield {
                 val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
                   npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments) orElse
@@ -119,11 +118,17 @@ trait WhatDoYouWantToDoController extends TaiBaseController
     val nino = Nino(user.getNino)
     val currentTaxYearEmployments = employmentService.employments(nino, TaxYear())
     val currentTaxYearTaxCodes = taxAccountService.taxCodeIncomes(nino, TaxYear())
-    for {
+    (for {
       employments <- currentTaxYearEmployments
       taxCodes <- currentTaxYearTaxCodes
     } yield {
-      auditService.sendUserEntryAuditEvent(nino, request.headers.get("Referer").getOrElse("NA"), employments, taxCodes)
+      val noOfTaxCodes: Seq[TaxCodeIncome] = taxCodes match {
+        case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) => taxCodeIncomes
+        case _ => Seq.empty[TaxCodeIncome]
+      }
+      auditService.sendUserEntryAuditEvent(nino, request.headers.get("Referer").getOrElse("NA"), employments, noOfTaxCodes)
+    }).recover{
+      auditError
     }
 
     trackingService.isAnyIFormInProgress(user.getNino) flatMap { trackingResponse =>
@@ -138,6 +143,11 @@ trait WhatDoYouWantToDoController extends TaiBaseController
         Future.successful(Ok(views.html.whatDoYouWantToDo(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled))))
       }
     }
+  }
+
+ private def auditError(implicit request: Request[AnyContent], user: TaiUser): PartialFunction[Throwable, Unit] = {
+    case e =>
+      Logger.warn(s"<Send audit event failed to get either taxCodeIncomes or employments for nino ${user.getNino}  with exception: ${e.getClass()}", e)
   }
 
   private[controllers] def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {

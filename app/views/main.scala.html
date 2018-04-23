@@ -117,7 +117,7 @@
 }
 
 @gaCustomEvent = @{
-    gaCustomTitle.map(gaTitle => s"ga('set', 'title', '${gaTitle} ${serviceSuffix}')").getOrElse(false)
+    gaCustomTitle.map(gaTitle => s"""ga('set', 'title', "${gaTitle} ${serviceSuffix}")""").getOrElse(false)
 }
 
 @inlineScript = {
@@ -198,13 +198,15 @@
             Map("url" -> controllers.routes.AssetsController.versioned("javascript/char-count.js"))
         ),
         "inlineScript" -> inlineScript,
-        "assetsPath" -> ApplicationConfig.assetsPath,
-
         "showPropositionLinks" -> isWelshEnabled,
         "langSelector" -> isWelshEnabled,
         "enUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("english"),
         "cyUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("cymraeg"),
-        "isWelsh" -> isWelshActive
+        "isWelsh" -> isWelshActive,
+        "optimizely" -> Map(
+            "audience" -> "Other user",
+            "projectId" -> "8461600066"
+        )
     )
 }
 

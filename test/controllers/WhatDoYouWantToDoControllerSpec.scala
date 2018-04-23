@@ -36,7 +36,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
@@ -337,12 +337,10 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
   }
 
   "send an user entry audit event" when {
-    "landed to the page" in {
+    "landed to the page and get TaiSuccessResponseWithPayload" in {
       val testController = createSUT()
       when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-      when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
-        TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
-      )
+
       when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
 
@@ -351,6 +349,29 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       result.header.status mustBe OK
 
       verify(testController.auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
+    }
+    "landed to the page and get TaiSuccessResponse" in {
+      val testController = createSUT()
+      when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        thenReturn(Future.successful(TaiSuccessResponse))
+
+      val result = Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
+
+      result.header.status mustBe OK
+
+      verify(testController.auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
+    }
+    "landed to the page and get failure from taxCodeIncomes" in {
+      val testController = createSUT()
+      when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        thenReturn(Future.failed(new BadRequestException("bad request")))
+
+      val result = Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
+
+      result.header.status mustBe OK
+
     }
   }
 
