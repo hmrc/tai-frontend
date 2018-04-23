@@ -16,30 +16,55 @@
 
 package views.html.print
 
-import controllers.{FakeTaiPlayApplication, routes}
-import org.jsoup.Jsoup
-import org.scalatest.concurrent.ScalaFutures
+import controllers.routes
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.UnitSpec
+import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.EditableDetails
+import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel
 
 class YourIncomeCalculationSpec
-  extends UnitSpec
-    with FakeTaiPlayApplication
-    with ScalaFutures {
+  extends TaiViewSpec {
 
 
   "The income calculation print page" should {
-    "show the necessary back and print buttons" in {
-      val incomeCalcViewModel = YourIncomeCalculationViewModel(employerName = "test", employmentPayments= Nil ,isPension = true, incomeCalculationMsg = "", empId = 2, hasPrevious = true,
-        editableDetails = EditableDetails(payRollingBiks = false,isEditable = true), rtiDown = false, employmentStatus = Some(1), endDate = None)
-      val doc = Jsoup.parse(views.html.print.yourIncomeCalculation(incomeCalcViewModel, empId = 2)(request = FakeRequest("GET", routes.YourIncomeCalculationController.printYourIncomeCalculationPage(None).url), messages = play.api.i18n.Messages.Implicits.applicationMessages, user = builders.UserBuilder.apply()).toString())
-      doc.getElementsByClass("back-link").toString should include("/check-income-tax/your-income-calculation")
-      doc.getElementsByClass("print-button").toString should include("javascript:window.print()")
-      doc.getElementsByClass("title").toString should include("Taxable Income")
+
+    behave like pageWithTitle(s"${messages("tai.yourIncome.heading")} - ${messages("tai.service.navTitle")} - GOV.UK")
+
+    "have a back link" in {
+      doc must haveBackLink
     }
 
+    "show a print button" in {
+      doc.getElementsByClass("print-button").toString must include("javascript:window.print()")
+    }
+
+    "show appropriate headings" in {
+      doc must haveHeadingWithText("Taxable Income")
+      doc must haveHeadingH2WithText("Taxable income from test")
+    }
   }
 
+  val incomeCalcViewModel = YourIncomeCalculationViewModel(
+    employerName = "test",
+    employmentPayments= Nil,
+    isPension = true,
+    incomeCalculationMsg = "",
+    empId = 2,
+    hasPrevious = true,
+    editableDetails = EditableDetails(
+      payRollingBiks = false,
+      isEditable = true
+    ),
+    rtiDown = false,
+    employmentStatus = Some(1),
+    endDate = None)
+
+  override def view: Html =
+    views.html.print.yourIncomeCalculation(incomeCalcViewModel, empId = 2)(
+      request = FakeRequest("GET",
+      routes.YourIncomeCalculationController.printYourIncomeCalculationPage(None).url),
+      messages = play.api.i18n.Messages.Implicits.applicationMessages,
+      user = builders.UserBuilder.apply()
+    )
 }
