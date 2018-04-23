@@ -142,7 +142,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
       endDate.getOrElse(""),
       endDate.isDefined,
       Messages("tai.incomeTaxSummary.employment.link"),
-      controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(employment.sequenceNumber)).url,
+      controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(employment.sequenceNumber).url,
       true)
   }
 
@@ -159,7 +159,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
     val incomeSourceSummaryUrl =
         if(taxCodeIncome.componentType == EmploymentIncome && taxCodeIncome.status != Live)
-          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(employment.sequenceNumber)).url
+          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(employment.sequenceNumber).url
         else
           controllers.routes.IncomeSourceSummaryController.onPageLoad(employment.sequenceNumber).url
     

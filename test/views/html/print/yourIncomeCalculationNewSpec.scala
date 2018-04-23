@@ -30,7 +30,7 @@ class yourIncomeCalculationNewSpec extends TaiViewSpec {
   "YourIncomeCalculationView" must {
 
     behave like pageWithBackLink
-    behave like haveBackButtonWithUrl(controllers.routes.YourIncomeCalculationControllerNew.yourIncomeCalculationPage(model.empId).url)
+    behave like haveBackButtonWithUrl(controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(model.empId).url)
 
 
     "show details for potentially ceased employment" when {

@@ -25,9 +25,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -40,7 +38,7 @@ import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 
-class TaxFreeAmountControllerNewSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
+class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "taxFreeAmount" must {
@@ -80,7 +78,7 @@ class TaxFreeAmountControllerNewSpec extends PlaySpec with FakeTaiPlayApplicatio
   val codingComponents = Seq(CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
     CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description"))
 
-  private class SUT() extends TaxFreeAmountControllerNew {
+  private class SUT() extends TaxFreeAmountController {
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val authConnector: AuthConnector = mock[AuthConnector]
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
@@ -95,9 +93,6 @@ class TaxFreeAmountControllerNewSpec extends PlaySpec with FakeTaiPlayApplicatio
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
     when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
-
-    val sd = AuthBuilder.createFakeSessionDataWithPY
-    when(taiService.taiSession(any(), any(), any())(any())).thenReturn(Future.successful(sd))
   }
 
 }
