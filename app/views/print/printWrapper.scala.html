@@ -22,12 +22,16 @@
 @import play.api.Play.current
 @import play.api.Play
 
+@fullTitle = @{
+    s"${title} - ${Messages("tai.service.navTitle")} - GOV.UK"
+}
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>@title</title>
+        <title>@fullTitle</title>
         <link rel="stylesheet" href='@controllers.routes.AssetsController.versioned("stylesheets/tai.min.css")' />
         <link rel="shortcut icon" href="/template/images/favicon.ico" type="image/x-icon" />
         <script type="text/javascript">
