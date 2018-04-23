@@ -340,9 +340,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     "landed to the page and get TaiSuccessResponseWithPayload" in {
       val testController = createSUT()
       when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-      when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
-        TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
-      )
+
       when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
 
@@ -355,9 +353,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     "landed to the page and get TaiSuccessResponse" in {
       val testController = createSUT()
       when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-      when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
-        TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
-      )
       when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.successful(TaiSuccessResponse))
 
@@ -366,6 +361,17 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       result.header.status mustBe OK
 
       verify(testController.auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
+    }
+    "landed to the page and get failure from taxCodeIncomes" in {
+      val testController = createSUT()
+      when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        thenReturn(Future.failed(new BadRequestException("bad request")))
+
+      val result = Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
+
+      result.header.status mustBe OK
+
     }
   }
 

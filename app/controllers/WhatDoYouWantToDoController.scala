@@ -118,7 +118,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
     val nino = Nino(user.getNino)
     val currentTaxYearEmployments = employmentService.employments(nino, TaxYear())
     val currentTaxYearTaxCodes = taxAccountService.taxCodeIncomes(nino, TaxYear())
-    for {
+    (for {
       employments <- currentTaxYearEmployments
       taxCodes <- currentTaxYearTaxCodes
     } yield {
@@ -127,7 +127,9 @@ trait WhatDoYouWantToDoController extends TaiBaseController
         case _ => Seq.empty[TaxCodeIncome]
       }
       auditService.sendUserEntryAuditEvent(nino, request.headers.get("Referer").getOrElse("NA"), employments, noOfTaxCodes)
-    } recover auditError
+    }).recover{
+      auditError
+    }
 
     trackingService.isAnyIFormInProgress(user.getNino) flatMap { trackingResponse =>
       if(cyPlusOneEnabled){
@@ -145,7 +147,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
 
  private def auditError(implicit request: Request[AnyContent], user: TaiUser): PartialFunction[Throwable, Unit] = {
     case e =>
-      Logger.warn(s"<Audit service failed for nino ${user.getNino}  with exception: ${e.getClass()}", e)
+      Logger.warn(s"<Send audit event failed to get either taxCodeIncomes or employments for nino ${user.getNino}  with exception: ${e.getClass()}", e)
   }
 
   private[controllers] def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
