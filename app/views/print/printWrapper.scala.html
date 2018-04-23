@@ -21,6 +21,7 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import play.api.Play.current
 @import play.api.Play
+@import uk.gov.hmrc.urls.Link
 
 @fullTitle = @{
     s"${title} - ${Messages("tai.service.navTitle")} - GOV.UK"
@@ -49,7 +50,7 @@
     <body class="print-page">
 
         <noscript>
-            <style> .print-button {display: none;} </style>
+            <style> .print-button, .displayIfJsEnabled {display: none !important;} </style>
         </noscript>
 
         <div class="print-wrapper">
@@ -57,7 +58,13 @@
                 <div class="nav-container print-grid-row">
                     <div class="print-grid-row">
                         <div class="column-half back-link">
-                            @back
+                            @Link.toInternalPage(
+                                id=Some("backLink"),
+                                value=Some(Messages("tai.back-link.upper")),
+                                url = "#",
+                                cssClasses=Some("displayIfJsEnabled link-back"),
+                                dataAttributes = Some(Map("journey-click" -> s"link - click:${title} - print page:${Messages("tai.back-link.upper")}"))
+                            ).toHtml
                         </div>
                         <div class="column-half print-button">
                             <a href="javascript:window.print();">@Messages("tai.label.print")</a>
