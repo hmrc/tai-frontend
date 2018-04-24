@@ -79,7 +79,7 @@ trait YourIncomeCalculationController extends TaiBaseController
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
           val model = YourIncomeCalculationViewModelNew(taxCodeIncomes.find(_.employmentId.contains(empId)), employment)(messages)
           if (printPage) {
-            Ok(views.html.print.yourIncomeCalculationNew(model))
+            Ok(views.html.print.yourIncomeCalculation(model))
           } else {
             Ok(views.html.incomes.yourIncomeCalculationNew(model))
           }
