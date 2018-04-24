@@ -31,7 +31,7 @@
 @printLink= {
     <p class="flush--bottom">
     @Link.toInternalPage(
-        url=routes.YourIncomeCalculationController.printYourIncomeCalculationPage(Some(model.empId)).toString,
+        url=routes.YourIncomeCalculationController.printYourIncomeCalculationPage(model.empId).toString,
         value=Some(Messages("tai.label.print")),
         cssClasses=Some("tai-print-link")).toHtml
     </p>

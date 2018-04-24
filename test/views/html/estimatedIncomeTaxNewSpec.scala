@@ -111,7 +111,7 @@ class estimatedIncomeTaxNewSpec extends TaiViewSpec {
     "show tax relief section" in {
       doc.select("#tax-relief-title").text() mustBe Messages("tai.estimatedIncome.taxrelief.title")
       doc.select("#tax-relief-message").html() mustBe Html(Messages("tai.estimatedIncome.taxRelief", Link.toInternalPage(
-        url = routes.EstimatedIncomeTaxControllerNew.taxRelief().toString,
+        url = routes.EstimatedIncomeTaxController.taxRelief().toString,
         value = Some("tai.estimatedIncome.taxRelief.link")
       ).toHtml)).body
     }

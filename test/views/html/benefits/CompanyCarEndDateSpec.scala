@@ -37,7 +37,7 @@ class CompanyCarEndDateSpec extends TaiViewSpec {
 
     behave like pageWithBackLink
 
-    behave like pageWithCancelLink(routes.TaxFreeAmountControllerNew.taxFreeAmount())
+    behave like pageWithCancelLink(routes.TaxFreeAmountController.taxFreeAmount())
 
     behave like pageWithContinueButtonForm("/check-income-tax/end-company-car/car-end-date")
 

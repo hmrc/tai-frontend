@@ -84,7 +84,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
           messages("tai.paye.lastTaxYear.table.link")
 
         doc.select("#last-tax-year-table .cya-change a").attr("href") mustBe
-          routes.YourIncomeCalculationController.yourIncomeCalculation(cyMinusOneTaxYear, employment.id).toString
+          routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(cyMinusOneTaxYear, employment.id).toString
 
         doc.select("#p800Link").size mustBe 1
 
@@ -128,7 +128,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
           messages("tai.paye.lastTaxYear.table.link")
 
         doc.select("#last-tax-year-table .cya-change a").attr("href") mustBe
-          routes.YourIncomeCalculationController.yourIncomeCalculation(cyMinusOneTaxYear, employment.id).toString
+          routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(cyMinusOneTaxYear, employment.id).toString
 
         doc.select("#p800Link").size mustBe 1
       }
@@ -155,7 +155,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
           messages("tai.paye.lastTaxYear.table.link")
 
         doc.select("#last-tax-year-table li:nth-child(1) .cya-change a").attr("href") mustBe
-          routes.YourIncomeCalculationController.yourIncomeCalculation(cyMinusOneTaxYear, employment1.id).toString
+          routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(cyMinusOneTaxYear, employment1.id).toString
 
         doc.select("#last-tax-year-table li:nth-child(2) .cya-question").text() mustBe "test employment 2"
         doc.select("#last-tax-year-table li:nth-child(2) .cya-answer").text() mustBe "£345.54"
@@ -164,7 +164,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
           messages("tai.paye.lastTaxYear.table.link")
 
         doc.select("#last-tax-year-table li:nth-child(2) .cya-change a").attr("href") mustBe
-          routes.YourIncomeCalculationController.yourIncomeCalculation(cyMinusOneTaxYear, employment2.id).toString
+          routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(cyMinusOneTaxYear, employment2.id).toString
 
         doc.select("#p800Link").size mustBe 1
       }

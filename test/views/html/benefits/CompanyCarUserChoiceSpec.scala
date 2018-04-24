@@ -54,7 +54,7 @@ class CompanyCarUserChoiceSpec extends TaiViewSpec {
 
     "display a cancel button" in {
 
-      doc(view).select("#cancelLink").get(0).attributes.get("href") mustBe routes.TaxFreeAmountControllerNew.taxFreeAmount().url
+      doc(view).select("#cancelLink").get(0).attributes.get("href") mustBe routes.TaxFreeAmountController.taxFreeAmount().url
     }
 
     "correctly summarise form errors at the page level" in {
