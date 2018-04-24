@@ -35,16 +35,14 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
 
   "The previous year income calculation print page" should {
 
-    behave like pageWithTitle(messages("tai.yourIncome.heading"))
+    behave like pageWithTitle(s"${messages("tai.yourIncome.heading")} - ${messages("tai.service.navTitle")} - GOV.UK")
 
     "have a small font heading" in {
       doc must haveHeadingH2WithText(messages("tai.income.calculation.TaxableIncomeDetails", "Foo"))
     }
 
     "have a back link" in {
-      val backLink: Element = doc.getElementById("backLink")
-      backLink must haveLinkURL(controllers.routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(TaxYear().prev, 1).url)
-      doc must haveLinkWithText(messages("tai.label.back"))
+      doc must haveElementAtPathWithId("a", "backLink")
     }
 
     "show the necessary print buttons" in {

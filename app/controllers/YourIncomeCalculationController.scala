@@ -19,7 +19,8 @@ package controllers
 import controllers.ServiceChecks.CustomRule
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
+import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.BadRequestException
@@ -51,6 +52,7 @@ trait YourIncomeCalculationController extends TaiBaseController
       implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
+            implicit val messages = Messages.Implicits.applicationMessages
             incomeCalculationPage(empId, false)
           }
   }
@@ -60,11 +62,12 @@ trait YourIncomeCalculationController extends TaiBaseController
       implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
+            implicit val messages = Messages.Implicits.applicationMessages
             incomeCalculationPage(empId, true)
           }
   }
 
-  private def incomeCalculationPage(empId: Int, printPage: Boolean)(implicit request: Request[AnyContent], user: TaiUser, taiRoot: TaiRoot) = {
+  private def incomeCalculationPage(empId: Int, printPage: Boolean)(implicit request: Request[AnyContent], user: TaiUser, taiRoot: TaiRoot, messages: Messages) = {
     val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
     val employmentFuture = employmentService.employment(Nino(user.getNino), empId)
 
@@ -74,9 +77,9 @@ trait YourIncomeCalculationController extends TaiBaseController
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-          val model = YourIncomeCalculationViewModelNew(taxCodeIncomes.find(_.employmentId.contains(empId)), employment)
+          val model = YourIncomeCalculationViewModelNew(taxCodeIncomes.find(_.employmentId.contains(empId)), employment)(messages)
           if (printPage) {
-            Ok(views.html.print.yourIncomeCalculationNew(model))
+            Ok(views.html.print.yourIncomeCalculation(model))
           } else {
             Ok(views.html.incomes.yourIncomeCalculationNew(model))
           }
@@ -90,6 +93,7 @@ trait YourIncomeCalculationController extends TaiBaseController
       implicit taiRoot =>
         implicit request => {
           ServiceCheckLite.personDetailsCheck {
+            implicit val messages = Messages.Implicits.applicationMessages
             if (year <= TaxYear().prev) {
               showHistoricIncomeCalculation(Nino(user.getNino), empId, year = year)
             } else {
@@ -104,6 +108,7 @@ trait YourIncomeCalculationController extends TaiBaseController
       implicit taiRoot =>
         implicit request => {
           ServiceCheckLite.personDetailsCheck {
+            implicit val messages = Messages.Implicits.applicationMessages
             if (year <= TaxYear().prev) {
               showHistoricIncomeCalculation(Nino(user.getNino), empId, printPage = true, year = year)
             } else {
@@ -114,7 +119,7 @@ trait YourIncomeCalculationController extends TaiBaseController
   }
 
   private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean = false, year: TaxYear)
-                                   (implicit request: Request[AnyContent], user: TaiUser, taiRoot: TaiRoot): Future[Result] = {
+                                   (implicit request: Request[AnyContent], user: TaiUser, taiRoot: TaiRoot, messages: Messages): Future[Result] = {
     for {
         employment <- employmentService.employments(nino, year)
       } yield {
