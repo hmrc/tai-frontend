@@ -20,24 +20,23 @@ import controllers.{FakeTaiPlayApplication, routes}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.Messages.Implicits._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 
 class timeoutSpec
   extends UnitSpec
   with FakeTaiPlayApplication
-  with ScalaFutures
-  with I18nSupport {
-
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  with ScalaFutures {
 
   "Rendering timeout.scala.html" should {
 
+    implicit val request = FakeRequest("GET", routes.ServiceController.timeoutPage().url)
+    implicit val templateRenderer = MockTemplateRenderer
+    implicit val partialRetriever = MockPartialRetriever
+
     "have the correct title for the page" in {
-      val doc = Jsoup.parse(views.html.timeout()(
-        FakeRequest("GET", routes.ServiceController.timeoutPage().url), messagesApi,
-        templateRenderer = MockTemplateRenderer, partialRetriever = MockPartialRetriever).toString())
+      val doc = Jsoup.parse(views.html.timeout().toString())
 
       doc.select(".page-header").text shouldBe "Log In"
     }
