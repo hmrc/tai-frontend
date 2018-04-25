@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.model.TaiRoot
 
 import scala.concurrent.Future
 
-class ServiceChecksSpec extends PlaySpec with FakeTaiPlayApplication {
+class ServiceCheckLiteSpec extends PlaySpec with FakeTaiPlayApplication {
 
   implicit val hc = HeaderCarrier()
   implicit val user = UserBuilder.apply()
