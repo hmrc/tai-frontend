@@ -37,7 +37,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.TaiRoot
-import uk.gov.hmrc.tai.service.{EmploymentService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.service.{EmploymentService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.tai.util.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 
 import scala.concurrent.Future
@@ -343,7 +343,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
 
     override implicit def templateRenderer: MockTemplateRenderer.type = MockTemplateRenderer
 
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
@@ -355,7 +355,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
   }
 
 }

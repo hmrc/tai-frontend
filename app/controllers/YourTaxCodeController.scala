@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.service.{TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.TaxCodeViewModel
 
 import scala.concurrent.Future
@@ -40,11 +40,11 @@ trait YourTaxCodeController extends TaiBaseController
   with Auditable
   with FeatureTogglesConfig {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def taxAccountService: TaxAccountService
 
-  def taxCodes(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def taxCodes(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -63,7 +63,7 @@ trait YourTaxCodeController extends TaiBaseController
 }
 
 object YourTaxCodeController extends YourTaxCodeController with AuthenticationConnectors {
-  override val taiService = TaiService
+  override val personService = PersonService
   override val taxAccountService: TaxAccountService = TaxAccountService
 
   override implicit def templateRenderer = LocalTemplateRenderer

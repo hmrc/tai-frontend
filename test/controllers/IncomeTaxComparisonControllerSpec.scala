@@ -36,7 +36,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
 import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxAccountService}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -105,7 +105,7 @@ with I18nSupport {
   def createSut = new SUT()
 
   class SUT() extends IncomeTaxComparisonController {
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override val codingComponentService: CodingComponentService = mock[CodingComponentService]
     override val employmentService: EmploymentService = mock[EmploymentService]
@@ -114,7 +114,7 @@ with I18nSupport {
     override implicit def templateRenderer: TemplateRenderer = MockTemplateRenderer
     override implicit def partialRetriever: FormPartialRetriever = MockPartialRetriever
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
   }
 }

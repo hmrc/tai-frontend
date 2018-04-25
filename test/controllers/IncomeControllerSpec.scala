@@ -536,7 +536,7 @@ class IncomeControllerSpec extends PlaySpec
   private class SUT extends IncomeController {
     override implicit def templateRenderer: MockTemplateRenderer.type = MockTemplateRenderer
 
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
@@ -552,7 +552,7 @@ class IncomeControllerSpec extends PlaySpec
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
 
   }
 

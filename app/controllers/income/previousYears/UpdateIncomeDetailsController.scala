@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumbe
 import uk.gov.hmrc.tai.forms.income.previousYears.{UpdateIncomeDetailsDecisionForm, UpdateIncomeDetailsForm}
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, PreviousYearsIncomeService, TaiService}
+import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, PreviousYearsIncomeService, PersonService}
 import uk.gov.hmrc.tai.util.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDetailsViewModel, UpdateIncomeDetailsCheckYourAnswersViewModel}
@@ -50,7 +50,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
   with AuditConstants
   with FormValuesConstants {
 
-  def taiService: TaiService
+  def personService: PersonService
   def auditService: AuditService
   def journeyCacheService: JourneyCacheService
   def trackingJourneyCacheService: JourneyCacheService
@@ -64,7 +64,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
     controllers.routes.PayeControllerHistoric.payePage(TaxYear(taxYear)).url
   )
 
-  def decision(taxYear: TaxYear): Action[AnyContent] = authorisedForTai(taiService).async {
+  def decision(taxYear: TaxYear): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -75,7 +75,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
           }
   }
 
-  def submitDecision(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitDecision(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -92,7 +92,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
           )
   }
 
-  def details(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def details(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -105,7 +105,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
           }
   }
 
-  def submitDetails(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitDetails(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -123,7 +123,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
           )
   }
 
-  def telephoneNumber(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def telephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -134,7 +134,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
           }
   }
 
-  def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -160,7 +160,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
           )
   }
 
-  def checkYourAnswers(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def checkYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -183,7 +183,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
           }
   }
 
-  def submitYourAnswers(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -200,7 +200,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
           }
   }
 
-  def confirmation(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def confirmation(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -212,7 +212,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
 }
 
 object UpdateIncomeDetailsController extends UpdateIncomeDetailsController with AuthenticationConnectors {
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
   override val auditService: AuditService = AuditService
   override val journeyCacheService: JourneyCacheService = JourneyCacheService(UpdatePreviousYearsIncome_JourneyKey)
   override val trackingJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)

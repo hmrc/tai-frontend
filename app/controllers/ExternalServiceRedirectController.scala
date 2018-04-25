@@ -23,19 +23,19 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.{AuditService, SessionService, TaiService}
+import uk.gov.hmrc.tai.service.{AuditService, SessionService, PersonService}
 
 trait ExternalServiceRedirectController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def auditService: AuditService
 
   def sessionService: SessionService
 
-  def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] = authorisedForTai(taiService).async {
+  def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request => {
@@ -54,7 +54,7 @@ object ExternalServiceRedirectController extends ExternalServiceRedirectControll
 
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
-  override val taiService = TaiService
+  override val personService = PersonService
   override val auditService = AuditService
   override val sessionService = SessionService
 }

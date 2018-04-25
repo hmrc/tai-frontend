@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompa
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.tai.util.{AuditConstants, FormHelper, FormValuesConstants, JourneyCacheConstants, _}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
@@ -54,13 +54,13 @@ trait RemoveCompanyBenefitController extends TaiBaseController
   with FormValuesConstants
   with RemoveCompanyBenefitStopDateConstants {
 
-  def taiService: TaiService
+  def personService: PersonService
   def auditService: AuditService
   def journeyCacheService: JourneyCacheService
   def trackingJourneyCacheService: JourneyCacheService
   def benefitsService: BenefitsService
 
-  def stopDate: Action[AnyContent] = authorisedForTai(taiService).async {
+  def stopDate: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -74,7 +74,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
           }
   }
 
-  def submitStopDate: Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitStopDate: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -105,7 +105,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
   }
 
 
-  def totalValueOfBenefit(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def totalValueOfBenefit(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -119,7 +119,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
             }
   }
 
-  def submitBenefitValue(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitBenefitValue(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -140,7 +140,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
           )
   }
 
-  def telephoneNumber(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def telephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -152,7 +152,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
           }
   }
 
-  def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -180,7 +180,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
           )
   }
 
-  def checkYourAnswers(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def checkYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -209,7 +209,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
           }
   }
 
-  def submitYourAnswers(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -239,7 +239,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
           }
   }
 
-  def cancel: Action[AnyContent] = authorisedForTai(taiService).async {
+  def cancel: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -251,7 +251,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
           }
   }
 
-  def confirmation(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def confirmation(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -280,7 +280,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
 }
 
 object RemoveCompanyBenefitController extends RemoveCompanyBenefitController with AuthenticationConnectors {
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
   override val auditService: AuditService = AuditService
   override val journeyCacheService: JourneyCacheService = JourneyCacheService(EndCompanyBenefit_JourneyKey)
   override val trackingJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)

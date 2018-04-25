@@ -326,7 +326,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
 
   private class SUT extends UpdateIncomeDetailsController {
 
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
@@ -340,7 +340,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
     override val auditService: AuditService = mock[AuditService]
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
   }
 
 }

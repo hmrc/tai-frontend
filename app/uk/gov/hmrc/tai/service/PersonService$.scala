@@ -24,7 +24,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import uk.gov.hmrc.http.HeaderCarrier
 
-trait TaiService {
+trait PersonService {
 
   def taiClient: TaiConnector
 
@@ -32,6 +32,6 @@ trait TaiService {
 }
 
 
-object TaiService extends TaiService {
+object PersonService extends PersonService {
   val taiClient = TaiConnector
 }

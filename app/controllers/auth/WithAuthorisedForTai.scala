@@ -27,7 +27,7 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.tai.auth.ConfigProperties
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaiRoot
-import uk.gov.hmrc.tai.service.TaiService
+import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.Tools
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -83,11 +83,11 @@ trait WithAuthorisedForTaiLite extends DelegationAwareActions { this: ErrorPages
   implicit private def createHeaderCarrier(implicit request: Request[_]): HeaderCarrier =
     fromHeadersAndSession(request.headers,Some(request.session))
 
-  def authorisedForTai(implicit taiService: TaiService) = {
-    new AuthorisedByTai(AuthorisedFor(TaiRegime, TaiConfidenceLevelPredicate), taiService)
+  def authorisedForTai(implicit personService: PersonService) = {
+    new AuthorisedByTai(AuthorisedFor(TaiRegime, TaiConfidenceLevelPredicate), personService)
   }
 
-  class AuthorisedByTai(authedBy: AuthenticatedBy, taiService: TaiService) {
+  class AuthorisedByTai(authedBy: AuthenticatedBy, personService: PersonService) {
 
     def async(action: AsyncTaiUserRequest) = authedBy.async {
       authContext => implicit request =>
@@ -97,7 +97,7 @@ trait WithAuthorisedForTaiLite extends DelegationAwareActions { this: ErrorPages
     private def resolveLoggedInTaiUser(body: AsyncTaiUserRequest, authContext: AuthContext) (implicit request: Request[AnyContent]): Future[Result] = {
       val taiAccount = authContext.principal.accounts.paye.getOrElse(throw new IllegalArgumentException("Cannot find tai user authority"))
       for {
-        taiRoot <- taiService.personDetails(taiAccount.link)
+        taiRoot <- personService.personDetails(taiAccount.link)
         taiUser <- getTaiUser(authContext, taiRoot)
         result <- body(taiUser)(taiRoot)(request)
       } yield result

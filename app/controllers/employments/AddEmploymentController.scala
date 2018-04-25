@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.employments.{AddEmploymentFirstPayForm, AddEmploymentPayrollNumberForm, EmploymentAddDateForm, EmploymentNameForm}
 import uk.gov.hmrc.tai.model.domain.AddEmployment
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.tai.util.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
@@ -50,7 +50,7 @@ trait AddEmploymentController extends TaiBaseController
   with AuditConstants
   with FormValuesConstants {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def auditService: AuditService
 
@@ -74,7 +74,7 @@ trait AddEmploymentController extends TaiBaseController
       case _ => Valid
     })
 
-  def addEmploymentName(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def addEmploymentName(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -82,7 +82,7 @@ trait AddEmploymentController extends TaiBaseController
         }
   }
 
-  def submitEmploymentName(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def submitEmploymentName(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         EmploymentNameForm.form.bindFromRequest.fold(
@@ -96,7 +96,7 @@ trait AddEmploymentController extends TaiBaseController
         )
   }
 
-  def addEmploymentStartDate(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def addEmploymentStartDate(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -107,7 +107,7 @@ trait AddEmploymentController extends TaiBaseController
         }
   }
 
-  def submitEmploymentStartDate(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def submitEmploymentStartDate(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         journeyCacheService.currentCache map {
@@ -133,7 +133,7 @@ trait AddEmploymentController extends TaiBaseController
         }
   }
 
-  def receivedFirstPay(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def receivedFirstPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -143,7 +143,7 @@ trait AddEmploymentController extends TaiBaseController
         }
   }
 
-  def submitFirstPay(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def submitFirstPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         AddEmploymentFirstPayForm.form.bindFromRequest().fold(
@@ -161,7 +161,7 @@ trait AddEmploymentController extends TaiBaseController
         )
   }
 
-  def sixWeeksError(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def sixWeeksError(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -172,7 +172,7 @@ trait AddEmploymentController extends TaiBaseController
         }
   }
 
-  def addEmploymentPayrollNumber(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def addEmploymentPayrollNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -184,7 +184,7 @@ trait AddEmploymentController extends TaiBaseController
         }
   }
 
-  def submitEmploymentPayrollNumber(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def submitEmploymentPayrollNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         AddEmploymentPayrollNumberForm.form.bindFromRequest().fold(
@@ -203,7 +203,7 @@ trait AddEmploymentController extends TaiBaseController
         )
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -211,7 +211,7 @@ trait AddEmploymentController extends TaiBaseController
         }
   }
 
-  def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         YesNoTextEntryForm.form(
@@ -234,7 +234,7 @@ trait AddEmploymentController extends TaiBaseController
         )
   }
 
-  def addEmploymentCheckYourAnswers: Action[AnyContent] = authorisedForTai(taiService).async {
+  def addEmploymentCheckYourAnswers: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -254,7 +254,7 @@ trait AddEmploymentController extends TaiBaseController
           }
   }
 
-  def submitYourAnswers: Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitYourAnswers: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -269,7 +269,7 @@ trait AddEmploymentController extends TaiBaseController
           }
   }
 
-  def confirmation: Action[AnyContent] = authorisedForTai(taiService).async {
+  def confirmation: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -281,7 +281,7 @@ trait AddEmploymentController extends TaiBaseController
 
 object AddEmploymentController extends AddEmploymentController with AuthenticationConnectors {
 
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
   override val auditService: AuditService = AuditService
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever

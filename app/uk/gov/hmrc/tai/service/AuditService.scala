@@ -38,7 +38,7 @@ trait AuditService {
   def appName: String
 
   def auditConnector: AuditConnector
-  def taiService: TaiService
+  def personService: PersonService
 
   val userEnterEvent = "userEntersService"
   val employmentPensionEvent = "startedEmploymentPensionJourney"
@@ -131,6 +131,6 @@ object AuditService extends AuditService {
 
   override val appName: String = AppName.appName
   override val auditConnector: AuditConnector = AuditConnector
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
 }
 

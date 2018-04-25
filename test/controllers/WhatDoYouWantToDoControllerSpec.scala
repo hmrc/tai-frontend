@@ -94,7 +94,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     "redirect to mci page" when {
       "mci indicator is true" in {
         val testController = createSUT()
-        when(testController.taiService.personDetails(any())(any()))
+        when(testController.personService.personDetails(any())(any()))
           .thenReturn(Future.successful(TaiRoot(nino.nino, 0, "Mr", "Name", None, "Surname", "Name Surname", true, Some(false))))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -124,7 +124,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
       "the deceased indicator is set on the retrieved TaiRoot" in {
         val testController = createSUT()
-        when(testController.taiService.personDetails(any())(any()))
+        when(testController.personService.personDetails(any())(any()))
           .thenReturn(Future.successful(TaiRoot(nino.nino, 0, "Mr", "Name", None, "Surname", "Name Surname", false, Some(true))))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
 
@@ -135,7 +135,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
       "the deceased AND mci indicators are set on the retrived TaiRoot" in {
         val testController = createSUT()
-        when(testController.taiService.personDetails(any())(any()))
+        when(testController.personService.personDetails(any())(any()))
           .thenReturn(Future.successful(TaiRoot(nino.nino, 0, "Mr", "Name", None, "Surname", "Name Surname", true, Some(true))))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
 
@@ -498,7 +498,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     new WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled)
 
   class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true) extends WhatDoYouWantToDoController {
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override val employmentService: EmploymentService = mock[EmploymentService]
     override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
@@ -515,7 +515,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
     when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any())(any())).thenReturn(Future.successful(AuditResult.Success))
 
     when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(

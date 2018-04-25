@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaiService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService}
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
@@ -84,7 +84,7 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val codingComponentService: CodingComponentService = mock[CodingComponentService]
     override val employmentService: EmploymentService = mock[EmploymentService]
     override val companyCarService: CompanyCarService = mock[CompanyCarService]
@@ -92,7 +92,7 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
     val ad = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
   }
 
 }

@@ -18,7 +18,7 @@ package controllers
 
 import controllers.auth.WithAuthorisedForTaiLite
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.tai.service.{TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.mvc.{Action, AnyContent}
@@ -37,10 +37,10 @@ trait TaxExplanationController extends TaiBaseController
 with DelegationAwareActions
 with WithAuthorisedForTaiLite {
 
-  def taiService: TaiService
+  def personService: PersonService
   def taxAccountService: TaxAccountService
 
-  def taxExplanationPage(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def taxExplanationPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -66,7 +66,7 @@ with WithAuthorisedForTaiLite {
 }
 
 object TaxExplanationController extends TaxExplanationController with AuthenticationConnectors {
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
   override val taxAccountService: TaxAccountService = TaxAccountService
   override implicit val templateRenderer: TemplateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever

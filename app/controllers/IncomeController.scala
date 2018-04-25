@@ -48,7 +48,7 @@ trait IncomeController extends TaiBaseController
   with FormValuesConstants
   with Auditable {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def journeyCacheService: JourneyCacheService
 
@@ -58,7 +58,7 @@ trait IncomeController extends TaiBaseController
 
   def incomeService: IncomeService
 
-  def regularIncome(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def regularIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -76,7 +76,7 @@ trait IncomeController extends TaiBaseController
         }
   }
 
-  def editRegularIncome(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def editRegularIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -105,7 +105,7 @@ trait IncomeController extends TaiBaseController
         }
   }
 
-  def confirmRegularIncome(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def confirmRegularIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -134,7 +134,7 @@ trait IncomeController extends TaiBaseController
         }
   }
 
-  def updateEstimatedIncome(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def updateEstimatedIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -151,7 +151,7 @@ trait IncomeController extends TaiBaseController
         }
   }
 
-  def pensionIncome(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def pensionIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -169,7 +169,7 @@ trait IncomeController extends TaiBaseController
         }
   }
 
-  def editPensionIncome(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def editPensionIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -198,7 +198,7 @@ trait IncomeController extends TaiBaseController
         }
   }
 
-  def confirmPensionIncome(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def confirmPensionIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -227,7 +227,7 @@ trait IncomeController extends TaiBaseController
         }
   }
 
-  def viewIncomeForEdit: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def viewIncomeForEdit: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -254,7 +254,7 @@ trait IncomeController extends TaiBaseController
 }
 
 object IncomeController extends IncomeController with AuthenticationConnectors {
-  override val taiService = TaiService
+  override val personService = PersonService
   override val taxAccountService = TaxAccountService
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever = TaiHtmlPartialRetriever

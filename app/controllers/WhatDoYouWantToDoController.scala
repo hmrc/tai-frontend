@@ -47,7 +47,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
   with Auditable
   with FeatureTogglesConfig {
 
-  def taiService: TaiService
+  def personService: PersonService
   def employmentService: EmploymentService
   def auditService: AuditService
   def trackingService: TrackingService
@@ -55,7 +55,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
 
   implicit val recoveryLocation:RecoveryLocation = classOf[WhatDoYouWantToDoController]
 
-  def whatDoYouWantToDoPage(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def whatDoYouWantToDoPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -84,7 +84,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
           } recoverWith (hodBadRequestResult orElse hodInternalErrorResult)
   }
 
-  def handleWhatDoYouWantToDoPage(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def handleWhatDoYouWantToDoPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -158,7 +158,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
 }
 
 object WhatDoYouWantToDoController extends WhatDoYouWantToDoController with AuthenticationConnectors {
-  override val taiService = TaiService
+  override val personService = PersonService
   override val employmentService = EmploymentService
   override val auditService = AuditService
   override val taxAccountService = TaxAccountService

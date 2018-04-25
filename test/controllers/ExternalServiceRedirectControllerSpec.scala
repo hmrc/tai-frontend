@@ -31,7 +31,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaiRoot
-import uk.gov.hmrc.tai.service.{AuditService, SessionService, TaiService}
+import uk.gov.hmrc.tai.service.{AuditService, SessionService, PersonService}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -63,7 +63,7 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
   def createSut = new SUT
 
   class SUT extends ExternalServiceRedirectController {
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
 
     override val sessionService: SessionService = mock[SessionService]
 
@@ -77,7 +77,7 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
 
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(
       Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino))))

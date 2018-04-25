@@ -46,7 +46,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   with Auditable
   with JourneyCacheConstants {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def journeyCacheService: JourneyCacheService
 
@@ -58,7 +58,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
   val incomeService: IncomeService
 
-  def howToUpdatePage(id: Int): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def howToUpdatePage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
 
@@ -93,7 +93,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     }
   }
 
-  def handleChooseHowToUpdate: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def handleChooseHowToUpdate: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("processChooseHowToUpdate")
@@ -115,7 +115,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         )
   }
 
-  def workingHoursPage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def workingHoursPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("getWorkingHours")
@@ -127,7 +127,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
-  def handleWorkingHours: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def handleWorkingHours: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("processWorkedHours")
@@ -149,7 +149,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         )
   }
 
-  def payPeriodPage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def payPeriodPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("getPayPeriodPage")
@@ -161,7 +161,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
-  def handlePayPeriod: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def handlePayPeriod: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("processPayPeriod")
@@ -185,7 +185,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         )
   }
 
-  def payslipAmountPage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def payslipAmountPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("getPayslipAmountPage")
@@ -198,7 +198,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
-  def handlePayslipAmount: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def handlePayslipAmount: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("processPayslipAmount")
@@ -223,7 +223,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         )
   }
 
-  def taxablePayslipAmountPage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def taxablePayslipAmountPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("getTaxablePayslipAmountPage")
@@ -236,7 +236,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
-  def handleTaxablePayslipAmount: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def handleTaxablePayslipAmount: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("processTaxablePayslipAmount")
@@ -265,7 +265,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
-  def payslipDeductionsPage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def payslipDeductionsPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("getPayslipDeductionsPage")
@@ -277,7 +277,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
-  def handlePayslipDeductions: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def handlePayslipDeductions: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("processPayslipDeductions")
@@ -306,7 +306,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         )
   }
 
-  def bonusPaymentsPage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def bonusPaymentsPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("getBonusPaymentsPage")
@@ -320,7 +320,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
-  def handleBonusPayments: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def handleBonusPayments: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("processBonusPayments")
@@ -350,7 +350,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         )
   }
 
-  def bonusOvertimeAmountPage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def bonusOvertimeAmountPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         for {
@@ -367,7 +367,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
-  def handleBonusOvertimeAmount: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def handleBonusOvertimeAmount: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("processBonusOvertimeAmount")
@@ -398,7 +398,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
-  def estimatedPayPage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def estimatedPayPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("getEstimatedPayPage")
@@ -432,7 +432,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         result.flatMap(identity)
   }
 
-  def handleCalculationResult: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def handleCalculationResult: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         sendActingAttorneyAuditEvent("processCalculationResult")
@@ -446,7 +446,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
-  def calcUnavailablePage: Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def calcUnavailablePage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         for {
@@ -459,7 +459,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 }
 
 object IncomeUpdateCalculatorController extends IncomeUpdateCalculatorController with AuthenticationConnectors {
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
   override val activityLoggerService: ActivityLoggerService = ActivityLoggerService
   override val journeyCacheService = JourneyCacheService(UpdateIncome_JourneyKey)
   override val employmentService: EmploymentService = EmploymentService

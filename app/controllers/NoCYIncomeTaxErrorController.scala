@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.service.{EmploymentService, TaiService}
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -43,11 +43,11 @@ trait NoCYIncomeTaxErrorController extends FrontendController
   with ErrorPagesHandler
   with Auditable {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def employmentService: EmploymentService
 
-  def noCYIncomeTaxErrorPage(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def noCYIncomeTaxErrorPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request => {
@@ -70,7 +70,7 @@ trait NoCYIncomeTaxErrorController extends FrontendController
 }
 
 object NoCYIncomeTaxErrorController extends NoCYIncomeTaxErrorController with AuthenticationConnectors {
-  override val taiService = TaiService
+  override val personService = PersonService
   override val employmentService = EmploymentService
 
   override implicit def templateRenderer = LocalTemplateRenderer

@@ -25,7 +25,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.service.{EmploymentService, TaiService}
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerException, NotFoundException}
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -125,7 +125,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
     "redirect to mci page when mci indicator is true" in {
       val testController = createTestController()
-      when(testController.taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRootMci))
+      when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRootMci))
 
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -234,7 +234,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
   class PayeControllerHistoricTest(employments: Seq[Employment], previousYears: Int) extends PayeControllerHistoric {
 
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val employmentService: EmploymentService = mock[EmploymentService]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val authConnector: AuthConnector = mock[AuthConnector]
@@ -245,7 +245,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
   }
 

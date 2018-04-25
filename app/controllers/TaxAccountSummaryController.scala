@@ -42,13 +42,13 @@ trait TaxAccountSummaryController extends TaiBaseController
   with Auditable
   with AuditConstants {
 
-  def taiService: TaiService
+  def personService: PersonService
   def auditService: AuditService
   def taxAccountService: TaxAccountService
   def employmentService: EmploymentService
   def trackingService: TrackingService
 
-  def onPageLoad: Action[AnyContent] = authorisedForTai(taiService).async {
+  def onPageLoad: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -87,7 +87,7 @@ trait TaxAccountSummaryController extends TaiBaseController
 }
 
 object TaxAccountSummaryController extends TaxAccountSummaryController with AuthenticationConnectors {
-  override val taiService = TaiService
+  override val personService = PersonService
   override val auditService: AuditService = AuditService
   override val taxAccountService = TaxAccountService
   override val employmentService = EmploymentService

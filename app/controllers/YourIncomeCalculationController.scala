@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.service.{EmploymentService, TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModelNew}
 
 import scala.concurrent.Future
@@ -39,13 +39,13 @@ trait YourIncomeCalculationController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def taxAccountService: TaxAccountService
 
   def employmentService: EmploymentService
 
-  def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -54,7 +54,7 @@ trait YourIncomeCalculationController extends TaiBaseController
           }
   }
 
-  def printYourIncomeCalculationPage(empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def printYourIncomeCalculationPage(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -84,7 +84,7 @@ trait YourIncomeCalculationController extends TaiBaseController
     }
   }
 
-  def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request => {
@@ -98,7 +98,7 @@ trait YourIncomeCalculationController extends TaiBaseController
         }
   }
 
-  def printYourIncomeCalculationHistoricYears(year: TaxYear,empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def printYourIncomeCalculationHistoricYears(year: TaxYear,empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request => {
@@ -132,7 +132,7 @@ object YourIncomeCalculationController extends YourIncomeCalculationController w
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
-  override val taiService = TaiService
+  override val personService = PersonService
   override val taxAccountService: TaxAccountService = TaxAccountService
   override val employmentService: EmploymentService = EmploymentService
 }

@@ -28,7 +28,7 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{JourneyCacheService, SessionService, TaiService}
+import uk.gov.hmrc.tai.service.{JourneyCacheService, SessionService, PersonService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
@@ -48,12 +48,12 @@ trait CompanyCarController extends TaiBaseController
   with JourneyCacheConstants
   with FeatureTogglesConfig{
 
-  def taiService: TaiService
+  def personService: PersonService
   def companyCarService: CompanyCarService
   def journeyCacheService : JourneyCacheService
   def sessionService: SessionService
 
-  def redirectCompanyCarSelection(employmentId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def redirectCompanyCarSelection(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -64,7 +64,7 @@ trait CompanyCarController extends TaiBaseController
           }
   }
 
-  def getCompanyCarDetails: Action[AnyContent] = authorisedForTai(taiService).async {
+  def getCompanyCarDetails: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -79,7 +79,7 @@ trait CompanyCarController extends TaiBaseController
           }
   }
 
-  def handleUserJourneyChoice: Action[AnyContent] = authorisedForTai(taiService).async {
+  def handleUserJourneyChoice: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -101,7 +101,7 @@ trait CompanyCarController extends TaiBaseController
           )
   }
 
-  def getCompanyCarEndDate: Action[AnyContent] = authorisedForTai(taiService).async {
+  def getCompanyCarEndDate: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -115,7 +115,7 @@ trait CompanyCarController extends TaiBaseController
           }
   }
 
-  def handleCompanyCarEndDate: Action[AnyContent] = authorisedForTai(taiService).async {
+  def handleCompanyCarEndDate: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -141,7 +141,7 @@ trait CompanyCarController extends TaiBaseController
           }
   }
 
-  def getFuelBenefitEndDate: Action[AnyContent] = authorisedForTai(taiService).async {
+  def getFuelBenefitEndDate: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -155,7 +155,7 @@ trait CompanyCarController extends TaiBaseController
           }
   }
 
-  def handleFuelBenefitEndDate: Action[AnyContent] = authorisedForTai(taiService).async {
+  def handleFuelBenefitEndDate: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -174,7 +174,7 @@ trait CompanyCarController extends TaiBaseController
           }
   }
 
-  def checkYourAnswers: Action[AnyContent] = authorisedForTai(taiService).async {
+  def checkYourAnswers: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -186,7 +186,7 @@ trait CompanyCarController extends TaiBaseController
           }
   }
 
-  def handleCheckYourAnswers: Action[AnyContent] = authorisedForTai(taiService).async {
+  def handleCheckYourAnswers: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -195,7 +195,7 @@ trait CompanyCarController extends TaiBaseController
           }
   }
 
-  def confirmation: Action[AnyContent] = authorisedForTai(taiService).async {
+  def confirmation: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -209,7 +209,7 @@ trait CompanyCarController extends TaiBaseController
 
 object CompanyCarController extends CompanyCarController with AuthenticationConnectors {
 
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
   override val companyCarService: CompanyCarService = CompanyCarService
   override val sessionService: SessionService = SessionService
   override val journeyCacheService : JourneyCacheService = JourneyCacheService(CompanyCar_JourneyKey)

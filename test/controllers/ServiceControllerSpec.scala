@@ -18,7 +18,7 @@ package controllers
 
 import java.util.UUID
 
-import uk.gov.hmrc.tai.service.TaiService
+import uk.gov.hmrc.tai.service.PersonService
 import builders.{AuthBuilder, RequestBuilder}
 import uk.gov.hmrc.tai.connectors._
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
@@ -114,11 +114,11 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
     override val delegationConnector = mock[DelegationConnector]
     override implicit val templateRenderer = MockTemplateRenderer
     override implicit val partialRetriever = MockPartialRetriever
-    override val taiService = mock[TaiService]
+    override val personService = mock[PersonService]
     override val userDetailsConnector = mock[UserDetailsConnector]
 
     val taiRoot = TaiRoot(nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", false, Some(false))
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(
       Future.successful(Some(AuthBuilder.createFakeAuthority(nino))))

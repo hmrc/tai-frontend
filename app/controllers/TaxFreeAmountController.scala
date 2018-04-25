@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaiService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
 
 trait TaxFreeAmountController extends TaiBaseController
@@ -38,12 +38,12 @@ trait TaxFreeAmountController extends TaiBaseController
   with Auditable
   with FeatureTogglesConfig {
 
-  def taiService: TaiService
+  def personService: PersonService
   def codingComponentService: CodingComponentService
   def employmentService: EmploymentService
   def companyCarService: CompanyCarService
 
-  def taxFreeAmount: Action[AnyContent] = authorisedForTai(taiService).async {
+  def taxFreeAmount: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -66,7 +66,7 @@ trait TaxFreeAmountController extends TaiBaseController
 }
 
 object TaxFreeAmountController extends TaxFreeAmountController with AuthenticationConnectors {
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
   override val codingComponentService: CodingComponentService = CodingComponentService
   override val employmentService: EmploymentService = EmploymentService
   override val companyCarService: CompanyCarService = CompanyCarService

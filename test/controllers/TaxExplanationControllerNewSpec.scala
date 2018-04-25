@@ -30,7 +30,7 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TotalTax}
-import uk.gov.hmrc.tai.service.{TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -78,14 +78,14 @@ class TaxExplanationControllerSpec extends PlaySpec with MockitoSugar with FakeT
   private def createSUT = new SUT
 
   class SUT extends TaxExplanationController {
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
   }
 }

@@ -33,7 +33,7 @@ import scala.language.postfixOps
 import scala.util.Random
 
 
-class TaiServiceSpec extends PlaySpec
+class PersonServiceSpec extends PlaySpec
     with MockitoSugar
     with I18nSupport
     with FakeTaiPlayApplication {
@@ -59,9 +59,9 @@ class TaiServiceSpec extends PlaySpec
 
   def generateNino: Nino = new Generator(new Random).nextNino
 
-  def createSut = new TaiServiceTest
+  def createSut = new PersonServiceTest
 
-  class TaiServiceTest extends TaiService {
+  class PersonServiceTest extends PersonService {
     override val taiClient: TaiConnector = mock[TaiConnector]
   }
 

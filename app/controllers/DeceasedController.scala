@@ -24,7 +24,7 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.TaiService
+import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.Future
 
@@ -34,16 +34,16 @@ trait DeceasedController extends TaiBaseController
   with WithAuthorisedForTaiLite
   with Auditable {
 
-  def taiService: TaiService
+  def personService: PersonService
 
-  def deceased() = authorisedForTai(taiService).async {
+  def deceased() = authorisedForTai(personService).async {
     implicit user => implicit taiRoot => implicit request =>
       Future.successful(Ok(views.html.deceased_helpline()))
   }
 }
 
 object DeceasedController extends DeceasedController with AuthenticationConnectors {
-  override val taiService = TaiService
+  override val personService = PersonService
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }

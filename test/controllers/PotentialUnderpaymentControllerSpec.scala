@@ -103,7 +103,7 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
 
   private class SUT() extends PotentialUnderpaymentController {
 
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val codingComponentService: CodingComponentService = mock[CodingComponentService]
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override val auditService: AuditService = mock[AuditService]
@@ -114,7 +114,7 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
     override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
 
     when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
       Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](
