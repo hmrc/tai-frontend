@@ -56,7 +56,7 @@ with WithAuthorisedForTaiLite {
                 case (TaiSuccessResponseWithPayload(totalTax: TotalTax),
                 TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
                   val model = TaxExplanationViewModel(totalTax, taxCodeIncomes)
-                  Ok(views.html.howIncomeTaxIsCalculatedNew(model))
+                  Ok(views.html.howIncomeTaxIsCalculated(model))
                 case _ => throw new RuntimeException("Failed to fetch total tax details")
               }
             }

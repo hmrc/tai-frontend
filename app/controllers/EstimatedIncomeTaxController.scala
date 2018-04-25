@@ -73,7 +73,7 @@ trait EstimatedIncomeTaxController extends TaiBaseController
                 TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
                 TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
                   val model = EstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, totalTaxDetails, nonTaxCodeIncome, taxCodeIncomes)
-                  Ok(views.html.estimatedIncomeTaxNew(model, iFormLinks successfulContentOrElse Html("")))
+                  Ok(views.html.estimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
                 case _ => throw new RuntimeException("Failed to get tax summary details")
               }
             }
