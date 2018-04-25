@@ -17,7 +17,7 @@
 package views.html.incomes
 
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class BankBuildingSocietyOverviewSpec extends TaiViewSpec{

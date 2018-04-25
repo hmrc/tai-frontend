@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
-import uk.gov.hmrc.tai.model.CloseAccountRequest
+import uk.gov.hmrc.tai.model.{AmountRequest, CloseAccountRequest, TaxYear}
 import org.joda.time.{DateTime, LocalDate}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -25,9 +25,7 @@ import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.connectors.BbsiConnector
-import uk.gov.hmrc.tai.model.{AmountRequest, CloseAccountRequest}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

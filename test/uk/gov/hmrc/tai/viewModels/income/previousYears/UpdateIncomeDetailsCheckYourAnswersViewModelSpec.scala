@@ -20,7 +20,7 @@ import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 class UpdateIncomeDetailsCheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication {

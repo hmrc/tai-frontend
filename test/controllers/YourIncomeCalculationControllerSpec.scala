@@ -32,10 +32,10 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
-import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.service.{EmploymentService, TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -204,7 +204,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
   val secondPayment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
   val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
   val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
-  val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.tai.TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
+  val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
   val employment = Employment("test employment", Some("EMPLOYER1"), LocalDate.now(),
     None, Seq(annualAccount), "", "", 2, None, false)
 
@@ -220,7 +220,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
   def createSUT = new SUT
 
   class SUT extends YourIncomeCalculationController {
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override val authConnector: AuthConnector = mock[AuthConnector]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
@@ -228,7 +228,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override val employmentService: EmploymentService = mock[EmploymentService]
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
 
   }

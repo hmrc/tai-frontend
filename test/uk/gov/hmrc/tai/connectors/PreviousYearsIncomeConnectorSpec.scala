@@ -27,8 +27,8 @@ import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
-import uk.gov.hmrc.tai.model.tai.TaxYear
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

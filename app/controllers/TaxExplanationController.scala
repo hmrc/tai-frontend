@@ -18,7 +18,7 @@ package controllers
 
 import controllers.auth.WithAuthorisedForTaiLite
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.tai.service.{TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.mvc.{Action, AnyContent}
@@ -28,19 +28,19 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.viewModels.TaxExplanationViewModel
 
 trait TaxExplanationController extends TaiBaseController
 with DelegationAwareActions
 with WithAuthorisedForTaiLite {
 
-  def taiService: TaiService
+  def personService: PersonService
   def taxAccountService: TaxAccountService
 
-  def taxExplanationPage(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def taxExplanationPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -56,7 +56,7 @@ with WithAuthorisedForTaiLite {
                 case (TaiSuccessResponseWithPayload(totalTax: TotalTax),
                 TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
                   val model = TaxExplanationViewModel(totalTax, taxCodeIncomes)
-                  Ok(views.html.howIncomeTaxIsCalculatedNew(model))
+                  Ok(views.html.howIncomeTaxIsCalculated(model))
                 case _ => throw new RuntimeException("Failed to fetch total tax details")
               }
             }
@@ -66,7 +66,7 @@ with WithAuthorisedForTaiLite {
 }
 
 object TaxExplanationController extends TaxExplanationController with AuthenticationConnectors {
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
   override val taxAccountService: TaxAccountService = TaxAccountService
   override implicit val templateRenderer: TemplateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever

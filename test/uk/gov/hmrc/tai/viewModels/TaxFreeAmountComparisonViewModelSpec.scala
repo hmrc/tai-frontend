@@ -213,7 +213,7 @@ class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayAppl
     }
   }
 
-  private val currentTaxYear = uk.gov.hmrc.tai.model.tai.TaxYear()
+  private val currentTaxYear = uk.gov.hmrc.tai.model.TaxYear()
   private val nextTaxYear = currentTaxYear.next
 
 }

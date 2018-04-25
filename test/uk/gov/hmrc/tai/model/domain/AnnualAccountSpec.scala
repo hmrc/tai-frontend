@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.model.domain
 
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.model.TaxYear
 
 
 class AnnualAccountSpec extends PlaySpec {

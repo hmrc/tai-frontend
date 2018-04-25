@@ -27,18 +27,18 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
-import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{EstimatedIncomeTaxViewModel, TaxReliefViewModel}
 
 trait EstimatedIncomeTaxController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def partialService: HasFormPartialService
 
@@ -47,7 +47,7 @@ trait EstimatedIncomeTaxController extends TaiBaseController
   def taxAccountService: TaxAccountService
 
 
-  def estimatedIncomeTax(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def estimatedIncomeTax(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -73,14 +73,14 @@ trait EstimatedIncomeTaxController extends TaiBaseController
                 TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
                 TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
                   val model = EstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, totalTaxDetails, nonTaxCodeIncome, taxCodeIncomes)
-                  Ok(views.html.estimatedIncomeTaxNew(model, iFormLinks successfulContentOrElse Html("")))
+                  Ok(views.html.estimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
                 case _ => throw new RuntimeException("Failed to get tax summary details")
               }
             }
           }
   }
 
-  def taxRelief(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def taxRelief(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -108,7 +108,7 @@ object EstimatedIncomeTaxController extends EstimatedIncomeTaxController with Au
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
-  override val taiService = TaiService
+  override val personService = PersonService
   override val partialService: HasFormPartialService = HasFormPartialService
   override val codingComponentService: CodingComponentService = CodingComponentService
   override val taxAccountService: TaxAccountService = TaxAccountService

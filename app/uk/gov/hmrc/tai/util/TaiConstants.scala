@@ -16,9 +16,6 @@
 
 package uk.gov.hmrc.tai.util
 
-import hmrc.nps2.IabdType._
-
-
 trait JourneyCacheConstants {
 
   val AddEmployment_JourneyKey = "add-employment"
@@ -222,15 +219,6 @@ object TaiConstants {
 
   val notApplicable = "Not applicable"
 
-  val IABD_TYPE_BENEFITS_IN_KIND_TOTAL = Some(BenefitInKind.code)
-  val IABD_TYPE_BENEFITS_IN_KIND = List(
-    Some(Accommodation.code), Some(Assets.code), Some(AssetTransfer.code), Some(EducationalServices.code), Some(EmployerProvidedProfessionalSubscription.code),
-    Some(EmployerProvidedServices.code), Some(Entertaining.code), Some(Expenses.code), Some(IncomeTaxPaidButNotDeductedFromDirectorsRemuneration.code),
-    Some(Mileage.code), Some(NonQualifyingRelocationExpenses.code), Some(NurseryPlaces.code), Some(OtherItems.code), Some(PaymentsOnEmployeesBehalf.code),
-    Some(PersonalIncidentalExpenses.code), Some(QualfyingRelocationExpenses.code), Some(TravelAndSubsistence.code), Some(VouchersAndCreditCards))
-
-  val IABD_UPDATE_SOURCES = List(Some(BpaReceivedFromSpouseOrCivilPartner.code), Some(CommunityInvestmentTaxCredit.code), Some(GiftsOfSharesToCharity.code),
-    Some(RetirementAnnuityPayments.code), Some(Tips.code), Some(Assets.code), Some(AssetTransfer.code), Some(NurseryPlaces))
   val IABD_TYPE_UKDIVIDENDS = 76
   val DividendZeroBandType = "SDR"
 

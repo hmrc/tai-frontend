@@ -27,9 +27,9 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.{AuditConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
@@ -42,13 +42,13 @@ trait TaxAccountSummaryController extends TaiBaseController
   with Auditable
   with AuditConstants {
 
-  def taiService: TaiService
+  def personService: PersonService
   def auditService: AuditService
   def taxAccountService: TaxAccountService
   def employmentService: EmploymentService
   def trackingService: TrackingService
 
-  def onPageLoad: Action[AnyContent] = authorisedForTai(taiService).async {
+  def onPageLoad: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -87,7 +87,7 @@ trait TaxAccountSummaryController extends TaiBaseController
 }
 
 object TaxAccountSummaryController extends TaxAccountSummaryController with AuthenticationConnectors {
-  override val taiService = TaiService
+  override val personService = PersonService
   override val auditService: AuditService = AuditService
   override val taxAccountService = TaxAccountService
   override val employmentService = EmploymentService

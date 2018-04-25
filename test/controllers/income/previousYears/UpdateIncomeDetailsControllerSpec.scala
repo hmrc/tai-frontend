@@ -33,12 +33,11 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.{TaiRoot, TaxYear}
 import uk.gov.hmrc.tai.service._
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants, UpdateHistoricIncomeChoiceConstants}
 
 import scala.concurrent.Future
@@ -326,7 +325,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
 
   private class SUT extends UpdateIncomeDetailsController {
 
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
@@ -340,7 +339,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
     override val auditService: AuditService = mock[AuditService]
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
   }
 
 }

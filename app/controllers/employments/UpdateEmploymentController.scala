@@ -32,7 +32,7 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
-import uk.gov.hmrc.tai.service.{EmploymentService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.service.{EmploymentService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.tai.util.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploymentCheckYourAnswersViewModel}
@@ -54,7 +54,7 @@ trait UpdateEmploymentController extends TaiBaseController
       case _ => Valid
     })
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def employmentService: EmploymentService
 
@@ -70,7 +70,7 @@ trait UpdateEmploymentController extends TaiBaseController
     controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url
   )
 
-  def updateEmploymentDetails(empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def updateEmploymentDetails(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -86,7 +86,7 @@ trait UpdateEmploymentController extends TaiBaseController
           }
   }
 
-  def submitUpdateEmploymentDetails(empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitUpdateEmploymentDetails(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -104,7 +104,7 @@ trait UpdateEmploymentController extends TaiBaseController
           )
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -114,7 +114,7 @@ trait UpdateEmploymentController extends TaiBaseController
         }
   }
 
-  def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         YesNoTextEntryForm.form(
@@ -139,7 +139,7 @@ trait UpdateEmploymentController extends TaiBaseController
         )
   }
 
-  def updateEmploymentCheckYourAnswers(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def updateEmploymentCheckYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -159,7 +159,7 @@ trait UpdateEmploymentController extends TaiBaseController
 
   }
 
-  def submitYourAnswers(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -176,7 +176,7 @@ trait UpdateEmploymentController extends TaiBaseController
           }
   }
 
-  def confirmation: Action[AnyContent] = authorisedForTai(taiService).async {
+  def confirmation: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -187,7 +187,7 @@ trait UpdateEmploymentController extends TaiBaseController
 }
 
 object UpdateEmploymentController extends UpdateEmploymentController with AuthenticationConnectors {
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override val employmentService = EmploymentService

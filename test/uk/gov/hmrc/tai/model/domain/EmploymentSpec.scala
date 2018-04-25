@@ -19,9 +19,9 @@ package uk.gov.hmrc.tai.model.domain
 import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.tai.model.TaxYear
 
 class EmploymentSpec extends PlaySpec {
 

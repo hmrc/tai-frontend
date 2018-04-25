@@ -17,8 +17,8 @@
 package views.html.incomes
 
 import controllers.routes
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class BankBuildingSocietyAccountsSpec extends TaiViewSpec {

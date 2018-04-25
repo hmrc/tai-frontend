@@ -20,9 +20,10 @@ import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.model.tai
+import uk.gov.hmrc.tai.model.{TaxYear, tai}
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.tai.model
 
 class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
@@ -97,7 +98,7 @@ class NoCYIncomeTaxErrorViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
   }
 
   private val currentYear: Int = LocalDate.now().getYear
-  private val cyMinusOneTaxYear: tai.TaxYear = tai.TaxYear(currentYear - 1)
+  private val cyMinusOneTaxYear: TaxYear = model.TaxYear(currentYear - 1)
 
   private val empStartDateOne = cyMinusOneTaxYear.start.plusMonths(2)
   private val empEndDateOne = cyMinusOneTaxYear.start.plusMonths(7)

@@ -27,8 +27,7 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.model.TaiRoot
-import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.model.{TaiRoot, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 
@@ -39,18 +38,18 @@ with DelegationAwareActions
 with WithAuthorisedForTaiLite
 with Auditable {
 
-  def taiService: TaiService
+  def personService: PersonService
   def employmentService: EmploymentService
   def numberOfPreviousYearsToShow: Int
 
-  def lastYearPaye(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def lastYearPaye(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
           Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
   }
 
-  def payePage(year: TaxYear): Action[AnyContent] = authorisedForTai(taiService).async {
+  def payePage(year: TaxYear): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -102,5 +101,5 @@ object PayeControllerHistoric extends PayeControllerHistoric with Authentication
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override val numberOfPreviousYearsToShow: Int = Play.configuration.getInt("tai.numberOfPreviousYearsToShow").getOrElse(3)
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
 }

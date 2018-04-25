@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.TaiService
+import uk.gov.hmrc.tai.service.PersonService
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
@@ -38,7 +38,7 @@ trait TaiLanguageController extends LanguageController with TaiBaseController
   with WithAuthorisedForTaiLite
   with FeatureTogglesConfig {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   override protected def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
@@ -49,7 +49,7 @@ trait TaiLanguageController extends LanguageController with TaiBaseController
 
   protected def isWelshEnabled = welshLanguageEnabled
 
-  override def switchToLanguage (language: String): Action[AnyContent] = authorisedForTai(taiService).async {
+  override def switchToLanguage (language: String): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -72,7 +72,7 @@ trait TaiLanguageController extends LanguageController with TaiBaseController
 
 object TaiLanguageController extends TaiLanguageController with AuthenticationConnectors {
 
-  override def taiService: TaiService = TaiService
+  override def personService: PersonService = PersonService
   override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }

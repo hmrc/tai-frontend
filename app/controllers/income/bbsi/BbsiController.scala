@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.viewModels.income.BbsiAccountsDecisionViewModel
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.tai.service.{BbsiService, TaiService}
+import uk.gov.hmrc.tai.service.{BbsiService, PersonService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.model.domain.BankAccount
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
@@ -41,11 +41,11 @@ trait BbsiController extends TaiBaseController
   with WithAuthorisedForTaiLite
   with BankAccountDecisionConstants {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def bbsiService: BbsiService
 
-  def accounts(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def accounts(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -59,7 +59,7 @@ trait BbsiController extends TaiBaseController
 
   }
 
-  def endConfirmation(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def endConfirmation(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -68,7 +68,7 @@ trait BbsiController extends TaiBaseController
           }
   }
 
-  def updateConfirmation(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def updateConfirmation(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -77,7 +77,7 @@ trait BbsiController extends TaiBaseController
           }
   }
 
-  def removeConfirmation(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def removeConfirmation(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -86,7 +86,7 @@ trait BbsiController extends TaiBaseController
           }
   }
 
-  def untaxedInterestDetails(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def untaxedInterestDetails(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -97,7 +97,7 @@ trait BbsiController extends TaiBaseController
           }
   }
 
-  def decision(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def decision(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -112,7 +112,7 @@ trait BbsiController extends TaiBaseController
           }
   }
 
-  def handleDecisionPage(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def handleDecisionPage(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -143,7 +143,7 @@ trait BbsiController extends TaiBaseController
 
 object BbsiController extends BbsiController {
 
-  override val taiService = TaiService
+  override val personService = PersonService
   override val bbsiService = BbsiService
 
   override protected val delegationConnector = FrontEndDelegationConnector

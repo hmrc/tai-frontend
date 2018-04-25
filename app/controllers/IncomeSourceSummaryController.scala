@@ -24,16 +24,16 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.{EmploymentService, TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 
 trait IncomeSourceSummaryController extends TaiBaseController
   with WithAuthorisedForTaiLite {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def taxAccountService: TaxAccountService
 
@@ -41,7 +41,7 @@ trait IncomeSourceSummaryController extends TaiBaseController
 
   def benefitsService: BenefitsService
 
-  def onPageLoad(empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def onPageLoad(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -67,7 +67,7 @@ trait IncomeSourceSummaryController extends TaiBaseController
 }
 
 object IncomeSourceSummaryController extends IncomeSourceSummaryController with AuthenticationConnectors {
-  override val taiService = TaiService
+  override val personService = PersonService
   override val taxAccountService: TaxAccountService = TaxAccountService
   override val employmentService: EmploymentService = EmploymentService
   override val benefitsService: BenefitsService = BenefitsService

@@ -16,7 +16,6 @@
 
 package controllers
 
-import controllers.ServiceChecks.CustomRule
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import play.api.Play.current
 import play.api.i18n.Messages
@@ -29,11 +28,10 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.{TaiRoot, TaxYear}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.service.{EmploymentService, TaiService, TaxAccountService}
-import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModelNew}
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
 
 import scala.concurrent.Future
 
@@ -41,13 +39,13 @@ trait YourIncomeCalculationController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def taxAccountService: TaxAccountService
 
   def employmentService: EmploymentService
 
-  def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -57,7 +55,7 @@ trait YourIncomeCalculationController extends TaiBaseController
           }
   }
 
-  def printYourIncomeCalculationPage(empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def printYourIncomeCalculationPage(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -77,18 +75,18 @@ trait YourIncomeCalculationController extends TaiBaseController
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-          val model = YourIncomeCalculationViewModelNew(taxCodeIncomes.find(_.employmentId.contains(empId)), employment)(messages)
+          val model = YourIncomeCalculationViewModel(taxCodeIncomes.find(_.employmentId.contains(empId)), employment)(messages)
           if (printPage) {
             Ok(views.html.print.yourIncomeCalculation(model))
           } else {
-            Ok(views.html.incomes.yourIncomeCalculationNew(model))
+            Ok(views.html.incomes.yourIncomeCalculation(model))
           }
         case _ => throw new RuntimeException("Error while fetching RTI details")
       }
     }
   }
 
-  def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request => {
@@ -103,7 +101,7 @@ trait YourIncomeCalculationController extends TaiBaseController
         }
   }
 
-  def printYourIncomeCalculationHistoricYears(year: TaxYear,empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def printYourIncomeCalculationHistoricYears(year: TaxYear,empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request => {
@@ -138,7 +136,7 @@ object YourIncomeCalculationController extends YourIncomeCalculationController w
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
-  override val taiService = TaiService
+  override val personService = PersonService
   override val taxAccountService: TaxAccountService = TaxAccountService
   override val employmentService: EmploymentService = EmploymentService
 }
