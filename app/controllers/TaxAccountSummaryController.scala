@@ -27,9 +27,9 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.{AuditConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel

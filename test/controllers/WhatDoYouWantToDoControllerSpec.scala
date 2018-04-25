@@ -37,10 +37,9 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.{TaiRoot, TaxYear}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers

@@ -23,10 +23,9 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, PayPeriodForm}
-import uk.gov.hmrc.tai.model._
+import uk.gov.hmrc.tai.model.{TaxYear, _}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
 import uk.gov.hmrc.tai.model.domain.income.Ceased
 

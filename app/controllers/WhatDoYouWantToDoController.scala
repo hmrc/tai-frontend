@@ -32,9 +32,9 @@ import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import uk.gov.hmrc.time.TaxYearResolver

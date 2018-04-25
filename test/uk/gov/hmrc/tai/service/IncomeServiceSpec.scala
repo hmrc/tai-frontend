@@ -28,10 +28,9 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, PayPeriodForm}
-import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails}
+import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails, TaxYear}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
 
 import scala.concurrent.duration._

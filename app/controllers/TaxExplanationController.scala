@@ -28,9 +28,9 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.viewModels.TaxExplanationViewModel
 
 trait TaxExplanationController extends TaiBaseController

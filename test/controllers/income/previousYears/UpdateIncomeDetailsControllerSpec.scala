@@ -33,12 +33,11 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.{TaiRoot, TaxYear}
 import uk.gov.hmrc.tai.service._
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants, UpdateHistoricIncomeChoiceConstants}
 
 import scala.concurrent.Future

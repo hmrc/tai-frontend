@@ -24,9 +24,9 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}

@@ -28,8 +28,8 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.AuditConstants
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel

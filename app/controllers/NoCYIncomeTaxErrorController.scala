@@ -28,8 +28,8 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
 import uk.gov.hmrc.time.TaxYearResolver

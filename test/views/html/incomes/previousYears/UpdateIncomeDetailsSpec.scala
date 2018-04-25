@@ -19,7 +19,7 @@ package views.html.incomes.previousYears
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsForm
-import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.previousYears.UpdateHistoricIncomeDetailsViewModel
 

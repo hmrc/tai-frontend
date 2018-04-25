@@ -27,10 +27,10 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{EstimatedIncomeTaxViewModel, TaxReliefViewModel}
 

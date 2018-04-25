@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.tai
+package uk.gov.hmrc.tai.model
 
-import org.joda.time.LocalDate
 import com.github.nscala_time.time.Imports._
+import org.joda.time.LocalDate
 import play.api.libs.json._
 
 case class TaxYear(year: Int) extends Ordered[TaxYear] {

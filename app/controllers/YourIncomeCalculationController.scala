@@ -28,9 +28,8 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.{TaiRoot, TaxYear}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModelNew}
 

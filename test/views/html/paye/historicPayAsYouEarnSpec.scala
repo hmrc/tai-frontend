@@ -22,7 +22,7 @@ import org.jsoup.nodes.Document
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel

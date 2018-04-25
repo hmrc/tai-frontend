@@ -19,13 +19,13 @@ package uk.gov.hmrc.tai.service
 import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.play.audit.AuditExtensions
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.play.config.AppName
 import uk.gov.hmrc.tai.config.{ApplicationConfig, AuditConnector}
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.util.TaiConstants._

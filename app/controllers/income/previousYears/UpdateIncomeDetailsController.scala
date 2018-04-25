@@ -31,9 +31,9 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.forms.income.previousYears.{UpdateIncomeDetailsDecisionForm, UpdateIncomeDetailsForm}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
-import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, PreviousYearsIncomeService, PersonService}
+import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, PersonService, PreviousYearsIncomeService}
 import uk.gov.hmrc.tai.util.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDetailsViewModel, UpdateIncomeDetailsCheckYourAnswersViewModel}

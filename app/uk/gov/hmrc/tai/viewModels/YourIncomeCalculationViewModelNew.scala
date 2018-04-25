@@ -22,9 +22,9 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.tai.model.TaxYear
 
 case class PaymentDetailsViewModel(date: LocalDate,
                                    taxableIncome: BigDecimal,

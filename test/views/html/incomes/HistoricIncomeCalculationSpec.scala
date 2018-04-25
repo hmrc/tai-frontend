@@ -22,8 +22,8 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import org.jsoup.nodes.Document
 import org.jsoup.Jsoup
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.tai.TaxYear
 
 class HistoricIncomeCalculationSpec extends TaiViewSpec {
 

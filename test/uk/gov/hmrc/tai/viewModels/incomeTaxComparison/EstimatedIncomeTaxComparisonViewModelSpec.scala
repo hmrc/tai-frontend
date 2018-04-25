@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.viewModels.incomeTaxComparison
 
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.model.TaxYear
 
 class EstimatedIncomeTaxComparisonViewModelSpec extends PlaySpec {
 

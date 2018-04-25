@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.config
 
 import play.api.Play._
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.model.TaxYear
 import views.html.helper
 
 object ApplicationConfig extends ServicesConfig {

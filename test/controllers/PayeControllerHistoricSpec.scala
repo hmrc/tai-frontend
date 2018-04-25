@@ -29,13 +29,12 @@ import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerException, NotFoundException}
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.{TaiRoot, TaxYear}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.util.TaiConstants.EmployeePensionIForm
 import uk.gov.hmrc.urls.Link

@@ -30,10 +30,9 @@ import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
-import uk.gov.hmrc.tai.model.EmploymentAmount
+import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
 import views.html.incomes.howToUpdate

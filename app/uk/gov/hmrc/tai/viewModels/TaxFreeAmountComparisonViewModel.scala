@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.ViewModelHelper
@@ -109,9 +110,9 @@ object TaxFreeAmountComparisonViewModel {
   }
 }
 
-case class CodingComponentForYear(year: uk.gov.hmrc.tai.model.tai.TaxYear, codingComponents: Seq[CodingComponent])
+case class CodingComponentForYear(year: TaxYear, codingComponents: Seq[CodingComponent])
 
-case class TaxAccountSummaryForYear(year: uk.gov.hmrc.tai.model.tai.TaxYear, taxAccountSummary: TaxAccountSummary)
+case class TaxAccountSummaryForYear(year: TaxYear, taxAccountSummary: TaxAccountSummary)
 
 case class PersonalAllowance(values: Seq[BigDecimal])
 

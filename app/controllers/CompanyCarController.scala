@@ -28,13 +28,13 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{JourneyCacheService, SessionService, PersonService}
+import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, SessionService}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig, TaiHtmlPartialRetriever}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.tai.util.CommonVMHelper._
 import uk.gov.hmrc.tai.util.JourneyCacheConstants

@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.model.tai
 
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
+import uk.gov.hmrc.tai.model.TaxYear
 
 
 class TaxYearSpec extends PlaySpec {
