@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryRowViewModel, TaxFreeAmountViewModel}
 
-class TaxFreeAmountNewViewSpec extends TaiViewSpec {
+class TaxFreeAmountViewSpec extends TaiViewSpec {
 
   "Tax free amount view page" must {
 
@@ -119,7 +119,7 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
         TaxFreeAmountSummaryCategoryViewModel("header1", "header2", true, false, "Deductions from your Personal Allowance", vm))
       val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", svm)
 
-      val document = doc(views.html.taxFreeAmountNew(viewModel))
+      val document = doc(views.html.taxFreeAmount(viewModel))
 
       document must haveLinkElement("estimatedTaxOwedLink", controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url, messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"))
     }
@@ -154,5 +154,5 @@ class TaxFreeAmountNewViewSpec extends TaiViewSpec {
   )
   val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", summaryItemViewModels)
 
-  override def view = views.html.taxFreeAmountNew(viewModel)
+  override def view = views.html.taxFreeAmount(viewModel)
 }

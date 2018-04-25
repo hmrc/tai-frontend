@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.util.CeasedEmploymentHelper
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.{LatestPayment, PaymentDetailsViewModel, YourIncomeCalculationViewModelNew}
+import uk.gov.hmrc.tai.viewModels.{LatestPayment, PaymentDetailsViewModel, YourIncomeCalculationViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
 
 class yourIncomeCalculationSpec extends TaiViewSpec {
@@ -208,7 +208,7 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
                                          hasPayrolledBenefit: Boolean = false) = {
 
     val latestPayment = if (payments.isEmpty) None else Some(LatestPayment(new LocalDate().minusWeeks(4), 400, 50, 25, Weekly))
-    YourIncomeCalculationViewModelNew(
+    YourIncomeCalculationViewModel(
       2,
       "test employment",
       payments,

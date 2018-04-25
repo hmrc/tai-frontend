@@ -143,7 +143,7 @@ trait IncomeController extends TaiBaseController
           } yield {
             response match {
               case TaiSuccessResponse =>
-                Ok(views.html.incomes.editSuccess_new(optionalData.head))
+                Ok(views.html.incomes.editSuccess(optionalData.head))
               case _ => throw new RuntimeException("Failed to update estimated income")
             }
           }

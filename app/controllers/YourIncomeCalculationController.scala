@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.{TaiRoot, TaxYear}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
-import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModelNew}
+import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
 
 import scala.concurrent.Future
 
@@ -75,11 +75,11 @@ trait YourIncomeCalculationController extends TaiBaseController
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-          val model = YourIncomeCalculationViewModelNew(taxCodeIncomes.find(_.employmentId.contains(empId)), employment)(messages)
+          val model = YourIncomeCalculationViewModel(taxCodeIncomes.find(_.employmentId.contains(empId)), employment)(messages)
           if (printPage) {
             Ok(views.html.print.yourIncomeCalculation(model))
           } else {
-            Ok(views.html.incomes.yourIncomeCalculationNew(model))
+            Ok(views.html.incomes.yourIncomeCalculation(model))
           }
         case _ => throw new RuntimeException("Error while fetching RTI details")
       }

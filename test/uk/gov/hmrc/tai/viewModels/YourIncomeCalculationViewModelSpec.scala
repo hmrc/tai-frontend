@@ -24,7 +24,7 @@ import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain._
 
-class YourIncomeCalculationViewModelNewSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
+class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -147,7 +147,7 @@ class YourIncomeCalculationViewModelNewSpec extends PlaySpec with FakeTaiPlayApp
     } else {
       None
     }
-    YourIncomeCalculationViewModelNew(taxCodeIncome, employment)
+    YourIncomeCalculationViewModel(taxCodeIncome, employment)
   }
 
 }

@@ -59,7 +59,7 @@ trait TaxFreeAmountController extends TaiBaseController
       companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
     } yield {
       val viewModel = TaxFreeAmountViewModel(codingComponents, employmentNames, companyCarBenefits)
-      Ok(views.html.taxFreeAmountNew(viewModel))
+      Ok(views.html.taxFreeAmount(viewModel))
     }
   }
 }

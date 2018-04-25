@@ -37,7 +37,7 @@ case class LatestPayment(date: LocalDate,
                          nationalInsuranceAmountYearToDate: BigDecimal,
                          paymentFrequency: PaymentFrequency)
 
-case class YourIncomeCalculationViewModelNew(
+case class YourIncomeCalculationViewModel(
                                               empId: Int,
                                               employerName: String,
                                               payments: Seq[PaymentDetailsViewModel],
@@ -52,8 +52,8 @@ case class YourIncomeCalculationViewModelNew(
                                               hasPayrolledBenefit: Boolean
                                             )
 
-object YourIncomeCalculationViewModelNew {
-  def apply(taxCodeIncome: Option[TaxCodeIncome], employment: Employment)(implicit messages: Messages): YourIncomeCalculationViewModelNew = {
+object YourIncomeCalculationViewModel {
+  def apply(taxCodeIncome: Option[TaxCodeIncome], employment: Employment)(implicit messages: Messages): YourIncomeCalculationViewModel = {
 
     val payments = employment.latestAnnualAccount.map(_.payments).getOrElse(Seq.empty[Payment])
     val paymentDetails = payments.map(payment => PaymentDetailsViewModel(
@@ -76,7 +76,7 @@ object YourIncomeCalculationViewModelNew {
         latestPayment.map(_.date))
     } getOrElse(None, None)
 
-    YourIncomeCalculationViewModelNew(
+    YourIncomeCalculationViewModel(
       employment.sequenceNumber,
       employment.name,
       paymentDetails,
