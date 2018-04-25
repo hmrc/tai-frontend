@@ -42,7 +42,7 @@ import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.time.TaxYearResolver
@@ -520,7 +520,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
   private def createSUT = new SUT
 
   private class SUT extends RemoveCompanyBenefitController {
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val auditService: AuditService = mock[AuditService]
     override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
     override val trackingJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
@@ -533,7 +533,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
   }
 
 }

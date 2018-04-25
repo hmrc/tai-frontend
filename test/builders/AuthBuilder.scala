@@ -16,10 +16,8 @@
 
 package builders
 
-import data.TaiData
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
-import uk.gov.hmrc.tai.model.SessionData
 
 import scala.concurrent.Future
 
@@ -37,10 +35,6 @@ object AuthBuilder {
     Future.successful {
       Some( createFakeAuthority(nino.nino) )
     }
-  }
-
-  def createFakeSessionDataWithPY: SessionData = {
-    TaiData.getSessionDataWithCYPYRtiData
   }
 
   def createFakeAuthority(nino: String) = {

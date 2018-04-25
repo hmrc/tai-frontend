@@ -37,7 +37,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment}
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
@@ -181,7 +181,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
 
   private class SUT extends CompanyBenefitController {
 
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val auditService: AuditService = mock[AuditService]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
@@ -195,6 +195,6 @@ class CompanyBenefitControllerSpec extends PlaySpec
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
   }
 }

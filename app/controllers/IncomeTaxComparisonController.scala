@@ -24,22 +24,22 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 
 trait IncomeTaxComparisonController extends TaiBaseController
   with WithAuthorisedForTaiLite {
 
-  def taiService: TaiService
+  def personService: PersonService
   def taxAccountService: TaxAccountService
   def codingComponentService: CodingComponentService
   def employmentService: EmploymentService
 
-  def onPageLoad(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def onPageLoad(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -103,7 +103,7 @@ trait IncomeTaxComparisonController extends TaiBaseController
 }
 
 object IncomeTaxComparisonController extends IncomeTaxComparisonController with AuthenticationConnectors {
-  override val taiService = TaiService
+  override val personService = PersonService
   override val taxAccountService = TaxAccountService
   override val codingComponentService = CodingComponentService
   override val employmentService: EmploymentService = EmploymentService

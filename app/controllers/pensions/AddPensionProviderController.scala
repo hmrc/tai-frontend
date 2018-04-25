@@ -50,7 +50,7 @@ trait AddPensionProviderController extends TaiBaseController
   with AuditConstants
   with FormValuesConstants {
 
-  def taiService: TaiService
+  def personService: PersonService
   def auditService: AuditService
   def journeyCacheService: JourneyCacheService
   def successfulJourneyCacheService: JourneyCacheService
@@ -66,7 +66,7 @@ trait AddPensionProviderController extends TaiBaseController
     )
   }
 
-  def addPensionProviderName(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def addPensionProviderName(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -74,7 +74,7 @@ trait AddPensionProviderController extends TaiBaseController
         }
   }
 
-  def submitPensionProviderName(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def submitPensionProviderName(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         PensionProviderNameForm.form.bindFromRequest.fold(
@@ -88,7 +88,7 @@ trait AddPensionProviderController extends TaiBaseController
         )
   }
 
-  def receivedFirstPay(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def receivedFirstPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -98,7 +98,7 @@ trait AddPensionProviderController extends TaiBaseController
         }
   }
 
-  def submitFirstPay(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def submitFirstPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         AddPensionProviderFirstPayForm.form.bindFromRequest().fold(
@@ -113,7 +113,7 @@ trait AddPensionProviderController extends TaiBaseController
         )
   }
 
-  def cantAddPension(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def cantAddPension(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -124,7 +124,7 @@ trait AddPensionProviderController extends TaiBaseController
         }
   }
 
-  def addPensionProviderStartDate(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def addPensionProviderStartDate(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -135,7 +135,7 @@ trait AddPensionProviderController extends TaiBaseController
         }
   }
 
-  def submitPensionProviderStartDate(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def submitPensionProviderStartDate(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         journeyCacheService.currentCache flatMap {
@@ -153,7 +153,7 @@ trait AddPensionProviderController extends TaiBaseController
         }
   }
 
-  def addPensionNumber(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def addPensionNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -165,7 +165,7 @@ trait AddPensionProviderController extends TaiBaseController
         }
   }
 
-  def submitPensionNumber(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def submitPensionNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         AddPensionProviderNumberForm.form.bindFromRequest().fold(
@@ -184,7 +184,7 @@ trait AddPensionProviderController extends TaiBaseController
         )
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -192,7 +192,7 @@ trait AddPensionProviderController extends TaiBaseController
         }
   }
 
-  def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         YesNoTextEntryForm.form(
@@ -215,7 +215,7 @@ trait AddPensionProviderController extends TaiBaseController
         )
   }
 
-  def checkYourAnswers: Action[AnyContent] = authorisedForTai(taiService).async {
+  def checkYourAnswers: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -239,7 +239,7 @@ trait AddPensionProviderController extends TaiBaseController
   }
 
 
-  def submitYourAnswers: Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitYourAnswers: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -256,7 +256,7 @@ trait AddPensionProviderController extends TaiBaseController
           }
   }
 
-  def confirmation: Action[AnyContent] = authorisedForTai(taiService).async {
+  def confirmation: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -269,7 +269,7 @@ trait AddPensionProviderController extends TaiBaseController
 
 
 object AddPensionProviderController extends AddPensionProviderController with AuthenticationConnectors {
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
   override val auditService: AuditService = AuditService
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever

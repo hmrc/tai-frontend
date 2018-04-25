@@ -38,7 +38,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.{CloseAccountRequest, TaiRoot}
-import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, TaiService, TaxPeriodLabelService}
+import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService, TaxPeriodLabelService}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.tai.util.{BankAccountClosingInterestConstants, FormValuesConstants, JourneyCacheConstants}
 
@@ -485,7 +485,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
   private implicit val hc= HeaderCarrier()
   private class SUT extends BbsiCloseAccountController {
 
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val bbsiService: BbsiService = mock[BbsiService]
     override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
@@ -498,6 +498,6 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
   }
 }

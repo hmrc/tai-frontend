@@ -150,7 +150,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
         val sut = createSUT
         when(sut.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
         when(sut.authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
-        when(sut.taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+        when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
 
         when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDataAbsentMsg.toLowerCase)))
 
@@ -163,7 +163,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
         val sut = createSUT
         when(sut.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
         when(sut.authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
-        when(sut.taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+        when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
 
         when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsNoEmploymentForCurrentTaxYear.toLowerCase)))
 
@@ -195,7 +195,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
   def createSUT = new SUT()
 
   class SUT() extends TaxAccountSummaryController {
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val auditService: AuditService = mock[AuditService]
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override val employmentService: EmploymentService = mock[EmploymentService]
@@ -207,6 +207,6 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
     override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
   }
 }

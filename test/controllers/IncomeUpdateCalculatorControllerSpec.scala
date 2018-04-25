@@ -573,7 +573,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   private def createSut = new SUT()
 
   private class SUT extends IncomeUpdateCalculatorController {
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val activityLoggerService: ActivityLoggerService = mock[ActivityLoggerService]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
@@ -588,7 +588,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
 
     when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(SampleId))
     when(journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_NameKey))(any())).thenReturn(Future.successful(EmployerName))

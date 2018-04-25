@@ -23,12 +23,12 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.service.{AuditService, TaiService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.{TaiRoot, TaxSummaryDetails}
+import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.service.{AuditService, PersonService}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -60,7 +60,7 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
   def createSut = new SUT
 
   class SUT extends AuditController {
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
 
     override val auditService: AuditService = mock[AuditService]
 
@@ -72,7 +72,7 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
 
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
   }

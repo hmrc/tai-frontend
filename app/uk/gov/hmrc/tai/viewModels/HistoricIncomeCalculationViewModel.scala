@@ -19,21 +19,20 @@ package uk.gov.hmrc.tai.viewModels
 import org.joda.time.LocalDate
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.tai
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.TaiConstants.EYU_DATE_FORMAT
 import play.api.i18n.Messages
-
 import play.api.Play.current
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.urls.Link
 
 case class HistoricIncomeCalculationViewModel(employerName: Option[String], employmentId: Int, payments: Seq[Payment],
                                               endOfTaxYearUpdateMessages: Seq[String], realTimeStatus: RealTimeStatus,
-                                              iFormLink: Html, taxYear: uk.gov.hmrc.tai.model.tai.TaxYear)
+                                              iFormLink: Html, taxYear: TaxYear)
 
 object HistoricIncomeCalculationViewModel {
 
-  def apply(employments: Seq[Employment], employmentId: Int, taxYear: uk.gov.hmrc.tai.model.tai.TaxYear)(implicit messages: Messages): HistoricIncomeCalculationViewModel = {
+  def apply(employments: Seq[Employment], employmentId: Int, taxYear: TaxYear)(implicit messages: Messages): HistoricIncomeCalculationViewModel = {
     val (employment, annualAccount) = fetchEmploymentAndAnnualAccount(employments, taxYear, employmentId)
     val realTimeStatus = fetchRealTimeStatus(annualAccount)
     val (payments, endOfTaxYearUpdateMessages) = annualAccount match {
@@ -51,7 +50,7 @@ object HistoricIncomeCalculationViewModel {
     }
   }
 
-  def fetchEmploymentAndAnnualAccount(employments: Seq[Employment], taxYear: tai.TaxYear, employmentId: Int): (Option[Employment], Option[AnnualAccount]) = {
+  def fetchEmploymentAndAnnualAccount(employments: Seq[Employment], taxYear: TaxYear, employmentId: Int): (Option[Employment], Option[AnnualAccount]) = {
     val employment = employments.find(_.sequenceNumber == employmentId)
     val annualAccount: Option[AnnualAccount] = employment.flatMap(emp => emp.annualAccounts.find(_.taxYear.year == taxYear.year))
     (employment, annualAccount)

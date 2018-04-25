@@ -27,7 +27,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.service.{EmploymentService, TaiService}
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -126,7 +126,7 @@ class NoCYIncomeTaxErrorControllerSpec
   def createSUT(taiRoot: TaiRoot = defaultTaiRoot, employmentDataFailure: Option[Throwable] = None) = new SUT(taiRoot, employmentDataFailure)
 
   class SUT(taiRoot: TaiRoot, employmentDataFailure: Option[Throwable]) extends NoCYIncomeTaxErrorController {
-    override val taiService = mock[TaiService]
+    override val personService = mock[PersonService]
     override implicit val templateRenderer = MockTemplateRenderer
     override implicit val partialRetriever = MockPartialRetriever
     override val employmentService = mock[EmploymentService]
@@ -138,7 +138,7 @@ class NoCYIncomeTaxErrorControllerSpec
     val ad = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
 
     val sampleEmployment = Seq(Employment("empName", None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false))
 

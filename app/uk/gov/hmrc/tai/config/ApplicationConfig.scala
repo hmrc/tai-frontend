@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.config
 
 import play.api.Play._
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.model.TaxYear
 import views.html.helper
 
 object ApplicationConfig extends ServicesConfig {
@@ -52,14 +52,14 @@ object ApplicationConfig extends ServicesConfig {
   lazy val feedbackHost = configuration.getString(s"govuk-tax.$env.external-url.feedback-survey-frontend.host").getOrElse("")
   lazy val companyCarServiceUrl = s"${fetchUrl("paye-frontend")}/paye/company-car/service-landing-page"
   lazy val companyCarFuelBenefitUrl = s"${fetchUrl("paye-frontend")}/paye/company-car/service-landing-page"
-  lazy val updateCompanyCarDetailsUrl = s"$taiServiceUrl/redirect-company-car"
-  lazy val taiServiceUrl = s"${fetchUrl("tai-frontend")}/check-income-tax"
+  lazy val updateCompanyCarDetailsUrl = s"$personServiceUrl/redirect-company-car"
+  lazy val personServiceUrl = s"${fetchUrl("tai-frontend")}/check-income-tax"
   lazy val marriageServiceUrl = s"${fetchUrl("tamc-frontend")}/marriage-allowance-application/history"
   lazy val marriageServiceHistoryUrl = s"${fetchUrl("tamc-frontend")}/marriage-allowance-application/history"
   lazy val medBenefitServiceUrl = s"${fetchUrl("benefits-frontend")}/paye/benefits/medical-benefit"
   lazy val mainContentHeaderPartialUrl = s"${fetchUrl("header-service")}/personal-account/integration/main-content-header"
   lazy val sa16UpliftUrl = s"${fetchUrl("identity-verification-frontend")}/mdtp/uplift"
-  lazy val taiFrontendServiceUrl = s"$taiServiceUrl/income-tax"
+  lazy val taiFrontendServiceUrl = s"$personServiceUrl/income-tax"
   lazy val taxYouPaidStatus = s"${fetchUrl("taxcalc-frontend")}/tax-you-paid/status"
   lazy val gg_web_context = configuration.getString(s"$env.external-url.gg.web-context").getOrElse("gg")
   lazy val ida_web_context = configuration.getString(s"$env.external-url.ida.web-context").getOrElse("ida")

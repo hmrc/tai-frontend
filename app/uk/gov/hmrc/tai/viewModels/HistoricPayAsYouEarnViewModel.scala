@@ -17,22 +17,22 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
-import uk.gov.hmrc.tai.model.tai
 
-case class HistoricPayAsYouEarnViewModel(taxYear: tai.TaxYear, employments: Seq[EmploymentViewModel], hasEmployments: Boolean) {
-  val p800ServiceIsAvailable: Boolean = taxYear == tai.TaxYear().prev
+case class HistoricPayAsYouEarnViewModel(taxYear: TaxYear, employments: Seq[EmploymentViewModel], hasEmployments: Boolean) {
+  val p800ServiceIsAvailable: Boolean = taxYear == TaxYear().prev
 }
 
 object HistoricPayAsYouEarnViewModel {
 
-  def apply(taxYear: tai.TaxYear, employments: Seq[Employment])(implicit messages: Messages): HistoricPayAsYouEarnViewModel = {
+  def apply(taxYear: TaxYear, employments: Seq[Employment])(implicit messages: Messages): HistoricPayAsYouEarnViewModel = {
     val employmentVMs: Seq[EmploymentViewModel] = filterEmployments(taxYear, employments) sortBy(_.id)
     HistoricPayAsYouEarnViewModel(taxYear, employmentVMs, employments.nonEmpty)
   }
 
-  private def filterEmployments(taxYear: tai.TaxYear, employments: Seq[Employment]): Seq[EmploymentViewModel] = {
+  private def filterEmployments(taxYear: TaxYear, employments: Seq[Employment]): Seq[EmploymentViewModel] = {
     for {
       emp <- employments
       account <- emp.annualAccounts.find(_.taxYear.year == taxYear.year)

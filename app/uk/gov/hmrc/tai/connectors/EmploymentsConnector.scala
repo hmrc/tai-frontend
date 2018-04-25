@@ -19,8 +19,8 @@ package uk.gov.hmrc.tai.connectors
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.tai.model.TaxYear
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

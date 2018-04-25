@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.viewModels.income.{BbsiUpdateAccountViewModel, BbsiUpdate
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnector, TaiHtmlPartialRetriever}
@@ -40,13 +40,13 @@ trait BbsiUpdateAccountController extends TaiBaseController
   with WithAuthorisedForTaiLite
   with JourneyCacheConstants {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def bbsiService: BbsiService
 
   def journeyCache: JourneyCacheService
 
-  def captureInterest(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def captureInterest(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -63,7 +63,7 @@ trait BbsiUpdateAccountController extends TaiBaseController
           }
   }
 
-  def submitInterest(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitInterest(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -86,7 +86,7 @@ trait BbsiUpdateAccountController extends TaiBaseController
           }
   }
 
-  def checkYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def checkYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -99,7 +99,7 @@ trait BbsiUpdateAccountController extends TaiBaseController
           }
   }
 
-  def submitYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -115,7 +115,7 @@ trait BbsiUpdateAccountController extends TaiBaseController
 
 object BbsiUpdateAccountController extends BbsiUpdateAccountController {
 
-  override val taiService = TaiService
+  override val personService = PersonService
   override val bbsiService = BbsiService
 
   override val journeyCache = JourneyCacheService(UpdateBankAccountJourneyKey)

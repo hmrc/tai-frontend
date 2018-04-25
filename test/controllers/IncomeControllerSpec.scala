@@ -37,10 +37,9 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
-import uk.gov.hmrc.tai.model.{EmploymentAmount, TaiRoot}
+import uk.gov.hmrc.tai.model.{EmploymentAmount, TaiRoot, TaxYear}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
 
@@ -536,7 +535,7 @@ class IncomeControllerSpec extends PlaySpec
   private class SUT extends IncomeController {
     override implicit def templateRenderer: MockTemplateRenderer.type = MockTemplateRenderer
 
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
@@ -552,7 +551,7 @@ class IncomeControllerSpec extends PlaySpec
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
 
   }
 

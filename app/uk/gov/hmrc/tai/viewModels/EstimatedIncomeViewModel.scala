@@ -16,39 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import controllers.viewModels.TupleFormats
-import hmrc.nps2.TaxBand
 import play.api.libs.json.Json
-import uk.gov.hmrc.tai.model.TaxComponent
-import uk.gov.hmrc.tai.util.ViewModelHelper
-
-case class EstimatedIncomeViewModel (
-                                     increasesTax: Boolean = false,
-                                     incomeTaxEstimate: BigDecimal = 0,
-                                     incomeEstimate: BigDecimal = 0,
-                                     taxFreeEstimate: BigDecimal = 0,
-                                     taxRelief: Boolean = false,
-                                     potentialUnderpayment: Boolean = false,
-                                     additionalTaxTable: List[(String,String)] = List(),
-                                     additionalTaxTableV2: List[AdditionalTaxRow] = List(),
-                                     additionalTaxTableTotal: String = "",
-                                     reductionsTable: List[(String,String,String)] = List(),
-                                     reductionsTableTotal: String = "",
-                                     newGraph: BandedGraph,
-                                     hasChanges: Boolean = false,
-                                     ukDividends: Option[TaxComponent],
-                                     taxBands: Option[List[TaxBand]],
-                                     incomeTaxReducedToZeroMessage: Option[String],
-                                     nextYearTaxTotal: BigDecimal =0,
-                                     hasSSR: Boolean = false,
-                                     hasPSA: Boolean = false,
-                                     taxRegion: String
-) extends ViewModelHelper {
-
-  lazy val ssrValue: BigDecimal = newGraph.bands find { _.bandType == "SR" } map { _.income } getOrElse 0
-  lazy val psaValue: BigDecimal = newGraph.bands find { _.bandType == "PSR" } map { _.income } getOrElse 0
-
-}
 
 case class BandedGraph(
                         id:String,
@@ -72,16 +40,6 @@ case class Band(
                  bandType: String
                )
 
-case class AdditionalTaxRow(
-                             description:String,
-                             amount:String,
-                             url:Option[String] = None
-                           )
-
-object AdditionalTaxRow {
-  implicit val format = Json.format[AdditionalTaxRow]
-}
-
 object Band {
   implicit val format = Json.format[Band]
 }
@@ -90,7 +48,3 @@ object BandedGraph {
   implicit val format = Json.format[BandedGraph]
 }
 
-object EstimatedIncomeViewModel {
-  import TupleFormats._
-  implicit val format = Json.format[EstimatedIncomeViewModel]
-}

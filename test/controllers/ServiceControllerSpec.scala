@@ -18,10 +18,9 @@ package controllers
 
 import java.util.UUID
 
-import uk.gov.hmrc.tai.service.TaiService
+import uk.gov.hmrc.tai.service.PersonService
 import builders.{AuthBuilder, RequestBuilder}
 import uk.gov.hmrc.tai.connectors._
-import data.TaiData
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
@@ -35,11 +34,10 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.tai.config.{ApplicationConfig, WSHttp}
-import uk.gov.hmrc.tai.model.{SessionData, TaiRoot, UserDetails}
+import uk.gov.hmrc.tai.model.{TaiRoot, UserDetails}
 import uk.gov.hmrc.tai.util.TaiConstants
 
 import scala.concurrent.Future
@@ -50,7 +48,6 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
 
   implicit val hc = HeaderCarrier()
 
-  val testTaxSummary = TaiData.getIncomesAndPensionsTaxSummary
   "Time Out page" should {
     "return page when called" in  {
       val fakeRequest = FakeRequest("POST", "").withFormUrlEncodedBody()
@@ -69,7 +66,6 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
 
       when(sut.userDetailsConnector.userDetails(any[AuthContext](any()))).thenReturn(Future.successful(UserDetails("GovernmentGateway")))
 
-      when(sut.taiService.taiSession(any(), any(), any())(any())).thenReturn(Future.successful(SessionData(nino, Some(TaiData.getPerson), TaiData.getIncomesAndPensionsTaxSummary, None, None)))
 
       val result = sut.serviceSignout()(authorisedRequest)
 
@@ -81,8 +77,6 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
 
       when(sut.userDetailsConnector.userDetails(any[AuthContext])(any()))
         .thenReturn(Future.successful(UserDetails("Verify")))
-
-      when(sut.taiService.taiSession(any(), any(), any())(any())).thenReturn(Future.successful(SessionData(nino, Some(TaiData.getPerson), TaiData.getIncomesAndPensionsTaxSummary, None, None)))
 
       val result = sut.serviceSignout()(authorisedRequest)
 
@@ -104,7 +98,6 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
   class TestTaiConnector extends TaiConnector {
     override def http = WSHttp
     override def serviceUrl: String = "test/tai"
-    val mockDetails = TaiData.getIncomesAndPensionsTaxSummary
 
     def get(key: String)(implicit hc: HeaderCarrier) =
       Future.successful(Some(JsArray()))
@@ -121,11 +114,11 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
     override val delegationConnector = mock[DelegationConnector]
     override implicit val templateRenderer = MockTemplateRenderer
     override implicit val partialRetriever = MockPartialRetriever
-    override val taiService = mock[TaiService]
+    override val personService = mock[PersonService]
     override val userDetailsConnector = mock[UserDetailsConnector]
 
     val taiRoot = TaiRoot(nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", false, Some(false))
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(
       Future.successful(Some(AuthBuilder.createFakeAuthority(nino))))

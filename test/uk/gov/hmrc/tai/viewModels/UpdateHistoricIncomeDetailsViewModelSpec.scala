@@ -18,9 +18,9 @@ package uk.gov.hmrc.tai.viewModels
 
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.viewModels.income.previousYears.UpdateHistoricIncomeDetailsViewModel
 import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.tai.model.TaxYear
 
 class UpdateHistoricIncomeDetailsViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 

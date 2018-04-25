@@ -33,7 +33,7 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnector, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.model.CloseAccountRequest
-import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
 
@@ -45,7 +45,7 @@ trait BbsiCloseAccountController extends TaiBaseController
   with WithAuthorisedForTaiLite
   with JourneyCacheConstants {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def bbsiService: BbsiService
 
@@ -53,7 +53,7 @@ trait BbsiCloseAccountController extends TaiBaseController
 
   def futureDateValidation: (LocalDate => Boolean, String) = ((date: LocalDate) => !date.isAfter(LocalDate.now()), Messages("tai.date.error.future"))
 
-  def captureCloseDate(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def captureCloseDate(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -68,7 +68,7 @@ trait BbsiCloseAccountController extends TaiBaseController
           }
   }
 
-  def submitCloseDate(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitCloseDate(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -95,7 +95,7 @@ trait BbsiCloseAccountController extends TaiBaseController
           }
   }
 
-  def captureClosingInterest(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def captureClosingInterest(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -109,7 +109,7 @@ trait BbsiCloseAccountController extends TaiBaseController
           }
   }
 
-  def submitClosingInterest(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitClosingInterest(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -125,7 +125,7 @@ trait BbsiCloseAccountController extends TaiBaseController
           )
   }
 
-  def submitYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -141,7 +141,7 @@ trait BbsiCloseAccountController extends TaiBaseController
           }
   }
 
-  def checkYourAnswers(id:Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def checkYourAnswers(id:Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -156,7 +156,7 @@ trait BbsiCloseAccountController extends TaiBaseController
 
 object BbsiCloseAccountController extends BbsiCloseAccountController {
 
-  override val taiService = TaiService
+  override val personService = PersonService
   override val bbsiService = BbsiService
 
   override val journeyCacheService = JourneyCacheService(CloseBankAccountJourneyKey)

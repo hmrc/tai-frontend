@@ -28,7 +28,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.{LocalTemplateRenderer, UserDetailsConnector}
 import uk.gov.hmrc.tai.model.TaiRoot
-import uk.gov.hmrc.tai.service.TaiService
+import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.TaiConstants
 
 import scala.concurrent.Future
@@ -38,7 +38,7 @@ trait ServiceController extends TaiBaseController
   with WithAuthorisedForTaiLite
   with Auditable {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def userDetailsConnector: UserDetailsConnector
 
@@ -46,7 +46,7 @@ trait ServiceController extends TaiBaseController
     implicit request => Future.successful(Ok(views.html.timeout()))
   }
 
-  def serviceSignout = authorisedForTai(taiService).async {
+  def serviceSignout = authorisedForTai(personService).async {
     implicit user => implicit taiRoot => implicit request =>
       userDetailsConnector.userDetails(user.authContext).map { x =>
             if (x.hasVerifyAuthProvider) {
@@ -58,7 +58,7 @@ trait ServiceController extends TaiBaseController
           }
   }
 
-  def gateKeeper() = authorisedForTai(taiService).async {
+  def gateKeeper() = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -72,7 +72,7 @@ trait ServiceController extends TaiBaseController
 }
 
 object ServiceController extends ServiceController with AuthenticationConnectors {
-  override val taiService = TaiService
+  override val personService = PersonService
 
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever

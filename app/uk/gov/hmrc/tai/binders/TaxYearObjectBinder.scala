@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.binders
 import play.api.Play
 import play.api.Play.current
 import play.api.mvc.PathBindable
-import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.model.TaxYear
 
 object TaxYearObjectBinder {
 

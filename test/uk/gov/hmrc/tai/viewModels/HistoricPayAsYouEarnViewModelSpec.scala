@@ -19,8 +19,9 @@ package uk.gov.hmrc.tai.viewModels
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.tai
+import uk.gov.hmrc.tai.model.{TaxYear, tai}
 import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.tai.model
 
 class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
@@ -171,11 +172,11 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
     }
   }
 
-  private val currentYear: Int = tai.TaxYear().year
-  private val cyMinusOneTaxYear: tai.TaxYear = tai.TaxYear(currentYear - 1)
-  private val cyMinusTwoTaxYear: tai.TaxYear = tai.TaxYear(currentYear - 2)
-  private val cyMinusThreeTaxYear: tai.TaxYear = tai.TaxYear(currentYear - 3)
-  private val cyMinusFourTaxYear: tai.TaxYear = tai.TaxYear(currentYear - 4)
+  private val currentYear: Int = TaxYear().year
+  private val cyMinusOneTaxYear: TaxYear = model.TaxYear(currentYear - 1)
+  private val cyMinusTwoTaxYear: TaxYear = model.TaxYear(currentYear - 2)
+  private val cyMinusThreeTaxYear: TaxYear = model.TaxYear(currentYear - 3)
+  private val cyMinusFourTaxYear: TaxYear = model.TaxYear(currentYear - 4)
 
   private val empStartDateWithinCYMinusOne = cyMinusOneTaxYear.start.plusMonths(2)
   private val empStartDateWithinCYMinusThree = cyMinusThreeTaxYear.start.plusMonths(2)
@@ -192,5 +193,5 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
   private val annualAccountWithMultiplePayments = AnnualAccount("", cyMinusOneTaxYear, Available, multipleAnnualAccountsPayments, Nil)
 
   private def createSut(employments: Seq[Employment]) = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, employments)
-  private def createSut(taxYear: tai.TaxYear, employments: Seq[Employment]) = HistoricPayAsYouEarnViewModel(taxYear, employments)
+  private def createSut(taxYear: TaxYear, employments: Seq[Employment]) = HistoricPayAsYouEarnViewModel(taxYear, employments)
 }

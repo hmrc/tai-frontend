@@ -34,7 +34,7 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
-import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
 
 import scala.concurrent.Future
 
@@ -138,7 +138,7 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
   private implicit val hc = HeaderCarrier()
 
   class SUT extends BbsiUpdateAccountController {
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val bbsiService: BbsiService = mock[BbsiService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
@@ -150,7 +150,7 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
     when(bbsiService.untaxedInterest(any())(any())).thenReturn(Future.successful(UntaxedInterest(1000,
       Seq(BankAccount(1, Some("1231231"), Some("123456"), Some("TEST"), 1000, Some("customer"))))))
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
   }
 
 }

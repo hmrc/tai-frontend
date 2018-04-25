@@ -17,9 +17,9 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.TaiConstants.ScottishTaxCodePrefix
 import uk.gov.hmrc.tai.util.ViewModelHelper
 
@@ -86,6 +86,6 @@ object TaxCodeComparisonViewModel {
 
 }
 
-case class TaxCodeIncomesForYear(year: uk.gov.hmrc.tai.model.tai.TaxYear, taxCodeIncomeSources: Seq[TaxCodeIncome])
+case class TaxCodeIncomesForYear(year: TaxYear, taxCodeIncomeSources: Seq[TaxCodeIncome])
 
 case class TaxCodeDetail(name: String, taxCodes: Seq[String])

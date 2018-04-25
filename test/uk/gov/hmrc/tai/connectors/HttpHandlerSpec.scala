@@ -19,20 +19,16 @@ package uk.gov.hmrc.tai.connectors
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers._
-import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.http.Status._
-import play.api.libs.json.{JsString, Json}
-import uk.gov.hmrc.play.http._
+import play.api.libs.json.{Format, JsString, Json}
+import uk.gov.hmrc.http._
+import uk.gov.hmrc.tai.config.WSHttp
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpException, HttpGet, HttpPost, HttpPut, HttpResponse, InternalServerException, LockedException, NotFoundException}
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import uk.gov.hmrc.tai.config.WSHttp
-import uk.gov.hmrc.tai.model.DateRequest
 
 class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
@@ -300,3 +296,8 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
   }
 }
 
+case class DateRequest(date: LocalDate)
+
+object DateRequest {
+  implicit val formatDateRequest: Format[DateRequest] = Json.format[DateRequest]
+}

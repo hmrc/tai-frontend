@@ -17,7 +17,6 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import data.TaiData
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
@@ -31,8 +30,8 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.tai.config.WSHttpProxy
-import uk.gov.hmrc.tai.model.{TaiRoot, TaxSummaryDetails}
-import uk.gov.hmrc.tai.service.TaiService
+import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
 import scala.concurrent.Future
@@ -109,7 +108,7 @@ class HelpControllerSpec extends PlaySpec
   def createSut = new SUT
 
   class SUT extends HelpController {
-    override val taiService = mock[TaiService]
+    override val personService = mock[PersonService]
 
     override val httpGet = mock[WSHttpProxy]
     override val webChatURL = ""
@@ -130,7 +129,7 @@ class HelpControllerSpec extends PlaySpec
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(
       Some( AuthBuilder.createFakeAuthority(nino.nino))))
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
 
     val response = HttpResponse(1, None, Map("a" -> List("1", "2", "3")), None)
 
@@ -145,5 +144,4 @@ class HelpControllerSpec extends PlaySpec
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
-  val testTaxSummary: TaxSummaryDetails = TaiData.getEverything
 }

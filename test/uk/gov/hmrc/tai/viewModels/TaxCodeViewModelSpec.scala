@@ -32,7 +32,7 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  val taxYear = uk.gov.hmrc.tai.model.tai.TaxYear()
+  val taxYear = uk.gov.hmrc.tai.model.TaxYear()
   val taxYearSuffix = Messages("tai.taxCode.title.pt2",
     taxYear.start.toString("d MMMM yyyy"),
     taxYear.end.toString("d MMMM yyyy"))
