@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.model.tai
 
 import org.joda.time.LocalDate
 import com.github.nscala_time.time.Imports._
+import play.api.libs.json._
 
 case class TaxYear(year: Int) extends Ordered[TaxYear] {
   require(year.toString.length == 4, "Invalid year")
@@ -75,5 +76,13 @@ object TaxYear {
         TaxYear(fYear)
       case x => throw new IllegalArgumentException(s"Cannot parse $x")
     }
+  }
+
+  implicit val formatTaxYear = new Format[TaxYear] {
+    override def reads(j: JsValue): JsResult[TaxYear] = j match {
+      case JsNumber(n) => JsSuccess(TaxYear(n.toInt))
+      case x => JsError(s"Expected JsNumber, found $x")
+    }
+    override def writes(v: TaxYear): JsValue = JsNumber(v.year)
   }
 }
