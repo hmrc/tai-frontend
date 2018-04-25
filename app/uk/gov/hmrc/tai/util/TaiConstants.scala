@@ -114,6 +114,10 @@ trait JourneyCacheConstants {
   val EndCompanyBenefit_TelephoneNumberKey = "telephoneNumber"
   val EndCompanyBenefit_BenefitNameKey = "benefitName"
   val EndCompanyBenefit_RefererKey = "referer"
+
+  val IncorrectPensionProvider_JourneyKey = "incorrect-pension-provider"
+  val IncorrectPensionProvider_NameKey = "incorrect-pension-provider-name"
+  val IncorrectPensionProvider_IdKey = "incorrect-pension-provider-id"
 }
 
 trait AuditConstants {
@@ -145,6 +149,10 @@ trait AddPensionFirstPayChoiceConstants {
 
 trait EmploymentDecisionConstants {
   val EmploymentDecision = "employmentDecision"
+}
+
+trait IncorrectPensionDecisionConstants {
+  val IncorrectPensionDecision = "incorrectPensionDecision"
 }
 
 trait IrregularPayConstants {
