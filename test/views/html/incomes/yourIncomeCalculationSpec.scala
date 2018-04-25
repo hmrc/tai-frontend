@@ -21,7 +21,7 @@ import org.joda.time.LocalDate
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.util.CeasedEmploymentHelper
+import uk.gov.hmrc.tai.util.DateHelper
 import uk.gov.hmrc.tai.util.TaiConstants._
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{LatestPayment, PaymentDetailsViewModel, YourIncomeCalculationViewModel}
@@ -85,7 +85,7 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
           messages("tai.income.calculation.ceased.heading", model.latestPayment.get.date.toString(dateFormatPattern))
         )
         doc(ceasedView) must haveParagraphWithText(messages("tai.income.calculation.rti.ceased.emp",
-          s"${CeasedEmploymentHelper.toDisplayFormat(model.endDate)}"))
+          s"${DateHelper.toDisplayFormat(model.endDate)}"))
       }
     }
 
