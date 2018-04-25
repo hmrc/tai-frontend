@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.tai
+package uk.gov.hmrc.tai.util
 
 import play.api.libs.json._
 

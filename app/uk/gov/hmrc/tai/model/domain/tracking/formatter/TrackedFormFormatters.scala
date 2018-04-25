@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.model.domain.tracking.formatter
 import play.api.Logger
 import play.api.libs.json._
 import uk.gov.hmrc.tai.model.domain.tracking._
-import uk.gov.hmrc.tai.model.tai.JsonExtra
+import uk.gov.hmrc.tai.util.JsonExtra
 
 trait TrackedFormFormatters {
 
