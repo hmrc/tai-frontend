@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiT
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, Week1Month1BasisOperation}
-import uk.gov.hmrc.tai.service.{JourneyCacheService, TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.{FormValuesConstants, IncorrectPensionDecisionConstants, JourneyCacheConstants}
 
 import scala.concurrent.Future
@@ -166,7 +166,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
   val generateNino: Nino = new Generator().nextNino
 
   class SUT extends IncorrectPensionProviderController {
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
@@ -175,6 +175,6 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
   }
 }
