@@ -1080,6 +1080,7 @@ tai.split.allowance.income.greater.message.p2=We estimate your highest source of
 tai.split.allowance.income.greater.message.p3=Unless you have already asked us to split your allowances across your income we will review your tax codes before the end of this tax year, or if you change jobs. This is so you pay the right amount of tax.
 tai.taxYearHeading=Tax year
 tai.income.calculation.TaxableIncomeDetails=Taxable income from {0}
+tai.income.calculation.TaxableIncomeDetails.gaTitle=Taxable income from
 tai.income.calculation.potentially.ceased.lede=This employer hasn’t provided any details of your final pay yet.
 tai.income.calculation.update.regular=You can {0} for this employer if it’s wrong.
 tai.income.calculation.update.pension=You can {0} for this pension provider if it’s wrong.

@@ -1334,6 +1334,7 @@ tai.income.previousYears.confirmation.heading=Mae''ch diweddariad wedi dod i law
 tai.iabdSummary.description-48=Y swm y mae''ch cyflogwr/cyflogwyr wedi''i dalu am eitemau ar eich rhan.
 tai.companyCar.checkAnswers.heading=Gwiriwch eich atebion
 tai.income.calculation.TaxableIncomeDetails=Incwm trethadwy oddi wrth {0}
+tai.income.calculation.TaxableIncomeDetails.gaTitle=Incwm trethadwy oddi wrth
 tai.iabdSummary.description-60=Y swm a wariwyd ar eich cerbyd hyd at 5 Ebrill 2002.
 tai.income.calculation.rti.continuous.annually.pension=Rhoddodd y darparwr pensiwn hwn wybod i ni eich bod wedi cael £{0} a''ch bod yn cael eich talu''n flynyddol.
 tai.iya.tax-code-change.cy-plus-one.text1=Credwn nad ydych wedi talu digon o Dreth Incwm y flwyddyn hon ac mae arnoch £{0}.
