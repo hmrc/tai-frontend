@@ -74,7 +74,7 @@ trait IncorrectPensionProviderController extends TaiBaseController
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.mandatoryValues(IncorrectPensionProvider_NameKey, IncorrectPensionProvider_IdKey) flatMap { mandatoryVals =>
+          journeyCacheService.mandatoryValues(IncorrectPensionProvider_IdKey, IncorrectPensionProvider_NameKey) flatMap { mandatoryVals =>
             UpdateRemovePensionForm.form.bindFromRequest().fold(
               formWithErrors => {
                 val model = PensionProviderViewModel(mandatoryVals.head.toInt, mandatoryVals.last)
