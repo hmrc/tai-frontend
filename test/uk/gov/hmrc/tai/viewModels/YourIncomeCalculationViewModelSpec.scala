@@ -197,6 +197,74 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     }
   }
 
+  "getPayFreqMsg" must {
+    "return messages for start date before start of tax year" when {
+      "payment frequency is monthly" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+
+        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(Monthly), 1000, None, 1000) mustBe (
+          (Some(messagesApi("tai.income.calculation.rti.continuous.weekly.emp", MoneyPounds(1000, 2).quantity, "")),
+            Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))))
+      }
+
+      "payment frequency is Annually" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+
+        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(Annually), 1000, None, 1000) mustBe (
+          Some(messagesApi("tai.income.calculation.rti.continuous.annually.emp", MoneyPounds(1000, 2).quantity)),
+          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity)))
+      }
+
+      "payment frequency is OneOff" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+
+        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(OneOff), 1000, None, 1000) mustBe (
+          Some(messagesApi("tai.income.calculation.rti.oneOff.emp", MoneyPounds(1000, 2).quantity)),
+          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity)))
+      }
+
+      "payment frequency is Irregular" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+
+        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(Irregular), 1000, None, 1000) mustBe (
+          None, Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1000, 0).quantity)))
+      }
+    }
+
+    "return messages for start date after tax of start year" when {
+      "payment frequency is monthly" in {
+        val employment = Employment("employment", None, TaxYear().start.plusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+
+        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(Monthly), 1000, None, 1000) mustBe (
+          Some(messagesApi("tai.income.calculation.rti.midYear.weekly", Dates.formatDate(employment.startDate), "", MoneyPounds(1000, 2).quantity)),
+          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity)))
+      }
+
+      "payment frequency is OneOff" in {
+        val employment = Employment("employment", None, TaxYear().start.plusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+
+        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(OneOff), 1000, None, 1000) mustBe (
+          Some(messagesApi("tai.income.calculation.rti.oneOff.emp", MoneyPounds(1000, 2).quantity)),
+          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity)))
+      }
+
+      "payment frequency is Irregular" in {
+        val employment = Employment("employment", None, TaxYear().start.plusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+
+        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(Irregular), 1000, None, 1000) mustBe (
+          None, Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1000, 0).quantity)))
+      }
+    }
+
+    "return none" when {
+      "payment frequency is none" in {
+        val employment = Employment("employment", None, TaxYear().start.plusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+
+        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, None, 1000, None, 1000) mustBe ((None, None))
+      }
+    }
+  }
+
   lazy val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
   lazy val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
 

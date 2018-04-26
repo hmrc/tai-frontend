@@ -240,33 +240,37 @@ object YourIncomeCalculationViewModel {
       case ((Some(Weekly) | Some(FortNightly) | Some(FourWeekly) | Some(Monthly) | Some(Quarterly) | Some(BiAnnually)), false) =>
         (Some(messages("tai.income.calculation.rti.continuous.weekly." + pensionOrEmp,
           MoneyPounds(amountYearToDate, 2).quantity, paymentDate.map(Dates.formatDate).getOrElse(""))),
-          Some(messages("tai.income.calculation.rti." + pensionOrEmp + ".estimate",
-            MoneyPounds(amount, 0).quantity)))
+          Some(messages("tai.income.calculation.rti." + pensionOrEmp + ".estimate", MoneyPounds(amount, 0).quantity)))
+
       case (Some(Annually), false) =>
         (Some(messages("tai.income.calculation.rti.continuous.annually." + pensionOrEmp,
           MoneyPounds(amountYearToDate, 2).quantity)),
           Some(messages("tai.income.calculation.rti." + pensionOrEmp + ".estimate",
             MoneyPounds(amount, 0).quantity)))
+
       case (Some(OneOff), false) =>
         (Some(messages("tai.income.calculation.rti.oneOff." + pensionOrEmp,
           MoneyPounds(amountYearToDate, 2).quantity)),
           Some(messages("tai.income.calculation.rti." + pensionOrEmp + ".estimate",
             MoneyPounds(amount, 0).quantity)))
+
       case (Some(Irregular), false) =>
-        val estPay = amount
-        (None, Some(messages("tai.income.calculation.rti.irregular." + pensionOrEmp, MoneyPounds(estPay, 0).quantity)))
+        (None, Some(messages("tai.income.calculation.rti.irregular." + pensionOrEmp, MoneyPounds(amount, 0).quantity)))
+
       case ((Some(Weekly) | Some(FortNightly) | Some(FourWeekly) | Some(Monthly) | Some(Quarterly) | Some(BiAnnually) | Some(Annually)), true) =>
         (Some(messages("tai.income.calculation.rti.midYear.weekly", Dates.formatDate(employment.startDate),
           paymentDate.map(Dates.formatDate).getOrElse(""), MoneyPounds(amountYearToDate, 2).quantity)),
           Some(messages("tai.income.calculation.rti." + pensionOrEmp + ".estimate",
             MoneyPounds(amount, 0).quantity)))
+
       case (Some(OneOff), true) =>
         (Some(messages("tai.income.calculation.rti.oneOff." + pensionOrEmp, MoneyPounds(amountYearToDate, 2).quantity)),
           Some(messages("tai.income.calculation.rti." + pensionOrEmp + ".estimate",
             MoneyPounds(amount, 0).quantity)))
+
       case (Some(Irregular), true) =>
-        val estPay =  amount
-        (None, Some(messages("tai.income.calculation.rti.irregular." + pensionOrEmp, MoneyPounds(estPay, 0).quantity)))
+        (None, Some(messages("tai.income.calculation.rti.irregular." + pensionOrEmp, MoneyPounds(amount, 0).quantity)))
+
       case _ => (None, None)
     }
   }
