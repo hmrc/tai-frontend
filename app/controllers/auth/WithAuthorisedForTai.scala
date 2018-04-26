@@ -30,6 +30,7 @@ import uk.gov.hmrc.tai.model.{SessionData, TaiRoot}
 import uk.gov.hmrc.tai.service.TaiService
 import uk.gov.hmrc.tai.util.Tools
 import uk.gov.hmrc.time.TaxYearResolver
+import play.api.Play.current
 
 import scala.concurrent.Future
 
@@ -107,6 +108,7 @@ trait WithAuthorisedForTai extends DelegationAwareActions { this: ErrorPagesHand
       } yield result
     }.recoverWith{
       implicit val user = TaiUser(authContext,TaiRoot())
+      implicit val messages = play.api.i18n.Messages.Implicits.applicationMessages
       handleErrorResponse("resolveLoggedInTaiUser",authContext.principal.accounts.paye
         .getOrElse(throw new IllegalArgumentException("Cannot find tai user authority")).nino)
     }
@@ -148,6 +150,7 @@ trait WithAuthorisedForTaiLite extends DelegationAwareActions { this: ErrorPages
     }.recoverWith{
       implicit val user = TaiUser(authContext,TaiRoot())
       implicit val recoveryLocation:RecoveryLocation = classOf[AuthorisedByTai]
+      implicit val messages = play.api.i18n.Messages.Implicits.applicationMessages
       hodAnyErrorResult
     }
 
