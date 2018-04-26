@@ -19,6 +19,7 @@ package controllers
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
+import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
@@ -69,7 +70,7 @@ trait TaxAccountSummaryController extends TaiBaseController
           }
   }
 
-  private def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(implicit hc: HeaderCarrier) = {
+  private def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(implicit hc: HeaderCarrier, messages: Messages) = {
     for {
       taxCodeIncomes <- taxAccountService.taxCodeIncomes(nino, TaxYear())
       nonTaxCodeIncome <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
@@ -79,7 +80,7 @@ trait TaxAccountSummaryController extends TaiBaseController
       (taxCodeIncomes, nonTaxCodeIncome) match {
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
         TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)) =>
-          TaxAccountSummaryViewModel(taxCodeIncomes, employments, taxAccountSummary, isAnyFormInProgress, nonTaxCodeIncome)
+          TaxAccountSummaryViewModel(taxCodeIncomes, employments, taxAccountSummary, isAnyFormInProgress, nonTaxCodeIncome)(messages)
         case _ => throw new RuntimeException("Failed to fetch income details")
       }
     }
