@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary, input}
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 @import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderFirstPayForm
-@import includes.forms.inputRadioGroupNewStyling
+@import includes.forms.inputRadioGroupStyling
 
 @(firstPayForm: Form[Option[String]], pensionProviderName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -43,7 +43,7 @@
 
     @form(action = controllers.pensions.routes.AddPensionProviderController.submitFirstPay(), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {
 
-        @{inputRadioGroupNewStyling(
+        @{inputRadioGroupStyling(
             field=firstPayForm(AddPensionProviderFirstPayForm.FirstPayChoice),
             radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),
             legend=Messages("tai.addPensionProvider.firstPay.legend"),

@@ -19,7 +19,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers._
-@import includes.forms.inputRadioGroupNewStyling
+@import includes.forms.inputRadioGroupStyling
 
 @gaEventActionString = @{"Choose how to update your income"}
 
@@ -46,7 +46,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
     <div class="section flush--bottom">
         @form(action=controllers.routes.IncomeUpdateCalculatorController.handleChooseHowToUpdate){
-                @{inputRadioGroupNewStyling(
+                @{inputRadioGroupStyling(
                     field=howToUpdateForm("howToUpdate"),
                     radioOptions=Seq(("incomeCalculator" -> Messages("tai.howToUpdate.incomeCalculator")), ("enterAnnual" -> Messages("tai.howToUpdate.enterAnnual"))),
                     legend=Messages("tai.whatDoYouWantToDo"),
