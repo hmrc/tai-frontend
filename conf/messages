@@ -1650,3 +1650,11 @@ tai.typeDecodes.IncapacityBenefit=Incapacity Benefit
 language.to=to
 language.day.singular=day
 language.day.plural=days
+
+
+# Incorrect Pension Messages
+tai.incorrectPension.decision.title=Update or remove pension
+tai.incorrectPension.decision.main.heading=Do you currently get pension income from {0}?
+tai.pension.decision.radio1=Yes
+tai.pension.decision.radio2=No
+tai.pension.decision.legend=Do you currently get pension income from this pension provider?
