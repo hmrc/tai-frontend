@@ -20,9 +20,12 @@ import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel.pensionOrEmpMessage
 
 class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
 
@@ -129,6 +132,70 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     }
   }
 
+  "getSameMsg" must {
+    "return none" when {
+      "amountYearToDate is not same as amount" in {
+        val employment = Employment("employment", None, TaxYear().start.plusDays(1),
+          None, Nil, "", "", 2, None, false)
+
+        YourIncomeCalculationViewModel.getSameMsg(employment, 100, 1000, false, None) mustBe ((None, None))
+      }
+    }
+
+    "return message" when {
+      "amountYearToDate is not same as amount" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false)
+
+        YourIncomeCalculationViewModel.getSameMsg(employment, 100, 100, false, None) mustBe
+          (Some(messagesApi("tai.income.calculation.rti.emp.same", Dates.formatDate(TaxYear().start),
+            "", MoneyPounds(100, 0).quantity)), None)
+      }
+    }
+  }
+
+  "getCeasedMessage" must {
+    "return message for ceased employment" when {
+      "endDate and cessationPay is available" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, Some(100), false)
+
+        YourIncomeCalculationViewModel.getCeasedMsg(Ceased, employment, true, 1000) mustBe(
+          (Some(messagesApi("tai.income.calculation.rti.ceased.pension",
+            employment.endDate.map(Dates.formatDate).getOrElse(""))), None)
+        )
+      }
+
+      "cessationPay is not available" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+
+        YourIncomeCalculationViewModel.getCeasedMsg(Ceased, employment, true, 1000) mustBe(
+          (Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay")),
+            Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate",
+              MoneyPounds(1000, 0).quantity))))
+      }
+    }
+
+    "return message for potentially ceased employment" when {
+      "end date is not available" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false)
+
+        YourIncomeCalculationViewModel.getCeasedMsg(PotentiallyCeased, employment, true, 1000) mustBe
+          (Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay")),
+          Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate",
+            MoneyPounds(1000, 0).quantity)))
+      }
+    }
+
+    "return None" when {
+      "employment is live" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+
+        YourIncomeCalculationViewModel.getCeasedMsg(Ceased, employment, true, 1000) mustBe (
+          (Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay")),
+            Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate",
+              MoneyPounds(1000, 0).quantity))))
+      }
+    }
+  }
 
   lazy val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
   lazy val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)

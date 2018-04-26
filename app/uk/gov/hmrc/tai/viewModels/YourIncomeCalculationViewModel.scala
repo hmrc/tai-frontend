@@ -92,6 +92,8 @@ object YourIncomeCalculationViewModel {
     )
   }
 
+  private def pensionOrEmpMessage(isPension: Boolean) = if (isPension) "pension" else "emp"
+
   private def totalNotEqualMessage(isLive: Boolean,
                                    payments: Seq[PaymentDetailsViewModel],
                                    latestPayment: Option[LatestPayment],
@@ -153,7 +155,6 @@ object YourIncomeCalculationViewModel {
     }
   }
 
-
   def getCeasedMsg(employmentStatus: TaxCodeIncomeSourceStatus, employment: Employment, isPension: Boolean,
                    amount: BigDecimal)(implicit messages: Messages): (Option[String], Option[String]) = {
 
@@ -161,16 +162,16 @@ object YourIncomeCalculationViewModel {
       employment.cessationPay.isDefined) match {
 
       case (Ceased, true, true) =>
-        (Some(messages("tai.income.calculation.rti.ceased." + (if (isPension) "pension" else "emp"),
+        (Some(messages("tai.income.calculation.rti.ceased." + pensionOrEmpMessage(isPension),
           employment.endDate.map(Dates.formatDate).getOrElse(""))), None)
+
       case (Ceased, true, false) =>
-        (Some(messages("tai.income.calculation.rti.ceased." + (if (isPension) "pension" else "emp") + ".noFinalPay")),
-          Some(messages("tai.income.calculation.rti.ceased.noFinalPay.estimate",
-            MoneyPounds(amount, 0).quantity)))
-      case (PotentiallyCeased, false, _) => (Some(messages("tai.income.calculation.rti.ceased." +
-        (if (isPension) "pension" else "emp") + ".noFinalPay")),
-        Some(messages("tai.income.calculation.rti.ceased.noFinalPay.estimate",
-          MoneyPounds(amount, 0).quantity)))
+        (Some(messages("tai.income.calculation.rti.ceased." + pensionOrEmpMessage(isPension) + ".noFinalPay")),
+          Some(messages("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(amount, 0).quantity)))
+
+      case (PotentiallyCeased, false, _) =>
+        (Some(messages("tai.income.calculation.rti.ceased." + pensionOrEmpMessage(isPension) + ".noFinalPay")),
+        Some(messages("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(amount, 0).quantity)))
 
       case _ => (None, None)
     }
@@ -233,7 +234,7 @@ object YourIncomeCalculationViewModel {
                     amount: BigDecimal)(implicit messages: Messages): (Option[String], Option[String]) = {
 
     val isMidYear = employment.startDate.isAfter(TaxYear().start)
-    val pensionOrEmp = if (isPension) "pension" else "emp"
+    val pensionOrEmp = pensionOrEmpMessage(isPension)
 
     (paymentFrequency, isMidYear) match {
       case ((Some(Weekly) | Some(FortNightly) | Some(FourWeekly) | Some(Monthly) | Some(Quarterly) | Some(BiAnnually)), false) =>
@@ -276,7 +277,7 @@ object YourIncomeCalculationViewModel {
     val startDate = if (TaxYearResolver.fallsInThisTaxYear(employment.startDate)) employment.startDate else TaxYear().start
 
     if (amount == amountYearToDate) {
-      (Some(messages("tai.income.calculation.rti." + (if (isPension) "pension" else "emp") +
+      (Some(messages("tai.income.calculation.rti." + pensionOrEmpMessage(isPension) +
         ".same", Dates.formatDate(startDate),
         paymentDate.map(Dates.formatDate).getOrElse(""), MoneyPounds(amountYearToDate, 0).quantity)), None)
     } else { (None, None) }
