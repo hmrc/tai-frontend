@@ -21,6 +21,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
 import uk.gov.hmrc.tai.util.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 
 class IncorrectPensionDecisionPageSpec extends TaiViewSpec with FormValuesConstants {
 
@@ -28,7 +29,7 @@ class IncorrectPensionDecisionPageSpec extends TaiViewSpec with FormValuesConsta
     behave like pageWithTitle(messages("tai.incorrectPension.decision.title"))
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(messages("tai.incorrectPension.decision.title"),
-      messages("tai.incorrectPension.decision.main.heading", pensionName))
+      messages("tai.incorrectPension.decision.main.heading", model.pensionName))
 
     behave like pageWithYesNoRadioButton(
       UpdateRemovePensionForm.IncorrectPensionDecision+"-yes",
@@ -37,12 +38,13 @@ class IncorrectPensionDecisionPageSpec extends TaiViewSpec with FormValuesConsta
       messages("tai.pension.decision.radio2"))
 
     behave like pageWithContinueButtonForm(controllers.pensions.routes.IncorrectPensionProviderController.handleDecision().url)
+    behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(model.id))
 
     "show error" when {
       "form contains error" in {
         val pensionUpdateRemoveFormWithError = UpdateRemovePensionForm.form.bind(
           Map(UpdateRemovePensionForm.IncorrectPensionDecision -> ""))
-        val viewWithError: Html = views.html.pensions.incorrectPensionDecision(pensionName, pensionUpdateRemoveFormWithError)
+        val viewWithError: Html = views.html.pensions.incorrectPensionDecision(model, pensionUpdateRemoveFormWithError)
 
         val errorDoc = doc(viewWithError)
 
@@ -55,6 +57,6 @@ class IncorrectPensionDecisionPageSpec extends TaiViewSpec with FormValuesConsta
 
   private lazy val pensionUpdateRemoveForm = UpdateRemovePensionForm.form.bind(
     Map(UpdateRemovePensionForm.IncorrectPensionDecision -> YesValue))
-  private lazy val pensionName = "Test Pension"
-  override def view: Html = views.html.pensions.incorrectPensionDecision(pensionName, pensionUpdateRemoveForm)
+  private lazy val model = PensionProviderViewModel(1, "Test Pension")
+  override def view: Html = views.html.pensions.incorrectPensionDecision(model, pensionUpdateRemoveForm)
 }

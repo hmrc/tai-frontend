@@ -33,6 +33,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 
 import scala.concurrent.Future
 
@@ -57,7 +58,10 @@ trait IncorrectPensionProviderController extends TaiBaseController
                 case Some(taxCodeIncome) =>
                   journeyCacheService.cache(Map(IncorrectPensionProvider_IdKey -> id.toString,
                     IncorrectPensionProvider_NameKey -> taxCodeIncome.name)).
-                    map(_ => Ok(views.html.pensions.incorrectPensionDecision(taxCodeIncome.name, UpdateRemovePensionForm.form)))
+                    map {
+                      val model = PensionProviderViewModel(id, taxCodeIncome.name)
+                      _ => Ok(views.html.pensions.incorrectPensionDecision(model, UpdateRemovePensionForm.form))
+                    }
                 case _ => throw new RuntimeException(s"Tax code income source is not available for id $id")
               }
             case _ => throw new RuntimeException("Tax code income source is not available")
@@ -70,10 +74,11 @@ trait IncorrectPensionProviderController extends TaiBaseController
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.mandatoryValue(IncorrectPensionProvider_NameKey) flatMap { name =>
+          journeyCacheService.mandatoryValues(IncorrectPensionProvider_NameKey, IncorrectPensionProvider_IdKey) flatMap { mandatoryVals =>
             UpdateRemovePensionForm.form.bindFromRequest().fold(
               formWithErrors => {
-                Future(BadRequest(views.html.pensions.incorrectPensionDecision(name, formWithErrors)))
+                val model = PensionProviderViewModel(mandatoryVals.head.toInt, mandatoryVals.last)
+                Future(BadRequest(views.html.pensions.incorrectPensionDecision(model, formWithErrors)))
               },
               {
                 case Some(YesValue) => Future.successful(Ok(""))
