@@ -154,8 +154,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
           withFormUrlEncodedBody(IncorrectPensionDecision -> YesValue))
 
         status(result) mustBe SEE_OTHER
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.title"))
+        redirectLocation(result).get mustBe controllers.pensions.routes.IncorrectPensionProviderController.whatDoYouWantToTellUs().url
       }
     }
 
@@ -172,7 +171,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.title"))
+        doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.title",pensionName))
       }
     }
   }
@@ -182,6 +181,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
   private def createSUT = new SUT
 
   val generateNino: Nino = new Generator().nextNino
+  val pensionName = "TEST"
 
   class SUT extends IncorrectPensionProviderController {
     override val personService: PersonService = mock[PersonService]

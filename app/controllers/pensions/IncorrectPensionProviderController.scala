@@ -28,12 +28,11 @@ import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.PensionIncome
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
-
 import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
+import uk.gov.hmrc.tai.forms.pensions.{UpdateRemovePensionForm, WhatDoYouWantToTellUsForm}
 import uk.gov.hmrc.tai.model.TaxYear
 
 import scala.concurrent.Future
@@ -94,10 +93,38 @@ trait IncorrectPensionProviderController extends TaiBaseController
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           journeyCacheService.mandatoryValue(IncorrectPensionProvider_NameKey) flatMap { name =>
-            Future.successful(Ok(views.html.pensions.update.whatDoYouWantToTellUs(name, UpdateEmploymentDetailsForm.form)))
+            Future.successful(Ok(views.html.pensions.update.whatDoYouWantToTellUs(name, WhatDoYouWantToTellUsForm.form)))
           }
         }
   }
+
+
+  def submitWhatDoYouWantToTellUs(): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit taiRoot =>
+        implicit request =>
+          WhatDoYouWantToTellUsForm.form.bindFromRequest.fold(
+            formWithErrors => {
+              journeyCacheService.mandatoryValue(IncorrectPensionProvider_NameKey) map { name =>
+                BadRequest(views.html.pensions.update.whatDoYouWantToTellUs(name, formWithErrors))
+              }
+            },
+            pensionDetails => {
+              journeyCacheService.cache(Map(IncorrectPensionProvider_DetailsKey -> pensionDetails))
+                .map(_ => Redirect(controllers.pensions.routes.IncorrectPensionProviderController.addTelephoneNumber()))
+            }
+          )
+  }
+
+
+  def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+            Future.successful(Ok(""))
+        }
+  }
+
 
 
 }
