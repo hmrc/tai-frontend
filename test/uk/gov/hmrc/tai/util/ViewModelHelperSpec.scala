@@ -70,10 +70,23 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlay
     }
   }
 
-  "unescapeNonBreakingSpaceOnly" must {
-    "substitute a non breaking space unicode character '\u00A0', in place of any text '&nbsp' instances" in {
-      val replaced = unescapeNonBreakingSpaceOnly("something&nbsp;with&nbsp;non&nbsp;breaks")
-      replaced mustBe "something\u00A0with\u00A0non\u00A0breaks"
+  "calling isTrue" must {
+    "return true, if string is 'true'" in {
+      isTrue("true") mustBe true
+    }
+
+    "return false, if string is 'false'" in {
+      isTrue("false") mustBe false
+    }
+
+    "return false, if string is anything else" in {
+      isTrue("hello") mustBe false
+    }
+  }
+
+  "calling url encoder" must {
+    "encode the url" in {
+      urlEncode("http://foo") mustBe "http%3A%2F%2Ffoo"
     }
   }
 }

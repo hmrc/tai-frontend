@@ -16,12 +16,16 @@
 
 package uk.gov.hmrc.tai.util
 
+import java.net.URLEncoder
+
 import play.api.Play.current
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.time.TaxYearResolver
 import TaiConstants.encodedMinusSign
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
+
+import scala.util.Try
 
 trait ViewModelHelper {
 
@@ -56,8 +60,9 @@ trait ViewModelHelper {
     string.replace(" ", "\u00A0")
   }
 
-  def unescapeNonBreakingSpaceOnly(string: String): String = {
-    string.replace("&nbsp;", "\u00A0")
-  }
+  def isTrue(str: String): Boolean = Try(str.toBoolean).getOrElse(false)
+
+  def urlEncode(u: String) = URLEncoder.encode(u, "UTF-8")
 }
 
+object ViewModelHelper extends ViewModelHelper

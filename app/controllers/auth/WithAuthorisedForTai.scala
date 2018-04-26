@@ -19,7 +19,6 @@ package controllers.auth
 import controllers.ErrorPagesHandler
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
-import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.HeaderCarrierConverter.fromHeadersAndSession
 import uk.gov.hmrc.play.frontend.auth._
@@ -28,8 +27,7 @@ import uk.gov.hmrc.tai.auth.ConfigProperties
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.service.PersonService
-import uk.gov.hmrc.tai.util.Tools
-import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.util.ViewModelHelper
 
 import scala.concurrent.Future
 
@@ -59,7 +57,7 @@ object TaiAuthenticationProvider extends AnyAuthenticationProvider {
   }
 
   private def ggRedirect(implicit request: Request[_]): Future[Result] = {
-    val postSignInUpliftUrl = s"${Tools.urlEncode(ApplicationConfig.pertaxServiceUrl)}/do-uplift?redirectUrl=${Tools.
+    val postSignInUpliftUrl = s"${ViewModelHelper.urlEncode(ApplicationConfig.pertaxServiceUrl)}/do-uplift?redirectUrl=${ViewModelHelper.
       urlEncode(ConfigProperties.postSignInRedirectUrl.
       getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url))}"
 
