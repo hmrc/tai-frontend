@@ -159,6 +159,19 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
     }
   }
 
+  "addTelephoneNumber" must {
+    "show the contact by telephone page" when {
+      "an authorised request is received" in {
+        val sut = createSUT
+        val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+      }
+    }
+  }
+
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private def createSUT = new SUT

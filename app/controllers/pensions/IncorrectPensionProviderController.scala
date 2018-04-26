@@ -31,8 +31,11 @@ import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, TaxAccountSe
 import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages
+import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 
 import scala.concurrent.Future
@@ -46,6 +49,14 @@ trait IncorrectPensionProviderController extends TaiBaseController
   def personService: PersonService
   def taxAccountService: TaxAccountService
   def journeyCacheService: JourneyCacheService
+
+  def telephoneNumberViewModel(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
+    messages("tai.updatePension.preHeading"),
+    messages("tai.canWeContactByPhone.title"),
+    "/thisBackLinkUrlIsNoLongerUsed",
+    "TODO!",
+    controllers.routes.TaxAccountSummaryController.onPageLoad().url
+  )
 
   def decision(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
@@ -81,7 +92,7 @@ trait IncorrectPensionProviderController extends TaiBaseController
                 Future(BadRequest(views.html.pensions.incorrectPensionDecision(model, formWithErrors)))
               },
               {
-                case Some(YesValue) => Future.successful(Ok(""))
+                case Some(YesValue) => Future.successful(Ok(""))  // TODO what do you want to tell us
                 case _ => Future.successful(Redirect(ApplicationConfig.incomeFromEmploymentPensionLinkUrl))
               }
             )
@@ -89,6 +100,18 @@ trait IncorrectPensionProviderController extends TaiBaseController
           }
         }
   }
+
+  def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          Future.successful(Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel, YesNoTextEntryForm.form())))
+        }
+  }
+
+
+
+
 }
 
 object IncorrectPensionProviderController extends IncorrectPensionProviderController with AuthenticationConnectors {
