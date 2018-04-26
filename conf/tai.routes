@@ -254,3 +254,4 @@ GET         /language/:lang                                                     
 
 GET         /incorrect-pension/decision/:id                                             controllers.pensions.IncorrectPensionProviderController.decision(id: Int)
 POST        /incorrect-pension/decision                                                 controllers.pensions.IncorrectPensionProviderController.handleDecision()
+GET         /incorrect-pension/whatDoYouWantToTellUs                                    controllers.pensions.IncorrectPensionProviderController.whatDoYouWantToTellUs()

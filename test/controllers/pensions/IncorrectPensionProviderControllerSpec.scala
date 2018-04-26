@@ -22,7 +22,7 @@ import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiT
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, Week1Month1BasisOperation}
-import uk.gov.hmrc.tai.service.{JourneyCacheService, TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.{FormValuesConstants, IncorrectPensionDecisionConstants, JourneyCacheConstants}
 
 import scala.concurrent.Future
@@ -144,7 +144,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
       }
     }
 
-    "return OK" when {
+    "redirect to whatDoYouWantToTellUs" when {
       "option YES is selected" in {
         val sut = createSUT
         when(sut.journeyCacheService.mandatoryValue(Matchers.eq(IncorrectPensionProvider_NameKey))(any())).
@@ -153,8 +153,26 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
         val result = sut.handleDecision()(RequestBuilder.buildFakeRequestWithAuth("POST").
           withFormUrlEncodedBody(IncorrectPensionDecision -> YesValue))
 
+        status(result) mustBe SEE_OTHER
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.title"))
+      }
+    }
+
+  }
+
+  "whatDoYouWantToTellUs" must {
+    "show the whatDoYouWantToTellUs page" when {
+      "an authorised user calls the page" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(IncorrectPensionProvider_NameKey))(any())).
+          thenReturn(Future.successful("TEST"))
+
+        val result = sut.whatDoYouWantToTellUs()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
         status(result) mustBe OK
-        //TODO add assert to check the page title
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.title"))
       }
     }
   }
@@ -166,7 +184,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
   val generateNino: Nino = new Generator().nextNino
 
   class SUT extends IncorrectPensionProviderController {
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
@@ -175,6 +193,6 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
   }
 }

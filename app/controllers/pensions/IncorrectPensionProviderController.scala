@@ -27,12 +27,14 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.PensionIncome
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.service.{JourneyCacheService, TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
+
+import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
+import uk.gov.hmrc.tai.model.TaxYear
 
 import scala.concurrent.Future
 
@@ -42,11 +44,11 @@ trait IncorrectPensionProviderController extends TaiBaseController
   with JourneyCacheConstants
   with FormValuesConstants {
 
-  def taiService: TaiService
+  def personService: PersonService
   def taxAccountService: TaxAccountService
   def journeyCacheService: JourneyCacheService
 
-  def decision(id: Int): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def decision(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -66,7 +68,7 @@ trait IncorrectPensionProviderController extends TaiBaseController
 
   }
 
-  def handleDecision(): Action[AnyContent] = authorisedForTai(taiService).async { implicit user =>
+  def handleDecision(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -76,7 +78,8 @@ trait IncorrectPensionProviderController extends TaiBaseController
                 Future(BadRequest(views.html.pensions.incorrectPensionDecision(name, formWithErrors)))
               },
               {
-                case Some(YesValue) => Future.successful(Ok(""))
+                case Some(YesValue) => Future.successful(
+                  Redirect(controllers.pensions.routes.IncorrectPensionProviderController.whatDoYouWantToTellUs()))
                 case _ => Future.successful(Redirect(ApplicationConfig.incomeFromEmploymentPensionLinkUrl))
               }
             )
@@ -84,10 +87,23 @@ trait IncorrectPensionProviderController extends TaiBaseController
           }
         }
   }
+
+
+  def whatDoYouWantToTellUs(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          journeyCacheService.mandatoryValue(IncorrectPensionProvider_NameKey) flatMap { name =>
+            Future.successful(Ok(views.html.pensions.update.whatDoYouWantToTellUs(name, UpdateEmploymentDetailsForm.form)))
+          }
+        }
+  }
+
+
 }
 
 object IncorrectPensionProviderController extends IncorrectPensionProviderController with AuthenticationConnectors {
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override val journeyCacheService = JourneyCacheService(IncorrectPensionProvider_JourneyKey)
