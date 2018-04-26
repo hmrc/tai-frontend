@@ -26,14 +26,13 @@ import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.tai.model.DateRequest
+import uk.gov.hmrc.tai.model.TaxYear
 
 import scala.util.Random
 

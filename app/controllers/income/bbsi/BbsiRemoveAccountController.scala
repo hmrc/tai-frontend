@@ -22,7 +22,7 @@ import controllers.{ServiceCheckLite, TaiBaseController}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.tai.service.{BbsiService, TaiService}
+import uk.gov.hmrc.tai.service.{BbsiService, PersonService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnector, TaiHtmlPartialRetriever}
@@ -33,11 +33,11 @@ trait BbsiRemoveAccountController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def bbsiService: BbsiService
 
-  def checkYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def checkYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -50,7 +50,7 @@ trait BbsiRemoveAccountController extends TaiBaseController
           }
   }
 
-  def submitYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -64,7 +64,7 @@ trait BbsiRemoveAccountController extends TaiBaseController
 }
 
 object BbsiRemoveAccountController extends BbsiRemoveAccountController {
-  override val taiService = TaiService
+  override val personService = PersonService
   override val bbsiService = BbsiService
   override protected val delegationConnector = FrontEndDelegationConnector
   override protected val authConnector = FrontendAuthConnector

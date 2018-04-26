@@ -28,9 +28,9 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
-import uk.gov.hmrc.tai.model.tai.TaxYear
-import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.AuditConstants
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 
@@ -40,12 +40,12 @@ trait PotentialUnderpaymentController extends TaiBaseController
   with Auditable
   with AuditConstants {
 
-  def taiService: TaiService
+  def personService: PersonService
   def codingComponentService: CodingComponentService
   def taxAccountService: TaxAccountService
   def auditService: AuditService
 
-  def potentialUnderpaymentPage(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def potentialUnderpaymentPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -68,7 +68,7 @@ trait PotentialUnderpaymentController extends TaiBaseController
 }
 
 object PotentialUnderpaymentController extends PotentialUnderpaymentController with AuthenticationConnectors {
-  override def taiService: TaiService = TaiService
+  override def personService: PersonService = PersonService
   override def codingComponentService: CodingComponentService = CodingComponentService
   override def taxAccountService: TaxAccountService = TaxAccountService
   override def auditService: AuditService = AuditService

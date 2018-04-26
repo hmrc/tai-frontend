@@ -24,6 +24,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.TaiConstants.EYU_DATE_FORMAT
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.model.TaxYear
 
 class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
 
@@ -273,7 +274,7 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
   val sampleEmployeeId = 1
   val sampleRealTimeStatus = TemporarilyUnavailable
   val sampleIFormLink: Html = Html("dummy Link")
-  val previousYear = uk.gov.hmrc.tai.model.tai.TaxYear().prev
+  val previousYear = uk.gov.hmrc.tai.model.TaxYear().prev
   val samplePayment = Payment(date = new LocalDate(2017, 5, 26), amountYearToDate = 2000, taxAmountYearToDate = 1200,
     nationalInsuranceAmountYearToDate = 1500, amount = 200, taxAmount = 100, nationalInsuranceAmount = 150, payFrequency = Monthly)
 
@@ -283,7 +284,7 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
   val sampleEmployment2 = Employment("emp2", None, new LocalDate(2017, 6, 10), None, Seq(sampleAnnualAccount), "taxNumber", "payeNumber", 2, None, false)
   val sampleEmployments = List(sampleEmployment1, sampleEmployment2)
 
-  def createSUT(employments: Seq[Employment] = sampleEmployments, employmentId: Int = 1, taxYear: uk.gov.hmrc.tai.model.tai.TaxYear = previousYear) = {
+  def createSUT(employments: Seq[Employment] = sampleEmployments, employmentId: Int = 1, taxYear: TaxYear = previousYear) = {
     HistoricIncomeCalculationViewModel(employments, employmentId, taxYear)
   }
 

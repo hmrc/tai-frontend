@@ -23,17 +23,17 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.{AuditService, TaiService}
+import uk.gov.hmrc.tai.service.{AuditService, PersonService}
 
 trait AuditController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def auditService: AuditService
 
-  def auditLinksToIForm(iformName: String): Action[AnyContent] = authorisedForTai(taiService).async {
+  def auditLinksToIForm(iformName: String): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request => {
@@ -49,6 +49,6 @@ object AuditController extends AuditController with AuthenticationConnectors {
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
-  override val taiService = TaiService
+  override val personService = PersonService
   override val auditService = AuditService
 }

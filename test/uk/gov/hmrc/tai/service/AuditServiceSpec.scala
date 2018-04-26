@@ -17,23 +17,23 @@
 package uk.gov.hmrc.tai.service
 
 import controllers.FakeTaiPlayApplication
-import data.TaiData
-import uk.gov.hmrc.tai.model._
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, LocalDate}
 import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.test.FakeRequest
-import uk.gov.hmrc.tai.service.AuditService._
-import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.logging.{Authorization, ForwardedFor, RequestId, SessionId}
 import uk.gov.hmrc.http.{HeaderCarrier, UserId}
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model._
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
+import uk.gov.hmrc.tai.service.AuditService._
 import uk.gov.hmrc.tai.util.TaiConstants._
 
 import scala.concurrent.duration._
@@ -142,13 +142,13 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
       "one employment details has been passed" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        when(sut.taiService.taiSession(any(), any(), any())(any())).thenReturn(Future.successful(sessionData))
         implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")))
 
-        Await.result(sut.sendUserEntryAuditEvent(nino, "NA"), 5.seconds)
+        val employment = Employment("The Man Plc", None, new LocalDate("2016-06-09"), None, Nil, "", "", 1, None, false)
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOperation, Live)
+        Await.result(sut.sendUserEntryAuditEvent(nino, "NA", List(employment),List(taxCodeIncome)), 5.seconds)
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
-        verify(sut.taiService, times(1)).taiSession(any(), any(), any())(any())
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(
           auditType = userEnterEvent,detail = auditDetail(userEnterEvent,Some("1")))
@@ -158,13 +158,11 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
       "there is zero employment" in {
         val sut = createSUT
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
-        when(sut.taiService.taiSession(any(), any(), any())(any())).thenReturn(Future.successful(sessionDataWithoutTaxCodeDetails))
         implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")))
 
-        Await.result(sut.sendUserEntryAuditEvent(nino, "NA"), 5.seconds)
+        Await.result(sut.sendUserEntryAuditEvent(nino, "NA", Seq.empty[Employment], Seq.empty[TaxCodeIncome]), 5.seconds)
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])
-        verify(sut.taiService, times(1)).taiSession(any(), any(), any())(any())
         verify(sut.auditConnector, times(1)).sendEvent(argumentCaptor.capture())(any(), any())
         argumentCaptor.getValue.copy(generatedAt = now, eventId = eventId) mustBe event(auditType = userEnterEvent,
           detail = auditDetail(userEnterEvent, Some("0"))).copy(generatedAt = now, eventId = eventId)
@@ -503,24 +501,12 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
 
     )
 
-  private val taxCode = TaxCodeDetails(employment = Some(List(Employments(taxCode = Some("1100L")))),
-    taxCode = Some(List(TaxCode(Some("BR"), Some(20)))), deductions = None, allowances = None)
-
-  val taxSummaryDetails = TaxSummaryDetails(nino = nino.nino, version = 0, taxCodeDetails = Some(taxCode))
-
-  val taxSummaryDetailsWithoutTaxCode = TaxSummaryDetails(nino = nino.nino, version = 0, taxCodeDetails = None)
-
-  val sessionData = SessionData(nino = nino.nino, taiRoot = Some(TaiData.getPerson), taxSummaryDetailsCY = taxSummaryDetails)
-
-  val sessionDataWithoutTaxCodeDetails = SessionData(nino = nino.nino, taiRoot = Some(TaiData.getPerson),
-    taxSummaryDetailsCY = taxSummaryDetailsWithoutTaxCode)
-
   def createSUT = new SUT
 
   class SUT extends AuditService {
 
     override val appName: String = "test"
     override val auditConnector: AuditConnector = mock[AuditConnector]
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
   }
 }

@@ -14,115 +14,96 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.tai.auth.ConfigProperties
-@import uk.gov.hmrc.urls.Link
-@import uk.gov.hmrc.play.views.helpers.MoneyPounds
-@import uk.gov.hmrc.play.views.formatting.Money._
-@import uk.gov.hmrc.play.views.html.layouts.loginStatus
-@import uk.gov.hmrc.tai.model.RtiCalc
-@import uk.gov.hmrc.tai.util.TaxSummaryHelper
-@import uk.gov.hmrc.tai.config.ApplicationConfig
-@import uk.gov.hmrc.tai.model.rti.RtiPayment
-@import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.play.views.helpers._
-@import uk.gov.hmrc.tai.model.CeasedEmploymentDetails
-@import uk.gov.hmrc.tai.util.CeasedEmploymentHelper
+@import uk.gov.hmrc.tai.util.DateHelper
 @import uk.gov.hmrc.tai.util.TaiConstants._
+@import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel
+@import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.tai.model.domain.income._
+@import uk.gov.hmrc.tai.model.domain._
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
 
-@(incomeCalcDetails: uk.gov.hmrc.tai.viewModels.YourIncomeCalculationViewModel, empId: Int)(implicit request: Request[_],
+@(model: YourIncomeCalculationViewModel)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser)
 
 @printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
-    <a id="backLink" href="@controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(empId))">@Messages("tai.label.back")</a>
-}{
 
     <br><strong><p>@user.getDisplayName</p></strong>
-    <section class="section soft--top"><h2>@Messages("tai.income.calculation.TaxableIncomeDetails", incomeCalcDetails.employerName)</h2></section>
+    <section class="section soft--top"><h2>@Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName)</h2></section>
 	    <section class="section soft--top">
-            @incomeCalcDetails.employmentStatus match {
-                case Some(EmploymentPotentiallyCeased) => {
-                    @if(incomeCalcDetails.employmentPayments.nonEmpty) {
-                    <strong>@Messages("tai.income.calculation.ceased.heading",Dates.formatDate(incomeCalcDetails.employmentPayments.last.paidOn))</strong>
+            @model.employmentStatus match {
+                case PotentiallyCeased => {
+                    @if(model.latestPayment.isDefined) {
+                        <strong>@Messages("tai.income.calculation.heading.withRti", Dates.formatDate(model.latestPayment.get.date))</strong>
                     } else {
-                    <strong>@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</strong>
+                        <strong>@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</strong>
                     }
 
                     <p>@Messages("tai.income.calculation.potentially.ceased.lede")</p>
                 }
-                case Some(EmploymentCeased) => {
-                    @if(incomeCalcDetails.employmentPayments.nonEmpty) {
-                    <strong>@Messages("tai.income.calculation.ceased.heading",Dates.formatDate(incomeCalcDetails.employmentPayments.last.paidOn))</strong>
-                    } else {
-                    <strong>@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</strong>
-                    }
 
-                    <p>@Messages("tai.income.calculation.rti.ceased.emp",s"${CeasedEmploymentHelper.toDisplayFormat(incomeCalcDetails.endDate)}")</p>
-                }
-
-                case _ => {
-                    @if(incomeCalcDetails.employmentPayments.nonEmpty) {
-                        <strong>@Messages("tai.income.calculation.heading.withRti", Dates.formatDate(incomeCalcDetails.employmentPayments.last.paidOn))</strong>
+                case Ceased => {
+                    @if(model.latestPayment.isDefined) {
+                        <strong>@Messages("tai.income.calculation.ceased.heading", Dates.formatDate(model.latestPayment.get.date))</strong>
                     } else {
                         <strong>@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</strong>
                     }
-                    @if(!incomeCalcDetails.rtiDown) {
-                        <p id="incomeCalculationMsg@incomeCalcDetails.empId">@incomeCalcDetails.incomeCalculationMsg</p>
-                        @incomeCalcDetails.payrollMsg.map { payrollMessage =>
-                            <p id="payrollNumber@incomeCalcDetails.empId">@payrollMessage</p>
-                        }
+
+                    <p>@Messages("tai.income.calculation.rti.ceased.emp",s"${DateHelper.toDisplayFormat(model.endDate)}")</p>
+                }
+
+                case _ => {
+                    @if(model.latestPayment.isDefined) {
+                       <strong>@Messages("tai.income.calculation.heading.withRti", Dates.formatDate(model.latestPayment.get.date))</strong>
                     } else {
+                        <strong>@Messages("tai.income.calculation.heading",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</strong>
+                    }
+
+                    @if(model.rtiStatus == TemporarilyUnavailable) {
                         <p id="rtiUnavailableCurrentYear">@Messages("tai.income.calculation.rtiUnavailableCurrentYear.message")</p>
                         <p id="rtiUnavailableCurrentYearContact">@Messages("tai.income.calculation.rtiUnavailableCurrentYear.message.contact")</p>
-
+                    } else {
+                        <p id="incomeCalculationMsg@model.empId">@model.incomeCalculationMessage</p>
                     }
                 }
             }
 	    </section>
 
-    @if(incomeCalcDetails.employmentPayments.nonEmpty) {
+    @if(model.latestPayment.isDefined) {
         <section class="section soft--top soft--bottom">
             <table id="taxable-income-table" class="print-table-section print-table">
                 <thead>
-                <tr class="print-table__row--bold">
-                    <th id="print-date-column">@Messages("tai.income.calculation.incomeTable.dateHeader")</th>
-                    <th id="print-taxable-income-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.incomeHeader")</th>
-                    <th id="print-income-tax-paid-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.taxPaidHeader")</th>
-                    <th id="print-ni-paid-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.nationalInsuranceHeader")</th>
-                </tr>
+                    <tr class="print-table__row--bold">
+                        <th id="print-date-column">@Messages("tai.income.calculation.incomeTable.dateHeader")</th>
+                        <th id="print-taxable-income-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.incomeHeader")</th>
+                        <th id="print-income-tax-paid-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.taxPaidHeader")</th>
+                        <th id="print-ni-paid-column" class="print-text--right">@Messages("tai.income.calculation.incomeTable.print.nationalInsuranceHeader")</th>
+                    </tr>
                 </thead>
                 <tbody>
-                @for(payment <- incomeCalcDetails.employmentPayments){
-                <tr class="print-pension-contributions-data">
-                    <td>@Dates.formatDate(payment.paidOn)</td>
-                    <td class="print-text--right">£ @{f"${payment.taxablePay}%,.2f"}</td>
-                    <td class="print-text--right">£ @{f"${payment.taxed}%,.2f"}</td>
-                    @if(payment.nicPaid.isDefined){
-                    <td class="print-text--right">£ @{f"${payment.nicPaid.get}%,.2f"}</td>
-                    }else {
-                    <td class="print-text--right"></td>
+                    @for(payment <- model.payments){
+                        <tr class="print-pension-contributions-data">
+                            <td>@Dates.formatDateAbbrMonth(payment.date)</td>
+                            <td class="print-text--right">£ @{f"${payment.taxableIncome}%,.2f"}</td>
+                            <td class="print-text--right">£ @{f"${payment.taxAmount}%,.2f"}</td>
+                            <td class="print-text--right">£ @{f"${payment.nationalInsuranceAmount}%,.2f"}</td>
+                        </tr>
                     }
-                </tr>
-                }
                 </tbody>
                 <tfoot>
-                <tr class="print-table__row--bold">
-                    <td>@Messages("tai.taxFree.total")</td>
-                    <td class="print-text--right">£ @{f"${incomeCalcDetails.employmentPayments.last.taxablePayYTD}%,.2f"}</td>
-                    <td class="print-text--right">£ @{f"${incomeCalcDetails.employmentPayments.last.taxedYTD}%,.2f"}</td>
-                    @if(incomeCalcDetails.employmentPayments.last.nicPaid.isDefined){
-                    <td class="print-text--right">£ @{f"${incomeCalcDetails.employmentPayments.last.nicPaidYTD.get}%,.2f"}</td>
-                    }else {
-                    <td class="print-text--right"></td>
-                    }
-                </tr>
+                    <tr class="print-table__row--bold">
+                        <td>@Messages("tai.taxFree.total")</td>
+                        <td class="print-text--right">£ @{f"${model.latestPayment.get.amountYearToDate}%,.2f"}</td>
+                        <td class="print-text--right">£ @{f"${model.latestPayment.get.taxAmountYearToDate}%,.2f"}</td>
+                        <td class="print-text--right">£ @{f"${model.latestPayment.get.nationalInsuranceAmountYearToDate}%,.2f"}</td>
+                    </tr>
                 </tfoot>
             </table>
 
-            @incomeCalcDetails.totalNotEqualMessage.map{ message =>
-            <p>@message</p>
-            <p>@Messages("tai.income.calculation.totalNotMatching.message")</p>
+            @model.messageWhenTotalNotEqual.map { message =>
+                <p>@message</p>
+                <p>@Messages("tai.income.calculation.totalNotMatching.message")</p>
             }
         </section>
     }
@@ -130,17 +111,17 @@ messages: Messages, user: controllers.auth.TaiUser)
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
-                @incomeCalcDetails.employmentStatus match {
-                    case Some(EmploymentPotentiallyCeased) => {
-                        @if(incomeCalcDetails.employmentPayments.nonEmpty) {
-                            <h4 class="heading-small">@Messages("tai.income.calculation.potentailly.ceased", {f"${incomeCalcDetails.employmentPayments.last.taxablePayYTD}%,.2f"})</h4>
+                @model.employmentStatus match {
+                    case PotentiallyCeased => {
+                        @if(model.latestPayment.isDefined) {
+                            <h4 class="heading-small">@Messages("tai.income.calculation.potentailly.ceased", {f"${model.latestPayment.get.amountYearToDate}%,.2f"})</h4>
                         }
                     }
 
                     case _ => {
-                        <h4 class="heading-small">@incomeCalcDetails.incomeCalculationEstimateMsg</h4>
+                        <h4 class="heading-small">@model.incomeCalculationEstimateMessage</h4>
 
-                        @if(incomeCalcDetails.editableDetails.isEditable && incomeCalcDetails.editableDetails.payRollingBiks){
+                        @if(model.hasPayrolledBenefit){
                             <div class="panel-indent panel-indent--info panel-indent--gutter">
                                 <p id="payrolling1">@Messages("tai.income.calculation.payrollingBik.message1")</p>
                                 <p id="payrolling2">@Messages("tai.income.calculation.payrollingBik.message2")</p>

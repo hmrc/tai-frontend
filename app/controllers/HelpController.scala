@@ -27,7 +27,7 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever, WSHttpProxy}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.TaiService
+import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.Future
 
@@ -36,11 +36,11 @@ trait HelpController  extends TaiBaseController
   with WithAuthorisedForTaiLite
   with Auditable {
 
-  def taiService: TaiService
+  def personService: PersonService
   def httpGet: WSHttpProxy
   def webChatURL: String
 
-  def helpPage() = authorisedForTai(taiService).async {
+  def helpPage() = authorisedForTai(personService).async {
     implicit user => implicit taiRoot => implicit request =>
       getEligibilityStatus map { status =>
         Ok(views.html.help.getHelp(status))
@@ -69,7 +69,7 @@ trait HelpController  extends TaiBaseController
 }
 
 object HelpController extends HelpController with AuthenticationConnectors {
-  override val taiService = TaiService
+  override val personService = PersonService
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override val httpGet = WSHttpProxy

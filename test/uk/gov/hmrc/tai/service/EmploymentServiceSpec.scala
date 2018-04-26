@@ -25,8 +25,8 @@ import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector
+import uk.gov.hmrc.tai.model.TaxYear
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

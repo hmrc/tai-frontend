@@ -36,10 +36,10 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.model.{TaiRoot, TaxYear}
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
@@ -93,7 +93,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     "redirect to mci page" when {
       "mci indicator is true" in {
         val testController = createSUT()
-        when(testController.taiService.personDetails(any())(any()))
+        when(testController.personService.personDetails(any())(any()))
           .thenReturn(Future.successful(TaiRoot(nino.nino, 0, "Mr", "Name", None, "Surname", "Name Surname", true, Some(false))))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -123,7 +123,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
       "the deceased indicator is set on the retrieved TaiRoot" in {
         val testController = createSUT()
-        when(testController.taiService.personDetails(any())(any()))
+        when(testController.personService.personDetails(any())(any()))
           .thenReturn(Future.successful(TaiRoot(nino.nino, 0, "Mr", "Name", None, "Surname", "Name Surname", false, Some(true))))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
 
@@ -134,7 +134,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
       "the deceased AND mci indicators are set on the retrived TaiRoot" in {
         val testController = createSUT()
-        when(testController.taiService.personDetails(any())(any()))
+        when(testController.personService.personDetails(any())(any()))
           .thenReturn(Future.successful(TaiRoot(nino.nino, 0, "Mr", "Name", None, "Surname", "Name Surname", true, Some(true))))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
 
@@ -336,18 +336,41 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
   }
 
   "send an user entry audit event" when {
-    "landed to the page" in {
+    "landed to the page and get TaiSuccessResponseWithPayload" in {
       val testController = createSUT()
       when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-      when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
-        TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
-      )
+
+      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
 
       val result = Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
 
       result.header.status mustBe OK
 
-      verify(testController.auditService, times(1)).sendUserEntryAuditEvent(any(), any())(any())
+      verify(testController.auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
+    }
+    "landed to the page and get TaiSuccessResponse" in {
+      val testController = createSUT()
+      when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        thenReturn(Future.successful(TaiSuccessResponse))
+
+      val result = Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
+
+      result.header.status mustBe OK
+
+      verify(testController.auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
+    }
+    "landed to the page and get failure from taxCodeIncomes" in {
+      val testController = createSUT()
+      when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        thenReturn(Future.failed(new BadRequestException("bad request")))
+
+      val result = Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
+
+      result.header.status mustBe OK
+
     }
   }
 
@@ -442,7 +465,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     }
   }
 
-  "employments retrieval for CY-1" should {
+  "employments retrieval for CY-1" must {
 
     "supply employment data where data is found" in {
       implicit val hc = HeaderCarrier()
@@ -474,7 +497,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     new WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled)
 
   class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true) extends WhatDoYouWantToDoController {
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override val employmentService: EmploymentService = mock[EmploymentService]
     override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
@@ -491,8 +514,8 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
-    when(auditService.sendUserEntryAuditEvent(any(), any())(any())).thenReturn(Future.successful(AuditResult.Success))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+    when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any())(any())).thenReturn(Future.successful(AuditResult.Success))
 
     when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
       Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary))

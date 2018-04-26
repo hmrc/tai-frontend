@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(updateResponse: uk.gov.hmrc.tai.model.IabdUpdateEmploymentsResponse, income: uk.gov.hmrc.tai.forms.EditIncomeForm, hasMultipleIncomes: Boolean, employerName : Option[String] = None)(implicit request: Request[_],
+@(employerName : Option[String] = None)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 
@@ -26,14 +26,14 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     employerName = employerName,
     gaCustomTitle = None
 ){
-    <header class="page-header text">
+    <header class="page-header">
         <h1 class="heading-xlarge" id="currentYearTitle">@Messages("tai.incomes.updated.check.title")</h1>
     </header>
 
-    <section class="section soft--top">
+    <div class="section soft--top">
         <p>@Messages("tai.incomes.updated.check.text")</p>
         <p>@Messages("tai.incomes.seeChanges.text")</p>
-    </section>
+    </div>
 
     @includes.link(
         copy=Messages("tai.IncomeTaxSummaryReturn"),

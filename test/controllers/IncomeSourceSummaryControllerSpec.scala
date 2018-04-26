@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiT
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.{EmploymentService, TaiService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
@@ -114,7 +114,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
   val secondPayment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
   val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
   val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
-  val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.tai.TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
+  val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
   val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
     None, Seq(annualAccount), "", "", 2, None, false)
 
@@ -129,7 +129,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
   def createSUT = new SUT
 
   class SUT extends IncomeSourceSummaryController {
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override val authConnector: AuthConnector = mock[AuthConnector]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
@@ -138,7 +138,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
     override val employmentService: EmploymentService = mock[EmploymentService]
     override val benefitsService: BenefitsService = mock[BenefitsService]
 
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
 
 

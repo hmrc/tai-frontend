@@ -32,7 +32,7 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{JourneyCacheService, SessionService, TaiService}
+import uk.gov.hmrc.tai.service.{JourneyCacheService, SessionService, PersonService}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, SessionKeys}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -387,7 +387,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
   class SUT(isCompanyCarForceRedirectEnabled: Boolean) extends CompanyCarController {
 
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val sessionService: SessionService = mock[SessionService]
     override val companyCarService: CompanyCarService = mock[CompanyCarService]
     override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
@@ -399,7 +399,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
     override val companyCarForceRedirectEnabled: Boolean = isCompanyCarForceRedirectEnabled
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
 
     val dateForm = DateForm(Messages("tai.companyCar.endDate.blank"))
   }

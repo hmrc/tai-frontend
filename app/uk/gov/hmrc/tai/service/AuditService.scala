@@ -19,12 +19,15 @@ package uk.gov.hmrc.tai.service
 import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.play.audit.AuditExtensions
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.play.config.AppName
 import uk.gov.hmrc.tai.config.{ApplicationConfig, AuditConnector}
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.util.TaiConstants._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,7 +38,7 @@ trait AuditService {
   def appName: String
 
   def auditConnector: AuditConnector
-  def taiService: TaiService
+  def personService: PersonService
 
   val userEnterEvent = "userEntersService"
   val employmentPensionEvent = "startedEmploymentPensionJourney"
@@ -64,16 +67,14 @@ trait AuditService {
     ))
   }
 
-  def sendUserEntryAuditEvent(nino: Nino, path: String)(implicit hc: HeaderCarrier): Future[AuditResult] = {
-    taiService.taiSession(nino, TaxYear().year, "") flatMap (sessionData => {
-      val details = Map(
-        "authProviderId" -> authProviderId(hc),
-        "nino" -> nino.nino,
-        "noOfCurrentYearEmployments" -> sessionData.taxSummaryDetailsCY.taxCodeDetails.flatMap(_.employment).getOrElse(Nil).size.toString,
-        "noOfTaxCodes" -> sessionData.taxSummaryDetailsCY.taxCodeDetails.flatMap(_.taxCode).getOrElse(Nil).size.toString
-      )
-      createAndSendAuditEvent(userEnterEvent, path, details)
-    })
+  def sendUserEntryAuditEvent(nino: Nino, path: String, numberOfEmployments: Seq[Employment], numberOfTaxCodeIncomes: Seq[TaxCodeIncome])(implicit hc: HeaderCarrier): Future[AuditResult] = {
+    val details = Map(
+      "authProviderId" -> authProviderId(hc),
+      "nino" -> nino.nino,
+      "noOfCurrentYearEmployments" -> numberOfEmployments.size.toString,
+      "noOfTaxCodes" -> numberOfTaxCodeIncomes.size.toString
+    )
+    createAndSendAuditEvent(userEnterEvent, path, details)
   }
 
   def sendEndCompanyCarAuditEvent(nino: String,
@@ -130,6 +131,6 @@ object AuditService extends AuditService {
 
   override val appName: String = AppName.appName
   override val auditConnector: AuditConnector = AuditConnector
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
 }
 

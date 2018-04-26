@@ -30,10 +30,10 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
     "return the same quantity of tax codes within each generated TaxCodeDetail as there are tax years requested" in {
 
-      val prevYearMinus2Request = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear(new LocalDate().minusYears(2)), currentTaxCodeIncomes)
-      val prevYearRequest = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear().prev, Nil)
-      val currentYearRequest = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear(), Nil)
-      val nextYearRequest = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear().next, Nil)
+      val prevYearMinus2Request = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(new LocalDate().minusYears(2)), currentTaxCodeIncomes)
+      val prevYearRequest = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear().prev, Nil)
+      val currentYearRequest = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), Nil)
+      val nextYearRequest = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear().next, Nil)
 
       val result = TaxCodeComparisonViewModel(Seq(prevYearMinus2Request, prevYearRequest, currentYearRequest, nextYearRequest))
 
@@ -47,8 +47,8 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
     "return Live income and pension sources tax codes" when {
       "current year and next year income sources passed to view model" in {
-        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear(), currentTaxCodeIncomes)
-        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear().next, nextYearTaxCodeIncomes)
+        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), currentTaxCodeIncomes)
+        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear().next, nextYearTaxCodeIncomes)
 
         val taxCodeDetails = TaxCodeComparisonViewModel(Seq(nextYearDetails, currentYearDetails))
 
@@ -72,8 +72,8 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
     "return 'not applicable' placeholder tax code values" when {
       "two tax years are requested, but there is a missing income source record for a the earlier tax year" in {
-        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear(), currentTaxCodeIncomes)
-        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear().next, nextYearMissingTaxCodeIncomes)
+        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), currentTaxCodeIncomes)
+        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear().next, nextYearMissingTaxCodeIncomes)
 
         val taxCodeDetails = TaxCodeComparisonViewModel(Seq(nextYearDetails, currentYearDetails))
 
@@ -93,8 +93,8 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
       }
 
       "multiple tax years are requested, but there is a missing income source record for the later tax year" in {
-        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear(), currentMissingTaxCodeIncomes)
-        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear().next, nextYearTaxCodeIncomes)
+        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), currentMissingTaxCodeIncomes)
+        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear().next, nextYearTaxCodeIncomes)
 
         val taxCodeDetails = TaxCodeComparisonViewModel(Seq(nextYearDetails, currentYearDetails))
 
@@ -120,8 +120,8 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         val nyTaxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "S1150L", "employer1", OtherBasisOperation, Live),
           TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment", "11150L", "employer1", OtherBasisOperation, Live))
 
-        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear(), cyTaxCodeIncomes)
-        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear().next, nyTaxCodeIncomes)
+        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), cyTaxCodeIncomes)
+        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear().next, nyTaxCodeIncomes)
 
         val taxCodeDetails = TaxCodeComparisonViewModel(Seq(nextYearDetails, currentYearDetails))
 
@@ -135,8 +135,8 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         val nyTaxCodeIncomes = Seq(TaxCodeIncome(PensionIncome, Some(1), 1111, "employment", "S1150L", "employer1", OtherBasisOperation, Live),
           TaxCodeIncome(PensionIncome, Some(2), 1111, "employment", "11150L", "employer1", OtherBasisOperation, Live))
 
-        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear(), cyTaxCodeIncomes)
-        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear().next, nyTaxCodeIncomes)
+        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), cyTaxCodeIncomes)
+        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear().next, nyTaxCodeIncomes)
 
         val taxCodeDetails = TaxCodeComparisonViewModel(Seq(nextYearDetails, currentYearDetails))
 
@@ -151,8 +151,8 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         val nyTaxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "S1150L", "employer1", OtherBasisOperation, Live),
           TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment", "11150L", "employer1", OtherBasisOperation, Live))
 
-        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear(), cyTaxCodeIncomes)
-        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear().next, nyTaxCodeIncomes)
+        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), cyTaxCodeIncomes)
+        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear().next, nyTaxCodeIncomes)
 
         val taxCodeDetails = TaxCodeComparisonViewModel(Seq(nextYearDetails, currentYearDetails))
 
@@ -166,8 +166,8 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         val nyTaxCodeIncomes = Seq(TaxCodeIncome(PensionIncome, Some(1), 1111, "employment", "S1150L", "employer1", OtherBasisOperation, Live),
           TaxCodeIncome(PensionIncome, Some(2), 1111, "employment", "11150L", "employer1", OtherBasisOperation, Live))
 
-        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear(), cyTaxCodeIncomes)
-        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear().next, nyTaxCodeIncomes)
+        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), cyTaxCodeIncomes)
+        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear().next, nyTaxCodeIncomes)
 
         val taxCodeDetails = TaxCodeComparisonViewModel(Seq(nextYearDetails, currentYearDetails))
 
@@ -180,8 +180,8 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         val nyTaxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live),
           TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment", "11150L", "employer1", OtherBasisOperation, Live))
 
-        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear(), cyTaxCodeIncomes)
-        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear().next, nyTaxCodeIncomes)
+        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), cyTaxCodeIncomes)
+        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear().next, nyTaxCodeIncomes)
 
         val taxCodeDetails = TaxCodeComparisonViewModel(Seq(nextYearDetails, currentYearDetails))
 
@@ -195,8 +195,8 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         val nyTaxCodeIncomes = Seq(TaxCodeIncome(PensionIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live),
           TaxCodeIncome(PensionIncome, Some(2), 1111, "employment", "11150L", "employer1", OtherBasisOperation, Live))
 
-        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear(), cyTaxCodeIncomes)
-        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear().next, nyTaxCodeIncomes)
+        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), cyTaxCodeIncomes)
+        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear().next, nyTaxCodeIncomes)
 
         val taxCodeDetails = TaxCodeComparisonViewModel(Seq(nextYearDetails, currentYearDetails))
 
@@ -209,8 +209,8 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         val nyTaxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live),
           TaxCodeIncome(PensionIncome, Some(2), 1111, "employment", "S11150L", "employer1", OtherBasisOperation, Live))
 
-        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear(), cyTaxCodeIncomes)
-        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear().next, nyTaxCodeIncomes)
+        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), cyTaxCodeIncomes)
+        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear().next, nyTaxCodeIncomes)
 
         val taxCodeDetails = TaxCodeComparisonViewModel(Seq(nextYearDetails, currentYearDetails))
 
@@ -223,8 +223,8 @@ class TaxCodeComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         val nyTaxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "S1150L", "employer1", OtherBasisOperation, Live),
           TaxCodeIncome(PensionIncome, Some(2), 1111, "employment", "11150L", "employer1", OtherBasisOperation, Live))
 
-        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear(), cyTaxCodeIncomes)
-        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.tai.TaxYear().next, nyTaxCodeIncomes)
+        val currentYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear(), cyTaxCodeIncomes)
+        val nextYearDetails = TaxCodeIncomesForYear(uk.gov.hmrc.tai.model.TaxYear().next, nyTaxCodeIncomes)
 
         val taxCodeDetails = TaxCodeComparisonViewModel(Seq(nextYearDetails, currentYearDetails))
 

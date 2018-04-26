@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.employments.{EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
 import uk.gov.hmrc.tai.model.domain.EndEmployment
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
@@ -51,7 +51,7 @@ trait EndEmploymentController extends TaiBaseController
   with IrregularPayConstants
   with AuditConstants {
 
-  def taiService: TaiService
+  def personService: PersonService
 
   def auditService: AuditService
 
@@ -74,9 +74,9 @@ trait EndEmploymentController extends TaiBaseController
       case _ => Valid
     })
 
-  def employmentUpdateRemove(empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def employmentUpdateRemove(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit sessionData =>
+      implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             val nino = Nino(user.getNino)
@@ -91,9 +91,9 @@ trait EndEmploymentController extends TaiBaseController
           }
   }
 
-  def handleEmploymentUpdateRemove(empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def handleEmploymentUpdateRemove(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit sessionData =>
+      implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             val nino = Nino(user.getNino)
@@ -140,9 +140,9 @@ trait EndEmploymentController extends TaiBaseController
 
   }
 
-  def endEmploymentError(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def endEmploymentError(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit sessionData =>
+      implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.mandatoryValues(EndEmployment_LatestPaymentDateKey, EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { data =>
@@ -153,9 +153,9 @@ trait EndEmploymentController extends TaiBaseController
 
   }
 
-  def irregularPaymentError(empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def irregularPaymentError(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit sessionData =>
+      implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.mandatoryValue(EndEmployment_NameKey) map { name =>
@@ -166,9 +166,9 @@ trait EndEmploymentController extends TaiBaseController
   }
 
 
-  def handleIrregularPaymentError(empId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def handleIrregularPaymentError(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit sessionData =>
+      implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             IrregularPayForm.createForm.bindFromRequest.fold(
@@ -189,9 +189,9 @@ trait EndEmploymentController extends TaiBaseController
           }
   }
 
-  def endEmploymentPage(employmentId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def endEmploymentPage(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit sessionData =>
+      implicit taiRoot =>
         implicit request =>
           val nino = Nino(user.getNino)
           ServiceCheckLite.personDetailsCheck {
@@ -203,9 +203,9 @@ trait EndEmploymentController extends TaiBaseController
           }
   }
 
-  def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] = authorisedForTai(taiService).async {
+  def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit sessionData =>
+      implicit taiRoot =>
         implicit request =>
           val nino = Nino(user.getNino)
           ServiceCheckLite.personDetailsCheck {
@@ -230,9 +230,9 @@ trait EndEmploymentController extends TaiBaseController
           }
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit sessionData =>
+      implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey) map { employmentId =>
@@ -241,9 +241,9 @@ trait EndEmploymentController extends TaiBaseController
           }
   }
 
-  def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit sessionData =>
+      implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             YesNoTextEntryForm.form(
@@ -269,9 +269,9 @@ trait EndEmploymentController extends TaiBaseController
           }
   }
 
-  def endEmploymentCheckYourAnswers: Action[AnyContent] = authorisedForTai(taiService).async {
+  def endEmploymentCheckYourAnswers: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit sessionData =>
+      implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.collectedValues(Seq(EndEmployment_EmploymentIdKey,
@@ -288,9 +288,9 @@ trait EndEmploymentController extends TaiBaseController
   }
 
 
-  def confirmAndSendEndEmployment: Action[AnyContent] = authorisedForTai(taiService).async {
+  def confirmAndSendEndEmployment: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit sessionData =>
+      implicit taiRoot =>
         implicit request =>
           val nino = Nino(user.getNino)
           ServiceCheckLite.personDetailsCheck {
@@ -305,9 +305,9 @@ trait EndEmploymentController extends TaiBaseController
           }
   }
 
-  def showConfirmationPage: Action[AnyContent] = authorisedForTai(taiService).async {
+  def showConfirmationPage: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit sessionData =>
+      implicit taiRoot =>
         implicit request => Future.successful(Ok(views.html.employments.confirmation()))
   }
 }
@@ -315,7 +315,7 @@ trait EndEmploymentController extends TaiBaseController
 object EndEmploymentController extends EndEmploymentController with
   AuthenticationConnectors {
 
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
   override val auditService: AuditService = AuditService
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever

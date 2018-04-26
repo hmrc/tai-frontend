@@ -22,8 +22,8 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 import play.twirl.api.Html
 import play.api.i18n.MessagesApi
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{RealTimeStatus, _}
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class HistoricIncomeCalculationSpec extends TaiViewSpec {
@@ -35,16 +35,14 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
 
   "The previous year income calculation print page" should {
 
-    behave like pageWithTitle(messages("tai.yourIncome.heading"))
+    behave like pageWithTitle(s"${messages("tai.yourIncome.heading")} - ${messages("tai.service.navTitle")} - GOV.UK")
 
     "have a small font heading" in {
       doc must haveHeadingH2WithText(messages("tai.income.calculation.TaxableIncomeDetails", "Foo"))
     }
 
     "have a back link" in {
-      val backLink: Element = doc.getElementById("backLink")
-      backLink must haveLinkURL(controllers.routes.YourIncomeCalculationController.yourIncomeCalculation(TaxYear().prev, 1).url)
-      doc must haveLinkWithText(messages("tai.label.back"))
+      doc must haveElementAtPathWithId("a", "backLink")
     }
 
     "show the necessary print buttons" in {

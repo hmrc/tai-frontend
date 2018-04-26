@@ -40,8 +40,8 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIn
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
-
-import scala.concurrent.Future
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 import scala.util.Random
 
 class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with JourneyCacheConstants {
@@ -62,7 +62,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
       val result = sut.howToUpdatePage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.IncomeControllerNew.pensionIncome().url)
+      redirectLocation(result) mustBe Some(routes.IncomeController.pensionIncome().url)
     }
   }
 
@@ -77,7 +77,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
           TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome]))(RequestBuilder.buildFakeRequestWithAuth("GET"), UserBuilder.apply())
 
         result.header.status mustBe SEE_OTHER
-        result.header.headers.get(LOCATION) mustBe Some(routes.IncomeControllerNew.pensionIncome().url)
+        result.header.headers.get(LOCATION) mustBe Some(routes.IncomeController.pensionIncome().url)
       }
 
       "employment amount is not occupation income" in {
@@ -123,12 +123,10 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val sut = createSut
         when(sut.incomeService.editableIncomes(any())).thenReturn(Nil)
         when(sut.incomeService.singularIncomeId(any())).thenReturn(None)
+      val ex = the[RuntimeException] thrownBy sut.processHowToUpdatePage(1, "name", employmentAmount(true, false),
+            TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome]))(RequestBuilder.buildFakeRequestWithAuth("GET"), UserBuilder.apply())
 
-        val result: Result = sut.processHowToUpdatePage(1, "name", employmentAmount(true, false),
-          TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome]))(RequestBuilder.buildFakeRequestWithAuth("GET"), UserBuilder.apply())
-
-        result.header.status mustBe SEE_OTHER
-        result.header.headers.get(LOCATION) mustBe Some(routes.YourIncomeCalculationController.yourIncomeCalculationPage(None).url)
+        ex.getMessage mustBe "Employment id not present"
       }
     }
 
@@ -149,7 +147,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val sut = createSut
         val result = sut.handleChooseHowToUpdate()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("howToUpdate" -> "income"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.IncomeControllerNew.viewIncomeForEdit().url)
+        redirectLocation(result) mustBe Some(routes.IncomeController.viewIncomeForEdit().url)
       }
     }
 
@@ -528,7 +526,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
 
         when(sut.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
-        when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NetAnnualPayKey))(any())).thenReturn(Future.successful(Some("100")))
+        when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NewAmountKey))(any())).thenReturn(Future.successful(Some("100")))
 
         val result = sut.handleCalculationResult()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -542,7 +540,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
 
         when(sut.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
-        when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NetAnnualPayKey))(any())).thenReturn(Future.successful(None))
+        when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NewAmountKey))(any())).thenReturn(Future.successful(None))
 
         val result = sut.handleCalculationResult()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -575,7 +573,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   private def createSut = new SUT()
 
   private class SUT extends IncomeUpdateCalculatorController {
-    override val taiService: TaiService = mock[TaiService]
+    override val personService: PersonService = mock[PersonService]
     override val activityLoggerService: ActivityLoggerService = mock[ActivityLoggerService]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
@@ -590,8 +588,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(taiService.taiSession(any(), any(), any())(any())).thenReturn(Future.successful(AuthBuilder.createFakeSessionDataWithPY))
-    when(taiService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
 
     when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(SampleId))
     when(journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_NameKey))(any())).thenReturn(Future.successful(EmployerName))

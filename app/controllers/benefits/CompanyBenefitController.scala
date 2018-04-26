@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 import uk.gov.hmrc.tai.model.domain.BenefitComponentType
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, TaiService}
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.tai.util.{AuditConstants, JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
@@ -43,13 +43,13 @@ trait CompanyBenefitController extends TaiBaseController
   with JourneyCacheConstants
   with UpdateOrRemoveCompanyBenefitDecisionConstants {
 
-  def taiService: TaiService
+  def personService: PersonService
   def auditService: AuditService
   def employmentService: EmploymentService
   def journeyCacheService: JourneyCacheService
   def trackingJourneyCacheService: JourneyCacheService
 
-  def redirectCompanyBenefitSelection(empId: Int, benefitType: BenefitComponentType) : Action[AnyContent] = authorisedForTai(taiService).async {
+  def redirectCompanyBenefitSelection(empId: Int, benefitType: BenefitComponentType) : Action[AnyContent] = authorisedForTai(personService).async {
       implicit user =>
         implicit taiRoot =>
           implicit request =>
@@ -63,7 +63,7 @@ trait CompanyBenefitController extends TaiBaseController
             }
   }
 
-  def decision: Action[AnyContent] = authorisedForTai(taiService).async {
+  def decision: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -99,7 +99,7 @@ trait CompanyBenefitController extends TaiBaseController
   }
 
 
-  def submitDecision: Action[AnyContent] = authorisedForTai(taiService).async {
+  def submitDecision: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
         implicit request =>
@@ -126,7 +126,7 @@ trait CompanyBenefitController extends TaiBaseController
 }
 
 object CompanyBenefitController extends CompanyBenefitController with AuthenticationConnectors {
-  override val taiService: TaiService = TaiService
+  override val personService: PersonService = PersonService
   override val auditService: AuditService = AuditService
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever

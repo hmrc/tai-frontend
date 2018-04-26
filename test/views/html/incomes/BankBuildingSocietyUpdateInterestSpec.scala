@@ -20,7 +20,7 @@ import uk.gov.hmrc.tai.forms.incomes.bbsi.UpdateInterestForm
 import uk.gov.hmrc.tai.viewModels.income.BbsiUpdateAccountViewModel
 import play.api.data.Form
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class BankBuildingSocietyUpdateInterestSpec extends TaiViewSpec {

@@ -19,8 +19,8 @@ package views.html.includes
 import controllers.routes
 import org.jsoup.Jsoup
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
-import uk.gov.hmrc.tai.model.tai.TaxYear
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 

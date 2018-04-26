@@ -22,8 +22,8 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import org.jsoup.nodes.Document
 import org.jsoup.Jsoup
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.tai.TaxYear
 
 class HistoricIncomeCalculationSpec extends TaiViewSpec {
 
@@ -39,7 +39,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
 
     "have a print link" in {
       val printLink = doc.getElementById("printLink")
-      printLink must haveLinkURL(controllers.routes.YourIncomeCalculationController.printYourIncomeCalculation(TaxYear().prev, 1).url)
+      printLink must haveLinkURL(controllers.routes.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1).url)
       doc.getElementsByTag("a").toString must include(messages("tai.label.print"))
     }
 

@@ -243,7 +243,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         endDate = "21 April 2018",
         displayEndDate = true,
         detailsLinkLabel = Messages("tai.incomeTaxSummary.employment.link"),
-        detailsLinkUrl = controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(998)).url,
+        detailsLinkUrl = controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(998).url,
         true)
     }
   }
@@ -356,7 +356,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         "income source type is employment" in {
           val sut = IncomeSourceViewModel(taxCodeIncomeCeased, ceasedEmployment)
           sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.employment.link")
-          sut.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(1)).url
+          sut.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(1).url
         }
       }
       "has details link with pension label" when {
@@ -433,7 +433,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
       "has details link with employment only label " in {
         val sut = IncomeSourceViewModel(ceasedEmployment)
         sut.detailsLinkLabel mustBe Messages("tai.incomeTaxSummary.employment.link")
-        sut.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(Some(1)).url
+        sut.detailsLinkUrl mustBe controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(1).url
       }
     }
   }
@@ -473,7 +473,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
   val taxCodeIncomeCeased = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Ceased)
   val employment = Employment("Employer name", Some("123ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq.empty[AnnualAccount], "DIST123", "PAYE543", 1, None, false)
   val payment = Payment(new LocalDate(), BigDecimal(123.45), BigDecimal(678.90), BigDecimal(123.12), BigDecimal(444.44), BigDecimal(555.55), BigDecimal(666.66), Monthly)
-  val annualAccount = AnnualAccount("key", uk.gov.hmrc.tai.model.tai.TaxYear(), Available, Seq(payment), Nil)
+  val annualAccount = AnnualAccount("key", uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(payment), Nil)
   val ceasedEmployment = Employment("Ceased employer name", Some("123ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq(annualAccount), "DIST123", "PAYE543", 1, None, false)
 
   val nonMatchedEmployments = Seq(

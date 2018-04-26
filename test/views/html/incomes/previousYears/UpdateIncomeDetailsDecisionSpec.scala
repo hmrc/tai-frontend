@@ -20,7 +20,7 @@ import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsDecisionForm
 import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice
-import uk.gov.hmrc.tai.model.tai.TaxYear
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
