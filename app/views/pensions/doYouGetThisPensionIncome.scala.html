@@ -44,7 +44,7 @@
     articleClasses = None,
     gaCustomTitle = None) {
 
-    @form(action = controllers.pensions.routes.IncorrectPensionProviderController.handleDecision(), Symbol("data-journey-dynamic-radios") -> "" ) {
+    @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension(), Symbol("data-journey-dynamic-radios") -> "" ) {
         <div class="form-group">
 
             @{inputRadioGroupNewStyling(
