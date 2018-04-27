@@ -313,6 +313,15 @@ tai.addPensionProvider.cya.q3=Pension number
 tai.addPensionProvider.cya.q4=Can we contact you by phone
 tai.pensionConfirmation.heading=Your update about a pension has been received
 
+##Update pension provider journey
+tai.updatePension.whatDoYouWantToTellUs.title=What do you want to tell us
+tai.updatePension.whatDoYouWantToTellUs.heading=What do you want to tell us about your pension from?
+tai.updatePension.whatDoYouWantToTellUs.preHeading=Update pension
+tai.updatePension.whatDoYouWantToTellUs.customGaTitle=What do you want to tell us about this pension?
+tai.updatePension.whatDoYouWantToTellUs.textarea.error.blank=Enter what you want to tell us about your pension?
+tai.updatePension.whatDoYouWantToTellUs.textarea.text=Enter details about your update (Maximum characters {0})
+tai.updatePension.whatDoYouWantToTellUs.textarea.error.maximumExceeded =You can only enter a maximum of {0} characters
+
 ##Close bank account pages
 tai.closeBankAccount.preHeadingText=Account closed
 tai.closeBankAccount.closeDateForm.title=When did you close the account with {0}?

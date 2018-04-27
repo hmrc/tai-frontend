@@ -254,6 +254,8 @@ GET         /language/:lang                                                     
 
 GET         /incorrect-pension/decision/:id                                             controllers.pensions.UpdatePensionProviderController.doYouGetThisPension(id: Int)
 POST        /incorrect-pension/decision                                                 controllers.pensions.UpdatePensionProviderController.handleDoYouGetThisPension
+GET         /incorrect-pension/whatDoYouWantToTellUs                                    controllers.pensions.UpdatePensionProviderController.whatDoYouWantToTellUs
+POST        /incorrect-pension/whatDoYouWantToTellUs                                    controllers.pensions.UpdatePensionProviderController.submitWhatDoYouWantToTellUs
 GET         /incorrect-pension/telephone-number                                         controllers.pensions.UpdatePensionProviderController.addTelephoneNumber
 POST        /incorrect-pension/telephone-number                                         controllers.pensions.UpdatePensionProviderController.submitTelephoneNumber
 GET         /incorrect-pension/check-your-answers                                       controllers.pensions.UpdatePensionProviderController.checkYourAnswers

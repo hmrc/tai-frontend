@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
-import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
+import uk.gov.hmrc.tai.forms.pensions.{UpdateRemovePensionForm, WhatDoYouWantToTellUsForm}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.PensionIncome
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
@@ -102,7 +102,8 @@ trait UpdatePensionProviderController extends TaiBaseController
                 Future(BadRequest(views.html.pensions.doYouGetThisPensionIncome(model, formWithErrors)))
               },
               {
-                case Some(YesValue) => Future.successful(Ok("")) // TODO what do you want to tell us
+                case Some(YesValue) => Future.successful(
+                  Redirect(controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs()))
                 case _ => Future.successful(Redirect(ApplicationConfig.incomeFromEmploymentPensionLinkUrl))
               }
             )
@@ -111,7 +112,35 @@ trait UpdatePensionProviderController extends TaiBaseController
         }
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+  def whatDoYouWantToTellUs: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          journeyCacheService.mandatoryValue(UpdatePensionProvider_NameKey) flatMap { name =>
+            Future.successful(Ok(views.html.pensions.update.whatDoYouWantToTellUs(name, WhatDoYouWantToTellUsForm.form)))
+          }
+        }
+  }
+
+
+  def submitWhatDoYouWantToTellUs: Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit taiRoot =>
+        implicit request =>
+          WhatDoYouWantToTellUsForm.form.bindFromRequest.fold(
+            formWithErrors => {
+              journeyCacheService.mandatoryValue(UpdatePensionProvider_NameKey) map { name =>
+                BadRequest(views.html.pensions.update.whatDoYouWantToTellUs(name, formWithErrors))
+              }
+            },
+            pensionDetails => {
+              journeyCacheService.cache(Map(IncorrectPensionProvider_DetailsKey -> pensionDetails))
+                .map(_ => Redirect(controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber()))
+            }
+          )
+  }
+
+  def addTelephoneNumber: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -121,7 +150,7 @@ trait UpdatePensionProviderController extends TaiBaseController
         }
   }
 
-  def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+  def submitTelephoneNumber: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
       implicit request =>
         YesNoTextEntryForm.form(
