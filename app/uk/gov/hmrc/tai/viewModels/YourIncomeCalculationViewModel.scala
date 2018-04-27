@@ -133,19 +133,19 @@ object YourIncomeCalculationViewModel {
 
     (ceasedIncomeCalculationMessage(employmentStatus, employment, isPension),
       ceasedIncomeCalculationEstimateMessage(employmentStatus, employment, isPension, taxCodeIncome.amount),
-      getManualUpdateMsg(taxCodeIncome),
+      manualUpdateIncomeCalculationMessage(taxCodeIncome),
       sameIncomeCalculationMessage(employment, taxCodeIncome.amount, amountYearToDate, isPension, paymentDate),
       getPayFreqMsg(employment, isPension, paymentFrequency, amountYearToDate, paymentDate, taxCodeIncome.amount)) match {
 
       case (Some(ceasedMsg), Some(ceasedMsgEstimate), _, _, _) => (Some(ceasedMsg), Some(ceasedMsgEstimate))
       case (Some(ceasedMsg), None, _, _, _) => (Some(ceasedMsg), None)
 
-      case (_, _,(Some(manualUpdateMsg), Some(manualUpdateMsgEstimate)), _, _) => (Some(manualUpdateMsg), Some(manualUpdateMsgEstimate))
+      case (_, _, Some(manualUpdateMsg), _, _) => (Some(manualUpdateMsg), manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome))
 
       case (_, _, _, Some(sameIncomeMsg), _) => (Some(sameIncomeMsg), None)
 
       case (_, _, _, _, (Some(payFreqMsg), Some(payFreqMsgEstimate))) => (Some(payFreqMsg), Some(payFreqMsgEstimate))
-      case (_, _, _, _,(None, Some(payFreqMsgEstimate))) => (None, Some(payFreqMsgEstimate))
+      case (_, _, _, _, (None, Some(payFreqMsgEstimate))) => (None, Some(payFreqMsgEstimate))
 
       case _ => (Some(messages("tai.income.calculation.default." + pensionOrEmpMessage(isPension), Dates.formatDate(TaxYear().end))),
         Some(messages("tai.income.calculation.default.estimate." + pensionOrEmpMessage(isPension), taxCodeIncome.amount)))
@@ -181,54 +181,49 @@ object YourIncomeCalculationViewModel {
     }
   }
 
-  def getManualUpdateMsg(taxCodeIncome: TaxCodeIncome)(implicit messages: Messages): (Option[String], Option[String]) = {
-
+  def manualUpdateIncomeCalculationMessage(taxCodeIncome: TaxCodeIncome)(implicit messages: Messages) = {
     (taxCodeIncome.iabdUpdateSource, taxCodeIncome.updateNotificationDate, taxCodeIncome.updateActionDate) match {
       case (Some(ManualTelephone), Some(notificationDate), Some(actionDate)) =>
-        (Some(messages("tai.income.calculation.manual.update.phone", Dates.formatDate(actionDate), Dates.formatDate(notificationDate))),
-          Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        Some(messages("tai.income.calculation.manual.update.phone", Dates.formatDate(actionDate), Dates.formatDate(notificationDate)))
 
       case (Some(ManualTelephone), _, _) =>
-        (Some(messages("tai.income.calculation.manual.update.phone.withoutDate")),
-          Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        Some(messages("tai.income.calculation.manual.update.phone.withoutDate"))
 
       case (Some(Letter), Some(notificationDate), Some(actionDate)) =>
-        (Some(messages("tai.income.calculation.manual.update.letter", Dates.formatDate(actionDate), Dates.formatDate(notificationDate))),
-          Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        Some(messages("tai.income.calculation.manual.update.letter", Dates.formatDate(actionDate), Dates.formatDate(notificationDate)))
 
       case (Some(Letter), _, _) =>
-        (Some(messages("tai.income.calculation.manual.update.letter.withoutDate")),
-          Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        Some(messages("tai.income.calculation.manual.update.letter.withoutDate"))
 
       case (Some(Email), Some(notificationDate), Some(actionDate)) =>
-        (Some(messages("tai.income.calculation.manual.update.email", Dates.formatDate(actionDate), Dates.formatDate(notificationDate))),
-          Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        Some(messages("tai.income.calculation.manual.update.email", Dates.formatDate(actionDate), Dates.formatDate(notificationDate)))
 
       case (Some(Email), _, _) =>
-        (Some(messages("tai.income.calculation.manual.update.email.withoutDate")),
-          Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        Some(messages("tai.income.calculation.manual.update.email.withoutDate"))
 
-      case (Some(AgentContact), _, _) => (Some(messages("tai.income.calculation.agent")),
-        Some(messages("tai.income.calculation.agent.estimate", taxCodeIncome.amount)))
+      case (Some(AgentContact), _, _) => Some(messages("tai.income.calculation.agent"))
 
       case (Some(OtherForm) | Some(InformationLetter), Some(notificationDate), Some(actionDate)) =>
-        (Some(messages("tai.income.calculation.manual.update.informationLetter", Dates.formatDate(actionDate), Dates.formatDate(notificationDate))),
-          Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        Some(messages("tai.income.calculation.manual.update.informationLetter", Dates.formatDate(actionDate), Dates.formatDate(notificationDate)))
 
       case (Some(OtherForm) | Some(InformationLetter), _, _) =>
-        (Some(messages("tai.income.calculation.manual.update.informationLetter.withoutDate")),
-          Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        Some(messages("tai.income.calculation.manual.update.informationLetter.withoutDate"))
 
       case (Some(Internet), Some(notificationDate), _) =>
-        (Some(messages("tai.income.calculation.manual.update.internet", Dates.formatDate(notificationDate))),
-          Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        Some(messages("tai.income.calculation.manual.update.internet", Dates.formatDate(notificationDate)))
 
       case (Some(Internet), None, _) =>
-        (Some(messages("tai.income.calculation.manual.update.internet.withoutDate")),
-          Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        Some(messages("tai.income.calculation.manual.update.internet.withoutDate"))
 
-      case _ => (None, None)
+      case _ => None
     }
+  }
+
+  def manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome: TaxCodeIncome)(implicit messages: Messages): Option[String] = {
+      (taxCodeIncome.iabdUpdateSource, taxCodeIncome.updateNotificationDate, taxCodeIncome.updateActionDate) match {
+        case (Some(AgentContact), _, _) => Some(messages("tai.income.calculation.agent.estimate", taxCodeIncome.amount))
+        case _ => Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount))
+      }
   }
 
   def getPayFreqMsg(employment: Employment, isPension: Boolean, paymentFrequency: Option[PaymentFrequency],
@@ -272,7 +267,7 @@ object YourIncomeCalculationViewModel {
   }
 
   def sameIncomeCalculationMessage(employment: Employment, amount: BigDecimal, amountYearToDate: BigDecimal,
-                 isPension: Boolean, paymentDate: Option[LocalDate])(implicit messages: Messages): Option[String] = {
+                                   isPension: Boolean, paymentDate: Option[LocalDate])(implicit messages: Messages): Option[String] = {
 
     val startDate = if (TaxYearResolver.fallsInThisTaxYear(employment.startDate)) employment.startDate else TaxYear().start
 
