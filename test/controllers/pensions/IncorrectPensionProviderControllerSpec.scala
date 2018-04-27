@@ -120,8 +120,8 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
     "return bad request" when {
       "no options are selected" in {
         val sut = createSUT
-        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(IncorrectPensionProvider_NameKey))(any())).
-          thenReturn(Future.successful("TEST"))
+        when(sut.journeyCacheService.mandatoryValues(any())(any())).
+          thenReturn(Future.successful(Seq("1","TEST")))
 
         val result = sut.handleDecision()(RequestBuilder.buildFakeRequestWithAuth("POST").
           withFormUrlEncodedBody(IncorrectPensionDecision -> ""))
@@ -133,8 +133,8 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
     "redirect to tes-1 iform" when {
       "option NO is selected" in {
         val sut = createSUT
-        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(IncorrectPensionProvider_NameKey))(any())).
-          thenReturn(Future.successful("TEST"))
+        when(sut.journeyCacheService.mandatoryValues(any())(any())).
+          thenReturn(Future.successful(Seq("1","TEST")))
 
         val result = sut.handleDecision()(RequestBuilder.buildFakeRequestWithAuth("POST").
           withFormUrlEncodedBody(IncorrectPensionDecision -> NoValue))
@@ -147,8 +147,8 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
     "redirect to whatDoYouWantToTellUs" when {
       "option YES is selected" in {
         val sut = createSUT
-        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(IncorrectPensionProvider_NameKey))(any())).
-          thenReturn(Future.successful("TEST"))
+        when(sut.journeyCacheService.mandatoryValues(any())(any())).
+          thenReturn(Future.successful(Seq("1","TEST")))
 
         val result = sut.handleDecision()(RequestBuilder.buildFakeRequestWithAuth("POST").
           withFormUrlEncodedBody(IncorrectPensionDecision -> YesValue))

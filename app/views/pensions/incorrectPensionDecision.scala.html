@@ -14,14 +14,15 @@
  * limitations under the License.
  *@
 
-@import includes.backLink
+@import includes.{backLink, cancelLink}
 @import includes.forms.submit
 @import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
 @import includes.forms.inputRadioGroupNewStyling
+@import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 
-@(pensionName: String, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Update or remove pension- Do you currently get income from this pension provider?"}
 
@@ -30,7 +31,7 @@
     ptaHeader(
         formForErrorSummary = Some(updateOrRemoveForm),
         displayBackLink = true,
-        mainHeadingText = Messages("tai.incorrectPension.decision.main.heading", pensionName),
+        mainHeadingText = Messages("tai.incorrectPension.decision.main.heading", model.pensionName),
         preHeadingText = Messages("tai.incorrectPension.decision.title")
     )
 }
@@ -64,5 +65,8 @@
         @submit(buttonMessageKey = Some(messages("tai.submit")), gaEventAction = Some(gaEventActionString), gaEventLabel = Some(""))
 
     }
+
+    @cancelLink(url = routes.IncomeSourceSummaryController.onPageLoad(model.id), gaEventAction = Some(gaEventActionString))
+
 
 }

@@ -18,6 +18,8 @@ package controllers.pensions
 
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
@@ -25,15 +27,13 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
-import uk.gov.hmrc.tai.model.domain.PensionIncome
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
-import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, TaxAccountService}
-import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants}
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 import uk.gov.hmrc.tai.forms.pensions.{UpdateRemovePensionForm, WhatDoYouWantToTellUsForm}
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.PensionIncome
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 
 import scala.concurrent.Future
 
@@ -58,7 +58,10 @@ trait IncorrectPensionProviderController extends TaiBaseController
                 case Some(taxCodeIncome) =>
                   journeyCacheService.cache(Map(IncorrectPensionProvider_IdKey -> id.toString,
                     IncorrectPensionProvider_NameKey -> taxCodeIncome.name)).
-                    map(_ => Ok(views.html.pensions.incorrectPensionDecision(taxCodeIncome.name, UpdateRemovePensionForm.form)))
+                    map {
+                      val model = PensionProviderViewModel(id, taxCodeIncome.name)
+                      _ => Ok(views.html.pensions.incorrectPensionDecision(model, UpdateRemovePensionForm.form))
+                    }
                 case _ => throw new RuntimeException(s"Tax code income source is not available for id $id")
               }
             case _ => throw new RuntimeException("Tax code income source is not available")
@@ -71,10 +74,11 @@ trait IncorrectPensionProviderController extends TaiBaseController
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.mandatoryValue(IncorrectPensionProvider_NameKey) flatMap { name =>
+          journeyCacheService.mandatoryValues(IncorrectPensionProvider_IdKey, IncorrectPensionProvider_NameKey) flatMap { mandatoryVals =>
             UpdateRemovePensionForm.form.bindFromRequest().fold(
               formWithErrors => {
-                Future(BadRequest(views.html.pensions.incorrectPensionDecision(name, formWithErrors)))
+                val model = PensionProviderViewModel(mandatoryVals.head.toInt, mandatoryVals.last)
+                Future(BadRequest(views.html.pensions.incorrectPensionDecision(model, formWithErrors)))
               },
               {
                 case Some(YesValue) => Future.successful(

@@ -15,19 +15,18 @@
  *@
 
 @import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-@import play.api.i18n.Messages.Implicits._
 @import play.api.Play.current
 
-@()(implicit request: Request[_], messages: MessagesApi, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 @import uk.gov.hmrc.urls.Link
 @main(
-    title = Messages("tai.timeout.title"),
+    title = messages("tai.timeout.title"),
     gaCustomTitle = None
 ){
     <header class="page-header">
-        <h1>@Messages("tai.timeout.title")</h1>
+        <h1>@messages("tai.timeout.title")</h1>
     </header>
-    <p>@Messages("tai.timeout.message")</p>
-    <p>@Messages("tai.timeout.message.pleaseLogin")</p>
-    @Link.toInternalPage(url=routes.TaxAccountSummaryController.onPageLoad().toString, value=Some(Messages("tai.timeout.login_button.text")), cssClasses=Some("button")).toHtml
+    <p>@messages("tai.timeout.message")</p>
+    <p>@messages("tai.timeout.message.pleaseLogin")</p>
+    @Link.toInternalPage(url=routes.TaxAccountSummaryController.onPageLoad().toString, value=Some(messages("tai.timeout.login_button.text")), cssClasses=Some("button")).toHtml
 }
