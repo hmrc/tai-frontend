@@ -169,8 +169,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
         YourIncomeCalculationViewModel.getCeasedMsg(Ceased, employment, true, 1000) mustBe (
           (Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay")),
-            Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate",
-              MoneyPounds(1000, 0).quantity))))
+            Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1000, 0).quantity))))
       }
     }
 
@@ -474,6 +473,81 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
           None, None, None)
         YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
           ((None, None))
+      }
+    }
+  }
+
+  "incomeExplanationMessage" must {
+    "return messages" when {
+      "getCeasedMsg returns both messages" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+          None, None, None)
+        YourIncomeCalculationViewModel.incomeExplanationMessage(Ceased, employment, true, taxCodeIncome, None, 1000, None) mustBe (
+          (Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay")),
+            Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1111, 0).quantity))))
+      }
+
+      "getCeasedMsg returns first message" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, Some(100), false)
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+          None, None, None)
+
+        YourIncomeCalculationViewModel.incomeExplanationMessage(Ceased, employment, true, taxCodeIncome, None, 1000, None) mustBe
+          (Some(messagesApi("tai.income.calculation.rti.ceased.pension",
+          employment.endDate.map(Dates.formatDate).getOrElse(""))), None)
+      }
+
+      "getManualUpdateMsg returns both messages" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+          Some(ManualTelephone), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
+
+        YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, true, taxCodeIncome, None, 1000, None) mustBe
+          (Some(messagesApi("tai.income.calculation.manual.update.phone", Dates.formatDate(taxCodeIncome.updateActionDate.get),
+            Dates.formatDate(taxCodeIncome.updateNotificationDate.get))),
+            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+      }
+
+      "getSameMsg returns the first message" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false)
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+          None, Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
+
+        YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, false, taxCodeIncome, None, 1111, None) mustBe
+          (Some(messagesApi("tai.income.calculation.rti.emp.same", Dates.formatDate(TaxYear().start),
+            "", MoneyPounds(1111, 0).quantity)), None)
+      }
+
+      "getPayFreqMsg returns both messages" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+          None, Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
+
+        YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, false, taxCodeIncome, Some(OneOff), 1000, None) mustBe
+          (Some(messagesApi("tai.income.calculation.rti.oneOff.emp", MoneyPounds(1000, 2).quantity)),
+            Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1111, 0).quantity)))
+      }
+
+      "getPayFreqMsg returns the first message" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+          None, Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
+
+        YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, false, taxCodeIncome, Some(Irregular), 1000, None) mustBe
+          (None, Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1111, 0).quantity)))
+      }
+    }
+
+    "returns default messages" when {
+      "none of the conditions are matched" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+          None, Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
+
+        YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, false, taxCodeIncome, None, 1000, None) mustBe
+          (Some(messagesApi("tai.income.calculation.default.emp", Dates.formatDate(TaxYear().end))),
+            Some(messagesApi("tai.income.calculation.default.estimate.emp", taxCodeIncome.amount)))
       }
     }
   }

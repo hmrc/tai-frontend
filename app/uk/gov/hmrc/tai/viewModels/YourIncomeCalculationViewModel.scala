@@ -137,21 +137,13 @@ object YourIncomeCalculationViewModel {
       getPayFreqMsg(employment, isPension, paymentFrequency, amountYearToDate, paymentDate, taxCodeIncome.amount)) match {
 
       case ((Some(ceasedMsg), Some(ceasedMsgEstimate)), _, _, _) => (Some(ceasedMsg), Some(ceasedMsgEstimate))
-      case ((None, Some(ceasedMsgEstimate)), _, _, _) => (None, Some(ceasedMsgEstimate))
       case ((Some(ceasedMsg), None), _, _, _) => (Some(ceasedMsg), None)
       case (_, (Some(manualUpdateMsg), Some(manualUpdateMsgEstimate)), _, _) => (Some(manualUpdateMsg), Some(manualUpdateMsgEstimate))
-      case (_, (None, Some(manualUpdateMsgEstimate)), _, _) => (None, Some(manualUpdateMsgEstimate))
-      case (_, (Some(manualUpdateMsg), None), _, _) => (Some(manualUpdateMsg), None)
-      case (_, _, (Some(sameIncomeMsg), Some(sameIncomeEstimateMsg)), _) => (Some(sameIncomeMsg), Some(sameIncomeEstimateMsg))
       case (_, _, (Some(sameIncomeMsg), None), _) => (Some(sameIncomeMsg), None)
       case (_, _, _, (Some(payFreqMsg), Some(payFreqMsgEstimate))) => (Some(payFreqMsg), Some(payFreqMsgEstimate))
       case (_, _, _, (None, Some(payFreqMsgEstimate))) => (None, Some(payFreqMsgEstimate))
-      case (_, _, _, (Some(payFreqMsg), None)) => (Some(payFreqMsg), None)
-
-      case _ => (Some(messages("tai.income.calculation.default." + (if (isPension) "pension" else "emp"),
-        Dates.formatDate(TaxYear().end))),
-        Some(messages("tai.income.calculation.default.estimate." + (if (isPension) "pension" else "emp"),
-          taxCodeIncome.amount)))
+      case _ => (Some(messages("tai.income.calculation.default." + pensionOrEmpMessage(isPension), Dates.formatDate(TaxYear().end))),
+        Some(messages("tai.income.calculation.default.estimate." + pensionOrEmpMessage(isPension), taxCodeIncome.amount)))
     }
   }
 
@@ -275,8 +267,7 @@ object YourIncomeCalculationViewModel {
     val startDate = if (TaxYearResolver.fallsInThisTaxYear(employment.startDate)) employment.startDate else TaxYear().start
 
     if (amount == amountYearToDate) {
-      (Some(messages("tai.income.calculation.rti." + pensionOrEmpMessage(isPension) +
-        ".same", Dates.formatDate(startDate),
+      (Some(messages("tai.income.calculation.rti." + pensionOrEmpMessage(isPension) + ".same", Dates.formatDate(startDate),
         paymentDate.map(Dates.formatDate).getOrElse(""), MoneyPounds(amountYearToDate, 0).quantity)), None)
     } else { (None, None) }
   }
