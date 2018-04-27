@@ -22,7 +22,7 @@ import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -144,7 +144,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
       }
     }
 
-    "return OK" when {
+    "redirect to whatDoYouWantToTellUs" when {
       "option YES is selected" in {
         val sut = createSUT
         when(sut.journeyCacheService.mandatoryValues(any())(any())).
@@ -153,8 +153,25 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
         val result = sut.handleDecision()(RequestBuilder.buildFakeRequestWithAuth("POST").
           withFormUrlEncodedBody(IncorrectPensionDecision -> YesValue))
 
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.pensions.routes.IncorrectPensionProviderController.whatDoYouWantToTellUs().url
+      }
+    }
+
+  }
+
+  "whatDoYouWantToTellUs" must {
+    "show the whatDoYouWantToTellUs page" when {
+      "an authorised user calls the page" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(IncorrectPensionProvider_NameKey))(any())).
+          thenReturn(Future.successful("TEST"))
+
+        val result = sut.whatDoYouWantToTellUs()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
         status(result) mustBe OK
-        //TODO add assert to check the page title
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.title",pensionName))
       }
     }
   }
@@ -164,6 +181,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
   private def createSUT = new SUT
 
   val generateNino: Nino = new Generator().nextNino
+  val pensionName = "TEST"
 
   class SUT extends IncorrectPensionProviderController {
     override val personService: PersonService = mock[PersonService]

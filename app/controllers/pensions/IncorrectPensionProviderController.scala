@@ -18,6 +18,8 @@ package controllers.pensions
 
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
@@ -25,14 +27,12 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.forms.pensions.{UpdateRemovePensionForm, WhatDoYouWantToTellUsForm}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.PensionIncome
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants}
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
-import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 
 import scala.concurrent.Future
@@ -81,7 +81,8 @@ trait IncorrectPensionProviderController extends TaiBaseController
                 Future(BadRequest(views.html.pensions.incorrectPensionDecision(model, formWithErrors)))
               },
               {
-                case Some(YesValue) => Future.successful(Ok(""))
+                case Some(YesValue) => Future.successful(
+                  Redirect(controllers.pensions.routes.IncorrectPensionProviderController.whatDoYouWantToTellUs()))
                 case _ => Future.successful(Redirect(ApplicationConfig.incomeFromEmploymentPensionLinkUrl))
               }
             )
@@ -89,6 +90,47 @@ trait IncorrectPensionProviderController extends TaiBaseController
           }
         }
   }
+
+
+  def whatDoYouWantToTellUs(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          journeyCacheService.mandatoryValue(IncorrectPensionProvider_NameKey) flatMap { name =>
+            Future.successful(Ok(views.html.pensions.update.whatDoYouWantToTellUs(name, WhatDoYouWantToTellUsForm.form)))
+          }
+        }
+  }
+
+
+  def submitWhatDoYouWantToTellUs(): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit taiRoot =>
+        implicit request =>
+          WhatDoYouWantToTellUsForm.form.bindFromRequest.fold(
+            formWithErrors => {
+              journeyCacheService.mandatoryValue(IncorrectPensionProvider_NameKey) map { name =>
+                BadRequest(views.html.pensions.update.whatDoYouWantToTellUs(name, formWithErrors))
+              }
+            },
+            pensionDetails => {
+              journeyCacheService.cache(Map(IncorrectPensionProvider_DetailsKey -> pensionDetails))
+                .map(_ => Redirect(controllers.pensions.routes.IncorrectPensionProviderController.addTelephoneNumber()))
+            }
+          )
+  }
+
+
+  def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+            Future.successful(Ok(""))
+        }
+  }
+
+
+
 }
 
 object IncorrectPensionProviderController extends IncorrectPensionProviderController with AuthenticationConnectors {
