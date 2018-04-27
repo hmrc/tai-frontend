@@ -50,12 +50,12 @@ trait IncorrectPensionProviderController extends TaiBaseController
   def taxAccountService: TaxAccountService
   def journeyCacheService: JourneyCacheService
 
-  def telephoneNumberViewModel(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
+  def telephoneNumberViewModel(incomeSourceId: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
     messages("tai.updatePension.preHeading"),
     messages("tai.canWeContactByPhone.title"),
     "/thisBackLinkUrlIsNoLongerUsed",
     "TODO!",
-    controllers.routes.TaxAccountSummaryController.onPageLoad().url
+    controllers.routes.IncomeSourceSummaryController.onPageLoad(incomeSourceId).url
   )
 
   def decision(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -105,7 +105,9 @@ trait IncorrectPensionProviderController extends TaiBaseController
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          Future.successful(Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel, YesNoTextEntryForm.form())))
+          journeyCacheService.mandatoryValueAsInt(IncorrectPensionProvider_IdKey) map { id =>
+            Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel(id), YesNoTextEntryForm.form()))
+          }
         }
   }
 

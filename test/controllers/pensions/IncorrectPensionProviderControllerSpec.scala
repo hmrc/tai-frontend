@@ -163,6 +163,8 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
     "show the contact by telephone page" when {
       "an authorised request is received" in {
         val sut = createSUT
+        when(sut.journeyCacheService.mandatoryValueAsInt(any())(any())).
+          thenReturn(Future.successful(1))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
