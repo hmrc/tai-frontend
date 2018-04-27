@@ -44,7 +44,7 @@ trait AuditController extends TaiBaseController
   }
 
 }
-
+// $COVERAGE-OFF$
 object AuditController extends AuditController with AuthenticationConnectors {
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
@@ -52,3 +52,4 @@ object AuditController extends AuditController with AuthenticationConnectors {
   override val personService = PersonService
   override val auditService = AuditService
 }
+// $COVERAGE-ON$

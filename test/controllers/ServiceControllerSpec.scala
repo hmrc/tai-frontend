@@ -93,6 +93,17 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
     }
   }
 
+  "gateKeeper" should {
+    "return return manualCorrespondence page when called" in  {
+      val fakeRequest = FakeRequest("GET", "").withFormUrlEncodedBody()
+      val sut = createSut
+      val result = sut.gateKeeper()(authorisedRequest)
+      status(result) shouldBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.title() should include(Messages("tai.gatekeeper.refuse.title"))
+    }
+  }
+
 
   //create TaxSummaryDetail from Json
   class TestTaiConnector extends TaiConnector {
