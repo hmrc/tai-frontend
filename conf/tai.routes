@@ -249,3 +249,8 @@ GET         /redirect-company-benefit/:employmentId/:benefitType                
 GET         /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.decision
 
 GET         /language/:lang                                                            controllers.i18n.TaiLanguageController.switchToLanguage(lang: String)
+
+## Incorrect Pension
+
+GET         /incorrect-pension/decision/:id                                             controllers.pensions.IncorrectPensionProviderController.decision(id: Int)
+POST        /incorrect-pension/decision                                                 controllers.pensions.IncorrectPensionProviderController.handleDecision()

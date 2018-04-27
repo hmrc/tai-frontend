@@ -33,7 +33,7 @@ class IncomeSummarySpec extends TaiViewSpec {
     "display employment income summary information" in{
 
       doc(view) must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
-        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM")))}")
+        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM YYYY")))}")
 
       doc(view) must haveThWithText(s"${nonBreakable(messages("tai.NextTaxYear"))} " +
         s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column2",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))}")
@@ -57,7 +57,7 @@ class IncomeSummarySpec extends TaiViewSpec {
     "display pensions income summary information" in{
 
       doc(view) must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
-        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM")))}")
+        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM YYYY")))}")
 
       doc(view) must haveThWithText(s"${nonBreakable(messages("tai.NextTaxYear"))} " +
         s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column2",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))}")
@@ -79,7 +79,7 @@ class IncomeSummarySpec extends TaiViewSpec {
     "display combined employment and private pensions income summary information" in{
 
       doc(view) must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
-        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM")))}")
+        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM YYYY")))}")
 
       doc(view) must haveThWithText(s"${nonBreakable(messages("tai.NextTaxYear"))} " +
         s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column2",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))}")
