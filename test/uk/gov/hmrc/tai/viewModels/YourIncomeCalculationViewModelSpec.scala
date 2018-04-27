@@ -138,7 +138,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
         val employment = Employment("employment", None, TaxYear().start.plusDays(1),
           None, Nil, "", "", 2, None, false)
 
-        YourIncomeCalculationViewModel.getSameMsg(employment, 100, 1000, false, None) mustBe ((None, None))
+        YourIncomeCalculationViewModel.sameIncomeCalculationMessage(employment, 100, 1000, false, None) mustBe None
       }
     }
 
@@ -146,9 +146,8 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "amountYearToDate is not same as amount" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false)
 
-        YourIncomeCalculationViewModel.getSameMsg(employment, 100, 100, false, None) mustBe
-          (Some(messagesApi("tai.income.calculation.rti.emp.same", Dates.formatDate(TaxYear().start),
-            "", MoneyPounds(100, 0).quantity)), None)
+        YourIncomeCalculationViewModel.sameIncomeCalculationMessage(employment, 100, 100, false, None) mustBe
+          Some(messagesApi("tai.income.calculation.rti.emp.same", Dates.formatDate(TaxYear().start), "", MoneyPounds(100, 0).quantity))
       }
     }
   }
