@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, TaxAccountSe
 import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
@@ -46,16 +47,26 @@ trait IncorrectPensionProviderController extends TaiBaseController
   with JourneyCacheConstants
   with FormValuesConstants {
 
+
   def personService: PersonService
+
   def taxAccountService: TaxAccountService
+
   def journeyCacheService: JourneyCacheService
 
-  def telephoneNumberViewModel(incomeSourceId: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
+  def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
+    Constraint[String]((textContent: String) => textContent match {
+      case txt if txt.length < 8 || txt.length > 30 => Invalid(messages("tai.canWeContactByPhone.telephone.invalid"))
+      case _ => Valid
+    })
+
+
+  def telephoneNumberViewModel(pensionId: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
     messages("tai.updatePension.preHeading"),
     messages("tai.canWeContactByPhone.title"),
     "/thisBackLinkUrlIsNoLongerUsed",
     "TODO!",
-    controllers.routes.IncomeSourceSummaryController.onPageLoad(incomeSourceId).url
+    controllers.routes.IncomeSourceSummaryController.onPageLoad(pensionId).url
   )
 
   def decision(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -64,7 +75,7 @@ trait IncorrectPensionProviderController extends TaiBaseController
         ServiceCheckLite.personDetailsCheck {
           taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear()) flatMap {
             case TaiSuccessResponseWithPayload(incomes: Seq[TaxCodeIncome]) =>
-              incomes.find( income => income.employmentId.contains(id) &&
+              incomes.find(income => income.employmentId.contains(id) &&
                 income.componentType == PensionIncome) match {
                 case Some(taxCodeIncome) =>
                   journeyCacheService.cache(Map(IncorrectPensionProvider_IdKey -> id.toString,
@@ -92,7 +103,7 @@ trait IncorrectPensionProviderController extends TaiBaseController
                 Future(BadRequest(views.html.pensions.incorrectPensionDecision(model, formWithErrors)))
               },
               {
-                case Some(YesValue) => Future.successful(Ok(""))  // TODO what do you want to tell us
+                case Some(YesValue) => Future.successful(Ok("")) // TODO what do you want to tell us
                 case _ => Future.successful(Redirect(ApplicationConfig.incomeFromEmploymentPensionLinkUrl))
               }
             )
@@ -111,9 +122,39 @@ trait IncorrectPensionProviderController extends TaiBaseController
         }
   }
 
+  def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        YesNoTextEntryForm.form(
+          Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
+          Messages("tai.canWeContactByPhone.telephone.empty"),
+          Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
+          formWithErrors => {
+            journeyCacheService.currentCache map { currentCache =>
+              BadRequest(views.html.can_we_contact_by_phone(telephoneNumberViewModel(currentCache(IncorrectPensionProvider_IdKey).toInt), formWithErrors))
+            }
+          },
+          form => {
+            val mandatoryData = Map(IncorrectPensionProvider_TelephoneQuestionKey -> Messages(s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))
+            val dataForCache = form.yesNoChoice match {
+              case Some(yn) if yn == YesValue => mandatoryData ++ Map(IncorrectPension_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
+              case _ => mandatoryData ++ Map(IncorrectPension_TelephoneNumberKey -> "")
+            }
+            journeyCacheService.cache(dataForCache) map { _ =>
+              Redirect(controllers.pensions.routes.IncorrectPensionProviderController.incorrectPensionProviderCheckYourAnswers())
+            }
+          }
+        )
+  }
 
+  def incorrectPensionProviderCheckYourAnswers: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit taiRoot =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          Future.successful(Ok(""))
 
-
+        }
+  }
 }
 
 object IncorrectPensionProviderController extends IncorrectPensionProviderController with AuthenticationConnectors {

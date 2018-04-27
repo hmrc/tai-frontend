@@ -115,6 +115,8 @@ trait JourneyCacheConstants {
   val IncorrectPensionProvider_JourneyKey = "incorrect-pension-provider"
   val IncorrectPensionProvider_NameKey = "incorrect-pension-provider-name"
   val IncorrectPensionProvider_IdKey = "incorrect-pension-provider-id"
+  val IncorrectPensionProvider_TelephoneQuestionKey = "pensionTelephoneContactAllowed"
+  val IncorrectPension_TelephoneNumberKey = "pensionTelephoneNumber"
 }
 
 trait AuditConstants {

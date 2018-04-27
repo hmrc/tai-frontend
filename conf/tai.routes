@@ -255,3 +255,4 @@ GET         /language/:lang                                                     
 GET         /incorrect-pension/decision/:id                                             controllers.pensions.IncorrectPensionProviderController.decision(id: Int)
 POST        /incorrect-pension/decision                                                 controllers.pensions.IncorrectPensionProviderController.handleDecision()
 GET         /incorrect-pension/telephone-number                                         controllers.pensions.IncorrectPensionProviderController.addTelephoneNumber
+GET         /incorrect-pension/check-your-answers                                       controllers.pensions.IncorrectPensionProviderController.incorrectPensionProviderCheckYourAnswers

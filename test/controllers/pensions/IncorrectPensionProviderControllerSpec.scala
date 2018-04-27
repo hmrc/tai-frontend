@@ -23,6 +23,7 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import org.mockito.Matchers.{eq => mockEq, _}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -170,6 +171,68 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+      }
+    }
+  }
+
+  "submit telephone number" must {
+    "redirect to the check your answers page" when {
+      "the request has an authorised session, and a telephone number has been provided" in {
+        val sut = createSUT
+        val expectedCache = Map(IncorrectPensionProvider_TelephoneQuestionKey -> YesValue, IncorrectPension_TelephoneNumberKey -> "12345678")
+        when(sut.journeyCacheService.cache(mockEq(expectedCache))(any())).thenReturn(Future.successful(expectedCache))
+
+        val result = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
+          YesNoChoice -> YesValue, YesNoTextEntry -> "12345678"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.pensions.routes.IncorrectPensionProviderController.incorrectPensionProviderCheckYourAnswers().url
+      }
+
+    }
+    "the request has an authorised session, and telephone number contact has not been approved" in {
+      val sut = createSUT
+
+      val expectedCacheWithErasingNumber = Map(IncorrectPensionProvider_TelephoneQuestionKey -> NoValue, IncorrectPension_TelephoneNumberKey -> "")
+      when(sut.journeyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any())).thenReturn(Future.successful(expectedCacheWithErasingNumber))
+
+      val result = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
+        YesNoChoice -> NoValue, YesNoTextEntry -> "this value must not be cached"))
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.pensions.routes.IncorrectPensionProviderController.incorrectPensionProviderCheckYourAnswers().url
+    }
+
+    "return BadRequest" when {
+      "there is a form validation error (standard form validation)" in {
+        val sut = createSUT
+        val cache = Map(IncorrectPensionProvider_IdKey -> "1")
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+
+        val result = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
+          YesNoChoice -> YesValue, YesNoTextEntry -> ""))
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+      }
+
+      "there is a form validation error (additional, controller specific constraint)" in {
+        val sut = createSUT
+        val cache = Map(IncorrectPensionProvider_IdKey -> "1")
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+
+        val tooFewCharsResult = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
+          YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))
+        status(tooFewCharsResult) mustBe BAD_REQUEST
+        val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
+        tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
+
+        val tooManyCharsResult = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
+          YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
+        status(tooManyCharsResult) mustBe BAD_REQUEST
+        val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
+        tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
     }
   }
