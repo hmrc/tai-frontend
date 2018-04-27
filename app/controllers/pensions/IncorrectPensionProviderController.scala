@@ -18,6 +18,10 @@ package controllers.pensions
 
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
+import play.api.Play.current
+import play.api.data.validation.{Constraint, Invalid, Valid}
+import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
@@ -25,17 +29,13 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
+import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.PensionIncome
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants}
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import play.api.data.validation.{Constraint, Invalid, Valid}
-import play.api.i18n.Messages
-import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
-import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
-import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 
@@ -59,13 +59,12 @@ trait IncorrectPensionProviderController extends TaiBaseController
       case txt if txt.length < 8 || txt.length > 30 => Invalid(messages("tai.canWeContactByPhone.telephone.invalid"))
       case _ => Valid
     })
-
-
+  
   def telephoneNumberViewModel(pensionId: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
     messages("tai.updatePension.preHeading"),
     messages("tai.canWeContactByPhone.title"),
     "/thisBackLinkUrlIsNoLongerUsed",
-    "TODO!",
+    controllers.pensions.routes.IncorrectPensionProviderController.submitTelephoneNumber().url,
     controllers.routes.IncomeSourceSummaryController.onPageLoad(pensionId).url
   )
 
@@ -152,7 +151,6 @@ trait IncorrectPensionProviderController extends TaiBaseController
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           Future.successful(Ok(""))
-
         }
   }
 }
