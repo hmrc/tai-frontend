@@ -135,6 +135,19 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
       }
       redirectUrl mustBe "/check-income-tax/tax-estimate-unavailable"
     }
+    "redirect to deceased page when deceased indicator is true" in {
+      val testController = createTestController()
+      when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRootDeceased))
+
+      val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe SEE_OTHER
+      val redirectUrl = redirectLocation(result) match {
+        case Some(s: String) => s
+        case _ => ""
+      }
+      redirectUrl mustBe "/check-income-tax/deceased"
+    }
 
     "display an error page" when {
 
@@ -228,6 +241,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
   val fakeTaiRoot = TaiRoot(fakeNino.nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", false, Some(false))
   val fakeTaiRootMci = TaiRoot(fakeNino.nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", true, Some(false))
+  val fakeTaiRootDeceased = TaiRoot(fakeNino.nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", false, Some(true))
 
   def createTestController(employments: Seq[Employment] = Nil, previousYears: Int = 3) = new PayeControllerHistoricTest(employments, previousYears)
 
