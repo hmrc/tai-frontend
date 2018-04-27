@@ -38,5 +38,10 @@ class WhatDoYouWantToTellUsSpec extends TaiViewSpec {
     behave like pageWithCancelLink(routes.IncomeSourceSummaryController.onPageLoad(1))
     behave like pageWithBackLink
 
+    "display a text area to collect further information" in {
+      doc must haveElementAtPathWithAttribute("textarea", "name", "pensionDetails")
+      doc must haveElementAtPathWithAttribute("textarea", "maxlength", "500")
+    }
+
   }
 }
