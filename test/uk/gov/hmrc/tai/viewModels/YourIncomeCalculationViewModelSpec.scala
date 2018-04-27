@@ -153,45 +153,58 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     }
   }
 
-  "getCeasedMessage" must {
+  "ceasedIncomeCalculationMessage" must {
     "return message for ceased employment" when {
       "endDate and cessationPay is available" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, Some(100), false)
-
-        YourIncomeCalculationViewModel.getCeasedMsg(Ceased, employment, true, 1000) mustBe (
-          (Some(messagesApi("tai.income.calculation.rti.ceased.pension",
-            employment.endDate.map(Dates.formatDate).getOrElse(""))), None)
-          )
+        YourIncomeCalculationViewModel.ceasedIncomeCalculationMessage(Ceased, employment, true) mustBe
+          Some(messagesApi("tai.income.calculation.rti.ceased.pension", Dates.formatDate(TaxYear().end)))
       }
 
       "cessationPay is not available" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getCeasedMsg(Ceased, employment, true, 1000) mustBe (
-          (Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay")),
-            Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1000, 0).quantity))))
+        YourIncomeCalculationViewModel.ceasedIncomeCalculationMessage(Ceased, employment, true) mustBe
+          Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay"))
       }
     }
 
     "return message for potentially ceased employment" when {
       "end date is not available" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getCeasedMsg(PotentiallyCeased, employment, true, 1000) mustBe
-          (Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay")),
-            Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate",
-              MoneyPounds(1000, 0).quantity)))
+        YourIncomeCalculationViewModel.ceasedIncomeCalculationMessage(PotentiallyCeased, employment, true) mustBe
+          Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay"))
       }
     }
 
     "return None" when {
       "employment is live" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+        YourIncomeCalculationViewModel.ceasedIncomeCalculationMessage(Live, employment, true) mustBe None
+      }
+    }
+  }
 
-        YourIncomeCalculationViewModel.getCeasedMsg(Ceased, employment, true, 1000) mustBe (
-          (Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay")),
-            Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate",
-              MoneyPounds(1000, 0).quantity))))
+  "ceasedIncomeCalculationEstimateMessage" must {
+    "return message for ceased employment" when {
+      "cessationPay is not available" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+        YourIncomeCalculationViewModel.ceasedIncomeCalculationEstimateMessage(Ceased, employment, true, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1000, 0).quantity))
+      }
+    }
+
+    "return message for potentially ceased employment" when {
+      "end date is not available" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false)
+        YourIncomeCalculationViewModel.ceasedIncomeCalculationEstimateMessage(PotentiallyCeased, employment, true, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1000, 0).quantity))
+      }
+    }
+
+    "return None" when {
+      "employment is live" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+        YourIncomeCalculationViewModel.ceasedIncomeCalculationEstimateMessage(Live, employment, true, 1000) mustBe None
       }
     }
   }
@@ -495,7 +508,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
         YourIncomeCalculationViewModel.incomeExplanationMessage(Ceased, employment, true, taxCodeIncome, None, 1000, None) mustBe
           (Some(messagesApi("tai.income.calculation.rti.ceased.pension",
-          employment.endDate.map(Dates.formatDate).getOrElse(""))), None)
+            employment.endDate.map(Dates.formatDate).getOrElse(""))), None)
       }
 
       "getManualUpdateMsg returns both messages" in {
