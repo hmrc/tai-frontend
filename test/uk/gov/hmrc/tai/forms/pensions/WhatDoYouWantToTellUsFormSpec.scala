@@ -27,7 +27,7 @@ class WhatDoYouWantToTellUsFormSpec extends PlaySpec
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  "UpdateEmploymentDetailsForm" must {
+  "WhatDoYouWantToTellUs Form" must {
     "return no errors with valid data" in {
 
       val validatedFormForPensionDetails = form.bind(validDetails)

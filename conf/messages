@@ -318,9 +318,6 @@ tai.updatePension.whatDoYouWantToTellUs.textarea.error.blank=Enter what you want
 tai.updatePension.whatDoYouWantToTellUs.textarea.text=Enter details about your update (Maximum characters {0})
 tai.updatePension.whatDoYouWantToTellUs.textarea.error.maximumExceeded =You can only enter a maximum of {0} characters
 
-
-
-
 ##Close bank account pages
 tai.closeBankAccount.preHeadingText=Account closed
 tai.closeBankAccount.closeDateForm.title=When did you close the account with {0}?
