@@ -47,7 +47,6 @@ trait UpdatePensionProviderController extends TaiBaseController
   with JourneyCacheConstants
   with FormValuesConstants {
 
-
   def personService: PersonService
 
   def taxAccountService: TaxAccountService
@@ -88,7 +87,6 @@ trait UpdatePensionProviderController extends TaiBaseController
             case _ => throw new RuntimeException("Tax code income source is not available")
           }
         }
-
   }
 
   def handleDoYouGetThisPension: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -179,9 +177,10 @@ trait UpdatePensionProviderController extends TaiBaseController
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          Future.successful(Ok(""))
+          Future.successful(Ok("TODO"))
         }
   }
+
 }
 
 object UpdatePensionProviderController extends UpdatePensionProviderController with AuthenticationConnectors {
