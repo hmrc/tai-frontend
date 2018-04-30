@@ -20,7 +20,6 @@ import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, TaxAccountSumma
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.util.ViewModelHelper
 
 case class PotentialUnderpaymentViewModel(iyaCYAmount: BigDecimal,
@@ -32,7 +31,7 @@ case class PotentialUnderpaymentViewModel(iyaCYAmount: BigDecimal,
 
 object PotentialUnderpaymentViewModel extends ViewModelHelper {
 
-  def apply(taxAccountSummary: TaxAccountSummary, codingComponents: Seq[CodingComponent]): PotentialUnderpaymentViewModel = {
+  def apply(taxAccountSummary: TaxAccountSummary, codingComponents: Seq[CodingComponent])(implicit messages:Messages): PotentialUnderpaymentViewModel = {
 
     val iyaTaxCodeChangeAmount = codingComponents.collect({
       case CodingComponent(EstimatedTaxYouOweThisYear, _, amount, _, _) => amount
