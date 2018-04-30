@@ -132,7 +132,7 @@ trait UpdatePensionProviderController extends TaiBaseController
               }
             },
             pensionDetails => {
-              journeyCacheService.cache(Map(IncorrectPensionProvider_DetailsKey -> pensionDetails))
+              journeyCacheService.cache(Map(UpdatePensionProvider_DetailsKey -> pensionDetails))
                 .map(_ => Redirect(controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber()))
             }
           )
