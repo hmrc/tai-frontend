@@ -181,7 +181,7 @@ object YourIncomeCalculationViewModel {
     }
   }
 
-  def manualUpdateIncomeCalculationMessage(taxCodeIncome: TaxCodeIncome)(implicit messages: Messages) = {
+  def manualUpdateIncomeCalculationMessage(taxCodeIncome: TaxCodeIncome)(implicit messages: Messages): Option[String] = {
     (taxCodeIncome.iabdUpdateSource, taxCodeIncome.updateNotificationDate, taxCodeIncome.updateActionDate) match {
       case (Some(ManualTelephone), Some(notificationDate), Some(actionDate)) =>
         Some(messages("tai.income.calculation.manual.update.phone", Dates.formatDate(actionDate), Dates.formatDate(notificationDate)))
@@ -220,10 +220,10 @@ object YourIncomeCalculationViewModel {
   }
 
   def manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome: TaxCodeIncome)(implicit messages: Messages): Option[String] = {
-      (taxCodeIncome.iabdUpdateSource, taxCodeIncome.updateNotificationDate, taxCodeIncome.updateActionDate) match {
-        case (Some(AgentContact), _, _) => Some(messages("tai.income.calculation.agent.estimate", taxCodeIncome.amount))
-        case _ => Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount))
-      }
+    (taxCodeIncome.iabdUpdateSource, taxCodeIncome.updateNotificationDate, taxCodeIncome.updateActionDate) match {
+      case (Some(AgentContact), _, _) => Some(messages("tai.income.calculation.agent.estimate", taxCodeIncome.amount))
+      case _ => Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount))
+    }
   }
 
   def getPayFreqMsg(employment: Employment, isPension: Boolean, paymentFrequency: Option[PaymentFrequency],
@@ -233,37 +233,45 @@ object YourIncomeCalculationViewModel {
     val isMidYear = employment.startDate.isAfter(TaxYear().start)
     val pensionOrEmp = pensionOrEmpMessage(isPension)
 
-    (paymentFrequency, isMidYear) match {
-      case ((Some(Weekly) | Some(FortNightly) | Some(FourWeekly) | Some(Monthly) | Some(Quarterly) | Some(BiAnnually)), false) =>
-        val paymentDt = paymentDate.map(Dates.formatDate).getOrElse("")
-        (Some(messages(s"tai.income.calculation.rti.continuous.weekly.$pensionOrEmp", MoneyPounds(amountYearToDate, 2).quantity, paymentDt)),
-          Some(messages(s"tai.income.calculation.rti.$pensionOrEmp.estimate", MoneyPounds(amount, 0).quantity)))
+    def incomeCalculationMessage = {
 
-      case (Some(Annually), false) =>
-        (Some(messages(s"tai.income.calculation.rti.continuous.annually.$pensionOrEmp", MoneyPounds(amountYearToDate, 2).quantity)),
-          Some(messages(s"tai.income.calculation.rti.$pensionOrEmp.estimate", MoneyPounds(amount, 0).quantity)))
+      paymentFrequency match {
+        case ((Some(Weekly) | Some(FortNightly) | Some(FourWeekly) | Some(Monthly) | Some(Quarterly) | Some(BiAnnually))) =>
+          val paymentDt = paymentDate.map(Dates.formatDate).getOrElse("")
+          if(isMidYear)
+            Some(messages(s"tai.income.calculation.rti.midYear.weekly", Dates.formatDate(employment.startDate), paymentDt, MoneyPounds(amountYearToDate, 2).quantity))
+          else
+            Some(messages(s"tai.income.calculation.rti.continuous.weekly.$pensionOrEmp", MoneyPounds(amountYearToDate, 2).quantity, paymentDt))
 
-      case (Some(OneOff), false) =>
-        (Some(messages(s"tai.income.calculation.rti.oneOff.$pensionOrEmp", MoneyPounds(amountYearToDate, 2).quantity)),
-          Some(messages(s"tai.income.calculation.rti.$pensionOrEmp.estimate", MoneyPounds(amount, 0).quantity)))
 
-      case (Some(Irregular), false) =>
-        (None, Some(messages(s"tai.income.calculation.rti.irregular." + pensionOrEmp, MoneyPounds(amount, 0).quantity)))
+        case Some(Annually) =>
+          val paymentDt = paymentDate.map(Dates.formatDate).getOrElse("")
+          if(isMidYear)
+            Some(messages(s"tai.income.calculation.rti.continuous.weekly.$pensionOrEmp", MoneyPounds(amountYearToDate, 2).quantity, paymentDt))
+          else
+            Some(messages(s"tai.income.calculation.rti.continuous.annually.$pensionOrEmp", MoneyPounds(amountYearToDate, 2).quantity))
 
-      case ((Some(Weekly) | Some(FortNightly) | Some(FourWeekly) | Some(Monthly) | Some(Quarterly) | Some(BiAnnually) | Some(Annually)), true) =>
-        val paymentDt = paymentDate.map(Dates.formatDate).getOrElse("")
-        (Some(messages(s"tai.income.calculation.rti.midYear.weekly", Dates.formatDate(employment.startDate), paymentDt, MoneyPounds(amountYearToDate, 2).quantity)),
-          Some(messages(s"tai.income.calculation.rti.$pensionOrEmp.estimate", MoneyPounds(amount, 0).quantity)))
+        case Some(OneOff) =>
+          Some(messages(s"tai.income.calculation.rti.oneOff.$pensionOrEmp", MoneyPounds(amountYearToDate, 2).quantity))
 
-      case (Some(OneOff), true) =>
-        (Some(messages(s"tai.income.calculation.rti.oneOff." + pensionOrEmp, MoneyPounds(amountYearToDate, 2).quantity)),
-          Some(messages(s"tai.income.calculation.rti.$pensionOrEmp.estimate", MoneyPounds(amount, 0).quantity)))
-
-      case (Some(Irregular), true) =>
-        (None, Some(messages(s"tai.income.calculation.rti.irregular." + pensionOrEmp, MoneyPounds(amount, 0).quantity)))
-
-      case _ => (None, None)
+        case _ => None
+      }
     }
+
+    def incomeCalculationEstimateMessage = {
+      paymentFrequency match {
+        case (Some(Weekly) | Some(FortNightly) | Some(FourWeekly) | Some(Monthly) |
+              Some(Quarterly) | Some(BiAnnually) | Some(Annually) | Some(OneOff)) =>
+          Some(messages(s"tai.income.calculation.rti.$pensionOrEmp.estimate", MoneyPounds(amount, 0).quantity))
+
+        case Some(Irregular) =>
+          Some(messages(s"tai.income.calculation.rti.irregular." + pensionOrEmp, MoneyPounds(amount, 0).quantity))
+
+        case _ => None
+      }
+    }
+
+    (incomeCalculationMessage, incomeCalculationEstimateMessage)
   }
 
   def sameIncomeCalculationMessage(employment: Employment, amount: BigDecimal, amountYearToDate: BigDecimal,
