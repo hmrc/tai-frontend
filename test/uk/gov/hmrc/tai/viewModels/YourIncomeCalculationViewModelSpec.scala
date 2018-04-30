@@ -208,70 +208,108 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     }
   }
 
-  "getPayFreqMsg" must {
+  "payFreqIncomeCalculationMessage" must {
     "return messages for start date before start of tax year" when {
       "payment frequency is monthly" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(Monthly), 1000, None, 1000) mustBe (
-          (Some(messagesApi("tai.income.calculation.rti.continuous.weekly.emp", MoneyPounds(1000, 2).quantity, "")),
-            Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))))
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationMessage(employment, false, Some(Monthly), 1000, None) mustBe
+          Some(messagesApi("tai.income.calculation.rti.continuous.weekly.emp", MoneyPounds(1000, 2).quantity, ""))
       }
 
       "payment frequency is Annually" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(Annually), 1000, None, 1000) mustBe(
-          Some(messagesApi("tai.income.calculation.rti.continuous.annually.emp", MoneyPounds(1000, 2).quantity)),
-          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity)))
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationMessage(employment, false, Some(Annually), 1000, None) mustBe
+          Some(messagesApi("tai.income.calculation.rti.continuous.annually.emp", MoneyPounds(1000, 2).quantity))
       }
 
       "payment frequency is OneOff" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(OneOff), 1000, None, 1000) mustBe(
-          Some(messagesApi("tai.income.calculation.rti.oneOff.emp", MoneyPounds(1000, 2).quantity)),
-          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity)))
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationMessage(employment, false, Some(OneOff), 1000, None) mustBe
+          Some(messagesApi("tai.income.calculation.rti.oneOff.emp", MoneyPounds(1000, 2).quantity))
       }
 
       "payment frequency is Irregular" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(Irregular), 1000, None, 1000) mustBe(
-          None, Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1000, 0).quantity)))
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationMessage(employment, false, Some(Irregular), 1000, None) mustBe None
       }
     }
 
     "return messages for start date after tax of start year" when {
       "payment frequency is monthly" in {
         val employment = Employment("employment", None, TaxYear().start.plusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationMessage(employment, false, Some(Monthly), 1000, None) mustBe
+          Some(messagesApi("tai.income.calculation.rti.midYear.weekly", Dates.formatDate(employment.startDate), "", MoneyPounds(1000, 2).quantity))
+      }
 
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(Monthly), 1000, None, 1000) mustBe(
-          Some(messagesApi("tai.income.calculation.rti.midYear.weekly", Dates.formatDate(employment.startDate), "", MoneyPounds(1000, 2).quantity)),
-          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity)))
+      "payment frequency is Annually" in {
+        val employment = Employment("employment", None, TaxYear().start.plusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationMessage(employment, false, Some(Annually), 1000, None) mustBe
+          Some(messagesApi("tai.income.calculation.rti.midYear.weekly", Dates.formatDate(employment.startDate), "", MoneyPounds(1000, 2).quantity))
       }
 
       "payment frequency is OneOff" in {
         val employment = Employment("employment", None, TaxYear().start.plusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(OneOff), 1000, None, 1000) mustBe(
-          Some(messagesApi("tai.income.calculation.rti.oneOff.emp", MoneyPounds(1000, 2).quantity)),
-          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity)))
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationMessage(employment, false, Some(OneOff), 1000, None) mustBe
+          Some(messagesApi("tai.income.calculation.rti.oneOff.emp", MoneyPounds(1000, 2).quantity))
       }
 
       "payment frequency is Irregular" in {
         val employment = Employment("employment", None, TaxYear().start.plusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(Irregular), 1000, None, 1000) mustBe(
-          None, Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1000, 0).quantity)))
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationMessage(employment, false, Some(Irregular), 1000, None) mustBe None
       }
     }
 
     "return none" when {
       "payment frequency is none" in {
         val employment = Employment("employment", None, TaxYear().start.plusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationMessage(employment, false, None, 1000, None) mustBe None
+      }
+    }
+  }
 
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, None, 1000, None, 1000) mustBe ((None, None))
+  "payFreqIncomeCalculationEstimateMessage" must {
+    "return messages for start date before start of tax year" when {
+      "payment frequency is monthly" in {
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationEstimateMessage(false, Some(Monthly), None, 1000) mustBe
+            Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
+      }
+
+      "payment frequency is Annually" in {
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationEstimateMessage(false, Some(Annually), None, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
+      }
+
+      "payment frequency is OneOff" in {
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationEstimateMessage(false, Some(OneOff), None, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
+      }
+
+      "payment frequency is Irregular" in {
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationEstimateMessage(false, Some(Irregular), None, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1000, 0).quantity))
+      }
+    }
+
+    "return messages for start date after tax of start year" when {
+      "payment frequency is monthly" in {
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationEstimateMessage(false, Some(Monthly), None, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
+      }
+
+      "payment frequency is OneOff" in {
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationEstimateMessage(false, Some(OneOff), None, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
+      }
+
+      "payment frequency is Irregular" in {
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationEstimateMessage(false, Some(Irregular), None, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1000, 0).quantity))
+      }
+    }
+
+    "return none" when {
+      "payment frequency is none" in {
+        YourIncomeCalculationViewModel.payFreqIncomeCalculationEstimateMessage(false, None, None, 1000) mustBe None
       }
     }
   }
