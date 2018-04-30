@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.util.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 
-class IncorrectPensionDecisionPageSpec extends TaiViewSpec with FormValuesConstants {
+class DoYouGetThisPensionIncomePageSpec extends TaiViewSpec with FormValuesConstants {
 
   "IncorrectPension page" must {
     behave like pageWithTitle(messages("tai.incorrectPension.decision.title"))
@@ -37,14 +37,14 @@ class IncorrectPensionDecisionPageSpec extends TaiViewSpec with FormValuesConsta
       messages("tai.pension.decision.radio1"),
       messages("tai.pension.decision.radio2"))
 
-    behave like pageWithContinueButtonForm(controllers.pensions.routes.IncorrectPensionProviderController.handleDecision().url)
+    behave like pageWithContinueButtonForm(controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension().url)
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(model.id))
 
     "show error" when {
       "form contains error" in {
         val pensionUpdateRemoveFormWithError = UpdateRemovePensionForm.form.bind(
           Map(UpdateRemovePensionForm.IncorrectPensionDecision -> ""))
-        val viewWithError: Html = views.html.pensions.incorrectPensionDecision(model, pensionUpdateRemoveFormWithError)
+        val viewWithError: Html = views.html.pensions.doYouGetThisPensionIncome(model, pensionUpdateRemoveFormWithError)
 
         val errorDoc = doc(viewWithError)
 
@@ -58,5 +58,5 @@ class IncorrectPensionDecisionPageSpec extends TaiViewSpec with FormValuesConsta
   private lazy val pensionUpdateRemoveForm = UpdateRemovePensionForm.form.bind(
     Map(UpdateRemovePensionForm.IncorrectPensionDecision -> YesValue))
   private lazy val model = PensionProviderViewModel(1, "Test Pension")
-  override def view: Html = views.html.pensions.incorrectPensionDecision(model, pensionUpdateRemoveForm)
+  override def view: Html = views.html.pensions.doYouGetThisPensionIncome(model, pensionUpdateRemoveForm)
 }
