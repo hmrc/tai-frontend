@@ -133,20 +133,23 @@ object YourIncomeCalculationViewModel {
 
     (ceasedIncomeCalculationMessage(employmentStatus, employment, isPension),
       ceasedIncomeCalculationEstimateMessage(employmentStatus, employment, isPension, taxCodeIncome.amount),
+
       manualUpdateIncomeCalculationMessage(taxCodeIncome),
+
       sameIncomeCalculationMessage(employment, taxCodeIncome.amount, amountYearToDate, isPension, paymentDate),
+
       payFreqIncomeCalculationMessage(employment, isPension, paymentFrequency, amountYearToDate, paymentDate),
       payFreqIncomeCalculationEstimateMessage(isPension, paymentFrequency, paymentDate, taxCodeIncome.amount)) match {
 
-      case (Some(ceasedMsg), Some(ceasedMsgEstimate), _, _, _, _) => (Some(ceasedMsg), Some(ceasedMsgEstimate))
-      case (Some(ceasedMsg), None, _, _, _, _) => (Some(ceasedMsg), None)
+      case (msg@Some(_), estMsg@Some(_), _, _, _, _) => (msg, estMsg)
+      case (msg@Some(_), None, _, _, _, _) => (msg, None)
 
-      case (_, _, Some(manualUpdateMsg), _, _, _) => (Some(manualUpdateMsg), manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome))
+      case (_, _, msg@Some(_), _, _, _) => (msg, manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome))
 
-      case (_, _, _, Some(sameIncomeMsg), _, _) => (Some(sameIncomeMsg), None)
+      case (_, _, _, msg@Some(_), _, _) => (msg, None)
 
-      case (_, _, _, _, Some(payFreqMsg), Some(payFreqMsgEstimate)) => (Some(payFreqMsg), Some(payFreqMsgEstimate))
-      case (_, _, _, _, None, Some(payFreqMsgEstimate)) => (None, Some(payFreqMsgEstimate))
+      case (_, _, _, _, msg@Some(_), estMsg@Some(_)) => (msg, estMsg)
+      case (_, _, _, _, None, estMsg@Some(_)) => (None, estMsg)
 
       case _ => (Some(messages("tai.income.calculation.default." + pensionOrEmpMessage(isPension), Dates.formatDate(TaxYear().end))),
         Some(messages("tai.income.calculation.default.estimate." + pensionOrEmpMessage(isPension), taxCodeIncome.amount)))
@@ -232,19 +235,18 @@ object YourIncomeCalculationViewModel {
 
     val isMidYear = employment.startDate.isAfter(TaxYear().start)
     val pensionOrEmp = pensionOrEmpMessage(isPension)
+    val paymentDt = paymentDate.map(Dates.formatDate).getOrElse("")
 
     paymentFrequency match {
       case ((Some(Weekly) | Some(FortNightly) | Some(FourWeekly) | Some(Monthly) | Some(Quarterly) | Some(BiAnnually))) =>
-        val paymentDt = paymentDate.map(Dates.formatDate).getOrElse("")
-        if(isMidYear)
+        if (isMidYear)
           Some(messages(s"tai.income.calculation.rti.midYear.weekly", Dates.formatDate(employment.startDate), paymentDt, MoneyPounds(amountYearToDate, 2).quantity))
         else
           Some(messages(s"tai.income.calculation.rti.continuous.weekly.$pensionOrEmp", MoneyPounds(amountYearToDate, 2).quantity, paymentDt))
 
       case Some(Annually) =>
-        val paymentDt = paymentDate.map(Dates.formatDate).getOrElse("")
-        if(isMidYear)
-          Some(messages(s"tai.income.calculation.rti.continuous.weekly.$pensionOrEmp", MoneyPounds(amountYearToDate, 2).quantity, paymentDt))
+        if (isMidYear)
+          Some(messages("tai.income.calculation.rti.midYear.weekly", Dates.formatDate(employment.startDate), paymentDt, MoneyPounds(amountYearToDate, 2).quantity))
         else
           Some(messages(s"tai.income.calculation.rti.continuous.annually.$pensionOrEmp", MoneyPounds(amountYearToDate, 2).quantity))
 
