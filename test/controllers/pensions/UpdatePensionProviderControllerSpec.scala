@@ -22,6 +22,8 @@ import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.any
+import org.mockito.Mockito.when
+import org.mockito.Matchers.{eq => mockEq, _}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -43,7 +45,7 @@ import uk.gov.hmrc.tai.util.{FormValuesConstants, IncorrectPensionDecisionConsta
 
 import scala.concurrent.Future
 
-class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayApplication
+class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayApplication
   with MockitoSugar
   with I18nSupport
   with JourneyCacheConstants
@@ -65,7 +67,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
-        val result = sut.decision(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.doYouGetThisPension(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
@@ -80,7 +82,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
 
-        val result = sut.decision(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.doYouGetThisPension(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -94,7 +96,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
-        val result = sut.decision(4)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.doYouGetThisPension(4)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -109,7 +111,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
-        val result = sut.decision(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.doYouGetThisPension(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -123,7 +125,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
         when(sut.journeyCacheService.mandatoryValues(any())(any())).
           thenReturn(Future.successful(Seq("1","TEST")))
 
-        val result = sut.handleDecision()(RequestBuilder.buildFakeRequestWithAuth("POST").
+        val result = sut.handleDoYouGetThisPension()(RequestBuilder.buildFakeRequestWithAuth("POST").
           withFormUrlEncodedBody(IncorrectPensionDecision -> ""))
 
         status(result) mustBe BAD_REQUEST
@@ -136,7 +138,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
         when(sut.journeyCacheService.mandatoryValues(any())(any())).
           thenReturn(Future.successful(Seq("1","TEST")))
 
-        val result = sut.handleDecision()(RequestBuilder.buildFakeRequestWithAuth("POST").
+        val result = sut.handleDoYouGetThisPension()(RequestBuilder.buildFakeRequestWithAuth("POST").
           withFormUrlEncodedBody(IncorrectPensionDecision -> NoValue))
 
         status(result) mustBe SEE_OTHER
@@ -150,11 +152,11 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
         when(sut.journeyCacheService.mandatoryValues(any())(any())).
           thenReturn(Future.successful(Seq("1","TEST")))
 
-        val result = sut.handleDecision()(RequestBuilder.buildFakeRequestWithAuth("POST").
+        val result = sut.handleDoYouGetThisPension()(RequestBuilder.buildFakeRequestWithAuth("POST").
           withFormUrlEncodedBody(IncorrectPensionDecision -> YesValue))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.pensions.routes.IncorrectPensionProviderController.whatDoYouWantToTellUs().url
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs().url
       }
     }
 
@@ -164,7 +166,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
     "show the whatDoYouWantToTellUs page" when {
       "an authorised user calls the page" in {
         val sut = createSUT
-        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(IncorrectPensionProvider_NameKey))(any())).
+        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(UpdatePensionProvider_NameKey))(any())).
           thenReturn(Future.successful("TEST"))
 
         val result = sut.whatDoYouWantToTellUs()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -176,6 +178,83 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
     }
   }
 
+  "addTelephoneNumber" must {
+    "show the contact by telephone page" when {
+      "an authorised request is received" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.mandatoryValueAsInt(any())(any())).
+          thenReturn(Future.successful(1))
+        val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+      }
+    }
+  }
+
+  "submit telephone number" must {
+    "redirect to the check your answers page" when {
+      "the request has an authorised session, and a telephone number has been provided" in {
+        val sut = createSUT
+        val expectedCache = Map(UpdatePensionProvider_TelephoneQuestionKey -> YesValue, UpdatePensionProvider_TelephoneNumberKey -> "12345678")
+        when(sut.journeyCacheService.cache(mockEq(expectedCache))(any())).thenReturn(Future.successful(expectedCache))
+
+        val result = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
+          YesNoChoice -> YesValue, YesNoTextEntry -> "12345678"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers().url
+      }
+
+    }
+    "the request has an authorised session, and telephone number contact has not been approved" in {
+      val sut = createSUT
+
+      val expectedCacheWithErasingNumber = Map(UpdatePensionProvider_TelephoneQuestionKey -> NoValue, UpdatePensionProvider_TelephoneNumberKey -> "")
+      when(sut.journeyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any())).thenReturn(Future.successful(expectedCacheWithErasingNumber))
+
+      val result = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
+        YesNoChoice -> NoValue, YesNoTextEntry -> "this value must not be cached"))
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.checkYourAnswers().url
+    }
+
+    "return BadRequest" when {
+      "there is a form validation error (standard form validation)" in {
+        val sut = createSUT
+        val cache = Map(UpdatePensionProvider_IdKey -> "1")
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+
+        val result = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
+          YesNoChoice -> YesValue, YesNoTextEntry -> ""))
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+      }
+
+      "there is a form validation error (additional, controller specific constraint)" in {
+        val sut = createSUT
+        val cache = Map(UpdatePensionProvider_IdKey -> "1")
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+
+        val tooFewCharsResult = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
+          YesNoChoice -> YesValue, YesNoTextEntry -> "1234"))
+        status(tooFewCharsResult) mustBe BAD_REQUEST
+        val tooFewDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
+        tooFewDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
+
+        val tooManyCharsResult = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
+          YesNoChoice -> YesValue, YesNoTextEntry -> "1234123412341234123412341234123"))
+        status(tooManyCharsResult) mustBe BAD_REQUEST
+        val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
+        tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
+      }
+    }
+  }
+
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private def createSUT = new SUT
@@ -183,7 +262,7 @@ class IncorrectPensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAp
   val generateNino: Nino = new Generator().nextNino
   val pensionName = "TEST"
 
-  class SUT extends IncorrectPensionProviderController {
+  class SUT extends UpdatePensionProviderController {
     override val personService: PersonService = mock[PersonService]
     override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer

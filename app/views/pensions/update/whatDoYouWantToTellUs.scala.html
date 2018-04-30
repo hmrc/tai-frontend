@@ -42,7 +42,7 @@
     articleClasses = None,
     gaCustomTitle = Some(Messages("tai.updatePension.whatDoYouWantToTellUs.customGaTitle"))) {
 
-    @form(action = controllers.pensions.routes.IncorrectPensionProviderController.submitWhatDoYouWantToTellUs(), args=(Symbol("class"), "subsection")) {
+    @form(action = controllers.pensions.routes.UpdatePensionProviderController.submitWhatDoYouWantToTellUs(), args=(Symbol("class"), "subsection")) {
 
         @textArea(
             field=whatDoYouWantToTellUsForm("pensionDetails"),
