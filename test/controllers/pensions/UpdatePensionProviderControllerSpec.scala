@@ -151,6 +151,8 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val sut = createSUT
         when(sut.journeyCacheService.mandatoryValues(any())(any())).
           thenReturn(Future.successful(Seq("1","TEST")))
+        when(sut.journeyCacheService.cache(any(), any())(any())).
+          thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.handleDoYouGetThisPension()(RequestBuilder.buildFakeRequestWithAuth("POST").
           withFormUrlEncodedBody(IncorrectPensionDecision -> YesValue))

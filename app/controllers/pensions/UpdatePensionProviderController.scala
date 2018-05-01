@@ -102,8 +102,10 @@ trait UpdatePensionProviderController extends TaiBaseController
                 Future(BadRequest(views.html.pensions.update.doYouGetThisPensionIncome(model, formWithErrors)))
               },
               {
-                case Some(YesValue) => Future.successful(
-                  Redirect(controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs()))    //TODO we should cache a yes response here. Remember to cache in i18n form
+                case Some(YesValue) =>
+                  journeyCacheService.cache(UpdatePensionProvider_ReceivePensionQuestionKey, Messages("tai.label.yes")).map{ _ =>
+                    Redirect(controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs())
+                  }
                 case _ => Future.successful(Redirect(ApplicationConfig.incomeFromEmploymentPensionLinkUrl))
               }
             )
