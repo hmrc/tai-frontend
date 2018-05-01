@@ -124,33 +124,48 @@ object YourIncomeCalculationViewModel {
   }
 
   def incomeExplanationMessage(employmentStatus: TaxCodeIncomeSourceStatus,
-                               employment: Employment,
-                               pensionOrEmployment: String,
-                               taxCodeIncome: TaxCodeIncome,
-                               paymentFrequency: Option[PaymentFrequency],
-                               amountYearToDate: BigDecimal,
-                               paymentDate: Option[LocalDate])(implicit messages: Messages): (Option[String], Option[String]) = {
+                                employment: Employment,
+                                pensionOrEmployment: String,
+                                taxCodeIncome: TaxCodeIncome,
+                                paymentFrequency: Option[PaymentFrequency],
+                                amountYearToDate: BigDecimal,
+                                paymentDate: Option[LocalDate])(implicit messages: Messages): (Option[String], Option[String]) = {
 
-    (ceasedIncomeCalculationMessage(employmentStatus, employment, pensionOrEmployment),
-      ceasedIncomeCalculationEstimateMessage(employmentStatus, employment, taxCodeIncome.amount),
-      manualUpdateIncomeCalculationMessage(taxCodeIncome),
-      sameIncomeCalculationMessage(employment, taxCodeIncome.amount, amountYearToDate, pensionOrEmployment, paymentDate),
-      payFreqIncomeCalculationMessage(employment, pensionOrEmployment, paymentFrequency, amountYearToDate, paymentDate),
-      payFreqIncomeCalculationEstimateMessage(pensionOrEmployment, paymentFrequency, paymentDate, taxCodeIncome.amount)) match {
 
-      case (msg@Some(_), estMsg@Some(_), _, _, _, _) => (msg, estMsg)
-      case (msg@Some(_), None, _, _, _, _) => (msg, None)
+    lazy val ceasedIncomeMessages = (
+      ceasedIncomeCalculationMessage(employmentStatus, employment, pensionOrEmployment),
+      ceasedIncomeCalculationEstimateMessage(employmentStatus, employment, taxCodeIncome.amount)
+    )
 
-      case (_, _, msg@Some(_), _, _, _) => (msg, manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome))
-
-      case (_, _, _, msg@Some(_), _, _) => (msg, None)
-
-      case (_, _, _, _, msg@Some(_), estMsg@Some(_)) => (msg, estMsg)
-      case (_, _, _, _, None, estMsg@Some(_)) => (None, estMsg)
-
-      case _ => (Some(messages(s"tai.income.calculation.default.$pensionOrEmployment", Dates.formatDate(TaxYear().end))),
-        Some(messages(s"tai.income.calculation.default.estimate.$pensionOrEmployment", taxCodeIncome.amount)))
+    lazy val manualIncomeMessages = {
+      val msg = manualUpdateIncomeCalculationMessage(taxCodeIncome)
+      (msg, if(msg.isDefined) manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome) else None)
     }
+
+    lazy val sameMessages = (sameIncomeCalculationMessage(employment, taxCodeIncome.amount, amountYearToDate, pensionOrEmployment, paymentDate), None)
+
+    lazy val payFrequencyMessages = (
+      payFreqIncomeCalculationMessage(employment, pensionOrEmployment, paymentFrequency, amountYearToDate, paymentDate),
+      payFreqIncomeCalculationEstimateMessage(pensionOrEmployment, paymentFrequency, paymentDate, taxCodeIncome.amount)
+    )
+
+    lazy val defaultMessages =
+      (Some(messages(s"tai.income.calculation.default.$pensionOrEmployment", Dates.formatDate(TaxYear().end))),
+        Some(messages(s"tai.income.calculation.default.estimate.$pensionOrEmployment", taxCodeIncome.amount)))
+
+
+    if(fetchMessages.isDefinedAt(ceasedIncomeMessages)) ceasedIncomeMessages
+    else if (fetchMessages.isDefinedAt(manualIncomeMessages)) manualIncomeMessages
+    else if (fetchMessages.isDefinedAt(sameMessages)) sameMessages
+    else if (fetchMessages.isDefinedAt(payFrequencyMessages)) payFrequencyMessages
+    else defaultMessages
+
+  }
+
+  def fetchMessages: PartialFunction[(Option[String], Option[String]), (Option[String], Option[String])] = {
+    case (incomeMessage@Some(_), incomeEstimateMessage@Some(_)) => (incomeMessage, incomeEstimateMessage)
+    case (None, incomeEstimateMessage@Some(_)) => (None, incomeEstimateMessage)
+    case (incomeMessage@Some(_), None) => (incomeMessage, None)
   }
 
   def ceasedIncomeCalculationMessage(employmentStatus: TaxCodeIncomeSourceStatus, employment: Employment, pensionOrEmpMessage: String
@@ -232,7 +247,7 @@ object YourIncomeCalculationViewModel {
 
     val isMidYear = employment.startDate.isAfter(TaxYear().start)
     val paymentDt = paymentDate.map(Dates.formatDate).getOrElse("")
-
+    print("------------Epic fail I am calling this guy")
     paymentFrequency match {
       case ((Some(Weekly) | Some(FortNightly) | Some(FourWeekly) | Some(Monthly) | Some(Quarterly) | Some(BiAnnually))) =>
         if (isMidYear)
