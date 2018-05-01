@@ -19,7 +19,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers._
-@import includes.forms.inputRadioGroupNewStyling
+@import includes.forms.inputRadioGroupStyling
 
 
 @gaEventActionString = @{"Payslip deductions"}
@@ -48,7 +48,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
         @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayslipDeductions){
 
-            @{inputRadioGroupNewStyling(
+            @{inputRadioGroupStyling(
                 field=payslipDeductionsForm("payslipDeductions"),
                 radioOptions=Seq(("Yes" -> Messages("tai.payslipDeductions.yes")), ("No" -> Messages("tai.payslipDeductions.no"))),
                 legend=Messages("tai.payslipDeductions.legend"),

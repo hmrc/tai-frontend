@@ -18,7 +18,7 @@
 @import includes.forms.submit
 @import includes.{cancelLink, ptaHeader}
 @import uk.gov.hmrc.play.views.html.helpers.{errorSummary, form}
-@import includes.forms.inputRadioGroupNewStyling
+@import includes.forms.inputRadioGroupStyling
 
 @(updateRemoveForm: Form[Option[String]], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -44,7 +44,7 @@
     @form(action = controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove(empId), Symbol("data-journey-dynamic-radios") -> "" ) {
         <div class="form-group">
 
-            @{inputRadioGroupNewStyling(
+            @{inputRadioGroupStyling(
                 field=updateRemoveForm(UpdateRemoveEmploymentForm.EmploymentDecision),
                 radioOptions=Seq(("Yes" -> Messages("tai.employment.decision.radio1")), ("No" -> Messages("tai.employment.decision.radio2")) ),
                 legend=Messages("tai.employment.decision.legend"),

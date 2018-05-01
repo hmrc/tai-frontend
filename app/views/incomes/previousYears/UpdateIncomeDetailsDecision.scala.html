@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import includes.forms.submit
 @import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsDecisionForm
-@import includes.forms.inputRadioGroupNewStyling
+@import includes.forms.inputRadioGroupStyling
 
 @(decisionForm: Form[Option[String]], taxYear: TaxYear)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -48,7 +48,7 @@
 
     @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {
 
-        @{inputRadioGroupNewStyling(
+        @{inputRadioGroupStyling(
             field=decisionForm(UpdateIncomeDetailsDecisionForm.UpdateIncomeChoice),
             radioOptions=Seq(("Yes" -> Messages("tai.income.previousYears.decision.radio.yes")), ("No" -> Messages("tai.income.previousYears.decision.radio.no")) ),
             legend=Messages("tai.income.previousYears.decision.IWantTo"),

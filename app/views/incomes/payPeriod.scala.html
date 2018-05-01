@@ -20,7 +20,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers._
-@import includes.forms.inputRadioGroupNewStyling
+@import includes.forms.inputRadioGroupStyling
 
 @gaEventActionString = @{"How often do you get paid?"}
 
@@ -62,7 +62,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 ){
     <div class="section flush--bottom">
         @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
-            @{inputRadioGroupNewStyling(
+            @{inputRadioGroupStyling(
                 field=payPeriodForm("payPeriod"),
                 radioOptions=Seq(("monthly" -> Messages("tai.payPeriod.monthly")), ("weekly" -> Messages("tai.payPeriod.weekly")),("fortnightly" -> Messages("tai.payPeriod.fortnightly")),("other" -> Messages("tai.payPeriod.other"))),
                 legend=Messages("tai.payPeriod.legend"),

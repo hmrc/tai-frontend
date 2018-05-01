@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
-@import includes.forms.inputRadioGroupNewStyling
+@import includes.forms.inputRadioGroupStyling
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
 
@@ -53,7 +53,7 @@
                 }
                 @form(action=controllers.routes.WhatDoYouWantToDoController.handleWhatDoYouWantToDoPage, args = Symbol("data-journey-dynamic-radios") -> "") {
 
-                    @{inputRadioGroupNewStyling(
+                    @{inputRadioGroupStyling(
                         field=wdywtdForm("taxYears"),
                         radioOptions=radioSequence,
                         legend=Messages("tai.whatDoYouWantToDo.legend"),

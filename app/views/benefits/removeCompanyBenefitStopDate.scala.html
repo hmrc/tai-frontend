@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.urls.Link
 @import includes.{ptaHeader, cancelLink}
 @import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
-@import includes.forms.{inputRadioGroupNewStyling, submit}
+@import includes.forms.{inputRadioGroupStyling, submit}
 @import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
@@ -47,7 +47,7 @@ gaCustomTitle = Some(Messages("tai.benefits.ended.stopDate.customGaTitle"))){
 
     @form(action = controllers.benefits.routes.RemoveCompanyBenefitController.submitStopDate(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {
 
-        @{inputRadioGroupNewStyling(
+        @{inputRadioGroupStyling(
             stopDateForm(RemoveCompanyBenefitStopDateForm.StopDateChoice),
             Seq(
                 RemoveCompanyBenefitStopDateForm.BeforeTaxYearEnd -> Messages("tai.benefits.ended.stopDate.radio.beforeTaxYearEnd",startOfCurrentTaxYear),
