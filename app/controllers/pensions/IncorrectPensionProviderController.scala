@@ -90,7 +90,7 @@ trait IncorrectPensionProviderController extends TaiBaseController
         }
   }
 }
-
+// $COVERAGE-OFF$
 object IncorrectPensionProviderController extends IncorrectPensionProviderController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override implicit val templateRenderer = LocalTemplateRenderer
@@ -98,3 +98,4 @@ object IncorrectPensionProviderController extends IncorrectPensionProviderContro
   override val journeyCacheService = JourneyCacheService(IncorrectPensionProvider_JourneyKey)
   override val taxAccountService: TaxAccountService = TaxAccountService
 }
+// $COVERAGE-ON$

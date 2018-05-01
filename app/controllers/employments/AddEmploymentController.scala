@@ -278,7 +278,7 @@ trait AddEmploymentController extends TaiBaseController
           }
   }
 }
-
+// $COVERAGE-OFF$
 object AddEmploymentController extends AddEmploymentController with AuthenticationConnectors {
 
   override val personService: PersonService = PersonService
@@ -289,3 +289,4 @@ object AddEmploymentController extends AddEmploymentController with Authenticati
   override val journeyCacheService = JourneyCacheService(AddEmployment_JourneyKey)
   override val successfulJourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
 }
+// $COVERAGE-ON$

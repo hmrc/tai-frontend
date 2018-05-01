@@ -185,7 +185,7 @@ trait UpdateEmploymentController extends TaiBaseController
           }
   }
 }
-
+// $COVERAGE-OFF$
 object UpdateEmploymentController extends UpdateEmploymentController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override implicit val templateRenderer = LocalTemplateRenderer
@@ -194,3 +194,4 @@ object UpdateEmploymentController extends UpdateEmploymentController with Authen
   override val journeyCacheService = JourneyCacheService(UpdateEmployment_JourneyKey)
   override val successfulJourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
 }
+// $COVERAGE-ON$
