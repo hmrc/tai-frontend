@@ -16,19 +16,19 @@
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-@import uk.gov.hmrc.tai.viewModels.employments._
+@import uk.gov.hmrc.tai.viewModels.pensions.update._
 @import includes._
 @import includes.forms._
 @import uk.gov.hmrc.play.views.html.helpers._
 
-@(viewModel: UpdateEmploymentCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
+@(viewModel: UpdatePensionCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
 
 @header = @{
     ptaHeader(
-    displayBackLink = true,
-    mainHeadingText = Messages("tai.checkYourAnswers"),
-    preHeadingText = Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading")
-)
+        displayBackLink = true,
+        mainHeadingText = Messages("tai.checkYourAnswers"),
+        preHeadingText = Messages("tai.updatePension.preHeading")
+    )
 }
 
 @main(
@@ -40,7 +40,7 @@
 ) {
 
     @checkYourAnswers(
-        title = Some(viewModel.employerName),
+        title = Some(viewModel.pensionProviderName),
         confirmationLines = viewModel.journeyConfirmationLines
     )
 
