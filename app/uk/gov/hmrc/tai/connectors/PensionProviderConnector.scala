@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.connectors
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.tai.model.domain.AddPensionProvider
+import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -36,8 +36,15 @@ trait PensionProviderConnector {
   }
 
   def addPensionProviderServiceUrl(nino: Nino) = s"$serviceUrl/tai/$nino/pensionProvider"
-}
 
+  def incorrectPensionProvider(nino: Nino, id: Int, pensionProvider: IncorrectPensionProvider)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    httpHandler.postToApi[IncorrectPensionProvider](incorrectPensionProviderServiceUrl(nino, id), pensionProvider).map { response =>
+      (response.json \ "data").asOpt[String]
+    }
+  }
+
+  def incorrectPensionProviderServiceUrl(nino: Nino, id: Int) = s"$serviceUrl/tai/$nino/pensionProvider/$id/reason"
+}
 
 object PensionProviderConnector extends PensionProviderConnector with ServicesConfig {
   override val serviceUrl: String = baseUrl("tai")
