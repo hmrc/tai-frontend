@@ -28,7 +28,7 @@ import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.test.Helpers._
+import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
@@ -251,6 +251,26 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         status(tooManyCharsResult) mustBe BAD_REQUEST
         val tooManyDoc = Jsoup.parse(contentAsString(tooFewCharsResult))
         tooManyDoc.title() must include(Messages("tai.canWeContactByPhone.title"))
+      }
+    }
+  }
+
+  "check your answers" must {
+    "show summary page" when {
+      "valid details are present in journey cache" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+          Future.successful((
+            Seq[String]("1", "Yes", "some random info", "Yes"),
+            Seq[Option[String]](Some("123456789"))
+          ))
+        )
+
+        val result = sut.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.checkYourAnswers"))
       }
     }
   }

@@ -44,7 +44,7 @@ class DoYouGetThisPensionIncomePageSpec extends TaiViewSpec with FormValuesConst
       "form contains error" in {
         val pensionUpdateRemoveFormWithError = UpdateRemovePensionForm.form.bind(
           Map(UpdateRemovePensionForm.IncorrectPensionDecision -> ""))
-        val viewWithError: Html = views.html.pensions.doYouGetThisPensionIncome(model, pensionUpdateRemoveFormWithError)
+        val viewWithError: Html = views.html.pensions.update.doYouGetThisPensionIncome(model, pensionUpdateRemoveFormWithError)
 
         val errorDoc = doc(viewWithError)
 
@@ -58,5 +58,5 @@ class DoYouGetThisPensionIncomePageSpec extends TaiViewSpec with FormValuesConst
   private lazy val pensionUpdateRemoveForm = UpdateRemovePensionForm.form.bind(
     Map(UpdateRemovePensionForm.IncorrectPensionDecision -> YesValue))
   private lazy val model = PensionProviderViewModel(1, "Test Pension")
-  override def view: Html = views.html.pensions.doYouGetThisPensionIncome(model, pensionUpdateRemoveForm)
+  override def view: Html = views.html.pensions.update.doYouGetThisPensionIncome(model, pensionUpdateRemoveForm)
 }

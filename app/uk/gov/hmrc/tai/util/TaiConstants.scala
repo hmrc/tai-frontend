@@ -52,6 +52,7 @@ trait JourneyCacheConstants {
   val UpdatePensionProvider_JourneyKey = "update-pension-provider"
   val UpdatePensionProvider_NameKey = "pensionProviderName"
   val UpdatePensionProvider_IdKey = "pensionProviderId"
+  val UpdatePensionProvider_ReceivePensionQuestionKey = "receivePension"
   val UpdatePensionProvider_TelephoneQuestionKey = "telephoneContactAllowed"
   val UpdatePensionProvider_TelephoneNumberKey = "telephoneNumber"
   val UpdatePensionProvider_DetailsKey = "pensionDetails"

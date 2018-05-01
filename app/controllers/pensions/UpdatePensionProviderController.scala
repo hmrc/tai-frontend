@@ -38,7 +38,9 @@ import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, TaxAccountSe
 import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
+import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersViewModel
 
+import scala.Function.tupled
 import scala.concurrent.Future
 
 trait UpdatePensionProviderController extends TaiBaseController
@@ -80,7 +82,7 @@ trait UpdatePensionProviderController extends TaiBaseController
                     UpdatePensionProvider_NameKey -> taxCodeIncome.name)).
                     map {
                       val model = PensionProviderViewModel(id, taxCodeIncome.name)
-                      _ => Ok(views.html.pensions.doYouGetThisPensionIncome(model, UpdateRemovePensionForm.form))
+                      _ => Ok(views.html.pensions.update.doYouGetThisPensionIncome(model, UpdateRemovePensionForm.form))
                     }
                 case _ => throw new RuntimeException(s"Tax code income source is not available for id $id")
               }
@@ -97,11 +99,11 @@ trait UpdatePensionProviderController extends TaiBaseController
             UpdateRemovePensionForm.form.bindFromRequest().fold(
               formWithErrors => {
                 val model = PensionProviderViewModel(mandatoryVals.head.toInt, mandatoryVals.last)
-                Future(BadRequest(views.html.pensions.doYouGetThisPensionIncome(model, formWithErrors)))
+                Future(BadRequest(views.html.pensions.update.doYouGetThisPensionIncome(model, formWithErrors)))
               },
               {
                 case Some(YesValue) => Future.successful(
-                  Redirect(controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs()))
+                  Redirect(controllers.pensions.routes.UpdatePensionProviderController.whatDoYouWantToTellUs()))    //TODO we should cache a yes response here. Remember to cache in i18n form
                 case _ => Future.successful(Redirect(ApplicationConfig.incomeFromEmploymentPensionLinkUrl))
               }
             )
@@ -173,12 +175,33 @@ trait UpdatePensionProviderController extends TaiBaseController
         )
   }
 
-  def checkYourAnswers: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
-      implicit request =>
-        ServiceCheckLite.personDetailsCheck {
-          Future.successful(Ok("TODO"))
-        }
+  def checkYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit taiRoot =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            journeyCacheService.collectedValues(
+              Seq(
+                UpdatePensionProvider_IdKey,
+                UpdatePensionProvider_NameKey,
+                UpdatePensionProvider_ReceivePensionQuestionKey,
+                UpdatePensionProvider_DetailsKey,
+                UpdatePensionProvider_TelephoneQuestionKey),
+              Seq(UpdatePensionProvider_TelephoneNumberKey)
+            ) map tupled { (mandatorySeq, optionalSeq) => {
+
+                Ok("")
+//              Ok(views.html.pensions.update.CheckYourAnswers(UpdatePensionCheckYourAnswersViewModel(
+//                mandatorySeq.head.toInt,
+//                mandatorySeq(1),
+//                mandatorySeq(2),
+//                mandatorySeq(3),
+//                mandatorySeq(4),
+//                optionalSeq.head)))
+            }
+            }
+          }
+
   }
 
 }
