@@ -190,15 +190,14 @@ trait UpdatePensionProviderController extends TaiBaseController
               Seq(UpdatePensionProvider_TelephoneNumberKey)
             ) map tupled { (mandatorySeq, optionalSeq) => {
 
-                Ok("")
-//              Ok(views.html.pensions.update.CheckYourAnswers(UpdatePensionCheckYourAnswersViewModel(
-//                mandatorySeq.head.toInt,
-//                mandatorySeq(1),
-//                mandatorySeq(2),
-//                mandatorySeq(3),
-//                mandatorySeq(4),
-//                optionalSeq.head)))
-            }
+                Ok(views.html.pensions.update.updatePensionCheckYourAnswers(UpdatePensionCheckYourAnswersViewModel(
+                  mandatorySeq.head.toInt,
+                  mandatorySeq(1),
+                  mandatorySeq(2),
+                  mandatorySeq(3),
+                  mandatorySeq(4),
+                  optionalSeq.head)))
+              }
             }
           }
 

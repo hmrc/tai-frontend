@@ -261,7 +261,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val sut = createSUT
         when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
           Future.successful((
-            Seq[String]("1", "Yes", "some random info", "Yes"),
+            Seq[String]("1", "Pension1", "Yes", "some random info", "Yes"),
             Seq[Option[String]](Some("123456789"))
           ))
         )
