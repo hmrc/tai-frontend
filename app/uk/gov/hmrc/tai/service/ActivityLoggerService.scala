@@ -21,10 +21,11 @@ import org.joda.time.DateTime
 import uk.gov.hmrc.domain.{Nino, TaxIds}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.Activity
-
+// $COVERAGE-OFF$
 object ActivityLoggerService extends ActivityLoggerService {
   override lazy val activityLoggerConnector = ActivityLoggerConnector
 }
+// $COVERAGE-ON$
 
 trait ActivityLoggerService {
 

@@ -66,7 +66,8 @@ trait BbsiService {
     }
   }
 }
-
+// $COVERAGE-OFF$
 object BbsiService extends BbsiService {
   override val connector: BbsiConnector = BbsiConnector
 }
+// $COVERAGE-ON$

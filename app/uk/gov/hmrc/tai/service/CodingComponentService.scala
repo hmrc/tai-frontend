@@ -45,7 +45,8 @@ trait CodingComponentService {
     }
   }
 }
-
+// $COVERAGE-OFF$
 object CodingComponentService extends CodingComponentService {
   override val taxAccountConnector: TaxAccountConnector = TaxAccountConnector
 }
+// $COVERAGE-ON$

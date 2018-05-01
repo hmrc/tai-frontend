@@ -127,9 +127,10 @@ trait IncomeService extends JourneyCacheConstants {
       bonusPaymentsForm.bonusPaymentsMoreThisYear.fold(Map.empty[String, String])(bonusPayments => Map(UpdateIncome_BonusPaymentsThisYearKey -> bonusPayments))
   }
 }
-
+// $COVERAGE-OFF$
 object IncomeService extends IncomeService {
   override val taxAccountService: TaxAccountService = TaxAccountService
   override val employmentService: EmploymentService = EmploymentService
   override val taiConnector: TaiConnector = TaiConnector
 }
+// $COVERAGE-ON$
