@@ -1509,3 +1509,5 @@ tai.updatePension.confirmation.heading=WELSH Your update about a pension has bee
 tai.updatePension.decision.heading=WELSH Do you currently get pension income from {0}?
 tai.updatePension.decision.customGaTitle=WELSH Do you currently get this pension income
 tai.updatePension.decision.legend=WELSH Do you currently get pension income from this pension provider?
+
+tai.canWeContactByPhone.explanation.pt2=WELSH If you select ''No'' we will contact you by letter. For security reasons we can not ask for more information by email.
