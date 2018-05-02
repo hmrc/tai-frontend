@@ -122,7 +122,6 @@
                                     </div>
                                 </div>
 
-                                <p>@historicIncomeCalculationViewModel.iFormLink</p>
                             </section>
                         }
                         case TemporarilyUnavailable => {
@@ -134,7 +133,6 @@
                         case _ => {
                             <section class="subsection subsection--wide">
                                 <p>@Messages("tai.income.calculation.noRtiDataPreviousYear",Dates.formatDate(TaxYear(historicIncomeCalculationViewModel.taxYear.year).end))</p>
-                                <p>@historicIncomeCalculationViewModel.iFormLink</p>
                             </section>
                         }
                     }

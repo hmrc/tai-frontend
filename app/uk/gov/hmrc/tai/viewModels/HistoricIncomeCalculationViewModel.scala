@@ -27,8 +27,7 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.urls.Link
 
 case class HistoricIncomeCalculationViewModel(employerName: Option[String], employmentId: Int, payments: Seq[Payment],
-                                              endOfTaxYearUpdateMessages: Seq[String], realTimeStatus: RealTimeStatus,
-                                              iFormLink: Html, taxYear: TaxYear)
+                                              endOfTaxYearUpdateMessages: Seq[String], realTimeStatus: RealTimeStatus, taxYear: TaxYear)
 
 object HistoricIncomeCalculationViewModel {
 
@@ -40,7 +39,7 @@ object HistoricIncomeCalculationViewModel {
       case _ => (Nil, Nil)
     }
 
-    HistoricIncomeCalculationViewModel(employment.map(_.name), employmentId, payments, endOfTaxYearUpdateMessages, realTimeStatus, createIFormLink, taxYear)
+    HistoricIncomeCalculationViewModel(employment.map(_.name), employmentId, payments, endOfTaxYearUpdateMessages, realTimeStatus, taxYear)
   }
 
   def fetchRealTimeStatus(annualAccount: Option[AnnualAccount]): RealTimeStatus = {
@@ -75,13 +74,6 @@ object HistoricIncomeCalculationViewModel {
 
         Messages(messageKey, date.toString(EYU_DATE_FORMAT), lessOrMore(adjustment.amount))
     }
-  }
-
-  def createIFormLink(implicit messages: Messages) = {
-    Html(Messages("tai.income.calculation.detailsWrongIform.description",
-      Link.toInternalPage(url = ApplicationConfig.incomeFromEmploymentPensionLinkUrl,
-      value = Some(Messages("tai.income.calculation.detailsWrongIformLink")),
-      dataAttributes = Some(Map("journey-click" -> "check-income-tax:Outbound Link:wrong-other-income-iform"))).toHtml))
   }
 
   def filterEndOfYearUpdateAdjustments(annualAccount: AnnualAccount): Seq[(Adjustment, LocalDate)] = {
