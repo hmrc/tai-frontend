@@ -256,24 +256,16 @@ tai.employmentConfirmation.heading=Your update about an employment has been rece
 tai.employmentConfirmation.back=Return to your Income Tax Summary
 
 
-
 ##Update Pension Pages
 tai.updatePension.preHeading=Update pension
 tai.updatePension.cya.currentlyReceivePension=Currently receive pension
-tai.updatePension.confirmation.heading=Your update about an employment has been received
+tai.updatePension.confirmation.heading=Your update about a pension has been received
 tai.updatePension.confirmation.back=Return to your Income Tax Summary
-
-# Incorrect Pension Messages
-tai.incorrectPension.decision.title=Update or remove pension
-tai.incorrectPension.decision.main.heading=Do you currently get pension income from {0}?
-tai.pension.decision.radio1=Yes
-tai.pension.decision.radio2=No
-tai.pension.decision.legend=Do you currently get pension income from this pension provider?
-
-
-
-
-
+tai.updatePension.decision.title=Update or remove pension
+tai.updatePension.decision.heading=Do you currently get pension income from {0}?
+tai.updatePension.decision.radio1=Yes
+tai.updatePension.decision.radio2=No
+tai.updatePension.decision.legend=Do you currently get pension income from this pension provider?
 
 
 ##Add Employment page

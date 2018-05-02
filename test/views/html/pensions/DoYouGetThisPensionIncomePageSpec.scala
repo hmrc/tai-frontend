@@ -26,16 +26,16 @@ import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 class DoYouGetThisPensionIncomePageSpec extends TaiViewSpec with FormValuesConstants {
 
   "IncorrectPension page" must {
-    behave like pageWithTitle(messages("tai.incorrectPension.decision.title"))
+    behave like pageWithTitle(messages("tai.updatePension.decision.title"))
     behave like pageWithBackLink
-    behave like pageWithCombinedHeader(messages("tai.incorrectPension.decision.title"),
-      messages("tai.incorrectPension.decision.main.heading", model.pensionName))
+    behave like pageWithCombinedHeader(messages("tai.updatePension.decision.title"),
+      messages("tai.updatePension.decision.heading", model.pensionName))
 
     behave like pageWithYesNoRadioButton(
       UpdateRemovePensionForm.IncorrectPensionDecision+"-yes",
       UpdateRemovePensionForm.IncorrectPensionDecision+"-no",
-      messages("tai.pension.decision.radio1"),
-      messages("tai.pension.decision.radio2"))
+      messages("tai.updatePension.decision.radio1"),
+      messages("tai.updatePension.decision.radio2"))
 
     behave like pageWithContinueButtonForm(controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension().url)
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(model.id))

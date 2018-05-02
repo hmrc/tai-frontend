@@ -31,13 +31,13 @@
     ptaHeader(
         formForErrorSummary = Some(updateOrRemoveForm),
         displayBackLink = true,
-        mainHeadingText = Messages("tai.incorrectPension.decision.main.heading", model.pensionName),
-        preHeadingText = Messages("tai.incorrectPension.decision.title")
+        mainHeadingText = Messages("tai.updatePension.decision.heading", model.pensionName),
+        preHeadingText = Messages("tai.updatePension.decision.title")
     )
 }
 
 @main(
-    title = Messages("tai.incorrectPension.decision.title"),
+    title = Messages("tai.updatePension.decision.title"),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
@@ -48,8 +48,8 @@
 
             @{inputRadioGroupStyling(
                 field=updateOrRemoveForm(UpdateRemovePensionForm.IncorrectPensionDecision),
-                radioOptions=Seq(("Yes" -> Messages("tai.pension.decision.radio1")), ("No" -> Messages("tai.pension.decision.radio2")) ),
-                legend=Messages("tai.pension.decision.legend"),
+                radioOptions=Seq(("Yes" -> Messages("tai.updatePension.decision.radio1")), ("No" -> Messages("tai.updatePension.decision.radio2")) ),
+                legend=Messages("tai.updatePension.decision.legend"),
                 legendHint=None,
                 ('_groupDivClass, "form-group" ),
                 ('_fieldsetAttributes, "id=incorrectPensionDecision" ),
