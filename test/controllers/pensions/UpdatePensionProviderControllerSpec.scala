@@ -36,11 +36,11 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaiRoot
-import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, PensionIncome}
+import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, IncorrectIncome, IncorrectPensionProvider, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, Week1Month1BasisOperation}
-import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{JourneyCacheService, PensionProviderService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.{FormValuesConstants, IncorrectPensionDecisionConstants, JourneyCacheConstants}
 
 import scala.concurrent.Future
@@ -277,6 +277,54 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     }
   }
 
+  "submit your answers" must {
+    "invoke the back end 'incorrectEmployment' service and redirect to the confirmation page" when {
+      "the request has an authorised session and a telephone number has been provided" in {
+        val sut = createSUT
+        val incorrectPensionProvider = IncorrectPensionProvider("some random info", "Yes", Some("123456789"))
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+          Future.successful((
+            Seq[String]("1", "some random info", "Yes"),
+            Seq[Option[String]](Some("123456789"))
+          ))
+        )
+        when(sut.pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(any()))
+          .thenReturn(Future.successful("envelope_id_1"))
+        when(sut.successfulJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_UpdatePensionKey), Matchers.eq("true"))(any()))
+            .thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdateEmploymentKey -> "true")))
+        when(sut.journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+
+        val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.confirmation().url
+        verify(sut.journeyCacheService, times(1)).flush()(any())
+      }
+
+      "the request has an authorised session and telephone number has not been provided" in {
+        val sut = createSUT
+        val incorrectPensionProvider = IncorrectPensionProvider("some random info", "No", None)
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+          Future.successful((
+            Seq[String]("1", "some random info", "No"),
+            Seq[Option[String]](None)
+          ))
+        )
+        when(sut.pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(any()))
+          .thenReturn(Future.successful("envelope_id_1"))
+        when(sut.successfulJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_UpdatePensionKey), Matchers.eq("true"))(any()))
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdateEmploymentKey -> "true")))
+        when(sut.journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+
+        val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.confirmation().url
+        verify(sut.journeyCacheService, times(1)).flush()(any())
+      }
+    }
+  }
+
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private def createSUT = new SUT
@@ -295,5 +343,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    override val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+    override val pensionProviderService: PensionProviderService = mock[PensionProviderService]
   }
 }
