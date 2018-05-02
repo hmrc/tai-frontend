@@ -1501,7 +1501,6 @@ tai.updatePension.preHeading=WELSH Update pension
 tai.updatePension.cya.currentlyReceivePension=WELSH Currently receive pension
 tai.updatePension.whatDoYouWantToTellUs.customGaTitle=WELSH What do you want to tell us about this pension?
 tai.updatePension.whatDoYouWantToTellUs.heading=WELSH What do you want to tell us about your pension from {0}?
-tai.updatePension.whatDoYouWantToTellUs.preHeading=WELSH Update pension
 tai.updatePension.whatDoYouWantToTellUs.textarea.error.blank=WELSH Enter what you want to tell us about your pension?
 tai.updatePension.whatDoYouWantToTellUs.textarea.text=WELSH Enter details about your update (Maximum characters {0})
 tai.updatePension.whatDoYouWantToTellUs.textarea.error.maximumExceeded=WELSH You can only enter a maximum of {0} characters

@@ -31,7 +31,7 @@
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.updatePension.whatDoYouWantToTellUs.heading", name),
-        preHeadingText = Messages("tai.updatePension.whatDoYouWantToTellUs.preHeading")
+        preHeadingText = Messages("tai.updatePension.preHeading")
     )
 }
 
@@ -51,7 +51,7 @@
             maxlength =  WhatDoYouWantToTellUsForm.pensionDetailsCharacterLimit.toString
         )
 
-        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.updatePension.whatDoYouWantToTellUs.preHeading")))
+        @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.updatePension.preHeading")))
     }
 
     @cancelLink(url = routes.IncomeSourceSummaryController.onPageLoad(1), gaEventAction = Some(gaEventActionString))

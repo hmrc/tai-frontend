@@ -32,7 +32,7 @@ class WhatDoYouWantToTellUsSpec extends TaiViewSpec {
 
   "whatDoYouWantToTellUs" must {
     behave like pageWithTitle(Messages("tai.updatePension.whatDoYouWantToTellUs.heading", pensionName))
-    behave like pageWithCombinedHeader(Messages("tai.updatePension.whatDoYouWantToTellUs.preHeading"),
+    behave like pageWithCombinedHeader(Messages("tai.updatePension.preHeading"),
       Messages("tai.updatePension.whatDoYouWantToTellUs.heading",pensionName))
      behave like pageWithContinueButtonForm("/check-income-tax/incorrect-pension/whatDoYouWantToTellUs")
     behave like pageWithCancelLink(routes.IncomeSourceSummaryController.onPageLoad(1))
