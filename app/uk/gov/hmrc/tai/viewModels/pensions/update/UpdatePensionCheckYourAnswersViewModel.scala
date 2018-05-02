@@ -50,7 +50,7 @@ case class UpdatePensionCheckYourAnswersViewModel(id: Int,
       controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url
     )
 
-    if (contactByPhone.equals("Yes")) {
+    if (contactByPhone.equals(Messages("tai.label.yes"))) {
       Seq(receivePensionLine, whatYouToldUsLine, contactByPhoneLine, phoneNumberLine)
     } else {
       Seq(receivePensionLine, whatYouToldUsLine, contactByPhoneLine)

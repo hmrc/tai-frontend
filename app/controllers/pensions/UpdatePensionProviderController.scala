@@ -113,7 +113,6 @@ trait UpdatePensionProviderController extends TaiBaseController
                 case _ => Future.successful(Redirect(ApplicationConfig.incomeFromEmploymentPensionLinkUrl))
               }
             )
-
           }
         }
   }
