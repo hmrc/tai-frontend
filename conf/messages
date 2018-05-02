@@ -1169,15 +1169,6 @@ tai.income.calculation.default.estimate.emp=We’ve estimated your annual taxabl
 tai.income.calculation.default.estimate.pension=We’ve estimated your annual taxable income from this pension provider to be £{0}.
 
 #new Your Taxable Income page
-tai.taxFreeAllowance.detailsWrongIform={0}.
-tai.taxFreeAllowance.detailsWrongIformLink=Tell us about changes that affect your tax-free allowance
-tai.yourTaxableIncome.otherDetailsWrongIform=If other details for this employer are wrong {0}.
-tai.yourTaxableIncome.otherDetailsWrongIformLink=tell us what to change
-tai.yourTaxableIncome.otherDetailsWrongPensionIform=If other details for this pension are wrong {0}.
-tai.income.calculation.detailsWrongIform.emp={0} if income from this employer is missing or wrong.
-tai.income.calculation.detailsWrongIform.pension={0} if income from this pension provider is missing or wrong.
-tai.income.calculation.detailsWrongIform.description={0} if income from this employer or pension provider is missing or wrong.
-tai.income.calculation.detailsWrongIformLink=Tell us what to change
 tai.iabdSummary.employmentBenefit.type-8=Employer provided services for {0}
 tai.iabdSummary.employmentBenefit.type-28=Employer benefits for {0}
 tai.iabdSummary.employmentBenefit.type-29=Car fuel benefit for {0}
