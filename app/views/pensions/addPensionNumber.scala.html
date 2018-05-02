@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 @import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderNumberForm
 @import uk.gov.hmrc.tai.viewModels.pensions.PensionNumberViewModel
-@import includes.forms.inputRadioGroupNewStyling
+@import includes.forms.inputRadioGroupStyling
 
 @(payrollNumberForm: Form[AddPensionProviderNumberForm], pensionNumberViewModel: PensionNumberViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
 
@@ -45,7 +45,7 @@
 
     @form(action = controllers.pensions.routes.AddPensionProviderController.submitPensionNumber(), Symbol("data-dynamic-form") -> "true", Symbol("data-journey-dynamic-radios") -> "") {
 
-        @{inputRadioGroupNewStyling(
+        @{inputRadioGroupStyling(
             field=payrollNumberForm(AddPensionProviderNumberForm.PayrollNumberChoice),
             radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),
             legend=Messages("tai.addPensionProvider.pensionNumber.title"),

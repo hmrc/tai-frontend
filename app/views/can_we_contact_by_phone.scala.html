@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 @import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 @import play.api.mvc.Call
-@import includes.forms.inputRadioGroupNewStyling
+@import includes.forms.inputRadioGroupStyling
 
 @(viewModel: CanWeContactByPhoneViewModel, yesNoForm: Form[YesNoTextEntryForm])(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
 
@@ -49,7 +49,7 @@
             <p>@Messages("tai.canWeContactByPhone.explanation.pt2")</p>
         </div>
 
-        @{inputRadioGroupNewStyling(
+        @{inputRadioGroupStyling(
             field = yesNoForm(YesNoTextEntryForm.YesNoChoice),
             radioOptions = Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),
             legend = Messages("tai.canWeContactByPhone.legend"),

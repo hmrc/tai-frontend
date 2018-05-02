@@ -25,7 +25,7 @@ import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.PensionProviderConnector
-import uk.gov.hmrc.tai.model.domain.AddPensionProvider
+import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -51,6 +51,29 @@ class PensionProviderServiceSpec extends PlaySpec with MockitoSugar {
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.addPensionProvider(nino, model), 5.seconds)
         rte.getMessage mustBe s"No envelope id was generated when adding the new pension provider for ${nino.nino}"
+      }
+    }
+  }
+
+  "incorrect pension provider" must {
+    "return an envelope id" in {
+      val sut = createSUT
+      val model = IncorrectPensionProvider(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
+      when(sut.connector.incorrectPensionProvider(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
+
+      val envId = Await.result(sut.incorrectPensionProvider(nino, 1,model), 5 seconds)
+
+      envId mustBe "123-456-789"
+    }
+
+    "generate a runtime exception" when {
+      "no envelope id was returned from the connector layer" in {
+        val sut = createSUT
+        val model = IncorrectPensionProvider(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
+        when(sut.connector.incorrectPensionProvider(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
+
+        val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectPensionProvider(nino, 1,model), 5.seconds)
+        rte.getMessage mustBe s"No envelope id was generated when submitting incorrect pension for ${nino.nino}"
       }
     }
   }
