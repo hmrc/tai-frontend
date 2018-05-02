@@ -29,7 +29,7 @@ class UpdatePensionsCheckYourAnswersSpec extends TaiViewSpec {
       messages("tai.updatePension.whatDoYouWantToTellUs.preHeading"),
       messages("tai.checkYourAnswers"))
     behave like pageWithButtonForm(
-      "/check-income-tax/update-employment/check-your-answers",
+      "/check-income-tax/incorrect-pension/check-your-answers",
       messages("tai.confirmAndSend"))
     behave like pageWithCheckYourAnswersSummary
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(1))

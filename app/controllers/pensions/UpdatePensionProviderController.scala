@@ -206,7 +206,6 @@ trait UpdatePensionProviderController extends TaiBaseController
             }
             }
           }
-
   }
 
   def submitYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {

@@ -259,5 +259,6 @@ POST        /incorrect-pension/whatDoYouWantToTellUs                            
 GET         /incorrect-pension/telephone-number                                         controllers.pensions.UpdatePensionProviderController.addTelephoneNumber
 POST        /incorrect-pension/telephone-number                                         controllers.pensions.UpdatePensionProviderController.submitTelephoneNumber
 GET         /incorrect-pension/check-your-answers                                       controllers.pensions.UpdatePensionProviderController.checkYourAnswers
+POST        /incorrect-pension/check-your-answers                                       controllers.pensions.UpdatePensionProviderController.submitYourAnswers
 GET         /incorrect-pension/success                                                  controllers.pensions.UpdatePensionProviderController.confirmation
 
