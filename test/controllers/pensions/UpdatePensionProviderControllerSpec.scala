@@ -325,6 +325,18 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     }
   }
 
+  "confirmation" must {
+    "show the update pension confirmation page" when {
+      "the request has an authorised session" in {
+        val sut = createSUT
+        val result = sut.confirmation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.updatePension.confirmation.heading"))
+      }
+    }
+  }
+
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private def createSUT = new SUT

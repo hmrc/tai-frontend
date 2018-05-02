@@ -233,6 +233,9 @@ trait UpdatePensionProviderController extends TaiBaseController
       implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
+
+//            Future.successful(Ok(views.html.pensions.confirmation()))
+
             Future.successful(Ok(""))
           }
   }
