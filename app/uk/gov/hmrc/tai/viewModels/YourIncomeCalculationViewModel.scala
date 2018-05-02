@@ -152,17 +152,12 @@ object YourIncomeCalculationViewModel {
       payFreqIncomeCalculationEstimateMessage(pensionOrEmployment, paymentFrequency, paymentDate, taxCodeIncome.amount)
     )
 
-    lazy val defaultMessages =
-      (Some(messages(s"tai.income.calculation.default.$pensionOrEmployment", Dates.formatDate(TaxYear().end))),
-        Some(messages(s"tai.income.calculation.default.estimate.$pensionOrEmployment", taxCodeIncome.amount)))
-
-
-    if(fetchMessages.isDefinedAt(ceasedIncomeMessages)) ceasedIncomeMessages
-    else if (fetchMessages.isDefinedAt(manualIncomeMessages)) manualIncomeMessages
-    else if (fetchMessages.isDefinedAt(sameMessages)) sameMessages
-    else if (fetchMessages.isDefinedAt(payFrequencyMessages)) payFrequencyMessages
-    else defaultMessages
-
+    Seq(ceasedIncomeMessages, manualIncomeMessages, sameMessages, payFrequencyMessages).find(fetchMessages.isDefinedAt) match {
+      case None =>
+        (Some(messages(s"tai.income.calculation.default.$pensionOrEmployment", Dates.formatDate(TaxYear().end))),
+          Some(messages(s"tai.income.calculation.default.estimate.$pensionOrEmployment", taxCodeIncome.amount)))
+      case Some(incomeCalculationMessages) => incomeCalculationMessages
+    }
   }
 
   def fetchMessages: PartialFunction[(Option[String], Option[String]), (Option[String], Option[String])] = {
