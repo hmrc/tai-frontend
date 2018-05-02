@@ -25,6 +25,9 @@ import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
+import CeasedIncomeMessages._
+import ManualUpdateIncomeMessages._
+import PaymentFrequencyIncomeMessages._
 
 case class PaymentDetailsViewModel(date: LocalDate,
                                    taxableIncome: BigDecimal,
@@ -168,6 +171,21 @@ object YourIncomeCalculationViewModel {
     case (incomeMessage@Some(_), None) => (incomeMessage, None)
   }
 
+  def sameIncomeCalculationMessage(employment: Employment, amount: BigDecimal, amountYearToDate: BigDecimal,
+                                   pensionOrEmployment: String, paymentDate: Option[LocalDate])(implicit messages: Messages): Option[String] = {
+
+    val startDate = if (TaxYearResolver.fallsInThisTaxYear(employment.startDate)) employment.startDate else TaxYear().start
+
+    if (amount == amountYearToDate) {
+      Some(messages(s"tai.income.calculation.rti.$pensionOrEmployment.same", Dates.formatDate(startDate),
+        paymentDate.map(Dates.formatDate).getOrElse(""), MoneyPounds(amountYearToDate, 0).quantity))
+    } else {
+      None
+    }
+  }
+}
+
+object CeasedIncomeMessages {
   def ceasedIncomeCalculationMessage(employmentStatus: TaxCodeIncomeSourceStatus, employment: Employment, pensionOrEmpMessage: String
                                     )(implicit messages: Messages): Option[String] = {
     (employmentStatus, employment.endDate, employment.cessationPay) match {
@@ -196,7 +214,9 @@ object YourIncomeCalculationViewModel {
       case _ => None
     }
   }
+}
 
+object ManualUpdateIncomeMessages {
   def manualUpdateIncomeCalculationMessage(taxCodeIncome: TaxCodeIncome)(implicit messages: Messages): Option[String] = {
     (taxCodeIncome.iabdUpdateSource, taxCodeIncome.updateNotificationDate, taxCodeIncome.updateActionDate) match {
       case (Some(ManualTelephone), Some(notificationDate), Some(actionDate)) =>
@@ -241,13 +261,15 @@ object YourIncomeCalculationViewModel {
       case _ => Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount))
     }
   }
+}
 
+object PaymentFrequencyIncomeMessages {
   def payFreqIncomeCalculationMessage(employment: Employment, pensionOrEmployment: String, paymentFrequency: Option[PaymentFrequency],
                                       amountYearToDate: BigDecimal, paymentDate: Option[LocalDate])(implicit messages: Messages): Option[String] = {
 
     val isMidYear = employment.startDate.isAfter(TaxYear().start)
     val paymentDt = paymentDate.map(Dates.formatDate).getOrElse("")
-    print("------------Epic fail I am calling this guy")
+
     paymentFrequency match {
       case ((Some(Weekly) | Some(FortNightly) | Some(FourWeekly) | Some(Monthly) | Some(Quarterly) | Some(BiAnnually))) =>
         if (isMidYear)
@@ -279,19 +301,6 @@ object YourIncomeCalculationViewModel {
         Some(messages(s"tai.income.calculation.rti.irregular.$pensionOrEmployment", MoneyPounds(amount, 0).quantity))
 
       case _ => None
-    }
-  }
-
-  def sameIncomeCalculationMessage(employment: Employment, amount: BigDecimal, amountYearToDate: BigDecimal,
-                                   pensionOrEmployment: String, paymentDate: Option[LocalDate])(implicit messages: Messages): Option[String] = {
-
-    val startDate = if (TaxYearResolver.fallsInThisTaxYear(employment.startDate)) employment.startDate else TaxYear().start
-
-    if (amount == amountYearToDate) {
-      Some(messages(s"tai.income.calculation.rti.$pensionOrEmployment.same", Dates.formatDate(startDate),
-        paymentDate.map(Dates.formatDate).getOrElse(""), MoneyPounds(amountYearToDate, 0).quantity))
-    } else {
-      None
     }
   }
 }
