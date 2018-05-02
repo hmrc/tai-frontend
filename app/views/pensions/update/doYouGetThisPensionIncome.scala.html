@@ -32,23 +32,23 @@
         formForErrorSummary = Some(updateOrRemoveForm),
         displayBackLink = true,
         mainHeadingText = Messages("tai.updatePension.decision.heading", model.pensionName),
-        preHeadingText = Messages("tai.updatePension.decision.title")
+        preHeadingText = Messages("tai.updatePension.preHeading")
     )
 }
 
 @main(
-    title = Messages("tai.updatePension.decision.title"),
+    title = Messages("tai.updatePension.decision.heading", model.pensionName),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = None) {
+    gaCustomTitle = Some(Messages("tai.updatePension.decision.customGaTitle"))) {
 
     @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension(), Symbol("data-journey-dynamic-radios") -> "" ) {
         <div class="form-group">
 
             @{inputRadioGroupStyling(
                 field=updateOrRemoveForm(UpdateRemovePensionForm.IncorrectPensionDecision),
-                radioOptions=Seq(("Yes" -> Messages("tai.updatePension.decision.radio1")), ("No" -> Messages("tai.updatePension.decision.radio2")) ),
+                radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),
                 legend=Messages("tai.updatePension.decision.legend"),
                 legendHint=None,
                 ('_groupDivClass, "form-group" ),
@@ -66,6 +66,4 @@
     }
 
     @cancelLink(url = routes.IncomeSourceSummaryController.onPageLoad(model.id), gaEventAction = Some(gaEventActionString))
-
-
 }

@@ -71,7 +71,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.updatePension.decision.title"))
+        doc.title() must include(Messages("tai.updatePension.decision.heading", "TEST"))
       }
     }
 
@@ -175,7 +175,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.title",pensionName))
+        doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.heading", "TEST"))
       }
     }
   }

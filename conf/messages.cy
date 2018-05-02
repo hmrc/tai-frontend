@@ -1494,3 +1494,18 @@ tai.taxFreeAmount.missing.section.benefit=Ychwanegu buddiant cwmni sydd ar goll
 tai.taxFreeAmount.missing.section.income=Ychwanegu incwm o ffynhonnell arall sydd ar goll
 
 tai.whatDoYouWantToDo.legend=Gweld manylion Treth Incwm TWE ar gyfer:
+
+
+##Update Pension Pages
+tai.updatePension.preHeading=WELSH Update pension
+tai.updatePension.cya.currentlyReceivePension=WELSH Currently receive pension
+tai.updatePension.whatDoYouWantToTellUs.customGaTitle=WELSH What do you want to tell us about this pension?
+tai.updatePension.whatDoYouWantToTellUs.heading=WELSH What do you want to tell us about your pension from {0}?
+tai.updatePension.whatDoYouWantToTellUs.preHeading=WELSH Update pension
+tai.updatePension.whatDoYouWantToTellUs.textarea.error.blank=WELSH Enter what you want to tell us about your pension?
+tai.updatePension.whatDoYouWantToTellUs.textarea.text=WELSH Enter details about your update (Maximum characters {0})
+tai.updatePension.whatDoYouWantToTellUs.textarea.error.maximumExceeded=WELSH You can only enter a maximum of {0} characters
+tai.updatePension.confirmation.heading=WELSH Your update about a pension has been received
+tai.updatePension.decision.heading=WELSH Do you currently get pension income from {0}?
+tai.updatePension.decision.customGaTitle=WELSH Do you currently get this pension income
+tai.updatePension.decision.legend=WELSH Do you currently get pension income from this pension provider?

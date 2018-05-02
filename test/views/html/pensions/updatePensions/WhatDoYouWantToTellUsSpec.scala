@@ -31,7 +31,7 @@ class WhatDoYouWantToTellUsSpec extends TaiViewSpec {
   override def view: Html = views.html.pensions.update.whatDoYouWantToTellUs(pensionName,WhatDoYouWantToTellUsForm.form)
 
   "whatDoYouWantToTellUs" must {
-    behave like pageWithTitle(Messages("tai.updatePension.whatDoYouWantToTellUs.title", pensionName))
+    behave like pageWithTitle(Messages("tai.updatePension.whatDoYouWantToTellUs.heading", pensionName))
     behave like pageWithCombinedHeader(Messages("tai.updatePension.whatDoYouWantToTellUs.preHeading"),
       Messages("tai.updatePension.whatDoYouWantToTellUs.heading",pensionName))
      behave like pageWithContinueButtonForm("/check-income-tax/incorrect-pension/whatDoYouWantToTellUs")

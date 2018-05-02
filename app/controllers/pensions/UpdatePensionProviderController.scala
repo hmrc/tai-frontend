@@ -128,7 +128,6 @@ trait UpdatePensionProviderController extends TaiBaseController
         }
   }
 
-
   def submitWhatDoYouWantToTellUs: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit taiRoot =>
@@ -195,15 +194,14 @@ trait UpdatePensionProviderController extends TaiBaseController
                 UpdatePensionProvider_TelephoneQuestionKey),
               Seq(UpdatePensionProvider_TelephoneNumberKey)
             ) map tupled { (mandatorySeq, optionalSeq) => {
-
-              Ok(views.html.pensions.update.updatePensionCheckYourAnswers(UpdatePensionCheckYourAnswersViewModel(
-                mandatorySeq.head.toInt,
-                mandatorySeq(1),
-                mandatorySeq(2),
-                mandatorySeq(3),
-                mandatorySeq(4),
-                optionalSeq.head)))
-            }
+                Ok(views.html.pensions.update.updatePensionCheckYourAnswers(UpdatePensionCheckYourAnswersViewModel(
+                  mandatorySeq.head.toInt,
+                  mandatorySeq(1),
+                  mandatorySeq(2),
+                  mandatorySeq(3),
+                  mandatorySeq(4),
+                  optionalSeq.head)))
+              }
             }
           }
   }
@@ -214,8 +212,8 @@ trait UpdatePensionProviderController extends TaiBaseController
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             for {
-              (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedValues(
-                Seq(
+              (mandatoryCacheSeq, optionalCacheSeq) <-
+                journeyCacheService.collectedValues(Seq(
                   UpdatePensionProvider_IdKey,
                   UpdatePensionProvider_DetailsKey,
                   UpdatePensionProvider_TelephoneQuestionKey),

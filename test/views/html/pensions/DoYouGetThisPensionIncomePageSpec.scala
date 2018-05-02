@@ -26,16 +26,16 @@ import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 class DoYouGetThisPensionIncomePageSpec extends TaiViewSpec with FormValuesConstants {
 
   "IncorrectPension page" must {
-    behave like pageWithTitle(messages("tai.updatePension.decision.title"))
+    behave like pageWithTitle(messages("tai.updatePension.decision.heading", model.pensionName))
     behave like pageWithBackLink
-    behave like pageWithCombinedHeader(messages("tai.updatePension.decision.title"),
+    behave like pageWithCombinedHeader(messages("tai.updatePension.preHeading"),
       messages("tai.updatePension.decision.heading", model.pensionName))
 
     behave like pageWithYesNoRadioButton(
       UpdateRemovePensionForm.IncorrectPensionDecision+"-yes",
       UpdateRemovePensionForm.IncorrectPensionDecision+"-no",
-      messages("tai.updatePension.decision.radio1"),
-      messages("tai.updatePension.decision.radio2"))
+      messages("tai.label.yes"),
+      messages("tai.label.no"))
 
     behave like pageWithContinueButtonForm(controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension().url)
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(model.id))
@@ -53,7 +53,6 @@ class DoYouGetThisPensionIncomePageSpec extends TaiViewSpec with FormValuesConst
       }
     }
   }
-
 
   private lazy val pensionUpdateRemoveForm = UpdateRemovePensionForm.form.bind(
     Map(UpdateRemovePensionForm.IncorrectPensionDecision -> YesValue))
