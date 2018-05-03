@@ -25,17 +25,16 @@ user = Some(user),
 articleClasses = None,
 gaCustomTitle = None) {
 
-<div class="transaction-banner--complete">
-    <h1 class="transaction-banner__heading">@Messages("tai.updatePension.confirmation.heading")</h1>
-</div>
+    <div class="transaction-banner--complete">
+        <h1 class="transaction-banner__heading">@Messages("tai.updatePension.confirmation.heading")</h1>
+    </div>
 
-@confirmation_summary()
+    @confirmation_summary()
 
-@includes.link(
-    id=Some("returnToSummary"),
-    copy=Messages("tai.returnToIncomeTaxSummary"),
-    url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
-    isButton=true
-)
-
+    @includes.link(
+        id=Some("returnToSummary"),
+        copy=Messages("tai.returnToIncomeTaxSummary"),
+        url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
+        isButton=true
+    )
 }
