@@ -47,25 +47,24 @@
     }
     @main(
     title = Messages("tai.noCYIncomeError.heading"),
+    articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
     gaCustomTitle = None
 ) {
+                <p id="no-income-info">
+                    @noCYIncomeTaxErrorViewModel.endDate match {
+                        case Some(date) => {
+                            @Messages("tai.noCYIncomeError.body.with.employment", date)
+                        }
+                        case _ => {
+                            @Messages("tai.noCYIncomeError.body.missing.employment")
+                        }
+                    }
+                </p>
 
-    <p id="no-income-info">
-    @noCYIncomeTaxErrorViewModel.endDate match {
-        case Some(date) => {
-            @Messages("tai.noCYIncomeError.body.with.employment", date)
-        }
-        case _ => {
-            @Messages("tai.noCYIncomeError.body.missing.employment")
-        }
-    }
-    </p>
-
-    <p id="missing-info-Iform">@Html(Messages(
-        "tai.noCYIncomeError.missingInfo",
-        Link.toInternalPage(url = routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url, value = Some(Messages("tai.missingInfo.link.message"))).toHtml
-    ))</p>
-
+                <p id="missing-info-Iform">@Html(Messages(
+                    "tai.noCYIncomeError.missingInfo",
+                    Link.toInternalPage(url = routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url, value = Some(Messages("tai.missingInfo.link.message"))).toHtml
+                ))</p>
 }

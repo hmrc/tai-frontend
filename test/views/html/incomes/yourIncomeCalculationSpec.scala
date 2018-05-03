@@ -126,11 +126,6 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
           "tai.income.calculation.update.pension",
           Link.toInternalPage(url = routes.IncomeUpdateCalculatorController.howToUpdatePage(model.empId).url,
             value = Some(messages("tai.income.calculation.updateLink.regular"))).toHtml)).body
-
-        doc(liveView).select("#pensionIFormLink").html() mustBe Html(messages(
-          "tai.yourTaxableIncome.otherDetailsWrongPensionIform",
-          Link.toInternalPage(url = routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url,
-            value = Some(messages("tai.yourTaxableIncome.otherDetailsWrongIformLink"))).toHtml)).body
       }
 
       "employment type is Employment Income" in {
