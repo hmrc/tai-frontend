@@ -59,21 +59,18 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
         val view: Html = customView(realTimeStatus = Unavailable)
         val doc: Document = Jsoup.parse(view.toString)
         doc must haveParagraphWithText(messages("tai.income.calculation.noRtiDataPreviousYear", TaxYear(TaxYear().year - 1).end.toString(dateFormatPattern)))
-        doc must haveParagraphWithText("dummyIFormLink")
       }
 
       "there is no RTI data for cy - 2" in {
         val view: Html = customView(realTimeStatus = Unavailable, year = TaxYear(TaxYear().year - 2))
         val doc: Document = Jsoup.parse(view.toString)
         doc must haveParagraphWithText(messages("tai.income.calculation.noRtiDataPreviousYear", TaxYear(TaxYear().year - 2).end.toString(dateFormatPattern)))
-        doc must haveParagraphWithText("dummyIFormLink")
       }
 
       "RTI is available but payment data is not available" in {
         val view: Html = customView(realTimeStatus = Available)
         val doc: Document = Jsoup.parse(view.toString)
         doc must haveParagraphWithText(messages("tai.income.calculation.noRtiDataPreviousYear", TaxYear(TaxYear().year - 1).end.toString(dateFormatPattern)))
-        doc must haveParagraphWithText("dummyIFormLink")
       }
     }
 
@@ -168,7 +165,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
 
   def createHistoricIncomeCalculationVM(payments: Seq[Payment], eyuMessage: Seq[String], realTimeStatus: RealTimeStatus, year: TaxYear) =
     HistoricIncomeCalculationViewModel(employerName = Some("Foo"), employmentId = 1,
-    payments = payments, endOfTaxYearUpdateMessages = eyuMessage, realTimeStatus = realTimeStatus, iFormLink = Html("dummyIFormLink"), year)
+    payments = payments, endOfTaxYearUpdateMessages = eyuMessage, realTimeStatus = realTimeStatus, year)
 
   private def customView(payments: Seq[Payment] = Nil, eyuMessage: Seq[String] = Nil, realTimeStatus: RealTimeStatus = Available, year: TaxYear = TaxYear().prev) = {
     val historicIncomeCalculationVM: HistoricIncomeCalculationViewModel = createHistoricIncomeCalculationVM(payments, eyuMessage, realTimeStatus, year)

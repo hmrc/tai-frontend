@@ -55,11 +55,6 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
       val sut = createSUT()
       sut.realTimeStatus mustBe sampleRealTimeStatus
     }
-
-    "have iForm link" in {
-      val sut = createSUT()
-      sut.iFormLink.body must include(ApplicationConfig.incomeFromEmploymentPensionLinkUrl)
-    }
   }
 
   "Given tax year, employee id and sequence of employments, HistoricIncomeCalculationViewModel" should {
@@ -262,18 +257,10 @@ class HistoricIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayAp
     }
   }
 
-  "createIFormLink" should {
-    "provide the link description and link" in {
-      val sut = HistoricIncomeCalculationViewModel.createIFormLink
-      sut.body must include(ApplicationConfig.incomeFromEmploymentPensionLinkUrl)
-    }
-  }
-
   val empName = "employer name"
   val sampleEndOfTaxYearUpdateMessages = Seq("EyuMessage1", "EyuMessage2")
   val sampleEmployeeId = 1
   val sampleRealTimeStatus = TemporarilyUnavailable
-  val sampleIFormLink: Html = Html("dummy Link")
   val previousYear = uk.gov.hmrc.tai.model.TaxYear().prev
   val samplePayment = Payment(date = new LocalDate(2017, 5, 26), amountYearToDate = 2000, taxAmountYearToDate = 1200,
     nationalInsuranceAmountYearToDate = 1500, amount = 200, taxAmount = 100, nationalInsuranceAmount = 150, payFrequency = Monthly)
