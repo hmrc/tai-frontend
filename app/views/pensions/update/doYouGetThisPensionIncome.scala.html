@@ -26,7 +26,6 @@
 
 @gaEventActionString = @{"Update or remove pension- Do you currently get income from this pension provider?"}
 
-
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(updateOrRemoveForm),
@@ -62,8 +61,6 @@
         </div>
 
         @submit(buttonMessageKey = Some(messages("tai.submit")), gaEventAction = Some(gaEventActionString), gaEventLabel = Some(""))
-
     }
-
     @cancelLink(url = routes.IncomeSourceSummaryController.onPageLoad(model.id), gaEventAction = Some(gaEventActionString))
 }

@@ -1495,18 +1495,17 @@ tai.taxFreeAmount.missing.section.income=Ychwanegu incwm o ffynhonnell arall syd
 
 tai.whatDoYouWantToDo.legend=Gweld manylion Treth Incwm TWE ar gyfer:
 
+tai.canWeContactByPhone.explanation.pt2=Os dewiswch ''Na'', byddwn yn cysylltu â chi trwy lythyr. Am resymau diogelwch, ni allwn ofyn am fwy o wybodaeth trwy e-bost.
 
 ##Update Pension Pages
-tai.updatePension.preHeading=WELSH Update pension
-tai.updatePension.cya.currentlyReceivePension=WELSH Currently receive pension
-tai.updatePension.whatDoYouWantToTellUs.customGaTitle=WELSH What do you want to tell us about this pension?
-tai.updatePension.whatDoYouWantToTellUs.heading=WELSH What do you want to tell us about your pension from {0}?
-tai.updatePension.whatDoYouWantToTellUs.textarea.error.blank=WELSH Enter what you want to tell us about your pension?
-tai.updatePension.whatDoYouWantToTellUs.textarea.text=WELSH Enter details about your update (Maximum characters {0})
-tai.updatePension.whatDoYouWantToTellUs.textarea.error.maximumExceeded=WELSH You can only enter a maximum of {0} characters
-tai.updatePension.confirmation.heading=WELSH Your update about a pension has been received
-tai.updatePension.decision.heading=WELSH Do you currently get pension income from {0}?
-tai.updatePension.decision.customGaTitle=WELSH Do you currently get this pension income
-tai.updatePension.decision.legend=WELSH Do you currently get pension income from this pension provider?
-
-tai.canWeContactByPhone.explanation.pt2=WELSH If you select ''No'' we will contact you by letter. For security reasons we can not ask for more information by email.
+tai.updatePension.preHeading=Diweddaru pensiwn
+tai.updatePension.cya.currentlyReceivePension=Ar hyn o bryd yn cael y pensiwn hwn
+tai.updatePension.whatDoYouWantToTellUs.customGaTitle=Beth ydych am roi gwybod i ni am y pensiwn hwn?
+tai.updatePension.whatDoYouWantToTellUs.heading=Beth ydych am roi gwybod i ni am y pensiwn hwn gan {0}?
+tai.updatePension.whatDoYouWantToTellUs.textarea.error.blank=Nodwch yr beth ydych am roi gwybod i ni am y pensiwn hwn
+tai.updatePension.whatDoYouWantToTellUs.textarea.text=Rhowch fanylion eich diweddariad (Uchafswm o {0} o gymeriadau)
+tai.updatePension.whatDoYouWantToTellUs.textarea.error.maximumExceeded=Gallwch ond nodi hyd at uchafswm o {0} o gymeriadau
+tai.updatePension.confirmation.heading=Mae''ch diweddariad am bensiwn wedi dod i law
+tai.updatePension.decision.heading=A ydych yn cael incwm pensiwn oddi wrth {0}?
+tai.updatePension.decision.customGaTitle=A ydych yn cael incwm pensiwn hwn
+tai.updatePension.decision.legend=A ydych yn cael incwm pensiwn oddi wrth darparwr pensiwn hwn?
