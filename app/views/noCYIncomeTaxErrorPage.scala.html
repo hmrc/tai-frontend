@@ -47,14 +47,11 @@
     }
     @main(
     title = Messages("tai.noCYIncomeError.heading"),
+    articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
     gaCustomTitle = None
 ) {
-
-    <div class="grid-row">
-        <div class="grid grid-2-3">
-            <div class="inner-block">
                 <p id="no-income-info">
                     @noCYIncomeTaxErrorViewModel.endDate match {
                         case Some(date) => {
@@ -70,8 +67,4 @@
                     "tai.noCYIncomeError.missingInfo",
                     Link.toInternalPage(url = routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url, value = Some(Messages("tai.missingInfo.link.message"))).toHtml
                 ))</p>
-        </div>
-    </div>
-</div>
-
 }
