@@ -118,10 +118,11 @@ trait CompanyCarService extends JourneyCacheConstants {
     }
   }
 }
-
+// $COVERAGE-OFF$
 object CompanyCarService extends CompanyCarService {
   override val carConnector: CompanyCarConnector = CompanyCarConnector
   override val journeyCacheService: JourneyCacheService = JourneyCacheService(CompanyCar_JourneyKey)
   override val employmentService: EmploymentService = EmploymentService
   override val auditService: AuditService = AuditService
 }
+// $COVERAGE-ON$

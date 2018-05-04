@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.service.benefits
 
 import uk.gov.hmrc.tai.connectors.CompanyCarConnector
-import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiNotFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -149,6 +149,14 @@ class CompanyCarServiceSpec extends PlaySpec
         val expectedResult = TaiNoCompanyCarFoundResponse("No company car found")
         Await.result(sut.beginJourney(generateNino, 1), 5 seconds) mustBe expectedResult
       }
+      "there are no employments" in  {
+        val sut = createSut
+
+        when(sut.carConnector.companyCarBenefitForEmployment(any(), any())(any())).thenReturn(Future.successful(Some(companyCar)))
+        when(sut.employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(None))
+
+        the[RuntimeException] thrownBy Await.result(sut.beginJourney(generateNino, 1), 5 seconds)
+      }
     }
   }
 
@@ -221,6 +229,32 @@ class CompanyCarServiceSpec extends PlaySpec
         val withdrawCarAndFuel = WithdrawCarAndFuel(version, withdrawDate, Some(withdrawDate))
         val nino = generateNino
         val expectedResult = TaiSuccessResponse
+
+        val sampleCache = Map(CompanyCar_EmployerIdKey -> employmentSeqNum.toString,
+          CompanyCar_CarSeqNoKey -> carSeqNum.toString,
+          CompanyCar_DateGivenBackKey -> withdrawDate.toString,
+          CompanyCar_DateFuelBenefitStoppedKey -> withdrawDate.toString,
+          CompanyCar_Version -> version.toString)
+
+        when(sut.journeyCacheService.currentCache(hc)).thenReturn(Future.successful(sampleCache))
+
+        when(sut.carConnector.withdrawCompanyCarAndFuel(Matchers.eq(nino), Matchers.eq(employmentSeqNum), Matchers.eq(carSeqNum),
+          Matchers.eq(withdrawCarAndFuel))(any())).thenReturn(Future.successful(expectedResult))
+
+        val result = Await.result(sut.withdrawCompanyCarAndFuel(nino, "NA"), 5 seconds)
+        result mustBe expectedResult
+        verify(sut.carConnector, times(1)).withdrawCompanyCarAndFuel(nino, employmentSeqNum, carSeqNum, withdrawCarAndFuel)
+        verify(sut.journeyCacheService, times(1)).currentCache
+      }
+      "withdrawCompanyCarAndFuel results in a failure" in {
+        val sut = createSut
+        val employmentSeqNum = 1
+        val carSeqNum = 2
+        val withdrawDate = new LocalDate("2017-06-09")
+        val version = 1
+        val withdrawCarAndFuel = WithdrawCarAndFuel(version, withdrawDate, Some(withdrawDate))
+        val nino = generateNino
+        val expectedResult = TaiNotFoundResponse("Something went wrong")
 
         val sampleCache = Map(CompanyCar_EmployerIdKey -> employmentSeqNum.toString,
           CompanyCar_CarSeqNoKey -> carSeqNum.toString,

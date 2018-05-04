@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
@@ -34,7 +35,10 @@ trait CodingComponentService {
     taxAccountConnector.codingComponents(nino, year) map {
       case TaiSuccessResponseWithPayload(codingComponents: Seq[CodingComponent]) => filterOutZeroAmountsComponents(codingComponents)
       case TaiTaxAccountFailureResponse(e) => throw new RuntimeException(e)
-      case _ => throw new RuntimeException("could not fetch coding components")
+    }recover {
+      case e: Exception =>
+       throw new RuntimeException("Couldn't retrieve coding components")
+
     }
   }
 

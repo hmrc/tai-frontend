@@ -63,7 +63,7 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
         when(sut.taxAccountConnector.codingComponents(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("error description")))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.taxFreeAmountComponents(generateNino, currrentTaxYear), 5 seconds)
-        ex.getMessage must include("error description")
+        ex.getMessage must include("Couldn't retrieve coding components")
       }
     }
 
@@ -74,7 +74,15 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
 
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.taxFreeAmountComponents(generateNino, currrentTaxYear), 5 seconds)
-        ex.getMessage must include("error description")
+        ex.getMessage must include("Couldn't retrieve coding components")
+      }
+      "other error is received from TAI" in {
+        val sut = createSut
+        when(sut.taxAccountConnector.codingComponents(any(), any())(any())).thenReturn(Future.failed(new RuntimeException("error description")))
+
+
+        val ex = the[RuntimeException] thrownBy Await.result(sut.taxFreeAmountComponents(generateNino, currrentTaxYear), 5 seconds)
+        ex.getMessage must include("Couldn't retrieve coding components")
       }
     }
   }
