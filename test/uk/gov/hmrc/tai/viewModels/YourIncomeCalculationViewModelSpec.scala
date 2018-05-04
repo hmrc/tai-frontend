@@ -50,6 +50,20 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
         model.rtiStatus mustBe Available
         model.employmentStatus mustBe Live
       }
+      "there are no payment details" in {
+        val model = incomeCalculationViewModel(realTimeStatus = TemporarilyUnavailable,
+          payments= Nil,
+          employmentStatus= Live,
+          employmentType = EmploymentIncome,
+          hasTaxCodeIncome = true,
+          cessationPay = None)
+
+        model.empId mustBe 2
+        model.employerName mustBe "test employment"
+        model.payments mustBe Seq()
+        model.latestPayment mustBe None
+        model.rtiStatus mustBe TemporarilyUnavailable
+      }
 
       "employment type is Pension Income" in {
         val model = incomeCalculationViewModel(employmentType = PensionIncome)
