@@ -594,22 +594,6 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     }
   }
 
-  "fetchMessage" must {
-    "return the messages" when {
-      "both messages are available" in {
-        YourIncomeCalculationViewModel.fetchMessages(Some("message1"), Some("message2")) mustBe (Some("message1"), Some("message2"))
-      }
-
-      "only first message is available" in {
-        YourIncomeCalculationViewModel.fetchMessages(None, Some("message2")) mustBe (None, Some("message2"))
-      }
-
-      "only second message is available" in {
-        YourIncomeCalculationViewModel.fetchMessages(Some("message1"), None) mustBe (Some("message1"), None)
-      }
-    }
-  }
-
   lazy val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
   lazy val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
 
