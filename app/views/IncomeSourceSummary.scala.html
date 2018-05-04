@@ -82,7 +82,7 @@
         @Link.toInternalPage(
             id=Some("updatePensionScreenReader"),
             url=controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension(model.empId).url,
-            value=Some(messages("tai.pension.income.details.updateLinkText.screenReader"))).toHtml
+            value=Some(messages("tai.pension.income.details.updateLinkText.screenReader", model.empOrPensionName))).toHtml
         </p>
     }else {
         <p  aria-hidden="true">
