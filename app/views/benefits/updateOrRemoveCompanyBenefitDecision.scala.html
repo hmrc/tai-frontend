@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.urls.Link
 @import includes.{ptaHeader, cancelLink}
 @import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
-@import includes.forms.{inputRadioGroupNewStyling, submit}
+@import includes.forms.{inputRadioGroupStyling, submit}
 @import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
@@ -44,7 +44,7 @@ gaCustomTitle = Some(Messages("tai.benefits.updateOrRemove.decision.customGaTitl
 
     @form(action = controllers.benefits.routes.CompanyBenefitController.submitDecision(), Symbol("data-dynamic-form") -> "true", Symbol("class") -> "subsection", Symbol("data-journey-dynamic-radios") -> "") {
 
-        @{inputRadioGroupNewStyling(
+        @{inputRadioGroupStyling(
             viewModel.decisionForm(UpdateOrRemoveCompanyBenefitDecisionForm.DecisionChoice),
             Seq(
             UpdateOrRemoveCompanyBenefitDecisionForm.YesIGetThisBenefit -> Messages("tai.benefits.updateOrRemove.decision.radio.yes"),

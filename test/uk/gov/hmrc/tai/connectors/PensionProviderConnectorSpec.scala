@@ -28,7 +28,7 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.AddPensionProvider
+import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -45,9 +45,24 @@ class PensionProviderConnectorSpec extends PlaySpec
       val sut = createSUT()
       val addPensionProvider = AddPensionProvider("testPension", new LocalDate(2017, 6, 6), "12345", "Yes", Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
-      when(sut.httpHandler.postToApi(Matchers.eq(sut.addPensionProviderServiceUrl(nino)), Matchers.eq(addPensionProvider))(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+      when(sut.httpHandler.postToApi(Matchers.eq(sut.addPensionProviderServiceUrl(nino)),
+        Matchers.eq(addPensionProvider))(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.addPensionProvider(nino, addPensionProvider), 5.seconds)
+
+      result mustBe Some("123-456-789")
+    }
+  }
+
+  "PensionProviderConnector incorrectPensionProvider" must {
+    "return an envelope id on a successful invocation" in {
+      val sut = createSUT()
+      val incorrectPensionProvider = IncorrectPensionProvider(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
+      val json = Json.obj("data" -> JsString("123-456-789"))
+      when(sut.httpHandler.postToApi(Matchers.eq(sut.incorrectPensionProviderServiceUrl(nino, 1)),
+        Matchers.eq(incorrectPensionProvider))(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+
+      val result = Await.result(sut.incorrectPensionProvider(nino, 1, incorrectPensionProvider), 5.seconds)
 
       result mustBe Some("123-456-789")
     }

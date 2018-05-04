@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.service
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.PensionProviderConnector
-import uk.gov.hmrc.tai.model.domain.AddPensionProvider
+import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvider}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,6 +35,12 @@ trait PensionProviderService {
     }
   }
 
+  def incorrectPensionProvider(nino: Nino, id: Int, pensionProvider: IncorrectPensionProvider)(implicit hc:HeaderCarrier):
+  Future[String] = {connector.incorrectPensionProvider(nino, id, pensionProvider) map {
+    case Some(envId) => envId
+    case _ => throw new RuntimeException(s"No envelope id was generated when submitting incorrect pension for ${nino.nino}")
+    }
+  }
 }
 // $COVERAGE-OFF$
 object PensionProviderService extends PensionProviderService {

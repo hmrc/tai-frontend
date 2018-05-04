@@ -20,7 +20,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers._
-@import includes.forms.inputRadioGroupNewStyling
+@import includes.forms.inputRadioGroupStyling
 
 @gaEventActionString = @{"Payslip deductions"}
 
@@ -42,7 +42,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     ) {
     @form(action = controllers.routes.IncomeUpdateCalculatorController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
 
-        @{inputRadioGroupNewStyling(
+        @{inputRadioGroupStyling(
             field=bonusPaymentsForm("bonusPayments"),
 
             radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no"))),
@@ -55,7 +55,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             ('_fieldsetAttributes, "id=bonusPayments" )
         )}
 
-        @{inputRadioGroupNewStyling(
+        @{inputRadioGroupStyling(
             field=bonusPaymentsForm("bonusPaymentsMoreThisYear"),
             radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no"))),
             legend=Messages("tai.bonusPayments.moreThisYear"),

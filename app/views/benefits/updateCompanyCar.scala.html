@@ -41,7 +41,7 @@
 
     @form( action=controllers.routes.CompanyCarController.handleUserJourneyChoice, args=(Symbol("class"), "subsection"),(Symbol("data-journey-dynamic-radios"), "") ){
 
-        @{inputRadioGroupNewStyling(
+        @{inputRadioGroupStyling(
             field=wdywtdForm("userChoice"),
             radioOptions=Seq(("changeCarDetails" -> Messages("tai.changeCompanyCar.radioLabel1")), ("removeCar" -> Messages("tai.changeCompanyCar.radioLabel2")) ),
             legend=Messages("tai.changeCompanyCar.legend"),

@@ -29,7 +29,7 @@ class NoCYIncomeTaxErrorPageSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("tai.noCYIncomeError.heading"))
     behave like pageWithCombinedHeader(
       preHeaderText ="Current tax year",
-      mainHeaderText = "Your Pay As You Earn Income Tax")
+      mainHeaderText = "Your PAYE Income Tax")
 
     "display no income message" when {
       "name and end date of employer is not present" in {

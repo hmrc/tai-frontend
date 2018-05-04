@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.util
+package uk.gov.hmrc.tai.viewModels.pensions.update
 
-import java.net.URLEncoder
+import controllers.routes
+import play.twirl.api.Html
+import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-object Tools {
-  def urlEncode(u: String) = URLEncoder.encode(u, "UTF-8")
+class confirmationSpec extends TaiViewSpec {
+  override def view: Html = views.html.pensions.update.confirmation()
+
+  "Confirmation View" must {
+
+    behave like pageWithTitle(messages("tai.updatePension.confirmation.heading"))
+    behave like pageWithHeader(messages("tai.updatePension.confirmation.heading"))
+    behave like haveReturnToSummaryButtonWithUrl(routes.TaxAccountSummaryController.onPageLoad())
+
+  }
 }

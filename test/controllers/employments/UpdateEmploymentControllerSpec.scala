@@ -229,6 +229,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
+
       "there is a form validation error (additional, controller specific constraint)" in {
         val sut = createSUT
         val cache = Map(UpdateEmployment_EmploymentIdKey -> "1")

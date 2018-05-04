@@ -19,38 +19,36 @@
 @import uk.gov.hmrc.tai.forms.pensions.UpdateRemovePensionForm
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
-@import includes.forms.inputRadioGroupNewStyling
+@import includes.forms.inputRadioGroupStyling
 @import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
 
 @(model: PensionProviderViewModel, updateOrRemoveForm: Form[Option[String]])(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Update or remove pension- Do you currently get income from this pension provider?"}
 
-
 @header = @{
     ptaHeader(
         formForErrorSummary = Some(updateOrRemoveForm),
         displayBackLink = true,
-        mainHeadingText = Messages("tai.incorrectPension.decision.main.heading", model.pensionName),
-        preHeadingText = Messages("tai.incorrectPension.decision.title")
+        mainHeadingText = Messages("tai.updatePension.decision.heading", model.pensionName),
+        preHeadingText = Messages("tai.updatePension.preHeading")
     )
 }
 
-
 @main(
-    title = Messages("tai.incorrectPension.decision.title"),
+    title = Messages("tai.updatePension.decision.heading", model.pensionName),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = None) {
+    gaCustomTitle = Some(Messages("tai.updatePension.decision.customGaTitle"))) {
 
-    @form(action = controllers.pensions.routes.IncorrectPensionProviderController.handleDecision(), Symbol("data-journey-dynamic-radios") -> "" ) {
+    @form(action = controllers.pensions.routes.UpdatePensionProviderController.handleDoYouGetThisPension(), Symbol("data-journey-dynamic-radios") -> "" ) {
         <div class="form-group">
 
-            @{inputRadioGroupNewStyling(
+            @{inputRadioGroupStyling(
                 field=updateOrRemoveForm(UpdateRemovePensionForm.IncorrectPensionDecision),
-                radioOptions=Seq(("Yes" -> Messages("tai.pension.decision.radio1")), ("No" -> Messages("tai.pension.decision.radio2")) ),
-                legend=Messages("tai.pension.decision.legend"),
+                radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no")) ),
+                legend=Messages("tai.updatePension.decision.legend"),
                 legendHint=None,
                 ('_groupDivClass, "form-group" ),
                 ('_fieldsetAttributes, "id=incorrectPensionDecision" ),
@@ -63,10 +61,6 @@
         </div>
 
         @submit(buttonMessageKey = Some(messages("tai.submit")), gaEventAction = Some(gaEventActionString), gaEventLabel = Some(""))
-
     }
-
     @cancelLink(url = routes.IncomeSourceSummaryController.onPageLoad(model.id), gaEventAction = Some(gaEventActionString))
-
-
 }
