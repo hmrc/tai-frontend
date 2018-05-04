@@ -141,11 +141,6 @@
                     case PotentiallyCeased => {
                         @if(model.isPension) {
                             <h4 class="heading-small">@model.incomeCalculationEstimateMessage</h4>
-                            <p>@Html(Messages(
-                                "tai.yourTaxableIncome.otherDetailsWrongPensionIform",
-                                Link.toInternalPage(url=routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url, value=Some(Messages("tai.yourTaxableIncome.otherDetailsWrongIformLink"))).toHtml
-                                ))
-                            </p>
                         } else {
                             <h4 class="heading-small">@model.incomeCalculationEstimateMessage</h4>
                         }
@@ -182,11 +177,6 @@
                                 "tai.income.calculation.update.pension",
                                 Link.toInternalPage(url=routes.IncomeUpdateCalculatorController.howToUpdatePage(model.empId).toString, value=Some(Messages("tai.income.calculation.updateLink.regular"))).toHtml
                                 ))</p>
-                            <p id="pensionIFormLink">@Html(Messages(
-                                "tai.yourTaxableIncome.otherDetailsWrongPensionIform",
-                                Link.toInternalPage(url=routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url, value=Some(Messages("tai.yourTaxableIncome.otherDetailsWrongIformLink"))).toHtml
-                                ))
-                            </p>
                         } else {
                             <p id="regularUpdateLink">@Html(Messages(
                                 "tai.income.calculation.update.regular",
@@ -196,14 +186,6 @@
                         }
                     }
 
-                }
-
-                @if(!model.isPension){
-                    <p>@Html(Messages(
-                        "tai.yourTaxableIncome.otherDetailsWrongIform",
-                        Link.toInternalPage(url=routes.AuditController.auditLinksToIForm(EmployeePensionIForm).url, value=Some(Messages("tai.yourTaxableIncome.otherDetailsWrongIformLink"))).toHtml
-                        ))
-                    </p>
                 }
 
             </div>

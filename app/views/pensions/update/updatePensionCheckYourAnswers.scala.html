@@ -46,13 +46,11 @@
 
     <p class="subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
 
-
     @form(action = controllers.pensions.routes.UpdatePensionProviderController.submitYourAnswers()) {
         @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
     }
 
     @cancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.id))
-
 }
 
 
