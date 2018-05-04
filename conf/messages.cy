@@ -1486,3 +1486,18 @@ tai.taxFreeAmount.missing.section.benefit=Ychwanegu buddiant cwmni sydd ar goll
 tai.taxFreeAmount.missing.section.income=Ychwanegu incwm o ffynhonnell arall sydd ar goll
 
 tai.whatDoYouWantToDo.legend=Gweld manylion Treth Incwm TWE ar gyfer:
+
+tai.canWeContactByPhone.explanation.pt2=Os dewiswch ''Na'', byddwn yn cysylltu â chi trwy lythyr. Am resymau diogelwch, ni allwn ofyn am fwy o wybodaeth trwy e-bost.
+
+##Update Pension Pages
+tai.updatePension.preHeading=Diweddaru pensiwn
+tai.updatePension.cya.currentlyReceivePension=Ar hyn o bryd yn cael y pensiwn hwn
+tai.updatePension.whatDoYouWantToTellUs.customGaTitle=Beth ydych am roi gwybod i ni am y pensiwn hwn?
+tai.updatePension.whatDoYouWantToTellUs.heading=Beth ydych am roi gwybod i ni am y pensiwn hwn gan {0}?
+tai.updatePension.whatDoYouWantToTellUs.textarea.error.blank=Nodwch yr beth ydych am roi gwybod i ni am y pensiwn hwn
+tai.updatePension.whatDoYouWantToTellUs.textarea.text=Rhowch fanylion eich diweddariad (Uchafswm o {0} o gymeriadau)
+tai.updatePension.whatDoYouWantToTellUs.textarea.error.maximumExceeded=Gallwch ond nodi hyd at uchafswm o {0} o gymeriadau
+tai.updatePension.confirmation.heading=Mae''ch diweddariad am bensiwn wedi dod i law
+tai.updatePension.decision.heading=A ydych yn cael incwm pensiwn oddi wrth {0}?
+tai.updatePension.decision.customGaTitle=A ydych yn cael incwm pensiwn hwn
+tai.updatePension.decision.legend=A ydych yn cael incwm pensiwn oddi wrth darparwr pensiwn hwn?

@@ -251,12 +251,24 @@ tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.maximumExceeded=You ca
 tai.updateEmployment.whatDoYouWantToTellUs.textarea.text=Enter details about your update (Maximum characters {0})
 tai.updateEmployment.cya.currentlyWorkHere=Currently work here
 
-##Update Pension Pages
-tai.updatePension.preHeading=Update pension
-
 ##Confirmation page
 tai.employmentConfirmation.heading=Your update about an employment has been received
 tai.employmentConfirmation.back=Return to your Income Tax Summary
+
+
+##Update Pension Pages
+tai.updatePension.preHeading=Update pension
+tai.updatePension.cya.currentlyReceivePension=Currently receive pension
+tai.updatePension.whatDoYouWantToTellUs.customGaTitle=What do you want to tell us about this pension?
+tai.updatePension.whatDoYouWantToTellUs.heading=What do you want to tell us about your pension from {0}?
+tai.updatePension.whatDoYouWantToTellUs.textarea.error.blank=Enter what you want to tell us about your pension
+tai.updatePension.whatDoYouWantToTellUs.textarea.text=Enter details about your update (Maximum characters {0})
+tai.updatePension.whatDoYouWantToTellUs.textarea.error.maximumExceeded=You can only enter a maximum of {0} characters
+tai.updatePension.confirmation.heading=Your update about a pension has been received
+tai.updatePension.decision.heading=Do you currently get pension income from {0}?
+tai.updatePension.decision.customGaTitle=Do you currently get this pension income
+tai.updatePension.decision.legend=Do you currently get pension income from this pension provider?
+
 
 ##Add Employment page
 tai.addEmployment.addEmploymentJourneyLink=Add a missing employment
@@ -313,14 +325,6 @@ tai.addPensionProvider.cya.q3=Pension number
 tai.addPensionProvider.cya.q4=Can we contact you by phone
 tai.pensionConfirmation.heading=Your update about a pension has been received
 
-##Update pension provider journey
-tai.updatePension.whatDoYouWantToTellUs.title=What do you want to tell us
-tai.updatePension.whatDoYouWantToTellUs.heading=What do you want to tell us about your pension from?
-tai.updatePension.whatDoYouWantToTellUs.preHeading=Update pension
-tai.updatePension.whatDoYouWantToTellUs.customGaTitle=What do you want to tell us about this pension?
-tai.updatePension.whatDoYouWantToTellUs.textarea.error.blank=Enter what you want to tell us about your pension?
-tai.updatePension.whatDoYouWantToTellUs.textarea.text=Enter details about your update (Maximum characters {0})
-tai.updatePension.whatDoYouWantToTellUs.textarea.error.maximumExceeded =You can only enter a maximum of {0} characters
 
 ##Close bank account pages
 tai.closeBankAccount.preHeadingText=Account closed
@@ -1654,11 +1658,3 @@ tai.typeDecodes.IncapacityBenefit=Incapacity Benefit
 language.to=to
 language.day.singular=day
 language.day.plural=days
-
-
-# Incorrect Pension Messages
-tai.incorrectPension.decision.title=Update or remove pension
-tai.incorrectPension.decision.main.heading=Do you currently get pension income from {0}?
-tai.pension.decision.radio1=Yes
-tai.pension.decision.radio2=No
-tai.pension.decision.legend=Do you currently get pension income from this pension provider?

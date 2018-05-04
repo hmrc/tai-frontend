@@ -147,16 +147,15 @@ trait UpdateEmploymentController extends TaiBaseController
             journeyCacheService.collectedValues(Seq(UpdateEmployment_EmploymentIdKey, UpdateEmployment_NameKey,
               UpdateEmployment_EmploymentDetailsKey, UpdateEmployment_TelephoneQuestionKey),
               Seq(UpdateEmployment_TelephoneNumberKey)) map tupled { (mandatorySeq, optionalSeq) => {
-              Ok(views.html.employments.update.UpdateEmploymentCheckYourAnswers(UpdateEmploymentCheckYourAnswersViewModel(
-                mandatorySeq.head.toInt,
-                mandatorySeq(1),
-                mandatorySeq(2),
-                mandatorySeq(3),
-                optionalSeq.head)))
-            }
+                Ok(views.html.employments.update.UpdateEmploymentCheckYourAnswers(UpdateEmploymentCheckYourAnswersViewModel(
+                  mandatorySeq.head.toInt,
+                  mandatorySeq(1),
+                  mandatorySeq(2),
+                  mandatorySeq(3),
+                  optionalSeq.head)))
+              }
             }
           }
-
   }
 
   def submitYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
