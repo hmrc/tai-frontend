@@ -25,6 +25,9 @@ import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
+import CeasedIncomeMessages._
+import ManualUpdateIncomeMessages._
+import PaymentFrequencyIncomeMessages._
 
 case class PaymentDetailsViewModel(date: LocalDate,
                                    taxableIncome: BigDecimal,
@@ -38,19 +41,19 @@ case class LatestPayment(date: LocalDate,
                          paymentFrequency: PaymentFrequency)
 
 case class YourIncomeCalculationViewModel(
-                                              empId: Int,
-                                              employerName: String,
-                                              payments: Seq[PaymentDetailsViewModel],
-                                              employmentStatus: TaxCodeIncomeSourceStatus,
-                                              rtiStatus: RealTimeStatus,
-                                              latestPayment: Option[LatestPayment],
-                                              endDate: Option[LocalDate],
-                                              isPension: Boolean,
-                                              messageWhenTotalNotEqual: Option[String],
-                                              incomeCalculationMessage: String,
-                                              incomeCalculationEstimateMessage: Option[String],
-                                              hasPayrolledBenefit: Boolean
-                                            )
+                                           empId: Int,
+                                           employerName: String,
+                                           payments: Seq[PaymentDetailsViewModel],
+                                           employmentStatus: TaxCodeIncomeSourceStatus,
+                                           rtiStatus: RealTimeStatus,
+                                           latestPayment: Option[LatestPayment],
+                                           endDate: Option[LocalDate],
+                                           isPension: Boolean,
+                                           messageWhenTotalNotEqual: Option[String],
+                                           incomeCalculationMessage: String,
+                                           incomeCalculationEstimateMessage: Option[String],
+                                           hasPayrolledBenefit: Boolean
+                                         )
 
 object YourIncomeCalculationViewModel {
   def apply(taxCodeIncome: Option[TaxCodeIncome], employment: Employment)(implicit messages: Messages): YourIncomeCalculationViewModel = {
@@ -69,7 +72,7 @@ object YourIncomeCalculationViewModel {
       incomeExplanationMessage(
         income.status,
         employment,
-        isPension,
+        pensionOrEmpMessage(isPension),
         income,
         latestPayment.map(_.paymentFrequency),
         latestPayment.map(_.amountYearToDate).getOrElse(BigDecimal(0)),
@@ -87,12 +90,12 @@ object YourIncomeCalculationViewModel {
       isPension,
       totalNotEqualMessage(status == Live, paymentDetails, latestPayment, isPension),
       incomeCalculationMessage.getOrElse(""),
-      if(status == Ceased) None else incomeCalculationEstimateMessage,
+      if (status == Ceased) None else incomeCalculationEstimateMessage,
       employment.hasPayrolledBenefit
     )
   }
 
-  private def pensionOrEmpMessage(isPension: Boolean) = if (isPension) "pension" else "emp"
+  private def pensionOrEmpMessage(isPension: Boolean): String = if (isPension) "pension" else "emp"
 
   private def totalNotEqualMessage(isLive: Boolean,
                                    payments: Seq[PaymentDetailsViewModel],
@@ -102,7 +105,7 @@ object YourIncomeCalculationViewModel {
       payments.map(_.taxableIncome).sum == latestPayment.map(_.amountYearToDate).getOrElse(0) &&
       payments.map(_.nationalInsuranceAmount).sum == latestPayment.map(_.nationalInsuranceAmountYearToDate).getOrElse(0)
 
-    if(isLive && !isTotalEqual && isPension) {
+    if (isLive && !isTotalEqual && isPension) {
       Some(messages("tai.income.calculation.totalNotMatching.pension.message"))
     } else if (isLive && !isTotalEqual && !isPension) {
       Some(messages("tai.income.calculation.totalNotMatching.emp.message"))
@@ -125,150 +128,147 @@ object YourIncomeCalculationViewModel {
 
   def incomeExplanationMessage(employmentStatus: TaxCodeIncomeSourceStatus,
                                employment: Employment,
-                               isPension: Boolean,
+                               pensionOrEmployment: String,
                                taxCodeIncome: TaxCodeIncome,
                                paymentFrequency: Option[PaymentFrequency],
                                amountYearToDate: BigDecimal,
                                paymentDate: Option[LocalDate])(implicit messages: Messages): (Option[String], Option[String]) = {
 
-    (getCeasedMsg(employmentStatus, employment, isPension, taxCodeIncome.amount),
-      getManualUpdateMsg(taxCodeIncome),
-      getSameMsg(employment, taxCodeIncome.amount, amountYearToDate, isPension, paymentDate),
-      getPayFreqMsg(employment, isPension, paymentFrequency, amountYearToDate, paymentDate, taxCodeIncome.amount)) match {
 
-      case ((Some(ceasedMsg), Some(ceasedMsgEstimate)), _, _, _) => (Some(ceasedMsg), Some(ceasedMsgEstimate))
-      case ((Some(ceasedMsg), None), _, _, _) => (Some(ceasedMsg), None)
-      case (_, (Some(manualUpdateMsg), Some(manualUpdateMsgEstimate)), _, _) => (Some(manualUpdateMsg), Some(manualUpdateMsgEstimate))
-      case (_, _, (Some(sameIncomeMsg), None), _) => (Some(sameIncomeMsg), None)
-      case (_, _, _, (Some(payFreqMsg), Some(payFreqMsgEstimate))) => (Some(payFreqMsg), Some(payFreqMsgEstimate))
-      case (_, _, _, (None, Some(payFreqMsgEstimate))) => (None, Some(payFreqMsgEstimate))
-      case _ => (Some(messages("tai.income.calculation.default." + pensionOrEmpMessage(isPension), Dates.formatDate(TaxYear().end))),
-        Some(messages("tai.income.calculation.default.estimate." + pensionOrEmpMessage(isPension), taxCodeIncome.amount)))
+    lazy val ceasedIncomeMessages = (
+      ceasedIncomeCalculationMessage(employmentStatus, employment, pensionOrEmployment),
+      ceasedIncomeCalculationEstimateMessage(employmentStatus, employment, taxCodeIncome.amount)
+    )
+
+    lazy val manualIncomeMessages: (Option[String], Option[String]) = {
+      val msg: Option[String] = manualUpdateIncomeCalculationMessage(taxCodeIncome)
+      (msg, msg.flatMap(_ => manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome)))
+    }
+
+    lazy val sameMessages = (sameIncomeCalculationMessage(employment, taxCodeIncome.amount, amountYearToDate, pensionOrEmployment, paymentDate), None)
+
+    lazy val payFrequencyMessages = (
+      payFreqIncomeCalculationMessage(employment, pensionOrEmployment, paymentFrequency, amountYearToDate, paymentDate),
+      payFreqIncomeCalculationEstimateMessage(pensionOrEmployment, paymentFrequency, paymentDate, taxCodeIncome.amount)
+    )
+
+    Seq(ceasedIncomeMessages, manualIncomeMessages, sameMessages, payFrequencyMessages).find(_ != (None, None)) match {
+      case None =>
+        (Some(messages(s"tai.income.calculation.default.$pensionOrEmployment", Dates.formatDate(TaxYear().end))),
+          Some(messages(s"tai.income.calculation.default.estimate.$pensionOrEmployment", taxCodeIncome.amount)))
+      case Some(incomeCalculationMessages) => incomeCalculationMessages
     }
   }
 
-  def getCeasedMsg(employmentStatus: TaxCodeIncomeSourceStatus, employment: Employment, isPension: Boolean,
-                   amount: BigDecimal)(implicit messages: Messages): (Option[String], Option[String]) = {
-
-    (employmentStatus, employment.endDate.isDefined,
-      employment.cessationPay.isDefined) match {
-
-      case (Ceased, true, true) =>
-        (Some(messages("tai.income.calculation.rti.ceased." + pensionOrEmpMessage(isPension),
-          employment.endDate.map(Dates.formatDate).getOrElse(""))), None)
-
-      case (Ceased, true, false) =>
-        (Some(messages("tai.income.calculation.rti.ceased." + pensionOrEmpMessage(isPension) + ".noFinalPay")),
-          Some(messages("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(amount, 0).quantity)))
-
-      case (PotentiallyCeased, false, _) =>
-        (Some(messages("tai.income.calculation.rti.ceased." + pensionOrEmpMessage(isPension) + ".noFinalPay")),
-        Some(messages("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(amount, 0).quantity)))
-
-      case _ => (None, None)
-    }
-  }
-
-  def getManualUpdateMsg(taxCodeIncome: TaxCodeIncome)(implicit messages: Messages): (Option[String], Option[String]) = {
-
-    (taxCodeIncome.iabdUpdateSource, taxCodeIncome.updateNotificationDate.isDefined, taxCodeIncome.updateActionDate.isDefined) match {
-      case (Some(ManualTelephone), true, true) => (Some(messages("tai.income.calculation.manual.update.phone",
-        Dates.formatDate(taxCodeIncome.updateActionDate.get), Dates.formatDate(taxCodeIncome.updateNotificationDate.get))),
-        Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
-
-      case (Some(ManualTelephone), false, false) | (Some(ManualTelephone), false, true) |
-           (Some(ManualTelephone), true, false) => (Some(messages("tai.income.calculation.manual.update.phone.withoutDate")),
-        Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
-
-      case (Some(Letter), true, true) => (Some(messages("tai.income.calculation.manual.update.letter",
-        Dates.formatDate(taxCodeIncome.updateActionDate.get), Dates.formatDate(taxCodeIncome.updateNotificationDate.get))),
-        Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
-
-      case (Some(Letter), false, false) | (Some(Letter), false, true) |
-           (Some(Letter), true, false) => (Some(messages("tai.income.calculation.manual.update.letter.withoutDate")),
-        Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
-
-      case (Some(Email), true, true) => (Some(messages("tai.income.calculation.manual.update.email",
-        Dates.formatDate(taxCodeIncome.updateActionDate.get), Dates.formatDate(taxCodeIncome.updateNotificationDate.get))),
-        Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
-
-      case (Some(Email), false, false) | (Some(Email), false, true) |
-           (Some(Email), true, false) => (Some(messages("tai.income.calculation.manual.update.email.withoutDate")),
-        Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
-
-      case (Some(AgentContact), _, _) => (Some(messages("tai.income.calculation.agent")),
-        Some(messages("tai.income.calculation.agent.estimate", taxCodeIncome.amount)))
-
-      case (Some(OtherForm) | Some(InformationLetter), true, true) =>
-        (Some(messages("tai.income.calculation.manual.update.informationLetter", Dates.formatDate(taxCodeIncome.updateActionDate.get),
-          Dates.formatDate(taxCodeIncome.updateNotificationDate.get))),
-          Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
-
-      case (Some(OtherForm) | Some(InformationLetter), false, false)
-           | (Some(OtherForm) | Some(InformationLetter), false, true)
-           | (Some(OtherForm) | Some(InformationLetter), true, false) =>
-        (Some(messages("tai.income.calculation.manual.update.informationLetter.withoutDate")),
-          Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
-
-      case (Some(Internet), true, _) => (Some(messages("tai.income.calculation.manual.update.internet",
-        Dates.formatDate(taxCodeIncome.updateNotificationDate.get))),
-        Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
-
-      case (Some(Internet), false, _) => (Some(messages("tai.income.calculation.manual.update.internet.withoutDate")),
-        Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
-
-      case _ => (None, None)
-    }
-  }
-
-  def getPayFreqMsg(employment: Employment, isPension: Boolean, paymentFrequency: Option[PaymentFrequency],
-                    amountYearToDate: BigDecimal, paymentDate: Option[LocalDate],
-                    amount: BigDecimal)(implicit messages: Messages): (Option[String], Option[String]) = {
-
-    val isMidYear = employment.startDate.isAfter(TaxYear().start)
-    val pensionOrEmp = pensionOrEmpMessage(isPension)
-
-    (paymentFrequency, isMidYear) match {
-      case ((Some(Weekly) | Some(FortNightly) | Some(FourWeekly) | Some(Monthly) | Some(Quarterly) | Some(BiAnnually)), false) =>
-        val paymentDt = paymentDate.map(Dates.formatDate).getOrElse("")
-        (Some(messages(s"tai.income.calculation.rti.continuous.weekly.$pensionOrEmp", MoneyPounds(amountYearToDate, 2).quantity, paymentDt)),
-          Some(messages(s"tai.income.calculation.rti.$pensionOrEmp.estimate", MoneyPounds(amount, 0).quantity)))
-
-      case (Some(Annually), false) =>
-        (Some(messages(s"tai.income.calculation.rti.continuous.annually.$pensionOrEmp", MoneyPounds(amountYearToDate, 2).quantity)),
-          Some(messages(s"tai.income.calculation.rti.$pensionOrEmp.estimate", MoneyPounds(amount, 0).quantity)))
-
-      case (Some(OneOff), false) =>
-        (Some(messages(s"tai.income.calculation.rti.oneOff.$pensionOrEmp", MoneyPounds(amountYearToDate, 2).quantity)),
-          Some(messages(s"tai.income.calculation.rti.$pensionOrEmp.estimate", MoneyPounds(amount, 0).quantity)))
-
-      case (Some(Irregular), false) =>
-        (None, Some(messages(s"tai.income.calculation.rti.irregular." + pensionOrEmp, MoneyPounds(amount, 0).quantity)))
-
-      case ((Some(Weekly) | Some(FortNightly) | Some(FourWeekly) | Some(Monthly) | Some(Quarterly) | Some(BiAnnually) | Some(Annually)), true) =>
-        val paymentDt = paymentDate.map(Dates.formatDate).getOrElse("")
-        (Some(messages(s"tai.income.calculation.rti.midYear.weekly", Dates.formatDate(employment.startDate), paymentDt, MoneyPounds(amountYearToDate, 2).quantity)),
-          Some(messages(s"tai.income.calculation.rti.$pensionOrEmp.estimate", MoneyPounds(amount, 0).quantity)))
-
-      case (Some(OneOff), true) =>
-        (Some(messages(s"tai.income.calculation.rti.oneOff." + pensionOrEmp, MoneyPounds(amountYearToDate, 2).quantity)),
-          Some(messages(s"tai.income.calculation.rti.$pensionOrEmp.estimate", MoneyPounds(amount, 0).quantity)))
-
-      case (Some(Irregular), true) =>
-        (None, Some(messages(s"tai.income.calculation.rti.irregular." + pensionOrEmp, MoneyPounds(amount, 0).quantity)))
-
-      case _ => (None, None)
-    }
-  }
-
-  def getSameMsg(employment: Employment, amount: BigDecimal, amountYearToDate: BigDecimal,
-                 isPension: Boolean, paymentDate: Option[LocalDate])(implicit messages: Messages): (Option[String], Option[String]) = {
+  def sameIncomeCalculationMessage(employment: Employment, amount: BigDecimal, amountYearToDate: BigDecimal,
+                                   pensionOrEmployment: String, paymentDate: Option[LocalDate])(implicit messages: Messages): Option[String] = {
 
     val startDate = if (TaxYearResolver.fallsInThisTaxYear(employment.startDate)) employment.startDate else TaxYear().start
 
     if (amount == amountYearToDate) {
-      (Some(messages("tai.income.calculation.rti." + pensionOrEmpMessage(isPension) + ".same", Dates.formatDate(startDate),
-        paymentDate.map(Dates.formatDate).getOrElse(""), MoneyPounds(amountYearToDate, 0).quantity)), None)
-    } else { (None, None) }
+      Some(messages(s"tai.income.calculation.rti.$pensionOrEmployment.same", Dates.formatDate(startDate),
+        paymentDate.map(Dates.formatDate).getOrElse(""), MoneyPounds(amountYearToDate, 0).quantity))
+    } else {
+      None
+    }
+  }
+}
+
+object CeasedIncomeMessages {
+  def ceasedIncomeCalculationMessage(employmentStatus: TaxCodeIncomeSourceStatus, employment: Employment, pensionOrEmpMessage: String
+                                    )(implicit messages: Messages): Option[String] = {
+    (employmentStatus, employment.endDate, employment.cessationPay) match {
+      case (Ceased, Some(endDate), Some(_)) =>
+        Some(messages(s"tai.income.calculation.rti.ceased.$pensionOrEmpMessage", Dates.formatDate(endDate)))
+
+      case (Ceased, Some(_), None) =>
+        Some(messages(s"tai.income.calculation.rti.ceased.$pensionOrEmpMessage.noFinalPay"))
+
+      case (PotentiallyCeased, None, _) =>
+        Some(messages(s"tai.income.calculation.rti.ceased.$pensionOrEmpMessage.noFinalPay"))
+
+      case _ => None
+    }
+  }
+
+  def ceasedIncomeCalculationEstimateMessage(employmentStatus: TaxCodeIncomeSourceStatus, employment: Employment,
+                                             amount: BigDecimal)(implicit messages: Messages): Option[String] = {
+    (employmentStatus, employment.endDate, employment.cessationPay) match {
+      case (Ceased, Some(_), None) =>
+        Some(messages("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(amount, 0).quantity))
+
+      case (PotentiallyCeased, None, _) =>
+        Some(messages("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(amount, 0).quantity))
+
+      case _ => None
+    }
+  }
+}
+
+object ManualUpdateIncomeMessages {
+  def manualUpdateIncomeCalculationMessage(taxCodeIncome: TaxCodeIncome)(implicit messages: Messages): Option[String] = {
+
+    def iadbManualMessages(messageKey: String) = {
+      (taxCodeIncome.updateNotificationDate, taxCodeIncome.updateActionDate) match {
+        case (Some(notificationDate), _) if messageKey == "internet" =>
+          messages("tai.income.calculation.manual.update.internet", Dates.formatDate(notificationDate))
+        case (Some(notificationDate), Some(actionDate)) =>
+          messages(s"tai.income.calculation.manual.update.$messageKey", Dates.formatDate(actionDate), Dates.formatDate(notificationDate))
+        case _ =>
+          messages(s"tai.income.calculation.manual.update.$messageKey.withoutDate")
+      }
+    }
+
+    taxCodeIncome.iabdUpdateSource collect {
+      case AgentContact => messages("tai.income.calculation.agent")
+      case ManualTelephone => iadbManualMessages("phone")
+      case OtherForm | InformationLetter => iadbManualMessages("informationLetter")
+      case Letter | Email | Internet => iadbManualMessages(taxCodeIncome.iabdUpdateSource.get.toString.toLowerCase)
+    }
+  }
+
+  def manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome: TaxCodeIncome)(implicit messages: Messages): Option[String] = {
+    taxCodeIncome.iabdUpdateSource match {
+      case Some(AgentContact) => Some(messages("tai.income.calculation.agent.estimate", taxCodeIncome.amount))
+      case _ => Some(messages("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount))
+    }
+  }
+}
+
+object PaymentFrequencyIncomeMessages {
+  def payFreqIncomeCalculationMessage(employment: Employment, pensionOrEmployment: String, paymentFrequency: Option[PaymentFrequency],
+                                      amountYearToDate: BigDecimal, paymentDate: Option[LocalDate])(implicit messages: Messages): Option[String] = {
+
+    val isMidYear = employment.startDate.isAfter(TaxYear().start)
+    val paymentDt = paymentDate.map(Dates.formatDate).getOrElse("")
+
+    paymentFrequency collect {
+      case (Weekly | FortNightly | FourWeekly | Monthly | Quarterly | BiAnnually) =>
+        if (isMidYear)
+          messages(s"tai.income.calculation.rti.midYear.weekly", Dates.formatDate(employment.startDate), paymentDt, MoneyPounds(amountYearToDate, 2).quantity)
+        else
+          messages(s"tai.income.calculation.rti.continuous.weekly.$pensionOrEmployment", MoneyPounds(amountYearToDate, 2).quantity, paymentDt)
+
+      case Annually =>
+        if (isMidYear)
+          messages("tai.income.calculation.rti.midYear.weekly", Dates.formatDate(employment.startDate), paymentDt, MoneyPounds(amountYearToDate, 2).quantity)
+        else
+          messages(s"tai.income.calculation.rti.continuous.annually.$pensionOrEmployment", MoneyPounds(amountYearToDate, 2).quantity)
+
+      case OneOff =>
+        messages(s"tai.income.calculation.rti.oneOff.$pensionOrEmployment", MoneyPounds(amountYearToDate, 2).quantity)
+    }
+  }
+
+  def payFreqIncomeCalculationEstimateMessage(pensionOrEmployment: String, paymentFrequency: Option[PaymentFrequency],
+                                              paymentDate: Option[LocalDate], amount: BigDecimal)(implicit messages: Messages): Option[String] = {
+    paymentFrequency collect {
+      case (Weekly | FortNightly | FourWeekly | Monthly |
+            Quarterly | BiAnnually | Annually | OneOff) =>
+        messages(s"tai.income.calculation.rti.$pensionOrEmployment.estimate", MoneyPounds(amount, 0).quantity)
+
+      case Irregular =>
+        messages(s"tai.income.calculation.rti.irregular.$pensionOrEmployment", MoneyPounds(amount, 0).quantity)
+    }
   }
 }

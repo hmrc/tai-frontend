@@ -138,7 +138,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
         val employment = Employment("employment", None, TaxYear().start.plusDays(1),
           None, Nil, "", "", 2, None, false)
 
-        YourIncomeCalculationViewModel.getSameMsg(employment, 100, 1000, false, None) mustBe ((None, None))
+        YourIncomeCalculationViewModel.sameIncomeCalculationMessage(employment, 100, 1000, "emp", None) mustBe None
       }
     }
 
@@ -146,157 +146,203 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "amountYearToDate is not same as amount" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false)
 
-        YourIncomeCalculationViewModel.getSameMsg(employment, 100, 100, false, None) mustBe
-          (Some(messagesApi("tai.income.calculation.rti.emp.same", Dates.formatDate(TaxYear().start),
-            "", MoneyPounds(100, 0).quantity)), None)
+        YourIncomeCalculationViewModel.sameIncomeCalculationMessage(employment, 100, 100, "emp", None) mustBe
+          Some(messagesApi("tai.income.calculation.rti.emp.same", Dates.formatDate(TaxYear().start), "", MoneyPounds(100, 0).quantity))
       }
     }
   }
 
-  "getCeasedMessage" must {
+  "ceasedIncomeCalculationMessage" must {
     "return message for ceased employment" when {
       "endDate and cessationPay is available" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, Some(100), false)
-
-        YourIncomeCalculationViewModel.getCeasedMsg(Ceased, employment, true, 1000) mustBe (
-          (Some(messagesApi("tai.income.calculation.rti.ceased.pension",
-            employment.endDate.map(Dates.formatDate).getOrElse(""))), None)
-          )
+        CeasedIncomeMessages.ceasedIncomeCalculationMessage(Ceased, employment, "pension") mustBe
+          Some(messagesApi("tai.income.calculation.rti.ceased.pension", Dates.formatDate(TaxYear().end)))
       }
 
       "cessationPay is not available" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getCeasedMsg(Ceased, employment, true, 1000) mustBe (
-          (Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay")),
-            Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1000, 0).quantity))))
+        CeasedIncomeMessages.ceasedIncomeCalculationMessage(Ceased, employment, "pension") mustBe
+          Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay"))
       }
     }
 
     "return message for potentially ceased employment" when {
       "end date is not available" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getCeasedMsg(PotentiallyCeased, employment, true, 1000) mustBe
-          (Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay")),
-            Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate",
-              MoneyPounds(1000, 0).quantity)))
+        CeasedIncomeMessages.ceasedIncomeCalculationMessage(PotentiallyCeased, employment, "pension") mustBe
+          Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay"))
       }
     }
 
     "return None" when {
       "employment is live" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getCeasedMsg(Ceased, employment, true, 1000) mustBe (
-          (Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay")),
-            Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate",
-              MoneyPounds(1000, 0).quantity))))
+        CeasedIncomeMessages.ceasedIncomeCalculationMessage(Live, employment, "pension") mustBe None
       }
     }
   }
 
-  "getPayFreqMsg" must {
+  "ceasedIncomeCalculationEstimateMessage" must {
+    "return message for ceased employment" when {
+      "cessationPay is not available" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+        CeasedIncomeMessages.ceasedIncomeCalculationEstimateMessage(Ceased, employment, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1000, 0).quantity))
+      }
+    }
+
+    "return message for potentially ceased employment" when {
+      "end date is not available" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false)
+        CeasedIncomeMessages.ceasedIncomeCalculationEstimateMessage(PotentiallyCeased, employment, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1000, 0).quantity))
+      }
+    }
+
+    "return None" when {
+      "employment is live" in {
+        val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+        CeasedIncomeMessages.ceasedIncomeCalculationEstimateMessage(Live, employment, 1000) mustBe None
+      }
+    }
+  }
+
+  "payFreqIncomeCalculationMessage" must {
     "return messages for start date before start of tax year" when {
       "payment frequency is monthly" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(Monthly), 1000, None, 1000) mustBe (
-          (Some(messagesApi("tai.income.calculation.rti.continuous.weekly.emp", MoneyPounds(1000, 2).quantity, "")),
-            Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))))
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationMessage(employment, "emp", Some(Monthly), 1000, None) mustBe
+          Some(messagesApi("tai.income.calculation.rti.continuous.weekly.emp", MoneyPounds(1000, 2).quantity, ""))
       }
 
       "payment frequency is Annually" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(Annually), 1000, None, 1000) mustBe(
-          Some(messagesApi("tai.income.calculation.rti.continuous.annually.emp", MoneyPounds(1000, 2).quantity)),
-          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity)))
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationMessage(employment, "emp", Some(Annually), 1000, None) mustBe
+          Some(messagesApi("tai.income.calculation.rti.continuous.annually.emp", MoneyPounds(1000, 2).quantity))
       }
 
       "payment frequency is OneOff" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(OneOff), 1000, None, 1000) mustBe(
-          Some(messagesApi("tai.income.calculation.rti.oneOff.emp", MoneyPounds(1000, 2).quantity)),
-          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity)))
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationMessage(employment, "emp", Some(OneOff), 1000, None) mustBe
+          Some(messagesApi("tai.income.calculation.rti.oneOff.emp", MoneyPounds(1000, 2).quantity))
       }
 
       "payment frequency is Irregular" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(Irregular), 1000, None, 1000) mustBe(
-          None, Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1000, 0).quantity)))
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationMessage(employment, "emp", Some(Irregular), 1000, None) mustBe None
       }
     }
 
     "return messages for start date after tax of start year" when {
       "payment frequency is monthly" in {
         val employment = Employment("employment", None, TaxYear().start.plusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationMessage(employment, "emp", Some(Monthly), 1000, None) mustBe
+          Some(messagesApi("tai.income.calculation.rti.midYear.weekly", Dates.formatDate(employment.startDate), "", MoneyPounds(1000, 2).quantity))
+      }
 
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(Monthly), 1000, None, 1000) mustBe(
-          Some(messagesApi("tai.income.calculation.rti.midYear.weekly", Dates.formatDate(employment.startDate), "", MoneyPounds(1000, 2).quantity)),
-          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity)))
+      "payment frequency is Annually" in {
+        val employment = Employment("employment", None, TaxYear().start.plusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationMessage(employment, "emp", Some(Annually), 1000, None) mustBe
+          Some(messagesApi("tai.income.calculation.rti.midYear.weekly", Dates.formatDate(employment.startDate), "", MoneyPounds(1000, 2).quantity))
       }
 
       "payment frequency is OneOff" in {
         val employment = Employment("employment", None, TaxYear().start.plusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(OneOff), 1000, None, 1000) mustBe(
-          Some(messagesApi("tai.income.calculation.rti.oneOff.emp", MoneyPounds(1000, 2).quantity)),
-          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity)))
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationMessage(employment, "emp", Some(OneOff), 1000, None) mustBe
+          Some(messagesApi("tai.income.calculation.rti.oneOff.emp", MoneyPounds(1000, 2).quantity))
       }
 
       "payment frequency is Irregular" in {
         val employment = Employment("employment", None, TaxYear().start.plusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, Some(Irregular), 1000, None, 1000) mustBe(
-          None, Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1000, 0).quantity)))
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationMessage(employment, "emp", Some(Irregular), 1000, None) mustBe None
       }
     }
 
     "return none" when {
       "payment frequency is none" in {
         val employment = Employment("employment", None, TaxYear().start.plusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
-
-        YourIncomeCalculationViewModel.getPayFreqMsg(employment, false, None, 1000, None, 1000) mustBe ((None, None))
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationMessage(employment, "emp", None, 1000, None) mustBe None
       }
     }
   }
 
-  "getManualUpdateMsg" must {
+  "payFreqIncomeCalculationEstimateMessage" must {
+    "return messages for start date before start of tax year" when {
+      "payment frequency is monthly" in {
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(Monthly), None, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
+      }
+
+      "payment frequency is Annually" in {
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(Annually), None, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
+      }
+
+      "payment frequency is OneOff" in {
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(OneOff), None, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
+      }
+
+      "payment frequency is Irregular" in {
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(Irregular), None, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1000, 0).quantity))
+      }
+    }
+
+    "return messages for start date after tax of start year" when {
+      "payment frequency is monthly" in {
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(Monthly), None, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
+      }
+
+      "payment frequency is OneOff" in {
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(OneOff), None, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
+      }
+
+      "payment frequency is Irregular" in {
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(Irregular), None, 1000) mustBe
+          Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1000, 0).quantity))
+      }
+    }
+
+    "return none" when {
+      "payment frequency is none" in {
+        PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", None, None, 1000) mustBe None
+      }
+    }
+  }
+
+  "manualUpdateIncomeCalculationMessage" must {
     "return messages for Manual telephone" when {
       "updateNotificationDate and updateActionDate is available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(ManualTelephone), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.phone", Dates.formatDate(taxCodeIncome.updateActionDate.get),
-            Dates.formatDate(taxCodeIncome.updateNotificationDate.get))),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.phone", Dates.formatDate(taxCodeIncome.updateActionDate.get),
+            Dates.formatDate(taxCodeIncome.updateNotificationDate.get)))
       }
 
       "updateNotificationDate is not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(ManualTelephone), None, Some(new LocalDate()))
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.phone.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.phone.withoutDate"))
       }
 
       "updateActionDate is not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(ManualTelephone), Some(new LocalDate().minusWeeks(4)), None)
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.phone.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.phone.withoutDate"))
       }
 
       "updateActionDate and updateNotificationDate are not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(ManualTelephone), None, None)
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.phone.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.phone.withoutDate"))
       }
     }
 
@@ -304,34 +350,30 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "updateNotificationDate and updateActionDate is available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(Letter), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.letter",
-            Dates.formatDate(taxCodeIncome.updateActionDate.get), Dates.formatDate(taxCodeIncome.updateNotificationDate.get))),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.letter",
+            Dates.formatDate(taxCodeIncome.updateActionDate.get), Dates.formatDate(taxCodeIncome.updateNotificationDate.get)))
       }
 
       "updateNotificationDate is not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(Letter), None, Some(new LocalDate()))
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.letter.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.letter.withoutDate"))
       }
 
       "updateActionDate is not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(Letter), Some(new LocalDate().minusWeeks(4)), None)
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.letter.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.letter.withoutDate"))
       }
 
       "updateActionDate and updateNotificationDate are not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(Letter), None, None)
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.letter.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.letter.withoutDate"))
       }
     }
 
@@ -339,77 +381,69 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "updateNotificationDate and updateActionDate is available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(Email), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.email",
-            Dates.formatDate(taxCodeIncome.updateActionDate.get), Dates.formatDate(taxCodeIncome.updateNotificationDate.get))),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.email",
+            Dates.formatDate(taxCodeIncome.updateActionDate.get), Dates.formatDate(taxCodeIncome.updateNotificationDate.get)))
       }
 
       "updateNotificationDate is not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(Email), None, Some(new LocalDate()))
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.email.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.email.withoutDate"))
       }
 
       "updateActionDate is not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(Email), Some(new LocalDate().minusWeeks(4)), None)
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.email.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.email.withoutDate"))
       }
 
       "updateActionDate and updateNotificationDate are not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(Email), None, None)
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.email.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.email.withoutDate"))
       }
     }
 
     "return messages for AgentContact" when {
-      val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
-        Some(AgentContact), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
-      YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-        (Some(messagesApi("tai.income.calculation.agent")),
-          Some(messagesApi("tai.income.calculation.agent.estimate", taxCodeIncome.amount)))
+      "1" in {
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+          Some(AgentContact), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe Some(messagesApi("tai.income.calculation.agent"))
+      }
     }
 
     "return messages for OtherForm" when {
       "updateNotificationDate and updateActionDate is available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(OtherForm), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.informationLetter",
-            Dates.formatDate(taxCodeIncome.updateActionDate.get), Dates.formatDate(taxCodeIncome.updateNotificationDate.get))),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.informationLetter",
+            Dates.formatDate(taxCodeIncome.updateActionDate.get), Dates.formatDate(taxCodeIncome.updateNotificationDate.get)))
       }
 
       "updateNotificationDate is not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(OtherForm), None, Some(new LocalDate()))
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
       }
 
       "updateActionDate is not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(OtherForm), Some(new LocalDate().minusWeeks(4)), None)
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
       }
 
       "updateActionDate and updateNotificationDate are not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(OtherForm), None, None)
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
       }
     }
 
@@ -417,34 +451,30 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "updateNotificationDate and updateActionDate is available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(InformationLetter), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.informationLetter",
-            Dates.formatDate(taxCodeIncome.updateActionDate.get), Dates.formatDate(taxCodeIncome.updateNotificationDate.get))),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.informationLetter",
+            Dates.formatDate(taxCodeIncome.updateActionDate.get), Dates.formatDate(taxCodeIncome.updateNotificationDate.get)))
       }
 
       "updateNotificationDate is not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(InformationLetter), None, Some(new LocalDate()))
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
       }
 
       "updateActionDate is not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(InformationLetter), Some(new LocalDate().minusWeeks(4)), None)
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
       }
 
       "updateActionDate and updateNotificationDate are not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(InformationLetter), None, None)
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
       }
     }
 
@@ -452,18 +482,16 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "updateNotificationDate is available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(Internet), Some(new LocalDate()), None)
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.internet",
-            Dates.formatDate(taxCodeIncome.updateNotificationDate.get))),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.internet",
+            Dates.formatDate(taxCodeIncome.updateNotificationDate.get)))
       }
 
       "updateNotificationDate is not available" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(Internet), None, None)
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          (Some(messagesApi("tai.income.calculation.manual.update.internet.withoutDate")),
-            Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
+          Some(messagesApi("tai.income.calculation.manual.update.internet.withoutDate"))
       }
     }
 
@@ -471,9 +499,24 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       "iabdUpdateSource is none" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           None, None, None)
-        YourIncomeCalculationViewModel.getManualUpdateMsg(taxCodeIncome) mustBe
-          ((None, None))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe None
       }
+    }
+  }
+
+  "manualUpdateIncomeCalculationEstimateMessage" must {
+    "return messages is not agent code" when {
+      val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        Some(ManualTelephone), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
+      ManualUpdateIncomeMessages.manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome) mustBe
+        Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount))
+    }
+
+    "return messages is agent code" when {
+      val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        Some(AgentContact), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
+      ManualUpdateIncomeMessages.manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome) mustBe
+        Some(messagesApi("tai.income.calculation.agent.estimate", taxCodeIncome.amount))
     }
   }
 
@@ -483,7 +526,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false)
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           None, None, None)
-        YourIncomeCalculationViewModel.incomeExplanationMessage(Ceased, employment, true, taxCodeIncome, None, 1000, None) mustBe (
+        YourIncomeCalculationViewModel.incomeExplanationMessage(Ceased, employment, "pension", taxCodeIncome, None, 1000, None) mustBe (
           (Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay")),
             Some(messagesApi("tai.income.calculation.rti.ceased.noFinalPay.estimate", MoneyPounds(1111, 0).quantity))))
       }
@@ -493,9 +536,9 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           None, None, None)
 
-        YourIncomeCalculationViewModel.incomeExplanationMessage(Ceased, employment, true, taxCodeIncome, None, 1000, None) mustBe
+        YourIncomeCalculationViewModel.incomeExplanationMessage(Ceased, employment, "pension", taxCodeIncome, None, 1000, None) mustBe
           (Some(messagesApi("tai.income.calculation.rti.ceased.pension",
-          employment.endDate.map(Dates.formatDate).getOrElse(""))), None)
+            employment.endDate.map(Dates.formatDate).getOrElse(""))), None)
       }
 
       "getManualUpdateMsg returns both messages" in {
@@ -503,7 +546,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           Some(ManualTelephone), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
 
-        YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, true, taxCodeIncome, None, 1000, None) mustBe
+        YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, "pension", taxCodeIncome, None, 1000, None) mustBe
           (Some(messagesApi("tai.income.calculation.manual.update.phone", Dates.formatDate(taxCodeIncome.updateActionDate.get),
             Dates.formatDate(taxCodeIncome.updateNotificationDate.get))),
             Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount)))
@@ -514,7 +557,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           None, Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
 
-        YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, false, taxCodeIncome, None, 1111, None) mustBe
+        YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, "emp", taxCodeIncome, None, 1111, None) mustBe
           (Some(messagesApi("tai.income.calculation.rti.emp.same", Dates.formatDate(TaxYear().start),
             "", MoneyPounds(1111, 0).quantity)), None)
       }
@@ -524,7 +567,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           None, Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
 
-        YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, false, taxCodeIncome, Some(OneOff), 1000, None) mustBe
+        YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, "emp", taxCodeIncome, Some(OneOff), 1000, None) mustBe
           (Some(messagesApi("tai.income.calculation.rti.oneOff.emp", MoneyPounds(1000, 2).quantity)),
             Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1111, 0).quantity)))
       }
@@ -534,7 +577,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           None, Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
 
-        YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, false, taxCodeIncome, Some(Irregular), 1000, None) mustBe
+        YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, "emp", taxCodeIncome, Some(Irregular), 1000, None) mustBe
           (None, Some(messagesApi("tai.income.calculation.rti.irregular.emp", MoneyPounds(1111, 0).quantity)))
       }
     }
@@ -545,7 +588,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
           None, Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
 
-        YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, false, taxCodeIncome, None, 1000, None) mustBe
+        YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, "emp", taxCodeIncome, None, 1000, None) mustBe
           (Some(messagesApi("tai.income.calculation.default.emp", Dates.formatDate(TaxYear().end))),
             Some(messagesApi("tai.income.calculation.default.estimate.emp", taxCodeIncome.amount)))
       }
