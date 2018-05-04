@@ -208,40 +208,22 @@ object CeasedIncomeMessages {
 object ManualUpdateIncomeMessages {
   def manualUpdateIncomeCalculationMessage(taxCodeIncome: TaxCodeIncome)(implicit messages: Messages): Option[String] = {
 
-    (taxCodeIncome.iabdUpdateSource, taxCodeIncome.updateNotificationDate, taxCodeIncome.updateActionDate) match {
-      case (Some(ManualTelephone), Some(notificationDate), Some(actionDate)) =>
-        Some(messages("tai.income.calculation.manual.update.phone", Dates.formatDate(actionDate), Dates.formatDate(notificationDate)))
+    def iadbManualMessages(messageKey: String) = {
+      (taxCodeIncome.updateNotificationDate, taxCodeIncome.updateActionDate) match {
+        case (Some(notificationDate), _) if messageKey == "internet" =>
+          messages("tai.income.calculation.manual.update.internet", Dates.formatDate(notificationDate))
+        case (Some(notificationDate), Some(actionDate)) =>
+          messages(s"tai.income.calculation.manual.update.$messageKey", Dates.formatDate(actionDate), Dates.formatDate(notificationDate))
+        case _ =>
+          messages(s"tai.income.calculation.manual.update.$messageKey.withoutDate")
+      }
+    }
 
-      case (Some(ManualTelephone), _, _) =>
-        Some(messages("tai.income.calculation.manual.update.phone.withoutDate"))
-
-      case (Some(Letter), Some(notificationDate), Some(actionDate)) =>
-        Some(messages("tai.income.calculation.manual.update.letter", Dates.formatDate(actionDate), Dates.formatDate(notificationDate)))
-
-      case (Some(Letter), _, _) =>
-        Some(messages("tai.income.calculation.manual.update.letter.withoutDate"))
-
-      case (Some(Email), Some(notificationDate), Some(actionDate)) =>
-        Some(messages("tai.income.calculation.manual.update.email", Dates.formatDate(actionDate), Dates.formatDate(notificationDate)))
-
-      case (Some(Email), _, _) =>
-        Some(messages("tai.income.calculation.manual.update.email.withoutDate"))
-
-      case (Some(AgentContact), _, _) => Some(messages("tai.income.calculation.agent"))
-
-      case (Some(OtherForm) | Some(InformationLetter), Some(notificationDate), Some(actionDate)) =>
-        Some(messages("tai.income.calculation.manual.update.informationLetter", Dates.formatDate(actionDate), Dates.formatDate(notificationDate)))
-
-      case (Some(OtherForm) | Some(InformationLetter), _, _) =>
-        Some(messages("tai.income.calculation.manual.update.informationLetter.withoutDate"))
-
-      case (Some(Internet), Some(notificationDate), _) =>
-        Some(messages("tai.income.calculation.manual.update.internet", Dates.formatDate(notificationDate)))
-
-      case (Some(Internet), _, _) =>
-        Some(messages("tai.income.calculation.manual.update.internet.withoutDate"))
-
-      case _ => None
+    taxCodeIncome.iabdUpdateSource collect {
+      case AgentContact => messages("tai.income.calculation.agent")
+      case ManualTelephone => iadbManualMessages("phone")
+      case OtherForm | InformationLetter => iadbManualMessages("informationLetter")
+      case Letter | Email | Internet => iadbManualMessages(taxCodeIncome.iabdUpdateSource.get.toString.toLowerCase)
     }
   }
 

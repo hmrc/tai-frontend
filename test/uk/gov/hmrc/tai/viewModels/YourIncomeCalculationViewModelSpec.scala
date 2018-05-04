@@ -271,7 +271,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     "return messages for start date before start of tax year" when {
       "payment frequency is monthly" in {
         PaymentFrequencyIncomeMessages.payFreqIncomeCalculationEstimateMessage("emp", Some(Monthly), None, 1000) mustBe
-            Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
+          Some(messagesApi("tai.income.calculation.rti.emp.estimate", MoneyPounds(1000, 0).quantity))
       }
 
       "payment frequency is Annually" in {
@@ -409,10 +409,11 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     }
 
     "return messages for AgentContact" when {
-      val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
-        Some(AgentContact), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
-      ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
-        Some(messagesApi("tai.income.calculation.agent"))
+      "1" in {
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+          Some(AgentContact), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
+        ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe Some(messagesApi("tai.income.calculation.agent"))
+      }
     }
 
     "return messages for OtherForm" when {
