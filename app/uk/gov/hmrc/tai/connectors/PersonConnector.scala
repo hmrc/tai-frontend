@@ -41,7 +41,7 @@ trait PersonConnector {
         TaiSuccessResponseWithPayload((json \ "data").as[Person])
       ) recover {
         case e: Exception =>
-          Logger.warn(s"Couldn't retrieve tax payer details for $nino with exception:${e.getMessage}", e)
+          Logger.warn(s"Couldn't retrieve person details for $nino with exception:${e.getMessage}", e)
           TaiNotFoundResponse(e.getMessage)
       }
   }
