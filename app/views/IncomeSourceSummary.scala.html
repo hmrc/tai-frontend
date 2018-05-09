@@ -75,14 +75,14 @@
         <p  aria-hidden="true">
             @Link.toInternalPage(
                 id=Some("updatePension"),
-                url=ApplicationConfig.incomeFromEmploymentPensionLinkUrl,
+                url=controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension(model.empId).url,
                 value=Some(messages("tai.pension.income.details.updateLinkText"))).toHtml
         </p>
         <p class="visuallyhidden">
         @Link.toInternalPage(
             id=Some("updatePensionScreenReader"),
-            url=ApplicationConfig.incomeFromEmploymentPensionLinkUrl,
-            value=Some(messages("tai.pension.income.details.updateLinkText.screenReader"))).toHtml
+            url=controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension(model.empId).url,
+            value=Some(messages("tai.pension.income.details.updateLinkText.screenReader", model.empOrPensionName))).toHtml
         </p>
     }else {
         <p  aria-hidden="true">
