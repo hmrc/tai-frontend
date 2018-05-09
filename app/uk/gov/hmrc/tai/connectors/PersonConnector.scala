@@ -32,7 +32,7 @@ trait PersonConnector {
 
   def httpHandler: HttpHandler
 
-  def personUrl(nino: String): String = s"$serviceUrl/$nino/person"
+  def personUrl(nino: String): String = s"$serviceUrl/tai/$nino/person"
 
   def person(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
 
