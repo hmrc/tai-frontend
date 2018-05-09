@@ -195,11 +195,18 @@ trait EndEmploymentController extends TaiBaseController
         implicit request =>
           val nino = Nino(user.getNino)
           ServiceCheckLite.personDetailsCheck {
-            employmentService.employment(nino, employmentId).map {
-              case Some(employment) =>
+            for{
+              employment <- employmentService.employment(nino, employmentId)
+              cache <- journeyCacheService.currentValueAsDate(EndEmployment_EndDateKey)
+            }yield (employment, cache) match{
+              case (Some(employment),Some(cache)) =>
+                Ok(views.html.employments.endEmployment(EmploymentEndDateForm(employment.name).form.fill(cache), EmploymentViewModel(employment.name, employmentId)))
+              case (Some(employment),None) =>
                 Ok(views.html.employments.endEmployment(EmploymentEndDateForm(employment.name).form, EmploymentViewModel(employment.name, employmentId)))
               case _ => throw new RuntimeException("No employment found")
             }
+
+
           }
   }
 
@@ -235,8 +242,14 @@ trait EndEmploymentController extends TaiBaseController
       implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey) map { employmentId =>
-              Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel(employmentId), YesNoTextEntryForm.form()))
+            for {
+              employmentId <- journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey)
+              telephoneNumberQuestionCache <- journeyCacheService.currentValue(EndEmployment_TelephoneQuestionKey)
+              telephoneNumberCache <- journeyCacheService.currentValue(EndEmployment_TelephoneNumberKey)
+            } yield (employmentId, telephoneNumberQuestionCache, telephoneNumberCache) match {
+              case (employmentId, None, None) => Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel(employmentId), YesNoTextEntryForm.form()))
+              case (employmentId, telephoneNumberQuestionCache, telephoneNumberCache) => Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel(employmentId), YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneNumberQuestionCache, telephoneNumberCache))))
+
             }
           }
   }

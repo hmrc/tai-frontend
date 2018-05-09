@@ -293,6 +293,7 @@ class EndEmploymentControllerSpec
       val sut = createSUT
       Await.result(sut.endEmploymentPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
       verify(sut.employmentService, times(1)).employment(any(), any())(any())
+      verify(sut.journeyCacheService, times(1)).currentValueAsDate(any())(any())
     }
 
     "redirect to GG login" when {
@@ -441,9 +442,24 @@ class EndEmploymentControllerSpec
 
   "add telephone number" must {
     "show the contact by telephone page" when {
+      "the request has an authorised session and there is cached data" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(EndEmployment_EmploymentIdKey))(any())).thenReturn(Future.successful(0))
+        when(sut.journeyCacheService.currentValue(Matchers.eq(EndEmployment_TelephoneQuestionKey))(any())).thenReturn(Future.successful(Some("yes")))
+        when(sut.journeyCacheService.currentValue(Matchers.eq(EndEmployment_TelephoneNumberKey))(any())).thenReturn(Future.successful(Some("12121")))
+
+        val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+      }
+
       "the request has an authorised session" in {
         val sut = createSUT
         when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(EndEmployment_EmploymentIdKey))(any())).thenReturn(Future.successful(0))
+        when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
+        when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -594,6 +610,9 @@ class EndEmploymentControllerSpec
 
     when(employmentService.employment(any(), any())(any()))
       .thenReturn(Future.successful(Some(Employment(employerName, None, new LocalDate(), None, Nil, "", "", 1, None, false))))
+
+    when(journeyCacheService.currentValueAsDate(any())(any())).thenReturn(Future.successful(Some(new LocalDate("2017-9-9"))))
+    when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(Some(("Test Value"))))
 
     when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
   }
