@@ -49,10 +49,6 @@ class TaiUserSpec extends PlaySpec with MockitoSugar {
       "return UTR as an empty String" in {
         taiUser.getUTR mustBe ""
       }
-
-      "return version number as 99" in {
-        taiUser.getVersion mustBe 99
-      }
     }
 
   private val user = UserBuilder()

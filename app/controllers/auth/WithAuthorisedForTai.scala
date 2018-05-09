@@ -128,6 +128,4 @@ case class TaiUser(authContext: AuthContext, taiRoot: TaiRoot){
 
     def getUTR = authContext.principal.accounts.sa.map(sa => sa.utr.utr).getOrElse("")
 
-    def getVersion = taiRoot.version
-
 }
