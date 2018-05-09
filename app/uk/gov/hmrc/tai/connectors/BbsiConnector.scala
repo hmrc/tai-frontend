@@ -81,9 +81,10 @@ trait BbsiConnector {
   def bbsiSavingsInvestmentsUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/tax-account/income/savings-investments/untaxed-interest"
 
 }
-
+// $COVERAGE-OFF$
 object BbsiConnector extends BbsiConnector with ServicesConfig {
 
   override def serviceUrl: String = baseUrl("tai")
   override def httpHandler: HttpHandler = HttpHandler
 }
+// $COVERAGE-ON$

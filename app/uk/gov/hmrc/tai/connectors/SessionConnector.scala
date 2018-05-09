@@ -30,7 +30,8 @@ trait SessionConnector extends TaiUrls with TaiConfig {
   }
 
 }
-
+// $COVERAGE-OFF$
 object SessionConnector extends SessionConnector {
   override val httpHandler: HttpHandler = HttpHandler
 }
+// $COVERAGE-ON$

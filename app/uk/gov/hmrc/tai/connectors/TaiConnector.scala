@@ -47,9 +47,10 @@ trait TaiConnector extends RawResponseReads{
     http.POST(postUrl, payDetails).map(responseTo[CalculatedPay](postUrl))
   }
 }
-
+// $COVERAGE-OFF$
 object TaiConnector extends TaiConnector with ServicesConfig {
 
   lazy val serviceUrl = baseUrl("tai")
   override def http = WSHttp
 }
+// $COVERAGE-ON$
