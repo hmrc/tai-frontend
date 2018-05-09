@@ -35,10 +35,7 @@ trait CodingComponentService {
     taxAccountConnector.codingComponents(nino, year) map {
       case TaiSuccessResponseWithPayload(codingComponents: Seq[CodingComponent]) => filterOutZeroAmountsComponents(codingComponents)
       case TaiTaxAccountFailureResponse(e) => throw new RuntimeException(e)
-    }recover {
-      case e: Exception =>
-       throw new RuntimeException("Couldn't retrieve coding components")
-
+      case _ => throw new RuntimeException("could not fetch coding components")
     }
   }
 

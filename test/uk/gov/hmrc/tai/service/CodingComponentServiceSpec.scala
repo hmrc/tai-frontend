@@ -25,7 +25,7 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
@@ -60,29 +60,29 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
     "return Tai Failure response" when {
       "error is received from TAI" in {
         val sut = createSut
-        when(sut.taxAccountConnector.codingComponents(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("error description")))
+        when(sut.taxAccountConnector.codingComponents(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("could not fetch coding components")))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.taxFreeAmountComponents(generateNino, currrentTaxYear), 5 seconds)
-        ex.getMessage must include("Couldn't retrieve coding components")
+        ex.getMessage must include("could not fetch coding components")
       }
     }
 
     "return exception" when {
       "error is received from TAI" in {
         val sut = createSut
-        when(sut.taxAccountConnector.codingComponents(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("error description")))
+        when(sut.taxAccountConnector.codingComponents(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("could not fetch coding components")))
 
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.taxFreeAmountComponents(generateNino, currrentTaxYear), 5 seconds)
-        ex.getMessage must include("Couldn't retrieve coding components")
+        ex.getMessage must include("could not fetch coding components")
       }
       "other error is received from TAI" in {
         val sut = createSut
-        when(sut.taxAccountConnector.codingComponents(any(), any())(any())).thenReturn(Future.failed(new RuntimeException("error description")))
+        when(sut.taxAccountConnector.codingComponents(any(), any())(any())).thenReturn(Future.successful(TaiNotFoundResponse("error description")))
 
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.taxFreeAmountComponents(generateNino, currrentTaxYear), 5 seconds)
-        ex.getMessage must include("Couldn't retrieve coding components")
+        ex.getMessage must include("could not fetch coding components")
       }
     }
   }
