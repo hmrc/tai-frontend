@@ -27,6 +27,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.service.{BbsiService, PersonService}
 import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
@@ -37,6 +38,7 @@ import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.util.BankAccountDecisionConstants
 
 import scala.concurrent.Future
+import scala.util.Random
 
 class BbsiControllerSpec extends PlaySpec
   with MockitoSugar
@@ -262,6 +264,8 @@ class BbsiControllerSpec extends PlaySpec
 
   def createSUT = new SUT
 
+  val nino = new Generator(new Random).nextNino
+
   val emptyBankAccount: BankAccount = BankAccount(1, None, None, None, 123.4, None)
   val bankAccount: BankAccount = BankAccount(0, Some("0"), Some("0"), Some("TestBank"), 0, None)
 
@@ -276,6 +280,6 @@ class BbsiControllerSpec extends PlaySpec
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
   }
 }

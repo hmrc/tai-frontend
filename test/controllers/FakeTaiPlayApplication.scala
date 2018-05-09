@@ -16,6 +16,7 @@
 
 package controllers
 
+import org.joda.time.LocalDate
 import org.scalatest.Suite
 import org.scalatest.concurrent.PatienceConfiguration
 import org.scalatestplus.play.OneServerPerSuite
@@ -24,6 +25,7 @@ import play.api.Application
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.domain.{Address, Person}
 
 trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguration  {
   this: Suite =>
@@ -54,5 +56,7 @@ trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguratio
     .setLevel(ch.qos.logback.classic.Level.WARN)
 
   def fakeTaiRoot(nino:Nino) = TaiRoot(nino.nino, 0, "Mr", "Name", None, "Surname", "Name Surname", false, Some(false))
+
+  def fakePerson(nino:Nino) = Person(nino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), false, false)
 
 }

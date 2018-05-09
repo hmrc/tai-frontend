@@ -77,7 +77,7 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
 
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
+    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(
       Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino))))

@@ -114,7 +114,7 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
     override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
     when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
       Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](

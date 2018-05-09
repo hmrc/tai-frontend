@@ -71,7 +71,7 @@ trait ErrorPagesHandler {
   }
 
   def error5xxFromNps(pageBody: String)
-                     (implicit request: Request[_], user: TaiUser, messages: Messages)= {
+                     (implicit request: Request[_], messages: Messages)= {
     views.html.error_template_noauth(
       Messages("global.error.InternalServerError500.title"),
       Messages("tai.technical.error.heading"),

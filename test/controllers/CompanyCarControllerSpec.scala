@@ -32,8 +32,8 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{JourneyCacheService, SessionService, PersonService}
-import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, SessionService}
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, SessionKeys}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
@@ -42,6 +42,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.domain.{Address, Person}
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
 
 import scala.concurrent.Future
@@ -381,7 +382,8 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
   val fakeAuthority = AuthBuilder.createFakeAuthority(fakeNino.nino)
 
-  val fakeTaiRoot = TaiRoot(fakeNino.nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", false, Some(false))
+  val fakePerson = Person(fakeNino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), false, false)
+
 
   def createSUT(isCompanyCarForceRedirectEnabled: Boolean = false) = new SUT(isCompanyCarForceRedirectEnabled)
 
@@ -399,7 +401,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
     override val companyCarForceRedirectEnabled: Boolean = isCompanyCarForceRedirectEnabled
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
+    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson))
 
     val dateForm = DateForm(Messages("tai.companyCar.endDate.blank"))
   }

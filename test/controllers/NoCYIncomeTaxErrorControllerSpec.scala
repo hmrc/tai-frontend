@@ -138,7 +138,7 @@ class NoCYIncomeTaxErrorControllerSpec
     val ad = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
+    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
 
     val sampleEmployment = Seq(Employment("empName", None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false))
 

@@ -30,6 +30,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain.BankAccount
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
@@ -44,6 +45,7 @@ import uk.gov.hmrc.tai.util.{BankAccountClosingInterestConstants, FormValuesCons
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.util.Random
 
 class BbsiCloseAccountControllerSpec extends PlaySpec
   with FakeTaiPlayApplication
@@ -478,6 +480,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
     }
   }
 
+  private val nino = new Generator(new Random).nextNino
   private val bankAccountId = 1
   private val bankAccount1 = BankAccount(bankAccountId, Some("****5678"), Some("123456"), Some("Test Bank account name"), 100, None)
 
@@ -498,6 +501,6 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
   }
 }

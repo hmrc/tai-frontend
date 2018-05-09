@@ -54,6 +54,6 @@ class TaiUserSpec extends PlaySpec with MockitoSugar {
   private val user = UserBuilder()
   private val userWithAttorney = UserBuilder.createUserWithAttorney("Test Name", Link("",""))
 
-  private val taiUser = TaiUser(user.authContext, user.taiRoot)
-  private val taiUserWithAttorney = TaiUser(userWithAttorney.authContext, userWithAttorney.taiRoot)
+  private val taiUser = TaiUser(user.authContext, user.person)
+  private val taiUserWithAttorney = TaiUser(userWithAttorney.authContext, userWithAttorney.person)
 }

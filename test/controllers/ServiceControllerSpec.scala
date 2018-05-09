@@ -30,7 +30,7 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.{JsArray, JsValue}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.AuthContext
@@ -118,7 +118,7 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
     override val userDetailsConnector = mock[UserDetailsConnector]
 
     val taiRoot = TaiRoot(nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", false, Some(false))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
+    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(Nino(nino))))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(
       Future.successful(Some(AuthBuilder.createFakeAuthority(nino))))

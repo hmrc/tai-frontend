@@ -32,12 +32,14 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.PersonService
 import play.api.test.Helpers.{status, _}
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.util.TaiConstants
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.Future
+import scala.util.Random
 
 class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -96,6 +98,8 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
     }
   }
 
+  private val nino = new Generator(new Random).nextNino
+
   private class SUT(welshEnabled: Boolean = true) extends TaiLanguageController {
     override val personService: PersonService = mock[PersonService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
@@ -106,7 +110,7 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
 
     val authority = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(authority)
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
   }
 
 }

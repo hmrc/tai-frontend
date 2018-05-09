@@ -28,6 +28,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.{LocalTemplateRenderer, UserDetailsConnector}
 import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.TaiConstants
 
@@ -65,7 +66,7 @@ trait ServiceController extends TaiBaseController
           getGateKeeper(Nino(user.getNino.toString))
   }
 
-  def getGateKeeper(nino: Nino)(implicit request: Request[AnyContent], user: TaiUser, taiRoot: TaiRoot): Future[Result] = {
+  def getGateKeeper(nino: Nino)(implicit request: Request[AnyContent], user: TaiUser, person: Person): Future[Result] = {
     Future.successful(Ok(views.html.manualCorrespondence()))
   } recoverWith handleErrorResponse("getServiceUnavailable", nino)
 

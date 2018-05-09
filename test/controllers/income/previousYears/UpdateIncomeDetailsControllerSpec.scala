@@ -339,7 +339,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
     override val auditService: AuditService = mock[AuditService]
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
   }
 
 }

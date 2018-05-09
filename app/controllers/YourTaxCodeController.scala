@@ -49,7 +49,7 @@ trait YourTaxCodeController extends TaiBaseController
       implicit taiRoot =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            val nino = Nino(user.taiRoot.nino)
+            val nino = user.person.nino
 
             for {
               TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService.taxCodeIncomes(nino, TaxYear())

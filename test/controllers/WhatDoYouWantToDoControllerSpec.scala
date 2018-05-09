@@ -92,9 +92,10 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
     "redirect to mci page" when {
       "mci indicator is true" in {
+        val person = Person(nino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), false, true)
         val testController = createSUT()
-        when(testController.personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(TaiRoot(nino.nino, 0, "Mr", "Name", None, "Surname", "Name Surname", true, Some(false))))
+        when(testController.personService.personDetailsNew(any())(any()))
+          .thenReturn(Future.successful(person))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -122,9 +123,10 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       }
 
       "the deceased indicator is set on the retrieved TaiRoot" in {
+        val person = Person(nino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), true, false)
         val testController = createSUT()
-        when(testController.personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(TaiRoot(nino.nino, 0, "Mr", "Name", None, "Surname", "Name Surname", false, Some(true))))
+        when(testController.personService.personDetailsNew(any())(any()))
+          .thenReturn(Future.successful(person))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -133,9 +135,10 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       }
 
       "the deceased AND mci indicators are set on the retrived TaiRoot" in {
+        val person = Person(nino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), true, true)
         val testController = createSUT()
-        when(testController.personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(TaiRoot(nino.nino, 0, "Mr", "Name", None, "Surname", "Name Surname", true, Some(true))))
+        when(testController.personService.personDetailsNew(any())(any()))
+          .thenReturn(Future.successful(person))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -514,7 +517,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any())(any())).thenReturn(Future.successful(AuditResult.Success))
 
     when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(

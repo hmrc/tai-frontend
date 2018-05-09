@@ -26,6 +26,7 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.model.{TaiRoot, TaxYear}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService}
@@ -51,7 +52,7 @@ trait TaxFreeAmountController extends TaiBaseController
           }
   }
 
-  private def taxFreeAmount()(implicit user: TaiUser, request: Request[AnyContent], taiRoot: TaiRoot) = {
+  private def taxFreeAmount()(implicit user: TaiUser, request: Request[AnyContent], person: Person) = {
     val nino = Nino(user.getNino)
     for {
       codingComponents <- codingComponentService.taxFreeAmountComponents(nino, TaxYear())

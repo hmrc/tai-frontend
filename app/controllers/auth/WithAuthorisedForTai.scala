@@ -17,7 +17,8 @@
 package controllers.auth
 
 import controllers.ErrorPagesHandler
-import play.api.mvc.Results._
+import play.Logger
+import play.api.mvc.Results.{InternalServerError, _}
 import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.HeaderCarrierConverter.fromHeadersAndSession
@@ -28,6 +29,10 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.service.PersonService
 import play.api.Play.current
+import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits.applicationMessages
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.tai.model.domain.{Address, Person}
 import uk.gov.hmrc.tai.util.ViewModelHelper
 
 import scala.concurrent.Future
@@ -77,7 +82,7 @@ trait WithAuthorisedForTaiLite extends DelegationAwareActions { this: ErrorPages
   private type PlayRequest = (Request[AnyContent] => Result)
   private type AsyncPlayRequest = (Request[AnyContent] => Future[Result])
   private type TaiUserRequest = TaiUser => PlayRequest
-  private type AsyncTaiUserRequest = TaiUser => TaiRoot => AsyncPlayRequest
+  private type AsyncTaiUserRequest = TaiUser => Person => AsyncPlayRequest
 
   implicit private def createHeaderCarrier(implicit request: Request[_]): HeaderCarrier =
     fromHeadersAndSession(request.headers,Some(request.session))
@@ -96,24 +101,25 @@ trait WithAuthorisedForTaiLite extends DelegationAwareActions { this: ErrorPages
     private def resolveLoggedInTaiUser(body: AsyncTaiUserRequest, authContext: AuthContext) (implicit request: Request[AnyContent]): Future[Result] = {
       val taiAccount = authContext.principal.accounts.paye.getOrElse(throw new IllegalArgumentException("Cannot find tai user authority"))
       for {
-        taiRoot <- personService.personDetails(taiAccount.link)
-        taiUser <- getTaiUser(authContext, taiRoot)
-        result <- body(taiUser)(taiRoot)(request)
+        person <- personService.personDetailsNew(taiAccount.nino)
+        taiUser <- getTaiUser(authContext, person)
+        result <- body(taiUser)(person)(request)
       } yield result
     }.recoverWith{
-      implicit val user = TaiUser(authContext,TaiRoot())
-      implicit val recoveryLocation:RecoveryLocation = classOf[AuthorisedByTai]
-      implicit val messages = play.api.i18n.Messages.Implicits.applicationMessages
-      hodAnyErrorResult
+      case e => {
+        val ninoString = authContext.principal.accounts.paye.map(paye => paye.nino.nino).getOrElse("")
+        Logger.warn(s"<Exception returned during user resolution for nino ${ninoString} @${classOf[AuthorisedByTai].getName} with exception: ${e.getClass()}", e)
+        Future.successful(InternalServerError(error5xxFromNps(Messages("tai.technical.error.message"))))
+      }
     }
 
-    def getTaiUser(authContext: AuthContext, taiRoot: TaiRoot)(implicit request: Request[_]): Future[TaiUser] = {
-      Future.successful(TaiUser(authContext, taiRoot).getAuthContext(taiRoot.firstName + " " + taiRoot.surname))
+    def getTaiUser(authContext: AuthContext, person: Person)(implicit request: Request[_]): Future[TaiUser] = {
+      Future.successful(TaiUser(authContext, person).getAuthContext(person.firstName + " " + person.surname))
     }
   }
 }
 
-case class TaiUser(authContext: AuthContext, taiRoot: TaiRoot){
+case class TaiUser(authContext: AuthContext, person: Person){
     def getAuthContext(name: String) = if (!authContext.isDelegating){
        this.copy(authContext = authContext.copy(principal = authContext.principal.copy(Some(name))))
     } else { this }

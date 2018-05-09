@@ -18,6 +18,7 @@ package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -28,7 +29,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerException, NotFoundException}
-import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.{Address, Employment, Person}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
@@ -124,7 +125,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
     "redirect to mci page when mci indicator is true" in {
       val testController = createTestController()
-      when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRootMci))
+      when(testController.personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePersonMci))
 
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -226,8 +227,8 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
   val fakeAuthority = AuthBuilder.createFakeAuthority(fakeNino.nino)
 
-  val fakeTaiRoot = TaiRoot(fakeNino.nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", false, Some(false))
-  val fakeTaiRootMci = TaiRoot(fakeNino.nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", true, Some(false))
+  val fakePerson = Person(fakeNino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), false, false)
+  val fakePersonMci = Person(fakeNino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), false, true)
 
   def createTestController(employments: Seq[Employment] = Nil, previousYears: Int = 3) = new PayeControllerHistoricTest(employments, previousYears)
 
@@ -244,7 +245,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
+    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson))
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
   }
 

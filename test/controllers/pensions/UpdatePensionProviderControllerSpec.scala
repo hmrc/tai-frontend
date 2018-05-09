@@ -354,7 +354,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
     override val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
     override val pensionProviderService: PensionProviderService = mock[PensionProviderService]
   }

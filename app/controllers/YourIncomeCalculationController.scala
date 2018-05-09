@@ -28,6 +28,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.model.{TaiRoot, TaxYear}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
@@ -65,7 +66,7 @@ trait YourIncomeCalculationController extends TaiBaseController
           }
   }
 
-  private def incomeCalculationPage(empId: Int, printPage: Boolean)(implicit request: Request[AnyContent], user: TaiUser, taiRoot: TaiRoot, messages: Messages) = {
+  private def incomeCalculationPage(empId: Int, printPage: Boolean)(implicit request: Request[AnyContent], user: TaiUser, person: Person, messages: Messages) = {
     val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
     val employmentFuture = employmentService.employment(Nino(user.getNino), empId)
 
@@ -117,7 +118,7 @@ trait YourIncomeCalculationController extends TaiBaseController
   }
 
   private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean = false, year: TaxYear)
-                                   (implicit request: Request[AnyContent], user: TaiUser, taiRoot: TaiRoot, messages: Messages): Future[Result] = {
+                                   (implicit request: Request[AnyContent], user: TaiUser, person: Person, messages: Messages): Future[Result] = {
     for {
         employment <- employmentService.employments(nino, year)
       } yield {
