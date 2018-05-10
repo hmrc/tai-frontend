@@ -131,7 +131,7 @@ trait YourIncomeCalculationController extends TaiBaseController
     }
 
 }
-
+// $COVERAGE-OFF$
 object YourIncomeCalculationController extends YourIncomeCalculationController with AuthenticationConnectors {
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
@@ -140,3 +140,4 @@ object YourIncomeCalculationController extends YourIncomeCalculationController w
   override val taxAccountService: TaxAccountService = TaxAccountService
   override val employmentService: EmploymentService = EmploymentService
 }
+// $COVERAGE-ON$

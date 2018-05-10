@@ -64,7 +64,7 @@ trait TaxFreeAmountController extends TaiBaseController
     }
   }
 }
-
+// $COVERAGE-OFF$
 object TaxFreeAmountController extends TaxFreeAmountController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override val codingComponentService: CodingComponentService = CodingComponentService
@@ -75,4 +75,5 @@ object TaxFreeAmountController extends TaxFreeAmountController with Authenticati
 
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$
 

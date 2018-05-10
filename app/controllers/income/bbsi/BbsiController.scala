@@ -140,7 +140,7 @@ trait BbsiController extends TaiBaseController
           )
   }
 }
-
+// $COVERAGE-OFF$
 object BbsiController extends BbsiController {
 
   override val personService = PersonService
@@ -151,3 +151,4 @@ object BbsiController extends BbsiController {
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$

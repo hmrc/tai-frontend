@@ -234,7 +234,7 @@ trait UpdatePensionProviderController extends TaiBaseController
           }
   }
 }
-
+// $COVERAGE-OFF$
 object UpdatePensionProviderController extends UpdatePensionProviderController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override implicit val templateRenderer = LocalTemplateRenderer
@@ -244,4 +244,5 @@ object UpdatePensionProviderController extends UpdatePensionProviderController w
   override val successfulJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
   override val pensionProviderService: PensionProviderService = PensionProviderService
 }
+// $COVERAGE-ON$
 

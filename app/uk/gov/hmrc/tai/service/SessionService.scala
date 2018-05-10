@@ -30,7 +30,8 @@ trait SessionService {
   }
 
 }
-
+// $COVERAGE-OFF$
 object SessionService extends SessionService {
   override val sessionConnector = SessionConnector
 }
+// $COVERAGE-ON$

@@ -41,9 +41,10 @@ trait DeceasedController extends TaiBaseController
       Future.successful(Ok(views.html.deceased_helpline()))
   }
 }
-
+// $COVERAGE-OFF$
 object DeceasedController extends DeceasedController with AuthenticationConnectors {
   override val personService = PersonService
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$

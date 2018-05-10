@@ -465,6 +465,24 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         val doc = Jsoup.parse(contentAsString(result))
         doc.select("fieldset input").size mustBe 2
       }
+      "no value is present in taxYears and cy plus is turned off" in {
+        val testController = createSUT(isCyPlusOneEnabled = false)
+
+        val request = FakeRequest("POST", "").withFormUrlEncodedBody("taxYears" -> "").withSession(
+          SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
+        )
+
+        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+          TaiNotFoundResponse("Not found")
+        ))
+
+        val result = testController.handleWhatDoYouWantToDoPage()(request)
+
+        status(result) mustBe BAD_REQUEST
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.select("fieldset input").size mustBe 2
+      }
     }
   }
 

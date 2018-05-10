@@ -62,7 +62,7 @@ trait BbsiRemoveAccountController extends TaiBaseController
   }
 
 }
-
+// $COVERAGE-OFF$
 object BbsiRemoveAccountController extends BbsiRemoveAccountController {
   override val personService = PersonService
   override val bbsiService = BbsiService
@@ -71,3 +71,4 @@ object BbsiRemoveAccountController extends BbsiRemoveAccountController {
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$

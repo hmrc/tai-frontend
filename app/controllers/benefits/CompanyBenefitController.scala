@@ -124,7 +124,7 @@ trait CompanyBenefitController extends TaiBaseController
           )
   }
 }
-
+// $COVERAGE-OFF$
 object CompanyBenefitController extends CompanyBenefitController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override val auditService: AuditService = AuditService
@@ -134,5 +134,6 @@ object CompanyBenefitController extends CompanyBenefitController with Authentica
   override val journeyCacheService: JourneyCacheService = JourneyCacheService(EndCompanyBenefit_JourneyKey)
   override val trackingJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
 }
+// $COVERAGE-ON$
 
 

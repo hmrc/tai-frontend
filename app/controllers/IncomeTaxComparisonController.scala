@@ -101,7 +101,7 @@ trait IncomeTaxComparisonController extends TaiBaseController
   }
 
 }
-
+// $COVERAGE-OFF$
 object IncomeTaxComparisonController extends IncomeTaxComparisonController with AuthenticationConnectors {
   override val personService = PersonService
   override val taxAccountService = TaxAccountService
@@ -112,5 +112,5 @@ object IncomeTaxComparisonController extends IncomeTaxComparisonController with 
 
   override implicit def partialRetriever = TaiHtmlPartialRetriever
 
-
 }
+// $COVERAGE-ON$

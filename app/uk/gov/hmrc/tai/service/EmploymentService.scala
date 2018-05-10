@@ -63,8 +63,9 @@ trait EmploymentService {
      }
   }
 }
-
+// $COVERAGE-OFF$
 object EmploymentService extends EmploymentService{
   override val connector: EmploymentsConnector = EmploymentsConnector
 }
+// $COVERAGE-ON$
 

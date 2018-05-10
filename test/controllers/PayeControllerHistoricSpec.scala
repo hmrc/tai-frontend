@@ -132,6 +132,15 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
       }
       redirectUrl mustBe "/check-income-tax/tax-estimate-unavailable"
     }
+    "redirect to deceased page when deceased indicator is true" in {
+      val testController = createTestController()
+      when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(person.copy(isDeceased=true)))
+
+      val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some("/check-income-tax/deceased")
+    }
 
     "display an error page" when {
 

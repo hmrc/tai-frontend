@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
@@ -49,3 +50,4 @@ trait CodingComponentService {
 object CodingComponentService extends CodingComponentService {
   override val taxAccountConnector: TaxAccountConnector = TaxAccountConnector
 }
+

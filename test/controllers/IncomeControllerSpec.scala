@@ -180,6 +180,23 @@ class IncomeControllerSpec extends PlaySpec
 
         status(result) mustBe OK
       }
+
+      "pay to date cannot be determined, due to no annual account records on the income source" in {
+        val sut = createSUT
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(Nil)
+        when(sut.journeyCacheService.mandatoryValues(any())(any())).
+          thenReturn(Future.successful(Seq("1", "200")))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(sut.employmentService.employment(any(), any())(any())).
+          thenReturn(Future.successful(Some(employment)))
+
+        val result = sut.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+      }
     }
 
     "return Internal Server Error" when {

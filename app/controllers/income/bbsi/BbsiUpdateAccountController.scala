@@ -112,7 +112,7 @@ trait BbsiUpdateAccountController extends TaiBaseController
   }
 
 }
-
+// $COVERAGE-OFF$
 object BbsiUpdateAccountController extends BbsiUpdateAccountController {
 
   override val personService = PersonService
@@ -126,3 +126,4 @@ object BbsiUpdateAccountController extends BbsiUpdateAccountController {
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$

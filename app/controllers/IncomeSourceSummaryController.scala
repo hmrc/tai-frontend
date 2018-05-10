@@ -65,7 +65,7 @@ trait IncomeSourceSummaryController extends TaiBaseController
           }
   }
 }
-
+// $COVERAGE-OFF$
 object IncomeSourceSummaryController extends IncomeSourceSummaryController with AuthenticationConnectors {
   override val personService = PersonService
   override val taxAccountService: TaxAccountService = TaxAccountService
@@ -76,3 +76,4 @@ object IncomeSourceSummaryController extends IncomeSourceSummaryController with 
 
   override implicit def partialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$

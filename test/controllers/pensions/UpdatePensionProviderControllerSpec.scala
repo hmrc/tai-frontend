@@ -176,6 +176,41 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       }
     }
   }
+  "submitUpdateEmploymentDetails" must {
+
+    "redirect to the addTelephoneNumber page" when {
+      "the form submission is valid" in {
+
+        val sut = createSUT
+
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+
+        val result = sut.submitWhatDoYouWantToTellUs(RequestBuilder.buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(("pensionDetails", "test details")))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url
+      }
+    }
+
+    "return Bad Request" when {
+      "the form submission is invalid" in {
+
+        val sut = createSUT
+
+        val pensionDetailsFormData = ("pensionDetails", "")
+
+        when(sut.journeyCacheService.mandatoryValue(any())(any())).thenReturn(Future.successful("Test"))
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+
+        val result = sut.submitWhatDoYouWantToTellUs(RequestBuilder.buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(pensionDetailsFormData))
+
+        status(result) mustBe BAD_REQUEST
+      }
+    }
+
+  }
 
   "addTelephoneNumber" must {
     "show the contact by telephone page" when {

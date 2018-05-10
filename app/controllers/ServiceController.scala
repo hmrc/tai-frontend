@@ -70,7 +70,7 @@ trait ServiceController extends TaiBaseController
   } recoverWith handleErrorResponse("getServiceUnavailable", nino)
 
 }
-
+// $COVERAGE-OFF$
 object ServiceController extends ServiceController with AuthenticationConnectors {
   override val personService = PersonService
 
@@ -79,3 +79,4 @@ object ServiceController extends ServiceController with AuthenticationConnectors
 
   override def userDetailsConnector = UserDetailsConnector
 }
+// $COVERAGE-ON$

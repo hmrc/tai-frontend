@@ -39,7 +39,8 @@ trait BenefitsService {
     }
   }
 }
-
+// $COVERAGE-OFF$
 object BenefitsService extends BenefitsService {
   override val benefitsConnector: BenefitsConnector = BenefitsConnector
 }
+// $COVERAGE-ON$

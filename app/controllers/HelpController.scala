@@ -67,7 +67,7 @@ trait HelpController  extends TaiBaseController
     }
   }
 }
-
+// $COVERAGE-OFF$
 object HelpController extends HelpController with AuthenticationConnectors {
   override val personService = PersonService
   override implicit def templateRenderer = LocalTemplateRenderer
@@ -75,3 +75,4 @@ object HelpController extends HelpController with AuthenticationConnectors {
   override val httpGet = WSHttpProxy
   override val webChatURL = ApplicationConfig.webchatAvailabilityUrl
 }
+// $COVERAGE-ON$
