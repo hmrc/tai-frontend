@@ -48,7 +48,7 @@ trait YourIncomeCalculationController extends TaiBaseController
 
   def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             implicit val messages = Messages.Implicits.applicationMessages
@@ -58,7 +58,7 @@ trait YourIncomeCalculationController extends TaiBaseController
 
   def printYourIncomeCalculationPage(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             implicit val messages = Messages.Implicits.applicationMessages
@@ -89,7 +89,7 @@ trait YourIncomeCalculationController extends TaiBaseController
 
   def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request => {
           ServiceCheckLite.personDetailsCheck {
             implicit val messages = Messages.Implicits.applicationMessages
@@ -104,7 +104,7 @@ trait YourIncomeCalculationController extends TaiBaseController
 
   def printYourIncomeCalculationHistoricYears(year: TaxYear,empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request => {
           ServiceCheckLite.personDetailsCheck {
             implicit val messages = Messages.Implicits.applicationMessages

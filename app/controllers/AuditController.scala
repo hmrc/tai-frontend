@@ -35,7 +35,7 @@ trait AuditController extends TaiBaseController
 
   def auditLinksToIForm(iformName: String): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request => {
          auditService.sendAuditEventAndGetRedirectUri(Nino(user.getNino), iformName) map { redirectUri =>
            Redirect(redirectUri)

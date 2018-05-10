@@ -48,7 +48,7 @@ trait ServiceController extends TaiBaseController
   }
 
   def serviceSignout = authorisedForTai(personService).async {
-    implicit user => implicit taiRoot => implicit request =>
+    implicit user => implicit person => implicit request =>
       userDetailsConnector.userDetails(user.authContext).map { x =>
             if (x.hasVerifyAuthProvider) {
               Redirect(ApplicationConfig.citizenAuthFrontendSignOutUrl).
@@ -61,7 +61,7 @@ trait ServiceController extends TaiBaseController
 
   def gateKeeper() = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           getGateKeeper(Nino(user.getNino.toString))
   }

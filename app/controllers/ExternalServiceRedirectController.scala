@@ -37,7 +37,7 @@ trait ExternalServiceRedirectController extends TaiBaseController
 
   def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request => {
           ServiceCheckLite.personDetailsCheck {
             for {

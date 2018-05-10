@@ -39,7 +39,7 @@ trait BbsiRemoveAccountController extends TaiBaseController
 
   def checkYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             bbsiService.bankAccount(Nino(user.getNino), id) map {
@@ -52,7 +52,7 @@ trait BbsiRemoveAccountController extends TaiBaseController
 
   def submitYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             bbsiService.removeBankAccount(Nino(user.getNino), id) map { _ =>

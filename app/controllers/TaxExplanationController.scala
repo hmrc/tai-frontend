@@ -42,7 +42,7 @@ with WithAuthorisedForTaiLite {
 
   def taxExplanationPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             val nino = Nino(user.getNino)

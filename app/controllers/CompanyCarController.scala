@@ -55,7 +55,7 @@ trait CompanyCarController extends TaiBaseController
 
   def redirectCompanyCarSelection(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.cache(CompanyCar_EmployerIdKey, employmentId.toString) map {
@@ -66,7 +66,7 @@ trait CompanyCarController extends TaiBaseController
 
   def getCompanyCarDetails: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             for {
@@ -81,7 +81,7 @@ trait CompanyCarController extends TaiBaseController
 
   def handleUserJourneyChoice: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
 
           UpdateOrRemoveCarForm.createForm.bindFromRequest.fold(
@@ -103,7 +103,7 @@ trait CompanyCarController extends TaiBaseController
 
   def getCompanyCarEndDate: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
               journeyCacheService.currentValueAsDate(CompanyCar_DateGivenBackKey) map {
@@ -117,7 +117,7 @@ trait CompanyCarController extends TaiBaseController
 
   def handleCompanyCarEndDate: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           journeyCacheService.currentCache flatMap { cachedData =>
             val startDate = cachedData.get(CompanyCar_DateStartedKey)
@@ -143,7 +143,7 @@ trait CompanyCarController extends TaiBaseController
 
   def getFuelBenefitEndDate: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.currentValueAsDate(CompanyCar_DateFuelBenefitStoppedKey) map {
@@ -157,7 +157,7 @@ trait CompanyCarController extends TaiBaseController
 
   def handleFuelBenefitEndDate: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           journeyCacheService.currentCache flatMap { cachedData =>
             val checkDate = cachedData.get(CompanyCar_DateFuelBenefitStartedKey).orElse(cachedData.get(CompanyCar_DateStartedKey))
@@ -176,7 +176,7 @@ trait CompanyCarController extends TaiBaseController
 
   def checkYourAnswers: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.currentCache.map{cache=>
@@ -188,7 +188,7 @@ trait CompanyCarController extends TaiBaseController
 
   def handleCheckYourAnswers: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           companyCarService.withdrawCompanyCarAndFuel(Nino(user.getNino), request.headers.get("Referer").getOrElse("NA")).map{_ =>
             Redirect(controllers.routes.CompanyCarController.confirmation())
@@ -197,7 +197,7 @@ trait CompanyCarController extends TaiBaseController
 
   def confirmation: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
 

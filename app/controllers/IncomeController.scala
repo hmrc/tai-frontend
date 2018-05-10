@@ -58,7 +58,7 @@ trait IncomeController extends TaiBaseController
   def incomeService: IncomeService
 
   def regularIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           for {
@@ -76,7 +76,7 @@ trait IncomeController extends TaiBaseController
   }
 
   def editRegularIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           sendActingAttorneyAuditEvent("handleRegularIncomeUpdateForEdit")
@@ -105,7 +105,7 @@ trait IncomeController extends TaiBaseController
   }
 
   def confirmRegularIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           sendActingAttorneyAuditEvent("confirmRegularIncome")
@@ -134,7 +134,7 @@ trait IncomeController extends TaiBaseController
   }
 
   def updateEstimatedIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           for {
@@ -151,7 +151,7 @@ trait IncomeController extends TaiBaseController
   }
 
   def pensionIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           for {
@@ -169,7 +169,7 @@ trait IncomeController extends TaiBaseController
   }
 
   def editPensionIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           sendActingAttorneyAuditEvent("handlePensionIncomeUpdateForEdit")
@@ -198,7 +198,7 @@ trait IncomeController extends TaiBaseController
   }
 
   def confirmPensionIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           sendActingAttorneyAuditEvent("confirmIncomeUpdatesForEdit")
@@ -227,7 +227,7 @@ trait IncomeController extends TaiBaseController
   }
 
   def viewIncomeForEdit: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           for {

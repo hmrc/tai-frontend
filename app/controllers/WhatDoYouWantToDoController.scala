@@ -57,7 +57,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
 
   def whatDoYouWantToDoPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             val possibleRedirectFuture =
@@ -86,7 +86,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
 
   def handleWhatDoYouWantToDoPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           WhatDoYouWantToDoForm.createForm.bindFromRequest.fold(
             formWithErrors => {

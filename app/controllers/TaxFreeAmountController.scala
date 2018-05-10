@@ -45,7 +45,7 @@ trait TaxFreeAmountController extends TaiBaseController
 
   def taxFreeAmount: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
               taxFreeAmount()

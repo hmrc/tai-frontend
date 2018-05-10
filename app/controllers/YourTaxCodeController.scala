@@ -46,7 +46,7 @@ trait YourTaxCodeController extends TaiBaseController
 
   def taxCodes(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             val nino = user.person.nino

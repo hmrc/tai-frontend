@@ -45,14 +45,14 @@ with Auditable {
 
   def lastYearPaye(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
   }
 
   def payePage(year: TaxYear): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           getHistoricPayePage(year, Nino(user.getNino))
   }

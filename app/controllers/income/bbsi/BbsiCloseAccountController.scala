@@ -55,7 +55,7 @@ trait BbsiCloseAccountController extends TaiBaseController
 
   def captureCloseDate(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             bbsiService.bankAccount(Nino(user.getNino), id) map {
@@ -70,7 +70,7 @@ trait BbsiCloseAccountController extends TaiBaseController
 
   def submitCloseDate(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           bbsiService.bankAccount(Nino(user.getNino), id) flatMap {
             case Some(BankAccount(_, Some(_), Some(_), Some(bankName), _, _)) =>
@@ -97,7 +97,7 @@ trait BbsiCloseAccountController extends TaiBaseController
 
   def captureClosingInterest(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             bbsiService.bankAccount(Nino(user.getNino), id) map {
@@ -111,7 +111,7 @@ trait BbsiCloseAccountController extends TaiBaseController
 
   def submitClosingInterest(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           BankAccountClosingInterestForm.form.bindFromRequest().fold(
             formWithErrors => {
@@ -127,7 +127,7 @@ trait BbsiCloseAccountController extends TaiBaseController
 
   def submitYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             for {
@@ -143,7 +143,7 @@ trait BbsiCloseAccountController extends TaiBaseController
 
   def checkYourAnswers(id:Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.collectedValues(Seq(CloseBankAccountDateKey), Seq(CloseBankAccountNameKey, CloseBankAccountInterestKey)) map { seq =>
