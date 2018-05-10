@@ -142,11 +142,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe SEE_OTHER
-      val redirectUrl = redirectLocation(result) match {
-        case Some(s: String) => s
-        case _ => ""
-      }
-      redirectUrl mustBe "/check-income-tax/deceased"
+      redirectLocation(result) mustBe Some("/check-income-tax/deceased")
     }
 
     "display an error page" when {

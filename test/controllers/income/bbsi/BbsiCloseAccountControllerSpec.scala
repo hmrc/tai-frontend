@@ -408,6 +408,24 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
       status(result) mustBe BAD_REQUEST
     }
+    "date is blank" in {
+
+      val sut = createSUT
+
+      val formData = Json.obj(
+        sut.closeBankAccountDateForm.DateFormDay -> "",
+        sut.closeBankAccountDateForm.DateFormMonth -> "",
+        sut.closeBankAccountDateForm.DateFormYear -> ""
+      )
+      when(sut.bbsiService.bankAccount(any(), any())(any()))
+        .thenReturn(Future.successful(Some(bankAccount1)))
+
+      val result = sut.submitCloseDate(1)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+
+      status(result) mustBe BAD_REQUEST
+    }
+  }
+  "return internal server error" when{
     "no name provided" in {
 
       val sut = createSUT
@@ -444,24 +462,8 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
       status(result) mustBe INTERNAL_SERVER_ERROR
     }
-
-    "date is blank" in {
-
-      val sut = createSUT
-
-      val formData = Json.obj(
-        sut.closeBankAccountDateForm.DateFormDay -> "",
-        sut.closeBankAccountDateForm.DateFormMonth -> "",
-        sut.closeBankAccountDateForm.DateFormYear -> ""
-      )
-      when(sut.bbsiService.bankAccount(any(), any())(any()))
-        .thenReturn(Future.successful(Some(bankAccount1)))
-
-      val result = sut.submitCloseDate(1)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
-
-      status(result) mustBe BAD_REQUEST
-    }
   }
+
 
   "Submit your answers" must {
     "send request to close the bank account" in {

@@ -149,6 +149,8 @@ class CompanyCarServiceSpec extends PlaySpec
         val expectedResult = TaiNoCompanyCarFoundResponse("No company car found")
         Await.result(sut.beginJourney(generateNino, 1), 5 seconds) mustBe expectedResult
       }
+    }
+    "return exception"when{
       "there are no employments" in  {
         val sut = createSut
 
