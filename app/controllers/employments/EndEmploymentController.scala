@@ -249,7 +249,7 @@ trait EndEmploymentController extends TaiBaseController
             } yield (employmentId, telephoneNumberQuestionCache, telephoneNumberCache) match {
               case (employmentId, None, None) => Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel(employmentId), YesNoTextEntryForm.form()))
               case (employmentId, telephoneNumberQuestionCache, telephoneNumberCache) => Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel(employmentId), YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneNumberQuestionCache, telephoneNumberCache))))
-
+              case _ => throw new RuntimeException("No employment found")
             }
           }
   }
