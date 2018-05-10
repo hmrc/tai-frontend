@@ -74,14 +74,18 @@ trait UpdateEmploymentController extends TaiBaseController
     implicit user =>
       implicit taiRoot =>
         implicit request =>
-          ServiceCheckLite.personDetailsCheck { 
-            employmentService.employment(Nino(user.getNino), empId) map {
-              case Some(employment) =>
-                val cache = Map(UpdateEmployment_EmploymentIdKey -> empId.toString, UpdateEmployment_NameKey -> employment.name)
-                journeyCacheService.cache(cache)
-                Ok(views.html.employments.update.whatDoYouWantToTellUs(EmploymentViewModel(employment.name, empId),
-                  UpdateEmploymentDetailsForm.form))
-              case None => throw new RuntimeException("No employment found")
+          ServiceCheckLite.personDetailsCheck {
+
+            for {
+              employmentId <- journeyCacheService.mandatoryValueAsInt(UpdateEmployment_EmploymentIdKey)
+              updateCache <- journeyCacheService.currentValue(UpdateEmployment_EmploymentDetailsKey)
+              employment <- employmentService.employment(Nino(user.getNino), empId)
+            } yield (employmentId, updateCache, employment) match {
+
+              case (employmentId, None, Some(employment))=> Ok(views.html.employments.update.whatDoYouWantToTellUs(EmploymentViewModel(employment.name, empId),
+                UpdateEmploymentDetailsForm.form))
+              case (employmentId, updateCache, Some(employment))=> Ok(views.html.employments.update.whatDoYouWantToTellUs(EmploymentViewModel(employment.name, empId),
+                UpdateEmploymentDetailsForm.form))
             }
           }
   }
