@@ -445,8 +445,7 @@ class EndEmploymentControllerSpec
       "the request has an authorised session and there is cached data" in {
         val sut = createSUT
         when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(EndEmployment_EmploymentIdKey))(any())).thenReturn(Future.successful(0))
-        when(sut.journeyCacheService.currentValue(Matchers.eq(EndEmployment_TelephoneQuestionKey))(any())).thenReturn(Future.successful(Some("yes")))
-        when(sut.journeyCacheService.currentValue(Matchers.eq(EndEmployment_TelephoneNumberKey))(any())).thenReturn(Future.successful(Some("12121")))
+        when(sut.journeyCacheService.collectedOptionalValues(any())(any())).thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -455,11 +454,10 @@ class EndEmploymentControllerSpec
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
       }
 
-      "the request has an authorised session" in {
+      "the request has an authorised session no cached data" in {
         val sut = createSUT
         when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(EndEmployment_EmploymentIdKey))(any())).thenReturn(Future.successful(0))
-        when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
-        when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
+        when(sut.journeyCacheService.collectedOptionalValues(any())(any())).thenReturn(Future.successful(Seq(None,None)))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
