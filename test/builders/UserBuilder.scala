@@ -18,9 +18,8 @@ package builders
 
 import controllers.auth.TaiUser
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.play.frontend.auth.{Attorney, AuthContext, Link}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.play.frontend.auth.{Attorney, AuthContext, Link}
 import uk.gov.hmrc.tai.model.domain.{Address, Person}
 
 object UserBuilder {

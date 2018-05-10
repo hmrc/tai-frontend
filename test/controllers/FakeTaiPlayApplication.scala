@@ -20,11 +20,9 @@ import org.joda.time.LocalDate
 import org.scalatest.Suite
 import org.scalatest.concurrent.PatienceConfiguration
 import org.scalatestplus.play.OneServerPerSuite
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
-import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.{Address, Person}
 
 trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguration  {

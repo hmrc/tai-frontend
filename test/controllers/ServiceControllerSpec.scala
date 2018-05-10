@@ -18,9 +18,7 @@ package controllers
 
 import java.util.UUID
 
-import uk.gov.hmrc.tai.service.PersonService
 import builders.{AuthBuilder, RequestBuilder}
-import uk.gov.hmrc.tai.connectors._
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
@@ -37,7 +35,9 @@ import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.tai.config.{ApplicationConfig, WSHttp}
-import uk.gov.hmrc.tai.model.{TaiRoot, UserDetails}
+import uk.gov.hmrc.tai.connectors._
+import uk.gov.hmrc.tai.model.UserDetails
+import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.TaiConstants
 
 import scala.concurrent.Future

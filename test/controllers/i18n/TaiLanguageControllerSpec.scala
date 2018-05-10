@@ -19,26 +19,20 @@ package controllers.i18n
 import builders.{AuthBuilder, RequestBuilder}
 import controllers.FakeTaiPlayApplication
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.RequestHeader
-import play.api.test.Helpers.status
+import play.api.test.Helpers.{status, _}
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.PersonService
-import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.tai.model.TaiRoot
-import uk.gov.hmrc.tai.util.TaiConstants
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
-import scala.concurrent.Future
 import scala.util.Random
 
 class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {

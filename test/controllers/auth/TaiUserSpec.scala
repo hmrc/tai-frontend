@@ -19,8 +19,7 @@ package controllers.auth
 import builders.UserBuilder
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.play.frontend.auth.{Attorney, AuthContext, Link}
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.play.frontend.auth.Link
 
 class TaiUserSpec extends PlaySpec with MockitoSugar {
 

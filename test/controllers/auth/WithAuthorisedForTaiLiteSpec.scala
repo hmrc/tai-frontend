@@ -33,7 +33,6 @@ import play.api.i18n.Messages.Implicits.applicationMessages
 import play.api.mvc.Results.Ok
 import play.api.mvc.{AnyContent, Request, ResponseHeader, Result}
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
@@ -42,8 +41,8 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.{Address, Person}
+import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
 import scala.concurrent.duration._

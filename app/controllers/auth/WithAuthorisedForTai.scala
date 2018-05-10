@@ -18,7 +18,10 @@ package controllers.auth
 
 import controllers.ErrorPagesHandler
 import play.Logger
-import play.api.mvc.Results.{InternalServerError, _}
+import play.api.Play.current
+import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits.applicationMessages
+import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.HeaderCarrierConverter.fromHeadersAndSession
@@ -26,13 +29,8 @@ import uk.gov.hmrc.play.frontend.auth._
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.tai.auth.ConfigProperties
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits.applicationMessages
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.tai.model.domain.{Address, Person}
 import uk.gov.hmrc.tai.util.ViewModelHelper
 
 import scala.concurrent.Future

@@ -18,7 +18,6 @@ package controllers.income.bbsi
 
 import builders.{AuthBuilder, RequestBuilder}
 import controllers.FakeTaiPlayApplication
-import uk.gov.hmrc.tai.forms.DateForm
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -32,16 +31,17 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.domain.BankAccount
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
-import uk.gov.hmrc.tai.model.{CloseAccountRequest, TaiRoot}
-import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService, TaxPeriodLabelService}
-import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.forms.DateForm
+import uk.gov.hmrc.tai.model.CloseAccountRequest
+import uk.gov.hmrc.tai.model.domain.BankAccount
+import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.tai.util.{BankAccountClosingInterestConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
