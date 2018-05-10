@@ -117,7 +117,6 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
     override val personService = mock[PersonService]
     override val userDetailsConnector = mock[UserDetailsConnector]
 
-    val taiRoot = TaiRoot(nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", false, Some(false))
     when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(Nino(nino))))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(

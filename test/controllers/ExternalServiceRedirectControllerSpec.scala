@@ -58,7 +58,6 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
   private val redirectUri = "redirectUri"
   private implicit val hc = HeaderCarrier()
   private val nino = new Generator(new Random).nextNino
-  private val taiRoot = TaiRoot(nino = nino.nino)
 
   def createSut = new SUT
 

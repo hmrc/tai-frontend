@@ -566,7 +566,6 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
   private val SampleId = 1
   private val EmployerName = "sample employer"
-  private val fakeTaiRoot = TaiRoot(fakeNino.nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", false, Some(false))
 
   private def fakeNino = new Generator(new Random).nextNino
 

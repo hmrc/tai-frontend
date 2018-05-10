@@ -55,8 +55,6 @@ trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguratio
     .asInstanceOf[ch.qos.logback.classic.Logger]
     .setLevel(ch.qos.logback.classic.Level.WARN)
 
-  def fakeTaiRoot(nino:Nino) = TaiRoot(nino.nino, 0, "Mr", "Name", None, "Surname", "Name Surname", false, Some(false))
-
   def fakePerson(nino:Nino) = Person(nino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), false, false)
 
 }

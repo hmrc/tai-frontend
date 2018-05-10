@@ -32,8 +32,6 @@ trait PersonService {
   def taiClient: TaiConnector
   def personConnector: PersonConnector
 
-  def personDetails(rootUri: String)(implicit hc: HeaderCarrier): Future[TaiRoot] = taiClient.root(rootUri)
-
   def personDetailsNew(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] = {
     personConnector.person(nino) map {
       case TaiSuccessResponseWithPayload(person: Person) => person

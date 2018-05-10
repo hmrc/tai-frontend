@@ -46,18 +46,6 @@ class PersonServiceSpec extends PlaySpec
 
   private implicit val hc = HeaderCarrier()
 
-  "personDetails" should {
-    "expose core customer details in TaiRoot form" in {
-      val sut = createSut
-
-      val taiRoot = TaiRoot(nino.nino, 0, "mr", "ggg", Some("reginald"), "ppp", "ggg ppp", false, None)
-      when(sut.taiClient.root(any())(any())).thenReturn(Future.successful(taiRoot))
-
-      val result = sut.personDetails("dummy/root/uri")
-      Await.result(result, testTimeout) mustBe taiRoot
-    }
-  }
-
   "personDetailsNew method" must {
     "return a Person model instance" when {
       "connector returns successfully" in {

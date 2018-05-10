@@ -68,7 +68,6 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
 
     "be able to Authorize Tai user" when {
 
-      val taiRoot = generateTaiRoot(generateNino)
       val person = generatePerson(generateNino)
 
       "AuthorisedByTai async is called" in {
@@ -204,8 +203,6 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
     doc must haveHeadingWithText(Messages("tai.technical.error.heading"))
     doc must haveParagraphWithText(Messages("tai.technical.error.message"))
   }
-
-  def generateTaiRoot(nino:Nino) = TaiRoot(nino.nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", false, Some(true))
 
   def generatePerson(nino:Nino) = Person(nino, "Kkk", "Sss", None, Address("l1", "l2", "l3", "pc", "country"), false, false)
 

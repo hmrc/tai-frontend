@@ -116,9 +116,6 @@ class NoCYIncomeTaxErrorControllerSpec
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val hc = HeaderCarrier()
 
-  def generateTaiRoot(nino: Nino, mci: Boolean = false, isDeceased: Boolean = false) =
-    TaiRoot(nino.nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", mci, Some(isDeceased))
-
   def generateNino: Nino = new Generator(new Random).nextNino
 
   val defaultPerson = fakePerson(generateNino)
