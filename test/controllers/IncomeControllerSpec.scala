@@ -551,7 +551,7 @@ class IncomeControllerSpec extends PlaySpec
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
   }
 

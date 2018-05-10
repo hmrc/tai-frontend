@@ -104,7 +104,7 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
 
     val authority = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(authority)
-    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
   }
 
 }

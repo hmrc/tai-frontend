@@ -228,7 +228,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override val employmentService: EmploymentService = mock[EmploymentService]
 
-    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
 
   }

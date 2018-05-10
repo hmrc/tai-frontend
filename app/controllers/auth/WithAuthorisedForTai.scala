@@ -99,7 +99,7 @@ trait WithAuthorisedForTaiLite extends DelegationAwareActions { this: ErrorPages
     private def resolveLoggedInTaiUser(body: AsyncTaiUserRequest, authContext: AuthContext) (implicit request: Request[AnyContent]): Future[Result] = {
       val taiAccount = authContext.principal.accounts.paye.getOrElse(throw new IllegalArgumentException("Cannot find tai user authority"))
       for {
-        person <- personService.personDetailsNew(taiAccount.nino)
+        person <- personService.personDetails(taiAccount.nino)
         taiUser <- getTaiUser(authContext, person)
         result <- body(taiUser)(person)(request)
       } yield result

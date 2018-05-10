@@ -532,7 +532,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
   }
 
 }

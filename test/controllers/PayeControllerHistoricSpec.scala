@@ -122,7 +122,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
     "redirect to mci page when mci indicator is true" in {
       val testController = createTestController()
-      when(testController.personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePersonMci))
+      when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(fakePersonMci))
 
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -242,7 +242,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
-    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson))
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
   }
 

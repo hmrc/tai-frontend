@@ -130,7 +130,7 @@ class HelpControllerSpec extends PlaySpec
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(
       Some( AuthBuilder.createFakeAuthority(nino.nino))))
 
-    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson))
 
     val response = HttpResponse(1, None, Map("a" -> List("1", "2", "3")), None)
 

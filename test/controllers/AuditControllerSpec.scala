@@ -73,7 +73,7 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
 
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
 
-    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(person))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(person))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
   }

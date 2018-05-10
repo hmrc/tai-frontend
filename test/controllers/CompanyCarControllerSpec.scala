@@ -399,7 +399,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
     override val companyCarForceRedirectEnabled: Boolean = isCompanyCarForceRedirectEnabled
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
-    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson))
 
     val dateForm = DateForm(Messages("tai.companyCar.endDate.blank"))
   }

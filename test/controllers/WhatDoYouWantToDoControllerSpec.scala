@@ -94,7 +94,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "mci indicator is true" in {
         val person = Person(nino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), false, true)
         val testController = createSUT()
-        when(testController.personService.personDetailsNew(any())(any()))
+        when(testController.personService.personDetails(any())(any()))
           .thenReturn(Future.successful(person))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -125,7 +125,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "the deceased indicator is set on the retrieved Person" in {
         val person = Person(nino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), true, false)
         val testController = createSUT()
-        when(testController.personService.personDetailsNew(any())(any()))
+        when(testController.personService.personDetails(any())(any()))
           .thenReturn(Future.successful(person))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
 
@@ -137,7 +137,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "the deceased AND mci indicators are set on the retrived Person" in {
         val person = Person(nino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), true, true)
         val testController = createSUT()
-        when(testController.personService.personDetailsNew(any())(any()))
+        when(testController.personService.personDetails(any())(any()))
           .thenReturn(Future.successful(person))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
 
@@ -517,7 +517,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
-    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any())(any())).thenReturn(Future.successful(AuditResult.Success))
 
     when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(

@@ -53,7 +53,7 @@ class PersonServiceSpec extends PlaySpec
         val person = Person(nino, "firstname", "surname", Some(new LocalDate()), Address("l1", "l2", "l3", "pc", "country"), false, false)
         when(sut.personConnector.person(Matchers.eq(nino))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(person)))
 
-        val result = Await.result(sut.personDetailsNew(nino), testTimeout)
+        val result = Await.result(sut.personDetails(nino), testTimeout)
         result mustBe(person)
       }
     }
@@ -62,7 +62,7 @@ class PersonServiceSpec extends PlaySpec
         val sut = createSut
         when(sut.personConnector.person(Matchers.eq(nino))(any())).thenReturn(Future.successful(TaiNotFoundResponse("downstream not found")))
 
-        val thrown = the[RuntimeException] thrownBy Await.result(sut.personDetailsNew(nino), testTimeout)
+        val thrown = the[RuntimeException] thrownBy Await.result(sut.personDetails(nino), testTimeout)
         thrown.getMessage must include("Failed to retrieve person details for nino")
       }
     }

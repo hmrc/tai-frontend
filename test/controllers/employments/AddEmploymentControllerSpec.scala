@@ -564,7 +564,7 @@ class AddEmploymentControllerSpec extends PlaySpec
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(Nino(nino))))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(Nino(nino))))
   }
 
 }

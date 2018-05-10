@@ -32,7 +32,7 @@ trait PersonService {
   def taiClient: TaiConnector
   def personConnector: PersonConnector
 
-  def personDetailsNew(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] = {
+  def personDetails(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] = {
     personConnector.person(nino) map {
       case TaiSuccessResponseWithPayload(person: Person) => person
       case _ => throw new RuntimeException(s"Failed to retrieve person details for nino ${nino.nino}. Unable to proceed.")
