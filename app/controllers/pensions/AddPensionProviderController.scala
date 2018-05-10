@@ -78,7 +78,6 @@ trait AddPensionProviderController extends TaiBaseController
               Ok(views.html.pensions.addPensionName(PensionProviderNameForm.form))
             }
           }
-
         }
   }
 
@@ -105,6 +104,21 @@ trait AddPensionProviderController extends TaiBaseController
           }
         }
   }
+
+//  def receivedFirstPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+//    implicit taiRoot =>
+//      implicit request =>
+//        ServiceCheckLite.personDetailsCheck {
+//          journeyCacheService.mandatoryValue(AddPensionProvider_NameKey) map { pensionProviderName =>
+//            case Some(YesValue) =>  {
+//              Ok(views.html.pensions.addPensionReceivedFirstPay(AddPensionProviderFirstPayForm.form.fill(YesValue)))
+//            }
+//            case _ => {
+//              Ok(views.html.pensions.addPensionReceivedFirstPay(AddPensionProviderFirstPayForm.form))
+//          }
+//
+//        }
+//  }
 
   def submitFirstPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit taiRoot =>
@@ -136,7 +150,7 @@ trait AddPensionProviderController extends TaiBaseController
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.currentValueAs[String](AddPensionProvider_NameKey, identity) map {
+          journeyCacheService.currentValue(AddPensionProvider_NameKey) map {
             case Some(employmentName) => Ok(views.html.pensions.addPensionStartDate(PensionAddDateForm(employmentName).form, employmentName))
             case None => throw new RuntimeException(s"Data not present in cache for $AddPensionProvider_JourneyKey - $AddPensionProvider_NameKey ")
           }

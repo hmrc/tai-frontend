@@ -207,6 +207,8 @@ class AddPensionProviderControllerSpec extends PlaySpec
     }
   }
 
+//  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
   "addPensionProviderStartDate" must {
     "show the pension start date form page" when {
       "the request has an authorised session" in {
@@ -215,8 +217,8 @@ class AddPensionProviderControllerSpec extends PlaySpec
         when(sut.journeyCacheService.currentValueAs[String](any(), any())(any())).thenReturn(Future.successful(Some(pensionProviderName)))
 
         val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
         status(result) mustBe OK
+
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.startDateForm.title", pensionProviderName))
       }
