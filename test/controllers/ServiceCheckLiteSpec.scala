@@ -43,7 +43,7 @@ class ServiceCheckLiteSpec extends PlaySpec with FakeTaiPlayApplication {
   "personDetailsCheck in ServiceCheckLite" should {
     "redirect users" when {
       "deceased indicator is true for the user" in {
-        implicit val taiRoot = definePerson(true, true)
+        implicit val person = definePerson(true, true)
         val result = ServiceCheckLite.personDetailsCheck{
           Future.successful(Ok("test"))
         }
@@ -53,7 +53,7 @@ class ServiceCheckLiteSpec extends PlaySpec with FakeTaiPlayApplication {
       }
 
       "MCI indicator (aka hasCorruptData) is true for the user" in {
-        implicit val taiRoot = definePerson(true, false)
+        implicit val person = definePerson(true, false)
         val result = ServiceCheckLite.personDetailsCheck{
           Future.successful(Ok("test"))
         }
@@ -65,7 +65,7 @@ class ServiceCheckLiteSpec extends PlaySpec with FakeTaiPlayApplication {
 
     "not be redirected" when {
       "deceased indicator and MCI (hasCorruptData) is false" in {
-        implicit val taiRoot = definePerson(false, false)
+        implicit val person = definePerson(false, false)
         val result = ServiceCheckLite.personDetailsCheck{
           Future.successful(Ok("test"))
         }

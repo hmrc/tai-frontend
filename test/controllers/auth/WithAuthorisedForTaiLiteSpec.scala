@@ -75,7 +75,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
 
         val responseBody = "my response"
         val sut = createSUT.authorisedForTai(personService)
-        val action = sut.async(implicit user => implicit taiRoot => implicit request => Future.successful(Ok(responseBody)))
+        val action = sut.async(implicit user => implicit person => implicit request => Future.successful(Ok(responseBody)))
         val result = action.apply(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
@@ -88,7 +88,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
         when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(person))
 
         val sut = createSUT.authorisedForTai(personService)
-        val action = sut.async(implicit user => implicit taiRoot => implicit request => Future.failed(new HttpException("Something failed at citizen details call", 500)))
+        val action = sut.async(implicit user => implicit person => implicit request => Future.failed(new HttpException("Something failed at citizen details call", 500)))
         val result = action.apply(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -135,7 +135,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
       }
     }
 
-    "expose basic person details in TaiRoot form, for an authorised user through authorisedForTai.async" in {
+    "expose basic person details in Person model form, for an authorised user through authorisedForTai.async" in {
 
       val person = generatePerson(generateNino)
       val sut = createSUT

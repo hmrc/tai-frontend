@@ -122,7 +122,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         redirectLocation(result).getOrElse("") mustBe "/check-income-tax/deceased"
       }
 
-      "the deceased indicator is set on the retrieved TaiRoot" in {
+      "the deceased indicator is set on the retrieved Person" in {
         val person = Person(nino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), true, false)
         val testController = createSUT()
         when(testController.personService.personDetailsNew(any())(any()))
@@ -134,7 +134,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         redirectLocation(result).getOrElse("") mustBe "/check-income-tax/deceased"
       }
 
-      "the deceased AND mci indicators are set on the retrived TaiRoot" in {
+      "the deceased AND mci indicators are set on the retrived Person" in {
         val person = Person(nino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), true, true)
         val testController = createSUT()
         when(testController.personService.personDetailsNew(any())(any()))
