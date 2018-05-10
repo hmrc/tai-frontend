@@ -153,7 +153,7 @@ trait BbsiCloseAccountController extends TaiBaseController
           }
   }
 }
-
+// $COVERAGE-OFF$
 object BbsiCloseAccountController extends BbsiCloseAccountController {
 
   override val personService = PersonService
@@ -167,4 +167,5 @@ object BbsiCloseAccountController extends BbsiCloseAccountController {
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$
 

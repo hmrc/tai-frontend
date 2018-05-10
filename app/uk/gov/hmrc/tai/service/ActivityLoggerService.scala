@@ -26,6 +26,7 @@ object ActivityLoggerService extends ActivityLoggerService {
   override lazy val activityLoggerConnector = ActivityLoggerConnector
 }
 
+
 trait ActivityLoggerService {
 
   lazy val appName = "tai-frontend"

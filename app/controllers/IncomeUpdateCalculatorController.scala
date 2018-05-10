@@ -456,7 +456,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 }
-
+// $COVERAGE-OFF$
 object IncomeUpdateCalculatorController extends IncomeUpdateCalculatorController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override val activityLoggerService: ActivityLoggerService = ActivityLoggerService
@@ -470,3 +470,4 @@ object IncomeUpdateCalculatorController extends IncomeUpdateCalculatorController
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
 }
+// $COVERAGE-ON$

@@ -156,7 +156,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
     }
   }
 }
-
+// $COVERAGE-OFF$
 object WhatDoYouWantToDoController extends WhatDoYouWantToDoController with AuthenticationConnectors {
   override val personService = PersonService
   override val employmentService = EmploymentService
@@ -167,3 +167,4 @@ object WhatDoYouWantToDoController extends WhatDoYouWantToDoController with Auth
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override val trackingService = TrackingService
 }
+// $COVERAGE-ON$

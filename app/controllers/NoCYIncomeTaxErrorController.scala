@@ -68,7 +68,7 @@ trait NoCYIncomeTaxErrorController extends FrontendController
   }
 
 }
-
+// $COVERAGE-OFF$
 object NoCYIncomeTaxErrorController extends NoCYIncomeTaxErrorController with AuthenticationConnectors {
   override val personService = PersonService
   override val employmentService = EmploymentService
@@ -77,3 +77,4 @@ object NoCYIncomeTaxErrorController extends NoCYIncomeTaxErrorController with Au
 
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$

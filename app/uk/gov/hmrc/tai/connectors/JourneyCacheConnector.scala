@@ -58,8 +58,9 @@ trait JourneyCacheConnector {
     httpHandler.deleteFromApi(cacheUrl(journeyName)).map(_ => TaiSuccessResponse)
   }
 }
-
+// $COVERAGE-OFF$
 object JourneyCacheConnector extends JourneyCacheConnector with ServicesConfig{
   override val serviceUrl = baseUrl("tai")
   val httpHandler: HttpHandler = HttpHandler
 }
+// $COVERAGE-ON$

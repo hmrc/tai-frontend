@@ -118,8 +118,9 @@ trait HttpHandler {
   }
 
 }
-
+// $COVERAGE-OFF$
 object HttpHandler extends HttpHandler {
   override val http = WSHttp
 }
+// $COVERAGE-ON$
 

@@ -36,8 +36,9 @@ trait PreviousYearsIncomeConnector {
   }
 
 }
-
+// $COVERAGE-OFF$
 object PreviousYearsIncomeConnector extends PreviousYearsIncomeConnector with ServicesConfig {
   override val serviceUrl = baseUrl("tai")
   override def httpHandler: HttpHandler = HttpHandler
 }
+// $COVERAGE-ON$
