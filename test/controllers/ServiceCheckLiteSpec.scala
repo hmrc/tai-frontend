@@ -17,14 +17,13 @@
 package controllers
 
 import builders.UserBuilder
-import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.http.Status._
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers.{defaultAwaitTimeout, redirectLocation, status}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.domain.{Address, Person}
+import uk.gov.hmrc.tai.model.domain.Person
 
 import scala.concurrent.Future
 
@@ -36,7 +35,7 @@ class ServiceCheckLiteSpec extends PlaySpec with FakeTaiPlayApplication {
   val nino = new Generator().nextNino
 
   def definePerson(mci:Boolean, di: Boolean) =
-    Person(nino, "firstname", "surname", None, Address("l1", "l2", "l3", "pc", "country"), di, mci)
+    Person(nino, "firstname", "surname", di, mci)
 
   implicit val timeout = 16
 

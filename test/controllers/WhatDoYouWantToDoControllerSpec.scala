@@ -92,7 +92,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
     "redirect to mci page" when {
       "mci indicator is true" in {
-        val person = Person(nino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), false, true)
+        val person = fakePerson(nino).copy(hasCorruptData = true)
         val testController = createSUT()
         when(testController.personService.personDetails(any())(any()))
           .thenReturn(Future.successful(person))
@@ -123,7 +123,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       }
 
       "the deceased indicator is set on the retrieved Person" in {
-        val person = Person(nino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), true, false)
+        val person = fakePerson(nino).copy(isDeceased = true)
         val testController = createSUT()
         when(testController.personService.personDetails(any())(any()))
           .thenReturn(Future.successful(person))
@@ -135,7 +135,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       }
 
       "the deceased AND mci indicators are set on the retrived Person" in {
-        val person = Person(nino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), true, true)
+        val person = fakePerson(nino).copy(isDeceased=true, hasCorruptData=true)
         val testController = createSUT()
         when(testController.personService.personDetails(any())(any()))
           .thenReturn(Future.successful(person))

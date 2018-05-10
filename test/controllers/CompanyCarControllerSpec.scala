@@ -38,7 +38,6 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.benefits.DateForm
-import uk.gov.hmrc.tai.model.domain.{Address, Person}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, SessionService}
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
@@ -380,9 +379,6 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
   val fakeAuthority = AuthBuilder.createFakeAuthority(fakeNino.nino)
 
-  val fakePerson = Person(fakeNino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), false, false)
-
-
   def createSUT(isCompanyCarForceRedirectEnabled: Boolean = false) = new SUT(isCompanyCarForceRedirectEnabled)
 
   class SUT(isCompanyCarForceRedirectEnabled: Boolean) extends CompanyCarController {
@@ -399,7 +395,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
     override val companyCarForceRedirectEnabled: Boolean = isCompanyCarForceRedirectEnabled
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(fakeNino)))
 
     val dateForm = DateForm(Messages("tai.companyCar.endDate.blank"))
   }

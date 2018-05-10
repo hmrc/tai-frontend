@@ -20,7 +20,6 @@ import TestConnectors.FakeAuthConnector
 import builders.{AuthBuilder, RequestBuilder}
 import controllers.{ErrorPagesHandler, FakeTaiPlayApplication}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
-import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers.any
@@ -41,7 +40,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.domain.{Address, Person}
+import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
@@ -67,7 +66,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
 
     "be able to Authorize Tai user" when {
 
-      val person = generatePerson(generateNino)
+      val person = fakePerson(generateNino)
 
       "AuthorisedByTai async is called" in {
         val personService = mock[PersonService]
@@ -104,7 +103,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
         val authContext = AuthContext(AuthBuilder.createFakeAuthority(fakeAuthorityFixtureNino), governmentGatewayToken = Some("a token"))
         val sut = createSUT.authorisedForTai(personService)
         val request = RequestBuilder.buildFakeRequestWithAuth("GET")
-        val person = Person(generateNino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), false, false)
+        val person = fakePerson(generateNino)
         val user = Await.result(sut.getTaiUser(authContext, person)(request), 5 seconds)
         user.getNino mustBe fakeAuthorityFixtureNino
       }
@@ -117,7 +116,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
 
       val fakeAuthority: Authority = Await.result(FakeAuthConnector.currentAuthority, 5 seconds).get
       val sut = createSUT
-      when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(generatePerson(generateNino)))
+      when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
 
       val action = sut.exampleAuthorisedForTaiUsage()
       val res = Await.result(action.apply(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
@@ -126,7 +125,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
       sut.capturedUser match {
 
         case Some(user) => {
-          user.getDisplayName mustBe "Kkk Sss"
+          user.getDisplayName mustBe "firstname surname"
           user.getNino mustBe fakeAuthorityFixtureNino
           user.authContext.user.userId mustBe fakeAuthority.uri
           user.authContext.principal.accounts mustBe fakeAuthority.accounts
@@ -137,7 +136,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
 
     "expose basic person details in Person model form, for an authorised user through authorisedForTai.async" in {
 
-      val person = generatePerson(generateNino)
+      val person = fakePerson(generateNino)
       val sut = createSUT
       when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(person))
 
@@ -152,7 +151,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
     "expose the request object for an authorised user through authorisedForTai.async" in {
 
       val sut = createSUT
-      when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(generatePerson(generateNino)))
+      when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
 
       val action = sut.exampleAuthorisedForTaiUsage()
       val request = RequestBuilder.buildFakeRequestWithAuth("GET")
@@ -165,7 +164,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
     "return a redirect response to govt gateway sign in, for an unauthorised user" in {
 
       val sut = createSUT
-      when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(generatePerson(generateNino)))
+      when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
 
       val action = sut.exampleAuthorisedForTaiUsage()
       val request = RequestBuilder.buildFakeRequestWithoutAuth("GET")
@@ -203,7 +202,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
     doc must haveParagraphWithText(Messages("tai.technical.error.message"))
   }
 
-  def generatePerson(nino:Nino) = Person(nino, "Kkk", "Sss", None, Address("l1", "l2", "l3", "pc", "country"), false, false)
+  
 
   def generateNino: Nino = new Generator(new Random).nextNino
 

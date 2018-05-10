@@ -17,19 +17,16 @@
 package uk.gov.hmrc.tai.service
 
 import controllers.FakeTaiPlayApplication
-import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import play.api.i18n.{I18nSupport, MessagesApi}
+import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
-import uk.gov.hmrc.tai.model._
-import uk.gov.hmrc.tai.model.domain.{Address, Person}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -50,7 +47,7 @@ class PersonServiceSpec extends PlaySpec
     "return a Person model instance" when {
       "connector returns successfully" in {
         val sut = createSut
-        val person = Person(nino, "firstname", "surname", Some(new LocalDate()), Address("l1", "l2", "l3", "pc", "country"), false, false)
+        val person = fakePerson(nino)
         when(sut.personConnector.person(Matchers.eq(nino))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(person)))
 
         val result = Await.result(sut.personDetails(nino), testTimeout)

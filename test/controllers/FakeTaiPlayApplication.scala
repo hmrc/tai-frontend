@@ -16,14 +16,13 @@
 
 package controllers
 
-import org.joda.time.LocalDate
 import org.scalatest.Suite
 import org.scalatest.concurrent.PatienceConfiguration
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.tai.model.domain.{Address, Person}
+import uk.gov.hmrc.tai.model.domain.Person
 
 trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguration  {
   this: Suite =>
@@ -53,6 +52,6 @@ trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguratio
     .asInstanceOf[ch.qos.logback.classic.Logger]
     .setLevel(ch.qos.logback.classic.Level.WARN)
 
-  def fakePerson(nino:Nino) = Person(nino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), false, false)
+  def fakePerson(nino:Nino) = Person(nino, "firstname", "surname", false, false)
 
 }

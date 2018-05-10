@@ -18,7 +18,6 @@ package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
-import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -31,7 +30,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.tai.config.WSHttpProxy
-import uk.gov.hmrc.tai.model.domain.{Address, Person}
+import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
@@ -125,7 +124,7 @@ class HelpControllerSpec extends PlaySpec
 
     val nino: Nino = new Generator().nextNino
 
-    val fakePerson = Person(nino, "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), false, false)
+    val fakePerson = Person(nino, "firstname", "surname", false, false)
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(
       Some( AuthBuilder.createFakeAuthority(nino.nino))))

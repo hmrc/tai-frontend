@@ -18,7 +18,6 @@ package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
-import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -28,7 +27,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.domain.{Address, Person}
+import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.{AuditService, PersonService}
 
 import scala.concurrent.duration._
@@ -55,7 +54,7 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
   }
 
   private val nino = AuthBuilder.nino.nino
-  private val person = Person(Nino(nino), "firstname", "surname", Some(new LocalDate(1985, 10, 10)), Address("l1", "l2", "l3", "pc", "country"), false, false)
+  private val person = Person(Nino(nino), "firstname", "surname", false, false)
   private val redirectUri = "redirectUri"
 
   def createSut = new SUT

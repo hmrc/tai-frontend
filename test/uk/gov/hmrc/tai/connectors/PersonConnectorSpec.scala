@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.connectors
 
 import controllers.FakeTaiPlayApplication
-import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -28,7 +27,7 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.model.domain.{Address, Person}
+import uk.gov.hmrc.tai.model.domain.Person
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -72,7 +71,7 @@ class PersonConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
 
   implicit val hc = HeaderCarrier()
   val nino = new Generator(new Random).nextNino
-  val person = Person(nino, "firstname", "surname", Some(new LocalDate()), Address("l1", "l2", "l3", "pc", "country"), false, false)
+  val person = fakePerson(nino)
 
   class SUT(servUrl: String = "")  extends PersonConnector {
     override val serviceUrl: String = servUrl
