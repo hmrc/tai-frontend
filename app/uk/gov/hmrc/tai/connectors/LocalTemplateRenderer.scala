@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.config.WSHttp
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-// $COVERAGE-OFF$
+
 object LocalTemplateRenderer extends TemplateRenderer with ServicesConfig {
 
   override lazy val templateServiceBaseUrl = baseUrl("frontend-template-provider")
@@ -37,4 +37,4 @@ object LocalTemplateRenderer extends TemplateRenderer with ServicesConfig {
     WSHttp.GET(path).map(_.body)
   }
 }
-// $COVERAGE-ON$
+

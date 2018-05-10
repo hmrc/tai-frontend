@@ -25,10 +25,10 @@ import uk.gov.hmrc.tai.model.TaiRoot
 import scala.concurrent.Future
 
 object ServiceCheckLite extends TaiBaseController {
-  // $COVERAGE-OFF$
+
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-  // $COVERAGE-ON$
+
   def personDetailsCheck(proceed: Future[Result])(implicit taiRoot: TaiRoot): Future[Result] = {
     if (taiRoot.deceasedIndicator.getOrElse(false)) {
       Future.successful(Redirect(routes.DeceasedController.deceased()))
