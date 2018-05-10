@@ -30,7 +30,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, NotFoundException}
-import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.{Employment, Person}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.tai.model.TaiRoot
@@ -84,8 +84,8 @@ class NoCYIncomeTaxErrorControllerSpec
       val nino = generateNino
 
       "user is deceased" in {
-        val taiRoot = generateTaiRoot(nino, isDeceased = true)
-        val sut = createSUT(taiRoot)
+        val person = defaultPerson.copy(isDeceased = true)
+        val sut = createSUT(person)
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe SEE_OTHER
@@ -93,8 +93,8 @@ class NoCYIncomeTaxErrorControllerSpec
       }
 
       "MCI indicator is true" in {
-        val taiRoot = generateTaiRoot(nino, mci = true)
-        val sut = createSUT(taiRoot)
+        val person = defaultPerson.copy(hasCorruptData = true)
+        val sut = createSUT(person)
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe SEE_OTHER
@@ -102,8 +102,8 @@ class NoCYIncomeTaxErrorControllerSpec
       }
 
       "to deceased page when both deceased and MCI indicators are true" in {
-        val taiRoot = generateTaiRoot(nino, mci = true, isDeceased = true)
-        val sut = createSUT(taiRoot)
+        val person = defaultPerson.copy(hasCorruptData = true, isDeceased = true)
+        val sut = createSUT(person)
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe SEE_OTHER
@@ -121,11 +121,11 @@ class NoCYIncomeTaxErrorControllerSpec
 
   def generateNino: Nino = new Generator(new Random).nextNino
 
-  val defaultTaiRoot = generateTaiRoot(generateNino)
+  val defaultPerson = fakePerson(generateNino)
 
-  def createSUT(taiRoot: TaiRoot = defaultTaiRoot, employmentDataFailure: Option[Throwable] = None) = new SUT(taiRoot, employmentDataFailure)
+  def createSUT(person: Person = defaultPerson, employmentDataFailure: Option[Throwable] = None) = new SUT(person, employmentDataFailure)
 
-  class SUT(taiRoot: TaiRoot, employmentDataFailure: Option[Throwable]) extends NoCYIncomeTaxErrorController {
+  class SUT(person: Person, employmentDataFailure: Option[Throwable]) extends NoCYIncomeTaxErrorController {
     override val personService = mock[PersonService]
     override implicit val templateRenderer = MockTemplateRenderer
     override implicit val partialRetriever = MockPartialRetriever
@@ -138,7 +138,7 @@ class NoCYIncomeTaxErrorControllerSpec
     val ad = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
+    when(personService.personDetailsNew(any())(any())).thenReturn(Future.successful(person))
 
     val sampleEmployment = Seq(Employment("empName", None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false))
 

@@ -82,7 +82,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
 
         status(result) mustBe OK
         contentAsString(result) mustBe responseBody
-        verify(personService, times(1)).personDetails(any())(any())
+        verify(personService, times(1)).personDetailsNew(any())(any())
       }
 
       "AuthorisedByTai call is failed" in {
@@ -96,7 +96,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
         status(result) mustBe INTERNAL_SERVER_ERROR
         val doc = Jsoup.parse(contentAsString(result))
         doc.title must include(Messages("global.error.InternalServerError500.title"))
-        verify(personService, times(1)).personDetails(any())(any())
+        verify(personService, times(1)).personDetailsNew(any())(any())
       }
     }
 
