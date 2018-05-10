@@ -74,7 +74,7 @@ trait UpdateEmploymentController extends TaiBaseController
     implicit user =>
       implicit taiRoot =>
         implicit request =>
-          ServiceCheckLite.personDetailsCheck {
+          ServiceCheckLite.personDetailsCheck { 
             employmentService.employment(Nino(user.getNino), empId) map {
               case Some(employment) =>
                 val cache = Map(UpdateEmployment_EmploymentIdKey -> empId.toString, UpdateEmployment_NameKey -> employment.name)
@@ -108,9 +108,15 @@ trait UpdateEmploymentController extends TaiBaseController
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.currentCache map { currentCache =>
-            Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel(currentCache(UpdateEmployment_EmploymentIdKey).toInt), YesNoTextEntryForm.form()))
+
+          for {
+            employmentId <- journeyCacheService.mandatoryValueAsInt(UpdateEmployment_EmploymentIdKey)
+            telephoneCache <- journeyCacheService.collectedOptionalValues(Seq(UpdateEmployment_TelephoneQuestionKey, UpdateEmployment_TelephoneNumberKey))
+
+          } yield{Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel((employmentId)),
+              YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
           }
+
         }
   }
 
