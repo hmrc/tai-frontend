@@ -16,22 +16,34 @@
 
 package uk.gov.hmrc.tai.service
 
-import uk.gov.hmrc.tai.connectors.TaiConnector
+import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
 import play.api.Play.current
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.model._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiNotFoundResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.model.domain.Person
 
 trait PersonService {
 
   def taiClient: TaiConnector
+  def personConnector: PersonConnector
 
   def personDetails(rootUri: String)(implicit hc: HeaderCarrier): Future[TaiRoot] = taiClient.root(rootUri)
+
+  def personDetailsNew(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] = {
+    personConnector.person(nino) map {
+      case TaiSuccessResponseWithPayload(person: Person) => person
+      case _ => throw new RuntimeException(s"Failed to retrieve person details for nino ${nino.nino}. Unable to proceed.")
+    }
+  }
 }
 
 
 object PersonService extends PersonService {
-  val taiClient = TaiConnector
+  override val taiClient = TaiConnector
+  override val personConnector = PersonConnector
 }
