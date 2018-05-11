@@ -77,16 +77,18 @@ trait UpdateEmploymentController extends TaiBaseController
           ServiceCheckLite.personDetailsCheck {
 
             for {
-              employmentId <- journeyCacheService.mandatoryValueAsInt(UpdateEmployment_EmploymentIdKey)
-              updateCache <- journeyCacheService.currentValue(UpdateEmployment_EmploymentDetailsKey)
-              employment <- employmentService.employment(Nino(user.getNino), empId)
-            } yield (employmentId, updateCache, employment) match {
+              userSuppliedDetails <- journeyCacheService.currentValue(UpdateEmployment_EmploymentDetailsKey)
+              employmentOpt <- employmentService.employment(Nino(user.getNino), empId)
+              employment <- employmentOpt
+              cache = Map(UpdateEmployment_EmploymentIdKey -> empId.toString, UpdateEmployment_NameKey -> employment.name)
+              _ <- journeyCacheService.cache(cache)
 
-              case (employmentId, None, Some(employment))=> Ok(views.html.employments.update.whatDoYouWantToTellUs(EmploymentViewModel(employment.name, empId),
-                UpdateEmploymentDetailsForm.form))
-              case (employmentId, updateCache, Some(employment))=> Ok(views.html.employments.update.whatDoYouWantToTellUs(EmploymentViewModel(employment.name, empId),
-                UpdateEmploymentDetailsForm.form))
+            } yield{
+                Ok(views.html.employments.update.whatDoYouWantToTellUs(EmploymentViewModel(employment.name, empId),
+                UpdateEmploymentDetailsForm.form.fill(userSuppliedDetails.getOrElse(""))))
             }
+          } recover{
+            case e => throw new RuntimeException("No employment found")
           }
   }
 
@@ -114,7 +116,7 @@ trait UpdateEmploymentController extends TaiBaseController
         ServiceCheckLite.personDetailsCheck {
 
           for {
-            employmentId <- journeyCacheService.mandatoryValueAsInt(UpdateEmployment_EmploymentIdKey)
+            employmentId <- journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey)
             telephoneCache <- journeyCacheService.collectedOptionalValues(Seq(UpdateEmployment_TelephoneQuestionKey, UpdateEmployment_TelephoneNumberKey))
 
           } yield{Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel((employmentId)),
