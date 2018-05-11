@@ -42,7 +42,8 @@ trait PensionProviderService {
     }
   }
 }
-
+// $COVERAGE-OFF$
 object PensionProviderService extends PensionProviderService {
   override val connector: PensionProviderConnector = PensionProviderConnector
 }
+// $COVERAGE-ON$

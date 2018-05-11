@@ -278,7 +278,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
   }
 
 }
-
+// $COVERAGE-OFF$
 object RemoveCompanyBenefitController extends RemoveCompanyBenefitController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override val auditService: AuditService = AuditService
@@ -288,3 +288,4 @@ object RemoveCompanyBenefitController extends RemoveCompanyBenefitController wit
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override def benefitsService: BenefitsService = BenefitsService
 }
+// $COVERAGE-ON$

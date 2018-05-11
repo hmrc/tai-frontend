@@ -64,10 +64,11 @@ with WithAuthorisedForTaiLite {
   }
 
 }
-
+// $COVERAGE-OFF$
 object TaxExplanationController extends TaxExplanationController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override val taxAccountService: TaxAccountService = TaxAccountService
   override implicit val templateRenderer: TemplateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$

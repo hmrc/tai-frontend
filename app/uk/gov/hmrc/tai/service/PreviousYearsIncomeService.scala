@@ -36,10 +36,11 @@ trait PreviousYearsIncomeService {
   }
 
 }
-
+// $COVERAGE-OFF$
 object PreviousYearsIncomeService extends PreviousYearsIncomeService {
   override def connector: PreviousYearsIncomeConnector = PreviousYearsIncomeConnector
 }
+// $COVERAGE-ON$
 
 
 

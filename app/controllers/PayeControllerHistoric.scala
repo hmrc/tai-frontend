@@ -95,7 +95,7 @@ with Auditable {
     hodAnyErrorResult
   }
 }
-
+// $COVERAGE-OFF$
 object PayeControllerHistoric extends PayeControllerHistoric with AuthenticationConnectors {
   override val employmentService = EmploymentService
   override implicit def templateRenderer = LocalTemplateRenderer
@@ -103,3 +103,4 @@ object PayeControllerHistoric extends PayeControllerHistoric with Authentication
   override val numberOfPreviousYearsToShow: Int = Play.configuration.getInt("tai.numberOfPreviousYearsToShow").getOrElse(3)
   override val personService: PersonService = PersonService
 }
+// $COVERAGE-ON$

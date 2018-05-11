@@ -37,3 +37,4 @@ object LocalTemplateRenderer extends TemplateRenderer with ServicesConfig {
     WSHttp.GET(path).map(_.body)
   }
 }
+

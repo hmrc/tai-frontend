@@ -311,7 +311,7 @@ trait EndEmploymentController extends TaiBaseController
         implicit request => Future.successful(Ok(views.html.employments.confirmation()))
   }
 }
-
+// $COVERAGE-OFF$
 object EndEmploymentController extends EndEmploymentController with
   AuthenticationConnectors {
 
@@ -323,3 +323,4 @@ object EndEmploymentController extends EndEmploymentController with
   override val journeyCacheService: JourneyCacheService = JourneyCacheService(EndEmployment_JourneyKey)
   override val successfulJourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
 }
+// $COVERAGE-ON$

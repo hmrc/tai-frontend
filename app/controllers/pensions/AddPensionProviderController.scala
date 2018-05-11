@@ -289,7 +289,7 @@ trait AddPensionProviderController extends TaiBaseController
 
 }
 
-
+// $COVERAGE-OFF$
 object AddPensionProviderController extends AddPensionProviderController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override val auditService: AuditService = AuditService
@@ -299,3 +299,4 @@ object AddPensionProviderController extends AddPensionProviderController with Au
   override val journeyCacheService = JourneyCacheService(AddPensionProvider_JourneyKey)
   override val successfulJourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
 }
+// $COVERAGE-ON$

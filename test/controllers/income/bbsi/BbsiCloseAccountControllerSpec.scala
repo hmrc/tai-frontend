@@ -16,6 +16,8 @@
 
 package controllers.income.bbsi
 
+import java.lang.RuntimeException
+
 import builders.{AuthBuilder, RequestBuilder}
 import controllers.FakeTaiPlayApplication
 import uk.gov.hmrc.tai.forms.DateForm
@@ -406,7 +408,6 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
       status(result) mustBe BAD_REQUEST
     }
-
     "date is blank" in {
 
       val sut = createSUT
@@ -424,6 +425,45 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
       status(result) mustBe BAD_REQUEST
     }
   }
+  "return internal server error" when{
+    "no name provided" in {
+
+      val sut = createSUT
+
+      val year = LocalDate.now().getYear.toString
+
+      val formData = Json.obj(
+        sut.closeBankAccountDateForm.DateFormDay -> year,
+        sut.closeBankAccountDateForm.DateFormMonth -> year,
+        sut.closeBankAccountDateForm.DateFormYear -> year
+      )
+      when(sut.bbsiService.bankAccount(any(), any())(any()))
+        .thenReturn(Future.successful(Some(bankAccount2)))
+
+      val result = sut.submitCloseDate(1)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+    "no account provided" in {
+
+      val sut = createSUT
+
+      val year = LocalDate.now().getYear.toString
+
+      val formData = Json.obj(
+        sut.closeBankAccountDateForm.DateFormDay -> year,
+        sut.closeBankAccountDateForm.DateFormMonth -> year,
+        sut.closeBankAccountDateForm.DateFormYear -> year
+      )
+      when(sut.bbsiService.bankAccount(any(), any())(any()))
+        .thenReturn(Future.successful(None))
+
+      val result = sut.submitCloseDate(1)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+  }
+
 
   "Submit your answers" must {
     "send request to close the bank account" in {
@@ -480,6 +520,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
   private val bankAccountId = 1
   private val bankAccount1 = BankAccount(bankAccountId, Some("****5678"), Some("123456"), Some("Test Bank account name"), 100, None)
+  private val bankAccount2 = BankAccount(bankAccountId, Some("****5678"), Some("123456"), None, 100, None)
 
   private def createSUT = new SUT
   private implicit val hc= HeaderCarrier()

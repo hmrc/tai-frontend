@@ -206,7 +206,7 @@ trait CompanyCarController extends TaiBaseController
   }
 
 }
-
+// $COVERAGE-OFF$
 object CompanyCarController extends CompanyCarController with AuthenticationConnectors {
 
   override val personService: PersonService = PersonService
@@ -216,3 +216,4 @@ object CompanyCarController extends CompanyCarController with AuthenticationConn
   override implicit val templateRenderer: TemplateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$

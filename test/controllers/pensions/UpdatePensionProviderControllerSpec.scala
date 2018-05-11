@@ -22,9 +22,8 @@ import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{never, times, verify, when}
 import org.mockito.Matchers.{eq => mockEq, _}
-import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -178,6 +177,41 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.heading", "TEST"))
       }
     }
+  }
+  "submitUpdateEmploymentDetails" must {
+
+    "redirect to the addTelephoneNumber page" when {
+      "the form submission is valid" in {
+
+        val sut = createSUT
+
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+
+        val result = sut.submitWhatDoYouWantToTellUs(RequestBuilder.buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(("pensionDetails", "test details")))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url
+      }
+    }
+
+    "return Bad Request" when {
+      "the form submission is invalid" in {
+
+        val sut = createSUT
+
+        val pensionDetailsFormData = ("pensionDetails", "")
+
+        when(sut.journeyCacheService.mandatoryValue(any())(any())).thenReturn(Future.successful("Test"))
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+
+        val result = sut.submitWhatDoYouWantToTellUs(RequestBuilder.buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(pensionDetailsFormData))
+
+        status(result) mustBe BAD_REQUEST
+      }
+    }
+
   }
 
   "addTelephoneNumber" must {

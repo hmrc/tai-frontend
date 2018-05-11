@@ -123,7 +123,7 @@ trait JourneyCacheService extends JourneyCacheConstants {
   }
 
 }
-
+// $COVERAGE-OFF$
 object JourneyCacheService {
 
   def apply(journey:String) : JourneyCacheService = {
@@ -133,3 +133,4 @@ object JourneyCacheService {
     }
   }
 }
+// $COVERAGE-ON$

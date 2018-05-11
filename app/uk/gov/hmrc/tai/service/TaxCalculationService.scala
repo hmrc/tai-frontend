@@ -81,9 +81,10 @@ trait TaxCalculationService extends uk.gov.hmrc.play.config.ServicesConfig {
     }
   }
 }
-
+// $COVERAGE-OFF$
 object TaxCalculationService extends TaxCalculationService {
   override val http = WSHttp
   override val metrics = Metrics
   override val taxCalcUrl: String = baseUrl("taxcalc")
 }
+// $COVERAGE-ON$

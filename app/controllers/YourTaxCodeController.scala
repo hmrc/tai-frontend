@@ -61,7 +61,7 @@ trait YourTaxCodeController extends TaiBaseController
           }
   }
 }
-
+// $COVERAGE-OFF$
 object YourTaxCodeController extends YourTaxCodeController with AuthenticationConnectors {
   override val personService = PersonService
   override val taxAccountService: TaxAccountService = TaxAccountService
@@ -70,4 +70,5 @@ object YourTaxCodeController extends YourTaxCodeController with AuthenticationCo
 
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$
 

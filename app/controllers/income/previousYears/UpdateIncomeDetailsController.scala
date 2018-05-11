@@ -210,7 +210,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
   }
 
 }
-
+// $COVERAGE-OFF$
 object UpdateIncomeDetailsController extends UpdateIncomeDetailsController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override val auditService: AuditService = AuditService
@@ -220,3 +220,4 @@ object UpdateIncomeDetailsController extends UpdateIncomeDetailsController with 
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override def previousYearsIncomeService: PreviousYearsIncomeService = PreviousYearsIncomeService
 }
+// $COVERAGE-ON$

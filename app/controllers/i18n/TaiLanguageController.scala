@@ -69,11 +69,12 @@ trait TaiLanguageController extends LanguageController with TaiBaseController
           }
   }
 }
-
+// $COVERAGE-OFF$
 object TaiLanguageController extends TaiLanguageController with AuthenticationConnectors {
 
   override def personService: PersonService = PersonService
   override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$
 
