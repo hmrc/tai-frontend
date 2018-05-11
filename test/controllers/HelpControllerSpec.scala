@@ -30,7 +30,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.tai.config.WSHttpProxy
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
@@ -124,12 +124,12 @@ class HelpControllerSpec extends PlaySpec
 
     val nino: Nino = new Generator().nextNino
 
-    val fakeTaiRoot = TaiRoot(nino.nino, 0, "Mr", "name", None, "surname", "name surname", false, Some(false))
+    val fakePerson = Person(nino, "firstname", "surname", false, false)
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(
       Some( AuthBuilder.createFakeAuthority(nino.nino))))
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson))
 
     val response = HttpResponse(1, None, Map("a" -> List("1", "2", "3")), None)
 

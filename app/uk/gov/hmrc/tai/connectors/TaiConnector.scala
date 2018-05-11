@@ -38,10 +38,6 @@ trait TaiConnector extends RawResponseReads{
   val STATUS_OK = 200
   val STATUS_EMAIL_RESPONSE = 201
 
-  def root(rootUri: String)(implicit hc: HeaderCarrier): Future[TaiRoot] = {
-    http.GET[TaiRoot](url = url(rootUri.replace("paye","tai")))
-  }
-
   def calculateEstimatedPay(payDetails : PayDetails)(implicit hc: HeaderCarrier): Future[CalculatedPay] = {
     val postUrl = url(s"/tai/calculator/calculate-estimated-pay")
     http.POST(postUrl, payDetails).map(responseTo[CalculatedPay](postUrl))

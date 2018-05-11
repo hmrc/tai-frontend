@@ -62,7 +62,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
 
   def stopDate: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
                 journeyCacheService.currentCache map { currentCache =>
@@ -76,7 +76,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
 
   def submitStopDate: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
 
           val startOfTaxYear = Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)
@@ -107,7 +107,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
 
   def totalValueOfBenefit(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
               journeyCacheService.mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey) flatMap  {
@@ -121,7 +121,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
 
   def submitBenefitValue(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           CompanyBenefitTotalValueForm.form.bindFromRequest.fold(
             formWithErrors => {
@@ -142,7 +142,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
 
   def telephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.currentCache map { currentCache =>
@@ -154,7 +154,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
 
   def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           YesNoTextEntryForm.form(
             Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
@@ -182,7 +182,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
 
   def checkYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.collectedValues(
@@ -211,7 +211,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
 
   def submitYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             for {
@@ -241,7 +241,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
 
   def cancel: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             for {
@@ -253,7 +253,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
 
   def confirmation(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             Future.successful(Ok(views.html.benefits.removeCompanyBenefitConfirmation()))

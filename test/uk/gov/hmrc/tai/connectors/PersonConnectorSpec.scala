@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.connectors
 
 import controllers.FakeTaiPlayApplication
-import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -28,7 +27,7 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.model.domain.{Address, Person}
+import uk.gov.hmrc.tai.model.domain.Person
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -41,7 +40,7 @@ class PersonConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
     "return a Person model instance, wrapped in a TaiSuccessResponse" when {
       "the http call returns successfully" in {
         val sut = new SUT("/fakeUrl")
-        when(sut.httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/${nino.nino}/person"))(any())).thenReturn(Future.successful(apiResponse(person)))
+        when(sut.httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any())).thenReturn(Future.successful(apiResponse(person)))
         val result = Await.result(sut.person(nino), 5 seconds)
         result mustBe(TaiSuccessResponseWithPayload(person))
       }
@@ -50,7 +49,7 @@ class PersonConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
     "return a TaiNotFoundResponse" when {
       "the http call returns a not found exception" in {
         val sut = new SUT("/fakeUrl")
-        when(sut.httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/${nino.nino}/person"))(any())).thenReturn(Future.failed(new NotFoundException("downstream not found")))
+        when(sut.httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any())).thenReturn(Future.failed(new NotFoundException("downstream not found")))
         val result = Await.result(sut.person(nino), 5 seconds)
         result mustBe(TaiNotFoundResponse("downstream not found"))
       }
@@ -58,7 +57,7 @@ class PersonConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
       "the http call returns invalid json" in {
         val sut = new SUT("/fakeUrl")
         val invalidJson = Json.obj("data" -> Json.obj("notEven" -> "close"))
-        when(sut.httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/${nino.nino}/person"))(any())).thenReturn(Future.successful(invalidJson))
+        when(sut.httpHandler.getFromApi(Matchers.eq(s"/fakeUrl/tai/${nino.nino}/person"))(any())).thenReturn(Future.successful(invalidJson))
         val result = Await.result(sut.person(nino), 5 seconds)
         result match {
           case TaiNotFoundResponse(msg) => msg must include("JsResultException")
@@ -72,7 +71,7 @@ class PersonConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
 
   implicit val hc = HeaderCarrier()
   val nino = new Generator(new Random).nextNino
-  val person = Person(nino, "firstname", "surname", Some(new LocalDate()), Address("l1", "l2", "l3", "pc", "country"), false, false)
+  val person = fakePerson(nino)
 
   class SUT(servUrl: String = "")  extends PersonConnector {
     override val serviceUrl: String = servUrl

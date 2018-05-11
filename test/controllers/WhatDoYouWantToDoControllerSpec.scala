@@ -37,7 +37,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
-import uk.gov.hmrc.tai.model.{TaiRoot, TaxYear}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
@@ -92,9 +92,10 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
     "redirect to mci page" when {
       "mci indicator is true" in {
+        val person = fakePerson(nino).copy(hasCorruptData = true)
         val testController = createSUT()
         when(testController.personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(TaiRoot(nino.nino, 0, "Mr", "Name", None, "Surname", "Name Surname", true, Some(false))))
+          .thenReturn(Future.successful(person))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -121,10 +122,11 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         redirectLocation(result).getOrElse("") mustBe "/check-income-tax/deceased"
       }
 
-      "the deceased indicator is set on the retrieved TaiRoot" in {
+      "the deceased indicator is set on the retrieved Person" in {
+        val person = fakePerson(nino).copy(isDeceased = true)
         val testController = createSUT()
         when(testController.personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(TaiRoot(nino.nino, 0, "Mr", "Name", None, "Surname", "Name Surname", false, Some(true))))
+          .thenReturn(Future.successful(person))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -132,10 +134,11 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         redirectLocation(result).getOrElse("") mustBe "/check-income-tax/deceased"
       }
 
-      "the deceased AND mci indicators are set on the retrived TaiRoot" in {
+      "the deceased AND mci indicators are set on the retrived Person" in {
+        val person = fakePerson(nino).copy(isDeceased=true, hasCorruptData=true)
         val testController = createSUT()
         when(testController.personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(TaiRoot(nino.nino, 0, "Mr", "Name", None, "Surname", "Name Surname", true, Some(true))))
+          .thenReturn(Future.successful(person))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -532,7 +535,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any())(any())).thenReturn(Future.successful(AuditResult.Success))
 
     when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(

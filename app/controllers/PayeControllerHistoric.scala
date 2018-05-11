@@ -27,7 +27,8 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.model.{TaiRoot, TaxYear}
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 
@@ -44,14 +45,14 @@ with Auditable {
 
   def lastYearPaye(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           Future.successful(Redirect(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev)))
   }
 
   def payePage(year: TaxYear): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           getHistoricPayePage(year, Nino(user.getNino))
   }
@@ -59,7 +60,7 @@ with Auditable {
   private[controllers] def getHistoricPayePage(taxYear: TaxYear,
                                                nino: Nino)
                                               (implicit request: Request[AnyContent],
-                                               user: TaiUser, taiRoot: TaiRoot): Future[Result] = {
+                                               user: TaiUser, person: Person): Future[Result] = {
     if (taxYear >= TaxYear()) {
       Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()))
     } else {
@@ -67,24 +68,24 @@ with Auditable {
         emp <- employmentService.employments(nino, taxYear)
       } yield {
         checkedAgainstPersonDetails(
-          taiRoot,
+          person,
           Ok(views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(taxYear, emp), numberOfPreviousYearsToShow))
         )
       }
     }
   } recoverWith hodStatusRedirect
 
-  private def checkedAgainstPersonDetails(taiRoot: TaiRoot, proceed: Result)(implicit request: Request[AnyContent], user: TaiUser): Result = {
-    if (taiRoot.deceasedIndicator.getOrElse(false)) {
+  private def checkedAgainstPersonDetails(person: Person, proceed: Result)(implicit request: Request[AnyContent], user: TaiUser): Result = {
+    if (person.isDeceased) {
       Redirect(routes.DeceasedController.deceased())
-    } else if (taiRoot.manualCorrespondenceInd) {
+    } else if (person.hasCorruptData) {
       Redirect(routes.ServiceController.gateKeeper())
     } else {
       proceed
     }
   }
 
-  def hodStatusRedirect(implicit request: Request[AnyContent], user: TaiUser, taiRoot: TaiRoot): PartialFunction[Throwable, Future[Result]] = {
+  def hodStatusRedirect(implicit request: Request[AnyContent], user: TaiUser, person: Person): PartialFunction[Throwable, Future[Result]] = {
 
     implicit val rl:RecoveryLocation = classOf[WhatDoYouWantToDoController]
 

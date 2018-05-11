@@ -51,7 +51,7 @@ trait CompanyBenefitController extends TaiBaseController
 
   def redirectCompanyBenefitSelection(empId: Int, benefitType: BenefitComponentType) : Action[AnyContent] = authorisedForTai(personService).async {
       implicit user =>
-        implicit taiRoot =>
+        implicit person =>
           implicit request =>
             ServiceCheckLite.personDetailsCheck {
 
@@ -65,7 +65,7 @@ trait CompanyBenefitController extends TaiBaseController
 
   def decision: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             (for{
@@ -101,7 +101,7 @@ trait CompanyBenefitController extends TaiBaseController
 
   def submitDecision: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           UpdateOrRemoveCompanyBenefitDecisionForm.form.bindFromRequest.fold(
             formWithErrors => {

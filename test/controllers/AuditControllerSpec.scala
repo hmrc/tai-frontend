@@ -27,7 +27,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.{AuditService, PersonService}
 
 import scala.concurrent.duration._
@@ -54,7 +54,7 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
   }
 
   private val nino = AuthBuilder.nino.nino
-  private val taiRoot = TaiRoot(nino = nino)
+  private val person = Person(Nino(nino), "firstname", "surname", false, false)
   private val redirectUri = "redirectUri"
 
   def createSut = new SUT
@@ -72,7 +72,7 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
 
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(person))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
   }

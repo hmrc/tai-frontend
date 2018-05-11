@@ -47,7 +47,7 @@ trait BbsiController extends TaiBaseController
 
   def accounts(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             for {
@@ -61,7 +61,7 @@ trait BbsiController extends TaiBaseController
 
   def endConfirmation(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             Future.successful(Ok(views.html.incomes.bbsi.bank_building_society_confirmation()))
@@ -70,7 +70,7 @@ trait BbsiController extends TaiBaseController
 
   def updateConfirmation(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             Future.successful(Ok(views.html.incomes.bbsi.bank_building_society_confirmation()))
@@ -79,7 +79,7 @@ trait BbsiController extends TaiBaseController
 
   def removeConfirmation(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             Future.successful(Ok(views.html.incomes.bbsi.bank_building_society_confirmation()))
@@ -88,7 +88,7 @@ trait BbsiController extends TaiBaseController
 
   def untaxedInterestDetails(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             bbsiService.untaxedInterest(Nino(user.getNino)) map { untaxedInterest =>
@@ -99,7 +99,7 @@ trait BbsiController extends TaiBaseController
 
   def decision(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             bbsiService.bankAccount(Nino(user.getNino), id) map {
@@ -114,7 +114,7 @@ trait BbsiController extends TaiBaseController
 
   def handleDecisionPage(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           BankAccountsDecisionForm.createForm.bindFromRequest.fold(
             formWithErrors => {
