@@ -211,18 +211,35 @@ class AddPensionProviderControllerSpec extends PlaySpec
 
   "addPensionProviderStartDate" must {
     "show the pension start date form page" when {
-      "the request has an authorised session" in {
+      "the request has an authorised session and no previously cached date present" in {
         val sut = createSUT
         val pensionProviderName = "TEST"
-        when(sut.journeyCacheService.currentValueAs[String](any(), any())(any())).thenReturn(Future.successful(Some(pensionProviderName)))
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(None)))
 
         val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.startDateForm.title", pensionProviderName))
+        doc.toString must not include("2037")
+      }
+
+      "the request has an authorised session and a previously cached date is present" in {
+        val sut = createSUT
+        val pensionProviderName = "TEST"
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(Some("2037-01-18"))))
+
+        val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addPensionProvider.startDateForm.title", pensionProviderName))
+        doc.toString must include("2037")
       }
     }
+
+
+
 
     "return error" when {
       "cache doesn't return data" in {

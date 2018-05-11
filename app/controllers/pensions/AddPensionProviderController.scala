@@ -150,9 +150,13 @@ trait AddPensionProviderController extends TaiBaseController
     implicit taiRoot =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.currentValue(AddPensionProvider_NameKey) map {
-            case Some(employmentName) => Ok(views.html.pensions.addPensionStartDate(PensionAddDateForm(employmentName).form, employmentName))
-            case None => throw new RuntimeException(s"Data not present in cache for $AddPensionProvider_JourneyKey - $AddPensionProvider_NameKey ")
+
+          journeyCacheService.collectedValues(Seq(AddPensionProvider_NameKey), Seq(AddPensionProvider_StartDateKey)) map tupled { (mandatoryVals, optionalVals) =>
+            val form = optionalVals(0) match {
+              case Some(userDateString) => PensionAddDateForm(mandatoryVals(0)).form.fill(new LocalDate(userDateString))
+              case _ => PensionAddDateForm(mandatoryVals(0)).form
+            }
+            Ok(views.html.pensions.addPensionStartDate(form, mandatoryVals(0)))
           }
         }
   }
