@@ -296,6 +296,16 @@ class EndEmploymentControllerSpec
       verify(sut.journeyCacheService, times(1)).currentValueAsDate(any())(any())
     }
 
+    "throw run time exception when endEmploymentPage call fails" in {
+      val sut = createSUT
+      when(sut.journeyCacheService.currentValueAsDate(any())(any()))
+        .thenReturn(Future.successful(None))
+      when(sut.employmentService.employment(any(), any())(any()))
+        .thenReturn(Future.successful(None))
+      val result = sut.endEmploymentPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+     status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+
     "redirect to GG login" when {
       "user is not authorised" in {
         val sut = createSUT
