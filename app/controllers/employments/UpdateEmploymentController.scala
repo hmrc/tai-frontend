@@ -78,18 +78,20 @@ trait UpdateEmploymentController extends TaiBaseController
 
             for {
               userSuppliedDetails <- journeyCacheService.currentValue(UpdateEmployment_EmploymentDetailsKey)
-              employmentOpt <- employmentService.employment(Nino(user.getNino), empId)
-              employment <- employmentOpt
-              cache = Map(UpdateEmployment_EmploymentIdKey -> empId.toString, UpdateEmployment_NameKey -> employment.name)
-              _ <- journeyCacheService.cache(cache)
-
-            } yield{
-                Ok(views.html.employments.update.whatDoYouWantToTellUs(EmploymentViewModel(employment.name, empId),
-                UpdateEmploymentDetailsForm.form.fill(userSuppliedDetails.getOrElse(""))))
-            }
-          } recover{
-            case e => throw new RuntimeException("No employment found")
-          }
+              employment <- employmentService.employment(Nino(user.getNino), empId)
+              futureResult =
+              employment match {
+                case Some(emp) => {
+                  val cache = Map(UpdateEmployment_EmploymentIdKey -> empId.toString, UpdateEmployment_NameKey -> emp.name)
+                  journeyCacheService.cache(cache).map(_ =>
+                    Ok(views.html.employments.update.whatDoYouWantToTellUs(EmploymentViewModel(emp.name, empId),
+                      UpdateEmploymentDetailsForm.form.fill(userSuppliedDetails.getOrElse(""))))
+                  )
+                }
+                case _ => throw new RuntimeException("Error during employment details retrieval")
+              }
+              result <- futureResult
+            } yield result
   }
 
   def submitUpdateEmploymentDetails(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
