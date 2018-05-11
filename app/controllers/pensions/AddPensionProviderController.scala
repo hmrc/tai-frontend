@@ -185,8 +185,16 @@ trait AddPensionProviderController extends TaiBaseController
         ServiceCheckLite.personDetailsCheck {
           journeyCacheService.currentCache map { cache =>
             val viewModel = PensionNumberViewModel(cache)
-            Ok(views.html.pensions.addPensionNumber(AddPensionProviderNumberForm.form, viewModel))
 
+            val payrollNo = cache.get(AddPensionProvider_PayrollNumberChoice) match {
+              case Some(YesValue) => cache.get(AddPensionProvider_PayrollNumberKey)
+              case _ => None
+            }
+
+            Ok(views.html.pensions.addPensionNumber(AddPensionProviderNumberForm.form.fill(
+              AddPensionProviderNumberForm(cache.get(AddPensionProvider_PayrollNumberChoice), payrollNo)),
+              viewModel)
+            )
           }
         }
   }
@@ -202,7 +210,9 @@ trait AddPensionProviderController extends TaiBaseController
             }
           },
           form => {
-            val payrollNumberToCache = Map(AddPensionProvider_PayrollNumberKey -> form.payrollNumberEntry.getOrElse(Messages("tai.notKnown.response")))
+            val payrollNumberToCache = Map(
+              AddPensionProvider_PayrollNumberChoice -> form.payrollNumberChoice.getOrElse(Messages("tai.label.no")),
+              AddPensionProvider_PayrollNumberKey -> form.payrollNumberEntry.getOrElse(Messages("tai.notKnown.response")))
             journeyCacheService.cache(payrollNumberToCache).map(_ =>
               Redirect(controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber())
             )

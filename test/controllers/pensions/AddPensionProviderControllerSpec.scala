@@ -207,8 +207,6 @@ class AddPensionProviderControllerSpec extends PlaySpec
     }
   }
 
-//  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
   "addPensionProviderStartDate" must {
     "show the pension start date form page" when {
       "the request has an authorised session and no previously cached date present" in {
@@ -237,9 +235,6 @@ class AddPensionProviderControllerSpec extends PlaySpec
         doc.toString must include("2037")
       }
     }
-
-
-
 
     "return error" when {
       "cache doesn't return data" in {
@@ -307,10 +302,10 @@ class AddPensionProviderControllerSpec extends PlaySpec
 
   "add pension number" must {
     "show the add pension number page" when {
-      "the request has an authorised session" in {
+      "the request has an authorised session and no previously cached pension number present" in {
         val sut = createSUT
         val pensionProviderName = "TEST"
-        val cache = Map(AddPensionProvider_NameKey -> pensionProviderName, AddPensionProvider_StartDateWithinSixWeeks -> YesValue)
+        val cache = Map(AddPensionProvider_NameKey -> pensionProviderName)
         when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = sut.addPensionNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -320,14 +315,125 @@ class AddPensionProviderControllerSpec extends PlaySpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
       }
+
+      "the request has an authorised session and previously cached pension number choice is 'No', and no payroll number is held in cache" in {
+        val sut = createSUT
+        val pensionProviderName = "TEST"
+        val cache = Map(
+          AddPensionProvider_NameKey -> pensionProviderName,
+          AddPensionProvider_PayrollNumberChoice -> NoValue)
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+
+        val result = sut.addPensionNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
+        doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe ""
+
+      }
+
+      "the request has an authorised session and previously cached pension number choice is 'No', and a payroll number is held in cache" in {
+        val sut = createSUT
+        val pensionProviderName = "TEST"
+        val cache = Map(
+          AddPensionProvider_NameKey -> pensionProviderName,
+          AddPensionProvider_PayrollNumberChoice -> NoValue,
+          AddPensionProvider_PayrollNumberKey -> Messages("123456789"))
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+
+        val result = sut.addPensionNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
+        doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe ""
+
+      }
+
+      "the request has an authorised session and previously cached pension number choice is 'Yes' but no payroll number added" in {
+        val sut = createSUT
+        val pensionProviderName = "TEST"
+        val cache = Map(
+          AddPensionProvider_NameKey -> pensionProviderName,
+          AddPensionProvider_PayrollNumberChoice -> YesValue)
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+
+        val result = sut.addPensionNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
+        doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe ""
+      }
+
+      "the request has an authorised session and previously cached pension number choice is 'Yes' and payroll number added" in {
+        val sut = createSUT
+        val pensionProviderName = "TEST"
+        val cache = Map(
+          AddPensionProvider_NameKey -> pensionProviderName,
+          AddPensionProvider_PayrollNumberChoice -> YesValue,
+          AddPensionProvider_PayrollNumberKey -> Messages("123456789"))
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+
+        val result = sut.addPensionNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
+        doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberEntry]").get(0).attributes().get("value") mustBe "123456789"
+      }
     }
   }
+
+//  "addPensionProviderStartDate" must {
+//    "show the pension start date form page" when {
+//      "the request has an authorised session and no previously cached date present" in {
+//        val sut = createSUT
+//        val pensionProviderName = "TEST"
+//        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(None)))
+//
+//        val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+//        status(result) mustBe OK
+//
+//        val doc = Jsoup.parse(contentAsString(result))
+//        doc.title() must include(Messages("tai.addPensionProvider.startDateForm.title", pensionProviderName))
+//        doc.toString must not include("2037")
+//      }
+//
+//      "the request has an authorised session and a previously cached date is present" in {
+//        val sut = createSUT
+//        val pensionProviderName = "TEST"
+//        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(Some("2037-01-18"))))
+//
+//        val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+//        status(result) mustBe OK
+//
+//        val doc = Jsoup.parse(contentAsString(result))
+//        doc.title() must include(Messages("tai.addPensionProvider.startDateForm.title", pensionProviderName))
+//        doc.toString must include("2037")
+//      }
+//    }
+
   "submit pension number" must {
     "cache pension number" when {
       "the form is valid and user knows their pension number" in {
         val sut = createSUT
         val payrollNo = "1234"
-        val mapWithPayrollNumber = Map(AddPensionProvider_PayrollNumberKey -> payrollNo)
+        val mapWithPayrollNumber = Map(
+          AddPensionProvider_PayrollNumberChoice -> YesValue,
+          AddPensionProvider_PayrollNumberKey -> payrollNo
+        )
         when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
         Await.result(sut.submitPensionNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           PayrollNumberChoice -> YesValue, PayrollNumberEntry -> payrollNo)), 5 seconds)
@@ -340,7 +446,10 @@ class AddPensionProviderControllerSpec extends PlaySpec
       "the form is valid and user knows their pension number" in {
         val sut = createSUT
         val payrollNo = "1234"
-        val mapWithPayrollNumber = Map(AddPensionProvider_PayrollNumberKey -> payrollNo)
+        val mapWithPayrollNumber = Map(
+          AddPensionProvider_PayrollNumberChoice -> YesValue,
+          AddPensionProvider_PayrollNumberKey -> payrollNo
+        )
         when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
         val result = sut.submitPensionNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           PayrollNumberChoice -> YesValue, PayrollNumberEntry -> payrollNo))
@@ -354,14 +463,17 @@ class AddPensionProviderControllerSpec extends PlaySpec
       "the form is valid and user doesn't know its pension number" in {
         val sut = createSUT
         val payrollNo = Messages("tai.notKnown.response")
-        val mapWithPayrollNumber = Map(AddPensionProvider_PayrollNumberKey -> payrollNo)
+        val mapWithoutPayrollNumber = Map(
+          AddPensionProvider_PayrollNumberChoice -> NoValue,
+          AddPensionProvider_PayrollNumberKey -> payrollNo
+        )
 
-        when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
+        when(sut.journeyCacheService.cache(mockEq(mapWithoutPayrollNumber))(any())).thenReturn(Future.successful(mapWithoutPayrollNumber))
 
         Await.result(sut.submitPensionNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           PayrollNumberChoice -> NoValue, PayrollNumberEntry -> "")), 5 seconds)
 
-        verify(sut.journeyCacheService, times(1)).cache(mockEq(mapWithPayrollNumber))(any())
+        verify(sut.journeyCacheService, times(1)).cache(mockEq(mapWithoutPayrollNumber))(any())
       }
     }
 
@@ -369,9 +481,12 @@ class AddPensionProviderControllerSpec extends PlaySpec
       "the form is valid and user doesn't know its pension number" in {
         val sut = createSUT
         val payrollNo = Messages("tai.notKnown.response")
-        val mapWithPayrollNumber = Map(AddPensionProvider_PayrollNumberKey -> payrollNo)
+        val mapWithoutPayrollNumber = Map(
+          AddPensionProvider_PayrollNumberChoice -> NoValue,
+          AddPensionProvider_PayrollNumberKey -> payrollNo
+        )
 
-        when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
+        when(sut.journeyCacheService.cache(mockEq(mapWithoutPayrollNumber))(any())).thenReturn(Future.successful(mapWithoutPayrollNumber))
 
         val result = sut.submitPensionNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           PayrollNumberChoice -> NoValue, PayrollNumberEntry -> ""))
