@@ -51,7 +51,37 @@
                     </p>
                 </div>
 
-                @multiDescriptionList(taxCodeViewModel.taxCodeDetails)
+                <!-- @multiDescriptionList(taxCodeViewModel.taxCodeDetails) -->
+
+                @for((descriptionList, descListIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
+
+                <section class="section" aria-labelledby="descriptionList@{descListIdx.toString}Heading">
+
+                    <h2 id="descriptionList@{descListIdx.toString}Heading">@descriptionList.heading</h2>
+
+                    <ul id="descriptionList@{descListIdx.toString}" class="tai-description-list flush">
+
+                        @for((descriptionTerm, termIdx) <- descriptionList.descriptionItems.keySet zip (Stream from 1)) {
+                        <li>
+                            <div class="bold-large" id="descriptionTerm_@{descListIdx.toString}_@{termIdx.toString}">
+                                <span class="visuallyhidden">@messages("tai.taxCode.part.announce") </span>
+                                @descriptionTerm
+                            </div>
+                            <div class="fixed-small" id="descriptionText_@{descListIdx.toString}_@{termIdx.toString}">
+                                <span class="visuallyhidden">@messages("tai.taxCode.definition.announce") </span>
+                                @Html(descriptionList.descriptionItems(descriptionTerm))
+                            </div>
+                        </li>
+                        }
+                    </ul>
+
+                </section>
+                }
+
+
+
+
+
             </div>
         </div>
 

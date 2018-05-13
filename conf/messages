@@ -1069,6 +1069,8 @@ tai.taxCode.multiple.info=Your tax codes are used to work out how much Income Ta
 tai.taxCode.subheading=Your tax code for {0}: {1}
 tai.taxCode.sideBar.heading=Understand your tax
 tai.taxCode.taxableIncome.link=View your taxable income
+tai.taxCode.part.announce=Definition of tax code part
+tai.taxCode.definition.announce=The definition of this part of your tax code is as follows:
 
 ## New tax code explanations
 tai.taxCode.L=You are entitled to the basic tax-free Personal Allowance. Your tax code will be updated automatically if the tax-free Personal Allowances change.

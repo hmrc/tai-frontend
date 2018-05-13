@@ -37,18 +37,18 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
       doc must haveLinkElement("taxableIncomeLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("tai.incomeTaxSummary.link"))
     }
 
-    "display a description list for each tax code provided in the view model" in {
-      doc must haveDescriptionListWithId("descriptionList1")
+    "display an list of tax-code-part descriptions, for each tax code provided in the view model" in {
+      doc must haveUnorderedListWithId("descriptionList1")
       doc must haveH2HeadingWithIdAndText("descriptionList1Heading", "Your tax code for employer1: BR")
-      doc must haveDescriptionTermWithIdAndText("descriptionTerm_1_1", "K")
-      doc must haveTermDescriptionWithIdAndText("descriptionText_1_1", messages("tai.taxCode.BR"))
+      doc must haveElementAtPathWithText("#descriptionTerm_1_1", s"${messages("tai.taxCode.part.announce")} K")
+      doc must haveElementAtPathWithText("#descriptionText_1_1", s"${messages("tai.taxCode.definition.announce")} ${messages("tai.taxCode.BR")}")
 
-      doc must haveDescriptionListWithId("descriptionList2")
+      doc must haveUnorderedListWithId("descriptionList2")
       doc must haveH2HeadingWithIdAndText("descriptionList2Heading", "Your tax code for employer2: D0")
-      doc must haveDescriptionTermWithIdAndText("descriptionTerm_2_1", "D0")
-      doc must haveTermDescriptionWithIdAndText("descriptionText_2_1", messages("tai.taxCode.DX", 40))
-      doc must haveDescriptionTermWithIdAndText("descriptionTerm_2_2", "K")
-      doc must haveTermDescriptionWithIdAndText("descriptionText_2_2", messages("tai.taxCode.BR"))
+      doc must haveElementAtPathWithText("#descriptionTerm_2_1", s"${messages("tai.taxCode.part.announce")} D0")
+      doc must haveElementAtPathWithText("#descriptionText_2_1", s"${messages("tai.taxCode.definition.announce")} ${messages("tai.taxCode.DX", 40)}")
+      doc must haveElementAtPathWithText("#descriptionTerm_2_2", s"${messages("tai.taxCode.part.announce")} K")
+      doc must haveElementAtPathWithText("#descriptionText_2_2", s"${messages("tai.taxCode.definition.announce")} ${messages("tai.taxCode.BR")}")
     }
   }
 
