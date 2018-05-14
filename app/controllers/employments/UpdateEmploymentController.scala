@@ -79,7 +79,7 @@ trait UpdateEmploymentController extends TaiBaseController
             for {
               userSuppliedDetails <- journeyCacheService.currentValue(UpdateEmployment_EmploymentDetailsKey)
               employment <- employmentService.employment(Nino(user.getNino), empId)
-              futureResult =
+              futureResult <-
               employment match {
                 case Some(emp) => {
                   val cache = Map(UpdateEmployment_EmploymentIdKey -> empId.toString, UpdateEmployment_NameKey -> emp.name)
@@ -90,8 +90,7 @@ trait UpdateEmploymentController extends TaiBaseController
                 }
                 case _ => throw new RuntimeException("Error during employment details retrieval")
               }
-              result <- futureResult
-            } yield result
+            } yield futureResult
           }
   }
 
@@ -125,7 +124,6 @@ trait UpdateEmploymentController extends TaiBaseController
           } yield{Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel((employmentId)),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
           }
-
         }
   }
 
