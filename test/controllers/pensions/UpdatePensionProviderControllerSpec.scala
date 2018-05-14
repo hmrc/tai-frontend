@@ -21,9 +21,7 @@ import controllers.FakeTaiPlayApplication
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
-import org.mockito.Matchers.{eq => mockEq, _}
+import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -37,9 +35,8 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
-import uk.gov.hmrc.tai.model.TaiRoot
-import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, IncorrectIncome, IncorrectPensionProvider, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, IncorrectPensionProvider, PensionIncome}
 import uk.gov.hmrc.tai.service.{JourneyCacheService, PensionProviderService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.{FormValuesConstants, IncorrectPensionDecisionConstants, JourneyCacheConstants}
 
@@ -178,6 +175,41 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.heading", "TEST"))
       }
     }
+  }
+  "submitUpdateEmploymentDetails" must {
+
+    "redirect to the addTelephoneNumber page" when {
+      "the form submission is valid" in {
+
+        val sut = createSUT
+
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+
+        val result = sut.submitWhatDoYouWantToTellUs(RequestBuilder.buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(("pensionDetails", "test details")))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.addTelephoneNumber().url
+      }
+    }
+
+    "return Bad Request" when {
+      "the form submission is invalid" in {
+
+        val sut = createSUT
+
+        val pensionDetailsFormData = ("pensionDetails", "")
+
+        when(sut.journeyCacheService.mandatoryValue(any())(any())).thenReturn(Future.successful("Test"))
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+
+        val result = sut.submitWhatDoYouWantToTellUs(RequestBuilder.buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(pensionDetailsFormData))
+
+        status(result) mustBe BAD_REQUEST
+      }
+    }
+
   }
 
   "addTelephoneNumber" must {
@@ -354,7 +386,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
     override val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
     override val pensionProviderService: PensionProviderService = mock[PensionProviderService]
   }

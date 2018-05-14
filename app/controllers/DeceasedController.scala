@@ -37,13 +37,14 @@ trait DeceasedController extends TaiBaseController
   def personService: PersonService
 
   def deceased() = authorisedForTai(personService).async {
-    implicit user => implicit taiRoot => implicit request =>
+    implicit user => implicit person => implicit request =>
       Future.successful(Ok(views.html.deceased_helpline()))
   }
 }
-
+// $COVERAGE-OFF$
 object DeceasedController extends DeceasedController with AuthenticationConnectors {
   override val personService = PersonService
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$

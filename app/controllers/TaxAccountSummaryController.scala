@@ -51,7 +51,7 @@ trait TaxAccountSummaryController extends TaiBaseController
 
   def onPageLoad: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
 
@@ -86,7 +86,7 @@ trait TaxAccountSummaryController extends TaiBaseController
     }
   }
 }
-
+// $COVERAGE-OFF$
 object TaxAccountSummaryController extends TaxAccountSummaryController with AuthenticationConnectors {
   override val personService = PersonService
   override val auditService: AuditService = AuditService
@@ -96,3 +96,4 @@ object TaxAccountSummaryController extends TaxAccountSummaryController with Auth
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$

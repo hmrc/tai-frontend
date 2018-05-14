@@ -51,7 +51,7 @@ trait CompanyBenefitController extends TaiBaseController
 
   def redirectCompanyBenefitSelection(empId: Int, benefitType: BenefitComponentType) : Action[AnyContent] = authorisedForTai(personService).async {
       implicit user =>
-        implicit taiRoot =>
+        implicit person =>
           implicit request =>
             ServiceCheckLite.personDetailsCheck {
 
@@ -65,7 +65,7 @@ trait CompanyBenefitController extends TaiBaseController
 
   def decision: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             (for{
@@ -101,7 +101,7 @@ trait CompanyBenefitController extends TaiBaseController
 
   def submitDecision: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           UpdateOrRemoveCompanyBenefitDecisionForm.form.bindFromRequest.fold(
             formWithErrors => {
@@ -124,7 +124,7 @@ trait CompanyBenefitController extends TaiBaseController
           )
   }
 }
-
+// $COVERAGE-OFF$
 object CompanyBenefitController extends CompanyBenefitController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override val auditService: AuditService = AuditService
@@ -134,5 +134,6 @@ object CompanyBenefitController extends CompanyBenefitController with Authentica
   override val journeyCacheService: JourneyCacheService = JourneyCacheService(EndCompanyBenefit_JourneyKey)
   override val trackingJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
 }
+// $COVERAGE-ON$
 
 

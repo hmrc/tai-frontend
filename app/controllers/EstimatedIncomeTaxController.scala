@@ -49,7 +49,7 @@ trait EstimatedIncomeTaxController extends TaiBaseController
 
   def estimatedIncomeTax(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             val nino = Nino(user.getNino)
@@ -82,7 +82,7 @@ trait EstimatedIncomeTaxController extends TaiBaseController
 
   def taxRelief(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             val nino = Nino(user.getNino)
@@ -103,7 +103,7 @@ trait EstimatedIncomeTaxController extends TaiBaseController
   }
 
 }
-
+// $COVERAGE-OFF$
 object EstimatedIncomeTaxController extends EstimatedIncomeTaxController with AuthenticationConnectors {
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
@@ -113,3 +113,4 @@ object EstimatedIncomeTaxController extends EstimatedIncomeTaxController with Au
   override val codingComponentService: CodingComponentService = CodingComponentService
   override val taxAccountService: TaxAccountService = TaxAccountService
 }
+// $COVERAGE-ON$

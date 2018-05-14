@@ -26,12 +26,10 @@ import org.scalatestplus.play.PlaySpec
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.TaiRoot
-import uk.gov.hmrc.tai.service.{AuditService, SessionService, PersonService}
+import uk.gov.hmrc.tai.service.{AuditService, PersonService, SessionService}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -58,7 +56,6 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
   private val redirectUri = "redirectUri"
   private implicit val hc = HeaderCarrier()
   private val nino = new Generator(new Random).nextNino
-  private val taiRoot = TaiRoot(nino = nino.nino)
 
   def createSut = new SUT
 
@@ -77,7 +74,7 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
 
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(
       Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino))))

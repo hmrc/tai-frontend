@@ -30,13 +30,12 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.domain.{Employment, IncorrectIncome}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.domain.{Employment, IncorrectIncome}
 import uk.gov.hmrc.tai.service.{EmploymentService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.tai.util.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 
@@ -356,7 +355,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
   }
 
 }

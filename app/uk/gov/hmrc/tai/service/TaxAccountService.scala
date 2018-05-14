@@ -66,7 +66,8 @@ trait TaxAccountService {
     }
   }
 }
-
+// $COVERAGE-OFF$
 object TaxAccountService extends TaxAccountService {
   override val taxAccountConnector: TaxAccountConnector = TaxAccountConnector
 }
+// $COVERAGE-ON$

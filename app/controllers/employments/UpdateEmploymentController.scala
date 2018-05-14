@@ -72,7 +72,7 @@ trait UpdateEmploymentController extends TaiBaseController
 
   def updateEmploymentDetails(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
 
@@ -96,7 +96,7 @@ trait UpdateEmploymentController extends TaiBaseController
 
   def submitUpdateEmploymentDetails(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           UpdateEmploymentDetailsForm.form.bindFromRequest.fold(
             formWithErrors => {
@@ -113,7 +113,7 @@ trait UpdateEmploymentController extends TaiBaseController
   }
 
   def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
 
@@ -129,7 +129,7 @@ trait UpdateEmploymentController extends TaiBaseController
   }
 
   def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         YesNoTextEntryForm.form(
           Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
@@ -155,7 +155,7 @@ trait UpdateEmploymentController extends TaiBaseController
 
   def updateEmploymentCheckYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.collectedValues(Seq(UpdateEmployment_EmploymentIdKey, UpdateEmployment_NameKey,
@@ -174,7 +174,7 @@ trait UpdateEmploymentController extends TaiBaseController
 
   def submitYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             for {
@@ -191,14 +191,14 @@ trait UpdateEmploymentController extends TaiBaseController
 
   def confirmation: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             Future.successful(Ok(views.html.employments.confirmation()))
           }
   }
 }
-
+// $COVERAGE-OFF$
 object UpdateEmploymentController extends UpdateEmploymentController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override implicit val templateRenderer = LocalTemplateRenderer
@@ -207,3 +207,4 @@ object UpdateEmploymentController extends UpdateEmploymentController with Authen
   override val journeyCacheService = JourneyCacheService(UpdateEmployment_JourneyKey)
   override val successfulJourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
 }
+// $COVERAGE-ON$

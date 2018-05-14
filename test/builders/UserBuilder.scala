@@ -18,22 +18,21 @@ package builders
 
 import controllers.auth.TaiUser
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.play.frontend.auth.{Attorney, AuthContext, Link}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.play.frontend.auth.{Attorney, AuthContext, Link}
+import uk.gov.hmrc.tai.model.domain.Person
 
 object UserBuilder {
 
   val nino: Nino = new Generator().nextNino
 
-  def apply(title: String = "Mr", firstName: String = "Jjj", secondName: Option[String] = None, lastName: String = "Bbb") = {
-    val taiRoot = TaiRoot(nino = nino.nino,
-                          title = title,
-                          version = 99,
-                          firstName = firstName,
-                          secondName = secondName,
-                          surname = lastName,
-                          name = s"$firstName $lastName")
+  def apply(title: String = "Mr", firstName: String = "Jjj", lastName: String = "Bbb") = {
+    val person = Person(
+      nino = nino,
+      firstName = firstName,
+      surname = lastName,
+      isDeceased = false,
+      hasCorruptData = false)
 
     def taxForIndividualsAuthority(id: String, nino: String): Authority =
       Authority(uri = s"/path/to/authority",
@@ -67,14 +66,14 @@ object UserBuilder {
     }
 
     TaiUser(
-      authContext = taiAuthContext(s"${firstName.head.toLower}${lastName.toLowerCase}", taiRoot.nino),
-      taiRoot = taiRoot
+      authContext = taiAuthContext(s"${firstName.head.toLower}${lastName.toLowerCase}", person.nino.nino),
+      person = person
     )
   }
 
   def createUserWithAttorney(attorneyName: String, attorneyLink: Link): TaiUser = {
     val user = apply()
-    TaiUser(user.authContext.copy(attorney = Some(Attorney(attorneyName,attorneyLink))), user.taiRoot)
+    TaiUser(user.authContext.copy(attorney = Some(Attorney(attorneyName,attorneyLink))), user.person)
   }
 
 }

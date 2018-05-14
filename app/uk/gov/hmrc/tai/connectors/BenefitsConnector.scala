@@ -52,8 +52,9 @@ trait BenefitsConnector {
   }
 
 }
-
+// $COVERAGE-OFF$
 object BenefitsConnector extends BenefitsConnector {
   override val serviceUrl: String = baseUrl("tai")
   override def httpHandler: HttpHandler = HttpHandler
 }
+// $COVERAGE-ON$

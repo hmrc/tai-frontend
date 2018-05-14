@@ -48,7 +48,7 @@ trait BbsiUpdateAccountController extends TaiBaseController
 
   def captureInterest(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             bbsiService.untaxedInterest(Nino(user.getNino)) map { untaxedInterest =>
@@ -65,7 +65,7 @@ trait BbsiUpdateAccountController extends TaiBaseController
 
   def submitInterest(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           bbsiService.untaxedInterest(Nino(user.getNino)) flatMap { untaxedInterest =>
             untaxedInterest.bankAccounts.find(_.id == id) match {
@@ -88,7 +88,7 @@ trait BbsiUpdateAccountController extends TaiBaseController
 
   def checkYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCache.mandatoryValues(UpdateBankAccountInterestKey, UpdateBankAccountNameKey) map { mandatory =>
@@ -101,7 +101,7 @@ trait BbsiUpdateAccountController extends TaiBaseController
 
   def submitYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           for {
             mandatory <- journeyCache.mandatoryValues(UpdateBankAccountInterestKey, UpdateBankAccountNameKey)
@@ -112,7 +112,7 @@ trait BbsiUpdateAccountController extends TaiBaseController
   }
 
 }
-
+// $COVERAGE-OFF$
 object BbsiUpdateAccountController extends BbsiUpdateAccountController {
 
   override val personService = PersonService
@@ -126,3 +126,4 @@ object BbsiUpdateAccountController extends BbsiUpdateAccountController {
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$

@@ -18,9 +18,7 @@ package controllers
 
 import java.util.UUID
 
-import uk.gov.hmrc.tai.service.PersonService
 import builders.{AuthBuilder, RequestBuilder}
-import uk.gov.hmrc.tai.connectors._
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
@@ -30,14 +28,16 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.{JsArray, JsValue}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.tai.config.{ApplicationConfig, WSHttp}
-import uk.gov.hmrc.tai.model.{TaiRoot, UserDetails}
+import uk.gov.hmrc.tai.connectors._
+import uk.gov.hmrc.tai.model.UserDetails
+import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.TaiConstants
 
 import scala.concurrent.Future
@@ -93,6 +93,17 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
     }
   }
 
+  "gateKeeper" should {
+    "return return manualCorrespondence page when called" in  {
+      val fakeRequest = FakeRequest("GET", "").withFormUrlEncodedBody()
+      val sut = createSut
+      val result = sut.gateKeeper()(authorisedRequest)
+      status(result) shouldBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.title() should include(Messages("tai.gatekeeper.refuse.title"))
+    }
+  }
+
 
   //create TaxSummaryDetail from Json
   class TestTaiConnector extends TaiConnector {
@@ -117,8 +128,7 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
     override val personService = mock[PersonService]
     override val userDetailsConnector = mock[UserDetailsConnector]
 
-    val taiRoot = TaiRoot(nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", false, Some(false))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(Nino(nino))))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(
       Future.successful(Some(AuthBuilder.createFakeAuthority(nino))))

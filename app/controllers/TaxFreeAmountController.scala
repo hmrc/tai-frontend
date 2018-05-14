@@ -26,7 +26,8 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.model.{TaiRoot, TaxYear}
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
@@ -44,14 +45,14 @@ trait TaxFreeAmountController extends TaiBaseController
 
   def taxFreeAmount: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
               taxFreeAmount()
           }
   }
 
-  private def taxFreeAmount()(implicit user: TaiUser, request: Request[AnyContent], taiRoot: TaiRoot) = {
+  private def taxFreeAmount()(implicit user: TaiUser, request: Request[AnyContent], person: Person) = {
     val nino = Nino(user.getNino)
     for {
       codingComponents <- codingComponentService.taxFreeAmountComponents(nino, TaxYear())
@@ -63,7 +64,7 @@ trait TaxFreeAmountController extends TaiBaseController
     }
   }
 }
-
+// $COVERAGE-OFF$
 object TaxFreeAmountController extends TaxFreeAmountController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override val codingComponentService: CodingComponentService = CodingComponentService
@@ -74,4 +75,5 @@ object TaxFreeAmountController extends TaxFreeAmountController with Authenticati
 
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$
 

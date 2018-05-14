@@ -42,7 +42,7 @@ with WithAuthorisedForTaiLite {
 
   def taxExplanationPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             val nino = Nino(user.getNino)
@@ -64,10 +64,11 @@ with WithAuthorisedForTaiLite {
   }
 
 }
-
+// $COVERAGE-OFF$
 object TaxExplanationController extends TaxExplanationController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override val taxAccountService: TaxAccountService = TaxAccountService
   override implicit val templateRenderer: TemplateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$

@@ -20,7 +20,7 @@ import play.api.mvc.Result
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.domain.Person
 
 import scala.concurrent.Future
 
@@ -29,10 +29,10 @@ object ServiceCheckLite extends TaiBaseController {
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
-  def personDetailsCheck(proceed: Future[Result])(implicit taiRoot: TaiRoot): Future[Result] = {
-    if (taiRoot.deceasedIndicator.getOrElse(false)) {
+  def personDetailsCheck(proceed: Future[Result])(implicit person: Person): Future[Result] = {
+    if (person.isDeceased) {
       Future.successful(Redirect(routes.DeceasedController.deceased()))
-    } else if (taiRoot.manualCorrespondenceInd) {
+    } else if (person.hasCorruptData) {
       Future.successful(Redirect(routes.ServiceController.gateKeeper()))
     } else {
       proceed
