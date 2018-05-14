@@ -92,6 +92,7 @@ trait UpdateEmploymentController extends TaiBaseController
               }
               result <- futureResult
             } yield result
+          }
   }
 
   def submitUpdateEmploymentDetails(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {

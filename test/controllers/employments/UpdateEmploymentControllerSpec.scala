@@ -60,6 +60,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
         when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
         when(sut.journeyCacheService.cache(Matchers.eq(cache))(any())).thenReturn(Future.successful(cache))
+        when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.updateEmploymentDetails(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -76,12 +77,29 @@ class UpdateEmploymentControllerSpec extends PlaySpec
         when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
         when(sut.journeyCacheService.cache(Matchers.eq(cache))(any())).thenReturn(Future.successful(cache))
+        when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.updateEmploymentDetails(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
         verify(sut.journeyCacheService, times(1)).cache(Matchers.eq(cache))(any())
+      }
+    }
+    "retrieve the employment update details from the cache" when {
+      "the request has an authorised session" in {
+        val sut = createSUT
+        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        val cacheDetails =Some("updateDetails")
+        when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(cacheDetails))
+        val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
+        when(sut.journeyCacheService.cache(Matchers.eq(cache))(any())).thenReturn(Future.successful(cache))
+
+        val result = sut.updateEmploymentDetails(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        verify(sut.journeyCacheService, times(1)).currentValue(any())(any())
       }
     }
 
@@ -177,6 +195,21 @@ class UpdateEmploymentControllerSpec extends PlaySpec
         val sut = createSUT
         val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
         when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(sut.journeyCacheService.mandatoryValueAsInt(any())(any())).thenReturn(Future.successful(1))
+        when(sut.journeyCacheService.collectedOptionalValues(any())(any())).thenReturn(Future.successful(Seq(None,None)))
+
+        val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+      }
+      "we fetch telephone details form cache" in {
+        val sut = createSUT
+        val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(sut.journeyCacheService.mandatoryValueAsInt(any())(any())).thenReturn(Future.successful(1))
+        when(sut.journeyCacheService.collectedOptionalValues(any())(any())).thenReturn(Future.successful(Seq(Some("yes"),Some("123456789"))))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
