@@ -171,17 +171,19 @@
         <h2 id="companyBenefitsHeading" class="heading-small flush--bottom">@Messages("tai.income.details.companyuBenefitsHeading", model.empOrPensionName)</h2>
 
         @if(model.benefits.size > 0) {
-        <dl id="companyBenefitDescriptionList" class="tai-description-list tai-description-list--dynamic-columns full-width section flush">
+        <ul id="companyBenefitDescriptionList" class="tai-description-list tai-description-list--dynamic-columns full-width section flush">
 
             @for((benefit, idx) <- model.benefits zip (Stream from 1)) {
-            <div>
-                <dt id="companyBenefitDescriptionTerm@idx">
+            <li>
+                <div id="companyBenefitDescriptionTerm@idx">
+                    <span class="visuallyhidden">@messages("tai.income.details.benefit.name.announce") </span>
                     @benefit.name
-                </dt>
-                <dd id="companyBenefitDescriptionText@idx">
+                </div>
+                <div id="companyBenefitDescriptionText@idx">
+                    <span class="visuallyhidden">@messages("tai.income.details.benefit.amount.announce") </span>
                     @pounds(benefit.amount)
-                </dd>
-                <dd class="tai-description-details--retain-column" id="companyBenefitChangeLinkDescriptionText@idx">
+                </div>
+                <div class="tai-description-details--retain-column" id="companyBenefitChangeLinkDescriptionText@idx">
                     @includes.link(
                         id = Some("changeCompanyBenefitLink" + idx.toString),
                         url = benefit.changeUrl,
@@ -189,11 +191,11 @@
                         altCopy=Some(Messages("tai.updateOrRemove") + " " + benefit.name.toLowerCase),
                         attributes = Seq("data-journey-click" -> ("link - click:" + gaEventActionString + ":" + Messages("tai.updateOrRemove") + " " + benefit.name.toLowerCase))
                     )
-                </dd>
-            </div>
+                </div>
+            </li>
             }
 
-        </dl>
+        </ul>
         } else {
         <p id="noCompanyBenefitsMessage">@Messages("tai.income.details.noCompanyBenefitsMsg", model.empOrPensionName)</p>
         }

@@ -1526,6 +1526,9 @@ tai.income.details.companyuBenefitsHeading=Your company benefits from {0}
 tai.income.details.noCompanyBenefitsMsg=You have no company benefits from {0}
 tai.employment.income.details.payrollNumber.screenReader=Your payroll number is {0}.
 tai.pension.income.details.pensionNumber.screenReader=Your pension number is {0}.
+tai.income.details.benefit.name.announce=Benefit type
+tai.income.details.benefit.amount.announce=The amount if this benefit is
+
 
 ## Update Income Details - Previous Years
 tai.income.previousYears.journey.preHeader=Update income details

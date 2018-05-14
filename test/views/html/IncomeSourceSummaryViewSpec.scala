@@ -129,32 +129,32 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       }
     }
 
-    "use conditional logic to display a company benefits description list" which {
-      "displays the description list when benefits are present in the view model" in {
+    "use conditional logic to display a company benefits list" which {
+      "displays the list when benefits are present in the view model" in {
         val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(modelWithCompanyBenefits).toString)
-        testDoc must haveElementAtPathWithId("#companyBenefitsSection dl", "companyBenefitDescriptionList")
+        testDoc must haveElementAtPathWithId("#companyBenefitsSection ul", "companyBenefitDescriptionList")
       }
-      "does not display the description list when benefits are absent from the view model" in {
-        doc must not(haveElementAtPathWithId("#companyBenefitsSection dl", "companyBenefitDescriptionList"))
+      "does not display the list when benefits are absent from the view model" in {
+        doc must not(haveElementAtPathWithId("#companyBenefitsSection ul", "companyBenefitDescriptionList"))
       }
       "displays a 'no company benefits' message when benefits are absent from the view model" in {
         doc must haveElementWithId("noCompanyBenefitsMessage")
       }
     }
 
-    "display the appropriate number of company benefit description list entries" in {
+    "display the appropriate number of company benefit list entries" in {
       val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(modelWithCompanyBenefits).toString)
       testDoc must haveElementWithId("companyBenefitDescriptionList")
-      testDoc must haveElementAtPathWithId("#companyBenefitDescriptionList dt", "companyBenefitDescriptionTerm1")
-      testDoc must haveElementAtPathWithId("#companyBenefitDescriptionList dt", "companyBenefitDescriptionTerm2")
-      testDoc must haveElementAtPathWithId("#companyBenefitDescriptionList dt", "companyBenefitDescriptionTerm3")
-      testDoc must not(haveElementAtPathWithId("#companyBenefitDescriptionList dt", "companyBenefitDescriptionTerm4"))
+      testDoc must haveElementAtPathWithId("#companyBenefitDescriptionList div", "companyBenefitDescriptionTerm1")
+      testDoc must haveElementAtPathWithId("#companyBenefitDescriptionList div", "companyBenefitDescriptionTerm2")
+      testDoc must haveElementAtPathWithId("#companyBenefitDescriptionList div", "companyBenefitDescriptionTerm3")
+      testDoc must not(haveElementAtPathWithId("#companyBenefitDescriptionList div", "companyBenefitDescriptionTerm4"))
     }
 
-    "display the appropriate content with a specific company benefit description list entry" in {
+    "display the appropriate content with a specific company benefit list entry" in {
       val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(modelWithCompanyBenefits).toString)
-      testDoc must haveElementAtPathWithText("#companyBenefitDescriptionTerm1", "ben1")
-      testDoc must haveElementAtPathWithText("#companyBenefitDescriptionText1", "£100")
+      testDoc must haveElementAtPathWithText("#companyBenefitDescriptionTerm1", s"${messages("tai.income.details.benefit.name.announce")} ben1")
+      testDoc must haveElementAtPathWithText("#companyBenefitDescriptionText1", s"${messages("tai.income.details.benefit.amount.announce")} £100")
       testDoc must haveElementAtPathWithText("#companyBenefitChangeLinkDescriptionText1 a span", s"${messages("tai.updateOrRemove")} ben1")
       testDoc must haveLinkWithUrlWithID("changeCompanyBenefitLink1", "url1")
     }

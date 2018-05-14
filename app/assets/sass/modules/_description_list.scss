@@ -49,7 +49,7 @@
         display: block;
         border-bottom: 1px solid $border-colour;
 
-        > dt:first-of-type {
+        > dt:first-of-type, div:first-of-type {
             padding-bottom: 0;
         }
 
