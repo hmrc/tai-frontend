@@ -132,13 +132,12 @@ class AddPensionProviderControllerSpec extends PlaySpec
     }
   }
 
-
   "receivedFirstPay" must {
     "show the first pay choice page" when {
-      "the request has an authorised session" in {
+      "the request has an authorised session and no previous value is held in the cache" in {
         val sut = createSUT
         val pensionProviderName = "Pension Provider"
-        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(AddPensionProvider_NameKey))(any())).thenReturn(Future.successful(pensionProviderName))
+        when(sut.journeyCacheService.collectedValues(any(),any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(None)))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -146,14 +145,42 @@ class AddPensionProviderControllerSpec extends PlaySpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.firstPay.title", pensionProviderName))
       }
+
+      "the request has an authorised session and a previous value of 'No' is held in the cache" in {
+        val sut = createSUT
+        val pensionProviderName = "Pension Provider"
+        when(sut.journeyCacheService.collectedValues(any(),any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(Some(NoValue))))
+
+        val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addPensionProvider.firstPay.title", pensionProviderName))
+        doc.select("input[id=firstPayChoice-no][checked=checked]").size() mustBe 1
+      }
+      "the request has an authorised session and a previous value of 'Yes' is held in the cache" in {
+        val sut = createSUT
+        val pensionProviderName = "Pension Provider"
+        when(sut.journeyCacheService.collectedValues(any(),any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(Some(YesValue))))
+
+        val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addPensionProvider.firstPay.title", pensionProviderName))
+        doc.select("input[id=firstPayChoice-yes][checked=checked]").size() mustBe 1
+      }
     }
   }
+
 
   "submit first pay choice" must {
 
     "redirect user to first payment date page" when {
       "yes is selected" in {
         val sut = createSUT
+
+        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.submitFirstPay()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           AddPensionProviderFirstPayForm.FirstPayChoice -> YesValue))
@@ -164,9 +191,10 @@ class AddPensionProviderControllerSpec extends PlaySpec
     }
 
     "redirect user to an error page" when {
-      "no is selected (indicating that the start date is within six weeks of current date but no payment has yet been received)" in {
+      "no is selected (indicating no payment has yet been received)" in {
         val sut = createSUT
-        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(AddPensionProvider_NameKey))(any())).thenReturn(Future.successful("TEST-Pension-Provider"))
+
+        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.submitFirstPay()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           AddPensionProviderFirstPayForm.FirstPayChoice -> NoValue))

@@ -43,6 +43,7 @@ trait JourneyCacheConstants {
 
   val AddPensionProvider_JourneyKey = "add-pension-provider"
   val AddPensionProvider_NameKey = "pensionProviderName"
+  val AddPensionProvider_FirstPaymentKey = "pensionFirstPayment"
   val AddPensionProvider_StartDateKey = "pensionProviderStartDate"
   val AddPensionProvider_PayrollNumberChoice = "pensionProviderPayrollChoice"
   val AddPensionProvider_PayrollNumberKey = "pensionProviderPayrollNumber"

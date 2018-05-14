@@ -99,26 +99,14 @@ trait AddPensionProviderController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.mandatoryValue(AddPensionProvider_NameKey) map { pensionProviderName =>
-            Ok(views.html.pensions.addPensionReceivedFirstPay(AddPensionProviderFirstPayForm.form, pensionProviderName))
+
+          journeyCacheService.collectedValues(Seq(AddPensionProvider_NameKey), Seq(AddPensionProvider_FirstPaymentKey)) map tupled { (mandatoryVals, optionalVals) =>
+
+            Ok(views.html.pensions.addPensionReceivedFirstPay(AddPensionProviderFirstPayForm.form.fill(optionalVals(0)), mandatoryVals(0)))
+          }
           }
         }
-  }
 
-//  def receivedFirstPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-//    implicit taiRoot =>
-//      implicit request =>
-//        ServiceCheckLite.personDetailsCheck {
-//          journeyCacheService.mandatoryValue(AddPensionProvider_NameKey) map { pensionProviderName =>
-//            case Some(YesValue) =>  {
-//              Ok(views.html.pensions.addPensionReceivedFirstPay(AddPensionProviderFirstPayForm.form.fill(YesValue)))
-//            }
-//            case _ => {
-//              Ok(views.html.pensions.addPensionReceivedFirstPay(AddPensionProviderFirstPayForm.form))
-//          }
-//
-//        }
-//  }
 
   def submitFirstPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
@@ -128,9 +116,17 @@ trait AddPensionProviderController extends TaiBaseController
             journeyCacheService.mandatoryValue(AddPensionProvider_NameKey).map { pensionProviderName =>
               BadRequest(views.html.pensions.addPensionReceivedFirstPay(formWithErrors, pensionProviderName))
             }
-          }, {
-            case Some(YesValue) => Future.successful(Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate()))
-            case _ => Future.successful(Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension()))
+          },
+          yesNo => {
+            journeyCacheService.cache(AddPensionProvider_FirstPaymentKey,yesNo.getOrElse("")) map { _ =>
+              yesNo match {
+                case Some(YesValue) => {
+                  journeyCacheService.cache("", "")
+                  Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate())
+                }
+                case _ => Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension())
+              }
+            }
           }
         )
   }
