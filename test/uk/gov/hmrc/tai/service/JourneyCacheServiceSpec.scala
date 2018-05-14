@@ -150,6 +150,12 @@ class JourneyCacheServiceSpec extends PlaySpec
 
       Await.result(sut.collectedOptionalValues("key4", "key3"), 5 seconds) mustBe Seq(Some("val3"), None)
     }
+    "return None when we have invalid values passed" in {
+      val sut = createSut
+      when(sut.journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
+
+      Await.result(sut.collectedOptionalValues("key5", "key6"), 5 seconds) mustBe Seq(None, None)
+    }
   }
 
   "flush the cache" must {
