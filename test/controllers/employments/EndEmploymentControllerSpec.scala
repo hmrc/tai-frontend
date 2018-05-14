@@ -472,7 +472,7 @@ class EndEmploymentControllerSpec
       "the request has an authorised session and there is cached data" in {
         val sut = createSUT
         when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(EndEmployment_EmploymentIdKey))(any())).thenReturn(Future.successful(0))
-        when(sut.journeyCacheService.collectedOptionalValues(any())(any())).thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -484,7 +484,7 @@ class EndEmploymentControllerSpec
       "the request has an authorised session no cached data" in {
         val sut = createSUT
         when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(EndEmployment_EmploymentIdKey))(any())).thenReturn(Future.successful(0))
-        when(sut.journeyCacheService.collectedOptionalValues(any())(any())).thenReturn(Future.successful(Seq(None,None)))
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(None,None)))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK

@@ -244,7 +244,7 @@ trait EndEmploymentController extends TaiBaseController
           ServiceCheckLite.personDetailsCheck {
             for {
               employmentId <- journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey)
-              telephoneCache <- journeyCacheService.collectedOptionalValues(EndEmployment_TelephoneQuestionKey,EndEmployment_TelephoneNumberKey)
+              telephoneCache <- journeyCacheService.optionalValues(EndEmployment_TelephoneQuestionKey,EndEmployment_TelephoneNumberKey)
             } yield {
               Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel(employmentId),
                 YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
