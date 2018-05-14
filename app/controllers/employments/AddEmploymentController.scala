@@ -143,8 +143,8 @@ trait AddEmploymentController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.mandatoryValue(AddEmployment_NameKey) map { employmentName =>
-            Ok(views.html.employments.add_employment_first_pay_form(AddEmploymentFirstPayForm.form, employmentName))
+          journeyCacheService.collectedValues(Seq(AddEmployment_NameKey), Seq(AddEmployment_RecewivedFirstPayKey)) map tupled { (mandSeq, optSeq)  =>
+            Ok(views.html.employments.add_employment_first_pay_form(AddEmploymentFirstPayForm.form.fill(optSeq(0)), mandSeq(0)))
           }
         }
   }

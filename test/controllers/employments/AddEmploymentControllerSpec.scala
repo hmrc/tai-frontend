@@ -249,10 +249,11 @@ class AddEmploymentControllerSpec extends PlaySpec
 
   "received First Pay" must {
     "show the first pay choice page" when {
-      "the request has an authorised session" in {
+      "the request has an authorised session and no previous response is held in cache" in {
         val sut = createSUT
         val employmentName = "TEST"
-        when(sut.journeyCacheService.mandatoryValue(any())(any())).thenReturn(Future.successful(employmentName))
+        when(sut.journeyCacheService.collectedValues(Matchers.eq(Seq(AddEmployment_NameKey)), Matchers.eq(Seq(AddEmployment_RecewivedFirstPayKey)))(any()))
+          .thenReturn(Future.successful((Seq(employmentName), Seq(None))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -260,6 +261,23 @@ class AddEmploymentControllerSpec extends PlaySpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.employmentFirstPay.title", employmentName))
+        doc.select("input[id=firstPayChoice-yes][checked=checked]").size() mustBe 0
+        doc.select("input[id=firstPayChoice-no][checked=checked]").size() mustBe 0
+      }
+      "the request has an authorised session and a previous response is held in cache" in {
+        val sut = createSUT
+        val employmentName = "TEST"
+        when(sut.journeyCacheService.collectedValues(Matchers.eq(Seq(AddEmployment_NameKey)), Matchers.eq(Seq(AddEmployment_RecewivedFirstPayKey)))(any()))
+          .thenReturn(Future.successful((Seq(employmentName), Seq(Some(YesValue)))))
+
+        val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addEmployment.employmentFirstPay.title", employmentName))
+        doc.select("input[id=firstPayChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=firstPayChoice-no][checked=checked]").size() mustBe 0
       }
     }
   }
