@@ -123,16 +123,29 @@ class AddEmploymentControllerSpec extends PlaySpec
 
   "addStartDate" must {
     "show the employment start date form page" when {
-      "the request has an authorised session" in {
+      "the request has an authorised session and no previously supplied start date is present in cache" in {
         val sut = createSUT
         val employmentName = "TEST"
-        when(sut.journeyCacheService.mandatoryValue(any())(any())).thenReturn(Future.successful(employmentName))
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(employmentName), Seq(None)))
 
         val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.startDateForm.title", employmentName))
+        doc.select("#tellUsStartDateForm_year").get(0).attributes.get("value") mustBe ""
+      }
+      "the request has an authorised session and a previously supplied start date is present in cache" in {
+        val sut = createSUT
+        val employmentName = "TEST"
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(employmentName), Seq(Some("2017-12-12"))))
+
+        val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addEmployment.startDateForm.title", employmentName))
+        doc.select("#tellUsStartDateForm_year").get(0).attributes.get("value") mustBe "2017"
       }
     }
 

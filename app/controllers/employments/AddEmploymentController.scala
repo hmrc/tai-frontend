@@ -102,8 +102,13 @@ trait AddEmploymentController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.mandatoryValue(AddEmployment_NameKey) map { empName =>
-            Ok(views.html.employments.add_employment_start_date_form(EmploymentAddDateForm(empName).form, empName))
+          journeyCacheService.collectedValues(Seq(AddEmployment_NameKey), Seq(AddEmployment_StartDateKey)) map tupled { (mandSeq, optSeq) =>
+
+            val form = optSeq(0) match {
+              case Some(dateString) => EmploymentAddDateForm(mandSeq(0)).form.fill(new LocalDate(dateString))
+              case _ => EmploymentAddDateForm(mandSeq(0)).form
+            }
+            Ok(views.html.employments.add_employment_start_date_form(form, mandSeq(0)))
           }
         }
   }
