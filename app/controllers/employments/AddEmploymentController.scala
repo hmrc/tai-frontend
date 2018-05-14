@@ -226,7 +226,17 @@ trait AddEmploymentController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          Future.successful( Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel, YesNoTextEntryForm.form())) )
+          journeyCacheService.optionalValues(AddEmployment_TelephoneQuestionKey, AddEmployment_TelephoneNumberKey) map { optSeq =>
+
+            val telNoToDisplay = optSeq(0) match {
+              case Some(YesValue) => optSeq(1)
+              case _ => None
+            }
+            Ok(views.html.can_we_contact_by_phone(
+              telephoneNumberViewModel,
+              YesNoTextEntryForm.form().fill(YesNoTextEntryForm(optSeq(0), telNoToDisplay))
+            ))
+          }
         }
   }
 

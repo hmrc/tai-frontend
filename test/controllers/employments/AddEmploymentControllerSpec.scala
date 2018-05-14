@@ -492,14 +492,41 @@ class AddEmploymentControllerSpec extends PlaySpec
 
   "add telephone number" must {
     "show the contact by telephone page" when {
-      "the request has an authorised session" in {
+      "the request has an authorised session and no previous response is held in cache" in {
         val sut = createSUT
-
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(None, None)))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoTextEntry]").get(0).attributes.get("value") mustBe ""
+      }
+      "the request has an authorised session and a previous 'no' response is held in cache" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(NoValue), Some("should be ignored"))))
+        val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=yesNoTextEntry]").get(0).attributes.get("value") mustBe ""
+      }
+      "the request has an authorised session and a previous 'yes' response is held in cache" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(YesValue), Some("should be displayed"))))
+        val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoTextEntry]").get(0).attributes.get("value") mustBe "should be displayed"
       }
     }
   }
