@@ -269,8 +269,7 @@ class AddEmploymentControllerSpec extends PlaySpec
     "redirect user to payroll number page" when {
       "yes is selected" in {
         val sut = createSUT
-        val firstPayChoice = Map(AddEmployment_StartDateWithinSixWeeks -> YesValue)
-        when(sut.journeyCacheService.cache(mockEq(firstPayChoice))(any())).thenReturn(Future.successful(firstPayChoice))
+        when(sut.journeyCacheService.cache(mockEq(AddEmployment_RecewivedFirstPayKey), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.submitFirstPay()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           AddEmploymentFirstPayForm.FirstPayChoice -> YesValue))
@@ -284,8 +283,7 @@ class AddEmploymentControllerSpec extends PlaySpec
       "no is selected" in {
         val sut = createSUT
         val employmentName = "TEST-Employer"
-
-        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(AddEmployment_NameKey))(any())).thenReturn(Future.successful(employmentName))
+        when(sut.journeyCacheService.cache(mockEq(AddEmployment_RecewivedFirstPayKey), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.submitFirstPay()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           AddEmploymentFirstPayForm.FirstPayChoice -> NoValue))

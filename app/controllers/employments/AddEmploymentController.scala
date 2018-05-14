@@ -158,10 +158,12 @@ trait AddEmploymentController extends TaiBaseController
               BadRequest(views.html.employments.add_employment_first_pay_form(formWithErrors, employmentName))
             }
           },
-          form => {
-            form match {
-              case Some(YesValue) => Future.successful(Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber()))
-              case _ => Future.successful(Redirect(controllers.employments.routes.AddEmploymentController.sixWeeksError()))
+          firstPayYesNo => {
+            journeyCacheService.cache(AddEmployment_RecewivedFirstPayKey, firstPayYesNo.getOrElse("")) map { _ =>
+              firstPayYesNo match {
+                case Some(YesValue) => Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber())
+                case _ => Redirect(controllers.employments.routes.AddEmploymentController.sixWeeksError())
+              }
             }
           }
         )
