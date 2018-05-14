@@ -119,7 +119,7 @@ trait UpdateEmploymentController extends TaiBaseController
 
           for {
             employmentId <- journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey)
-            telephoneCache <- journeyCacheService.collectedOptionalValues(Seq(UpdateEmployment_TelephoneQuestionKey, UpdateEmployment_TelephoneNumberKey))
+            telephoneCache <- journeyCacheService.collectedOptionalValues(UpdateEmployment_TelephoneQuestionKey, UpdateEmployment_TelephoneNumberKey)
 
           } yield{Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel((employmentId)),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
