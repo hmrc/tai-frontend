@@ -364,7 +364,10 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the form is valid and user knows their payroll number" in {
         val sut = createSUT
         val payrollNo = "1234"
-        val mapWithPayrollNumber = Map(AddEmployment_PayrollNumberKey -> payrollNo)
+        val mapWithPayrollNumber = Map(
+          AddEmployment_PayrollNumberQuestionKey -> YesValue,
+          AddEmployment_PayrollNumberKey -> payrollNo
+        )
         when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
         Await.result(sut.submitEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           PayrollNumberChoice -> YesValue, PayrollNumberEntry -> payrollNo)), 5 seconds)
@@ -377,7 +380,10 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the form is valid and user knows their payroll number" in {
         val sut = createSUT
         val payrollNo = "1234"
-        val mapWithPayrollNumber = Map(AddEmployment_PayrollNumberKey -> payrollNo)
+        val mapWithPayrollNumber = Map(
+          AddEmployment_PayrollNumberQuestionKey -> YesValue,
+          AddEmployment_PayrollNumberKey -> payrollNo
+        )
         when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
         val result = sut.submitEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           PayrollNumberChoice -> YesValue, PayrollNumberEntry -> payrollNo))
@@ -391,7 +397,10 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the form is valid and user doesn't know its payroll number" in {
         val sut = createSUT
         val payrollNo = Messages("tai.addEmployment.employmentPayrollNumber.notKnown")
-        val mapWithPayrollNumber = Map(AddEmployment_PayrollNumberKey -> payrollNo)
+        val mapWithPayrollNumber = Map(
+          AddEmployment_PayrollNumberQuestionKey -> NoValue,
+          AddEmployment_PayrollNumberKey -> payrollNo
+        )
 
         when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
 
@@ -406,7 +415,10 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the form is valid and user doesn't know its payroll number" in {
         val sut = createSUT
         val payrollNo = Messages("tai.addEmployment.employmentPayrollNumber.notKnown")
-        val mapWithPayrollNumber = Map(AddEmployment_PayrollNumberKey -> payrollNo)
+        val mapWithPayrollNumber = Map(
+          AddEmployment_PayrollNumberQuestionKey -> NoValue,
+          AddEmployment_PayrollNumberKey -> payrollNo
+        )
 
         when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
 

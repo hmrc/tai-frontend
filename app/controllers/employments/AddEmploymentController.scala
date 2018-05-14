@@ -203,7 +203,10 @@ trait AddEmploymentController extends TaiBaseController
             }
           },
           form => {
-            val payrollNumberToCache = Map(AddEmployment_PayrollNumberKey -> form.payrollNumberEntry.getOrElse(Messages("tai.addEmployment.employmentPayrollNumber.notKnown")))
+            val payrollNumberToCache = Map(
+              AddEmployment_PayrollNumberQuestionKey -> form.payrollNumberChoice.getOrElse(""),
+              AddEmployment_PayrollNumberKey -> form.payrollNumberEntry.getOrElse(Messages("tai.addEmployment.employmentPayrollNumber.notKnown"))
+            )
             journeyCacheService.cache(payrollNumberToCache).map(_ =>
               Redirect(controllers.employments.routes.AddEmploymentController.addTelephoneNumber())
             )
