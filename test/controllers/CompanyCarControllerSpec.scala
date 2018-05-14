@@ -17,31 +17,29 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.forms.benefits.DateForm
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{JourneyCacheService, SessionService, PersonService}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, SessionKeys}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.forms.benefits.DateForm
+import uk.gov.hmrc.tai.service.benefits.CompanyCarService
+import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, SessionService}
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
 
 import scala.concurrent.Future
@@ -381,8 +379,6 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
   val fakeAuthority = AuthBuilder.createFakeAuthority(fakeNino.nino)
 
-  val fakeTaiRoot = TaiRoot(fakeNino.nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", false, Some(false))
-
   def createSUT(isCompanyCarForceRedirectEnabled: Boolean = false) = new SUT(isCompanyCarForceRedirectEnabled)
 
   class SUT(isCompanyCarForceRedirectEnabled: Boolean) extends CompanyCarController {
@@ -399,7 +395,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
     override val companyCarForceRedirectEnabled: Boolean = isCompanyCarForceRedirectEnabled
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(fakeNino)))
 
     val dateForm = DateForm(Messages("tai.companyCar.endDate.blank"))
   }

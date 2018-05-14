@@ -65,7 +65,7 @@ trait TaiConfidenceLevelPredicate extends PageVisibilityPredicate {
       )
     )
 }
-
+// $COVERAGE-OFF$
 object TaiConfidenceLevelPredicate extends TaiConfidenceLevelPredicate {
   override def upliftUrl: String = ApplicationConfig.sa16UpliftUrl
 
@@ -75,3 +75,4 @@ object TaiConfidenceLevelPredicate extends TaiConfidenceLevelPredicate {
 
   override def origin: String = "TAI"
 }
+// $COVERAGE-ON$

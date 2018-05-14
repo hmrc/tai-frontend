@@ -74,7 +74,7 @@ trait UpdatePensionProviderController extends TaiBaseController
   )
 
   def doYouGetThisPension(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear()) flatMap {
@@ -96,7 +96,7 @@ trait UpdatePensionProviderController extends TaiBaseController
   }
 
   def handleDoYouGetThisPension: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           journeyCacheService.mandatoryValues(UpdatePensionProvider_IdKey, UpdatePensionProvider_NameKey) flatMap { mandatoryVals =>
@@ -118,7 +118,7 @@ trait UpdatePensionProviderController extends TaiBaseController
   }
 
   def whatDoYouWantToTellUs: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           journeyCacheService.mandatoryValue(UpdatePensionProvider_NameKey) flatMap { name =>
@@ -129,7 +129,7 @@ trait UpdatePensionProviderController extends TaiBaseController
 
   def submitWhatDoYouWantToTellUs: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           WhatDoYouWantToTellUsForm.form.bindFromRequest.fold(
             formWithErrors => {
@@ -145,7 +145,7 @@ trait UpdatePensionProviderController extends TaiBaseController
   }
 
   def addTelephoneNumber: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           journeyCacheService.mandatoryValueAsInt(UpdatePensionProvider_IdKey) map { id =>
@@ -155,7 +155,7 @@ trait UpdatePensionProviderController extends TaiBaseController
   }
 
   def submitTelephoneNumber: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         YesNoTextEntryForm.form(
           Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
@@ -181,7 +181,7 @@ trait UpdatePensionProviderController extends TaiBaseController
 
   def checkYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.collectedValues(
@@ -207,7 +207,7 @@ trait UpdatePensionProviderController extends TaiBaseController
 
   def submitYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             for {
@@ -227,14 +227,14 @@ trait UpdatePensionProviderController extends TaiBaseController
 
   def confirmation(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             Future.successful(Ok(views.html.pensions.update.confirmation()))
           }
   }
 }
-
+// $COVERAGE-OFF$
 object UpdatePensionProviderController extends UpdatePensionProviderController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override implicit val templateRenderer = LocalTemplateRenderer
@@ -244,4 +244,5 @@ object UpdatePensionProviderController extends UpdatePensionProviderController w
   override val successfulJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
   override val pensionProviderService: PensionProviderService = PensionProviderService
 }
+// $COVERAGE-ON$
 

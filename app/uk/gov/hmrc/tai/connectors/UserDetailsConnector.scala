@@ -45,8 +45,9 @@ trait UserDetailsConnector {
     }
   }
 }
-
+// $COVERAGE-OFF$
 object UserDetailsConnector extends UserDetailsConnector{
   override def http = WSHttp
 }
+// $COVERAGE-ON$
 

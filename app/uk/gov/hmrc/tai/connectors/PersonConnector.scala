@@ -16,29 +16,40 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.tai.model.domain.IncorrectIncome
+import uk.gov.hmrc.tai.connectors.responses._
+import uk.gov.hmrc.tai.model.domain.Person
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait PreviousYearsIncomeConnector {
+trait PersonConnector {
 
   val serviceUrl: String
+
   def httpHandler: HttpHandler
-  def previousYearsIncomeServiceUrl(nino: Nino, year: Int) = s"$serviceUrl/tai/$nino/employments/years/$year/update"
 
-  def incorrectIncome(nino: Nino, year: Int, incorrectIncome: IncorrectIncome)(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    httpHandler.postToApi[IncorrectIncome](previousYearsIncomeServiceUrl(nino, year), incorrectIncome).map { response =>
-      (response.json \ "data").asOpt[String]
-    }
+  def personUrl(nino: String): String = s"$serviceUrl/tai/$nino/person"
+
+  def person(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+
+    httpHandler.getFromApi(personUrl(nino.nino)) map (
+      json =>
+        TaiSuccessResponseWithPayload((json \ "data").as[Person])
+      ) recover {
+        case e: Exception =>
+          Logger.warn(s"Couldn't retrieve person details for $nino with exception:${e.getMessage}", e)
+          TaiNotFoundResponse(e.getMessage)
+      }
   }
-
 }
-// $COVERAGE-OFF$
-object PreviousYearsIncomeConnector extends PreviousYearsIncomeConnector with ServicesConfig {
+
+object PersonConnector extends PersonConnector with ServicesConfig {
+
   override val serviceUrl = baseUrl("tai")
+
   override def httpHandler: HttpHandler = HttpHandler
 }
-// $COVERAGE-ON$

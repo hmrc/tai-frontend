@@ -25,19 +25,16 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerException, NotFoundException}
-import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.{TaiRoot, TaxYear}
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
-import uk.gov.hmrc.tai.util.TaiConstants.EmployeePensionIForm
-import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -124,7 +121,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
     "redirect to mci page when mci indicator is true" in {
       val testController = createTestController()
-      when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRootMci))
+      when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(personMci))
 
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -134,6 +131,15 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
         case _ => ""
       }
       redirectUrl mustBe "/check-income-tax/tax-estimate-unavailable"
+    }
+    "redirect to deceased page when deceased indicator is true" in {
+      val testController = createTestController()
+      when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(person.copy(isDeceased=true)))
+
+      val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some("/check-income-tax/deceased")
     }
 
     "display an error page" when {
@@ -226,8 +232,8 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
   val fakeAuthority = AuthBuilder.createFakeAuthority(fakeNino.nino)
 
-  val fakeTaiRoot = TaiRoot(fakeNino.nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", false, Some(false))
-  val fakeTaiRootMci = TaiRoot(fakeNino.nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", true, Some(false))
+  val person = fakePerson(fakeNino)
+  val personMci = person.copy(hasCorruptData = true)
 
   def createTestController(employments: Seq[Employment] = Nil, previousYears: Int = 3) = new PayeControllerHistoricTest(employments, previousYears)
 
@@ -244,7 +250,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(person))
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
   }
 

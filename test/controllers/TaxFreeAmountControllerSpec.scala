@@ -25,11 +25,11 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{status, _}
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
@@ -37,6 +37,7 @@ import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, Perso
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
+import scala.util.Random
 
 class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -75,6 +76,8 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
 
   private def createSUT(newPageEnabled: Boolean = true) = new SUT()
 
+  private val nino = new Generator(new Random).nextNino
+
   val codingComponents = Seq(CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
     CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description"))
 
@@ -92,7 +95,7 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
     val ad = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
   }
 
 }

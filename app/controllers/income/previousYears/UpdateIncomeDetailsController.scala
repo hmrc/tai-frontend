@@ -66,7 +66,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
 
   def decision(taxYear: TaxYear): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.cache(Map(UpdatePreviousYearsIncome_TaxYearKey -> taxYear.year.toString)) map { _ =>
@@ -77,7 +77,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
 
   def submitDecision(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           UpdateIncomeDetailsDecisionForm.form.bindFromRequest.fold(
             formWithErrors => {
@@ -94,7 +94,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
 
   def details(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.currentCache map {
@@ -107,7 +107,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
 
   def submitDetails(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           UpdateIncomeDetailsForm.form.bindFromRequest.fold(
             formWithErrors => {
@@ -125,7 +125,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
 
   def telephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.currentCache map { currentCache =>
@@ -136,7 +136,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
 
   def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           YesNoTextEntryForm.form(
             Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
@@ -162,7 +162,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
 
   def checkYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.collectedValues(
@@ -185,7 +185,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
 
   def submitYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             for {
@@ -202,7 +202,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
 
   def confirmation(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
               Future.successful(Ok(views.html.incomes.previousYears.UpdateIncomeDetailsConfirmation()))
@@ -210,7 +210,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
   }
 
 }
-
+// $COVERAGE-OFF$
 object UpdateIncomeDetailsController extends UpdateIncomeDetailsController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
   override val auditService: AuditService = AuditService
@@ -220,3 +220,4 @@ object UpdateIncomeDetailsController extends UpdateIncomeDetailsController with 
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override def previousYearsIncomeService: PreviousYearsIncomeService = PreviousYearsIncomeService
 }
+// $COVERAGE-ON$

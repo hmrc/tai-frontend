@@ -45,8 +45,9 @@ trait PensionProviderConnector {
 
   def incorrectPensionProviderServiceUrl(nino: Nino, id: Int) = s"$serviceUrl/tai/$nino/pensionProvider/$id/reason"
 }
-
+// $COVERAGE-OFF$
 object PensionProviderConnector extends PensionProviderConnector with ServicesConfig {
   override val serviceUrl: String = baseUrl("tai")
   override def httpHandler: HttpHandler = HttpHandler
 }
+// $COVERAGE-ON$

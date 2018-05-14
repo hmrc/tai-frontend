@@ -72,7 +72,7 @@ object ApplicationConfig extends ServicesConfig {
 
   lazy val webchatTemplate = configuration.getString(s"govuk-tax.$env.services.webchat-frontend.template").getOrElse("defaultTemplate")
   lazy val webchatEntryPoint = configuration.getString(s"govuk-tax.$env.services.webchat-frontend.entry-point").getOrElse("defaultEntryPoint")
-  def webchatAvailabilityUrl = s"https://online.hmrc.gov.uk/webchatprod/egain/chat/entrypoint/checkEligibility/$webchatEntryPoint"
+  def webchatAvailabilityUrl = s"https://online.hmrc.gov.uk/system/egain/chat/entrypoint/checkEligibility/$webchatEntryPoint"
   lazy val scottishRateIncomeTaxUrl: String = "https://www.gov.uk/scottish-rate-income-tax"
 
   def fetchUrl(service: String) = {

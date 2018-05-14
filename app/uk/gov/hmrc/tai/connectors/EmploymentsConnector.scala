@@ -80,9 +80,10 @@ trait EmploymentsConnector {
 
   def incorrectEmploymentServiceUrl(nino: Nino, id: Int) = s"$serviceUrl/tai/$nino/employments/$id/reason"
 }
-
+// $COVERAGE-OFF$
 object EmploymentsConnector extends EmploymentsConnector with ServicesConfig {
   override val serviceUrl = baseUrl("tai")
 
   override def httpHandler: HttpHandler = HttpHandler
 }
+// $COVERAGE-ON$

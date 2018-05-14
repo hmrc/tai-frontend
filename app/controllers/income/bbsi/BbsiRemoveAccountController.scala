@@ -39,7 +39,7 @@ trait BbsiRemoveAccountController extends TaiBaseController
 
   def checkYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             bbsiService.bankAccount(Nino(user.getNino), id) map {
@@ -52,7 +52,7 @@ trait BbsiRemoveAccountController extends TaiBaseController
 
   def submitYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             bbsiService.removeBankAccount(Nino(user.getNino), id) map { _ =>
@@ -62,7 +62,7 @@ trait BbsiRemoveAccountController extends TaiBaseController
   }
 
 }
-
+// $COVERAGE-OFF$
 object BbsiRemoveAccountController extends BbsiRemoveAccountController {
   override val personService = PersonService
   override val bbsiService = BbsiService
@@ -71,3 +71,4 @@ object BbsiRemoveAccountController extends BbsiRemoveAccountController {
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$

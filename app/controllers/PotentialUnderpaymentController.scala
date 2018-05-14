@@ -47,7 +47,7 @@ trait PotentialUnderpaymentController extends TaiBaseController
 
   def potentialUnderpaymentPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
 
@@ -66,7 +66,7 @@ trait PotentialUnderpaymentController extends TaiBaseController
           } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", Nino(user.getNino))
   }
 }
-
+// $COVERAGE-OFF$
 object PotentialUnderpaymentController extends PotentialUnderpaymentController with AuthenticationConnectors {
   override def personService: PersonService = PersonService
   override def codingComponentService: CodingComponentService = CodingComponentService
@@ -75,3 +75,4 @@ object PotentialUnderpaymentController extends PotentialUnderpaymentController w
   override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$

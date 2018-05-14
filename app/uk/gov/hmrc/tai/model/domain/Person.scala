@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.service
+package uk.gov.hmrc.tai.model.domain
 
-import uk.gov.hmrc.tai.connectors.TaiConnector
-import play.api.Play.current
-import uk.gov.hmrc.tai.model._
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
-
-trait PersonService {
-
-  def taiClient: TaiConnector
-
-  def personDetails(rootUri: String)(implicit hc: HeaderCarrier): Future[TaiRoot] = taiClient.root(rootUri)
-}
+import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.domain.Nino
 
 
-object PersonService extends PersonService {
-  val taiClient = TaiConnector
+case class Person(nino: Nino,
+                  firstName: String,
+                  surname: String,
+                  isDeceased: Boolean,
+                  hasCorruptData: Boolean)
+
+object Person {
+  implicit val personFormat: Format[Person] = Json.format[Person]
 }

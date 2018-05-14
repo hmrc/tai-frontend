@@ -27,7 +27,7 @@ import uk.gov.hmrc.play.frontend.controller.UnauthorisedAction
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.{LocalTemplateRenderer, UserDetailsConnector}
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.TaiConstants
 
@@ -47,7 +47,7 @@ trait ServiceController extends TaiBaseController
   }
 
   def serviceSignout = authorisedForTai(personService).async {
-    implicit user => implicit taiRoot => implicit request =>
+    implicit user => implicit person => implicit request =>
       userDetailsConnector.userDetails(user.authContext).map { x =>
             if (x.hasVerifyAuthProvider) {
               Redirect(ApplicationConfig.citizenAuthFrontendSignOutUrl).
@@ -60,17 +60,17 @@ trait ServiceController extends TaiBaseController
 
   def gateKeeper() = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           getGateKeeper(Nino(user.getNino.toString))
   }
 
-  def getGateKeeper(nino: Nino)(implicit request: Request[AnyContent], user: TaiUser, taiRoot: TaiRoot): Future[Result] = {
+  def getGateKeeper(nino: Nino)(implicit request: Request[AnyContent], user: TaiUser, person: Person): Future[Result] = {
     Future.successful(Ok(views.html.manualCorrespondence()))
   } recoverWith handleErrorResponse("getServiceUnavailable", nino)
 
 }
-
+// $COVERAGE-OFF$
 object ServiceController extends ServiceController with AuthenticationConnectors {
   override val personService = PersonService
 
@@ -79,3 +79,4 @@ object ServiceController extends ServiceController with AuthenticationConnectors
 
   override def userDetailsConnector = UserDetailsConnector
 }
+// $COVERAGE-ON$

@@ -138,7 +138,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
     override val employmentService: EmploymentService = mock[EmploymentService]
     override val benefitsService: BenefitsService = mock[BenefitsService]
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakeTaiRoot(nino)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
 
 

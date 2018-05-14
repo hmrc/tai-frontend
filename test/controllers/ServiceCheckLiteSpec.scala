@@ -23,7 +23,7 @@ import play.api.mvc.Results.Ok
 import play.api.test.Helpers.{defaultAwaitTimeout, redirectLocation, status}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.domain.Person
 
 import scala.concurrent.Future
 
@@ -34,14 +34,15 @@ class ServiceCheckLiteSpec extends PlaySpec with FakeTaiPlayApplication {
 
   val nino = new Generator().nextNino
 
-  val defineTaiRoot = (mci:Boolean, di: Option[Boolean]) => TaiRoot(manualCorrespondenceInd = mci, deceasedIndicator = di)
+  def definePerson(mci:Boolean, di: Boolean) =
+    Person(nino, "firstname", "surname", di, mci)
 
   implicit val timeout = 16
 
   "personDetailsCheck in ServiceCheckLite" should {
     "redirect users" when {
       "deceased indicator is true for the user" in {
-        implicit val taiRoot = defineTaiRoot(true, Some(true))
+        implicit val person = definePerson(true, true)
         val result = ServiceCheckLite.personDetailsCheck{
           Future.successful(Ok("test"))
         }
@@ -50,8 +51,8 @@ class ServiceCheckLiteSpec extends PlaySpec with FakeTaiPlayApplication {
         redirectLocation(result).getOrElse("") mustBe routes.DeceasedController.deceased.url
       }
 
-      "MCI indicator is true for the user" in {
-        implicit val taiRoot = defineTaiRoot(true, Some(false))
+      "MCI indicator (aka hasCorruptData) is true for the user" in {
+        implicit val person = definePerson(true, false)
         val result = ServiceCheckLite.personDetailsCheck{
           Future.successful(Ok("test"))
         }
@@ -62,8 +63,8 @@ class ServiceCheckLiteSpec extends PlaySpec with FakeTaiPlayApplication {
     }
 
     "not be redirected" when {
-      "deceased indicator and MCI is false" in {
-        implicit val taiRoot = defineTaiRoot(false, Some(false))
+      "deceased indicator and MCI (hasCorruptData) is false" in {
+        implicit val person = definePerson(false, false)
         val result = ServiceCheckLite.personDetailsCheck{
           Future.successful(Ok("test"))
         }

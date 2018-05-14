@@ -38,9 +38,10 @@ trait TrackingConnector extends TrackedFormFormatters{
   }
 
 }
-
+// $COVERAGE-OFF$
 object TrackingConnector extends TrackingConnector with ServicesConfig {
   override val serviceUrl = baseUrl("tracking")
   override def httpHandler: HttpHandler = HttpHandler
 
 }
+// $COVERAGE-ON$

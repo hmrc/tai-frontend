@@ -37,9 +37,9 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.forms.employments.EmploymentAddDateForm
-import uk.gov.hmrc.tai.model.{EmploymentAmount, TaiRoot, TaxYear}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
 
@@ -171,6 +171,23 @@ class IncomeControllerSpec extends PlaySpec
         val employment = employmentWithAccounts(List(annualAccount))
         when(sut.journeyCacheService.mandatoryValues(any())(any())).
         thenReturn(Future.successful(Seq("1", "200")))
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(sut.employmentService.employment(any(), any())(any())).
+          thenReturn(Future.successful(Some(employment)))
+
+        val result = sut.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+      }
+
+      "pay to date cannot be determined, due to no annual account records on the income source" in {
+        val sut = createSUT
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(Nil)
+        when(sut.journeyCacheService.mandatoryValues(any())(any())).
+          thenReturn(Future.successful(Seq("1", "200")))
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(sut.employmentService.employment(any(), any())(any())).
@@ -551,7 +568,7 @@ class IncomeControllerSpec extends PlaySpec
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
   }
 

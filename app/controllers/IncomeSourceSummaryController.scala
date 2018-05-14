@@ -43,7 +43,7 @@ trait IncomeSourceSummaryController extends TaiBaseController
 
   def onPageLoad(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
@@ -65,7 +65,7 @@ trait IncomeSourceSummaryController extends TaiBaseController
           }
   }
 }
-
+// $COVERAGE-OFF$
 object IncomeSourceSummaryController extends IncomeSourceSummaryController with AuthenticationConnectors {
   override val personService = PersonService
   override val taxAccountService: TaxAccountService = TaxAccountService
@@ -76,3 +76,4 @@ object IncomeSourceSummaryController extends IncomeSourceSummaryController with 
 
   override implicit def partialRetriever = TaiHtmlPartialRetriever
 }
+// $COVERAGE-ON$

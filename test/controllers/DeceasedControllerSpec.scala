@@ -18,51 +18,47 @@ package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
-import org.mockito.Matchers
+import org.jsoup.Jsoup
 import org.mockito.Matchers.any
-import org.mockito.Mockito._
+import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.domain.Nino
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.test.Helpers._
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.domain.Person
-import uk.gov.hmrc.tai.service.{AuditService, PersonService}
+import uk.gov.hmrc.tai.service.PersonService
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
+import scala.language.postfixOps
 
-class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
+class DeceasedControllerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
 
-  "Audit Controller" must {
-    "send specific audit event and redirect" when {
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  "Deceased Controller" must {
+    "load the deceased page" when {
       "triggered from any page" which {
-        "redirects to appropriate url " in {
+        "the user is authorised" in {
           val sut = createSut
-          when(sut.auditService.sendAuditEventAndGetRedirectUri(any(), any())(any(), any())).thenReturn(Future.successful(redirectUri))
 
-          val result = Await.result(sut.auditLinksToIForm("any-iform")(RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" ->
-            redirectUri)), 5.seconds)
-
-          result.header.status mustBe 303
-          verify(sut.auditService, times(1)).sendAuditEventAndGetRedirectUri(Matchers.eq(Nino(nino)),
-            Matchers.eq("any-iform"))(any(), any())
+          val result = sut.deceased()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+          status(result) mustBe OK
+          val doc = Jsoup.parse(contentAsString(result))
+          doc.title() must include(Messages("tai.deceased.title"))
         }
       }
     }
   }
 
-  private val nino = AuthBuilder.nino.nino
-  private val person = Person(Nino(nino), "firstname", "surname", false, false)
-  private val redirectUri = "redirectUri"
+  private val nino = AuthBuilder.nino
 
   def createSut = new SUT
 
-  class SUT extends AuditController {
+  class SUT extends DeceasedController {
     override val personService: PersonService = mock[PersonService]
-
-    override val auditService: AuditService = mock[AuditService]
+    override val auditConnector: AuditConnector = mock[AuditConnector]
 
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
 
@@ -72,8 +68,10 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
 
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(person))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
   }
+
+
 }
