@@ -102,9 +102,8 @@ trait AddEmploymentController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.currentValueAs[String](AddEmployment_NameKey, identity) map {
-            case Some(employmentName) => Ok(views.html.employments.add_employment_start_date_form(EmploymentAddDateForm(employmentName).form, employmentName))
-            case None => throw new RuntimeException(s"Data not present in cache for $AddEmployment_JourneyKey - $AddEmployment_NameKey ")
+          journeyCacheService.mandatoryValue(AddEmployment_NameKey) map { empName =>
+            Ok(views.html.employments.add_employment_start_date_form(EmploymentAddDateForm(empName).form, empName))
           }
         }
   }

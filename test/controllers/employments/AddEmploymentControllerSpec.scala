@@ -126,7 +126,7 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val sut = createSUT
         val employmentName = "TEST"
-        when(sut.journeyCacheService.currentValueAs[String](any(), any())(any())).thenReturn(Future.successful(Some(employmentName)))
+        when(sut.journeyCacheService.mandatoryValue(any())(any())).thenReturn(Future.successful(employmentName))
 
         val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
