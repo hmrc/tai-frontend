@@ -343,7 +343,7 @@ class AddEmploymentControllerSpec extends PlaySpec
 
   "add employment payroll number" must {
     "show the add payroll number page" when {
-      "the request has an authorised session" in {
+      "the request has an authorised session and no previous response is held in cache" in {
         val sut = createSUT
         val employerName = "TEST"
         val cache = Map(AddEmployment_NameKey -> employerName, AddEmployment_StartDateWithinSixWeeks -> YesValue)
@@ -355,6 +355,49 @@ class AddEmploymentControllerSpec extends PlaySpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
+        doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 0
+        doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 0
+        doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe ""
+      }
+      "the request has an authorised session and a previous 'no' response is held in cache" in {
+        val sut = createSUT
+        val employerName = "TEST"
+        val cache = Map(
+          AddEmployment_NameKey -> employerName,
+          AddEmployment_StartDateWithinSixWeeks -> YesValue,
+          AddEmployment_PayrollNumberQuestionKey -> NoValue,
+          AddEmployment_PayrollNumberKey -> "should be ignored")
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+
+        val result = sut.addEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
+        doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 0
+        doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe ""
+      }
+      "the request has an authorised session and a previous 'yes' response is held in cache" in {
+        val sut = createSUT
+        val employerName = "TEST"
+        val cache = Map(
+          AddEmployment_NameKey -> employerName,
+          AddEmployment_StartDateWithinSixWeeks -> YesValue,
+          AddEmployment_PayrollNumberQuestionKey -> YesValue,
+          AddEmployment_PayrollNumberKey -> "should be displayed")
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+
+        val result = sut.addEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
+        doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 0
+        doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe "should be displayed"
       }
     }
   }

@@ -185,9 +185,17 @@ trait AddEmploymentController extends TaiBaseController
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           journeyCacheService.currentCache map { cache =>
-            val viewModel = PayrollNumberViewModel(cache)
-            Ok(views.html.employments.add_employment_payroll_number_form(AddEmploymentPayrollNumberForm.form, viewModel))
 
+            val viewModel = PayrollNumberViewModel(cache)
+            val payrollChoice = cache.get(AddEmployment_PayrollNumberQuestionKey)
+            val payroll = payrollChoice match {
+              case Some(YesValue) => cache.get(AddEmployment_PayrollNumberKey)
+              case _ => None
+            }
+
+            Ok(views.html.employments.add_employment_payroll_number_form(
+              AddEmploymentPayrollNumberForm.form.fill(AddEmploymentPayrollNumberForm(payrollChoice, payroll)),
+              viewModel))
           }
         }
   }
