@@ -142,13 +142,13 @@ class JourneyCacheServiceSpec extends PlaySpec
       val sut = createSut
       when(sut.journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
 
-      Await.result(sut.collectedOptionalValues(Seq("key1", "key2")), 5 seconds) mustBe Seq(Some("val1"), Some("val2"))
+      Await.result(sut.collectedOptionalValues("key1", "key2"), 5 seconds) mustBe Seq(Some("val1"), Some("val2"))
     }
     "return sequence of strings and a None when we have one value as string and a none" in {
       val sut = createSut
       when(sut.journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))
 
-      Await.result(sut.collectedOptionalValues(Seq("key4", "key3")), 5 seconds) mustBe Seq(Some("val3"), None)
+      Await.result(sut.collectedOptionalValues("key4", "key3"), 5 seconds) mustBe Seq(Some("val3"), None)
     }
   }
 

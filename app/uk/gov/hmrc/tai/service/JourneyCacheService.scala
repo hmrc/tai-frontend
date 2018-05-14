@@ -88,7 +88,7 @@ trait JourneyCacheService extends JourneyCacheConstants {
     }
   }
 
-  def collectedOptionalValues(optionalValues: Seq[String])(implicit hc: HeaderCarrier): Future[Seq[Option[String]]] = {
+  def collectedOptionalValues(optionalValues: String*)(implicit hc: HeaderCarrier): Future[Seq[Option[String]]] = {
     for {
       cache <- currentCache
     } yield {
