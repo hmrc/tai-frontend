@@ -220,13 +220,24 @@ trait AddPensionProviderController extends TaiBaseController
         )
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit person =>
-      implicit request =>
-        ServiceCheckLite.personDetailsCheck {
-          Future.successful(Ok(views.html.can_we_contact_by_phone(contactPhonePensionProvider, YesNoTextEntryForm.form())))
-        }
-  }
+    def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+      implicit person =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+
+            journeyCacheService.optionalValues(AddPensionProvider_TelephoneQuestionKey,AddPensionProvider_TelephoneNumberKey) map { seq =>
+
+
+              val telephoneNo = seq(0) match {
+                case Some(YesValue) => seq(1)
+                case _ => None
+              }
+
+              Ok(views.html.can_we_contact_by_phone(contactPhonePensionProvider, YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq(0), telephoneNo))))
+            }
+          }
+    }
+
 
   def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>

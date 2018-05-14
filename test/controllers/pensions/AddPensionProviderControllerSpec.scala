@@ -484,17 +484,89 @@ class AddPensionProviderControllerSpec extends PlaySpec
 
   "add telephone number" must {
     "show the contact by telephone page" when {
-      "the request has an authorised session" in {
+      "the request has an authorised session and no previously cached pension number present" in {
         val sut = createSUT
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(None, None)))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+
+        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoTextEntry]").get(0).attributes().get("value") mustBe ""
+
+      }
+
+      "the request has an authorised session and previously cached telephone number choice is 'No', and no telephone number is held in cache" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(NoValue), None)))
+
+        val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+
+        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoTextEntry]").get(0).attributes().get("value") mustBe ""
+
+      }
+
+      "the request has an authorised session and previously cached telephone number choice is 'No', and a telephone number is held in cache" in {
+        val sut = createSUT
+
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(NoValue), Some("01215485965"))))
+        val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+
+        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoTextEntry]").get(0).attributes().get("value") mustBe ""
+
+    }
+
+      "the request has an authorised session and previously cached telephone number choice is 'Yes', and no telephone number is held in cache" in {
+        val sut = createSUT
+
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(YesValue), None)))
+
+        val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+
+        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=yesNoTextEntry]").get(0).attributes().get("value") mustBe ""
+
+      }
+
+      "the request has an authorised session and previously cached telephone number choice is 'Yes', and a telephone number is held in cache" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(YesValue), Some("01215485965"))))
+
+        val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+
+        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=yesNoTextEntry]").get(0).attributes().get("value") mustBe "01215485965"
+
       }
     }
   }
+
 
   "submit telephone number" must {
     "redirect to the check your answers page" when {
