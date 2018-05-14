@@ -78,9 +78,9 @@ trait AddEmploymentController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-
-
-          Future.successful(Ok(views.html.employments.add_employment_name_form(EmploymentNameForm.form)))
+          journeyCacheService.currentValue(AddEmployment_NameKey) map { providedName =>
+            Ok(views.html.employments.add_employment_name_form(EmploymentNameForm.form.fill(providedName.getOrElse(""))))
+          }
         }
   }
 
