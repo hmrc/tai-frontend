@@ -88,6 +88,21 @@ trait JourneyCacheService extends JourneyCacheConstants {
     }
   }
 
+  def collectedOptionalValues(optionalValues: String*)(implicit hc: HeaderCarrier): Future[Seq[Option[String]]] = {
+    for {
+      cache <- currentCache
+    } yield {
+      val optionalResult = optionalValues map { key =>
+        val found = cache.get(key)
+        found match {
+          case Some(str) if !str.trim.isEmpty => found
+          case _ => None
+        }
+      }
+      optionalResult
+    }
+  }
+
   private def mappedMandatory(cache: Map[String, String], mandatoryValues: Seq[String]): Seq[String] = {
     mandatoryValues map { key =>
       cache.get(key) match {
