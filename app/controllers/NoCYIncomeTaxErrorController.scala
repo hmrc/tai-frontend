@@ -49,7 +49,7 @@ trait NoCYIncomeTaxErrorController extends FrontendController
 
   def noCYIncomeTaxErrorPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request => {
           ServiceCheckLite.personDetailsCheck {
             for {

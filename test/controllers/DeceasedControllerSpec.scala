@@ -29,7 +29,6 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.TaiRoot
 import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.Future
@@ -53,8 +52,7 @@ class DeceasedControllerSpec extends PlaySpec with FakeTaiPlayApplication with I
     }
   }
 
-  private val nino = AuthBuilder.nino.nino
-  private val taiRoot = TaiRoot(nino = nino)
+  private val nino = AuthBuilder.nino
 
   def createSut = new SUT
 
@@ -70,7 +68,7 @@ class DeceasedControllerSpec extends PlaySpec with FakeTaiPlayApplication with I
 
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
   }

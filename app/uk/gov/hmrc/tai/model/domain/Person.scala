@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import org.joda.time.LocalDate
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.domain.Nino
 
@@ -24,21 +23,9 @@ import uk.gov.hmrc.domain.Nino
 case class Person(nino: Nino,
                   firstName: String,
                   surname: String,
-                  dateOfBirth: Option[LocalDate],
-                  address: Address,
                   isDeceased: Boolean,
                   hasCorruptData: Boolean)
 
 object Person {
   implicit val personFormat: Format[Person] = Json.format[Person]
-}
-
-case class Address(line1: String,
-                   line2: String,
-                   line3: String,
-                   postcode: String,
-                   country: String)
-
-object Address {
-  implicit val addressFormat: Format[Address] = Json.format[Address]
 }

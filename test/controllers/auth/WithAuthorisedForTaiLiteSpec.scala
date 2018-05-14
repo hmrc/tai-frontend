@@ -32,7 +32,6 @@ import play.api.i18n.Messages.Implicits.applicationMessages
 import play.api.mvc.Results.Ok
 import play.api.mvc.{AnyContent, Request, ResponseHeader, Result}
 import play.api.test.Helpers._
-import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
@@ -41,7 +40,8 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.TaiRoot
+import uk.gov.hmrc.tai.model.domain.Person
+import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
 import scala.concurrent.duration._
@@ -66,15 +66,15 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
 
     "be able to Authorize Tai user" when {
 
-      val taiRoot = generateTaiRoot(generateNino)
+      val person = fakePerson(generateNino)
 
       "AuthorisedByTai async is called" in {
         val personService = mock[PersonService]
-        when(personService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
+        when(personService.personDetails(any())(any())).thenReturn(Future.successful(person))
 
         val responseBody = "my response"
         val sut = createSUT.authorisedForTai(personService)
-        val action = sut.async(implicit user => implicit taiRoot => implicit request => Future.successful(Ok(responseBody)))
+        val action = sut.async(implicit user => implicit person => implicit request => Future.successful(Ok(responseBody)))
         val result = action.apply(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
@@ -84,10 +84,10 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
 
       "AuthorisedByTai call is failed" in {
         val personService = mock[PersonService]
-        when(personService.personDetails(any())(any())).thenReturn(Future.successful(taiRoot))
+        when(personService.personDetails(any())(any())).thenReturn(Future.successful(person))
 
         val sut = createSUT.authorisedForTai(personService)
-        val action = sut.async(implicit user => implicit taiRoot => implicit request => Future.failed(new HttpException("Something failed at citizen details call", 500)))
+        val action = sut.async(implicit user => implicit person => implicit request => Future.failed(new HttpException("Something failed at citizen details call", 500)))
         val result = action.apply(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -103,7 +103,8 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
         val authContext = AuthContext(AuthBuilder.createFakeAuthority(fakeAuthorityFixtureNino), governmentGatewayToken = Some("a token"))
         val sut = createSUT.authorisedForTai(personService)
         val request = RequestBuilder.buildFakeRequestWithAuth("GET")
-        val user = Await.result(sut.getTaiUser(authContext, TaiRoot())(request), 5 seconds)
+        val person = fakePerson(generateNino)
+        val user = Await.result(sut.getTaiUser(authContext, person)(request), 5 seconds)
         user.getNino mustBe fakeAuthorityFixtureNino
       }
     }
@@ -115,7 +116,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
 
       val fakeAuthority: Authority = Await.result(FakeAuthConnector.currentAuthority, 5 seconds).get
       val sut = createSUT
-      when(sut.personService.personDetails(any())(any())).thenReturn( Future.successful(generateTaiRoot(generateNino)) )
+      when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
 
       val action = sut.exampleAuthorisedForTaiUsage()
       val res = Await.result(action.apply(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
@@ -124,7 +125,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
       sut.capturedUser match {
 
         case Some(user) => {
-          user.getDisplayName mustBe "Kkk Sss"
+          user.getDisplayName mustBe "firstname surname"
           user.getNino mustBe fakeAuthorityFixtureNino
           user.authContext.user.userId mustBe fakeAuthority.uri
           user.authContext.principal.accounts mustBe fakeAuthority.accounts
@@ -133,24 +134,24 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
       }
     }
 
-    "expose basic person details in TaiRoot form, for an authorised user through authorisedForTai.async" in {
+    "expose basic person details in Person model form, for an authorised user through authorisedForTai.async" in {
 
-      val taiRoot = generateTaiRoot(generateNino)
+      val person = fakePerson(generateNino)
       val sut = createSUT
-      when(sut.personService.personDetails(any())(any())).thenReturn( Future.successful(taiRoot) )
+      when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(person))
 
       val action = sut.exampleAuthorisedForTaiUsage()
       val res = Await.result(action.apply(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
       res.header.status mustBe OK
 
-      sut.capturedTaiRoot mustBe Some(taiRoot)
-      sut.capturedUser.get.taiRoot mustBe taiRoot
+      sut.capturedPerson mustBe Some(person)
+      sut.capturedUser.get.person mustBe person
     }
 
     "expose the request object for an authorised user through authorisedForTai.async" in {
 
       val sut = createSUT
-      when(sut.personService.personDetails(any())(any())).thenReturn( Future.successful(generateTaiRoot(generateNino)) )
+      when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
 
       val action = sut.exampleAuthorisedForTaiUsage()
       val request = RequestBuilder.buildFakeRequestWithAuth("GET")
@@ -163,7 +164,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
     "return a redirect response to govt gateway sign in, for an unauthorised user" in {
 
       val sut = createSUT
-      when(sut.personService.personDetails(any())(any())).thenReturn( Future.successful(generateTaiRoot(generateNino)) )
+      when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
 
       val action = sut.exampleAuthorisedForTaiUsage()
       val request = RequestBuilder.buildFakeRequestWithoutAuth("GET")
@@ -172,7 +173,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
       res.header.status mustBe SEE_OTHER
       res.header.headers.getOrElse("Location", "") must include("gg/sign-in")
 
-      sut.capturedTaiRoot mustBe None
+      sut.capturedPerson mustBe None
       sut.capturedRequest mustBe None
       sut.capturedUser mustBe None
     }
@@ -201,7 +202,7 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
     doc must haveParagraphWithText(Messages("tai.technical.error.message"))
   }
 
-  def generateTaiRoot(nino:Nino) = TaiRoot(nino.nino, 0, "Mr", "Kkk", None, "Sss", "Kkk Sss", false, Some(true))
+  
 
   def generateNino: Nino = new Generator(new Random).nextNino
 
@@ -223,14 +224,14 @@ class WithAuthorisedForTaiLiteSpec extends PlaySpec with FakeTaiPlayApplication 
     val personService = mock[PersonService]
 
     var capturedUser : Option[TaiUser] = None
-    var capturedTaiRoot: Option[TaiRoot] = None
+    var capturedPerson: Option[Person] = None
     var capturedRequest: Option[Request[AnyContent]] = None
 
     def exampleAuthorisedForTaiUsage() = authorisedForTai(personService).async {
 
-      user => taiRoot => request => {
+      user => person => request => {
         capturedUser = Some(user)
-        capturedTaiRoot = Some(taiRoot)
+        capturedPerson = Some(person)
         capturedRequest = Some(request)
         Future.successful(Result(ResponseHeader(200), mock[HttpEntity]))
       }

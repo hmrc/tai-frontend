@@ -51,7 +51,7 @@ trait TaiLanguageController extends LanguageController with TaiBaseController
 
   override def switchToLanguage (language: String): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
 

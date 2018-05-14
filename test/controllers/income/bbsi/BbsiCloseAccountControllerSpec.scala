@@ -20,7 +20,6 @@ import java.lang.RuntimeException
 
 import builders.{AuthBuilder, RequestBuilder}
 import controllers.FakeTaiPlayApplication
-import uk.gov.hmrc.tai.forms.DateForm
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -32,20 +31,23 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.domain.BankAccount
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
-import uk.gov.hmrc.tai.model.{CloseAccountRequest, TaiRoot}
-import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService, TaxPeriodLabelService}
-import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.forms.DateForm
+import uk.gov.hmrc.tai.model.CloseAccountRequest
+import uk.gov.hmrc.tai.model.domain.BankAccount
+import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.tai.util.{BankAccountClosingInterestConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.util.Random
 
 class BbsiCloseAccountControllerSpec extends PlaySpec
   with FakeTaiPlayApplication
@@ -518,6 +520,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
     }
   }
 
+  private val nino = new Generator(new Random).nextNino
   private val bankAccountId = 1
   private val bankAccount1 = BankAccount(bankAccountId, Some("****5678"), Some("123456"), Some("Test Bank account name"), 100, None)
   private val bankAccount2 = BankAccount(bankAccountId, Some("****5678"), Some("123456"), None, 100, None)
@@ -539,6 +542,6 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(TaiRoot("", 1, "", "", None, "", "", false, None)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
   }
 }

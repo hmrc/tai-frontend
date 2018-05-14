@@ -67,7 +67,7 @@ trait AddPensionProviderController extends TaiBaseController
   }
 
   def addPensionProviderName(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           journeyCacheService.currentValue(AddPensionProvider_NameKey) map {
@@ -82,7 +82,7 @@ trait AddPensionProviderController extends TaiBaseController
   }
 
   def submitPensionProviderName(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         PensionProviderNameForm.form.bindFromRequest.fold(
           formWithErrors => {
@@ -96,7 +96,7 @@ trait AddPensionProviderController extends TaiBaseController
   }
 
   def receivedFirstPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           journeyCacheService.mandatoryValue(AddPensionProvider_NameKey) map { pensionProviderName =>
@@ -121,7 +121,7 @@ trait AddPensionProviderController extends TaiBaseController
 //  }
 
   def submitFirstPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         AddPensionProviderFirstPayForm.form.bindFromRequest().fold(
           formWithErrors => {
@@ -136,7 +136,7 @@ trait AddPensionProviderController extends TaiBaseController
   }
 
   def cantAddPension(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           journeyCacheService.mandatoryValue(AddPensionProvider_NameKey) map { pensionProviderName =>
@@ -147,7 +147,7 @@ trait AddPensionProviderController extends TaiBaseController
   }
 
   def addPensionProviderStartDate(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
 
@@ -162,7 +162,7 @@ trait AddPensionProviderController extends TaiBaseController
   }
 
   def submitPensionProviderStartDate(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         journeyCacheService.currentCache flatMap {
           currentCache =>
@@ -180,7 +180,7 @@ trait AddPensionProviderController extends TaiBaseController
   }
 
   def addPensionNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           journeyCacheService.currentCache map { cache =>
@@ -200,7 +200,7 @@ trait AddPensionProviderController extends TaiBaseController
   }
 
   def submitPensionNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         AddPensionProviderNumberForm.form.bindFromRequest().fold(
           formWithErrors => {
@@ -221,7 +221,7 @@ trait AddPensionProviderController extends TaiBaseController
   }
 
   def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           Future.successful(Ok(views.html.can_we_contact_by_phone(contactPhonePensionProvider, YesNoTextEntryForm.form())))
@@ -229,7 +229,7 @@ trait AddPensionProviderController extends TaiBaseController
   }
 
   def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit taiRoot =>
+    implicit person =>
       implicit request =>
         YesNoTextEntryForm.form(
           Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
@@ -253,7 +253,7 @@ trait AddPensionProviderController extends TaiBaseController
 
   def checkYourAnswers: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
 
@@ -277,7 +277,7 @@ trait AddPensionProviderController extends TaiBaseController
 
   def submitYourAnswers: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           for {
             (mandatoryVals, optionalVals) <- journeyCacheService.collectedValues(
@@ -294,7 +294,7 @@ trait AddPensionProviderController extends TaiBaseController
 
   def confirmation: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             Future.successful(Ok(views.html.pensions.addPensionConfirmation()))

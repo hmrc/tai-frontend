@@ -46,10 +46,10 @@ trait YourTaxCodeController extends TaiBaseController
 
   def taxCodes(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-      implicit taiRoot =>
+      implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            val nino = Nino(user.taiRoot.nino)
+            val nino = user.person.nino
 
             for {
               TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService.taxCodeIncomes(nino, TaxYear())

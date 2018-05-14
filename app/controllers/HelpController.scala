@@ -41,7 +41,7 @@ trait HelpController  extends TaiBaseController
   def webChatURL: String
 
   def helpPage() = authorisedForTai(personService).async {
-    implicit user => implicit taiRoot => implicit request =>
+    implicit user => implicit person => implicit request =>
       getEligibilityStatus map { status =>
         Ok(views.html.help.getHelp(status))
       } recoverWith handleErrorResponse("getHelpPage", Nino(user.getNino))
