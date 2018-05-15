@@ -71,12 +71,8 @@ trait AddPensionProviderController extends TaiBaseController
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           journeyCacheService.currentValue(AddPensionProvider_NameKey) map {
-            case Some(pensionName) => {
-              Ok(views.html.pensions.addPensionName(PensionProviderNameForm.form.fill(pensionName)))
-            }
-            case _ => {
-              Ok(views.html.pensions.addPensionName(PensionProviderNameForm.form))
-            }
+            pensionName =>
+              Ok(views.html.pensions.addPensionName(PensionProviderNameForm.form.fill(pensionName.getOrElse(""))))
           }
         }
   }
