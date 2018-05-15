@@ -70,6 +70,7 @@ trait JourneyCacheConstants {
   val CompanyCar_HasActiveFuelBenefitdKey = "hasActiveFuelBenefit"
   val CompanyCar_DateWithdrawnKey = "dateWithdrawn"
 
+
   val CloseBankAccountJourneyKey = "close-bank-account"
   val CloseBankAccountDateKey = "closeBankAccountDate"
   val CloseBankAccountInterestKey = "closeBankAccountInterest"
@@ -175,6 +176,9 @@ trait BankAccountDecisionConstants {
   val UpdateInterest = "updateInterest"
   val CloseAccount = "closeAccount"
   val RemoveAccount = "removeAccount"
+
+  val UpdateBankAccountChoiceJourneyKey = "update-or-remove-bank-account-decision"
+  val UpdateBankAccountUserChoiceKey = "userAccountActionDecision"
 }
 
 trait BankAccountClosingInterestConstants {
