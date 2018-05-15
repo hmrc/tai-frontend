@@ -121,7 +121,8 @@ trait UpdateEmploymentController extends TaiBaseController
             employmentId <- journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey)
             telephoneCache <- journeyCacheService.collectedOptionalValues(UpdateEmployment_TelephoneQuestionKey, UpdateEmployment_TelephoneNumberKey)
 
-          } yield{Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel((employmentId)),
+          } yield {
+            Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel((employmentId)),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
           }
         }
@@ -160,13 +161,13 @@ trait UpdateEmploymentController extends TaiBaseController
             journeyCacheService.collectedValues(Seq(UpdateEmployment_EmploymentIdKey, UpdateEmployment_NameKey,
               UpdateEmployment_EmploymentDetailsKey, UpdateEmployment_TelephoneQuestionKey),
               Seq(UpdateEmployment_TelephoneNumberKey)) map tupled { (mandatorySeq, optionalSeq) => {
-                Ok(views.html.employments.update.UpdateEmploymentCheckYourAnswers(UpdateEmploymentCheckYourAnswersViewModel(
-                  mandatorySeq.head.toInt,
-                  mandatorySeq(1),
-                  mandatorySeq(2),
-                  mandatorySeq(3),
-                  optionalSeq.head)))
-              }
+              Ok(views.html.employments.update.UpdateEmploymentCheckYourAnswers(UpdateEmploymentCheckYourAnswersViewModel(
+                mandatorySeq.head.toInt,
+                mandatorySeq(1),
+                mandatorySeq(2),
+                mandatorySeq(3),
+                optionalSeq.head)))
+            }
             }
           }
   }
@@ -197,6 +198,7 @@ trait UpdateEmploymentController extends TaiBaseController
           }
   }
 }
+
 // $COVERAGE-OFF$
 object UpdateEmploymentController extends UpdateEmploymentController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
@@ -206,4 +208,5 @@ object UpdateEmploymentController extends UpdateEmploymentController with Authen
   override val journeyCacheService = JourneyCacheService(UpdateEmployment_JourneyKey)
   override val successfulJourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
 }
+
 // $COVERAGE-ON$
