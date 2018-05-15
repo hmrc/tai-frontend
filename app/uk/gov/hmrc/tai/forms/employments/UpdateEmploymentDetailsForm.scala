@@ -22,6 +22,7 @@ import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
+
 object UpdateEmploymentDetailsForm {
 
   val employmentDetailsCharacterLimit = 500
