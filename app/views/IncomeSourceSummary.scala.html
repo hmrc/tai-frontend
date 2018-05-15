@@ -171,17 +171,18 @@
         <h2 id="companyBenefitsHeading" class="heading-small flush--bottom">@Messages("tai.income.details.companyuBenefitsHeading", model.empOrPensionName)</h2>
 
         @if(model.benefits.size > 0) {
-        <ul id="companyBenefitDescriptionList" class="tai-description-list tai-description-list--dynamic-columns full-width section flush">
+        <ul role="list" id="companyBenefitDescriptionList" class="tai-description-list tai-description-list--dynamic-columns full-width section flush" aria-labelledby="companyBenefitsHeading">
 
             @for((benefit, idx) <- model.benefits zip (Stream from 1)) {
-            <li>
+            <li role="listitem">
                 <div id="companyBenefitDescriptionTerm@idx">
                     <span class="visuallyhidden">@messages("tai.income.details.benefit.name.announce") </span>
                     @benefit.name
                 </div>
                 <div id="companyBenefitDescriptionText@idx">
-                    <span class="visuallyhidden">@messages("tai.income.details.benefit.amount.announce") </span>
-                    @pounds(benefit.amount)
+
+                    <span aria-hidden="true">@pounds(benefit.amount)</span>
+                    <span class="visuallyhidden">@messages("tai.income.details.benefit.amount.announce") @pounds(benefit.amount).</span>
                 </div>
                 <div class="tai-description-details--retain-column" id="companyBenefitChangeLinkDescriptionText@idx">
                     @includes.link(

@@ -1069,8 +1069,8 @@ tai.taxCode.multiple.info=Your tax codes are used to work out how much Income Ta
 tai.taxCode.subheading=Your tax code for {0}: {1}
 tai.taxCode.sideBar.heading=Understand your tax
 tai.taxCode.taxableIncome.link=View your taxable income
-tai.taxCode.part.announce=Definition of tax code part
-tai.taxCode.definition.announce=The definition of this part of your tax code is as follows:
+tai.taxCode.part.announce=Definition of tax code part {0}.
+tai.taxCode.definition.announce=- The definition of this part of your tax code is as follows:
 
 ## New tax code explanations
 tai.taxCode.L=You are entitled to the basic tax-free Personal Allowance. Your tax code will be updated automatically if the tax-free Personal Allowances change.
@@ -1526,8 +1526,8 @@ tai.income.details.companyuBenefitsHeading=Your company benefits from {0}
 tai.income.details.noCompanyBenefitsMsg=You have no company benefits from {0}
 tai.employment.income.details.payrollNumber.screenReader=Your payroll number is {0}.
 tai.pension.income.details.pensionNumber.screenReader=Your pension number is {0}.
-tai.income.details.benefit.name.announce=Benefit type
-tai.income.details.benefit.amount.announce=The amount if this benefit is
+tai.income.details.benefit.name.announce=Benefit type:
+tai.income.details.benefit.amount.announce=- The amount of this benefit is
 
 
 ## Update Income Details - Previous Years

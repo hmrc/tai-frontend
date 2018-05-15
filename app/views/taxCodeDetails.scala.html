@@ -56,13 +56,13 @@
 
                     <h2 id="descriptionList@{descListIdx.toString}Heading">@descriptionList.heading</h2>
 
-                    <ul id="descriptionList@{descListIdx.toString}" class="tai-description-list flush">
+                    <ul role="list" id="descriptionList@{descListIdx.toString}" class="tai-description-list flush" aria-labelledby="descriptionList@{descListIdx.toString}Heading">
 
                         @for((descriptionTerm, termIdx) <- descriptionList.descriptionItems.keySet zip (Stream from 1)) {
-                        <li>
+                        <li role="listitem">
                             <div class="bold-large" id="descriptionTerm_@{descListIdx.toString}_@{termIdx.toString}">
-                                <span class="visuallyhidden">@messages("tai.taxCode.part.announce") </span>
-                                @descriptionTerm
+                                <span class="visuallyhidden">@messages("tai.taxCode.part.announce", descriptionTerm) </span>
+                                <span aria-hidden="true">@descriptionTerm</span>
                             </div>
                             <div class="fixed-small" id="descriptionText_@{descListIdx.toString}_@{termIdx.toString}">
                                 <span class="visuallyhidden">@messages("tai.taxCode.definition.announce") </span>
