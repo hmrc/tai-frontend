@@ -1529,7 +1529,6 @@ tai.pension.income.details.pensionNumber.screenReader=Your pension number is {0}
 tai.income.details.benefit.name.announce=Benefit type:
 tai.income.details.benefit.amount.announce=- The amount of this benefit is
 
-
 ## Update Income Details - Previous Years
 tai.income.previousYears.journey.preHeader=Update income details
 tai.income.previousYears.decision.customGaTitle=Update income decision
