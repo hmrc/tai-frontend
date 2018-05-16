@@ -94,12 +94,11 @@ trait UpdatePensionProviderController extends TaiBaseController
                                                                         request: Request[AnyContent],
                                                                         user: TaiUser): Future[Result] = {
     for {
-      _ <- journeyCacheService.cache(Map(UpdatePensionProvider_IdKey -> id.toString,
+      updatedCache <- journeyCacheService.cache(Map(UpdatePensionProvider_IdKey -> id.toString,
         UpdatePensionProvider_NameKey -> taxCodeIncome.name))
-      optionalYesNo <- journeyCacheService.currentValue(UpdatePensionProvider_ReceivePensionQuestionKey)
     } yield {
       val model = PensionProviderViewModel(id, taxCodeIncome.name)
-      val form = UpdateRemovePensionForm.form.fill(optionalYesNo)
+      val form = UpdateRemovePensionForm.form.fill(updatedCache.get(UpdatePensionProvider_ReceivePensionQuestionKey))
       Ok(views.html.pensions.update.doYouGetThisPensionIncome(model, form))
     }
   }

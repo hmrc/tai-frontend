@@ -63,7 +63,6 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
-        when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.doYouGetThisPension(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -80,7 +79,6 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
-        when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(Some("Yes")))
 
         val result = sut.doYouGetThisPension(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -271,6 +269,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+        doc.toString must include("123456789")
       }
     }
   }
