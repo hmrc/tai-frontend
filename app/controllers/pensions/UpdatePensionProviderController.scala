@@ -16,14 +16,15 @@
 
 package controllers.pensions
 
-import controllers.auth.WithAuthorisedForTaiLite
+import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
 import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
@@ -81,18 +82,25 @@ trait UpdatePensionProviderController extends TaiBaseController
             case TaiSuccessResponseWithPayload(incomes: Seq[TaxCodeIncome]) =>
               incomes.find(income => income.employmentId.contains(id) &&
                 income.componentType == PensionIncome) match {
-                case Some(taxCodeIncome) =>
-                  journeyCacheService.cache(Map(UpdatePensionProvider_IdKey -> id.toString,
-                    UpdatePensionProvider_NameKey -> taxCodeIncome.name)).
-                    map {
-                      val model = PensionProviderViewModel(id, taxCodeIncome.name)
-                      _ => Ok(views.html.pensions.update.doYouGetThisPensionIncome(model, UpdateRemovePensionForm.form))
-                    }
+                case Some(taxCodeIncome) => cacheAndCreateView(id, taxCodeIncome)
                 case _ => throw new RuntimeException(s"Tax code income source is not available for id $id")
               }
             case _ => throw new RuntimeException("Tax code income source is not available")
           }
         }
+  }
+
+  private def cacheAndCreateView(id: Int, taxCodeIncome: TaxCodeIncome)(implicit hc: HeaderCarrier,
+                                                                        request: Request[AnyContent],
+                                                                        user: TaiUser): Future[Result] = {
+    for {
+      updatedCache <- journeyCacheService.cache(Map(UpdatePensionProvider_IdKey -> id.toString,
+        UpdatePensionProvider_NameKey -> taxCodeIncome.name))
+    } yield {
+      val model = PensionProviderViewModel(id, taxCodeIncome.name)
+      val form = UpdateRemovePensionForm.form.fill(updatedCache.get(UpdatePensionProvider_ReceivePensionQuestionKey))
+      Ok(views.html.pensions.update.doYouGetThisPensionIncome(model, form))
+    }
   }
 
   def handleDoYouGetThisPension: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -121,8 +129,11 @@ trait UpdatePensionProviderController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.mandatoryValue(UpdatePensionProvider_NameKey) flatMap { name =>
-            Future.successful(Ok(views.html.pensions.update.whatDoYouWantToTellUs(name, WhatDoYouWantToTellUsForm.form)))
+          for{
+            (mandatoryValues, optionalValues) <- journeyCacheService.collectedValues(Seq(UpdatePensionProvider_NameKey), Seq(UpdatePensionProvider_DetailsKey))
+          }yield {
+             Ok(views.html.pensions.update.whatDoYouWantToTellUs(mandatoryValues(0),
+               WhatDoYouWantToTellUsForm.form.fill(optionalValues(0).getOrElse(""))))
           }
         }
   }
@@ -148,8 +159,12 @@ trait UpdatePensionProviderController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.mandatoryValueAsInt(UpdatePensionProvider_IdKey) map { id =>
-            Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel(id), YesNoTextEntryForm.form()))
+          for{
+            pensionId <- journeyCacheService.mandatoryValueAsInt(UpdatePensionProvider_IdKey)
+            telephoneCache <- journeyCacheService.collectedOptionalValues(UpdatePensionProvider_TelephoneQuestionKey,UpdatePensionProvider_TelephoneNumberKey )
+          }yield{
+            Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel(pensionId),
+              YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
           }
         }
   }
