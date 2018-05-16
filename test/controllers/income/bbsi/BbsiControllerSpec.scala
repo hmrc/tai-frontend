@@ -17,14 +17,12 @@
 package controllers.income.bbsi
 
 import builders.{AuthBuilder, RequestBuilder}
-import com.github.mustachejava.util.NodeValue
 import controllers.FakeTaiPlayApplication
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.when
-import org.scalatest.Matchers
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -37,7 +35,6 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
 import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.tai.util.BankAccountDecisionConstants
-
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -134,7 +131,7 @@ class BbsiControllerSpec extends PlaySpec
       doc.title() must include(Messages("tai.bbsi.decision.title", bankAccount.bankName.getOrElse("")))
     }
 
-    "show decision page with some saved cache data" in {
+    "show decision page with a cached user choice pre-selected" in {
       val sut = createSUT
       when(sut.bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
@@ -183,9 +180,7 @@ class BbsiControllerSpec extends PlaySpec
 
         when(sut.bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
-        val cache = Map(UpdateBankAccountUserChoiceKey -> UpdateInterest)
-
-        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(cache))
+        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String,String]))
 
         val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           BankAccountDecision -> UpdateInterest))
@@ -201,9 +196,7 @@ class BbsiControllerSpec extends PlaySpec
 
         when(sut.bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
-        val cache = Map(UpdateBankAccountUserChoiceKey -> CloseAccount)
-
-        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(cache))
+        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String,String]))
 
         val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           BankAccountDecision -> CloseAccount))
@@ -219,9 +212,7 @@ class BbsiControllerSpec extends PlaySpec
 
         when(sut.bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
-        val cache = Map(UpdateBankAccountUserChoiceKey -> RemoveAccount)
-
-        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(cache))
+        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String,String]))
 
         val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           BankAccountDecision -> RemoveAccount))
@@ -237,9 +228,7 @@ class BbsiControllerSpec extends PlaySpec
 
         when(sut.bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
-        val cache = Map(UpdateBankAccountUserChoiceKey -> "somethingElseNotHandled")
-
-        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(cache))
+        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String,String]))
 
         val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           BankAccountDecision -> "somethingElseNotHandled"))

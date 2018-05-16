@@ -105,13 +105,10 @@ trait BbsiController extends TaiBaseController
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            for{
+            for {
               bankAccount <- bbsiService.bankAccount(Nino(user.getNino), id)
-
               cacheDetails <- journeyCacheService.currentValue(UpdateBankAccountUserChoiceKey)
-
-
-            }yield bankAccount match{
+            } yield bankAccount match {
               case Some(BankAccount(_, Some(_), Some(_), Some(bankName), _, _)) =>
                 val viewModel = BbsiAccountsDecisionViewModel(id, bankName)
                 Ok(views.html.incomes.bbsi.bank_building_society_accounts_decision(viewModel, BankAccountsDecisionForm.createForm.fill(BankAccountsDecisionFormData(cacheDetails))))
