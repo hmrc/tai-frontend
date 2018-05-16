@@ -70,7 +70,10 @@ trait AddPensionProviderController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          Future.successful(Ok(views.html.pensions.addPensionName(PensionProviderNameForm.form)))
+          journeyCacheService.currentValue(AddPensionProvider_NameKey) map {
+            pensionName =>
+              Ok(views.html.pensions.addPensionName(PensionProviderNameForm.form.fill(pensionName.getOrElse(""))))
+          }
         }
   }
 
@@ -92,11 +95,14 @@ trait AddPensionProviderController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.mandatoryValue(AddPensionProvider_NameKey) map { pensionProviderName =>
-            Ok(views.html.pensions.addPensionReceivedFirstPay(AddPensionProviderFirstPayForm.form, pensionProviderName))
+
+          journeyCacheService.collectedValues(Seq(AddPensionProvider_NameKey), Seq(AddPensionProvider_FirstPaymentKey)) map tupled { (mandatoryVals, optionalVals) =>
+
+            Ok(views.html.pensions.addPensionReceivedFirstPay(AddPensionProviderFirstPayForm.form.fill(optionalVals(0)), mandatoryVals(0)))
+          }
           }
         }
-  }
+
 
   def submitFirstPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
@@ -106,9 +112,17 @@ trait AddPensionProviderController extends TaiBaseController
             journeyCacheService.mandatoryValue(AddPensionProvider_NameKey).map { pensionProviderName =>
               BadRequest(views.html.pensions.addPensionReceivedFirstPay(formWithErrors, pensionProviderName))
             }
-          }, {
-            case Some(YesValue) => Future.successful(Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate()))
-            case _ => Future.successful(Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension()))
+          },
+          yesNo => {
+            journeyCacheService.cache(AddPensionProvider_FirstPaymentKey,yesNo.getOrElse("")) map { _ =>
+              yesNo match {
+                case Some(YesValue) => {
+                  journeyCacheService.cache("", "")
+                  Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate())
+                }
+                case _ => Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension())
+              }
+            }
           }
         )
   }
@@ -128,9 +142,13 @@ trait AddPensionProviderController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.currentValueAs[String](AddPensionProvider_NameKey, identity) map {
-            case Some(employmentName) => Ok(views.html.pensions.addPensionStartDate(PensionAddDateForm(employmentName).form, employmentName))
-            case None => throw new RuntimeException(s"Data not present in cache for $AddPensionProvider_JourneyKey - $AddPensionProvider_NameKey ")
+
+          journeyCacheService.collectedValues(Seq(AddPensionProvider_NameKey), Seq(AddPensionProvider_StartDateKey)) map tupled { (mandatoryVals, optionalVals) =>
+            val form = optionalVals(0) match {
+              case Some(userDateString) => PensionAddDateForm(mandatoryVals(0)).form.fill(new LocalDate(userDateString))
+              case _ => PensionAddDateForm(mandatoryVals(0)).form
+            }
+            Ok(views.html.pensions.addPensionStartDate(form, mandatoryVals(0)))
           }
         }
   }
@@ -159,8 +177,16 @@ trait AddPensionProviderController extends TaiBaseController
         ServiceCheckLite.personDetailsCheck {
           journeyCacheService.currentCache map { cache =>
             val viewModel = PensionNumberViewModel(cache)
-            Ok(views.html.pensions.addPensionNumber(AddPensionProviderNumberForm.form, viewModel))
 
+            val payrollNo = cache.get(AddPensionProvider_PayrollNumberChoice) match {
+              case Some(YesValue) => cache.get(AddPensionProvider_PayrollNumberKey)
+              case _ => None
+            }
+
+            Ok(views.html.pensions.addPensionNumber(AddPensionProviderNumberForm.form.fill(
+              AddPensionProviderNumberForm(cache.get(AddPensionProvider_PayrollNumberChoice), payrollNo)),
+              viewModel)
+            )
           }
         }
   }
@@ -176,7 +202,9 @@ trait AddPensionProviderController extends TaiBaseController
             }
           },
           form => {
-            val payrollNumberToCache = Map(AddPensionProvider_PayrollNumberKey -> form.payrollNumberEntry.getOrElse(Messages("tai.notKnown.response")))
+            val payrollNumberToCache = Map(
+              AddPensionProvider_PayrollNumberChoice -> form.payrollNumberChoice.getOrElse(Messages("tai.label.no")),
+              AddPensionProvider_PayrollNumberKey -> form.payrollNumberEntry.getOrElse(Messages("tai.notKnown.response")))
             journeyCacheService.cache(payrollNumberToCache).map(_ =>
               Redirect(controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber())
             )
@@ -184,13 +212,24 @@ trait AddPensionProviderController extends TaiBaseController
         )
   }
 
-  def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit person =>
-      implicit request =>
-        ServiceCheckLite.personDetailsCheck {
-          Future.successful(Ok(views.html.can_we_contact_by_phone(contactPhonePensionProvider, YesNoTextEntryForm.form())))
-        }
-  }
+    def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+      implicit person =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+
+            journeyCacheService.optionalValues(AddPensionProvider_TelephoneQuestionKey,AddPensionProvider_TelephoneNumberKey) map { seq =>
+
+
+              val telephoneNo = seq(0) match {
+                case Some(YesValue) => seq(1)
+                case _ => None
+              }
+
+              Ok(views.html.can_we_contact_by_phone(contactPhonePensionProvider, YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq(0), telephoneNo))))
+            }
+          }
+    }
+
 
   def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
