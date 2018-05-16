@@ -50,23 +50,23 @@
                     </p>
                 </div>
 
-                @for((descriptionList, descListIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
+                @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
 
-                <section class="section" aria-labelledby="descriptionList@{descListIdx.toString}Heading">
+                <section class="section" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
 
-                    <h2 id="descriptionList@{descListIdx.toString}Heading">@descriptionList.heading</h2>
+                    <h2 id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
 
-                    <ul role="list" id="descriptionList@{descListIdx.toString}" class="tai-description-list flush" aria-labelledby="descriptionList@{descListIdx.toString}Heading">
+                    <ul role="list" id="taxCodeList@{listIdx.toString}" class="tai-description-list flush" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
 
-                        @for((descriptionTerm, termIdx) <- descriptionList.descriptionItems.keySet zip (Stream from 1)) {
+                        @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (Stream from 1)) {
                         <li role="listitem">
-                            <div class="bold-large" id="descriptionTerm_@{descListIdx.toString}_@{termIdx.toString}">
-                                <span class="visuallyhidden">@messages("tai.taxCode.part.announce", descriptionTerm) </span>
-                                <span aria-hidden="true">@descriptionTerm</span>
+                            <div class="bold-large" id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
+                                <span class="visuallyhidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
+                                <span aria-hidden="true">@taxCodeTerm</span>
                             </div>
-                            <div class="fixed-small" id="descriptionText_@{descListIdx.toString}_@{termIdx.toString}">
+                            <div class="fixed-small" id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
                                 <span class="visuallyhidden">@messages("tai.taxCode.definition.announce") </span>
-                                @Html(descriptionList.descriptionItems(descriptionTerm))
+                                @Html(taxCodeList.descriptionItems(taxCodeTerm))
                             </div>
                         </li>
                         }
