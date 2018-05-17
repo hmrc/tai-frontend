@@ -19,19 +19,19 @@ package controllers.income.bbsi
 
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{ServiceCheckLite, TaiBaseController}
-import uk.gov.hmrc.tai.forms.income.bbsi.BankAccountsDecisionForm
+import uk.gov.hmrc.tai.forms.income.bbsi.{BankAccountsDecisionForm, BankAccountsDecisionFormData}
 import uk.gov.hmrc.tai.viewModels.income.BbsiAccountsDecisionViewModel
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.tai.service.{BbsiService, PersonService}
+import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.model.domain.BankAccount
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnector, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.util.BankAccountDecisionConstants
+import uk.gov.hmrc.tai.util.{BankAccountDecisionConstants, JourneyCacheConstants}
 
 import scala.concurrent.Future
 
@@ -39,11 +39,14 @@ import scala.concurrent.Future
 trait BbsiController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
-  with BankAccountDecisionConstants {
+  with BankAccountDecisionConstants
+  with JourneyCacheConstants {
 
   def personService: PersonService
 
   def bbsiService: BbsiService
+
+  def journeyCacheService: JourneyCacheService
 
   def accounts(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -102,10 +105,13 @@ trait BbsiController extends TaiBaseController
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            bbsiService.bankAccount(Nino(user.getNino), id) map {
+            for {
+              bankAccount <- bbsiService.bankAccount(Nino(user.getNino), id)
+              cacheDetails <- journeyCacheService.currentValue(UpdateBankAccountUserChoiceKey)
+            } yield bankAccount match {
               case Some(BankAccount(_, Some(_), Some(_), Some(bankName), _, _)) =>
                 val viewModel = BbsiAccountsDecisionViewModel(id, bankName)
-                Ok(views.html.incomes.bbsi.bank_building_society_accounts_decision(viewModel, BankAccountsDecisionForm.createForm))
+                Ok(views.html.incomes.bbsi.bank_building_society_accounts_decision(viewModel, BankAccountsDecisionForm.createForm.fill(BankAccountsDecisionFormData(cacheDetails))))
               case Some(_) => throw new RuntimeException(s"Bank account does not contain name, number or sortcode for nino: [${user.getNino}] and id: [$id]")
               case None => NotFound
             }
@@ -126,15 +132,19 @@ trait BbsiController extends TaiBaseController
                 case None => Future.successful(NotFound)
               }
             },
-            formData => {
-              formData.bankAccountsDecision match {
-                case Some(UpdateInterest) =>
-                  Future.successful(Redirect(controllers.income.bbsi.routes.BbsiUpdateAccountController.captureInterest(id)))
-                case Some(CloseAccount) =>
-                  Future.successful(Redirect(controllers.income.bbsi.routes.BbsiCloseAccountController.captureCloseDate(id)))
-                case Some(RemoveAccount) =>
-                  Future.successful(Redirect(controllers.income.bbsi.routes.BbsiRemoveAccountController.checkYourAnswers(id)))
-                case _ => Future.successful(Redirect(controllers.income.bbsi.routes.BbsiController.accounts()))
+            (formData: BankAccountsDecisionFormData) => {
+
+              journeyCacheService.cache(UpdateBankAccountUserChoiceKey,formData.bankAccountsDecision.getOrElse("")) map { _ =>
+
+                formData.bankAccountsDecision match {
+                  case Some(UpdateInterest) =>
+                    Redirect(controllers.income.bbsi.routes.BbsiUpdateAccountController.captureInterest(id))
+                  case Some(CloseAccount) =>
+                    Redirect(controllers.income.bbsi.routes.BbsiCloseAccountController.captureCloseDate(id))
+                  case Some(RemoveAccount) =>
+                    Redirect(controllers.income.bbsi.routes.BbsiRemoveAccountController.checkYourAnswers(id))
+                  case _ => Redirect(controllers.income.bbsi.routes.BbsiController.accounts())
+                }
               }
             }
           )
@@ -145,10 +155,13 @@ object BbsiController extends BbsiController {
 
   override val personService = PersonService
   override val bbsiService = BbsiService
+  override val journeyCacheService = JourneyCacheService(UpdateBankAccountChoiceJourneyKey)
 
   override protected val delegationConnector = FrontEndDelegationConnector
   override protected val authConnector = FrontendAuthConnector
   override implicit val templateRenderer = LocalTemplateRenderer
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
+
+
 }
 // $COVERAGE-ON$
