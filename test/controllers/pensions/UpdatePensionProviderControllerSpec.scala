@@ -70,6 +70,22 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.updatePension.decision.heading", "TEST"))
       }
+      "a valid pension id has been passed and we have some cached data" in {
+        val sut = createSUT
+        val pensionTaxCodeIncome = TaxCodeIncome(PensionIncome, Some(1), 100, "", "",
+          "TEST", Week1Month1BasisOperation, Live)
+        val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "",
+          "", Week1Month1BasisOperation, Live)
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+
+        val result = sut.doYouGetThisPension(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.updatePension.decision.heading", "TEST"))
+      }
     }
 
 
@@ -165,8 +181,24 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     "show the whatDoYouWantToTellUs page" when {
       "an authorised user calls the page" in {
         val sut = createSUT
-        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(UpdatePensionProvider_NameKey))(any())).
-          thenReturn(Future.successful("TEST"))
+        val cache = Seq("TEST")
+        val optionalCache = Seq(None)
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(cache,optionalCache))
+
+
+        val result = sut.whatDoYouWantToTellUs()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.updatePension.whatDoYouWantToTellUs.heading", "TEST"))
+      }
+      "we have pension details in the cache" in {
+        val sut = createSUT
+        val cache = Seq("TEST")
+        val optionalCache = Seq(Some("test1"))
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(cache,optionalCache))
 
         val result = sut.whatDoYouWantToTellUs()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -218,11 +250,26 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val sut = createSUT
         when(sut.journeyCacheService.mandatoryValueAsInt(any())(any())).
           thenReturn(Future.successful(1))
+        when(sut.journeyCacheService.optionalValues(any())(any()))
+          .thenReturn(Future.successful(Seq(None,None)))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+      }
+      "an authorised request is received and we have cached data" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.mandatoryValueAsInt(any())(any())).
+          thenReturn(Future.successful(1))
+        when(sut.journeyCacheService.optionalValues(any())(any()))
+          .thenReturn(Future.successful(Seq(Some("yes"),Some("123456789"))))
+        val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+        doc.toString must include("123456789")
       }
     }
   }

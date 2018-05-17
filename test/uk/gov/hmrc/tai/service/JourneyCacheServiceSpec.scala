@@ -137,7 +137,7 @@ class JourneyCacheServiceSpec extends PlaySpec
     }
   }
 
-  "collectedOptionalValues" must{
+  "optionalValues" must{
     "return sequence of strings when we have values in cache" in {
       val sut = createSut
       when(sut.journeyCacheConnector.currentCache(Matchers.eq(sut.journeyName))(any())).thenReturn(Future.successful(testCache))

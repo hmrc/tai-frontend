@@ -45,7 +45,9 @@ trait JourneyCacheConstants {
 
   val AddPensionProvider_JourneyKey = "add-pension-provider"
   val AddPensionProvider_NameKey = "pensionProviderName"
+  val AddPensionProvider_FirstPaymentKey = "pensionFirstPayment"
   val AddPensionProvider_StartDateKey = "pensionProviderStartDate"
+  val AddPensionProvider_PayrollNumberChoice = "pensionProviderPayrollChoice"
   val AddPensionProvider_PayrollNumberKey = "pensionProviderPayrollNumber"
   val AddPensionProvider_TelephoneQuestionKey = "pensionProviderTelephoneContactAllowed"
   val AddPensionProvider_TelephoneNumberKey = "pensionProviderTelephoneNumber"
@@ -71,6 +73,7 @@ trait JourneyCacheConstants {
   val CompanyCar_DateFuelBenefitStartedKey = "carFuelStartDate"
   val CompanyCar_HasActiveFuelBenefitdKey = "hasActiveFuelBenefit"
   val CompanyCar_DateWithdrawnKey = "dateWithdrawn"
+
 
   val CloseBankAccountJourneyKey = "close-bank-account"
   val CloseBankAccountDateKey = "closeBankAccountDate"
@@ -177,6 +180,9 @@ trait BankAccountDecisionConstants {
   val UpdateInterest = "updateInterest"
   val CloseAccount = "closeAccount"
   val RemoveAccount = "removeAccount"
+
+  val UpdateBankAccountChoiceJourneyKey = "update-or-remove-bank-account-decision"
+  val UpdateBankAccountUserChoiceKey = "userAccountActionDecision"
 }
 
 trait BankAccountClosingInterestConstants {

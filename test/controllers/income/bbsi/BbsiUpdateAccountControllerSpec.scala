@@ -48,17 +48,37 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
       "valid details has been passed" in {
         val sut = createSut
 
+        when(sut.journeyCache.currentValue(any())(any())).thenReturn(Future.successful(None))
+
         val result = sut.captureInterest(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.bbsi.update.captureInterest.title", "TEST"))
+
+        doc.select("input[id=untaxedInterest]").get(0).attributes().get("value") mustBe ""
+      }
+
+      "valid details has been passed and values have been previously cached" in {
+        val sut = createSut
+
+        when(sut.journeyCache.currentValue(any())(any())).thenReturn(Future.successful(Some("10234")))
+
+        val result = sut.captureInterest(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.bbsi.update.captureInterest.title", "TEST"))
+
+        doc.select("input[id=untaxedInterest]").get(0).attributes().get("value") mustBe "10234"
       }
     }
 
     "throws internal server error" when {
       "details are invalid" in {
         val sut = createSut
+
+        when(sut.journeyCache.currentValue(any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.captureInterest(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
