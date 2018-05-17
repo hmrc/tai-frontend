@@ -75,6 +75,7 @@ trait JourneyCacheConstants {
   val CloseBankAccountJourneyKey = "close-bank-account"
   val CloseBankAccountDateKey = "closeBankAccountDate"
   val CloseBankAccountInterestKey = "closeBankAccountInterest"
+  val CloseBankAccountInterestChoice = "closeBankAccountInterestChoice"
   val CloseBankAccountNameKey = "bankName"
 
   val UpdateBankAccountJourneyKey="update-bank-account"
