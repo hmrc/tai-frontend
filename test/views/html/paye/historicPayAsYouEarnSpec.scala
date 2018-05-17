@@ -88,8 +88,8 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
 
         doc.select("#p800Link").size mustBe 1
 
-        doc must haveHeadingH4WithText(messages("tai.paye.lastTaxYear.checkTax.somethingNotRight"))
-        doc must haveHeadingH4WithText(messages("tai.paye.lastTaxYear.checkTax.text"))
+        doc must haveHeadingH3WithText(messages("tai.paye.lastTaxYear.checkTax.somethingNotRight"))
+        doc must haveHeadingH3WithText(messages("tai.paye.lastTaxYear.checkTax.text"))
       }
     }
 
