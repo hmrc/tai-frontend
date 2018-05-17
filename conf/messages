@@ -437,7 +437,7 @@ tai.incomes.noneEditable.link.url=https://www.gov.uk/government/organisations/de
 
 ##Edit Incomes Page
 tai.incomes.edit.incomeTax.update.heading=Update your annual taxable pay
-tai.incomes.edit.text=Enter your annual taxable pay from your employment(s) and pension(s) for the tax year  {0} to {1}.
+tai.incomes.edit.text=Enter your annual taxable pay from your employments and pensions for the tax year  {0} to {1}.
 tai.enterWholeAndNumericalOnly=Enter whole pounds and numerical characters only.
 
 ##Edit Ceased Incomes Page
@@ -734,7 +734,7 @@ error.tai.updateDataPension.enterLargerValue=Your pension provider told us you w
 
 ##Save page
 tai.incomes.updated.check.title=Your taxable income has been updated
-tai.incomes.updated.check.text=If changes are made later today, for example, by your employer(s) or pension provider(s), your calculation may change.
+tai.incomes.updated.check.text=If changes are made later today, for example, by your employer or pension provider, your calculation may change.
 tai.incomes.seeChanges.text=You can see the changes you have made by viewing your new calculation.
 tai.personalAllowance.paTransferred = Because you’ve chosen to transfer £{0} to your spouse or civil partner it is reduced to £{1}.
 tai.personalAllowance.paReceived = Because your spouse or civil partner has chosen to transfer £{0} of their Personal Allowance to you it is increased to £{1}.
@@ -1091,7 +1091,7 @@ tai.taxcode.deduction.type-45=Estimate of the tax you owe this year
 #Company Car
 
 #split allowances
-tai.split.allowance.income.less.message=Because your main source of income is less than your tax-free amount we’ve split your tax-free amount with your other income(s) so you don’t pay too much tax.
+tai.split.allowance.income.less.message=Because your main source of income is less than your tax-free amount we’ve split your tax-free amount with your other income so you don’t pay too much tax.
 tai.split.allowance.income.greater.message.p1=If your highest source of income is less than your tax-free amount, any tax-free amount left over can reduce tax on your other income.
 tai.split.allowance.income.greater.message.p2=We estimate your highest source of income to be more than your tax-free amount. Splitting it across your other incomes does not reduce your overall tax.
 tai.split.allowance.income.greater.message.p3=Unless you have already asked us to split your allowances across your income we will review your tax codes before the end of this tax year, or if you change jobs. This is so you pay the right amount of tax.
@@ -1593,7 +1593,7 @@ tai.taxCalc.pensionPaymentsAdjustment.title=Pension Payments Adjustment
 
 #Tax paid elsewhere
 tai.taxCollected.atSource.title=Reductions
-tai.taxCollected.atSource.description=Not all of the tax in your estimate is collected through PAYE using your tax code(s). The tax you won’t pay through PAYE includes:
+tai.taxCollected.atSource.description=Not all of the tax in your estimate is collected through PAYE using your tax code. The tax you won’t pay through PAYE includes:
 tai.taxCollected.atSource.heading.tax=Tax
 tai.taxCollected.atSource.heading.amount=Amount (£)
 

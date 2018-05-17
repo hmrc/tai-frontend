@@ -129,8 +129,8 @@
 
           countElement.classList.add('govuk-c-charcount')
         } else {
-          if (!countMessage) window.console.warn('Make sure you set an id for each of your field(s)')
-          if (!maxLength) window.console.warn('Make sure you set the ' + countAttribute + ' for each of your field(s)')
+          if (!countMessage) window.console.warn('Make sure you set an id for each of your fields')
+          if (!maxLength) window.console.warn('Make sure you set the ' + countAttribute + ' for each of your fields')
         }
       }
     }
