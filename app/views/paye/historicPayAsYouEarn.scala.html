@@ -70,9 +70,9 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                 } else {
                     <section id="lastTaxYearIncome">
 
-                        <h3 id="lastYearHeading" class="heading-medium flush--top">
+                        <h2 id="lastYearHeading" class="heading-medium flush--top">
                             @Messages("tai.paye.lastTaxYear.heading")
-                            <br/> @{TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)}</h3>
+                            <br/> @{TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)}</h2>
 
                         <div id="last-tax-year-table" class="flush--bottom">
                             <ul class="govuk-check-your-answers cya-questions-short govuk-check-your-answers--tax-summary">
@@ -94,7 +94,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                     </section>
             }
 
-                <h4 class="heading-medium">@Messages("tai.paye.lastTaxYear.checkTax.somethingNotRight")</h4>
+                <h3 class="heading-medium">@Messages("tai.paye.lastTaxYear.checkTax.somethingNotRight")</h3>
                 <div class="subsection flush--top">
                     @Link.toInternalPage(
                     url=controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(viewModel.taxYear).url,
@@ -104,7 +104,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                 </div>
 
                 @if(viewModel.p800ServiceIsAvailable) {
-                    <h4 class="heading-medium">@Messages("tai.paye.lastTaxYear.checkTax.text")</h4>
+                    <h3  class="heading-medium">@Messages("tai.paye.lastTaxYear.checkTax.text")</h3>
 
                     <div class="subsection flush--top">
                         @includes.link(
