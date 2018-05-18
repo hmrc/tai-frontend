@@ -58,12 +58,21 @@ trait BbsiCloseAccountController extends TaiBaseController
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            bbsiService.bankAccount(Nino(user.getNino), id) map {
-              case Some(BankAccount(_, Some(_), Some(_), Some(bankName), _, _)) =>
-                Ok(views.html.incomes.bbsi.close.bank_building_society_close_date(
-                  DateForm(Seq(futureDateValidation), Messages("tai.closeBankAccount.closeDateForm.blankDate", bankName)).form, bankName, id))
-              case Some(_) => throw new RuntimeException(s"Bank account does not contain name, number or sortcode for nino: [${user.getNino}] and id: [$id]")
-              case None => throw new RuntimeException(s"Bank account not found for nino: [${user.getNino}] and id: [$id]")
+            for{
+              bankAccount <- bbsiService.bankAccount(Nino(user.getNino), id)
+              dateCache <- journeyCacheService.currentValueAsDate(CloseBankAccountDateKey)
+            }yield{
+              val form = DateForm(Seq(futureDateValidation), Messages("tai.closeBankAccount.closeDateForm.blankDate")).form
+              val updatedForm = dateCache match{
+                case Some(d) => form.fill(d)
+                case _ => form
+              }
+              bankAccount match {
+                case Some(BankAccount(_, Some(_), Some(_), Some(bankName), _, _)) =>
+                  Ok(views.html.incomes.bbsi.close.bank_building_society_close_date(updatedForm, bankName, id))
+                case Some(_) => throw new RuntimeException(s"Bank account does not contain name, number or sortcode for nino: [${user.getNino}] and id: [$id]")
+                case None => throw new RuntimeException(s"Bank account not found for nino: [${user.getNino}] and id: [$id]")
+              }
             }
           }
   }
@@ -100,9 +109,13 @@ trait BbsiCloseAccountController extends TaiBaseController
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            bbsiService.bankAccount(Nino(user.getNino), id) map {
+            for{
+              interestCache <- journeyCacheService.optionalValues(CloseBankAccountInterestChoice,CloseBankAccountInterestKey)
+              bankAccount <-  bbsiService.bankAccount(Nino(user.getNino), id)
+            }yield bankAccount match {
               case Some(BankAccount(_, Some(_), Some(_), Some(bankName), _, _)) =>
-                Ok(views.html.incomes.bbsi.close.bank_building_society_closing_interest(id, BankAccountClosingInterestForm.form))
+                Ok(views.html.incomes.bbsi.close.bank_building_society_closing_interest(id, BankAccountClosingInterestForm.form.fill
+                (BankAccountClosingInterestForm(interestCache(0),interestCache(1)))))
               case Some(_) => throw new RuntimeException(s"Bank account does not contain name, number or sortcode for nino: [${user.getNino}] and id: [$id]")
               case None => throw new RuntimeException(s"Bank account not found for nino: [${user.getNino}] and id: [$id]")
             }
@@ -118,7 +131,8 @@ trait BbsiCloseAccountController extends TaiBaseController
               Future.successful(BadRequest(views.html.incomes.bbsi.close.bank_building_society_closing_interest(id, formWithErrors)))
             },
             form => {
-              journeyCacheService.cache(Map(CloseBankAccountInterestKey -> FormHelper.stripNumber(form.closingInterestEntry.getOrElse("")))) map { _ =>
+              journeyCacheService.cache(Map(CloseBankAccountInterestKey -> FormHelper.stripNumber(form.closingInterestEntry.getOrElse("")),
+                CloseBankAccountInterestChoice ->form.closingBankAccountInterestChoice.getOrElse(""))) map { _ =>
                 Redirect(controllers.income.bbsi.routes.BbsiCloseAccountController.checkYourAnswers(id))
               }
             }

@@ -68,6 +68,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
         when(sut.bbsiService.bankAccount(any(), any())(any()))
           .thenReturn(Future.successful(Some(bankAccount1)))
+        when(sut.journeyCacheService.currentValueAsDate(any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.captureCloseDate(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -85,6 +86,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
         when(sut.bbsiService.bankAccount(any(), any())(any()))
           .thenReturn(Future.successful(Some(bankAccount1.copy(bankName = None))))
+        when(sut.journeyCacheService.currentValueAsDate(any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.captureCloseDate(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -97,6 +99,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
         when(sut.bbsiService.bankAccount(any(), any())(any()))
           .thenReturn(Future.successful(None))
+        when(sut.journeyCacheService.currentValueAsDate(any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.captureCloseDate(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -245,6 +248,23 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         val sut = createSUT
 
         when(sut.bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount1)))
+        when(sut.journeyCacheService.optionalValues(any(),any())).thenReturn(Future.successful(Seq(None,None)))
+        val result = sut.captureClosingInterest(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.heading", TaxYearResolver.currentTaxYear.toString))
+      }
+      "the request contains a valid bank account id and we have some saved data in the form" in {
+
+        val sut = createSUT
+
+        val closingInterestData = Seq(Some("123"),Some("Yes"))
+
+
+        when(sut.bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount1)))
+        when(sut.journeyCacheService.optionalValues(any(),any())).thenReturn(Future.successful(closingInterestData))
 
         val result = sut.captureClosingInterest(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -288,9 +308,9 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         val sut = createSUT
         val closingInterest = "123"
 
-        val mapWithClosingInterest = Map(CloseBankAccountInterestKey -> closingInterest)
+        val mapWithClosingInterest = Map(CloseBankAccountInterestKey -> closingInterest, CloseBankAccountInterestChoice -> YesValue)
 
-        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(mapWithClosingInterest))
+        when(sut.journeyCacheService.cache(any(),any())(any())).thenReturn(Future.successful(mapWithClosingInterest))
 
         Await.result(sut.submitClosingInterest(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           ClosingInterestChoice -> YesValue, ClosingInterestEntry -> closingInterest)), 5 seconds)
@@ -321,11 +341,11 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
       "the form is valid but user has selected that they don't have any interest" in {
 
         val sut = createSUT
-        val closingInterest = "£123.45"
+        val closingInterest = ""
 
         val mapWithClosingInterest = Map(CloseBankAccountInterestKey -> closingInterest)
 
-        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(mapWithClosingInterest))
+        when(sut.journeyCacheService.cache(any(),any())(any())).thenReturn(Future.successful(mapWithClosingInterest))
 
         Await.result(sut.submitClosingInterest(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           ClosingInterestChoice -> NoValue, ClosingInterestEntry -> "")), 5 seconds)
@@ -356,9 +376,6 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
       "there is a form validation error" in {
 
         val sut = createSUT
-        val closingInterest = "£123.45"
-
-        val mapWithClosingInterest = Map(CloseBankAccountInterestKey -> closingInterest)
 
         val result = sut.submitClosingInterest(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           ClosingInterestChoice -> YesValue, ClosingInterestEntry -> ""))
