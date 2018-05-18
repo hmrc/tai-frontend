@@ -1198,10 +1198,16 @@ tai.incomeTaxComparison.taxFreeAmount.totalDeductions=Total deductions
 tai.incomeTaxComparison.taxFreeAmount.totalTFA=Your total tax-free amount
 tai.incomeTaxComparison.tellAboutChange.subHeading=Tell us about a change
 tai.incomeTaxComparison.tellAboutChange.description=If your details here are wrong or if there is something missing, tell us about changes to your:
+
 tai.incomeTaxComparison.tellAboutChange.companyBenefitsText=company benefits
+tai.incomeTaxComparison.tellAboutChange.companyBenefitsReaderText=Tell us about company benefits.
 tai.incomeTaxComparison.tellAboutChange.investmentIncomeText=investment income
+tai.incomeTaxComparison.tellAboutChange.investmentIncomeReaderText=Tell us about investment income.
 tai.incomeTaxComparison.tellAboutChange.stateBenefitsText=state benefits
+tai.incomeTaxComparison.tellAboutChange.stateBenefitsReaderText=Tell us about state benefits.
 tai.incomeTaxComparison.tellAboutChange.otherIncomeText=other income
+tai.incomeTaxComparison.tellAboutChange.otherIncomeReaderText=Tell us about other income.
+
 tai.incomeTaxComparison.sidebar.subHeading=Go to the current tax year
 tai.incomeTaxComparison.incomeSourceAbsent=Not available
 
