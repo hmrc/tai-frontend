@@ -1660,3 +1660,4 @@ language.day.singular=day
 language.day.plural=days
 
 tai.updateOrRemove.fromOtherSources=Update or remove {0}
+tai.mergedTaxBand.link.wording=Check tax on income
