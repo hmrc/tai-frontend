@@ -161,7 +161,7 @@ trait UpdatePensionProviderController extends TaiBaseController
         ServiceCheckLite.personDetailsCheck {
           for{
             pensionId <- journeyCacheService.mandatoryValueAsInt(UpdatePensionProvider_IdKey)
-            telephoneCache <- journeyCacheService.collectedOptionalValues(UpdatePensionProvider_TelephoneQuestionKey,UpdatePensionProvider_TelephoneNumberKey )
+            telephoneCache <- journeyCacheService.optionalValues(UpdatePensionProvider_TelephoneQuestionKey,UpdatePensionProvider_TelephoneNumberKey )
           }yield{
             Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel(pensionId),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))

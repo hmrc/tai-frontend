@@ -198,7 +198,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
         val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
         when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(sut.journeyCacheService.mandatoryValueAsInt(any())(any())).thenReturn(Future.successful(1))
-        when(sut.journeyCacheService.collectedOptionalValues(any())(any())).thenReturn(Future.successful(Seq(None,None)))
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(None,None)))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -214,7 +214,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
         val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
         when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(sut.journeyCacheService.mandatoryValueAsInt(any())(any())).thenReturn(Future.successful(1))
-        when(sut.journeyCacheService.collectedOptionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(YesValue), Some("01215485965"))))
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(YesValue), Some("01215485965"))))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK

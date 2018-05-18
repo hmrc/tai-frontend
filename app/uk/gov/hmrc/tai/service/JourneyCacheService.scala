@@ -76,13 +76,7 @@ trait JourneyCacheService extends JourneyCacheConstants {
     for {
       cache <- currentCache
     } yield {
-      keys map { key =>
-        val found = cache.get(key)
-        found match {
-          case Some(str) if !str.trim.isEmpty => found
-          case _ => None
-        }
-      }
+      mappedOptional(cache, keys)
     }
   }
 
@@ -91,29 +85,8 @@ trait JourneyCacheService extends JourneyCacheConstants {
       cache <- currentCache
     } yield {
       val mandatoryResult = mappedMandatory(cache, mandatoryValues)
-      val optionalResult = optionalValues map { key =>
-        val found = cache.get(key)
-        found match {
-          case Some(str) if !str.trim.isEmpty => found
-          case _ => None
-        }
-      }
+      val optionalResult = mappedOptional(cache, optionalValues)
       (mandatoryResult, optionalResult)
-    }
-  }
-
-  def collectedOptionalValues(optionalValues: String*)(implicit hc: HeaderCarrier): Future[Seq[Option[String]]] = {
-    for {
-      cache <- currentCache
-    } yield {
-      val optionalResult = optionalValues map { key =>
-        val found = cache.get(key)
-        found match {
-          case Some(str) if !str.trim.isEmpty => found
-          case _ => None
-        }
-      }
-      optionalResult
     }
   }
 
@@ -126,6 +99,14 @@ trait JourneyCacheService extends JourneyCacheConstants {
     }
   }
 
+  private def mappedOptional(cache: Map[String, String], optionalValues: Seq[String]): Seq[Option[String]] = {
+    optionalValues map { key =>
+      cache.get(key) match {
+        case found @ Some(str) if !str.trim.isEmpty => found
+        case _ => None
+      }
+    }
+  }
 
   def currentCache(implicit hc: HeaderCarrier): Future[Map[String,String]] = {
     journeyCacheConnector.currentCache(journeyName)

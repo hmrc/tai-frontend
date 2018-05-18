@@ -21,6 +21,8 @@ trait JourneyCacheConstants {
   val AddEmployment_JourneyKey = "add-employment"
   val AddEmployment_NameKey = "employmentName"
   val AddEmployment_StartDateKey = "employmentStartDate"
+  val AddEmployment_RecewivedFirstPayKey = "employmentFirstPayReceived"
+  val AddEmployment_PayrollNumberQuestionKey = "employmentPayrollNumberKnown"
   val AddEmployment_PayrollNumberKey = "employmentPayrollNumber"
   val AddEmployment_TelephoneQuestionKey = "employmentTelephoneContactAllowed"
   val AddEmployment_TelephoneNumberKey = "employmentTelephoneNumber"

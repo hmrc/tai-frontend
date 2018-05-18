@@ -58,14 +58,26 @@ class AddEmploymentControllerSpec extends PlaySpec
 
   "addEmploymentName" must {
     "show the employment name form page" when {
-      "the request has an authorised session" in {
+      "the request has an authorised session and no previously supplied employment name is present in cache" in {
         val sut = createSUT
+        when(sut.journeyCacheService.currentValue(Matchers.eq(AddEmployment_NameKey))(any())).thenReturn(Future.successful(None))
         val result = sut.addEmploymentName()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.addNameForm.title"))
+      }
+      "the request has an authorised session and a previously supplied employment name is present in cache" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.currentValue(Matchers.eq(AddEmployment_NameKey))(any())).thenReturn(Future.successful(Some("employer one plc")))
+        val result = sut.addEmploymentName()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addEmployment.addNameForm.title"))
+        doc.toString must include("employer one plc")
       }
     }
   }
@@ -111,16 +123,29 @@ class AddEmploymentControllerSpec extends PlaySpec
 
   "addStartDate" must {
     "show the employment start date form page" when {
-      "the request has an authorised session" in {
+      "the request has an authorised session and no previously supplied start date is present in cache" in {
         val sut = createSUT
         val employmentName = "TEST"
-        when(sut.journeyCacheService.currentValueAs[String](any(), any())(any())).thenReturn(Future.successful(Some(employmentName)))
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(employmentName), Seq(None)))
 
         val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.startDateForm.title", employmentName))
+        doc.select("#tellUsStartDateForm_year").get(0).attributes.get("value") mustBe ""
+      }
+      "the request has an authorised session and a previously supplied start date is present in cache" in {
+        val sut = createSUT
+        val employmentName = "TEST"
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(employmentName), Seq(Some("2017-12-12"))))
+
+        val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addEmployment.startDateForm.title", employmentName))
+        doc.select("#tellUsStartDateForm_year").get(0).attributes.get("value") mustBe "2017"
       }
     }
 
@@ -224,10 +249,11 @@ class AddEmploymentControllerSpec extends PlaySpec
 
   "received First Pay" must {
     "show the first pay choice page" when {
-      "the request has an authorised session" in {
+      "the request has an authorised session and no previous response is held in cache" in {
         val sut = createSUT
         val employmentName = "TEST"
-        when(sut.journeyCacheService.mandatoryValue(any())(any())).thenReturn(Future.successful(employmentName))
+        when(sut.journeyCacheService.collectedValues(Matchers.eq(Seq(AddEmployment_NameKey)), Matchers.eq(Seq(AddEmployment_RecewivedFirstPayKey)))(any()))
+          .thenReturn(Future.successful((Seq(employmentName), Seq(None))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -235,6 +261,23 @@ class AddEmploymentControllerSpec extends PlaySpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.employmentFirstPay.title", employmentName))
+        doc.select("input[id=firstPayChoice-yes][checked=checked]").size() mustBe 0
+        doc.select("input[id=firstPayChoice-no][checked=checked]").size() mustBe 0
+      }
+      "the request has an authorised session and a previous response is held in cache" in {
+        val sut = createSUT
+        val employmentName = "TEST"
+        when(sut.journeyCacheService.collectedValues(Matchers.eq(Seq(AddEmployment_NameKey)), Matchers.eq(Seq(AddEmployment_RecewivedFirstPayKey)))(any()))
+          .thenReturn(Future.successful((Seq(employmentName), Seq(Some(YesValue)))))
+
+        val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addEmployment.employmentFirstPay.title", employmentName))
+        doc.select("input[id=firstPayChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=firstPayChoice-no][checked=checked]").size() mustBe 0
       }
     }
   }
@@ -244,8 +287,7 @@ class AddEmploymentControllerSpec extends PlaySpec
     "redirect user to payroll number page" when {
       "yes is selected" in {
         val sut = createSUT
-        val firstPayChoice = Map(AddEmployment_StartDateWithinSixWeeks -> YesValue)
-        when(sut.journeyCacheService.cache(mockEq(firstPayChoice))(any())).thenReturn(Future.successful(firstPayChoice))
+        when(sut.journeyCacheService.cache(mockEq(AddEmployment_RecewivedFirstPayKey), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.submitFirstPay()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           AddEmploymentFirstPayForm.FirstPayChoice -> YesValue))
@@ -259,8 +301,7 @@ class AddEmploymentControllerSpec extends PlaySpec
       "no is selected" in {
         val sut = createSUT
         val employmentName = "TEST-Employer"
-
-        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(AddEmployment_NameKey))(any())).thenReturn(Future.successful(employmentName))
+        when(sut.journeyCacheService.cache(mockEq(AddEmployment_RecewivedFirstPayKey), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.submitFirstPay()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           AddEmploymentFirstPayForm.FirstPayChoice -> NoValue))
@@ -302,7 +343,7 @@ class AddEmploymentControllerSpec extends PlaySpec
 
   "add employment payroll number" must {
     "show the add payroll number page" when {
-      "the request has an authorised session" in {
+      "the request has an authorised session and no previous response is held in cache" in {
         val sut = createSUT
         val employerName = "TEST"
         val cache = Map(AddEmployment_NameKey -> employerName, AddEmployment_StartDateWithinSixWeeks -> YesValue)
@@ -314,6 +355,49 @@ class AddEmploymentControllerSpec extends PlaySpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
+        doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 0
+        doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 0
+        doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe ""
+      }
+      "the request has an authorised session and a previous 'no' response is held in cache" in {
+        val sut = createSUT
+        val employerName = "TEST"
+        val cache = Map(
+          AddEmployment_NameKey -> employerName,
+          AddEmployment_StartDateWithinSixWeeks -> YesValue,
+          AddEmployment_PayrollNumberQuestionKey -> NoValue,
+          AddEmployment_PayrollNumberKey -> "should be ignored")
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+
+        val result = sut.addEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
+        doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 0
+        doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe ""
+      }
+      "the request has an authorised session and a previous 'yes' response is held in cache" in {
+        val sut = createSUT
+        val employerName = "TEST"
+        val cache = Map(
+          AddEmployment_NameKey -> employerName,
+          AddEmployment_StartDateWithinSixWeeks -> YesValue,
+          AddEmployment_PayrollNumberQuestionKey -> YesValue,
+          AddEmployment_PayrollNumberKey -> "should be displayed")
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+
+        val result = sut.addEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
+        doc.select("input[id=payrollNumberChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=payrollNumberChoice-no][checked=checked]").size() mustBe 0
+        doc.select("input[id=payrollNumberEntry]").get(0).attributes.get("value") mustBe "should be displayed"
       }
     }
   }
@@ -323,7 +407,10 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the form is valid and user knows their payroll number" in {
         val sut = createSUT
         val payrollNo = "1234"
-        val mapWithPayrollNumber = Map(AddEmployment_PayrollNumberKey -> payrollNo)
+        val mapWithPayrollNumber = Map(
+          AddEmployment_PayrollNumberQuestionKey -> YesValue,
+          AddEmployment_PayrollNumberKey -> payrollNo
+        )
         when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
         Await.result(sut.submitEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           PayrollNumberChoice -> YesValue, PayrollNumberEntry -> payrollNo)), 5 seconds)
@@ -336,7 +423,10 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the form is valid and user knows their payroll number" in {
         val sut = createSUT
         val payrollNo = "1234"
-        val mapWithPayrollNumber = Map(AddEmployment_PayrollNumberKey -> payrollNo)
+        val mapWithPayrollNumber = Map(
+          AddEmployment_PayrollNumberQuestionKey -> YesValue,
+          AddEmployment_PayrollNumberKey -> payrollNo
+        )
         when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
         val result = sut.submitEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           PayrollNumberChoice -> YesValue, PayrollNumberEntry -> payrollNo))
@@ -350,7 +440,10 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the form is valid and user doesn't know its payroll number" in {
         val sut = createSUT
         val payrollNo = Messages("tai.addEmployment.employmentPayrollNumber.notKnown")
-        val mapWithPayrollNumber = Map(AddEmployment_PayrollNumberKey -> payrollNo)
+        val mapWithPayrollNumber = Map(
+          AddEmployment_PayrollNumberQuestionKey -> NoValue,
+          AddEmployment_PayrollNumberKey -> payrollNo
+        )
 
         when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
 
@@ -365,7 +458,10 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the form is valid and user doesn't know its payroll number" in {
         val sut = createSUT
         val payrollNo = Messages("tai.addEmployment.employmentPayrollNumber.notKnown")
-        val mapWithPayrollNumber = Map(AddEmployment_PayrollNumberKey -> payrollNo)
+        val mapWithPayrollNumber = Map(
+          AddEmployment_PayrollNumberQuestionKey -> NoValue,
+          AddEmployment_PayrollNumberKey -> payrollNo
+        )
 
         when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
 
@@ -396,14 +492,41 @@ class AddEmploymentControllerSpec extends PlaySpec
 
   "add telephone number" must {
     "show the contact by telephone page" when {
-      "the request has an authorised session" in {
+      "the request has an authorised session and no previous response is held in cache" in {
         val sut = createSUT
-
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(None, None)))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoTextEntry]").get(0).attributes.get("value") mustBe ""
+      }
+      "the request has an authorised session and a previous 'no' response is held in cache" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(NoValue), Some("should be ignored"))))
+        val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 1
+        doc.select("input[id=yesNoTextEntry]").get(0).attributes.get("value") mustBe ""
+      }
+      "the request has an authorised session and a previous 'yes' response is held in cache" in {
+        val sut = createSUT
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(YesValue), Some("should be displayed"))))
+        val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.canWeContactByPhone.title"))
+        doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 1
+        doc.select("input[id=yesNoChoice-no][checked=checked]").size() mustBe 0
+        doc.select("input[id=yesNoTextEntry]").get(0).attributes.get("value") mustBe "should be displayed"
       }
     }
   }
