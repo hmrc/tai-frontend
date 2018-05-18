@@ -73,22 +73,38 @@
                 <p>@messages("tai.incomeTaxComparison.tellAboutChange.description")</p>
 
                 <ul class="bullets">
-                    <li>@Link.toInternalPage(url = ApplicationConfig.companyBenefitsLinkUrl,
-                        value = Some("tai.incomeTaxComparison.tellAboutChange.companyBenefitsText"),
-                        id = Some("companyBenefitsLink")
-                    ).toHtml</li>
-                    <li>@Link.toInternalPage(url = ApplicationConfig.investmentIncomeLinkUrl,
-                        value = Some("tai.incomeTaxComparison.tellAboutChange.investmentIncomeText"),
-                        id = Some("investmentIncomeLink")
-                    ).toHtml</li>
-                    <li>@Link.toInternalPage(url = ApplicationConfig.taxableStateBenefitLinkUrl,
-                        value = Some("tai.incomeTaxComparison.tellAboutChange.stateBenefitsText"),
-                        id = Some("taxableStateBenefitLink")
-                    ).toHtml</li>
-                    <li>@Link.toInternalPage(url = ApplicationConfig.otherIncomeLinkUrl,
-                        value = Some("tai.incomeTaxComparison.tellAboutChange.otherIncomeText"),
-                        id = Some("otherIncomeLink")
-                    ).toHtml</li>
+                    <li>
+                        @includes.link(
+                            id = Some("companyBenefitsLink"),
+                            url = ApplicationConfig.companyBenefitsLinkUrl,
+                            copy = Messages("tai.incomeTaxComparison.tellAboutChange.companyBenefitsText"),
+                            altCopy = Some(Messages("tai.incomeTaxComparison.tellAboutChange.companyBenefitsReaderText"))
+                        )
+                    </li>
+                    <li>
+                        @includes.link(
+                            id = Some("investmentIncomeLink"),
+                            url = ApplicationConfig.investmentIncomeLinkUrl,
+                            copy = Messages("tai.incomeTaxComparison.tellAboutChange.investmentIncomeText"),
+                            altCopy = Some(Messages("tai.incomeTaxComparison.tellAboutChange.investmentIncomeReaderText"))
+                        )
+                    </li>
+                    <li>
+                        @includes.link(
+                            id = Some("taxableStateBenefitLink"),
+                            url = ApplicationConfig.taxableStateBenefitLinkUrl,
+                            copy = Messages("tai.incomeTaxComparison.tellAboutChange.stateBenefitsText"),
+                            altCopy = Some(Messages("tai.incomeTaxComparison.tellAboutChange.stateBenefitsReaderText"))
+                        )
+                    </li>
+                    <li>
+                        @includes.link(
+                            id = Some("otherIncomeLink"),
+                            url = ApplicationConfig.otherIncomeLinkUrl,
+                            copy = Messages("tai.incomeTaxComparison.tellAboutChange.otherIncomeText"),
+                            altCopy = Some(Messages("tai.incomeTaxComparison.tellAboutChange.otherIncomeReaderText"))
+                        )
+                    </li>
                 </ul>
             </section>
         </div>

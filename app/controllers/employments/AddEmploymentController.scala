@@ -78,7 +78,9 @@ trait AddEmploymentController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          Future.successful(Ok(views.html.employments.add_employment_name_form(EmploymentNameForm.form)))
+          journeyCacheService.currentValue(AddEmployment_NameKey) map { providedName =>
+            Ok(views.html.employments.add_employment_name_form(EmploymentNameForm.form.fill(providedName.getOrElse(""))))
+          }
         }
   }
 
@@ -100,9 +102,13 @@ trait AddEmploymentController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.currentValueAs[String](AddEmployment_NameKey, identity) map {
-            case Some(employmentName) => Ok(views.html.employments.add_employment_start_date_form(EmploymentAddDateForm(employmentName).form, employmentName))
-            case None => throw new RuntimeException(s"Data not present in cache for $AddEmployment_JourneyKey - $AddEmployment_NameKey ")
+          journeyCacheService.collectedValues(Seq(AddEmployment_NameKey), Seq(AddEmployment_StartDateKey)) map tupled { (mandSeq, optSeq) =>
+
+            val form = optSeq(0) match {
+              case Some(dateString) => EmploymentAddDateForm(mandSeq(0)).form.fill(new LocalDate(dateString))
+              case _ => EmploymentAddDateForm(mandSeq(0)).form
+            }
+            Ok(views.html.employments.add_employment_start_date_form(form, mandSeq(0)))
           }
         }
   }
@@ -137,8 +143,8 @@ trait AddEmploymentController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.mandatoryValue(AddEmployment_NameKey) map { employmentName =>
-            Ok(views.html.employments.add_employment_first_pay_form(AddEmploymentFirstPayForm.form, employmentName))
+          journeyCacheService.collectedValues(Seq(AddEmployment_NameKey), Seq(AddEmployment_RecewivedFirstPayKey)) map tupled { (mandSeq, optSeq)  =>
+            Ok(views.html.employments.add_employment_first_pay_form(AddEmploymentFirstPayForm.form.fill(optSeq(0)), mandSeq(0)))
           }
         }
   }
@@ -152,10 +158,12 @@ trait AddEmploymentController extends TaiBaseController
               BadRequest(views.html.employments.add_employment_first_pay_form(formWithErrors, employmentName))
             }
           },
-          form => {
-            form match {
-              case Some(YesValue) => Future.successful(Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber()))
-              case _ => Future.successful(Redirect(controllers.employments.routes.AddEmploymentController.sixWeeksError()))
+          firstPayYesNo => {
+            journeyCacheService.cache(AddEmployment_RecewivedFirstPayKey, firstPayYesNo.getOrElse("")) map { _ =>
+              firstPayYesNo match {
+                case Some(YesValue) => Redirect(controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber())
+                case _ => Redirect(controllers.employments.routes.AddEmploymentController.sixWeeksError())
+              }
             }
           }
         )
@@ -177,9 +185,17 @@ trait AddEmploymentController extends TaiBaseController
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           journeyCacheService.currentCache map { cache =>
-            val viewModel = PayrollNumberViewModel(cache)
-            Ok(views.html.employments.add_employment_payroll_number_form(AddEmploymentPayrollNumberForm.form, viewModel))
 
+            val viewModel = PayrollNumberViewModel(cache)
+            val payrollChoice = cache.get(AddEmployment_PayrollNumberQuestionKey)
+            val payroll = payrollChoice match {
+              case Some(YesValue) => cache.get(AddEmployment_PayrollNumberKey)
+              case _ => None
+            }
+
+            Ok(views.html.employments.add_employment_payroll_number_form(
+              AddEmploymentPayrollNumberForm.form.fill(AddEmploymentPayrollNumberForm(payrollChoice, payroll)),
+              viewModel))
           }
         }
   }
@@ -195,7 +211,10 @@ trait AddEmploymentController extends TaiBaseController
             }
           },
           form => {
-            val payrollNumberToCache = Map(AddEmployment_PayrollNumberKey -> form.payrollNumberEntry.getOrElse(Messages("tai.addEmployment.employmentPayrollNumber.notKnown")))
+            val payrollNumberToCache = Map(
+              AddEmployment_PayrollNumberQuestionKey -> form.payrollNumberChoice.getOrElse(""),
+              AddEmployment_PayrollNumberKey -> form.payrollNumberEntry.getOrElse(Messages("tai.addEmployment.employmentPayrollNumber.notKnown"))
+            )
             journeyCacheService.cache(payrollNumberToCache).map(_ =>
               Redirect(controllers.employments.routes.AddEmploymentController.addTelephoneNumber())
             )
@@ -207,7 +226,17 @@ trait AddEmploymentController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          Future.successful( Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel, YesNoTextEntryForm.form())) )
+          journeyCacheService.optionalValues(AddEmployment_TelephoneQuestionKey, AddEmployment_TelephoneNumberKey) map { optSeq =>
+
+            val telNoToDisplay = optSeq(0) match {
+              case Some(YesValue) => optSeq(1)
+              case _ => None
+            }
+            Ok(views.html.can_we_contact_by_phone(
+              telephoneNumberViewModel,
+              YesNoTextEntryForm.form().fill(YesNoTextEntryForm(optSeq(0), telNoToDisplay))
+            ))
+          }
         }
   }
 

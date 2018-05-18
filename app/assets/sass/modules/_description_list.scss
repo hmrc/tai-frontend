@@ -18,7 +18,7 @@
     }
 
     @media (min-width: 769px) {
-        > dt {
+        > dt, > div:first-child {
           padding: em(12, 19) em(12, 19) em(12, 19) 0;
         }
     }
@@ -49,7 +49,7 @@
         display: block;
         border-bottom: 1px solid $border-colour;
 
-        > dt:first-of-type {
+        > dt:first-of-type, div:first-of-type {
             padding-bottom: 0;
         }
 

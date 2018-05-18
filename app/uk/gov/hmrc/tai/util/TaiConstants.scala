@@ -21,6 +21,8 @@ trait JourneyCacheConstants {
   val AddEmployment_JourneyKey = "add-employment"
   val AddEmployment_NameKey = "employmentName"
   val AddEmployment_StartDateKey = "employmentStartDate"
+  val AddEmployment_RecewivedFirstPayKey = "employmentFirstPayReceived"
+  val AddEmployment_PayrollNumberQuestionKey = "employmentPayrollNumberKnown"
   val AddEmployment_PayrollNumberKey = "employmentPayrollNumber"
   val AddEmployment_TelephoneQuestionKey = "employmentTelephoneContactAllowed"
   val AddEmployment_TelephoneNumberKey = "employmentTelephoneNumber"
@@ -71,6 +73,7 @@ trait JourneyCacheConstants {
   val CompanyCar_DateFuelBenefitStartedKey = "carFuelStartDate"
   val CompanyCar_HasActiveFuelBenefitdKey = "hasActiveFuelBenefit"
   val CompanyCar_DateWithdrawnKey = "dateWithdrawn"
+
 
   val CloseBankAccountJourneyKey = "close-bank-account"
   val CloseBankAccountDateKey = "closeBankAccountDate"
@@ -177,6 +180,9 @@ trait BankAccountDecisionConstants {
   val UpdateInterest = "updateInterest"
   val CloseAccount = "closeAccount"
   val RemoveAccount = "removeAccount"
+
+  val UpdateBankAccountChoiceJourneyKey = "update-or-remove-bank-account-decision"
+  val UpdateBankAccountUserChoiceKey = "userAccountActionDecision"
 }
 
 trait BankAccountClosingInterestConstants {

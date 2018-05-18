@@ -250,7 +250,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val sut = createSUT
         when(sut.journeyCacheService.mandatoryValueAsInt(any())(any())).
           thenReturn(Future.successful(1))
-        when(sut.journeyCacheService.collectedOptionalValues(any())(any()))
+        when(sut.journeyCacheService.optionalValues(any())(any()))
           .thenReturn(Future.successful(Seq(None,None)))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -262,7 +262,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val sut = createSUT
         when(sut.journeyCacheService.mandatoryValueAsInt(any())(any())).
           thenReturn(Future.successful(1))
-        when(sut.journeyCacheService.collectedOptionalValues(any())(any()))
+        when(sut.journeyCacheService.optionalValues(any())(any()))
           .thenReturn(Future.successful(Seq(Some("yes"),Some("123456789"))))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
