@@ -348,6 +348,7 @@ tai.paye.lastTaxYear.table.headingOne=Income source
 tai.paye.lastTaxYear.table.headingTwo=Income
 tai.paye.lastTaxYear.table.headingThree=Action
 tai.paye.lastTaxYear.table.link=Check the pay details sent to us
+tai.paye.lastTaxYear.table.reader.link=Check the pay details sent to us from {0}
 tai.paye.lastTaxYear.checkTax.somethingNotRight=Something not right?
 tai.paye.lastTaxYear.checkTax.sendUpdate.link=Send us an update about your taxable income for {0}
 tai.paye.lastTaxYear.checkTax.text=Did you pay too much tax?

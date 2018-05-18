@@ -81,7 +81,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         doc.select("#last-tax-year-table .cya-answer").text() mustBe "£0.00"
 
         doc.select("#last-tax-year-table .cya-change a").text() mustBe
-          messages("tai.paye.lastTaxYear.table.link")
+          s"${messages("tai.paye.lastTaxYear.table.link")} ${messages("tai.paye.lastTaxYear.table.reader.link", "test employment")}"
 
         doc.select("#last-tax-year-table .cya-change a").attr("href") mustBe
           routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(cyMinusOneTaxYear, employment.id).toString
@@ -125,7 +125,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         doc.select("#last-tax-year-table .cya-answer").text() mustBe "£123.32"
 
         doc.select("#last-tax-year-table .cya-change a").text() mustBe
-          messages("tai.paye.lastTaxYear.table.link")
+          s"${messages("tai.paye.lastTaxYear.table.link")} ${messages("tai.paye.lastTaxYear.table.reader.link", "test employment")}"
 
         doc.select("#last-tax-year-table .cya-change a").attr("href") mustBe
           routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(cyMinusOneTaxYear, employment.id).toString
@@ -152,7 +152,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         doc.select("#last-tax-year-table li:nth-child(1) .cya-answer").text() mustBe "£123.32"
 
         doc.select("#last-tax-year-table li:nth-child(1) .cya-change a").text() mustBe
-          messages("tai.paye.lastTaxYear.table.link")
+          s"${messages("tai.paye.lastTaxYear.table.link")} ${messages("tai.paye.lastTaxYear.table.reader.link", "test employment 1")}"
 
         doc.select("#last-tax-year-table li:nth-child(1) .cya-change a").attr("href") mustBe
           routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(cyMinusOneTaxYear, employment1.id).toString
@@ -161,7 +161,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
         doc.select("#last-tax-year-table li:nth-child(2) .cya-answer").text() mustBe "£345.54"
 
         doc.select("#last-tax-year-table li:nth-child(2) .cya-change a").text() mustBe
-          messages("tai.paye.lastTaxYear.table.link")
+          s"${messages("tai.paye.lastTaxYear.table.link")} ${messages("tai.paye.lastTaxYear.table.reader.link", "test employment 2")}"
 
         doc.select("#last-tax-year-table li:nth-child(2) .cya-change a").attr("href") mustBe
           routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(cyMinusOneTaxYear, employment2.id).toString
