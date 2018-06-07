@@ -19,16 +19,36 @@ package views.html
 import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.Html
+import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{AdditionalTaxDetailRow, BandedGraph, EstimatedIncomeTaxViewModel, ReductionTaxRow}
+import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
+import uk.gov.hmrc.play.views.formatting.Money._
 
 class estimatedIncomeTaxSpec extends TaiViewSpec {
 
 
   "Estimated Income Tax Page" must {
-    behave like pageWithTitle(messages("tai.estimatedIncome.title"))
+    behave like pageWithCombinedHeader(
+      messages(
+        "tai.taxYear",
+        Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear).replace(" ", "\u00A0"),
+        Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear).replace(" ", "\u00A0")),
+        messages("tai.estimatedIncome.title"),
+        Some(messages("tai.estimatedIncome.accessiblePreHeading")
+      )
+    )
+
     behave like pageWithBackLink
+
+    "have a heading for the Income tax estimate" in {
+      doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.incomeTaxEstimate.subheading") + " £100")
+    }
+
+    "have a heading for the Total estimated Income" in {
+      doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalEstimatedIncome.subheading") + " £100")
+    }
 
     "have static messages" in {
       doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.desc",
@@ -69,6 +89,7 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
         AdditionalTaxDetailRow(Messages("tai.taxCalc.pensionPaymentsAdjustment.title"), 200, None)
       )
       val model = createViewModel(true, additionalRows, Seq.empty[ReductionTaxRow])
+
       def additionalDetailView: Html = views.html.estimatedIncomeTax(model, Html("<title/>"))
 
 
@@ -79,13 +100,14 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
     }
 
     "have reduction tax table" in {
-      val  reductionTaxRows = Seq(
+      val reductionTaxRows = Seq(
         ReductionTaxRow(Messages("tai.taxCollected.atSource.otherIncome.description"), 100, Messages("tai.taxCollected.atSource.otherIncome.title")),
         ReductionTaxRow(Messages("tai.taxCollected.atSource.dividends.description", 10), 200, Messages("tai.taxCollected.atSource.dividends.title")),
         ReductionTaxRow(Messages("tai.taxCollected.atSource.bank.description", 20), 100, Messages("tai.taxCollected.atSource.bank.title"))
       )
 
       val model = createViewModel(true, Seq.empty[AdditionalTaxDetailRow], reductionTaxRows)
+
       def reductionTaxDetailView: Html = views.html.estimatedIncomeTax(model, Html("<title/>"))
 
       doc(reductionTaxDetailView).select("#taxPaidElsewhereTable").size() mustBe 1
@@ -118,11 +140,13 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
   }
 
 
-
   val bandedGraph = BandedGraph("taxGraph", Nil, 0, 0, 0, 0, 0, 0, 0, None)
-  def createViewModel(hasCurrentIncome: Boolean, additionalRows: Seq[AdditionalTaxDetailRow],
+
+  def createViewModel(hasCurrentIncome: Boolean,
+                      additionalRows: Seq[AdditionalTaxDetailRow],
                       reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
-    EstimatedIncomeTaxViewModel(hasCurrentIncome, 100, 100, 100, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
+    EstimatedIncomeTaxViewModel(
+      hasCurrentIncome, 100, 100, 100, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
       reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, Some(100), Some(100), Some("Test"), "uk", true)
   }
 

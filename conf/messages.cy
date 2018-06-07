@@ -1212,3 +1212,6 @@ tai.updatePension.confirmation.heading=Mae''ch diweddariad am bensiwn wedi dod i
 tai.updatePension.decision.heading=A ydych yn cael incwm pensiwn oddi wrth {0}?
 tai.updatePension.decision.customGaTitle=A ydych yn cael incwm pensiwn hwn
 tai.updatePension.decision.legend=A ydych yn cael incwm pensiwn oddi wrth darparwr pensiwn hwn?
+
+
+tai.incomeTax.totalEstimatedIncome.subheading=

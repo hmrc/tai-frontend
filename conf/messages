@@ -928,6 +928,7 @@ tai.tables.column1=Description
 tai.tables.column2=Tax (£)
 tai.tables.total=Total
 tai.incomeTax.incomeTaxEstimate.subheading=Income tax estimate
+tai.incomeTax.totalEstimatedIncome.subheading=Total estimated income
 tai.incomeTax.taxFree.link=Check your tax-free amount
 tai.incomeTax.taxCodes.link=Check your tax codes
 tai.incomeTax.calculated.title=How your PAYE Income Tax is calculated

@@ -53,10 +53,25 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
             <div class="grid grid-2-3">
                 <div class="inner-block">
                     <section class="soft--top flush--bottom">
-                        <h2 class="flush--bottom">@Messages("tai.incomeTax.incomeTaxEstimate.subheading")
-                            <span id="currentYearAmount" class="display-block heading-48 section faded-text
-                                        flush section--narrow">@pounds(viewModel.incomeTaxEstimate)</span>
-                        </h2>
+                        <div class="grid-row">
+                            <div class="column-one-half">
+                                <h2 class="flush--bottom">
+                                    @Messages("tai.incomeTax.totalEstimatedIncome.subheading")
+                                    <span id="total-estimated-income" class="display-block heading-48 section faded-text flush section--narrow">
+                                    </span>
+                                </h2>
+                            </div>
+                            <div class="column-one-half">
+                                <h2 class="flush--bottom">
+                                    @Messages("tai.incomeTax.incomeTaxEstimate.subheading")
+                                    <span id="income-tax-estimate" class="display-block heading-48 section faded-text flush section--narrow">
+                                        @pounds(viewModel.incomeTaxEstimate)
+                                    </span>
+                                </h2>
+                            </div>
+                        </div>
+
+
                     </section>
                     <section id="estimatedIncomeText" class="soft--top flush--bottom">
 
