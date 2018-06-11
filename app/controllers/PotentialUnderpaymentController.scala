@@ -49,7 +49,7 @@ trait PotentialUnderpaymentController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          ServiceCheckLite.personDetailsCheck {
+          val test = ServiceCheckLite.personDetailsCheck {
 
             sendActingAttorneyAuditEvent("getPotentialUnderpaymentPage")
             val tasFuture = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear())
@@ -64,6 +64,7 @@ trait PotentialUnderpaymentController extends TaiBaseController
               Ok(views.html.potentialUnderpayment(vm))
             }
           } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", Nino(user.getNino))
+  test
   }
 }
 // $COVERAGE-OFF$
