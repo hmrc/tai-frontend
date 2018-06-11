@@ -24,6 +24,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.test.Helpers._
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
@@ -49,20 +50,21 @@ class PreviousYearUnderpaymentControllerSpec extends PlaySpec
   "PreviousYearUnderpaymentController" should {
     "respond with OK" when {
       "underpaymentExplanation is called" in {
-        val controller = new SUT()
-        when(controller.personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-
+        val controller = new SUT
         val res = controller.underpaymentExplanation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(res) mustBe OK
       }
     }
 
-//    "respond with UNAUTHORIZED" when {
-//      "should kick user out if not authorized" in {
-//        val sut = new SUT()
-     //   status(sut.underpaymentExplanation) mustEqual UNAUTHORIZED
-//      }
-//    }
+    "respond with UNAUTHORIZED" when {
+      "should redirect to unauthorised page if not authorized" in {
+        val controller = new SUT
+        val res = controller.underpaymentExplanation()(FakeRequest(method = "GET", path = ""))
+
+        status(res) mustEqual SEE_OTHER
+        redirectLocation(res) mustEqual Some("/gg/sign-in?continue=%2Fpersonal-account/do-uplift?redirectUrl=%2Fcheck-income-tax%2Fwhat-do-you-want-to-do&accountType=individual")
+      }
+    }
   }
 
   private class SUT() extends PreviousYearUnderpaymentController {

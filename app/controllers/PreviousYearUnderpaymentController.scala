@@ -45,11 +45,8 @@ trait PreviousYearUnderpaymentController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-
-    Future.successful(Ok("bla"))
-
+          Future.successful(Ok(""))
   }
-
 }
 
 object PreviousYearUnderpaymentController extends PreviousYearUnderpaymentController with AuthenticationConnectors {
