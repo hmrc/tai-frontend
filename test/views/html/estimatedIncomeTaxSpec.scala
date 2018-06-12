@@ -49,13 +49,6 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.incomeTaxEstimate.subheading") + " £100")
     }
 
-    "have static messages" in {
-      doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.desc",
-        "£100",
-        viewModel.currentTaxYearRangeHtmlNonBreak,
-        "£100")).body)
-    }
-
     "have potential underpayment" in {
       doc.select("#income-potential-underpayment").text() mustBe Messages("tai.potentialUnderpayment.title")
       doc.select("#link-potential-underpayment").size() mustBe 1

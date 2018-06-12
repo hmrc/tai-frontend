@@ -71,21 +71,6 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                                 </h2>
                             </div>
                         </div>
-
-
-                    </section>
-                    <section id="estimatedIncomeText" class="soft--top flush--bottom">
-
-                        <p  id="estimatedIncomeDesc">
-                            @Html(Messages("tai.estimatedIncome.desc",
-                            pounds(viewModel.incomeEstimate),
-                            taxYearRangeString,
-                            pounds(viewModel.taxFreeEstimate)))
-                        </p>
-
-                        @includes.details_summary(Messages("tai.estimatedIncome.whyEstimate.link")){
-                            <p>@Messages("tai.estimatedIncome.whyEstimate.desc", uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))</p>
-                        }
                     </section>
 
                     <section>

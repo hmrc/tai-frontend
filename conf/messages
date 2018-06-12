@@ -915,7 +915,6 @@ tai.estimatedIncome.title=Your PAYE Income Tax estimate
 tai.estimatedIncome.accessiblePreHeading=This section is your income tax estimate for
 tai.estimatedIncome.whyEstimate.link=Why is this an estimate?
 tai.estimatedIncome.whyEstimate.desc=The amount of tax you pay depends on your total income for the whole tax year. We can’t give an exact figure because we won’t know about all your income until after the tax year ends on {0}.
-tai.estimatedIncome.desc=We estimate that your taxable income will be about {0} for the tax year from {1}. The first {2} of this is tax free; this is your tax-free allowance. You will pay Income Tax on any income over this amount.
 tai.estimatedIncome.taxRelief=Because you’ve made a gift aid payment or personal pension payment you can have more income at a lower tax rate. This is called {0}.
 tai.estimatedIncome.taxRelief.link=Tax Relief
 tai.estimatedIncome.additionalTax.title=Additional tax due
