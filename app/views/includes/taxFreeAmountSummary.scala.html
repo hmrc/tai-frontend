@@ -50,6 +50,15 @@
                                         attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
                                     )
                                 }
+                                @if(row.label == Messages("tai.taxFreeAmount.table.taxComponent.UnderPaymentFromPreviousYear")){
+                                    @includes.link(
+                                        id=Some("underPaymentFromPreviousYear"),
+                                        copy=Messages("tai.taxFreeAmount.summarysection.PreviousYearUnderpayment"),
+                                        url = controllers.routes.PreviousYearUnderpaymentController.underpaymentExplanation.url.toString,
+                                        linkClasses = Seq("link-list__item"),
+                                        attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.PreviousYearUnderpayment")}")
+                                    )
+                                }
                             </div>
 
                             <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ValueCell" class="cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
@@ -77,23 +86,31 @@
 
                 <div id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight heading-small} else {flush}">
                     <div id="summaryTable@{itemIdx.toString}Row1">
-
                         @if(isAllowanceOrTotalItem){
-                        <h3 id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word ">
+                            <h3 id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word ">
                         } else {
-                        <div id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word">
+                            <div id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word">
                         }
 
-                            @item.rows(0).label
-                            @if(item.rows(0).label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
-                                @includes.link(
-                                    id=Some("estimatedTaxOwedLink"),
-                                    copy=Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"),
-                                    url = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
-                                    linkClasses = Seq("link-list__item"),
-                                    attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
-                                )
-                            }
+                                @item.rows(0).label
+                                @if(item.rows(0).label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
+                                    @includes.link(
+                                        id=Some("estimatedTaxOwedLink"),
+                                        copy=Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"),
+                                        url = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
+                                        linkClasses = Seq("link-list__item"),
+                                        attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
+                                    )
+                                }
+                                @if(item.rows(0).label == Messages("tai.taxFreeAmount.table.taxComponent.UnderPaymentFromPreviousYear")){
+                                    @includes.link(
+                                        id=Some("underPaymentFromPreviousYear"),
+                                        copy=Messages("tai.taxFreeAmount.summarysection.PreviousYearUnderpayment"),
+                                        url = controllers.routes.PreviousYearUnderpaymentController.underpaymentExplanation.url.toString,
+                                        linkClasses = Seq("link-list__item"),
+                                        attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.PreviousYearUnderpayment")}")
+                                    )
+                                }
 
                         @if(isAllowanceOrTotalItem){
                         </h3>

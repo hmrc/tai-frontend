@@ -112,7 +112,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       doc must haveLinkElement("taxableIncomeLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("tai.incomeTaxSummary.link"))
     }
 
-    "display navigational link to underpayment page if EstimatedTaxYouOweThisYear is present" in {
+    "display navigational link to 'Estimated tax you owe' page if EstimatedTaxYouOweThisYear is present" in {
       val vm: Seq[TaxFreeAmountSummaryRowViewModel] = Seq(
         TaxFreeAmountSummaryRowViewModel("Estimated tax you owe this year", "£11,500", ChangeLinkViewModel(false)))
       val svm: Seq[TaxFreeAmountSummaryCategoryViewModel] = Seq(
@@ -122,6 +122,18 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       val document = doc(views.html.taxFreeAmount(viewModel))
 
       document must haveLinkElement("estimatedTaxOwedLink", controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url, messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"))
+    }
+
+    "display navigational link to 'Repaying Income Tax due' page if UnderPaymentFromPreviousYear is present" in {
+      val vm: Seq[TaxFreeAmountSummaryRowViewModel] = Seq(
+        TaxFreeAmountSummaryRowViewModel("Underpayment from previous year", "£11,500", ChangeLinkViewModel(false)))
+      val svm: Seq[TaxFreeAmountSummaryCategoryViewModel] = Seq(
+        TaxFreeAmountSummaryCategoryViewModel("header1", "header2", true, false, "Deductions from your Personal Allowance", vm))
+      val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", svm)
+
+      val document = doc(views.html.taxFreeAmount(viewModel))
+
+      document must haveLinkElement("underPaymentFromPreviousYear", controllers.routes.PreviousYearUnderpaymentController.underpaymentExplanation.url, messages("tai.taxFreeAmount.summarysection.PreviousYearUnderpayment"))
     }
 
     "display a 'something missing' section" which {
