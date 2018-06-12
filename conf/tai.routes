@@ -86,6 +86,7 @@ GET         /update-employment/check-your-answers                               
 POST        /update-employment/check-your-answers                                      controllers.employments.UpdateEmploymentController.submitYourAnswers
 GET         /update-employment/success                                                 controllers.employments.UpdateEmploymentController.confirmation
 
+GET         /previous-underpayment                                                     controllers.PreviousYearUnderpaymentController.underpaymentExplanation
 GET         /underpayment-estimate                                                     controllers.PotentialUnderpaymentController.potentialUnderpaymentPage
 GET         /tax-relief                                                                controllers.EstimatedIncomeTaxController.taxRelief
 
