@@ -58,6 +58,7 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                                 <h2 class="flush--bottom">
                                     @Messages("tai.incomeTax.totalEstimatedIncome.subheading")
                                     <span id="total-estimated-income" class="display-block heading-48 section faded-text flush section--narrow">
+                                        @pounds(viewModel.incomeEstimate)
                                     </span>
                                 </h2>
                             </div>

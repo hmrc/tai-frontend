@@ -24,7 +24,6 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{AdditionalTaxDetailRow, BandedGraph, EstimatedIncomeTaxViewModel, ReductionTaxRow}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
-import uk.gov.hmrc.play.views.formatting.Money._
 
 class estimatedIncomeTaxSpec extends TaiViewSpec {
 
@@ -42,12 +41,12 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
 
     behave like pageWithBackLink
 
-    "have a heading for the Income tax estimate" in {
-      doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.incomeTaxEstimate.subheading") + " £100")
-    }
-
     "have a heading for the Total estimated Income" in {
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalEstimatedIncome.subheading") + " £100")
+    }
+
+    "have a heading for the Income tax estimate" in {
+      doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.incomeTaxEstimate.subheading") + " £100")
     }
 
     "have static messages" in {
