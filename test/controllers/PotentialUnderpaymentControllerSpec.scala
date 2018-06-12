@@ -25,7 +25,7 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.test.Helpers.{contentAsString, status, _}
+import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{ForbiddenException, Upstream4xxResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
