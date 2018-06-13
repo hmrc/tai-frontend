@@ -1004,6 +1004,9 @@ tai.label.print=Print this page
 tai.label.paye=Taxable Income
 tai.label.back=Back
 
+tai.bandtype.zeroBand=Income you don’t pay tax on
+tai.bandtype.nonZeroBand=Income you do pay tax on
+
 #UK Band types
 uk.bandtype.B=Income basic rate
 uk.bandtype.D0=Income higher rate

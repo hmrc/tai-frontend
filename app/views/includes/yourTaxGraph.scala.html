@@ -72,10 +72,10 @@
                 <tr>
                     <td id="color@{count}"><span class="key-icon @band.colour"/></td>
                     <td id="bandType@{count}">
-                        @if(taxRegion.equals(UkTaxRegion)){
-                            @Messages(s"uk.bandtype.${band.bandType}")
+                        @if(band.bandType=="ZeroBand"){
+                            @Messages("tai.bandtype.zeroBand")
                         } else {
-                            @Messages(s"scottish.bandtype.${band.bandType}")
+                            @Messages("tai.bandtype.nonZeroBand")
                         }
                     </td>
                     <td id="bandPercentage@{count}" class="text--right">@Html(band.tablePercentage)</td>

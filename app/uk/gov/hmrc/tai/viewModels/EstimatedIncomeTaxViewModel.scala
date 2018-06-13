@@ -162,9 +162,11 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
       }
     }
 
+    val mergedIndividualBands = List(mergeZeroBands(individualBand))
+
     val allBands = mergedBand match {
-      case Some(band) => individualBand :+ band
-      case _ => individualBand
+      case Some(band) => mergedIndividualBands :+ band
+      case _ => mergedIndividualBands
     }
 
     val nextHigherBand = getUpperBand(taxbands, personalAllowance, taxFreeAllowanceBandSum)
@@ -249,15 +251,21 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     }
   }
 
+  def mergeZeroBands(individualBand: List[Band]): Band ={
+    val combinedBarPercentage = individualBand.map(_.barPercentage).sum
+    val conbinedIncome = individualBand.map(_.income).sum
+    Band("TaxFree",combinedBarPercentage,"0%",conbinedIncome,0,"ZeroBand")
+  }
+
   private def getBandValues(nonZeroBands: List[TaxBand])(implicit messages: Messages) = {
     if (nonZeroBands.size > 1) {
       (Link.toInternalPage(
         url = routes.TaxExplanationController.taxExplanationPage().toString,
         value = Some(Messages("tai.mergedTaxBand.description")),
         id = Some("taxExplanation")
-      ).toHtml.body, "TaxedIncome", nonZeroBands.map(_.income).sum)
+      ).toHtml.body, "NonZeroBand", nonZeroBands.map(_.income).sum)
     } else {
-      nonZeroBands.map(otherBand => (otherBand.rate.toString() + "%", otherBand.bandType, otherBand.income)).head
+      nonZeroBands.map(otherBand => (otherBand.rate.toString() + "%", "NonZeroBand", otherBand.income)).head
     }
   }
 
