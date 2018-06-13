@@ -25,6 +25,9 @@ import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.service.{AuditService, PersonService}
 import uk.gov.hmrc.tai.util.AuditConstants
+import views.html.previousYearUnderpayment
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.Future
 
@@ -41,7 +44,7 @@ trait PreviousYearUnderpaymentController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          Future.successful(Ok(""))
+          Future.successful(Ok(previousYearUnderpayment()))
   }
 }
 

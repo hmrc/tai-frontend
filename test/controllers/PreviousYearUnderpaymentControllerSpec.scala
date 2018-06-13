@@ -22,6 +22,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
+import play.api.i18n.I18nSupport
 import play.api.test.Helpers._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
@@ -49,8 +50,9 @@ class PreviousYearUnderpaymentControllerSpec extends PlaySpec
     "respond with OK" when {
       "underpaymentExplanation is called" in {
         val controller = new SUT
-        val res = controller.underpaymentExplanation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(res) mustBe OK
+        val result = controller.underpaymentExplanation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+        contentAsString(result) must include("helloooo")
       }
     }
 
