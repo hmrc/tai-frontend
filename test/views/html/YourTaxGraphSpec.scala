@@ -25,13 +25,9 @@ class YourTaxGraphSpec extends TaiViewSpec with TaxRegionConstants {
 
   "Your tax graph" should {
 
-    "display heading" in {
-      doc must haveHeadingH3WithText(messages("tai.estimatedIncomeTax.howWeWorkedOut"))
-    }
 
     "display number, chart and tax bars" in {
       doc must haveSpanWithText("£0")
-      doc must haveSpanWithText("£150,000")
       doc must haveSpanWithText("£48,000")
       doc must haveSpanWithText("£3,000")
     }

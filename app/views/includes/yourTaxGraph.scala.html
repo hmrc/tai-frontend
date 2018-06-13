@@ -18,12 +18,12 @@
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.tai.util.TaxRegionConstants._
-    <h3 class="heading-medium">@Messages("tai.estimatedIncomeTax.howWeWorkedOut")</h3>
-
     <div aria-hidden="true">
         <div class="number-bar">
             <span style="left:0">@pounds(0)</span>
-            <span id="nextHigherBand" style="right:0">@pounds(graph.nextBand)</span>
+            @if(graph.zeroIncomeTotal != graph.incomeTotal){
+                <span id="totalIncome" class="right" style="left:@graph.incomeAsPercentage%">@pounds(graph.incomeTotal)</span>
+            }
         </div>
 
         <div class="bar tax-bar">
@@ -45,9 +45,6 @@
             <div class="number-bar">
                 @if(graph.zeroIncomeAsPercentage != 0) {
                     <span id="zeroIncomeTotal" class="left" style="left:@graph.zeroIncomeAsPercentage%">@pounds(graph.zeroIncomeTotal)</span>
-                }
-                @if(graph.zeroIncomeTotal != graph.incomeTotal){
-                    <span id="totalIncome" class="right" style="left:@graph.incomeAsPercentage%">@pounds(graph.incomeTotal)</span>
                 }
             </div>
         }
