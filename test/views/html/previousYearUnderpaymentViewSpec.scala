@@ -16,8 +16,6 @@
 
 package views.html
 
-import views.html.previousYearUnderpayment
-import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
@@ -26,9 +24,26 @@ class previousYearUnderpaymentViewSpec extends TaiViewSpec {
 
 
   "previousYearUnderpaymentView" must {
-    "display the correct title" in {
-      doc.title() must include(Messages("tai.iya.tax.you.owe.cy-minus-one.title"))
+
+    behave like pageWithCombinedHeader(
+      Messages("tai.iya.tax.you.owe.cy-minus-one.preHeading"),
+      Messages("tai.iya.tax.you.owe.cy-minus-one.title"))
+
+    behave like pageWithTitle(Messages("tai.iya.tax.you.owe.cy-minus-one.title"))
+
+    behave like pageWithBackLink
+
+    "display paragraphs" in {
+      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para1"))
+      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para2"))
+      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para3"))
+      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para4"))
+      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para5"))
+
+
     }
+
+
   }
 
 

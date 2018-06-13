@@ -24,8 +24,8 @@
     ptaHeader(
         displayBackLink = true,
         backLinkGaEventAction = None,
-        mainHeadingText = "hello",
-        preHeadingText = Messages("tai.iya.tax.you.owe.preHeadingTEST")
+        mainHeadingText = Messages("tai.iya.tax.you.owe.cy-minus-one.title"),
+        preHeadingText = Messages("tai.iya.tax.you.owe.cy-minus-one.preHeading")
     )
 }
 
@@ -38,6 +38,17 @@
     gaCustomTitle = None
 ){
 
-helloooo
+<div class="grid-row">
+    <div class="grid grid-2-3">
+        <div class="inner-block">
+            <p class="lede">@Messages("tai.previous.year.underpayment.para1")</p>
+
+            <p>@Messages("tai.previous.year.underpayment.para2")</p>
+            <p>@Messages("tai.previous.year.underpayment.para3")</p>
+            <p>@Messages("tai.previous.year.underpayment.para4")</p>
+            <p>@Messages("tai.previous.year.underpayment.para5")</p>
+        </div>
+    </div>
+</div>
 
 }

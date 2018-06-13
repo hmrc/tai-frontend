@@ -52,7 +52,7 @@ class PreviousYearUnderpaymentControllerSpec extends PlaySpec
         val controller = new SUT
         val result = controller.underpaymentExplanation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
-        contentAsString(result) must include("helloooo")
+        contentAsString(result) must include("What is a previous year underpayment?")
       }
     }
 
