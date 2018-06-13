@@ -54,13 +54,13 @@ class PreviousYearUnderpaymentControllerSpec extends PlaySpec
       }
     }
 
-    "respond with UNAUTHORIZED" when {
-      "should redirect to unauthorised page if not authorized" in {
+    "respond with UNAUTHORIZED and redirect to unauthorised page" when {
+      "not authorized" in {
         val controller = new SUT
         val res = controller.underpaymentExplanation()(FakeRequest(method = "GET", path = ""))
 
         status(res) mustEqual SEE_OTHER
-        redirectLocation(res) mustEqual Some("/gg/sign-in?continue=%2Fpersonal-account/do-uplift?redirectUrl=%2Fcheck-income-tax%2Fwhat-do-you-want-to-do&accountType=individual")
+        redirectLocation(res).get must include("/gg/sign-in")
       }
     }
   }
