@@ -40,8 +40,8 @@
                         <li id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}">
 
                             <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" class="cya-question break-word">
-                                @row.label
-                                @if(row.label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
+                                @row.label.value
+                                @if(row.label.value == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
                                     @includes.link(
                                         id=Some("estimatedTaxOwedLink"),
                                         copy=Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"),
@@ -50,7 +50,7 @@
                                         attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
                                     )
                                 }
-                                @if(row.label == Messages("tai.taxFreeAmount.table.taxComponent.UnderPaymentFromPreviousYear")){
+                                @if(row.label.value == Messages("tai.taxFreeAmount.table.taxComponent.UnderPaymentFromPreviousYear")){
                                     @includes.link(
                                         id=Some("underPaymentFromPreviousYear"),
                                         copy=Messages("tai.taxFreeAmount.summarysection.PreviousYearUnderpayment"),
@@ -92,8 +92,8 @@
                             <div id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word">
                         }
 
-                                @item.rows(0).label
-                                @if(item.rows(0).label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
+                                @item.rows(0).label.value
+                                @if(item.rows(0).label.value == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
                                     @includes.link(
                                         id=Some("estimatedTaxOwedLink"),
                                         copy=Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"),
@@ -102,7 +102,7 @@
                                         attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
                                     )
                                 }
-                                @if(item.rows(0).label == Messages("tai.taxFreeAmount.table.taxComponent.UnderPaymentFromPreviousYear")){
+                                @if(item.rows(0).label.value == Messages("tai.taxFreeAmount.table.taxComponent.UnderPaymentFromPreviousYear")){
                                     @includes.link(
                                         id=Some("underPaymentFromPreviousYear"),
                                         copy=Messages("tai.taxFreeAmount.summarysection.PreviousYearUnderpayment"),
