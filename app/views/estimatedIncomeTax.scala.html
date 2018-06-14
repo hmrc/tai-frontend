@@ -75,7 +75,49 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
 
                     <section>
                         @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion)
+                    </section>
 
+                    <section id="estimatedIncomeText" class="soft--top flush--bottom">
+
+                        @if(viewModel.incomeTaxEstimate == 0) {
+                        <p id="estimatedIncomeLowDesc">
+                            @Html(Messages("tai.estimatedIncomeLow.desc",
+                            Link.toInternalPage(
+                            id=Some("taxFreeAmountLink"),
+                            url=routes.TaxFreeAmountController.taxFreeAmount.url,
+                            value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
+                            pounds(viewModel.taxFreeEstimate)))
+                        </p>
+                        <div id="balanceEarningsDesc">
+                            @Html(Messages("tai.estimatedIncomeEarning.desc",
+                            pounds(viewModel.taxFreeEstimate - viewModel.incomeEstimate)))
+                        </div>
+                        }
+                        @if(viewModel.incomeTaxEstimate > 0) {
+                        <p id="estimatedIncomeDesc">
+                            @Html(Messages("tai.estimatedIncome.desc",
+                            pounds(viewModel.incomeEstimate),
+                            taxYearRangeString,
+                            pounds(viewModel.taxFreeEstimate)))
+                        </p>
+                        }
+                    </section>
+
+                    <h2 class="flush--bottom">
+                        @Messages("tai.estimatedIncome.whyEstimate.link")
+                    </h2>
+                    <p id="whyEstimateDesc">@Messages("tai.estimatedIncome.whyEstimate.desc", uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))</p>
+                    <h2 class="flush--bottom">
+                        @Messages("tai.estimatedIncome.howYouPay.heading")
+                    </h2>
+                    <p  id="howYouPayDesc">
+                        @Html(Messages("tai.estimatedIncome.howYouPay.desc",
+                        Link.toInternalPage(
+                        id=Some("taxCodesLink"),
+                        url=routes.YourTaxCodeController.taxCodes.url,
+                        value=Some(Messages("tai.estimatedIncome.taxCodes.link"))).toHtml))
+                    </p>
+                    <section>
                         @if(viewModel.hasTaxRelief){
                             <h3 id="tax-relief-title" class="heading-medium">@Messages("tai.estimatedIncome.taxrelief.title")</h3>
                             <p id="tax-relief-message">@Html(Messages(
