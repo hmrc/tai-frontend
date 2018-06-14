@@ -1291,7 +1291,7 @@ tai.benefits.updateOrRemove.decision.radio.yes=Yes, I currently get this benefit
 tai.benefits.updateOrRemove.decision.radio.no=No, I do not get this benefit any more
 
 ##Estimated Income Tax Graph
-tai.taxCalc.nextTaxBand=You can have £{0} more before your income reaches the next tax band.
+tai.taxCalc.nextTaxBand=You can earn £{0} more before your income reaches the next tax band.
 tai.taxedIncome.desc=TaxedIncome
 tai.taxCalc.UnderpaymentPreviousYear.title=Underpayment from previous years
 tai.taxCalc.OutstandingDebt.title=Outstanding debt from previous year
