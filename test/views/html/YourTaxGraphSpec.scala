@@ -35,15 +35,7 @@ class YourTaxGraphSpec extends TaiViewSpec with TaxRegionConstants {
     "display graph table header" in {
       doc must haveThWithText(messages("tai.key"))
       doc must haveThWithText(messages("tai.item"))
-      doc must haveThWithText(messages("tai.percentTax"))
       doc must haveThWithText(messages("tai.income.currency"))
-      doc must haveThWithText(messages("tai.taxCurrencySymbol"))
-    }
-
-    "display table footer" in {
-      doc must haveTdWithText(messages("tai.total"))
-      doc must haveTdWithText("48,000")
-      doc must haveTdWithText("15,000.00")
     }
 
     "display next band message" in {

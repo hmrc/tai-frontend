@@ -55,18 +55,9 @@
             <tr>
                 <th>@Messages("tai.key")</th>
                 <th>@Messages("tai.item")</th>
-                <th class="text--right">@Messages("tai.percentTax")</th>
                 <th class="text--right">@Messages("tai.income.currency")</th>
-                <th class="text--right">@Messages("tai.taxCurrencySymbol")</th>
             </tr>
         </thead>
-        <tfoot>
-            <tr class="table__row--bold">
-                <td colspan="3">@Messages("tai.total")</td>
-                <td id="incomeTotal" class="text--right">@MoneyPounds(graph.incomeTotal,0).quantity</td>
-                <td id="taxTotal" class="text--right">@MoneyPounds(graph.taxTotal,2).quantity</td>
-            </tr>
-        </tfoot>
         <tbody>
             @for((band, count) <- graph.bands.zipWithIndex){
                 <tr>
@@ -78,9 +69,7 @@
                             @Messages("tai.bandtype.nonZeroBand")
                         }
                     </td>
-                    <td id="bandPercentage@{count}" class="text--right">@Html(band.tablePercentage)</td>
                     <td id="income@{count}" class="text--right">@MoneyPounds(band.income,0).quantity</td>
-                    <td id="tax@{count}" class="text--right">@MoneyPounds(band.tax,2).quantity</td>
                 </tr>
             }
         </tbody>

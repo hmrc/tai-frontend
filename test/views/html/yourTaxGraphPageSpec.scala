@@ -52,8 +52,6 @@ class yourTaxGraphPageSpec extends UnitSpec
       val doc = Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion).toString())
       doc.select("#bandType0").text() shouldBe Messages("tai.bandtype.zeroBand")
       doc.select("#nextBand").text() shouldBe nextBandMessage
-      doc.select("#incomeTotal").text() shouldBe "29,000"
-      doc.select("#taxTotal").text() shouldBe "0.00"
       doc.select("#zeroIncomeTotal").text() shouldBe "£29,000"
       doc.select("#totalIncome").text() shouldBe empty
 
@@ -71,8 +69,6 @@ class yourTaxGraphPageSpec extends UnitSpec
       doc.select("#bandType0").text() shouldBe Messages("tai.bandtype.zeroBand")
       doc.select("#bandType1").text() shouldBe Messages("tai.bandtype.nonZeroBand")
       doc.select("#nextBand").text() shouldBe nextBandMessage
-      doc.select("#incomeTotal").text() shouldBe "19,200"
-      doc.select("#taxTotal").text() shouldBe "5,000.00"
       doc.select("#bandType2").size() shouldBe 0
       doc.select("#zeroIncomeTotal").text() shouldBe "£3,200"
       doc.select("#totalIncome").text() shouldBe "£19,200"
@@ -90,8 +86,6 @@ class yourTaxGraphPageSpec extends UnitSpec
       doc.select("#bandType0").text() shouldBe Messages("tai.bandtype.zeroBand")
       doc.select("#bandType1").text() shouldBe Messages("tai.bandtype.nonZeroBand")
       doc.select("#nextBand").text() shouldBe nextBandMessage
-      doc.select("#incomeTotal").text() shouldBe "48,000"
-      doc.select("#taxTotal").text() shouldBe "15,000.00"
       doc.select("#bandType2").size() shouldBe 0
       doc.select("#zeroIncomeTotal").text() shouldBe "£3,000"
       doc.select("#totalIncome").text() shouldBe "£48,000"
@@ -111,8 +105,6 @@ class yourTaxGraphPageSpec extends UnitSpec
       doc.select("#bandType0").text() shouldBe Messages("tai.bandtype.zeroBand")
       doc.select("#bandType1").text() shouldBe Messages("tai.bandtype.nonZeroBand")
       doc.select("#nextBand").size() shouldBe 0
-      doc.select("#incomeTotal").text() shouldBe "29,000"
-      doc.select("#taxTotal").text() shouldBe "2,000.00"
       doc.select("#bandType3").size() shouldBe 0
       doc.select("#zeroIncomeTotal").text() shouldBe "£14,000"
       doc.select("#totalIncome").text() shouldBe "£29,000"

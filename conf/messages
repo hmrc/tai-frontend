@@ -1,16 +1,13 @@
 #General
 tai.income=Employer or pension provider
-tai.percentTax=Tax rate
 tai.income.currency=Amount (£)
 tai.key=Key
 tai.item=Item
 tai.incomeSources=Income sources
 tai.pensionSources=Pension provider
 tai.taxCode=Tax code
-tai.taxCurrencySymbol=Tax (£)
 tai.taxFree.total=Total
 tai.taxYear={0} to {1}
-tai.total=Total
 tai.back-link.upper=Back
 tai.backToHome-link.upper=Back to account home
 tai.change=Change
