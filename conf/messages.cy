@@ -1212,3 +1212,11 @@ tai.updatePension.confirmation.heading=Mae''ch diweddariad am bensiwn wedi dod i
 tai.updatePension.decision.heading=A ydych yn cael incwm pensiwn oddi wrth {0}?
 tai.updatePension.decision.customGaTitle=A ydych yn cael incwm pensiwn hwn
 tai.updatePension.decision.legend=A ydych yn cael incwm pensiwn oddi wrth darparwr pensiwn hwn?
+
+tai.paye.lastTaxYear.table.reader.link=Gwirio manylion y cyflog a anfonwyd atom gan {0}
+tai.incomeTaxComparison.tellAboutChange.companyBenefitsReaderText=Rhoi gwybod i ni am fuddiannau cwmni.
+tai.incomeTaxComparison.tellAboutChange.investmentIncomeReaderText=Rhoi gwybod i ni am incwm o fuddsoddiadau.
+tai.incomeTaxComparison.tellAboutChange.stateBenefitsReaderText=Rhoi gwybod i ni am fudd-daliadau’r Wladwriaeth.
+tai.incomeTaxComparison.tellAboutChange.otherIncomeReaderText=Rhoi gwybod i ni am incwm arall.
+tai.updateOrRemove.fromOtherSources=Diweddaru neu ddileu {0}
+tai.mergedTaxBand.link.wording=Gwirio treth ar incwm
