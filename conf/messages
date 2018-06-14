@@ -596,7 +596,7 @@ tai.taxFreeAmount.missing.section.income=Add a missing income from another sourc
 
 ##Your Tax Free Allowance Page
 tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear = What does this mean?
-tai.taxFreeAmount.summarysection.PreviousYearUnderpayment = What does this mean?
+tai.taxFreeAmount.summarysection.UnderPaymentFromPreviousYear = What does this mean?
 
 ##Scenarios
 

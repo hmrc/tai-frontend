@@ -133,7 +133,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
 
       val document = doc(views.html.taxFreeAmount(viewModel))
 
-      document must haveLinkElement("underPaymentFromPreviousYear", controllers.routes.PreviousYearUnderpaymentController.underpaymentExplanation.url, messages("tai.taxFreeAmount.summarysection.PreviousYearUnderpayment"))
+      document must haveLinkElement("underPaymentFromPreviousYear", controllers.routes.UnderPaymentFromPreviousYearController.underpaymentExplanation.url, messages("tai.taxFreeAmount.summarysection.UnderPaymentFromPreviousYear"))
     }
 
     "display a 'something missing' section" which {

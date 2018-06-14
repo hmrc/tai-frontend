@@ -84,22 +84,14 @@
                         }
 
                                 @item.rows(0).label.value
-                                @if(item.rows(0).label.value == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
+
+                                @item.rows(0).label.link.map { link =>
                                     @includes.link(
                                         id=Some("estimatedTaxOwedLink"),
-                                        copy=Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"),
-                                        url = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
+                                        copy=link.value,
+                                        url = link.href,
                                         linkClasses = Seq("link-list__item"),
-                                        attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
-                                    )
-                                }
-                                @if(item.rows(0).label.value == Messages("tai.taxFreeAmount.table.taxComponent.UnderPaymentFromPreviousYear")){
-                                    @includes.link(
-                                        id=Some("underPaymentFromPreviousYear"),
-                                        copy=Messages("tai.taxFreeAmount.summarysection.PreviousYearUnderpayment"),
-                                        url = controllers.routes.PreviousYearUnderpaymentController.underpaymentExplanation.url.toString,
-                                        linkClasses = Seq("link-list__item"),
-                                        attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.PreviousYearUnderpayment")}")
+                                        attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${link.value}")
                                     )
                                 }
 

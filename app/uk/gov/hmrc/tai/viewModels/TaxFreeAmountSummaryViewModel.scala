@@ -49,10 +49,8 @@ case class TaxFreeAmountSummaryRowViewModel(label: Label,
 
 object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
 
-  def apply(label: String, value: String, link: ChangeLinkViewModel): TaxFreeAmountSummaryRowViewModel = {
-    val labelVM = Label(label, Some(HelpLink("bon", "bla")))
-    new TaxFreeAmountSummaryRowViewModel(labelVM, value, link)
-  }
+  def apply(label: String, value: String, link: ChangeLinkViewModel): TaxFreeAmountSummaryRowViewModel =
+    new TaxFreeAmountSummaryRowViewModel(Label(label), value, link)
 
   //noinspection ScalaStyle
   def apply(codingComponent: CodingComponent,
@@ -60,16 +58,13 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
             companyCarBenefits: Seq[CompanyCarBenefit])
            (implicit messages: Messages): TaxFreeAmountSummaryRowViewModel = {
 
-
-
-    val label = codingComponent.employmentId.map((id: Int) =>
+    val ifEmploymentIdIsPresent: PartialFunction[Option[Int], Label] = { case Some(id) =>
       (employmentName.contains(id), codingComponent.componentType) match {
         case (true, CarBenefit) =>
           val makeModel = companyCarForEmployment(id, companyCarBenefits).getOrElse(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
 
           val displayText = s"""${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefitMakeModel", makeModel)}
-             |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentName(id))}""".stripMargin
-
+                               |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentName(id))}""".stripMargin
 
           Label(displayText)
 
@@ -78,7 +73,7 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
             Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}"),
             Some(
               HelpLink(
-                Messages("tai.taxFreeAmount.summarysection.PreviousYearUnderpayment"),
+                Messages("tai.taxFreeAmount.summarysection.UnderPaymentFromPreviousYear"),
                 "blablabal"
               )
             )
@@ -86,7 +81,7 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
 
         case (true, _) =>
           val displayText = s"""${Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}")}
-             |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentName(id))}""".stripMargin
+                               |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentName(id))}""".stripMargin
 
           Label(displayText)
 
@@ -94,9 +89,37 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
           Label(Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}"))
 
       }
-    ).getOrElse(
-      Label(Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}"))
-    )
+    }
+
+    val generateLabelNormally: PartialFunction[Option[Int], Label] = {
+      case _ =>
+        codingComponent.componentType match {
+          case UnderPaymentFromPreviousYear =>
+            Label(
+              Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}"),
+              Some(
+                HelpLink(
+                  Messages(s"tai.taxFreeAmount.summarysection.${codingComponent.componentType.toString}"),
+                  controllers.routes.UnderPaymentFromPreviousYearController.underpaymentExplanation.url.toString
+                )
+              )
+            )
+          case EstimatedTaxYouOweThisYear =>
+            Label(
+              Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}"),
+              Some(
+                HelpLink(
+                  Messages(s"tai.taxFreeAmount.summarysection.${codingComponent.componentType.toString}"),
+                  controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString
+                )
+              )
+            )
+          case _ =>
+            Label(Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}"))
+        }
+    }
+
+    val label: Label = (ifEmploymentIdIsPresent orElse generateLabelNormally)(codingComponent.employmentId)
 
     val value = withPoundPrefix(MoneyPounds(codingComponent.amount, 0))
 
