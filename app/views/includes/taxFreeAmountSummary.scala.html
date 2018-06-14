@@ -43,7 +43,7 @@
                                 @row.label.value
                                 @row.label.link.map { link =>
                                     @includes.link(
-                                        id=Some("estimatedTaxOwedLink"),
+                                        id=Some(link.id),
                                         copy=link.value,
                                         url = link.href,
                                         linkClasses = Seq("link-list__item"),
@@ -87,7 +87,7 @@
 
                                 @item.rows(0).label.link.map { link =>
                                     @includes.link(
-                                        id=Some("estimatedTaxOwedLink"),
+                                        id=Some(link.id),
                                         copy=link.value,
                                         url = link.href,
                                         linkClasses = Seq("link-list__item"),
