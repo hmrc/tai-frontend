@@ -40,30 +40,6 @@ class YourTaxGraphSpec extends TaiViewSpec with TaxRegionConstants {
       doc must haveThWithText(messages("tai.taxCurrencySymbol"))
     }
 
-
-    "display graph details" when {
-      "user is scottish" in {
-        doc must haveTdWithText(messages("scottish.bandtype.S"))
-        doc must haveTdWithText("0%")
-        doc must haveTdWithText(messages("scottish.bandtype.TaxedIncome"))
-        doc must haveTdWithText("Check in more detail")
-        doc must haveTdWithText(messages("scottish.bandtype.PSR"))
-        doc must haveTdWithText(messages("scottish.bandtype.SR"))
-      }
-
-      "user is UK user" in {
-        def view: Html = views.html.includes.yourTaxGraph(graphData, UkTaxRegion)
-
-        val ukDoc = doc(view)
-        ukDoc must haveTdWithText(messages("uk.bandtype.S"))
-        ukDoc must haveTdWithText("0%")
-        ukDoc must haveTdWithText(messages("uk.bandtype.TaxedIncome"))
-        ukDoc must haveTdWithText("Check in more detail")
-        ukDoc must haveTdWithText(messages("uk.bandtype.PSR"))
-        ukDoc must haveTdWithText(messages("uk.bandtype.SR"))
-      }
-    }
-
     "display table footer" in {
       doc must haveTdWithText(messages("tai.total"))
       doc must haveTdWithText("48,000")

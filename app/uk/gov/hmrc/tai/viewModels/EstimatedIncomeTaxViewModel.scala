@@ -166,7 +166,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
 
     val allBands = mergedBand match {
       case Some(band) => mergedIndividualBands :+ band
-      case _ => mergedIndividualBands
+      case _ => individualBand
     }
 
     val nextHigherBand = getUpperBand(taxbands, personalAllowance, taxFreeAllowanceBandSum)
