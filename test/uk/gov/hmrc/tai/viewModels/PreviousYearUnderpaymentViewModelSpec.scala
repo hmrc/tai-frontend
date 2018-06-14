@@ -19,7 +19,8 @@ package uk.gov.hmrc.tai.viewModels
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
+import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, UnderPaymentFromPreviousYear}
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
 class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -27,18 +28,18 @@ class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApp
   "PreviousYearUnderpaymentViewModel apply method" must {
 
     "return an instance with a shouldHavePaid drawn from the totalEstimatedTax value of the supplied TaxAccountSummary" in {
-      PreviousYearUnderpaymentViewModel(taxAccountSummary).shouldHavePaid mustEqual 1000.00
-      PreviousYearUnderpaymentViewModel(taxAccountSummary).actuallyPaid mustEqual 900.00
-      PreviousYearUnderpaymentViewModel(taxAccountSummary).allowanceReducedBy mustEqual 500.00
-      PreviousYearUnderpaymentViewModel(taxAccountSummary).amountDue mustEqual 100.00  // from totalin year adjustment
+      PreviousYearUnderpaymentViewModel(codingComponents, actuallyPaid).allowanceReducedBy mustEqual 500.00
+      PreviousYearUnderpaymentViewModel(codingComponents, actuallyPaid).shouldHavePaid mustEqual 1000.00
+      PreviousYearUnderpaymentViewModel(codingComponents, actuallyPaid).actuallyPaid mustEqual 900.00
+      PreviousYearUnderpaymentViewModel(codingComponents, actuallyPaid).amountDue mustEqual 100.00
     }
   }
 
 
+  val actuallyPaid = 900.00
 
-
-
-
-  val taxAccountSummary = TaxAccountSummary(1000.00, 11850.00, 140.00, 0,0)
-
+  val codingComponents = Seq(
+    CodingComponent(UnderPaymentFromPreviousYear, Some(1), 500.00, "UnderPaymentFromPreviousYear"),
+    CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear")
+  )
 }

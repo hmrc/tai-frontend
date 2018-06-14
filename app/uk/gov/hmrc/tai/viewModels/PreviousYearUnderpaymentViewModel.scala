@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
+import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, TaxAccountSummary, UnderPaymentFromPreviousYear}
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.ViewModelHelper
 
 case class PreviousYearUnderpaymentViewModel(
@@ -29,7 +30,16 @@ case class PreviousYearUnderpaymentViewModel(
 
 object PreviousYearUnderpaymentViewModel extends ViewModelHelper {
 
-  def apply(taxAccountSummary: TaxAccountSummary) : PreviousYearUnderpaymentViewModel = {
-    PreviousYearUnderpaymentViewModel(4110.00,0,0,0)
+  def apply(codingComponents: Seq[CodingComponent], actuallyPaid: BigDecimal) : PreviousYearUnderpaymentViewModel = {
+
+    val allowanceReducedBy = codingComponents.collectFirst {
+      case CodingComponent(UnderPaymentFromPreviousYear, _, amount, _, _) => amount
+    }.getOrElse(BigDecimal(0))
+
+    val amountDue = allowanceReducedBy / 5
+
+    val shouldHavePaid = actuallyPaid + amountDue
+
+    PreviousYearUnderpaymentViewModel(shouldHavePaid,actuallyPaid,allowanceReducedBy,amountDue)
   }
 }
