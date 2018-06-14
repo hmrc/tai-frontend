@@ -21,6 +21,7 @@ import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{AdditionalTaxDetailRow, BandedGraph, EstimatedIncomeTaxViewModel, ReductionTaxRow}
+import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 
 class estimatedIncomeTaxSpec extends TaiViewSpec {
@@ -35,6 +36,40 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
         "£100",
         viewModel.currentTaxYearRangeHtmlNonBreak,
         "£100")).body)
+
+      doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.whyEstimate.link"))
+      doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.howYouPay.heading"))
+
+      doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.whyEstimate.desc",
+        TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))).body)
+
+      doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.howYouPay.desc",
+        messages("tai.estimatedIncome.taxCodes.link"))).body)
+
+      doc(view).select("#howYouPayDesc").html() mustBe Html(messages("tai.estimatedIncome.howYouPay.desc",
+        Link.toInternalPage(
+          id=Some("taxCodesLink"),
+          url=routes.YourTaxCodeController.taxCodes.url.toString,
+          value=Some(Messages("tai.estimatedIncome.taxCodes.link"))).toHtml)).body
+    }
+
+    "have low estimated total income messages" when {
+      "the earnings for a NINO were lower than the tax free allowance" in {
+        def lowEarningsView: Html = views.html.estimatedIncomeTax(viewModel1, Html("<Html><head></head><body>Test</body></Html>"))
+
+        doc(lowEarningsView) must haveParagraphWithText(Html(messages("tai.estimatedIncomeLow.desc",
+          messages("tai.estimatedIncome.taxFree.link"),
+          "£11,500 ")).body)
+        doc(lowEarningsView).select("#estimatedIncomeLowDesc").html() mustBe Html(Messages("tai.estimatedIncomeLow.desc",
+          Link.toInternalPage(
+            id = Some("taxFreeAmountLink"),
+            url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
+            value = Some("tai.estimatedIncome.taxFree.link")
+          ).toHtml,
+          "£11,500 ")).body
+        doc(lowEarningsView).select("#balanceEarningsDesc").html() mustBe Html(Messages("tai.estimatedIncomeEarning.desc",
+          "£2,500")).body
+      }
     }
 
     "have potential underpayment" in {
@@ -126,7 +161,14 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
       reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, Some(100), Some(100), Some("Test"), "uk", true)
   }
 
+  def createViewModel1(hasCurrentIncome: Boolean, additionalRows: Seq[AdditionalTaxDetailRow],
+                      reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
+    EstimatedIncomeTaxViewModel(hasCurrentIncome, 0, 9000, 11500, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
+      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, None, None, Some("Test"), "uk")
+  }
+
   val viewModel = createViewModel(true, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])
+  val viewModel1 = createViewModel1(true, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])
 
 
   override def view: Html = views.html.estimatedIncomeTax(viewModel, Html("<Html><head></head><body>Test</body></Html>"))
