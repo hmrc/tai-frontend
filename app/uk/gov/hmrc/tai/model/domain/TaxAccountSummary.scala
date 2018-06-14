@@ -21,7 +21,7 @@ import play.api.libs.json.Json
 case class TaxAccountSummary(totalEstimatedTax: BigDecimal,
                              taxFreeAmount: BigDecimal,
                              totalInYearAdjustmentIntoCY: BigDecimal,
-                             totalInYearAdjustment:BigDecimal,
+                             totalInYearAdjustment:BigDecimal, // what they owe
                              totalInYearAdjustmentIntoCYPlusOne:BigDecimal,
                              totalEstimatedIncome: BigDecimal = 0,
                              taxFreeAllowance: BigDecimal = 0)

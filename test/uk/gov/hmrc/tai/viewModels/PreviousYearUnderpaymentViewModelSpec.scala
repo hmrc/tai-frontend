@@ -27,11 +27,18 @@ class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApp
   "PreviousYearUnderpaymentViewModel apply method" must {
 
     "return an instance with a shouldHavePaid drawn from the totalEstimatedTax value of the supplied TaxAccountSummary" in {
-      PreviousYearUnderpaymentViewModel(taxAccountSummary).shouldHavePaid mustBe BigDecimal(4110.00)
+      PreviousYearUnderpaymentViewModel(taxAccountSummary).shouldHavePaid mustEqual 1000.00
+      PreviousYearUnderpaymentViewModel(taxAccountSummary).actuallyPaid mustEqual 900.00
+      PreviousYearUnderpaymentViewModel(taxAccountSummary).allowanceReducedBy mustEqual 500.00
+      PreviousYearUnderpaymentViewModel(taxAccountSummary).amountDue mustEqual 100.00  // from totalin year adjustment
     }
   }
 
-  val taxAccountSummary = TaxAccountSummary(4110.00, 11850.00, 140.00, 0,0)
 
+
+
+
+
+  val taxAccountSummary = TaxAccountSummary(1000.00, 11850.00, 140.00, 0,0)
 
 }
