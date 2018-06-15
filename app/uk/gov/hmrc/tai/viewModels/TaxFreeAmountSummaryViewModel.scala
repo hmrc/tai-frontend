@@ -16,10 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import java.io
-
 import controllers.routes
-import play.api.Play.current
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
