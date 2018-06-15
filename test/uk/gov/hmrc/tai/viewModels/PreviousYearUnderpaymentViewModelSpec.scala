@@ -20,22 +20,36 @@ import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
 class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  "PreviousYearUnderpaymentViewModel apply method" must {
+  "PreviousYearUnderpaymentViewModel apply method" when {
 
-    "return an instance with a shouldHavePaid drawn from the totalEstimatedTax value of the supplied TaxAccountSummary" in {
+    "given only employments within CY-1" must {
+      "return an instance with a shouldHavePaid drawn from the totalEstimatedTax value of the supplied TaxAccountSummary" in {
 
-      val result = PreviousYearUnderpaymentViewModel(codingComponents, sampleEmployments)
+        val result = PreviousYearUnderpaymentViewModel(codingComponents, sampleEmployments)
 
-      result.allowanceReducedBy mustEqual 500.00
-      result.shouldHavePaid mustEqual 1000.00
-      result.actuallyPaid mustEqual 900.00
-      result.amountDue mustEqual 100.00
+        result.allowanceReducedBy mustEqual 500.00
+        result.shouldHavePaid mustEqual 1000.00
+        result.actuallyPaid mustEqual 900.00
+        result.amountDue mustEqual 100.00
+      }
+    }
+    "given employments accross multiple years" must {
+      "return an instance with a shouldHavePaid drawn from the totalEstimatedTax value of the supplied TaxAccountSummary" in {
+
+        val result = PreviousYearUnderpaymentViewModel(codingComponents, sampleEmployments2)
+
+        result.allowanceReducedBy mustEqual 500.00
+        result.amountDue mustEqual 100.00
+        result.actuallyPaid mustEqual 900.00
+        result.shouldHavePaid mustEqual 1000.00
+      }
     }
   }
 
@@ -46,7 +60,6 @@ class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApp
     CodingComponent(UnderPaymentFromPreviousYear, Some(1), 500.00, "UnderPaymentFromPreviousYear"),
     CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear"))
 
-
   val empName = "employer name"
   val previousYear = uk.gov.hmrc.tai.model.TaxYear().prev
 
@@ -54,8 +67,16 @@ class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApp
     nationalInsuranceAmountYearToDate = 1500, amount = 200, taxAmount = 100, nationalInsuranceAmount = 150, payFrequency = Monthly)
   val sampleAnnualAccount = AnnualAccount("1-2-3", previousYear, Available, List(samplePayment), Nil)
 
+  val samplePayment2 = Payment(date = new LocalDate(2016, 5, 26), amountYearToDate = 5000, taxAmountYearToDate = 4000,
+    nationalInsuranceAmountYearToDate = 1500, amount = 200, taxAmount = 100, nationalInsuranceAmount = 150, payFrequency = Monthly)
+  val sampleAnnualAccount2 = AnnualAccount("1-2-3", TaxYear(2016), Available, List(samplePayment), Nil)
+
   val sampleEmployment1 = Employment(empName, None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false)
   val sampleEmployment2 = Employment("emp2", None, new LocalDate(2017, 6, 10), None, Seq(sampleAnnualAccount), "taxNumber", "payeNumber", 2, None, false)
   val sampleEmployments = List(sampleEmployment1, sampleEmployment2)
+
+  val sampleEmployment3 = Employment(empName, None, new LocalDate(2016, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false)
+  val sampleEmployment4 = Employment("emp2", None, new LocalDate(2016, 6, 10), None, Seq(sampleAnnualAccount2), "taxNumber", "payeNumber", 2, None, false)
+  val sampleEmployments2 = sampleEmployments ++ List(sampleEmployment3, sampleEmployment4)
 
 }
