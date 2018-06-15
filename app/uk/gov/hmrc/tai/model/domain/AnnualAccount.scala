@@ -30,6 +30,10 @@ case class AnnualAccount (
   lazy val totalIncomeYearToDate: BigDecimal =
     if (payments.isEmpty) 0 else payments.max.amountYearToDate
 
+  lazy val totalTaxPaidYearToDate: BigDecimal = {
+    payments.max.taxAmountYearToDate
+  }
+
   lazy val employerDesignation = {
     val split = key.split("-")
     split(0) + "-" + split(1)

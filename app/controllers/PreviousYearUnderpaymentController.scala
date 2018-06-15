@@ -23,11 +23,13 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.{AuditService, PersonService}
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.AuditConstants
 import views.html.previousYearUnderpayment
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.tai.model.TaxYear
 
 import scala.concurrent.Future
 
@@ -39,18 +41,33 @@ trait PreviousYearUnderpaymentController extends TaiBaseController
 
   def personService: PersonService
   def auditService: AuditService
+  def employmentService: EmploymentService
 
   def underpaymentExplanation = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
+
+
+          val nino = Nino("AA111111A")
+          val year = TaxYear().prev
+
+          val employments = employmentService.employments(nino, year)
+
+
+
           Future.successful(Ok(previousYearUnderpayment()))
   }
+
+
+
+
 }
 
 object PreviousYearUnderpaymentController extends PreviousYearUnderpaymentController with AuthenticationConnectors {
   override def personService: PersonService = PersonService
   override def auditService: AuditService = AuditService
+  override def employmentService: EmploymentService = EmploymentService
   override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }

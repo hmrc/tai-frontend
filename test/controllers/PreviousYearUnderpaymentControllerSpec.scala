@@ -31,7 +31,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.service.{AuditService, PersonService}
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, PersonService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -70,6 +70,7 @@ class PreviousYearUnderpaymentControllerSpec extends PlaySpec
   private class SUT() extends PreviousYearUnderpaymentController {
     override val personService: PersonService = mock[PersonService]
     override val auditService: AuditService = mock[AuditService]
+    override val employmentService: EmploymentService = mock[EmploymentService]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val authConnector: AuthConnector = mock[AuthConnector]
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
