@@ -58,10 +58,8 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
 
     def generateLabel(componentType: String, href: String, id: String): Label = Label(
       Messages(s"tai.taxFreeAmount.table.taxComponent.${componentType}"),
-      Some(
-        HelpLink(Messages(s"tai.taxFreeAmount.summarysection.${componentType}"),
-                 href,
-                 id)))
+      Some(HelpLink(Messages(s"tai.taxFreeAmount.summarysection.${componentType}"), href, id))
+    )
 
     val label: Label = codingComponent match {
       case CodingComponent(UnderPaymentFromPreviousYear, _, _, _, _) =>
