@@ -45,8 +45,8 @@
             <p class="lede">@Messages("tai.previous.year.underpayment.para1")</p>
             <p>@Messages(
                     "tai.previous.year.underpayment.para2",
-                    viewModel.previousTaxYear.year,
-                    viewModel.previousTaxYear.next.year,
+                    viewModel.previousTaxYear.year.toString,
+                    viewModel.previousTaxYear.next.year.toString,
                     viewModel.shouldHavePaid,
                     viewModel.actuallyPaid
                 )</p>

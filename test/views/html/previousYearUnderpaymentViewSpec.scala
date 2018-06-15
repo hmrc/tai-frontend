@@ -42,11 +42,12 @@ class previousYearUnderpaymentViewSpec extends TaiViewSpec {
       doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para1"))
       doc must haveParagraphWithText(Messages(
         "tai.previous.year.underpayment.para2",
-        previousTaxYear.year,
-        previousTaxYear.next.year,
+        previousTaxYear.year.toString,
+        previousTaxYear.next.year.toString,
         shouldHavePaid,
         actuallyPaid
       ))
+
       doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para3", allowanceReducedBy, amountDue))
       doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para4", allowanceReducedBy))
       doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para5"))
