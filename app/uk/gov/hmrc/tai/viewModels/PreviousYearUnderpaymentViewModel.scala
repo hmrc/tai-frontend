@@ -45,7 +45,8 @@ object PreviousYearUnderpaymentViewModel extends ViewModelHelper {
       case CodingComponent(UnderPaymentFromPreviousYear, _, amount, _, _) => amount
     }.getOrElse(BigDecimal(0))
 
-    val amountDue = allowanceReducedBy / 5
+    val taxRate = 0.2
+    val amountDue = allowanceReducedBy * taxRate
 
     val shouldHavePaid = actuallyPaid + amountDue
 
