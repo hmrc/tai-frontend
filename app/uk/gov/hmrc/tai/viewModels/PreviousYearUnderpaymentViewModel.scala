@@ -25,7 +25,8 @@ case class PreviousYearUnderpaymentViewModel(
                                               shouldHavePaid: BigDecimal,
                                               actuallyPaid: BigDecimal,
                                               allowanceReducedBy: BigDecimal,
-                                              amountDue: BigDecimal) {
+                                              amountDue: BigDecimal,
+                                              previousTaxYear: TaxYear) {
 
 }
 
@@ -48,6 +49,6 @@ object PreviousYearUnderpaymentViewModel extends ViewModelHelper {
 
     val shouldHavePaid = actuallyPaid + amountDue
 
-    PreviousYearUnderpaymentViewModel(shouldHavePaid, actuallyPaid, allowanceReducedBy, amountDue)
+    PreviousYearUnderpaymentViewModel(shouldHavePaid, actuallyPaid, allowanceReducedBy, amountDue, taxYear)
   }
 }

@@ -17,8 +17,11 @@
 package views.html
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
+import uk.gov.hmrc.time.TaxYearResolver
 
 
 class previousYearUnderpaymentViewSpec extends TaiViewSpec {
@@ -27,31 +30,38 @@ class previousYearUnderpaymentViewSpec extends TaiViewSpec {
   "previousYearUnderpaymentView" must {
 
     behave like pageWithCombinedHeader(
-      Messages("tai.iya.tax.you.owe.cy-minus-one.preHeading"),
-      Messages("tai.iya.tax.you.owe.cy-minus-one.title"))
+      Messages("tai.previous.year.underpayment.preHeading"),
+      Messages("tai.previous.year.underpayment.title"))
 
-    behave like pageWithTitle(Messages("tai.iya.tax.you.owe.cy-minus-one.title"))
+    behave like pageWithTitle(Messages("tai.previous.year.underpayment.title"))
 
     behave like pageWithBackLink
 
     "display paragraphs" in {
+
       doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para1"))
-      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para2"))
-      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para3"))
-      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para4"))
+      doc must haveParagraphWithText(Messages(
+        "tai.previous.year.underpayment.para2",
+        previousTaxYear.year,
+        previousTaxYear.next.year,
+        shouldHavePaid,
+        actuallyPaid
+      ))
+      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para3", allowanceReducedBy, amountDue))
+      doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para4", allowanceReducedBy))
       doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para5"))
 
-
     }
-
-
   }
 
   val shouldHavePaid = 1000
   val actuallyPaid = 900
   val allowanceReducedBy = 500
   val amountDue = 100
+  val previousTaxYear = TaxYear(2016)
 
-  override def view = previousYearUnderpayment(PreviousYearUnderpaymentViewModel(shouldHavePaid, actuallyPaid, allowanceReducedBy, amountDue))
+  val test = Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)
+
+  override def view = previousYearUnderpayment(PreviousYearUnderpaymentViewModel(shouldHavePaid, actuallyPaid, allowanceReducedBy, amountDue, previousTaxYear))
 
 }

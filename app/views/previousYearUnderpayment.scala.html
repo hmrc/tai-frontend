@@ -25,13 +25,13 @@
     ptaHeader(
         displayBackLink = true,
         backLinkGaEventAction = None,
-        mainHeadingText = Messages("tai.iya.tax.you.owe.cy-minus-one.title"),
-        preHeadingText = Messages("tai.iya.tax.you.owe.cy-minus-one.preHeading")
+        mainHeadingText = Messages("tai.previous.year.underpayment.title"),
+        preHeadingText = Messages("tai.previous.year.underpayment.preHeading")
     )
 }
 
 @main(
-    title = Messages("tai.iya.tax.you.owe.cy-minus-one.title"),
+    title = Messages("tai.previous.year.underpayment.title"),
     articleClasses = Some("full-width"),
     user = None,
     pageHeader = Some(header),
@@ -43,10 +43,15 @@
     <div class="grid grid-2-3">
         <div class="inner-block">
             <p class="lede">@Messages("tai.previous.year.underpayment.para1")</p>
-
-            <p>@Messages("tai.previous.year.underpayment.para2")</p>
-            <p>@Messages("tai.previous.year.underpayment.para3")</p>
-            <p>@Messages("tai.previous.year.underpayment.para4")</p>
+            <p>@Messages(
+                    "tai.previous.year.underpayment.para2",
+                    viewModel.previousTaxYear.year,
+                    viewModel.previousTaxYear.next.year,
+                    viewModel.shouldHavePaid,
+                    viewModel.actuallyPaid
+                )</p>
+            <p>@Messages("tai.previous.year.underpayment.para3", viewModel.allowanceReducedBy, viewModel.amountDue)</p>
+            <p>@Messages("tai.previous.year.underpayment.para4", viewModel.allowanceReducedBy)</p>
             <p>@Messages("tai.previous.year.underpayment.para5")</p>
         </div>
     </div>
