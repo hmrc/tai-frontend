@@ -18,6 +18,7 @@ package views.html
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 
 
 class previousYearUnderpaymentViewSpec extends TaiViewSpec {
@@ -46,7 +47,11 @@ class previousYearUnderpaymentViewSpec extends TaiViewSpec {
 
   }
 
+  val shouldHavePaid = 1000
+  val actuallyPaid = 900
+  val allowanceReducedBy = 500
+  val amountDue = 100
 
-  override def view = previousYearUnderpayment()
+  override def view = previousYearUnderpayment(PreviousYearUnderpaymentViewModel(shouldHavePaid, actuallyPaid, allowanceReducedBy, amountDue))
 
 }

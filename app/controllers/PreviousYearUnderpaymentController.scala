@@ -18,20 +18,20 @@ package controllers
 
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, PersonService}
-import uk.gov.hmrc.tai.util.AuditConstants
-import views.html.previousYearUnderpayment
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, EmploymentService, PersonService}
+import uk.gov.hmrc.tai.util.AuditConstants
+import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
+import views.html.previousYearUnderpayment
 
-import scala.concurrent.Future
 
 trait PreviousYearUnderpaymentController extends TaiBaseController
   with DelegationAwareActions
@@ -42,32 +42,31 @@ trait PreviousYearUnderpaymentController extends TaiBaseController
   def personService: PersonService
   def auditService: AuditService
   def employmentService: EmploymentService
+  def codingComponentService: CodingComponentService
 
   def underpaymentExplanation = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
 
+          val nino = Nino(user.getNino)
+          val year = TaxYear()
 
-          val nino = Nino("AA111111A")
-          val year = TaxYear().prev
-
-          val employments = employmentService.employments(nino, year)
-
-
-
-          Future.successful(Ok(previousYearUnderpayment()))
+          for {
+            employments <- employmentService.employments(nino, year.prev)
+            codingComponents <- codingComponentService.taxFreeAmountComponents(nino, year)
+          } yield {
+            Ok(previousYearUnderpayment(PreviousYearUnderpaymentViewModel(codingComponents, employments)))
+          }
   }
-
-
-
-
 }
+
 
 object PreviousYearUnderpaymentController extends PreviousYearUnderpaymentController with AuthenticationConnectors {
   override def personService: PersonService = PersonService
   override def auditService: AuditService = AuditService
   override def employmentService: EmploymentService = EmploymentService
+  override def codingComponentService: CodingComponentService = CodingComponentService
   override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }

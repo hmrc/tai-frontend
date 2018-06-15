@@ -16,8 +16,9 @@
 
 @import play.api.i18n.Messages
 @import includes.ptaHeader
+@import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 
-@()(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: PreviousYearUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 
 @header = @{

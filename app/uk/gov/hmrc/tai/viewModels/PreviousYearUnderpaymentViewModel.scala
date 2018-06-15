@@ -17,22 +17,21 @@
 package uk.gov.hmrc.tai.viewModels
 
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{Employment, EstimatedTaxYouOweThisYear, TaxAccountSummary, UnderPaymentFromPreviousYear}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain.{Employment, UnderPaymentFromPreviousYear}
 import uk.gov.hmrc.tai.util.ViewModelHelper
-import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
 
 case class PreviousYearUnderpaymentViewModel(
-                                                  shouldHavePaid: BigDecimal,
-                                                  actuallyPaid: BigDecimal,
-                                                  allowanceReducedBy: BigDecimal,
-                                                  amountDue: BigDecimal) {
+                                              shouldHavePaid: BigDecimal,
+                                              actuallyPaid: BigDecimal,
+                                              allowanceReducedBy: BigDecimal,
+                                              amountDue: BigDecimal) {
 
 }
 
 object PreviousYearUnderpaymentViewModel extends ViewModelHelper {
 
-  def apply(codingComponents: Seq[CodingComponent], employments: Seq[Employment]) : PreviousYearUnderpaymentViewModel = {
+  def apply(codingComponents: Seq[CodingComponent], employments: Seq[Employment]): PreviousYearUnderpaymentViewModel = {
 
     val taxYear = TaxYear().prev
 
@@ -49,6 +48,6 @@ object PreviousYearUnderpaymentViewModel extends ViewModelHelper {
 
     val shouldHavePaid = actuallyPaid + amountDue
 
-    PreviousYearUnderpaymentViewModel(shouldHavePaid,actuallyPaid,allowanceReducedBy,amountDue)
+    PreviousYearUnderpaymentViewModel(shouldHavePaid, actuallyPaid, allowanceReducedBy, amountDue)
   }
 }

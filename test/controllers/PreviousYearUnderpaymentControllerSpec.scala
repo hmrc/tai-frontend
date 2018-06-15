@@ -31,7 +31,8 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, PersonService}
+import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, EmploymentService, PersonService}
+import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -71,6 +72,7 @@ class PreviousYearUnderpaymentControllerSpec extends PlaySpec
     override val personService: PersonService = mock[PersonService]
     override val auditService: AuditService = mock[AuditService]
     override val employmentService: EmploymentService = mock[EmploymentService]
+    override val codingComponentService: CodingComponentService = mock[CodingComponentService]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val authConnector: AuthConnector = mock[AuthConnector]
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
@@ -80,5 +82,9 @@ class PreviousYearUnderpaymentControllerSpec extends PlaySpec
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+    when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
+    when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
+
   }
+
 }
