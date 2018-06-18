@@ -15,9 +15,14 @@
  *@
 
 @(graph: uk.gov.hmrc.tai.viewModels.BandedGraph, taxRegion: String)(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.tai.viewModels.Swatch
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.tai.util.TaxRegionConstants._
+
+
+@swatchLeftPadding=@{ graph.swatch.foldLeft(BigDecimal(100))((acc: BigDecimal, next: Swatch) => acc - next.barPercentage)}
+
 
     <div aria-hidden="true">
         <div class="number-bar">
@@ -37,7 +42,7 @@
                 <div style="width:@band.barPercentage%" class="@band.colour chart-bar"></div>
             }
             @graph.swatch.map{ swatch =>
-                <div style="width:@swatch.barPercentage%; margin-left:95.9%" class="swatch chart-bar"></div>
+                <div style="width:@swatch.barPercentage%; margin-left:@swatchLeftPadding%" class="swatch chart-bar"></div>
             }
         </div>
         @if(graph.incomeAsPercentage < 100){
