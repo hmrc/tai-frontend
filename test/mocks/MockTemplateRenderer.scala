@@ -29,7 +29,7 @@ object MockTemplateRenderer extends TemplateRenderer {
   override val refreshAfter: FiniteDuration = 10 minutes
   override def fetchTemplate(path: String): Future[String] = ???
 
-  override def renderDefaultTemplate(content: Html, extraArgs: Map[String, Any])(implicit messages: Messages) = {
+  override def renderDefaultTemplate(path: String, content: Html, extraArgs: Map[String, Any])(implicit messages: Messages) = {
     val pageHeader = extraArgs.getOrElse("mainContentHeader", Html(""))
     Html("<title>" + extraArgs("pageTitle") + "</title>" + pageHeader + content)
   }

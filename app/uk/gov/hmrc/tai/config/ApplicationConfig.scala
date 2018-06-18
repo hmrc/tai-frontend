@@ -75,6 +75,8 @@ object ApplicationConfig extends ServicesConfig {
   lazy val webchatAvailabilityUrl = s"${configuration.getString(s"govuk-tax.$env.services.webchat-frontend.url").getOrElse("")}/$webchatEntryPoint"
   lazy val scottishRateIncomeTaxUrl: String = "https://www.gov.uk/scottish-rate-income-tax"
 
+  lazy val frontendTemplatePath: String = configuration.getString("microservice.services.frontend-template-provider.path").getOrElse("/template/mustache")
+
   def fetchUrl(service: String) = {
     try {
       baseUrl(service)
