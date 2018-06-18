@@ -18,13 +18,14 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 
-@(viewModel: PreviousYearUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: PreviousYearUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
+@gaEventActionString = @{"Underpayment from previous year"}
 
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = None,
+        backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.previous.year.underpayment.title"),
         preHeadingText = Messages("tai.previous.year.underpayment.preHeading")
     )
@@ -33,7 +34,7 @@
 @main(
     title = Messages("tai.previous.year.underpayment.title"),
     articleClasses = Some("full-width"),
-    user = None,
+    user = Some(user),
     pageHeader = Some(header),
     gaCallsAdditionalJs = None,
     gaCustomTitle = None
