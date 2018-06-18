@@ -80,3 +80,14 @@
 .Band { background-color: #FFBF47; }
 .Band-unused { background-color:#BFC1C3; }
 
+.income-tax, .swatch {
+    background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg"><title>Group 4</title><desc>Created with Sketch.</desc><g fill="none" fill-rule="evenodd"><rect width="160" height="160" fill="#fff" fill-opacity=".0071048"/><g transform="translate(40 40)" fill="#A90C1C"><rect width="40" height="40"/><rect x="80" width="40" height="40"/><rect y="80" width="40" height="40"/><rect x="80" y="80" width="40" height="40"/></g></g></svg>');
+    background-size: 12px;
+    background-color: transparent;
+
+}
+
+.swatch {
+    position:absolute;
+}
+

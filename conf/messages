@@ -1010,6 +1010,7 @@ tai.label.back=Back
 
 tai.bandtype.zeroBand=Income you don’t pay tax on
 tai.bandtype.nonZeroBand=Income you do pay tax on
+tai.bandtype.incomeTaxEstimate=Income Tax estimate
 
 #UK Band types
 uk.bandtype.B=Income basic rate
