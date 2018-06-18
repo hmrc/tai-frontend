@@ -323,7 +323,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 12800))
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 3200, totalEstimatedIncome = 19200, totalEstimatedTax = 5000)
-      dataF mustBe BandedGraph("taxGraph", bands, 0, 32000, 19200, 16.66, 3200, 99.99, 5000, nextBandMessage)
+      dataF mustBe BandedGraph("taxGraph", bands, 0, 32000, 19200, 16.66, 3200, 99.99, 5000, nextBandMessage,Some(Swatch(26.04,5000)))
     }
 
     "have two bands(0 & Taxed Income) to display in graph" in {
@@ -342,7 +342,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 102000))
       val links = Map("taxExplanationScreen" -> taxExplanationLink)
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 3000, totalEstimatedIncome = 48000, totalEstimatedTax = 15000)
-      dataF mustBe BandedGraph("taxGraph", bands, 0, 150000, 48000, 6.25, 3000, 100.00, 15000, nextBandMessage)
+      dataF mustBe BandedGraph("taxGraph", bands, 0, 150000, 48000, 6.25, 3000, 100.00, 15000, nextBandMessage,Some(Swatch(31.25,15000)))
     }
 
     "have two bands(0 & Taxed Income) for multiple other band to display in graph" in {
@@ -361,7 +361,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 5000, totalEstimatedIncome = 200000, totalEstimatedTax = 65250)
 
-      dataF mustBe BandedGraph("taxGraph", bands, 0, 200000, 200000, 2.5, 5000, 100, 65250)
+      dataF mustBe BandedGraph("taxGraph", bands, 0, 200000, 200000, 2.5, 5000, 100, 65250,None,Some(Swatch(32.62,65250)))
     }
 
     "have three bands as 20% 40% 45% for three other rate bands to display in graph" in {
@@ -380,7 +380,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, totalEstimatedIncome = 200000, totalEstimatedTax = 65250)
 
-      dataF mustBe BandedGraph("taxGraph", bands, 0, 200000, 200000, 0, 0, 100.00, 65250)
+      dataF mustBe BandedGraph("taxGraph", bands, 0, 200000, 200000, 0, 0, 100.00, 65250,None,Some(Swatch(32.62,65250)))
     }
 
     "have four bands as 20% 40% 45% 45% for four other rate bands to display in graph" in {
@@ -401,7 +401,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, totalEstimatedIncome = 230000, totalEstimatedTax = 67500)
 
-      dataF mustBe BandedGraph("taxGraph", bands, 0, 230000, 230000, 0, 0, 99.98, 67500)
+      dataF mustBe BandedGraph("taxGraph", bands, 0, 230000, 230000, 0, 0, 99.98, 67500,None,Some(Swatch(29.34,67500)))
     }
 
     "have two bands as 20% 40% for two other rate bands to display in graph" in {
@@ -421,7 +421,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, totalEstimatedIncome = 125000, totalEstimatedTax = 43300)
 
-      dataF mustBe BandedGraph("taxGraph", bands, 0, 150000, 125000, 0, 0, 100.00, 43300, nextBandMessage)
+      dataF mustBe BandedGraph("taxGraph", bands, 0, 150000, 125000, 0, 0, 100.00, 43300, nextBandMessage,Some(Swatch(34.64,43300)))
     }
 
     "have two 0 % band and one 20% band in graph" in {
@@ -439,7 +439,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 13000))
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 4000, totalEstimatedIncome = 23000, totalEstimatedTax = 3000)
-      dataF mustBe BandedGraph("taxGraph", bands, 0, 36000, 23000, 34.78, 8000, 99.99, 3000, nextBandMessage)
+      dataF mustBe BandedGraph("taxGraph", bands, 0, 36000, 23000, 34.78, 8000, 99.99, 3000, nextBandMessage, Some(Swatch(13.04,3000)))
     }
 
     "have two 0 % band and one Taxed Income band in graph" in {
@@ -456,7 +456,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       )
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 10000, totalEstimatedIncome = 40000, totalEstimatedTax =6000)
-      dataF mustBe BandedGraph("taxGraph", bands, 0, 40000, 40000, 50, 20000, 100, 6000)
+      dataF mustBe BandedGraph("taxGraph", bands, 0, 40000, 40000, 50, 20000, 100, 6000, None, Some(Swatch(15.00,6000)))
     }
 
     "have two 0 % band and one 7.5% band in graph" in {
@@ -472,7 +472,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       )
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 11000, totalEstimatedIncome = 29000, totalEstimatedTax =2000)
-      dataF mustBe BandedGraph("taxGraph", bands, 0, 29000, 29000, 48.27, 14000, 99.99, 2000)
+      dataF mustBe BandedGraph("taxGraph", bands, 0, 29000, 29000, 48.27, 14000, 99.99, 2000,None,Some(Swatch(6.89,2000)))
     }
 
     "have three 0 % band and zero other band in graph" in {
@@ -510,7 +510,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
 
       val links = Map("taxExplanationScreen" -> taxExplanationLink)
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 10000, totalEstimatedIncome = 40000, totalEstimatedTax =3750)
-      dataF mustBe BandedGraph("taxGraph", bands, 0, 40000, 40000, 50.00, 20000, 100.00, 3750)
+      dataF mustBe BandedGraph("taxGraph", bands, 0, 40000, 40000, 50.00, 20000, 100.00, 3750,None,Some(Swatch(9.37,3750)))
     }
 
     "have two 0 % band and one Taxed Income band(7.5 & 20 & 45) in graph" in {
@@ -532,7 +532,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
 
       val links = Map("taxExplanationScreen" -> taxExplanationLink)
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 10000, totalEstimatedIncome = 60000, totalEstimatedTax = 6750)
-      dataF mustBe BandedGraph("taxGraph", bands, 0, 110000, 60000, 33.32, 20000, 99.98, 6750, nextBandMessage)
+      dataF mustBe BandedGraph("taxGraph", bands, 0, 110000, 60000, 33.32, 20000, 99.98, 6750, nextBandMessage,Some(Swatch(11.25,6750)))
     }
 
     "have two 0 % band and one Taxed Income band(7.5 & 20 & 45 & 60) in graph" in {
@@ -555,7 +555,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
 
       val links = Map("taxExplanationScreen" -> taxExplanationLink)
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 10000, totalEstimatedIncome = 120000, totalEstimatedTax =9750)
-      dataF mustBe BandedGraph("taxGraph", bands, 0, 210000, 120000, 16.66, 20000, 99.99, 9750, nextBandMessage)
+      dataF mustBe BandedGraph("taxGraph", bands, 0, 210000, 120000, 16.66, 20000, 99.99, 9750, nextBandMessage, Some(Swatch(8.12,9750)))
     }
 
     "have tax-free allowance on the top in graph" in {
@@ -578,7 +578,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 90000))
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(EstimatedIncomeTaxViewModel.retrieveTaxBands(taxBand), taxFreeAllowanceBandSum = 10000, totalEstimatedIncome = 120000, totalEstimatedTax =9750)
-      dataF mustBe BandedGraph("taxGraph", bands, 0, 210000, 120000, 16.66, 20000, 99.99, 9750, nextBandMessage)
+      dataF mustBe BandedGraph("taxGraph", bands, 0, 210000, 120000, 16.66, 20000, 99.99, 9750, nextBandMessage,Some(Swatch(8.12,9750)))
     }
 
 

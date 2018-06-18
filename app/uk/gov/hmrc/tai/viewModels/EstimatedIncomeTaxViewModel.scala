@@ -214,7 +214,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
 
 
   def createSwatch(totalEstimatedTax: BigDecimal, totalEstimatedIncome: BigDecimal): Swatch ={
-    val swatchPercentage = (totalEstimatedTax / totalEstimatedIncome) * 100
+    val swatchPercentage = ((totalEstimatedTax / totalEstimatedIncome) * 100).setScale(2, BigDecimal.RoundingMode.FLOOR)
     Swatch(swatchPercentage,totalEstimatedTax)
   }
 
