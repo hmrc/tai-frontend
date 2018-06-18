@@ -16,6 +16,7 @@
 
 package views.html
 
+import controllers.routes
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
@@ -36,6 +37,10 @@ class previousYearUnderpaymentViewSpec extends TaiViewSpec {
     behave like pageWithTitle(Messages("tai.previous.year.underpayment.title"))
 
     behave like pageWithBackLink
+
+    "have a link to return to tax-free amount page" in {
+      doc must haveLinkURL(routes.TaxFreeAmountController.taxFreeAmount().url)
+    }
 
     "display paragraphs" in {
 

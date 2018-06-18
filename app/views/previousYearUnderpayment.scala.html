@@ -17,6 +17,7 @@
 @import play.api.i18n.Messages
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
+@import uk.gov.hmrc.urls.Link
 
 @(viewModel: PreviousYearUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -54,6 +55,14 @@
             <p>@Messages("tai.previous.year.underpayment.para3", viewModel.allowanceReducedBy, viewModel.amountDue)</p>
             <p>@Messages("tai.previous.year.underpayment.para4", viewModel.allowanceReducedBy)</p>
             <p>@Messages("tai.previous.year.underpayment.para5")</p>
+
+            <p>@Link.toInternalPage(
+                id=Some(Messages("returnToTaxFreePageLink")),
+                url=routes.TaxFreeAmountController.taxFreeAmount.url,
+                value=Some(Messages("tai.previous.year.underpayment.return")),
+                cssClasses=Some(""),
+                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.previous.year.underpayment.return")}"))).toHtml
+            </p>
         </div>
     </div>
 </div>
