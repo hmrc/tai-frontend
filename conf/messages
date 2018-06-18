@@ -595,8 +595,8 @@ tai.taxFreeAmount.missing.section.benefit=Add a missing company benefit
 tai.taxFreeAmount.missing.section.income=Add a missing income from another source
 
 ##Your Tax Free Allowance Page
-tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear = What does this mean?
-tai.taxFreeAmount.summarysection.PreviousYearUnderpayment = What does this mean?
+tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear=What does this mean?
+tai.taxFreeAmount.summarysection.UnderPaymentFromPreviousYear=What does this mean?
 
 ##Scenarios
 

@@ -37,7 +37,7 @@ import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PreviousYearUnderpaymentControllerSpec extends PlaySpec
+class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
   with OneAppPerSuite
   with MockitoSugar
   with FakeTaiPlayApplication {
@@ -47,7 +47,7 @@ class PreviousYearUnderpaymentControllerSpec extends PlaySpec
 
   val nino = new Generator().nextNino
 
-  "PreviousYearUnderpaymentController" should {
+  "UnderPaymentFromPreviousYearController" should {
     "respond with OK" when {
       "underpaymentExplanation is called" in {
         val controller = new SUT
@@ -68,7 +68,7 @@ class PreviousYearUnderpaymentControllerSpec extends PlaySpec
     }
   }
 
-  private class SUT() extends PreviousYearUnderpaymentController {
+  private class SUT() extends UnderPaymentFromPreviousYearController {
     override val personService: PersonService = mock[PersonService]
     override val auditService: AuditService = mock[AuditService]
     override val employmentService: EmploymentService = mock[EmploymentService]
