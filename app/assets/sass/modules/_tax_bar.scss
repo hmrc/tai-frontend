@@ -1,27 +1,36 @@
+.number-bar__container {
+    margin-top: 30px;
+    margin-bottom: 40px;
+}
+
 .chart {
     position:relative;
-    height:1.42105263157894736842em; /* 27 / 19 */
+    height:44.5px; /* 27 / 19 */
     width:auto;
     background-color:#bfc1c3;
 }
+
 .chart-bar {
     height:100%;
     width:0%;
     background-color:#2b8cc4;
     float:left;
 }
+
 .chart span {
     position:absolute;
     top:22%;
     margin-left:0.26315789473684210526em;
     font-weight:700;
 }
+
 .tax-bar {
     position:relative;
     height:0.52631578947368421053em; /* 10 / 19 */
     border:0px solid #6F777B;
     width:auto;
 }
+
 .tax-point {
     height:0.52631578947368421053em; /* 10 / 19 */
     width:2px;
@@ -35,20 +44,24 @@
     height:0.78947368421052631579em;
     margin:0.263158em 0;
 }
+
 .number-bar span {
     position:absolute;
     text-align:center;
-    font-size:16px;
+    font-size:19px;
 }
+
 .number-bar .centred {
     width:30%;
     margin-left:-15%;
 }
+
 .number-bar .right {
     width:30%;
     margin-right:-30%;
     text-align: left;
 }
+
 .number-bar .left {
     width:30%;
     margin-left:-30%;
@@ -70,6 +83,7 @@
     clear:both;
     margin-right:0.5em;
 }
+
 .key-icon.Band-unused {
     height:1.31578947368421052632em;
     width:1.31578947368421052632em;
@@ -78,16 +92,15 @@
 .TaxFree { background-color:#28A197; }
 
 .Band { background-color: #FFBF47; }
+
 .Band-unused { background-color:#BFC1C3; }
 
 .income-tax, .swatch {
     background-image: url('data:image/svg+xml;utf8,<svg version="1.1" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg"><title>Group 4</title><desc>Created with Sketch.</desc><g fill="none" fill-rule="evenodd"><rect width="160" height="160" fill="#fff" fill-opacity=".0071048"/><g transform="translate(40 40)" fill="#A90C1C"><rect width="40" height="40"/><rect x="80" width="40" height="40"/><rect y="80" width="40" height="40"/><rect x="80" y="80" width="40" height="40"/></g></g></svg>');
     background-size: 12px;
     background-color: transparent;
-
 }
 
 .swatch {
     position:absolute;
 }
-

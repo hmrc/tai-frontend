@@ -21,6 +21,7 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.tai.viewModels.{SimpleTax,ComplexTax}
+@import uk.gov.hmrc.tai.util.ViewModelHelper._
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.EstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
 request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
@@ -98,7 +99,7 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                     <section>
                         @if(viewModel.estimateType == SimpleTax) {
 
-                        <h2 class="flush--bottom">
+                        <h2 class="heading-section">
                             @Messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading")
                         </h2>
                         <p id="taxOnEmploymentIncomeDesc">
@@ -114,9 +115,9 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                             <thead>
                             <tr>
                                 <th>@Messages("tai.incomeTaxBand")</th>
-                                <th>@Messages("tai.amount")</th>
-                                <th>@Messages("tai.taxRate")</th>
-                                <th>@Messages("tai.tax")</th>
+                                <th class="numeric">@Messages("tai.amount")</th>
+                                <th class="numeric">@Messages("tai.taxRate")</th>
+                                <th class="numeric">@Messages("tai.tax")</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -129,9 +130,9 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                                     @Messages("tai.bandtype.nonZeroBand.incomeDetails")
                                     }
                                 </td>
-                                <td id="income@{count}">@MoneyPounds(band.income,0).quantity</td>
-                                <td id="taxRate@{count}">@band.tablePercentage</td>
-                                <td id="tax@{count}">@band.tax</td>
+                                <td id="income@{count}" class="numeric">@withPoundPrefix(MoneyPounds(band.income, 0))</td>
+                                <td id="taxRate@{count}" class="numeric">@band.tablePercentage</td>
+                                <td id="tax@{count}" class="numeric">@withPoundPrefix(MoneyPounds(band.tax, 0))</td>
                             </tr>
                             }
                             </tbody>
@@ -139,11 +140,11 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                         }
                     </section>
 
-                    <h2 class="flush--bottom">
+                    <h2 class="heading-section">
                         @Messages("tai.estimatedIncome.whyEstimate.link")
                     </h2>
                     <p id="whyEstimateDesc">@Messages("tai.estimatedIncome.whyEstimate.desc", uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))</p>
-                    <h2 class="flush--bottom">
+                    <h2 class="heading-section">
                         @Messages("tai.estimatedIncome.howYouPay.heading")
                     </h2>
                     <p  id="howYouPayDesc">
