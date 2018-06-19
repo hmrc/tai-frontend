@@ -21,7 +21,7 @@ import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.{AdditionalTaxDetailRow, BandedGraph, EstimatedIncomeTaxViewModel, ReductionTaxRow}
+import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 
@@ -50,10 +50,6 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
     }
 
     "have static messages" in {
-      doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.desc",
-        "£100",
-        viewModel.currentTaxYearRangeHtmlNonBreak,
-        "£100")).body)
 
       doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.whyEstimate.link"))
       doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.howYouPay.heading"))
@@ -177,13 +173,13 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
                       reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
     EstimatedIncomeTaxViewModel(
       hasCurrentIncome, 100, 100, 100, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
-      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, Some(100), Some(100), Some("Test"), "uk", true)
+      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, Some(100), Some(100), Some("Test"), "uk", true, ZeroTax,List())
   }
 
   def createViewModel1(hasCurrentIncome: Boolean, additionalRows: Seq[AdditionalTaxDetailRow],
                       reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
     EstimatedIncomeTaxViewModel(hasCurrentIncome, 0, 9000, 11500, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
-      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, None, None, Some("Test"), "uk")
+      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, None, None, Some("Test"), "uk",estimateType = ZeroTax,mergedTaxBands = List())
   }
 
   val viewModel = createViewModel(true, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])

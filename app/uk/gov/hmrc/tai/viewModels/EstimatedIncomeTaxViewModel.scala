@@ -25,11 +25,10 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.{TaxAdjustment, TaxAdjustmentType, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.urls.Link
-
 import scala.math.BigDecimal
+import uk.gov.hmrc.tai.config.TaxBandComplexityConfig.ukTaxBandType
 
 sealed trait IncomeTaxEstimateType
-
 case object ZeroTax extends IncomeTaxEstimateType
 case object SimpleTax extends IncomeTaxEstimateType
 case object ComplexTax extends IncomeTaxEstimateType
@@ -63,7 +62,8 @@ case class EstimatedIncomeTaxViewModel(
                                         dividendsMessage: Option[String],
                                         taxRegion: String,
                                         hasTaxRelief: Boolean = false,
-                                        estimateType:IncomeTaxEstimateType
+                                        estimateType:IncomeTaxEstimateType,
+                                        mergedTaxBands:List[TaxBand]
                                       ) extends ViewModelHelper
 
 object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants {
@@ -74,7 +74,6 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     val personalAllowance = personalAllowanceAmount(codingComponents)
     val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = retrieveTaxBands(taxBands.toList :+ paBand)
-    val estimateType = incomeTaxEstimateType(taxAccountSummary.totalEstimatedTax,mergedTaxBands)
     val graph = createBandedGraph(mergedTaxBands, personalAllowance, taxAccountSummary.taxFreeAllowance, taxAccountSummary.totalEstimatedIncome, taxAccountSummary.totalEstimatedTax)
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
     val additionalTaxTableTotal = additionalTaxTable.map(_.amount).sum
@@ -86,6 +85,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     val psrValue = fetchIncome(mergedTaxBands, PersonalSavingsRate)
     val dividends = dividendsMessage(nonTaxCodeIncome, totalTax)
     val taxRegion = findTaxRegion(taxCodeIncomes)
+    val estimateType = incomeTaxEstimateType(taxAccountSummary.totalEstimatedTax,taxBands,taxRegion)
 
     EstimatedIncomeTaxViewModel(taxCodeIncomes.nonEmpty,
       taxAccountSummary.totalEstimatedTax,
@@ -103,15 +103,27 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
       dividends,
       taxRegion,
       hasTaxRelief(totalTax),
-      estimateType)
+      estimateType,
+      mergedTaxBands)
   }
 
-  def incomeTaxEstimateType(totalEstimatedTax:BigDecimal,taxBands:List[TaxBand]): IncomeTaxEstimateType ={
-    (totalEstimatedTax == 0, taxBands.exists(_.rate == 0), taxBands.filter(_.rate != 0).size > 1) match {
-      case(true,true,false) => ZeroTax
-      case(false,true,false) => SimpleTax
-      case(false,_,true) => ComplexTax
-    }
+  def incomeTaxEstimateType(totalEstimatedTax:BigDecimal,taxBands:Seq[TaxBand],taxRegion:String): IncomeTaxEstimateType ={
+
+    if(totalEstimatedTax == 0){
+     ZeroTax
+   }else{
+     taxRegion match {
+       case UkTaxRegion => searchTaxBandComplexityMap(taxBands,ukTaxBandType)
+       case ScottishTaxRegion => searchTaxBandComplexityMap(taxBands,ukTaxBandType)
+     }
+   }
+  }
+
+  def searchTaxBandComplexityMap = (taxBands:Seq[TaxBand],taxBandComplexity:Map[String,IncomeTaxEstimateType]) => taxBands.map { taxBand =>
+    taxBandComplexity(taxBand.bandType)
+  }.contains(ComplexTax) match {
+    case true => ComplexTax
+    case false => SimpleTax
   }
 
   def fetchIncome(mergedTaxBands: List[TaxBand], bandType: String)(implicit messages: Messages): Option[BigDecimal] = {

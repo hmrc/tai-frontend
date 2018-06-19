@@ -46,12 +46,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         model.incomeEstimate mustBe 100
       }
 
-    "return totalEstimatedTax" in {
-      val model = EstimatedIncomeTaxViewModel(Seq.empty[CodingComponent], TaxAccountSummary(100, 0, 0, 0, 0),
-        totalTax, NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome]), Seq.empty[TaxCodeIncome])
 
-      model.incomeTaxEstimate mustBe 100
-    }
   }
 
   "merge Tax bands" must {
