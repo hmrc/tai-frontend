@@ -17,15 +17,17 @@
 package uk.gov.hmrc.tai.viewModels
 
 import controllers.routes
-import play.api.Play.current
 import play.api.i18n.Messages
-
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.util.{TaiConstants, ViewModelHelper}
+
+case class ChangeLinkViewModel(isDisplayed: Boolean,
+                               value: String = "",
+                               href: String = "")
 
 case class TaxFreeAmountSummaryCategoryViewModel(headerCol1: String,
                                                  headerCol2: String,
@@ -34,27 +36,55 @@ case class TaxFreeAmountSummaryCategoryViewModel(headerCol1: String,
                                                  caption: String,
                                                  rows: Seq[TaxFreeAmountSummaryRowViewModel])
 
-case class TaxFreeAmountSummaryRowViewModel(label: String,
+case class Label(value: String, link: Option[HelpLink] = None)
+
+case class HelpLink(value: String, href: String, id: String)
+
+case class TaxFreeAmountSummaryRowViewModel(label: Label,
                                             value: String,
                                             link: ChangeLinkViewModel)
 
 object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
 
-  def apply(codingComponent: CodingComponent, employmentName: Map[Int, String], companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages): TaxFreeAmountSummaryRowViewModel = {
+  def apply(label: String, value: String, link: ChangeLinkViewModel): TaxFreeAmountSummaryRowViewModel =
+    new TaxFreeAmountSummaryRowViewModel(Label(label), value, link)
 
-    def isCarBenefitComponent(codingComponent: CodingComponent) = codingComponent.componentType == CarBenefit
+  def apply(codingComponent: CodingComponent,
+            employmentName: Map[Int, String],
+            companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages): TaxFreeAmountSummaryRowViewModel = {
 
-    val label =
-      codingComponent.employmentId match {
-        case Some(id) if employmentName.get(id).isDefined && isCarBenefitComponent(codingComponent) =>
-          val makeModel = companyCarForEmployment(id, companyCarBenefits).getOrElse(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
-          s"""${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefitMakeModel", makeModel)}
-             |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentName(id))}""".stripMargin
-        case Some(id) if employmentName.get(id).isDefined =>
-          s"""${Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}")}
-             |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentName(id))}""".stripMargin
-        case _ => Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}")
-      }
+    def generateLabel(componentType: String, href: String, id: String): Label = Label(
+      Messages(s"tai.taxFreeAmount.table.taxComponent.${componentType}"),
+      Some(HelpLink(Messages(s"tai.taxFreeAmount.summarysection.${componentType}"), href, id))
+    )
+
+    val label: Label = codingComponent match {
+      case CodingComponent(UnderPaymentFromPreviousYear, _, _, _, _) =>
+        generateLabel(codingComponent.componentType.toString,
+                      controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
+                      "underPaymentFromPreviousYear")
+
+      case CodingComponent(EstimatedTaxYouOweThisYear, _, _, _, _) =>
+        generateLabel(codingComponent.componentType.toString,
+                      controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
+                      "estimatedTaxOwedLink")
+
+      case CodingComponent(CarBenefit, Some(id), _, _, _) if employmentName.contains(id) =>
+
+        val makeModel = companyCarForEmployment(id, companyCarBenefits).getOrElse(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
+
+        val displayText = s"""${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefitMakeModel", makeModel)}
+                             |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentName(id))}""".stripMargin
+        Label(displayText)
+
+      case CodingComponent(_, Some(id), _, _, _) if employmentName.contains(id) =>
+        val displayText = s"""${Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}")}
+                             |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentName(id))}""".stripMargin
+        Label(displayText)
+
+      case CodingComponent(_,_,_,_,_) =>
+        Label(Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}"))
+    }
 
     val value = withPoundPrefix(MoneyPounds(codingComponent.amount, 0))
 
@@ -74,10 +104,10 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
       case CarFuelBenefit =>
         val url = s"${ApplicationConfig.updateCompanyCarDetailsUrl}/${codingComponent.employmentId.getOrElse(0)}"
         ChangeLinkViewModel(isDisplayed = true, Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"), url)
-      case companyBenefit : BenefitComponentType =>
+      case companyBenefit: BenefitComponentType =>
         val url = controllers.benefits.routes.CompanyBenefitController.redirectCompanyBenefitSelection(codingComponent.employmentId.getOrElse(0), companyBenefit).url
         ChangeLinkViewModel(isDisplayed = true, Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}"), url)
-      case allowanceComponentType : AllowanceComponentType =>
+      case allowanceComponentType: AllowanceComponentType =>
         val url = ApplicationConfig.taxFreeAllowanceLinkUrl
         ChangeLinkViewModel(isDisplayed = true, Messages(s"tai.taxFreeAmount.table.taxComponent.${allowanceComponentType.toString}"), url)
       case _ =>
@@ -94,7 +124,3 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
     } yield model
 
 }
-
-case class ChangeLinkViewModel(isDisplayed: Boolean,
-                               value: String = "",
-                               href: String = "")

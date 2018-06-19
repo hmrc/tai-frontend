@@ -596,7 +596,8 @@ tai.taxFreeAmount.missing.section.benefit=Add a missing company benefit
 tai.taxFreeAmount.missing.section.income=Add a missing income from another source
 
 ##Your Tax Free Allowance Page
-tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear = What does this mean?
+tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear=What does this mean?
+tai.taxFreeAmount.summarysection.UnderPaymentFromPreviousYear=What does this mean?
 
 ##Scenarios
 
@@ -766,6 +767,17 @@ tai.iya.tax.you.owe.cy-plus-one.title=Estimated tax you owe
 tai.iya.tax-code-change.cy-plus-one.text1=We think you’ve paid too little Income Tax this year and owe £{0}.
 tai.iya.tax-code-change.cy-plus-one.text2=We’ll automatically change your tax code from {0} to collect the underpayment in equal amounts over the year
 tai.iya.tax-code-change.cy-plus-one.text3=We’ll let you know if this amount is right when we calculate your Income Tax for the year after {0}.
+
+##Underpayment Previous Year page
+tai.previous.year.underpayment.preHeading=Understand your tax
+tai.previous.year.underpayment.title=What is a previous year underpayment?
+tai.previous.year.underpayment.para1=A previous year underpayment means you didn’t pay enough Income Tax in a previous tax year.
+tai.previous.year.underpayment.para2=For the tax year from 6 April {0} to 5 April {1} you should have paid £{2} but you actually paid £{3}.
+tai.previous.year.underpayment.para3=Your Personal Allowance has been reduced by £{0} to collect the £{1} still due.
+tai.previous.year.underpayment.para4=This means you will pay tax at 20% on an extra £{0} of your income. This will be spread over the tax year so it is collected in equal instalments.
+tai.previous.year.underpayment.para5=Your tax code has been adjusted for this.
+tai.previous.year.underpayment.return=Return to your tax-free amount
+
 
 ##Error Messages
 error.invalid.date.past=Please enter a date in the current tax year

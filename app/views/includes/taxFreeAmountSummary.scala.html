@@ -40,14 +40,14 @@
                         <li id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}">
 
                             <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" class="cya-question break-word">
-                                @row.label
-                                @if(row.label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
+                                @row.label.value
+                                @row.label.link.map { link =>
                                     @includes.link(
-                                        id=Some("estimatedTaxOwedLink"),
-                                        copy=Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"),
-                                        url = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
+                                        id=Some(link.id),
+                                        copy=link.value,
+                                        url = link.href,
                                         linkClasses = Seq("link-list__item"),
-                                        attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
+                                        attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${link.value}")
                                     )
                                 }
                             </div>
@@ -77,23 +77,23 @@
 
                 <div id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight heading-small} else {flush}">
                     <div id="summaryTable@{itemIdx.toString}Row1">
-
                         @if(isAllowanceOrTotalItem){
-                        <h3 id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word ">
+                            <h3 id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word ">
                         } else {
-                        <div id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word">
+                            <div id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word">
                         }
 
-                            @item.rows(0).label
-                            @if(item.rows(0).label == Messages("tai.taxFreeAmount.table.taxComponent.EstimatedTaxYouOweThisYear")){
-                                @includes.link(
-                                    id=Some("estimatedTaxOwedLink"),
-                                    copy=Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"),
-                                    url = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
-                                    linkClasses = Seq("link-list__item"),
-                                    attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear")}")
-                                )
-                            }
+                                @item.rows(0).label.value
+
+                                @item.rows(0).label.link.map { link =>
+                                    @includes.link(
+                                        id=Some(link.id),
+                                        copy=link.value,
+                                        url = link.href,
+                                        linkClasses = Seq("link-list__item"),
+                                        attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${link.value}")
+                                    )
+                                }
 
                         @if(isAllowanceOrTotalItem){
                         </h3>
