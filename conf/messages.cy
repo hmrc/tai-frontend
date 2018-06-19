@@ -712,6 +712,7 @@ tai.taxFreeAmount.table.taxComponent.CasualEarnings=Enillion achlysurol
 tai.employment.income.details.mainHeading=Eich cyflogaeth gyda {0} {1} i {2}
 label.we_need_to_speak_to_you_before_you_can_access=Mae''n rhaid i ni siarad â chi cyn y gallwch fewngofnodi i''ch cyfrif.
 tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear=Beth mae hyn yn ei olygu?
+tai.taxFreeAmount.summarysection.UnderPaymentFromPreviousYear=Beth mae hyn yn ei olygu?
 scottish.bandtype.NA=Ddim yn gymwys
 tai.bbsi.account.desc1=Swm y llog yw''r unig wybodaeth a gawn. Nid ydym yn gwybod faint sydd gennych yn eich cyfrifon.
 tai.bonusPaymentsAmount.year.error=Nodwch faint o daliadau bonws neu oramser rydych yn credu y byddwch yn eu cael eleni
@@ -1214,6 +1215,17 @@ tai.updatePension.decision.heading=A ydych yn cael incwm pensiwn oddi wrth {0}?
 tai.updatePension.decision.customGaTitle=A ydych yn cael incwm pensiwn hwn
 tai.updatePension.decision.legend=A ydych yn cael incwm pensiwn oddi wrth darparwr pensiwn hwn?
 
+
+##Underpayment Previous Year page
+tai.previous.year.underpayment.preHeading=Deall eich treth
+tai.previous.year.underpayment.title=Beth yw tandaliad o flwyddyn flaenorol?
+tai.previous.year.underpayment.para1=Mae tandaliad o flwyddyn flaenorol yn golygu na daloch ddigon o Dreth Incwm mewn blwyddyn dreth flaenorol.
+tai.previous.year.underpayment.para2=Ar gyfer y flwyddyn dreth o 6 Ebrill {0} i 5 Ebrill {1} dylech fod wedi talu £{2} ond talwyd £{3} gennych mewn gwirionedd.
+tai.previous.year.underpayment.para3=Mae’ch Lwfans Personol wedi’i ostwng £{0} er mwyn casglu'r £{1} sy’n dal i fod yn ddyledus.
+tai.previous.year.underpayment.para4=Mae hyn yn golygu y byddwch yn talu treth ar gyfradd o 20% ar £{0} ychwanegol o’ch incwm. Caiff y swm ei rannu ar draws y flwyddyn dreth a'i gasglu drwy randaliadau cyfartal.
+tai.previous.year.underpayment.para5=Mae’ch cod treth wedi cael ei addasu ar gyfer hyn.
+tai.previous.year.underpayment.return=Return to your tax-free amount
+
 tai.paye.lastTaxYear.table.reader.link=Gwirio manylion y cyflog a anfonwyd atom gan {0}
 tai.incomeTaxComparison.tellAboutChange.companyBenefitsReaderText=Rhoi gwybod i ni am fuddiannau cwmni.
 tai.incomeTaxComparison.tellAboutChange.investmentIncomeReaderText=Rhoi gwybod i ni am incwm o fuddsoddiadau.
@@ -1221,3 +1233,4 @@ tai.incomeTaxComparison.tellAboutChange.stateBenefitsReaderText=Rhoi gwybod i ni
 tai.incomeTaxComparison.tellAboutChange.otherIncomeReaderText=Rhoi gwybod i ni am incwm arall.
 tai.updateOrRemove.fromOtherSources=Diweddaru neu ddileu {0}
 tai.mergedTaxBand.link.wording=Gwirio treth ar incwm
+
