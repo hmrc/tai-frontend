@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 import views.html.previousYearUnderpayment
 
 
-trait UnderPaymentFromPreviousYearController extends TaiBaseController
+trait UnderpaymentFromPreviousYearController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
@@ -62,7 +62,7 @@ trait UnderPaymentFromPreviousYearController extends TaiBaseController
 }
 
 
-object UnderPaymentFromPreviousYearController extends UnderPaymentFromPreviousYearController with AuthenticationConnectors {
+object UnderpaymentFromPreviousYearController extends UnderpaymentFromPreviousYearController with AuthenticationConnectors {
   override def personService: PersonService = PersonService
   override def auditService: AuditService = AuditService
   override def employmentService: EmploymentService = EmploymentService

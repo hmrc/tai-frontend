@@ -68,7 +68,7 @@ class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
     }
   }
 
-  private class SUT() extends UnderPaymentFromPreviousYearController {
+  private class SUT() extends UnderpaymentFromPreviousYearController {
     override val personService: PersonService = mock[PersonService]
     override val auditService: AuditService = mock[AuditService]
     override val employmentService: EmploymentService = mock[EmploymentService]

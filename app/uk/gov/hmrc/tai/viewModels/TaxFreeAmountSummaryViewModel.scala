@@ -61,7 +61,7 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
     val label: Label = codingComponent match {
       case CodingComponent(UnderPaymentFromPreviousYear, _, _, _, _) =>
         generateLabel(codingComponent.componentType.toString,
-                      controllers.routes.UnderPaymentFromPreviousYearController.underpaymentExplanation.url.toString,
+                      controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
                       "underPaymentFromPreviousYear")
 
       case CodingComponent(EstimatedTaxYouOweThisYear, _, _, _, _) =>
