@@ -20,6 +20,7 @@
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import includes.ptaHeader
 @import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.tai.viewModels.{SimpleTax,ComplexTax}
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.EstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
 request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
@@ -93,13 +94,48 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                             pounds(viewModel.taxFreeEstimate - viewModel.incomeEstimate)))
                         </div>
                         }
-                        @if(viewModel.incomeTaxEstimate > 0) {
-                        <p id="estimatedIncomeDesc">
+                    </section>
+                    <section>
+                        @if(viewModel.estimateType == SimpleTax) {
+
+                        <h2 class="flush--bottom">
+                            @Messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading")
+                        </h2>
+                        <p id="taxOnEmploymentIncomeDesc">
                             @Html(Messages("tai.estimatedIncome.desc",
                             pounds(viewModel.incomeEstimate),
-                            taxYearRangeString,
+                            Link.toInternalPage(
+                            id=Some("taxFreeAmountLink"),
+                            url=routes.TaxFreeAmountController.taxFreeAmount.url,
+                            value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
                             pounds(viewModel.taxFreeEstimate)))
                         </p>
+                        <table id="employmentIncomeTaxDetails">
+                            <thead>
+                            <tr>
+                                <th>@Messages("tai.incomeTaxBand")</th>
+                                <th>@Messages("tai.amount")</th>
+                                <th>@Messages("tai.taxRate")</th>
+                                <th>@Messages("tai.tax")</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @for((band, count) <- viewModel.graph.bands.zipWithIndex){
+                            <tr>
+                                <td id="bandType@{count}">
+                                    @if(band.bandType=="ZeroBand"){
+                                    @Messages("tai.bandtype.zeroBand.incomeDetails")
+                                    } else {
+                                    @Messages("tai.bandtype.nonZeroBand.incomeDetails")
+                                    }
+                                </td>
+                                <td id="income@{count}">@MoneyPounds(band.income,0).quantity</td>
+                                <td id="taxRate@{count}">@band.tablePercentage</td>
+                                <td id="tax@{count}">@band.tax</td>
+                            </tr>
+                            }
+                            </tbody>
+                        </table>
                         }
                     </section>
 
@@ -117,116 +153,120 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                         url=routes.YourTaxCodeController.taxCodes.url,
                         value=Some(Messages("tai.estimatedIncome.taxCodes.link"))).toHtml))
                     </p>
-                    <section>
-                        @if(viewModel.hasTaxRelief){
-                            <h3 id="tax-relief-title" class="heading-medium">@Messages("tai.estimatedIncome.taxrelief.title")</h3>
-                            <p id="tax-relief-message">@Html(Messages(
-                                "tai.estimatedIncome.taxRelief",
-                                Link.toInternalPage(
-                                    url=routes.EstimatedIncomeTaxController.taxRelief().toString,
-                                    value=Some("tai.estimatedIncome.taxRelief.link")
-                                ).toHtml
-                                ))</p>
-                        }
 
-                        @if(viewModel.hasPotentialUnderPayment){
-                            <div class="panel-indent panel-indent--info panel-indent--gutter">
-                                <p id="income-potential-underpayment">@Messages("tai.potentialUnderpayment.title")</p>
-                                <p id="link-potential-underpayment" data-journey='link - view:@Messages("tai.estimatedIncomeTax.howWeWorkedOut"):@Messages("tai.view.PotentialUnderpayment")' class="text">@Link.toInternalPage(url=routes.PotentialUnderpaymentController.potentialUnderpaymentPage.toString,
-                                    value=Some("tai.view.PotentialUnderpayment"),
-                                    dataAttributes=Some(Map("journey-click"->s"link - click:${Messages("tai.estimatedIncomeTax.howWeWorkedOut")}:${Messages("tai.view.PotentialUnderpayment")}."))
-                                    ).toHtml</p>
-                            </div>
-                        }
+                    @if(viewModel.estimateType == ComplexTax) {
 
-                        @viewModel.ssrValue.map { ssr =>
-                            <h3 id="starting-rate-savings-title" class="heading-medium">@Messages("tai.estimatedIncome.SSR.title")</h3>
-                            <p id="starting-rate-savings-text1">@Messages("tai.estimatedIncome.SSR.text1", ssr)</p>
-                        }
-
-                        @viewModel.psrValue.map { psr =>
-                            <h3 id="personal-savings-allowance-title" class="heading-medium">@Messages("tai.estimatedIncome.PSA.title")</h3>
-                            <p id="personal-savings-allowance-text1">@Html(Messages("tai.estimatedIncome.PSA.text1",
-                                psr,
-                                Link.toExternalPage(url="https://www.gov.uk/apply-tax-free-interest-on-savings", value=Some(Messages("tai.estimatedIncome.PSA.linkText"))).toHtml))</p>
-                        }
-
-                        @viewModel.dividendsMessage.map { divRateMessage =>
-                            <h3 id="dividends-allowance-title" class="heading-medium">@Messages("tai.estimatedIncome.DIV.title")</h3>
-                            <p id="dividendZeroRateMessage">@divRateMessage</p>
-                        }
-
-                    </section>
-
-                    @if(viewModel.additionalTaxTable.size>0){
                         <section>
-                            <h3 id ="additionalTaxTable-heading" class="heading-medium">
-                                @Messages("tai.estimatedIncome.additionalTax.title")</h3>
-                            <p id="additionalTaxTable-desc">@Messages("tai.estimatedIncome.additionalTax.desc")</p>
-                            <table id="additionalTaxTable" class="table-section">
-                                <thead>
-                                    <tr>
-                                        <th>@Messages("tai.tables.column1")</th>
-                                        <th class="text--right">@Messages("tai.tables.column2")</th>
-                                    </tr>
-                                </thead>
-                                @for(additionalTaxRow <- viewModel.additionalTaxTable){
-                                <tr>
-                                    @if(additionalTaxRow.url.isDefined){
-                                        @if(additionalTaxRow.description == Messages("tai.taxcode.deduction.type-45")) {
-                                            <td><a href="@additionalTaxRow.url" data-journey='link - view:@Messages("tai.estimatedIncome.additionalTax.title"):@Messages("tai.taxcode.deduction.type-45")' data-journey-click='link - click:@Messages("tai.estimatedIncome.additionalTax.title"):@Messages("tai.taxcode.deduction.type-45")'>@additionalTaxRow.description</a></td>
-                                        } else {
-                                            <td><a href="@additionalTaxRow.url">@additionalTaxRow.description</a></td>
-                                        }
-                                    } else{
-                                        <td>@additionalTaxRow.description</td>
-                                    }
-                                    <td class="text--right">@MoneyPounds(additionalTaxRow.amount, 2).quantity</td>
-                                </tr>
-                                }
-                                <tfoot>
-                                    <tr class="table__row--bold">
-                                        <td>@Messages("tai.tables.total")</td>
-                                        <td class="text--right">@MoneyPounds(viewModel.additionalTaxTableTotal,2).quantity</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </section>
-                    }
-
-                    @if(viewModel.reductionTaxTable.size > 0){
-                        <section class="section soft--top soft--bottom">
-                            <h3 id="taxPaidElsewhereTable-heading" class="heading-medium">@Messages("tai.estimatedIncome.reductionsTax.title")</h3>
-                            <p id="taxPaidElsewhereTable-desc">@Messages("tai.estimatedIncome.reductionsTax.desc")</p>
-                            <table id="taxPaidElsewhereTable" class="table-section">
-                                <thead>
-                                    <tr>
-                                        <th>@Messages("tai.tables.column1")</th>
-                                        <th class="text--right">@Messages("tai.tables.column2")</th>
-                                    </tr>
-                                </thead>
-                                @for(taxPaidElsewhere <- viewModel.reductionTaxTable){
-                                    <tr>
-                                            <td>
-                                                @includes.details_summary(taxPaidElsewhere.title){
-                                                    <p>@Html(taxPaidElsewhere.description)</p>
-                                                }
-                                            </td>
-                                        <td class="text--right">-@MoneyPounds(taxPaidElsewhere.amount, 2).quantity</td>
-                                    </tr>
-                                }
-                                <tfoot>
-                                    <tr class="table__row--bold">
-                                        <td>@Messages("tai.tables.total")</td>
-                                        <td class="text--right">-@MoneyPounds(viewModel.reductionTaxTableTotal, 2).quantity</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-
-                            @viewModel.incomeTaxReducedToZeroMessage.map { incomeTaxReducedToZeroMessage => 
-                                <p id="reducedToZero" class="indent">@incomeTaxReducedToZeroMessage</p> 
+                            @if(viewModel.hasTaxRelief){
+                                <h3 id="tax-relief-title" class="heading-medium">@Messages("tai.estimatedIncome.taxrelief.title")</h3>
+                                <p id="tax-relief-message">@Html(Messages(
+                                    "tai.estimatedIncome.taxRelief",
+                                    Link.toInternalPage(
+                                        url=routes.EstimatedIncomeTaxController.taxRelief().toString,
+                                        value=Some("tai.estimatedIncome.taxRelief.link")
+                                    ).toHtml
+                                    ))</p>
                             }
+
+                            @if(viewModel.hasPotentialUnderPayment){
+                                <div class="panel-indent panel-indent--info panel-indent--gutter">
+                                    <p id="income-potential-underpayment">@Messages("tai.potentialUnderpayment.title")</p>
+                                    <p id="link-potential-underpayment" data-journey='link - view:@Messages("tai.estimatedIncomeTax.howWeWorkedOut"):@Messages("tai.view.PotentialUnderpayment")' class="text">@Link.toInternalPage(url=routes.PotentialUnderpaymentController.potentialUnderpaymentPage.toString,
+                                        value=Some("tai.view.PotentialUnderpayment"),
+                                        dataAttributes=Some(Map("journey-click"->s"link - click:${Messages("tai.estimatedIncomeTax.howWeWorkedOut")}:${Messages("tai.view.PotentialUnderpayment")}."))
+                                        ).toHtml</p>
+                                </div>
+                            }
+
+                            @viewModel.ssrValue.map { ssr =>
+                                <h3 id="starting-rate-savings-title" class="heading-medium">@Messages("tai.estimatedIncome.SSR.title")</h3>
+                                <p id="starting-rate-savings-text1">@Messages("tai.estimatedIncome.SSR.text1", ssr)</p>
+                            }
+
+                            @viewModel.psrValue.map { psr =>
+                                <h3 id="personal-savings-allowance-title" class="heading-medium">@Messages("tai.estimatedIncome.PSA.title")</h3>
+                                <p id="personal-savings-allowance-text1">@Html(Messages("tai.estimatedIncome.PSA.text1",
+                                    psr,
+                                    Link.toExternalPage(url="https://www.gov.uk/apply-tax-free-interest-on-savings", value=Some(Messages("tai.estimatedIncome.PSA.linkText"))).toHtml))</p>
+                            }
+
+                            @viewModel.dividendsMessage.map { divRateMessage =>
+                                <h3 id="dividends-allowance-title" class="heading-medium">@Messages("tai.estimatedIncome.DIV.title")</h3>
+                                <p id="dividendZeroRateMessage">@divRateMessage</p>
+                            }
+
                         </section>
+
+                        @if(viewModel.additionalTaxTable.size>0){
+                            <section>
+                                <h3 id ="additionalTaxTable-heading" class="heading-medium">
+                                    @Messages("tai.estimatedIncome.additionalTax.title")</h3>
+                                <p id="additionalTaxTable-desc">@Messages("tai.estimatedIncome.additionalTax.desc")</p>
+                                <table id="additionalTaxTable" class="table-section">
+                                    <thead>
+                                        <tr>
+                                            <th>@Messages("tai.tables.column1")</th>
+                                            <th class="text--right">@Messages("tai.tables.column2")</th>
+                                        </tr>
+                                    </thead>
+                                    @for(additionalTaxRow <- viewModel.additionalTaxTable){
+                                    <tr>
+                                        @if(additionalTaxRow.url.isDefined){
+                                            @if(additionalTaxRow.description == Messages("tai.taxcode.deduction.type-45")) {
+                                                <td><a href="@additionalTaxRow.url" data-journey='link - view:@Messages("tai.estimatedIncome.additionalTax.title"):@Messages("tai.taxcode.deduction.type-45")' data-journey-click='link - click:@Messages("tai.estimatedIncome.additionalTax.title"):@Messages("tai.taxcode.deduction.type-45")'>@additionalTaxRow.description</a></td>
+                                            } else {
+                                                <td><a href="@additionalTaxRow.url">@additionalTaxRow.description</a></td>
+                                            }
+                                        } else{
+                                            <td>@additionalTaxRow.description</td>
+                                        }
+                                        <td class="text--right">@MoneyPounds(additionalTaxRow.amount, 2).quantity</td>
+                                    </tr>
+                                    }
+                                    <tfoot>
+                                        <tr class="table__row--bold">
+                                            <td>@Messages("tai.tables.total")</td>
+                                            <td class="text--right">@MoneyPounds(viewModel.additionalTaxTableTotal,2).quantity</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </section>
+                        }
+
+                        @if(viewModel.reductionTaxTable.size > 0){
+                            <section class="section soft--top soft--bottom">
+                                <h3 id="taxPaidElsewhereTable-heading" class="heading-medium">@Messages("tai.estimatedIncome.reductionsTax.title")</h3>
+                                <p id="taxPaidElsewhereTable-desc">@Messages("tai.estimatedIncome.reductionsTax.desc")</p>
+                                <table id="taxPaidElsewhereTable" class="table-section">
+                                    <thead>
+                                        <tr>
+                                            <th>@Messages("tai.tables.column1")</th>
+                                            <th class="text--right">@Messages("tai.tables.column2")</th>
+                                        </tr>
+                                    </thead>
+                                    @for(taxPaidElsewhere <- viewModel.reductionTaxTable){
+                                        <tr>
+                                                <td>
+                                                    @includes.details_summary(taxPaidElsewhere.title){
+                                                        <p>@Html(taxPaidElsewhere.description)</p>
+                                                    }
+                                                </td>
+                                            <td class="text--right">-@MoneyPounds(taxPaidElsewhere.amount, 2).quantity</td>
+                                        </tr>
+                                    }
+                                    <tfoot>
+                                        <tr class="table__row--bold">
+                                            <td>@Messages("tai.tables.total")</td>
+                                            <td class="text--right">-@MoneyPounds(viewModel.reductionTaxTableTotal, 2).quantity</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                                @viewModel.incomeTaxReducedToZeroMessage.map { incomeTaxReducedToZeroMessage => 
+                                    <p id="reducedToZero" class="indent">@incomeTaxReducedToZeroMessage</p> 
+                                }
+                            </section>
+                        }
                     }
 
                 </div>

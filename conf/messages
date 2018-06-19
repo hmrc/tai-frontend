@@ -1,8 +1,11 @@
 #General
 tai.income=Employer or pension provider
-tai.income.currency=Amount (£)
+tai.amount=Amount
 tai.key=Key
 tai.item=Item
+tai.incomeTaxBand=Income Tax Band
+tai.taxRate=Tax Rate
+tai.tax=Tax
 tai.incomeSources=Income sources
 tai.pensionSources=Pension provider
 tai.taxCode=Tax code
@@ -912,7 +915,8 @@ tai.estimatedIncome.title=Your PAYE Income Tax estimate
 tai.estimatedIncome.accessiblePreHeading=This section is your income tax estimate for
 tai.estimatedIncome.whyEstimate.link=Why this is an estimate
 tai.estimatedIncome.whyEstimate.desc=The amount of tax you pay depends on your total income for the whole tax year. We can’t give an exact figure because we won’t know about all your income until after the tax year ends on {0}.
-tai.estimatedIncome.desc=We estimate that your taxable income will be about {0} for the tax year from {1}. The first {2} of this is tax free; this is your tax-free allowance. You will pay Income Tax on any income over this amount.
+tai.estimatedIncome.taxOnEmploymentIncome.subHeading=Tax on your employment income
+tai.estimatedIncome.desc=Your total income from employment is estimated at {0} this tax year. You have a {1} for your employment income. This means the first {2} of your employment earnings are tax free.
 tai.estimatedIncomeLow.desc=We estimate that you will earn less than your {0} of {1}, this means you should pay no income Tax on your earnings this year.
 tai.estimatedIncome.taxFree.link=tax-free amount
 tai.estimatedIncome.taxCodes.link=Your tax code
@@ -1011,6 +1015,8 @@ tai.label.back=Back
 tai.bandtype.zeroBand=Income you don’t pay tax on
 tai.bandtype.nonZeroBand=Income you do pay tax on
 tai.bandtype.incomeTaxEstimate=Income Tax estimate
+tai.bandtype.zeroBand.incomeDetails=Tax-free amount for employment
+tai.bandtype.nonZeroBand.incomeDetails=Basic Rate
 
 #UK Band types
 uk.bandtype.B=Income basic rate

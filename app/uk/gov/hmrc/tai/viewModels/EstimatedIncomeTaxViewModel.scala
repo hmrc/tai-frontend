@@ -28,6 +28,12 @@ import uk.gov.hmrc.urls.Link
 
 import scala.math.BigDecimal
 
+sealed trait IncomeTaxEstimateType
+
+case object ZeroTax extends IncomeTaxEstimateType
+case object SimpleTax extends IncomeTaxEstimateType
+case object ComplexTax extends IncomeTaxEstimateType
+
 case class AdditionalTaxDetailRow(
                                    description: String,
                                    amount: BigDecimal,
@@ -56,7 +62,8 @@ case class EstimatedIncomeTaxViewModel(
                                         psrValue: Option[BigDecimal],
                                         dividendsMessage: Option[String],
                                         taxRegion: String,
-                                        hasTaxRelief: Boolean = false
+                                        hasTaxRelief: Boolean = false,
+                                        estimateType:IncomeTaxEstimateType
                                       ) extends ViewModelHelper
 
 object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants {
@@ -67,6 +74,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     val personalAllowance = personalAllowanceAmount(codingComponents)
     val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = retrieveTaxBands(taxBands.toList :+ paBand)
+    val estimateType = incomeTaxEstimateType(taxAccountSummary.totalEstimatedTax,mergedTaxBands)
     val graph = createBandedGraph(mergedTaxBands, personalAllowance, taxAccountSummary.taxFreeAllowance, taxAccountSummary.totalEstimatedIncome, taxAccountSummary.totalEstimatedTax)
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
     val additionalTaxTableTotal = additionalTaxTable.map(_.amount).sum
@@ -94,7 +102,16 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
       psrValue,
       dividends,
       taxRegion,
-      hasTaxRelief(totalTax))
+      hasTaxRelief(totalTax),
+      estimateType)
+  }
+
+  def incomeTaxEstimateType(totalEstimatedTax:BigDecimal,taxBands:List[TaxBand]): IncomeTaxEstimateType ={
+    (totalEstimatedTax == 0, taxBands.exists(_.rate == 0), taxBands.filter(_.rate != 0).size > 1) match {
+      case(true,true,false) => ZeroTax
+      case(false,true,false) => SimpleTax
+      case(false,_,true) => ComplexTax
+    }
   }
 
   def fetchIncome(mergedTaxBands: List[TaxBand], bandType: String)(implicit messages: Messages): Option[BigDecimal] = {
