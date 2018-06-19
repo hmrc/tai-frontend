@@ -712,6 +712,7 @@ tai.taxFreeAmount.table.taxComponent.CasualEarnings=Enillion achlysurol
 tai.employment.income.details.mainHeading=Eich cyflogaeth gyda {0} {1} i {2}
 label.we_need_to_speak_to_you_before_you_can_access=Mae''n rhaid i ni siarad â chi cyn y gallwch fewngofnodi i''ch cyfrif.
 tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear=Beth mae hyn yn ei olygu?
+tai.taxFreeAmount.summarysection.UnderPaymentFromPreviousYear=Beth mae hyn yn ei olygu?
 scottish.bandtype.NA=Ddim yn gymwys
 tai.bbsi.account.desc1=Swm y llog yw''r unig wybodaeth a gawn. Nid ydym yn gwybod faint sydd gennych yn eich cyfrifon.
 tai.bonusPaymentsAmount.year.error=Nodwch faint o daliadau bonws neu oramser rydych yn credu y byddwch yn eu cael eleni
