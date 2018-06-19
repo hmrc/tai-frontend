@@ -348,6 +348,7 @@ tai.paye.lastTaxYear.table.headingOne=Income source
 tai.paye.lastTaxYear.table.headingTwo=Income
 tai.paye.lastTaxYear.table.headingThree=Action
 tai.paye.lastTaxYear.table.link=Check the pay details sent to us
+tai.paye.lastTaxYear.table.reader.link=Check the pay details sent to us from {0}
 tai.paye.lastTaxYear.checkTax.somethingNotRight=Something not right?
 tai.paye.lastTaxYear.checkTax.sendUpdate.link=Send us an update about your taxable income for {0}
 tai.paye.lastTaxYear.checkTax.text=Did you pay too much tax?
@@ -1210,10 +1211,16 @@ tai.incomeTaxComparison.taxFreeAmount.totalDeductions=Total deductions
 tai.incomeTaxComparison.taxFreeAmount.totalTFA=Your total tax-free amount
 tai.incomeTaxComparison.tellAboutChange.subHeading=Tell us about a change
 tai.incomeTaxComparison.tellAboutChange.description=If your details here are wrong or if there is something missing, tell us about changes to your:
+
 tai.incomeTaxComparison.tellAboutChange.companyBenefitsText=company benefits
+tai.incomeTaxComparison.tellAboutChange.companyBenefitsReaderText=Tell us about company benefits.
 tai.incomeTaxComparison.tellAboutChange.investmentIncomeText=investment income
+tai.incomeTaxComparison.tellAboutChange.investmentIncomeReaderText=Tell us about investment income.
 tai.incomeTaxComparison.tellAboutChange.stateBenefitsText=state benefits
+tai.incomeTaxComparison.tellAboutChange.stateBenefitsReaderText=Tell us about state benefits.
 tai.incomeTaxComparison.tellAboutChange.otherIncomeText=other income
+tai.incomeTaxComparison.tellAboutChange.otherIncomeReaderText=Tell us about other income.
+
 tai.incomeTaxComparison.sidebar.subHeading=Go to the current tax year
 tai.incomeTaxComparison.incomeSourceAbsent=Not available
 
@@ -1380,3 +1387,6 @@ tai.typeDecodes.IncapacityBenefit=Incapacity Benefit
 language.to=to
 language.day.singular=day
 language.day.plural=days
+
+tai.updateOrRemove.fromOtherSources=Update or remove {0}
+tai.mergedTaxBand.link.wording=Check tax on income

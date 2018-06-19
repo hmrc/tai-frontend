@@ -1215,6 +1215,7 @@ tai.updatePension.decision.heading=A ydych yn cael incwm pensiwn oddi wrth {0}?
 tai.updatePension.decision.customGaTitle=A ydych yn cael incwm pensiwn hwn
 tai.updatePension.decision.legend=A ydych yn cael incwm pensiwn oddi wrth darparwr pensiwn hwn?
 
+
 ##Underpayment Previous Year page
 tai.previous.year.underpayment.preHeading=Deall eich treth
 tai.previous.year.underpayment.title=Beth yw tandaliad o flwyddyn flaenorol?
@@ -1224,3 +1225,12 @@ tai.previous.year.underpayment.para3=Mae’ch Lwfans Personol wedi’i ostwng £
 tai.previous.year.underpayment.para4=Mae hyn yn golygu y byddwch yn talu treth ar gyfradd o 20% ar £{0} ychwanegol o’ch incwm. Caiff y swm ei rannu ar draws y flwyddyn dreth a'i gasglu drwy randaliadau cyfartal.
 tai.previous.year.underpayment.para5=Mae’ch cod treth wedi cael ei addasu ar gyfer hyn.
 tai.previous.year.underpayment.return=Return to your tax-free amount
+
+tai.paye.lastTaxYear.table.reader.link=Gwirio manylion y cyflog a anfonwyd atom gan {0}
+tai.incomeTaxComparison.tellAboutChange.companyBenefitsReaderText=Rhoi gwybod i ni am fuddiannau cwmni.
+tai.incomeTaxComparison.tellAboutChange.investmentIncomeReaderText=Rhoi gwybod i ni am incwm o fuddsoddiadau.
+tai.incomeTaxComparison.tellAboutChange.stateBenefitsReaderText=Rhoi gwybod i ni am fudd-daliadau’r Wladwriaeth.
+tai.incomeTaxComparison.tellAboutChange.otherIncomeReaderText=Rhoi gwybod i ni am incwm arall.
+tai.updateOrRemove.fromOtherSources=Diweddaru neu ddileu {0}
+tai.mergedTaxBand.link.wording=Gwirio treth ar incwm
+
