@@ -31,10 +31,6 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
 
   "the Potential Underpayment view method" should {
 
-    "test" in {
-      println(doc)
-    }
-
     "show a back button" when {
       behave like pageWithBackLink
     }

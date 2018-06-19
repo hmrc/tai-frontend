@@ -39,7 +39,7 @@ object PreviousYearUnderpaymentViewModel extends ViewModelHelper {
     val actuallyPaid = (for {
       emp <- employments
       account <- emp.annualAccounts.find(_.taxYear.year == taxYear.year)
-    } yield account.totalTaxPaidYearToDate).foldLeft(BigDecimal(0.00))(_ + _)
+    } yield account.totalTaxPaidYearToDate).sum
 
     val allowanceReducedBy = codingComponents.collectFirst {
       case CodingComponent(UnderPaymentFromPreviousYear, _, amount, _, _) => amount
