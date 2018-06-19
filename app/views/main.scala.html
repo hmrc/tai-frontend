@@ -212,7 +212,6 @@
 }
 
 @{
-    templateRenderer.renderDefaultTemplate(
-        layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), mustacheMap
+    templateRenderer.renderDefaultTemplate(ApplicationConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), mustacheMap
     )
 }

@@ -25,6 +25,8 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.{TaxAdjustment, TaxAdjustmentType, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.urls.Link
+import views.html.includes.link
+
 import scala.math.BigDecimal
 import uk.gov.hmrc.tai.config.TaxBandComplexityConfig.ukTaxBandType
 
@@ -318,11 +320,12 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
 
   private def getBandValues(nonZeroBands: List[TaxBand])(implicit messages: Messages) = {
     if (nonZeroBands.size > 1) {
-      (Link.toInternalPage(
-        url = routes.TaxExplanationController.taxExplanationPage().toString,
-        value = Some(Messages("tai.mergedTaxBand.description")),
-        id = Some("taxExplanation")
-      ).toHtml.body, "NonZeroBand", nonZeroBands.map(_.income).sum)
+      (link(
+        copy = Messages("tai.mergedTaxBand.description"),
+        altCopy = Some(Messages("tai.mergedTaxBand.link.wording")),
+        id = Some("taxExplanation"),
+        url = routes.TaxExplanationController.taxExplanationPage().toString
+      ).body, "NonZeroBand", nonZeroBands.map(_.income).sum)
     } else {
       nonZeroBands.map(otherBand => (otherBand.rate.toString() + "%", "NonZeroBand", otherBand.income)).head
     }

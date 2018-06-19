@@ -33,7 +33,10 @@ case class TaxFreeAmountViewModel(header: String,
 
 object TaxFreeAmountViewModel extends TaxAccountCalculator with ViewModelHelper {
 
-  def apply(codingComponents: Seq[CodingComponent], employmentName: Map[Int, String], companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages): TaxFreeAmountViewModel = {
+  def apply(codingComponents: Seq[CodingComponent],
+            employmentName: Map[Int, String],
+            companyCarBenefits: Seq[CompanyCarBenefit])
+           (implicit messages: Messages): TaxFreeAmountViewModel = {
 
     val taxFreeAmountMsg = Messages("tai.taxFreeAmount.heading.pt1")
 

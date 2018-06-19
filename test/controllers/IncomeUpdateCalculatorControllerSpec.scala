@@ -543,6 +543,20 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         doc.title() must include(Messages("tai.incomes.confirm.save.title"))
       }
 
+      "journey cache returns employment name, net amount with large decimal value and id" in {
+        val sut = createSut
+        val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
+
+        when(sut.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+        when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NewAmountKey))(any())).thenReturn(Future.successful(Some("4632.460273972602739726027397260273")))
+
+        val result = sut.handleCalculationResult()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.incomes.confirm.save.title"))
+      }
+
       "journey cache does not returns net amount" in {
         val sut = createSut
         val employmentAmount = EmploymentAmount("", "", 1, 1, 1)

@@ -440,7 +440,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           income <- incomeService.employmentAmount(Nino(user.getNino), id)
           netAmount <- journeyCacheService.currentValue(UpdateIncome_NewAmountKey)
         } yield {
-          val newAmount = income.copy(newAmount = netAmount.map(_.toInt).getOrElse(income.oldAmount))
+          val newAmount = income.copy(newAmount = netAmount.map(netAmountValue => BigDecimal(netAmountValue).intValue()).getOrElse(income.oldAmount))
           Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = newAmount).get))
         }
   }

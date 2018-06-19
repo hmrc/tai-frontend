@@ -30,13 +30,12 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
 
 
   "TaxFreeAmountSummaryRowViewModel apply method" must {
-
     "build a label generated specifically to the coding component" in {
-      TaxFreeAmountSummaryRowViewModel(CodingComponent(PersonalAllowancePA, Some(123), 111, "PersonalAllowancePA"), employmentNames, companyCarBenefits).label mustBe
-        Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA")
+      val personalAllowance = TaxFreeAmountSummaryRowViewModel(CodingComponent(PersonalAllowancePA, Some(123), 111, "PersonalAllowancePA"), employmentNames, companyCarBenefits)
+      val foreignDividendIncome = TaxFreeAmountSummaryRowViewModel(CodingComponent(ForeignDividendIncome, Some(123), 111, "ForeignDividendIncome"), employmentNames, companyCarBenefits)
 
-      TaxFreeAmountSummaryRowViewModel(CodingComponent(ForeignDividendIncome, Some(123), 111, "ForeignDividendIncome"),
-        employmentNames, companyCarBenefits).label mustBe Messages("tai.taxFreeAmount.table.taxComponent.ForeignDividendIncome")
+      personalAllowance.label.value mustBe Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA")
+      foreignDividendIncome.label.value mustBe Messages("tai.taxFreeAmount.table.taxComponent.ForeignDividendIncome")
     }
 
     "build a value formatted with pound prefix" when {
@@ -135,7 +134,7 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
       "employment id is available in employment name map" in {
         val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(ForeignDividendIncome, Some(1), 111, "ForeignDividendIncome"),
           employmentNames, companyCarBenefits)
-        row.label mustBe
+        row.label.value mustBe
           s"""${Messages("tai.taxFreeAmount.table.taxComponent.ForeignDividendIncome")}
              |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentNames(1))}""".stripMargin
       }
@@ -143,30 +142,30 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
       "employment id is not available in employment name map" in {
         val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(ForeignDividendIncome, Some(123), 111, "ForeignDividendIncome"),
           employmentNames, companyCarBenefits)
-        row.label mustBe Messages("tai.taxFreeAmount.table.taxComponent.ForeignDividendIncome")
+        row.label.value mustBe Messages("tai.taxFreeAmount.table.taxComponent.ForeignDividendIncome")
       }
 
       "employment id is not available in coding components" in {
         val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(ForeignDividendIncome, None, 111, "ForeignDividendIncome"),
           employmentNames, companyCarBenefits)
-        row.label mustBe Messages("tai.taxFreeAmount.table.taxComponent.ForeignDividendIncome")
+        row.label.value mustBe Messages("tai.taxFreeAmount.table.taxComponent.ForeignDividendIncome")
       }
     }
 
     "display the company car make and model" when {
       "the coding component type is company car benefit" in {
         val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(CarBenefit, Some(10), 11500, "CarBenefit"), employmentNames, companyCarBenefits)
-        row.label mustBe Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit", "Make Model1")
+        row.label.value mustBe Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit", "Make Model1")
       }
 
       "employment id is none" in {
         val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(CarBenefit, None, 11500, "CarBenefit"), employmentNames, companyCarBenefits)
-        row.label mustBe Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit", "Car benefit")
+        row.label.value mustBe Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit", "Car benefit")
       }
 
       "employment id does not exist in company car benefits" in {
         val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(CarBenefit, Some(1), 11500, "CarBenefit"), employmentNames, companyCarBenefits)
-        row.label mustBe s"""${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit", "Car benefit")}
+        row.label.value mustBe s"""${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit", "Car benefit")}
                             |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentNames(1))}""".stripMargin
       }
     }

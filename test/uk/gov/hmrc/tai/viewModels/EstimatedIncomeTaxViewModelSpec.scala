@@ -26,6 +26,7 @@ import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxAdjustmentComponent, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.util.{BandTypesConstants, TaxRegionConstants}
 import uk.gov.hmrc.urls.Link
+import views.html.includes.link
 
 import scala.collection.immutable.Seq
 import scala.language.postfixOps
@@ -869,11 +870,11 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       income mustBe None
     }
   }
-
-  private lazy val taxExplanationLink = Link.toInternalPage(
-    url = routes.TaxExplanationController.taxExplanationPage().toString,
-    value = Some(Messages("tai.mergedTaxBand.description")),
-    id = Some("taxExplanation")
-  ).toHtml.body
+  private lazy val taxExplanationLink = link(
+    copy = Messages("tai.mergedTaxBand.description"),
+    altCopy = Some(Messages("tai.mergedTaxBand.link.wording")),
+    id = Some("taxExplanation"),
+    url = routes.TaxExplanationController.taxExplanationPage().toString
+  ).toString()
 
 }

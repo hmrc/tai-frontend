@@ -348,6 +348,7 @@ tai.paye.lastTaxYear.table.headingOne=Income source
 tai.paye.lastTaxYear.table.headingTwo=Income
 tai.paye.lastTaxYear.table.headingThree=Action
 tai.paye.lastTaxYear.table.link=Check the pay details sent to us
+tai.paye.lastTaxYear.table.reader.link=Check the pay details sent to us from {0}
 tai.paye.lastTaxYear.checkTax.somethingNotRight=Something not right?
 tai.paye.lastTaxYear.checkTax.sendUpdate.link=Send us an update about your taxable income for {0}
 tai.paye.lastTaxYear.checkTax.text=Did you pay too much tax?
@@ -595,7 +596,8 @@ tai.taxFreeAmount.missing.section.benefit=Add a missing company benefit
 tai.taxFreeAmount.missing.section.income=Add a missing income from another source
 
 ##Your Tax Free Allowance Page
-tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear = What does this mean?
+tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear=What does this mean?
+tai.taxFreeAmount.summarysection.UnderPaymentFromPreviousYear=What does this mean?
 
 ##Scenarios
 
@@ -765,6 +767,17 @@ tai.iya.tax.you.owe.cy-plus-one.title=Estimated tax you owe
 tai.iya.tax-code-change.cy-plus-one.text1=We think you’ve paid too little Income Tax this year and owe £{0}.
 tai.iya.tax-code-change.cy-plus-one.text2=We’ll automatically change your tax code from {0} to collect the underpayment in equal amounts over the year
 tai.iya.tax-code-change.cy-plus-one.text3=We’ll let you know if this amount is right when we calculate your Income Tax for the year after {0}.
+
+##Underpayment Previous Year page
+tai.previous.year.underpayment.preHeading=Understand your tax
+tai.previous.year.underpayment.title=What is a previous year underpayment?
+tai.previous.year.underpayment.para1=A previous year underpayment means you didn’t pay enough Income Tax in a previous tax year.
+tai.previous.year.underpayment.para2=For the tax year from 6 April {0} to 5 April {1} you should have paid £{2} but you actually paid £{3}.
+tai.previous.year.underpayment.para3=Your Personal Allowance has been reduced by £{0} to collect the £{1} still due.
+tai.previous.year.underpayment.para4=This means you will pay tax at 20% on an extra £{0} of your income. This will be spread over the tax year so it is collected in equal instalments.
+tai.previous.year.underpayment.para5=Your tax code has been adjusted for this.
+tai.previous.year.underpayment.return=Return to your tax-free amount
+
 
 ##Error Messages
 error.invalid.date.past=Please enter a date in the current tax year
@@ -1212,10 +1225,16 @@ tai.incomeTaxComparison.taxFreeAmount.totalDeductions=Total deductions
 tai.incomeTaxComparison.taxFreeAmount.totalTFA=Your total tax-free amount
 tai.incomeTaxComparison.tellAboutChange.subHeading=Tell us about a change
 tai.incomeTaxComparison.tellAboutChange.description=If your details here are wrong or if there is something missing, tell us about changes to your:
+
 tai.incomeTaxComparison.tellAboutChange.companyBenefitsText=company benefits
+tai.incomeTaxComparison.tellAboutChange.companyBenefitsReaderText=Tell us about company benefits.
 tai.incomeTaxComparison.tellAboutChange.investmentIncomeText=investment income
+tai.incomeTaxComparison.tellAboutChange.investmentIncomeReaderText=Tell us about investment income.
 tai.incomeTaxComparison.tellAboutChange.stateBenefitsText=state benefits
+tai.incomeTaxComparison.tellAboutChange.stateBenefitsReaderText=Tell us about state benefits.
 tai.incomeTaxComparison.tellAboutChange.otherIncomeText=other income
+tai.incomeTaxComparison.tellAboutChange.otherIncomeReaderText=Tell us about other income.
+
 tai.incomeTaxComparison.sidebar.subHeading=Go to the current tax year
 tai.incomeTaxComparison.incomeSourceAbsent=Not available
 
@@ -1382,3 +1401,6 @@ tai.typeDecodes.IncapacityBenefit=Incapacity Benefit
 language.to=to
 language.day.singular=day
 language.day.plural=days
+
+tai.updateOrRemove.fromOtherSources=Update or remove {0}
+tai.mergedTaxBand.link.wording=Check tax on income

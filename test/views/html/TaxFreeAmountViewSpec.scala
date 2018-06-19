@@ -19,7 +19,7 @@ package views.html
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryRowViewModel, TaxFreeAmountViewModel}
+import uk.gov.hmrc.tai.viewModels._
 
 class TaxFreeAmountViewSpec extends TaiViewSpec {
 
@@ -112,16 +112,17 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
       doc must haveLinkElement("taxableIncomeLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("tai.incomeTaxSummary.link"))
     }
 
-    "display navigational link to underpayment page if EstimatedTaxYouOweThisYear is present" in {
+    "display navigational link to 'Estimated tax you owe' page if EstimatedTaxYouOweThisYear is present" in {
+      val labelVm = Label("labelText", Some(HelpLink("testValue", "testHref", "estimatedTaxOwedLink")))
       val vm: Seq[TaxFreeAmountSummaryRowViewModel] = Seq(
-        TaxFreeAmountSummaryRowViewModel("Estimated tax you owe this year", "£11,500", ChangeLinkViewModel(false)))
+        TaxFreeAmountSummaryRowViewModel(labelVm, "£11,500", ChangeLinkViewModel(false)))
       val svm: Seq[TaxFreeAmountSummaryCategoryViewModel] = Seq(
         TaxFreeAmountSummaryCategoryViewModel("header1", "header2", true, false, "Deductions from your Personal Allowance", vm))
       val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", svm)
 
       val document = doc(views.html.taxFreeAmount(viewModel))
 
-      document must haveLinkElement("estimatedTaxOwedLink", controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url, messages("tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear"))
+      document must haveLinkElement("estimatedTaxOwedLink", "testHref", "testValue")
     }
 
     "display a 'something missing' section" which {

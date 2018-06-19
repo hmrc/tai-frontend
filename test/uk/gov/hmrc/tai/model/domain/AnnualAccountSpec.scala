@@ -39,23 +39,34 @@ class AnnualAccountSpec extends PlaySpec {
     }
 
     "Generate a unique employer designation, consisting of tax district and paye ref extracted from the id string" in {
-      val desig = SutWithNoPayments.employerDesignation
-      desig mustBe "taxdistrict-payeref"
+      val designation = SutWithNoPayments.employerDesignation
+      designation mustBe "taxdistrict-payeref"
     }
 
     "Generate a full key (unique employer designation plus optional employee payroll number)" when {
       "Employment has an employee payrollNumber present" in {
 
-        val desig = SutWithNoPayments.key
-        desig mustBe "taxdistrict-payeref-payroll"
+        val designation = SutWithNoPayments.key
+        designation mustBe "taxdistrict-payeref-payroll"
       }
     }
     "Generate a full key consisting of only tax district and paye ref" when {
 
       "Employment has no employee payrollNumber" in {
 
-        val desig = SutWithNoPayroll.key
-        desig mustBe "taxdistrict-payeref"
+        val designation = SutWithNoPayroll.key
+        designation mustBe "taxdistrict-payeref"
+      }
+    }
+  }
+
+  "totalTaxPaidYearToDate" must {
+    "return the latest year to date value from the payments" when {
+      "there is only one payment" in {
+        SutWithOnePayment.totalTaxPaidYearToDate mustBe 1200
+      }
+      "there are multiple payments" in {
+        SutWithMultiplePayments.totalTaxPaidYearToDate mustBe 2500
       }
     }
   }
@@ -250,9 +261,9 @@ class AnnualAccountSpec extends PlaySpec {
         taxAmount = 100,
         nationalInsuranceAmount = 150,
         payFrequency = FortNightly) :+
-      Payment(date = new LocalDate(2017, 5, 26),
+      Payment(date = new LocalDate(2017, 6, 26),
         amountYearToDate = 2000,
-        taxAmountYearToDate = 1200,
+        taxAmountYearToDate = 2500,
         nationalInsuranceAmountYearToDate = 1500,
         amount = 200,
         taxAmount = 100,
