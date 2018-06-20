@@ -28,12 +28,11 @@ import uk.gov.hmrc.urls.Link
 import views.html.includes.link
 
 import scala.math.BigDecimal
-import uk.gov.hmrc.tai.config.TaxBandComplexityConfig.ukTaxBandType
 
-sealed trait IncomeTaxEstimateType
-case object ZeroTax extends IncomeTaxEstimateType
-case object SimpleTax extends IncomeTaxEstimateType
-case object ComplexTax extends IncomeTaxEstimateType
+sealed trait TaxViewType
+case object ZeroTaxView extends TaxViewType
+case object SimpleTaxView extends TaxViewType
+case object ComplexTaxView extends TaxViewType
 
 case class AdditionalTaxDetailRow(
                                    description: String,
@@ -64,7 +63,7 @@ case class EstimatedIncomeTaxViewModel(
                                         dividendsMessage: Option[String],
                                         taxRegion: String,
                                         hasTaxRelief: Boolean = false,
-                                        estimateType:IncomeTaxEstimateType,
+                                        taxViewType:TaxViewType,
                                         mergedTaxBands:List[TaxBand]
                                       ) extends ViewModelHelper
 
@@ -87,7 +86,9 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     val psrValue = fetchIncome(mergedTaxBands, PersonalSavingsRate)
     val dividends = dividendsMessage(nonTaxCodeIncome, totalTax)
     val taxRegion = findTaxRegion(taxCodeIncomes)
-    val estimateType = incomeTaxEstimateType(taxAccountSummary.totalEstimatedTax,taxBands,taxRegion)
+    val taxView = taxViewType(hasTaxRelief(totalTax),hasPotentialUnderPayment,ssrValue,psrValue,dividends,
+      additionalTaxTable.size,reductionTaxTable.size, taxAccountSummary.totalEstimatedIncome, taxAccountSummary.taxFreeAllowance,
+      taxAccountSummary.totalEstimatedTax)
 
     EstimatedIncomeTaxViewModel(taxCodeIncomes.nonEmpty,
       taxAccountSummary.totalEstimatedTax,
@@ -105,28 +106,25 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
       dividends,
       taxRegion,
       hasTaxRelief(totalTax),
-      estimateType,
+      taxView,
       mergedTaxBands)
   }
 
-  def incomeTaxEstimateType(totalEstimatedTax:BigDecimal,taxBands:Seq[TaxBand],taxRegion:String): IncomeTaxEstimateType ={
+    def taxViewType(hasTaxRelief:Boolean,hasPotentialUnderPayment:Boolean,ssrValue:Option[BigDecimal],psrValue:Option[BigDecimal],
+                    dividends:Option[String],additionalTaxTableSize:Int, reductionTableSize:Int, totalEstimatedIncome:BigDecimal,
+                    taxFreeAllowance:BigDecimal,totalEstimatedTax:BigDecimal): TaxViewType ={
 
-    if(totalEstimatedTax == 0){
-     ZeroTax
-   }else{
-     taxRegion match {
-       case UkTaxRegion => searchTaxBandComplexityMap(taxBands,ukTaxBandType)
-       case ScottishTaxRegion => searchTaxBandComplexityMap(taxBands,ukTaxBandType)
-     }
-   }
-  }
+      hasTaxRelief || hasPotentialUnderPayment || ssrValue.isDefined || psrValue.isDefined || dividends.isDefined || additionalTaxTableSize > 0 || reductionTableSize > 0 match {
+        case true => ComplexTaxView
+        case false => {
+          (totalEstimatedIncome < taxFreeAllowance) && totalEstimatedTax == 0 match {
+            case true => ZeroTaxView
+            case false => SimpleTaxView
+          }
+        }
+      }
 
-  def searchTaxBandComplexityMap = (taxBands:Seq[TaxBand],taxBandComplexity:Map[String,IncomeTaxEstimateType]) => taxBands.map { taxBand =>
-    taxBandComplexity(taxBand.bandType)
-  }.contains(ComplexTax) match {
-    case true => ComplexTax
-    case false => SimpleTax
-  }
+    }
 
   def fetchIncome(mergedTaxBands: List[TaxBand], bandType: String)(implicit messages: Messages): Option[BigDecimal] = {
     mergedTaxBands.find(band => band.bandType == bandType && band.income > 0).map(_.income)

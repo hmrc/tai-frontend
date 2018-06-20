@@ -173,13 +173,13 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
                       reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
     EstimatedIncomeTaxViewModel(
       hasCurrentIncome, 100, 100, 100, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
-      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, Some(100), Some(100), Some("Test"), "uk", true, ZeroTax,List())
+      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, Some(100), Some(100), Some("Test"), "uk", true, ZeroTaxView,List())
   }
 
   def createViewModel1(hasCurrentIncome: Boolean, additionalRows: Seq[AdditionalTaxDetailRow],
                       reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
     EstimatedIncomeTaxViewModel(hasCurrentIncome, 0, 9000, 11500, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
-      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, None, None, Some("Test"), "uk",estimateType = ZeroTax,mergedTaxBands = List())
+      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, None, None, Some("Test"), "uk",taxViewType = ZeroTaxView,mergedTaxBands = List())
   }
 
   val viewModel = createViewModel(true, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])
