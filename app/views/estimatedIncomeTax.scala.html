@@ -20,7 +20,7 @@
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import includes.ptaHeader
 @import uk.gov.hmrc.time.TaxYearResolver
-@import uk.gov.hmrc.tai.viewModels.{SimpleTax,ComplexTax}
+@import uk.gov.hmrc.tai.viewModels.{SimpleTaxView,ComplexTaxView,ZeroTaxView}
 @import uk.gov.hmrc.tai.util.ViewModelHelper._
 @import uk.gov.hmrc.tai.util.TaxRegionConstants._
 
@@ -78,12 +78,12 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                     </section>
 
                     <section>
-                        @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,viewModel.estimateType, viewModel.incomeEstimate)
+                        @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,viewModel.taxViewType, viewModel.incomeEstimate)
                     </section>
 
                     <section id="estimatedIncomeText" class="soft--top flush--bottom">
 
-                        @if(viewModel.incomeTaxEstimate == 0) {
+                        @if(viewModel.taxViewType == ZeroTaxView) {
                         <p id="estimatedIncomeLowDesc">
                             @Html(Messages("tai.estimatedIncomeLow.desc",
                             Link.toInternalPage(
@@ -99,46 +99,46 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                         }
                     </section>
                     <section>
-                        @if(viewModel.estimateType == SimpleTax) {
+                        @if(viewModel.taxViewType == SimpleTaxView) {
 
-                        <h2 class="heading-section">
-                            @Messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading")
-                        </h2>
-                        <p id="taxOnEmploymentIncomeDesc">
-                            @Html(Messages("tai.estimatedIncome.desc",
-                            pounds(viewModel.incomeEstimate),
-                            Link.toInternalPage(
-                            id=Some("taxFreeAmountLink"),
-                            url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                            value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
-                            pounds(viewModel.taxFreeEstimate)))
-                        </p>
-                        <table id="employmentIncomeTaxDetails">
-                            <thead>
-                            <tr>
-                                <th id="incomeTaxBand">@Messages("tai.incomeTaxBand")</th>
-                                <th id="taxAmount" class="numeric">@Messages("tai.amount")</th>
-                                <th id="taxRate" class="numeric">@Messages("tai.taxRate")</th>
-                                <th id="tax" class="numeric">@Messages("tai.tax")</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @for((band, count) <- viewModel.mergedTaxBands.zipWithIndex){
-                            <tr>
-                                <td id="bandType@{count}">
-                                    @if(viewModel.taxRegion.equals(UkTaxRegion)){
-                                      @Messages(s"uk.bandtype.${band.bandType}")
-                                    } else {
-                                     @Messages(s"scottish.bandtype.${band.bandType}")
-                                    }
-                                </td>
-                                <td id="income@{count}" class="numeric">@withPoundPrefix(MoneyPounds(band.income, 0))</td>
-                                <td id="taxRate@{count}" class="numeric">@{band.rate}%</td>
-                                <td id="tax@{count}" class="numeric">@withPoundPrefix(MoneyPounds(band.tax, 0))</td>
-                            </tr>
-                            }
-                            </tbody>
-                        </table>
+                            <h2 class="heading-section">
+                                @Messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading")
+                            </h2>
+                            <p id="taxOnEmploymentIncomeDesc">
+                                @Html(Messages("tai.estimatedIncome.desc",
+                                pounds(viewModel.incomeEstimate),
+                                Link.toInternalPage(
+                                id=Some("taxFreeAmountLink"),
+                                url=routes.TaxFreeAmountController.taxFreeAmount.url,
+                                value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
+                                pounds(viewModel.taxFreeEstimate)))
+                            </p>
+                            <table id="employmentIncomeTaxDetails">
+                                <thead>
+                                <tr>
+                                    <th id="incomeTaxBand">@Messages("tai.incomeTaxBand")</th>
+                                    <th id="taxAmount" class="numeric">@Messages("tai.amount")</th>
+                                    <th id="taxRate" class="numeric">@Messages("tai.taxRate")</th>
+                                    <th id="tax" class="numeric">@Messages("tai.tax")</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @for((band, count) <- viewModel.mergedTaxBands.zipWithIndex){
+                                <tr>
+                                    <td id="bandType@{count}">
+                                        @if(viewModel.taxRegion.equals(UkTaxRegion)){
+                                          @Messages(s"uk.bandtype.${band.bandType}")
+                                        } else {
+                                         @Messages(s"scottish.bandtype.${band.bandType}")
+                                        }
+                                    </td>
+                                    <td id="income@{count}" class="numeric">@withPoundPrefix(MoneyPounds(band.income, 0))</td>
+                                    <td id="taxRate@{count}" class="numeric">@{band.rate}%</td>
+                                    <td id="tax@{count}" class="numeric">@withPoundPrefix(MoneyPounds(band.tax, 0))</td>
+                                </tr>
+                                }
+                                </tbody>
+                            </table>
                         }
                     </section>
 

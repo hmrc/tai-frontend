@@ -42,14 +42,13 @@ class yourTaxGraphPageSpec extends UnitSpec
     "show Tax-Free Allowance and SSR and DIV" in {
 
       val bands = List(
-        Band("TaxFree", 37.93, "0%", 11000, 0, "ZeroBand"),
-        Band("TaxFree", 10.34, "0%", 3000, 0, "ZeroBand"),
-        Band("TaxFree", 51.72, "0%", 15000, 0, "ZeroBand")
+        Band("TaxFree", 99.99, "0%", 29000, 0, "ZeroBand")
       )
       val nextBandMessage = "You can have £14,000 more before your income reaches the next tax band."
       val graphData = BandedGraph("taxGraph", bands, 0, 43000, 29000, 99.99, 29000, 99.99, 0, Some(nextBandMessage))
 
-      val doc = Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion, ZeroTax,29000).toString())
+      val doc = Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion, ComplexTaxView,29000).toString())
+      doc.select("#bandType0").text() shouldBe Messages("tai.bandtype.zeroBand")
       doc.select("#nextBand").text() shouldBe nextBandMessage
       doc.select("#totalIncome").text() shouldBe empty
 
@@ -63,7 +62,7 @@ class yourTaxGraphPageSpec extends UnitSpec
       val nextBandMessage = "You can have £12,800 more before your income reaches the next tax band."
       val graphData = BandedGraph("taxGraph", bands, 0, 32000, 19200, 16.66, 3200, 83.33, 5000, Some(nextBandMessage))
 
-      val doc = Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion, SimpleTax,19200).toString())
+      val doc = Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion, SimpleTaxView,19200).toString())
       doc.select("#bandType0").text() shouldBe Messages("tai.bandtype.zeroBand")
       doc.select("#bandType1").text() shouldBe Messages("tai.bandtype.nonZeroBand")
       doc.select("#nextBand").text() shouldBe nextBandMessage
@@ -80,7 +79,7 @@ class yourTaxGraphPageSpec extends UnitSpec
       val nextBandMessage = "You can have £102,000 more before your income reaches the next tax band."
       val graphData = BandedGraph("taxGraph", bands, 0, 150000, 48000, 6.15, 3000, 93.75, 15000, Some(nextBandMessage))
 
-      val doc = Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion,SimpleTax,48000).toString())
+      val doc = Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion,SimpleTaxView,48000).toString())
       doc.select("#bandType0").text() shouldBe Messages("tai.bandtype.zeroBand")
       doc.select("#bandType1").text() shouldBe Messages("tai.bandtype.nonZeroBand")
       doc.select("#nextBand").text() shouldBe nextBandMessage
@@ -98,7 +97,7 @@ class yourTaxGraphPageSpec extends UnitSpec
 
       val graphData = BandedGraph("taxGraph", bands, 0, 29000, 29000, 48.27, 14000, 51.72, 2000)
 
-      val doc = Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion,ComplexTax,29000).toString())
+      val doc = Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion,ComplexTaxView,29000).toString())
 
       doc.select("#bandType0").text() shouldBe Messages("tai.bandtype.zeroBand")
       doc.select("#bandType1").text() shouldBe Messages("tai.bandtype.nonZeroBand")
@@ -117,7 +116,7 @@ class yourTaxGraphPageSpec extends UnitSpec
 
         val graphData = BandedGraph("taxGraph", bands, 0, 33500, 33500, 0, 0, 99.99, 6700)
 
-        val doc = Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion,ComplexTax,33500).toString())
+        val doc = Jsoup.parseBodyFragment(views.html.includes.yourTaxGraph(graphData, UkTaxRegion,ComplexTaxView,33500).toString())
 
         doc.select("#bandType0").text() shouldBe Messages("tai.bandtype.nonZeroBand")
       }

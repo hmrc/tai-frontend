@@ -46,8 +46,21 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         model.taxFreeEstimate mustBe 100
         model.incomeEstimate mustBe 100
       }
+  }
 
+  "merge Zero bands" must {
+    "return an empty list when an empty list is supplied" in{
+      val result = EstimatedIncomeTaxViewModel.mergeZeroBands(List())
+      result mustBe List()
+    }
 
+    "return a merged list when two individual lists are supplied " in {
+      val individualList = List(Band("TaxFree",50,"0%",1000,0,"ZeroBand"),
+                                Band("TaxFree",50,"0%",1000,0,"ZeroBand"))
+
+      val mergedIndividualList = EstimatedIncomeTaxViewModel.mergeZeroBands(individualList)
+      mergedIndividualList mustBe List(Band("TaxFree",100,"0%",2000,0,"ZeroBand"))
+    }
   }
 
   "merge Tax bands" must {
@@ -114,6 +127,53 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
 
       val dataF = EstimatedIncomeTaxViewModel.individualOtherRateBands(taxBand, totalEstimatedIncome = 3000)
       dataF mustBe List(Band("Band", 33.33, "20%", 1000, 200, "B"), Band("Band", 66.66, "40%", 2000, 800, "D0"))
+    }
+  }
+
+  "taxViewType" must {
+
+    val taxFreeAllowance = 11500
+    val noTaxRelief = false
+    val noPotentialUnderPayment = false
+    val noSSRValue = None
+    val noPSRValue = None
+    val noDividends = None
+    val emptyAdditionalTaxTable = 0
+    val emptyReductionTable = 0
+
+    "return ZeroTaxView when the totalEstimatedIncome is less than the tax free allowance and the totalEstimateTax is zero and no additional complexities exist" in {
+
+      val earningUnderAllowance = 11000
+      val totalEstimatedTax = 0
+
+      val incomeTaxEstimateType = EstimatedIncomeTaxViewModel.taxViewType(noTaxRelief, noPotentialUnderPayment, noSSRValue,
+        noPSRValue, noDividends, emptyAdditionalTaxTable, emptyReductionTable, earningUnderAllowance, taxFreeAllowance, totalEstimatedTax)
+
+      incomeTaxEstimateType mustBe ZeroTaxView
+
+    }
+
+    "return SimpleTaxView when the totalEstimatedIncome is greater than the taxFreeAllowance and no additional complexities exist" when {
+
+      val totalEstimatedTax = 3840
+      val totalEstimatedIncome = 19200
+
+      val incomeTaxEstimateType = EstimatedIncomeTaxViewModel.taxViewType(noTaxRelief, noPotentialUnderPayment, noSSRValue,
+        noPSRValue, noDividends, emptyAdditionalTaxTable, emptyReductionTable, totalEstimatedIncome, taxFreeAllowance, totalEstimatedTax)
+
+      incomeTaxEstimateType mustBe SimpleTaxView
+    }
+
+    "return ComplexTaxView when the totalEstimatedIncome is greater than the taxFreeAllowance and additional complexities exist" when {
+
+      val totalEstimatedTax = 3840
+      val totalEstimatedIncome = 19200
+      val populatedAdditionalTaxTable = 1
+
+      val incomeTaxEstimateType = EstimatedIncomeTaxViewModel.taxViewType(noTaxRelief, noPotentialUnderPayment, noSSRValue,
+        noPSRValue, noDividends, populatedAdditionalTaxTable, emptyReductionTable, totalEstimatedIncome, taxFreeAllowance, totalEstimatedTax)
+
+      incomeTaxEstimateType mustBe ComplexTaxView
     }
   }
 
