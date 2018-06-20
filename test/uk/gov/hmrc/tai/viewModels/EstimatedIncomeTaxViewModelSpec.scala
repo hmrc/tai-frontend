@@ -48,6 +48,21 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       }
   }
 
+  "merge Zero bands" must {
+    "return an empty list when an empty list is supplied" in{
+      val result = EstimatedIncomeTaxViewModel.mergeZeroBands(List())
+      result mustBe List()
+    }
+
+    "return a merged list when two individual lists are supplied " in {
+      val individualList = List(Band("TaxFree",50,"0%",1000,0,"ZeroBand"),
+                                Band("TaxFree",50,"0%",1000,0,"ZeroBand"))
+
+      val mergedIndividualList = EstimatedIncomeTaxViewModel.mergeZeroBands(individualList)
+      mergedIndividualList mustBe List(Band("TaxFree",100,"0%",2000,0,"ZeroBand"))
+    }
+  }
+
   "merge Tax bands" must {
 
     "return None when an empty list is supplied." in {
