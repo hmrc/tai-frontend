@@ -78,7 +78,7 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                     </section>
 
                     <section>
-                        @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,viewModel.estimateType)
+                        @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,viewModel.estimateType, viewModel.incomeEstimate)
                     </section>
 
                     <section id="estimatedIncomeText" class="soft--top flush--bottom">
