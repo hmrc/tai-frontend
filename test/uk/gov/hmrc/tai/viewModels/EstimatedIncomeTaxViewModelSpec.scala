@@ -46,8 +46,21 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         model.taxFreeEstimate mustBe 100
         model.incomeEstimate mustBe 100
       }
+  }
 
+  "merge Zero bands" must {
+    "return an empty list when an empty list is supplied" in{
+      val result = EstimatedIncomeTaxViewModel.mergeZeroBands(List())
+      result mustBe List()
+    }
 
+    "return a merged list when two individual lists are supplied " in {
+      val individualList = List(Band("TaxFree",50,"0%",1000,0,"ZeroBand"),
+                                Band("TaxFree",50,"0%",1000,0,"ZeroBand"))
+
+      val mergedIndividualList = EstimatedIncomeTaxViewModel.mergeZeroBands(individualList)
+      mergedIndividualList mustBe List(Band("TaxFree",100,"0%",2000,0,"ZeroBand"))
+    }
   }
 
   "merge Tax bands" must {
@@ -66,7 +79,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       )
 
       val dataF = EstimatedIncomeTaxViewModel.mergedBands(taxBand,totalEstimatedIncome = 6500)
-      dataF.get mustBe Band("Band", 100, taxExplanationLink, 6500, 100, "NonZeroBand")
+      dataF.get mustBe Band("Band", 100, taxExplanationLink, 6500, 100, NonZeroBand)
     }
 
     "return only one merged tax band for other than zero% rate band" in {
@@ -78,7 +91,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       )
 
       val dataF = EstimatedIncomeTaxViewModel.mergedBands(taxBand, totalEstimatedIncome = 6500)
-      dataF.get mustBe Band("Band", 100, taxExplanationLink, 6500, 100, "NonZeroBand")
+      dataF.get mustBe Band("Band", 100, taxExplanationLink, 6500, 100, NonZeroBand)
     }
   }
 
@@ -114,6 +127,53 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
 
       val dataF = EstimatedIncomeTaxViewModel.individualOtherRateBands(taxBand, totalEstimatedIncome = 3000)
       dataF mustBe List(Band("Band", 33.33, "20%", 1000, 200, "B"), Band("Band", 66.66, "40%", 2000, 800, "D0"))
+    }
+  }
+
+  "taxViewType" must {
+
+    val taxFreeAllowance = 11500
+    val noTaxRelief = false
+    val noPotentialUnderPayment = false
+    val noSSRValue = None
+    val noPSRValue = None
+    val noDividends = None
+    val emptyAdditionalTaxTable = 0
+    val emptyReductionTable = 0
+
+    "return ZeroTaxView when the totalEstimatedIncome is less than the tax free allowance and the totalEstimateTax is zero and no additional complexities exist" in {
+
+      val earningUnderAllowance = 11000
+      val totalEstimatedTax = 0
+
+      val incomeTaxEstimateType = EstimatedIncomeTaxViewModel.taxViewType(noTaxRelief, noPotentialUnderPayment, noSSRValue,
+        noPSRValue, noDividends, emptyAdditionalTaxTable, emptyReductionTable, earningUnderAllowance, taxFreeAllowance, totalEstimatedTax)
+
+      incomeTaxEstimateType mustBe ZeroTaxView
+
+    }
+
+    "return SimpleTaxView when the totalEstimatedIncome is greater than the taxFreeAllowance and no additional complexities exist" when {
+
+      val totalEstimatedTax = 3840
+      val totalEstimatedIncome = 19200
+
+      val incomeTaxEstimateType = EstimatedIncomeTaxViewModel.taxViewType(noTaxRelief, noPotentialUnderPayment, noSSRValue,
+        noPSRValue, noDividends, emptyAdditionalTaxTable, emptyReductionTable, totalEstimatedIncome, taxFreeAllowance, totalEstimatedTax)
+
+      incomeTaxEstimateType mustBe SimpleTaxView
+    }
+
+    "return ComplexTaxView when the totalEstimatedIncome is greater than the taxFreeAllowance and additional complexities exist" when {
+
+      val totalEstimatedTax = 3840
+      val totalEstimatedIncome = 19200
+      val populatedAdditionalTaxTable = 1
+
+      val incomeTaxEstimateType = EstimatedIncomeTaxViewModel.taxViewType(noTaxRelief, noPotentialUnderPayment, noSSRValue,
+        noPSRValue, noDividends, populatedAdditionalTaxTable, emptyReductionTable, totalEstimatedIncome, taxFreeAllowance, totalEstimatedTax)
+
+      incomeTaxEstimateType mustBe ComplexTaxView
     }
   }
 
@@ -313,8 +373,8 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       )
 
       val bands = List(
-        Band("TaxFree", 16.66, "0%", 3200, 0, "ZeroBand"),
-        Band("Band", 83.33, "20%", 16000, 5000, "NonZeroBand"))
+        Band("TaxFree", 16.66, "0%", 3200, 0, ZeroBand),
+        Band("Band", 83.33, "20%", 16000, 5000, NonZeroBand))
 
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 12800))
 
@@ -331,8 +391,8 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       )
 
       val bands = List(
-        Band("TaxFree", 6.25, "0%", 3000, 0, "ZeroBand"),
-        Band("Band", 93.75, taxExplanationLink, 45000, 15000, "NonZeroBand")
+        Band("TaxFree", 6.25, "0%", 3000, 0, ZeroBand),
+        Band("Band", 93.75, taxExplanationLink, 45000, 15000, NonZeroBand)
       )
 
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 102000))
@@ -351,8 +411,8 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       )
 
       val bands = List(
-        Band("TaxFree", 2.5, "0%", 5000, 0, "ZeroBand"),
-        Band("Band", 97.5, taxExplanationLink, 195000, 65250, "NonZeroBand")
+        Band("TaxFree", 2.5, "0%", 5000, 0, ZeroBand),
+        Band("Band", 97.5, taxExplanationLink, 195000, 65250, NonZeroBand)
       )
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 5000, totalEstimatedIncome = 200000, totalEstimatedTax = 65250)
@@ -428,8 +488,8 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       )
 
       val bands = List(
-        Band("TaxFree", 34.78, "0%", 8000, 0, "ZeroBand"),
-        Band("Band", 65.21, "20%", 15000, 3000, "NonZeroBand")
+        Band("TaxFree", 34.78, "0%", 8000, 0, ZeroBand),
+        Band("Band", 65.21, "20%", 15000, 3000, NonZeroBand)
       )
 
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 13000))
@@ -447,8 +507,8 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       )
 
       val bands = List(
-        Band("TaxFree", 50, "0%", 20000, 0, "ZeroBand"),
-        Band("Band", 50, taxExplanationLink, 20000, 6000, "NonZeroBand")
+        Band("TaxFree", 50, "0%", 20000, 0, ZeroBand),
+        Band("Band", 50, taxExplanationLink, 20000, 6000, NonZeroBand)
       )
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 10000, totalEstimatedIncome = 40000, totalEstimatedTax =6000)
@@ -463,8 +523,8 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       )
 
       val bands = List(
-        Band("TaxFree", 48.27, "0%", 14000, 0, "ZeroBand"),
-        Band("Band", 51.72, "7.5%", 15000, 2000, "NonZeroBand")
+        Band("TaxFree", 48.27, "0%", 14000, 0, ZeroBand),
+        Band("Band", 51.72, "7.5%", 15000, 2000, NonZeroBand)
       )
 
       val dataF = EstimatedIncomeTaxViewModel.createBandedGraph(taxBand, taxFreeAllowanceBandSum = 11000, totalEstimatedIncome = 29000, totalEstimatedTax =2000)
@@ -500,8 +560,8 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       )
 
       val bands = List(
-        Band("TaxFree", 50.00, "0%", 20000, 0, "ZeroBand"),
-        Band("Band", 50.00, taxExplanationLink, 20000, 3750, "NonZeroBand")
+        Band("TaxFree", 50.00, "0%", 20000, 0, ZeroBand),
+        Band("Band", 50.00, taxExplanationLink, 20000, 3750, NonZeroBand)
       )
 
       val links = Map("taxExplanationScreen" -> taxExplanationLink)
@@ -520,8 +580,8 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       )
 
       val bands = List(
-        Band("TaxFree", 33.32, "0%", 20000, 0, "ZeroBand"),
-        Band("Band", 66.66, taxExplanationLink, 40000, 6750, "NonZeroBand")
+        Band("TaxFree", 33.32, "0%", 20000, 0, ZeroBand),
+        Band("Band", 66.66, taxExplanationLink, 40000, 6750, NonZeroBand)
       )
 
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 50000))
@@ -543,8 +603,8 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       )
 
       val bands = List(
-        Band("TaxFree", 16.66, "0%", 20000, 0, "ZeroBand"),
-        Band("Band", 83.33, taxExplanationLink, 100000, 9750, "NonZeroBand")
+        Band("TaxFree", 16.66, "0%", 20000, 0, ZeroBand),
+        Band("Band", 83.33, taxExplanationLink, 100000, 9750, NonZeroBand)
       )
 
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 90000))
@@ -567,8 +627,8 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
       )
 
       val bands = List(
-        Band("TaxFree", 16.66, "0%", 20000, 0, "ZeroBand"),
-        Band("Band", 83.33, taxExplanationLink, 100000, 9750, "NonZeroBand")
+        Band("TaxFree", 16.66, "0%", 20000, 0, ZeroBand),
+        Band("Band", 83.33, taxExplanationLink, 100000, 9750, NonZeroBand)
       )
 
       val nextBandMessage = Some(Messages("tai.taxCalc.nextTaxBand", 90000))

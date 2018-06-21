@@ -202,6 +202,10 @@ trait BandTypesConstants {
   val StarterSavingsRate = "SR"
   val PersonalSavingsRate = "PSR"
   val DividendZeroRate = "SDR"
+  val ZeroBand = "ZeroBand"
+  val NonZeroBand = "NonZeroBand"
+  val TaxGraph = "taxGraph"
+  val TaxFree = "TaxFree"
 }
 
 trait TaxRegionConstants {

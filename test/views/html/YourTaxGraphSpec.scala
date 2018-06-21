@@ -16,15 +16,14 @@
 
 package views.html
 
-import uk.gov.hmrc.tai.viewModels.{Band, BandedGraph, SimpleTax}
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.TaxRegionConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.{Band, BandedGraph, SimpleTaxView}
 
 class YourTaxGraphSpec extends TaiViewSpec with TaxRegionConstants {
 
   "Your tax graph" should {
-
 
     "display number, chart and tax bars" in {
       doc must haveSpanWithText("£0")
@@ -52,5 +51,5 @@ class YourTaxGraphSpec extends TaiViewSpec with TaxRegionConstants {
   private lazy val nextBandMessage = "You can have £102,000 more before your income reaches the next tax band."
   private lazy val graphData = BandedGraph("taxGraph", bands, 0, 150000, 48000, 2.00, 3000, 32.00, 15000, Some(nextBandMessage))
 
-  override def view: Html = views.html.includes.yourTaxGraph(graphData, ScottishTaxRegion,SimpleTax,48000)
+  override def view: Html = views.html.includes.yourTaxGraph(graphData, ScottishTaxRegion,SimpleTaxView,48000)
 }
