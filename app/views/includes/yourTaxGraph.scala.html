@@ -14,16 +14,25 @@
  * limitations under the License.
  *@
 
-@(graph: uk.gov.hmrc.tai.viewModels.BandedGraph, taxRegion: String)(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.tai.viewModels.{Swatch,ZeroTaxView,TaxViewType}
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.tai.util.TaxRegionConstants._
-    <h3 class="heading-medium">@Messages("tai.estimatedIncomeTax.howWeWorkedOut")</h3>
+@import uk.gov.hmrc.tai.util.ViewModelHelper.{withPoundPrefix}
 
-    <div aria-hidden="true">
+@(graph: uk.gov.hmrc.tai.viewModels.BandedGraph, taxRegion: String, taxViewType:TaxViewType,incomeEstimate:BigDecimal)(implicit request: Request[_], messages: Messages)
+
+@swatchLeftPadding=@{ graph.swatch.foldLeft(BigDecimal(100))((acc: BigDecimal, next: Swatch) => acc - next.barPercentage)}
+
+
+    <div aria-hidden="true" class="number-bar__container">
         <div class="number-bar">
             <span style="left:0">@pounds(0)</span>
-            <span id="nextHigherBand" style="right:0">@pounds(graph.nextBand)</span>
+            @if(graph.zeroIncomeTotal != graph.incomeTotal){
+                <span id="totalIncome" class="left" style="left:@graph.incomeAsPercentage%">@pounds(graph.incomeTotal)</span>
+            }else{
+                <span id="zeroIncome" class="left" style="left:100%">@pounds(graph.zeroIncomeTotal)</span>
+            }
         </div>
 
         <div class="bar tax-bar">
@@ -35,64 +44,64 @@
             @for(band <- graph.bands){
                 <div style="width:@band.barPercentage%" class="@band.colour chart-bar"></div>
             }
+            @graph.swatch.map{ swatch =>
+                <div style="width:@swatch.barPercentage%; margin-left:@swatchLeftPadding%" class="swatch chart-bar"></div>
+            }
         </div>
         @if(graph.incomeAsPercentage < 100){
             <div class="bar tax-bar">
                 <div style="left:@graph.zeroIncomeAsPercentage%; left:calc(@graph.zeroIncomeAsPercentage% - 1px);" class="tax-point"></div>
-                <div style="left:@graph.incomeAsPercentage%; left:calc(@graph.incomeAsPercentage% - 1px);" class="tax-point"></div>
             </div>
 
             <div class="number-bar">
-                @if(graph.zeroIncomeAsPercentage != 0) {
-                    <span id="zeroIncomeTotal" class="left" style="left:@graph.zeroIncomeAsPercentage%">@pounds(graph.zeroIncomeTotal)</span>
-                }
-                @if(graph.zeroIncomeTotal != graph.incomeTotal){
-                    <span id="totalIncome" class="right" style="left:@graph.incomeAsPercentage%">@pounds(graph.incomeTotal)</span>
+                @if(taxViewType == ZeroTaxView) {
+                  <span id="totalEstimateIncome" class="left" style="left:@graph.zeroIncomeAsPercentage%">@pounds(incomeEstimate)</span>
+                }else{
+                  <span id="zeroIncomeTotal" class="left" style="left:@graph.zeroIncomeAsPercentage%">@pounds(graph.zeroIncomeTotal)</span>
                 }
             </div>
         }
     </div>
 
-    <table id="tax-on-your-income">
-        <thead>
-            <tr>
-                <th>@Messages("tai.key")</th>
-                <th>@Messages("tai.item")</th>
-                <th class="text--right">@Messages("tai.percentTax")</th>
-                <th class="text--right">@Messages("tai.income.currency")</th>
-                <th class="text--right">@Messages("tai.taxCurrencySymbol")</th>
-            </tr>
-        </thead>
-        <tfoot>
-            <tr class="table__row--bold">
-                <td colspan="3">@Messages("tai.total")</td>
-                <td id="incomeTotal" class="text--right">@MoneyPounds(graph.incomeTotal,0).quantity</td>
-                <td id="taxTotal" class="text--right">@MoneyPounds(graph.taxTotal,2).quantity</td>
-            </tr>
-        </tfoot>
-        <tbody>
-            @for((band, count) <- graph.bands.zipWithIndex){
+    @if(taxViewType != ZeroTaxView){
+        <table>
+            <thead>
                 <tr>
-                    <td id="color@{count}"><span class="key-icon @band.colour"/></td>
-                    <td id="bandType@{count}">
-                        @if(taxRegion.equals(UkTaxRegion)){
-                            @Messages(s"uk.bandtype.${band.bandType}")
-                        } else {
-                            @Messages(s"scottish.bandtype.${band.bandType}")
-                        }
-                    </td>
-                    <td id="bandPercentage@{count}" class="text--right">@Html(band.tablePercentage)</td>
-                    <td id="income@{count}" class="text--right">@MoneyPounds(band.income,0).quantity</td>
-                    <td id="tax@{count}" class="text--right">@MoneyPounds(band.tax,2).quantity</td>
+                    <th>@Messages("tai.key")</th>
+                    <th>@Messages("tai.item")</th>
+                    <th class="text--right">@Messages("tai.amount")</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @for((band, count) <- graph.bands.zipWithIndex){
+                    <tr>
+                        <td id="color@{count}"><span class="key-icon @band.colour"/></td>
+                        <td id="bandType@{count}">
+                            @if(band.bandType=="ZeroBand"){
+                                @Messages("tai.bandtype.zeroBand")
+                            } else {
+                                @Messages("tai.bandtype.nonZeroBand")
+                            }
+                        </td>
+                        <td id="income@{count}" class="text--right numeric">@withPoundPrefix(MoneyPounds(band.income,0))</td>
+                    </tr>
+                }
+
+                @graph.swatch.map{ swatch =>
+                    <tr>
+                        <td id="incomeTaxBackground"><span class="key-icon income-tax"/></td>
+                        <td id="IncomeTaxEstimateType">@Messages("tai.bandtype.incomeTaxEstimate")</td>
+                        <td id="IncomeTaxEstimateAmount" class="text--right numeric">@withPoundPrefix(MoneyPounds(swatch.taxAmount,0))</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    }
 
     @graph.nextBandMessage.map { message =>
-        <ul class="keys">
+        <ul class="margin-top">
             <li class="key">
-                <span class="key-icon Band-unused"></span>
                 <span id="nextBand" class="key-description">@message</span>
             </li>
         </ul>

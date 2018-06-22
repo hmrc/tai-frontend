@@ -19,22 +19,112 @@ package views.html
 import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.Html
+import uk.gov.hmrc.play.views.formatting.Dates
+import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.{AdditionalTaxDetailRow, BandedGraph, EstimatedIncomeTaxViewModel, ReductionTaxRow}
+import uk.gov.hmrc.tai.viewModels._
+import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 
 class estimatedIncomeTaxSpec extends TaiViewSpec {
 
 
   "Estimated Income Tax Page" must {
-    behave like pageWithTitle(messages("tai.estimatedIncome.title"))
+    behave like pageWithCombinedHeader(
+      messages(
+        "tai.taxYear",
+        Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear).replace(" ", "\u00A0"),
+        Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear).replace(" ", "\u00A0")),
+        messages("tai.estimatedIncome.title"),
+        Some(messages("tai.estimatedIncome.accessiblePreHeading")
+      )
+    )
+
     behave like pageWithBackLink
 
+    "have a heading for the Total estimated Income" in {
+      doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalEstimatedIncome.subheading") + " £100")
+    }
+
+    "have a heading for the Income tax estimate" in {
+      doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.incomeTaxEstimate.subheading") + " £100")
+    }
+
     "have static messages" in {
-      doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.desc",
-        "£100",
-        viewModel.currentTaxYearRangeHtmlNonBreak,
-        "£100")).body)
+
+      doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.whyEstimate.link"))
+      doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.howYouPay.heading"))
+
+      doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.whyEstimate.desc",
+        TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))).body)
+
+      doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.howYouPay.desc",
+        messages("tai.estimatedIncome.taxCodes.link"))).body)
+
+      doc(view).select("#howYouPayDesc").html() mustBe Html(messages("tai.estimatedIncome.howYouPay.desc",
+        Link.toInternalPage(
+          id=Some("taxCodesLink"),
+          url=routes.YourTaxCodeController.taxCodes.url.toString,
+          value=Some(Messages("tai.estimatedIncome.taxCodes.link"))).toHtml)).body
+    }
+
+    "have low estimated total income messages" when {
+      "the earnings for a NINO were lower than the tax free allowance" in {
+        def lowEarningsView: Html = views.html.estimatedIncomeTax(viewModel1, Html("<Html><head></head><body>Test</body></Html>"))
+
+        doc(lowEarningsView) must haveParagraphWithText(Html(messages("tai.estimatedIncomeLow.desc",
+          messages("tai.estimatedIncome.taxFree.link"),
+          "£11,500 ")).body)
+        doc(lowEarningsView).select("#estimatedIncomeLowDesc").html() mustBe Html(Messages("tai.estimatedIncomeLow.desc",
+          Link.toInternalPage(
+            id = Some("taxFreeAmountLink"),
+            url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
+            value = Some("tai.estimatedIncome.taxFree.link")
+          ).toHtml,
+          "£11,500 ")).body
+        doc(lowEarningsView).select("#balanceEarningsDesc").html() mustBe Html(Messages("tai.estimatedIncomeEarning.desc",
+          "£2,500")).body
+      }
+    }
+
+    "have tax on your employment income section" when {
+      "the NINO falls into simple tax estimate type" in {
+        def simpleTaxView: Html = views.html.estimatedIncomeTax(viewModel2, Html("<Html><head></head><body>Test</body></Html>"))
+
+        doc(simpleTaxView) must haveH2HeadingWithText(messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading"))
+        doc(simpleTaxView) must haveParagraphWithText(Html(messages("tai.estimatedIncome.desc",
+          "£30,000",
+          messages("tai.estimatedIncome.taxFree.link"),
+          "£11,500")).body)
+
+        doc(simpleTaxView).select("#taxOnEmploymentIncomeDesc").html() mustBe Html(Messages("tai.estimatedIncome.desc",
+          "£30,000",
+          Link.toInternalPage(
+            id = Some("taxFreeAmountLink"),
+            url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
+            value = Some("tai.estimatedIncome.taxFree.link")
+          ).toHtml,
+          "£11,500")).body
+        doc(simpleTaxView).select("#employmentIncomeTaxDetails").size() mustBe 1
+        doc(simpleTaxView) must haveTableThWithIdAndText("incomeTaxBand", messages("tai.incomeTaxBand"))
+        doc(simpleTaxView) must haveTableThWithIdAndText("taxAmount", messages("tai.amount"))
+        doc(simpleTaxView) must haveTableThWithIdAndText("taxRate", messages("tai.taxRate"))
+        doc(simpleTaxView) must haveTableThWithIdAndText("tax", messages("tai.tax"))
+
+        doc(simpleTaxView).select("#bandType0").text() mustBe messages("uk.bandtype.pa")
+        doc(simpleTaxView).select("#bandType1").text() mustBe messages("uk.bandtype.B")
+        println("KRISHNA" + doc(simpleTaxView).select("#bandType2").text())
+        doc(simpleTaxView).select("#bandType2").text() mustBe messages("uk.bandtype.D0")
+        doc(simpleTaxView).select("#income0").text() mustBe "£11,500"
+        doc(simpleTaxView).select("#taxRate0").text() mustBe "0%"
+        doc(simpleTaxView).select("#tax0").text() mustBe "£0"
+        doc(simpleTaxView).select("#income1").text() mustBe "£32,010"
+        doc(simpleTaxView).select("#taxRate1").text() mustBe "20%"
+        doc(simpleTaxView).select("#tax1").text() mustBe "£6,402"
+        doc(simpleTaxView).select("#income2").text() mustBe "£36,466"
+        doc(simpleTaxView).select("#taxRate2").text() mustBe "40%"
+        doc(simpleTaxView).select("#tax2").text() mustBe "£14,586"
+      }
     }
 
     "have potential underpayment" in {
@@ -120,13 +210,34 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
 
 
   val bandedGraph = BandedGraph("taxGraph", Nil, 0, 0, 0, 0, 0, 0, 0, None)
+
+  val taxBands = List(
+    TaxBand("pa", "", 11500, 0, None, None, 0),
+    TaxBand("B", "", 32010, 6402, None, None, 20),
+    TaxBand("D0", "", 36466, 14586.4, None, None, 40))
+
   def createViewModel(hasCurrentIncome: Boolean, additionalRows: Seq[AdditionalTaxDetailRow],
                       reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
-    EstimatedIncomeTaxViewModel(hasCurrentIncome, 100, 100, 100, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
-      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, Some(100), Some(100), Some("Test"), "uk", true)
+    EstimatedIncomeTaxViewModel(
+      hasCurrentIncome, 100, 100, 100, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
+      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, Some(100), Some(100), Some("Test"), "uk", true, ZeroTaxView,List())
+  }
+
+  def createViewModel1(hasCurrentIncome: Boolean, additionalRows: Seq[AdditionalTaxDetailRow],
+                      reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
+    EstimatedIncomeTaxViewModel(hasCurrentIncome, 0, 9000, 11500, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
+      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, None, None, Some("Test"), "uk",taxViewType = ZeroTaxView,mergedTaxBands = List())
+  }
+
+  def createViewModel2(hasCurrentIncome: Boolean, additionalRows: Seq[AdditionalTaxDetailRow],
+                       reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
+    EstimatedIncomeTaxViewModel(hasCurrentIncome, 0, 30000, 11500, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
+      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, None, None, Some("Test"), "UK", taxViewType = SimpleTaxView,mergedTaxBands = taxBands)
   }
 
   val viewModel = createViewModel(true, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])
+  val viewModel1 = createViewModel1(true, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])
+  val viewModel2 = createViewModel2(true, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])
 
 
   override def view: Html = views.html.estimatedIncomeTax(viewModel, Html("<Html><head></head><body>Test</body></Html>"))

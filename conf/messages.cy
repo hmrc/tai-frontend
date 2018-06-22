@@ -756,7 +756,7 @@ tai.taxcode.X=Mae X yn golygu bod eich treth wedi''i seilio ar yr hyn a delir i 
 tai.taxFreeAmount.table.columnTwoHeader=Swm
 scottish.bandtype.TaxedIncome=Incwm wedi''i drethu
 tai.addEmployment.employmentPayrollNumber.customGaTitle=A ydych yn gwybod beth yw''ch rhif cyflogres ar gyfer y gyflogaeth hon?
-tai.estimatedIncome.desc=Amcangyfrifwn y bydd eich incwm trethadwy tua {0} ar gyfer y flwyddyn dreth o {1}. Mae''r {2} cyntaf yn rhydd o dreth, dyma''ch lwfans rhydd o dreth. Byddwch yn talu Treth Incwm ar unrhyw incwm dros y swm hwn.
+
 tai.whatDoYouWantToDo.chooseOneOption=Dewiswch un opsiwn
 uk.bandtype.B=Treth Incwm ar y gyfradd sylfaenol
 tai.bbsi.account.whatHappensNext.desc2=Anfonir manylion y llog a gawsoch mewn gwirionedd ar gyfer Ebrill {0} i Ebrill {1} ​​atom ar ôl 5 Ebrill {1}. Byddwn yn defnyddio''r ffigurau gwirioneddol i gyfrifo faint o Dreth Incwm y dylech fod wedi''i thalu yn ystod y flwyddyn honno.
@@ -1151,7 +1151,6 @@ tai.remove.company.benefit.total.value.customGaTitle=Beth oedd gwerth y buddiant
 tai.updateEmployment.whatDoYouWantToTellUs.customGaTitle=Beth ydych am roi gwybod i ni am y cyflogwr hwn?
 
 ##Estimated Income Tax Graph
-tai.taxCalc.nextTaxBand=Gallwch gael £{0} yn fwy cyn i''ch incwm gyrraedd yr haen treth nesaf.
 tai.taxedIncome.desc=Incwm wedi''i drethu
 tai.taxCalc.UnderpaymentPreviousYear.title=Tandaliad o flynyddoedd blaenorol
 tai.taxCalc.OutstandingDebt.title=Dyled sydd heb ei thalu o''r flwyddyn flaenorol
@@ -1160,6 +1159,28 @@ tai.taxCalc.childBenefit.title=Budd-dal Plant
 tai.taxCalc.excessGiftAidTax.title=Treth Rhodd Cymorth ychwanegol
 tai.taxCalc.excessWidowsAndOrphans.title=Gweddwon a Phlant Amddifad ychwanegol
 tai.taxCalc.pensionPaymentsAdjustment.title=Addasiad Taliadau Pensiwn
+tai.taxCalc.nextTaxBand=Gallwch ennill £{0} yn fwy cyn i''ch incwm gyrraedd yr haen treth nesaf.
+
+tai.tax=Treth
+tai.taxRate=Cyfradd Dreth
+tai.amount=Swm
+tai.incomeTax.totalEstimatedIncome.subheading=Cyfanswm incwm amcangyfrifedig
+tai.incomeTaxBand=Haen Treth Incwm
+tai.bandtype.zeroBand=Incwm nad ydych yn talu treth arno
+tai.bandtype.zeroBand.incomeDetails=Swm rhydd o dreth ar gyfer cyflogaeth
+tai.bandtype.nonZeroBand=Incwm yr ydych yn talu treth arno
+tai.bandtype.nonZeroBand.incomeDetails=Cyfradd Sylfaenol
+tai.bandtype.incomeTaxEstimate=Amcangyfrif o''r Dreth Incwm
+
+tai.estimatedIncome.desc=Mae cyfanswm eich incwm o gyflogaeth wedi ei amcangyfrif yn {0} am y flwyddyn dreth hon. Mae gennych {1} am eich incwm cyflogaeth. Mae hyn yn golygu bod y {2} cyntaf o''ch enillion o gyflogaeth yn rhydd o dreth.
+tai.estimatedIncome.taxOnEmploymentIncome.subHeading=Treth ar eich incwm cyflogaeth
+tai.estimatedIncome.taxFree.link=swm rhydd o dreth
+tai.estimatedIncome.taxCodes.link=Eich cod treth
+tai.estimatedIncome.whyEstimate.link=Pam mai amcangyfrif yw hwn
+tai.estimatedIncome.howYouPay.heading=Sut rydych yn talu’ch treth
+tai.estimatedIncomeLow.desc=Rydym yn amcangyfrif y byddwch yn ennill llai na’ch {0} o {1}, mae hyn yn golygu na ddylech dalu unrhyw Dreth Incwm ar eich enillion y flwyddyn hon.
+tai.estimatedIncomeEarning.desc=Gallwch ennill {0} yn fwy cyn i chi gyrraedd haen treth.
+
 
 #Tax paid elsewhere
 tai.taxCollected.atSource.title=Gostyngiadau

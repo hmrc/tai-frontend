@@ -1,16 +1,16 @@
 #General
 tai.income=Employer or pension provider
-tai.percentTax=Tax rate
-tai.income.currency=Amount (£)
+tai.amount=Amount
 tai.key=Key
 tai.item=Item
+tai.incomeTaxBand=Income Tax Band
+tai.taxRate=Tax Rate
+tai.tax=Tax
 tai.incomeSources=Income sources
 tai.pensionSources=Pension provider
 tai.taxCode=Tax code
-tai.taxCurrencySymbol=Tax (£)
 tai.taxFree.total=Total
 tai.taxYear={0} to {1}
-tai.total=Total
 tai.back-link.upper=Back
 tai.backToHome-link.upper=Back to account home
 tai.change=Change
@@ -926,9 +926,16 @@ tai.income.calculation.default.estimate.pension=We’ve estimated your annual ta
 
 tai.estimatedIncome.title=Your PAYE Income Tax estimate
 tai.estimatedIncome.accessiblePreHeading=This section is your income tax estimate for
-tai.estimatedIncome.whyEstimate.link=Why is this an estimate?
+tai.estimatedIncome.whyEstimate.link=Why this is an estimate
 tai.estimatedIncome.whyEstimate.desc=The amount of tax you pay depends on your total income for the whole tax year. We can’t give an exact figure because we won’t know about all your income until after the tax year ends on {0}.
-tai.estimatedIncome.desc=We estimate that your taxable income will be about {0} for the tax year from {1}. The first {2} of this is tax free; this is your tax-free allowance. You will pay Income Tax on any income over this amount.
+tai.estimatedIncome.taxOnEmploymentIncome.subHeading=Tax on your employment income
+tai.estimatedIncome.desc=Your total income from employment is estimated at {0} this tax year. You have a {1} for your employment income. This means the first {2} of your employment earnings are tax free.
+tai.estimatedIncomeLow.desc=We estimate that you will earn less than your {0} of {1}, this means you should pay no income Tax on your earnings this year.
+tai.estimatedIncome.taxFree.link=tax-free amount
+tai.estimatedIncome.taxCodes.link=Your tax code
+tai.estimatedIncome.howYouPay.heading=How you pay your tax
+tai.estimatedIncome.howYouPay.desc=Your employer or pension provider takes off Income Tax before they pay you. This is called Pay As You Earn (PAYE). {0} tells them how much tax-free income you can have before they deduct Income Tax.
+tai.estimatedIncomeEarning.desc=You can earn {0} more before you reach a tax band.
 tai.estimatedIncome.taxRelief=Because you’ve made a gift aid payment or personal pension payment you can have more income at a lower tax rate. This is called {0}.
 tai.estimatedIncome.taxRelief.link=Tax Relief
 tai.estimatedIncome.additionalTax.title=Additional tax due
@@ -941,6 +948,7 @@ tai.tables.column1=Description
 tai.tables.column2=Tax (£)
 tai.tables.total=Total
 tai.incomeTax.incomeTaxEstimate.subheading=Income tax estimate
+tai.incomeTax.totalEstimatedIncome.subheading=Total estimated income
 tai.incomeTax.taxFree.link=Check your tax-free amount
 tai.incomeTax.taxCodes.link=Check your tax codes
 tai.incomeTax.calculated.title=How your PAYE Income Tax is calculated
@@ -1016,6 +1024,12 @@ tai.income.calculation.rtiUnavailableCurrentYear.message.contact=You do not need
 tai.label.print=Print this page
 tai.label.paye=Taxable Income
 tai.label.back=Back
+
+tai.bandtype.zeroBand=Income you don’t pay tax on
+tai.bandtype.nonZeroBand=Income you do pay tax on
+tai.bandtype.incomeTaxEstimate=Income Tax estimate
+tai.bandtype.zeroBand.incomeDetails=Tax-free amount for employment
+tai.bandtype.nonZeroBand.incomeDetails=Basic Rate
 
 #UK Band types
 uk.bandtype.B=Income basic rate
@@ -1310,7 +1324,7 @@ tai.benefits.updateOrRemove.decision.radio.yes=Yes, I currently get this benefit
 tai.benefits.updateOrRemove.decision.radio.no=No, I do not get this benefit any more
 
 ##Estimated Income Tax Graph
-tai.taxCalc.nextTaxBand=You can have £{0} more before your income reaches the next tax band.
+tai.taxCalc.nextTaxBand=You can earn £{0} more before your income reaches the next tax band.
 tai.taxedIncome.desc=TaxedIncome
 tai.taxCalc.UnderpaymentPreviousYear.title=Underpayment from previous years
 tai.taxCalc.OutstandingDebt.title=Outstanding debt from previous year

@@ -29,6 +29,11 @@ import views.html.includes.link
 
 import scala.math.BigDecimal
 
+sealed trait TaxViewType
+case object ZeroTaxView extends TaxViewType
+case object SimpleTaxView extends TaxViewType
+case object ComplexTaxView extends TaxViewType
+
 case class AdditionalTaxDetailRow(
                                    description: String,
                                    amount: BigDecimal,
@@ -57,7 +62,9 @@ case class EstimatedIncomeTaxViewModel(
                                         psrValue: Option[BigDecimal],
                                         dividendsMessage: Option[String],
                                         taxRegion: String,
-                                        hasTaxRelief: Boolean = false
+                                        hasTaxRelief: Boolean = false,
+                                        taxViewType:TaxViewType,
+                                        mergedTaxBands:List[TaxBand]
                                       ) extends ViewModelHelper
 
 object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants {
@@ -68,7 +75,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     val personalAllowance = personalAllowanceAmount(codingComponents)
     val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = retrieveTaxBands(taxBands.toList :+ paBand)
-    val graph = createBandedGraph(mergedTaxBands, personalAllowance, taxAccountSummary.taxFreeAllowance)
+    val graph = createBandedGraph(mergedTaxBands, personalAllowance, taxAccountSummary.taxFreeAllowance, taxAccountSummary.totalEstimatedIncome, taxAccountSummary.totalEstimatedTax)
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
     val additionalTaxTableTotal = additionalTaxTable.map(_.amount).sum
     val reductionTaxTable = createReductionsTable(codingComponents, totalTax)
@@ -79,6 +86,9 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     val psrValue = fetchIncome(mergedTaxBands, PersonalSavingsRate)
     val dividends = dividendsMessage(nonTaxCodeIncome, totalTax)
     val taxRegion = findTaxRegion(taxCodeIncomes)
+    val taxView = taxViewType(hasTaxRelief(totalTax),hasPotentialUnderPayment,ssrValue,psrValue,dividends,
+      additionalTaxTable.size,reductionTaxTable.size, taxAccountSummary.totalEstimatedIncome, taxAccountSummary.taxFreeAllowance,
+      taxAccountSummary.totalEstimatedTax)
 
     EstimatedIncomeTaxViewModel(taxCodeIncomes.nonEmpty,
       taxAccountSummary.totalEstimatedTax,
@@ -95,8 +105,26 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
       psrValue,
       dividends,
       taxRegion,
-      hasTaxRelief(totalTax))
+      hasTaxRelief(totalTax),
+      taxView,
+      mergedTaxBands)
   }
+
+    def taxViewType(hasTaxRelief:Boolean,hasPotentialUnderPayment:Boolean,ssrValue:Option[BigDecimal],psrValue:Option[BigDecimal],
+                    dividends:Option[String],additionalTaxTableSize:Int, reductionTableSize:Int, totalEstimatedIncome:BigDecimal,
+                    taxFreeAllowance:BigDecimal,totalEstimatedTax:BigDecimal): TaxViewType ={
+
+      hasTaxRelief || hasPotentialUnderPayment || ssrValue.isDefined || psrValue.isDefined || dividends.isDefined || additionalTaxTableSize > 0 || reductionTableSize > 0 match {
+        case true => ComplexTaxView
+        case false => {
+          (totalEstimatedIncome < taxFreeAllowance) && totalEstimatedTax == 0 match {
+            case true => ZeroTaxView
+            case false => SimpleTaxView
+          }
+        }
+      }
+
+    }
 
   def fetchIncome(mergedTaxBands: List[TaxBand], bandType: String)(implicit messages: Messages): Option[BigDecimal] = {
     mergedTaxBands.find(band => band.bandType == bandType && band.income > 0).map(_.income)
@@ -146,25 +174,42 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
 
 
   def createBandedGraph(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None,
-                        taxFreeAllowanceBandSum: BigDecimal = 0)(implicit messages: Messages): BandedGraph = {
+                        taxFreeAllowanceBandSum: BigDecimal = 0, totalEstimatedIncome: BigDecimal,
+                        totalEstimatedTax: BigDecimal)(implicit messages: Messages): BandedGraph = {
     taxBands match {
-      case Nil => BandedGraph("taxGraph")
-      case taxbands => createGraph(taxbands, personalAllowance, taxFreeAllowanceBandSum)
+      case Nil => BandedGraph(TaxGraph)
+      case taxbands => createGraph(taxbands, personalAllowance, taxFreeAllowanceBandSum, totalEstimatedIncome, totalEstimatedTax)
     }
   }
 
   private def createGraph(taxbands: List[TaxBand], personalAllowance: Option[BigDecimal] = None,
-                          taxFreeAllowanceBandSum: BigDecimal = 0)(implicit messages: Messages): BandedGraph = {
-    val (individualBand: List[Band], mergedBand: Option[Band])  = {
-      if(taxbands.exists(_.rate == 0)){
-        (individualBands(taxbands, personalAllowance, taxFreeAllowanceBandSum), mergedBands(taxbands, personalAllowance, taxFreeAllowanceBandSum))
-      } else{
-        (individualOtherRateBands(taxbands, None, taxFreeAllowanceBandSum), None)
+                          taxFreeAllowanceBandSum: BigDecimal = 0,totalEstimatedIncome: BigDecimal,
+                          totalEstimatedTax: BigDecimal)(implicit messages: Messages): BandedGraph = {
+    val (individualBand: List[Band], mergedBand: Option[Band], swatch: Option[Swatch])  = {
+
+      (totalEstimatedTax == 0, taxbands.exists(_.rate == 0)) match {
+        case(true,true) => {(
+          individualBands(taxbands, personalAllowance, taxFreeAllowanceBandSum, totalEstimatedIncome),
+          None,
+          None
+        )}
+        case(false,true) => {(
+          individualBands(taxbands, personalAllowance, taxFreeAllowanceBandSum, totalEstimatedIncome),
+          mergedBands(taxbands, personalAllowance, taxFreeAllowanceBandSum,totalEstimatedIncome),
+          Some(createSwatch(totalEstimatedTax, totalEstimatedIncome))
+          )}
+        case(false,false) => {(
+          individualOtherRateBands(taxbands, None, taxFreeAllowanceBandSum, totalEstimatedIncome),
+          None,
+          Some(createSwatch(totalEstimatedTax,totalEstimatedIncome))
+          )}
       }
     }
 
+    val mergedIndividualBands = mergeZeroBands(individualBand)
+
     val allBands = mergedBand match {
-      case Some(band) => individualBand :+ band
+      case Some(band) => mergedIndividualBands :+ band
       case _ => individualBand
     }
 
@@ -173,7 +218,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     val nextBandMessage = createNextBandMessage(nextHigherBand - incomeTotal)
     val zeroRateBands = individualBand.filter(_.tax == BigDecimal(0))
 
-    BandedGraph("taxGraph",
+    BandedGraph(TaxGraph,
       allBands,
       nextBand = nextHigherBand,
       incomeTotal = incomeTotal,
@@ -181,20 +226,26 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
       zeroIncomeTotal = zeroRateBands.map(_.income).sum,
       incomeAsPercentage = allBands.map(_.barPercentage).sum,
       taxTotal = allBands.map(_.tax).sum,
-      nextBandMessage = nextBandMessage
+      nextBandMessage = nextBandMessage,
+      swatch = swatch
     )
   }
 
   def individualBands(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None,
-                      taxFreeAllowanceBandSum: BigDecimal = 0)(implicit messages: Messages): List[Band] =
-    for (taxBand <- taxBands.filter(_.rate == 0)) yield Band("TaxFree", calcBarPercentage(taxBand.income, taxBands, personalAllowance, taxFreeAllowanceBandSum),
+                      taxFreeAllowanceBandSum: BigDecimal = 0,totalEstimatedIncome: BigDecimal)(implicit messages: Messages): List[Band] =
+    for (taxBand <- taxBands.filter(_.rate == 0)) yield Band(TaxFree, calcBarPercentage(taxBand.income, taxBands, personalAllowance, taxFreeAllowanceBandSum,totalEstimatedIncome),
       "0%", taxBand.income, taxBand.tax, taxBand.bandType)
 
   def individualOtherRateBands(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None,
-                               taxFreeAllowanceBandSum: BigDecimal = 0)(implicit messages: Messages): List[Band] =
-    for (taxBand <- taxBands) yield Band("Band", calcBarPercentage(taxBand.income, taxBands, personalAllowance, taxFreeAllowanceBandSum),
+                               taxFreeAllowanceBandSum: BigDecimal = 0, totalEstimatedIncome: BigDecimal)(implicit messages: Messages): List[Band] =
+    for (taxBand <- taxBands) yield Band("Band", calcBarPercentage(taxBand.income, taxBands, personalAllowance, taxFreeAllowanceBandSum,totalEstimatedIncome),
       s"${taxBand.rate}%", taxBand.income, taxBand.tax, taxBand.bandType)
 
+
+  def createSwatch(totalEstimatedTax: BigDecimal, totalEstimatedIncome: BigDecimal): Swatch ={
+    val swatchPercentage = ((totalEstimatedTax / totalEstimatedIncome) * 100).setScale(2, BigDecimal.RoundingMode.FLOOR)
+    Swatch(swatchPercentage,totalEstimatedTax)
+  }
 
   def getUpperBand(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None,
                    taxFreeAllowanceBandSum: BigDecimal = 0)(implicit messages: Messages): BigDecimal = {
@@ -224,29 +275,47 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
   }
 
   def calcBarPercentage(incomeBand: BigDecimal, taxBands: List[TaxBand],
-                        personalAllowance: Option[BigDecimal] = None, taxFreeAllowanceBandSum: BigDecimal = 0)(implicit messages: Messages): BigDecimal = {
+                        personalAllowance: Option[BigDecimal] = None, taxFreeAllowanceBandSum: BigDecimal = 0,totalEstimatedIncome: BigDecimal)(implicit messages: Messages): BigDecimal = {
     taxBands match {
       case Nil => BigDecimal(0)
       case _ =>
-        val percentage = (incomeBand * 100) / getUpperBand(taxBands, personalAllowance, taxFreeAllowanceBandSum)
+        val percentage = if(incomeBand > totalEstimatedIncome) percentageForIncomeBandAboveIncomeAmount(totalEstimatedIncome,taxBands,personalAllowance) else percentageForIncomeBandLowerThanIncomeAmount(totalEstimatedIncome,incomeBand)
         percentage.setScale(2, BigDecimal.RoundingMode.FLOOR)
     }
   }
 
+  private def percentageForIncomeBandAboveIncomeAmount(totalEstimatedIncome:BigDecimal, taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None, taxFreeAllowanceBandSum: BigDecimal = 0)(implicit messages: Messages):BigDecimal = {
+    val upperBand = getUpperBand(taxBands, personalAllowance, taxFreeAllowanceBandSum)
+    (totalEstimatedIncome * 100) / upperBand
+  }
+
+  private def percentageForIncomeBandLowerThanIncomeAmount(totalEstimatedIncome:BigDecimal,incomeBand: BigDecimal):BigDecimal = {
+    (incomeBand * 100) / totalEstimatedIncome
+  }
+
   def mergedBands(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None,
-                  taxFreeAllowanceBandSum: BigDecimal = 0)(implicit messages: Messages): Option[Band] = {
+                  taxFreeAllowanceBandSum: BigDecimal = 0,totalEstimatedIncome: BigDecimal)(implicit messages: Messages): Option[Band] = {
     val nonZeroBands = taxBands.filter(_.rate != 0)
 
     Option(nonZeroBands.nonEmpty).collect {
       case true =>
         val (tablePercentage, bandType, incomeSum) = getBandValues(nonZeroBands)
 
-        Band("Band", calcBarPercentage(incomeSum, taxBands, personalAllowance, taxFreeAllowanceBandSum),
+        Band("Band", calcBarPercentage(incomeSum, taxBands, personalAllowance, taxFreeAllowanceBandSum,totalEstimatedIncome: BigDecimal),
           tablePercentage = tablePercentage,
           income = incomeSum,
           tax = nonZeroBands.map(_.tax).sum,
           bandType = bandType
         )
+    }
+  }
+
+  def mergeZeroBands(bands: List[Band]): List[Band] ={
+
+    if(bands.size > 0){
+      List(Band(TaxFree,bands.map(_.barPercentage).sum,"0%",bands.map(_.income).sum,0,ZeroBand))
+    }else{
+      bands
     }
   }
 
@@ -257,9 +326,9 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
         altCopy = Some(Messages("tai.mergedTaxBand.link.wording")),
         id = Some("taxExplanation"),
         url = routes.TaxExplanationController.taxExplanationPage().toString
-      ).body, "TaxedIncome", nonZeroBands.map(_.income).sum)
+      ).body, NonZeroBand, nonZeroBands.map(_.income).sum)
     } else {
-      nonZeroBands.map(otherBand => (otherBand.rate.toString() + "%", otherBand.bandType, otherBand.income)).head
+      nonZeroBands.map(otherBand => (otherBand.rate.toString() + "%", NonZeroBand, otherBand.income)).head
     }
   }
 

@@ -28,7 +28,8 @@ case class BandedGraph(
                         zeroIncomeTotal: BigDecimal =0,
                         incomeAsPercentage: BigDecimal =0,
                         taxTotal:BigDecimal =0,
-                        nextBandMessage: Option[String] = None
+                        nextBandMessage: Option[String] = None,
+                        swatch:Option[Swatch] = None
                       )
 
 case class Band(
@@ -40,8 +41,14 @@ case class Band(
                  bandType: String
                )
 
+case class Swatch(barPercentage:BigDecimal = 0,taxAmount:BigDecimal = 0)
+
 object Band {
   implicit val format = Json.format[Band]
+}
+
+object Swatch{
+  implicit val format = Json.format[Swatch]
 }
 
 object BandedGraph {
