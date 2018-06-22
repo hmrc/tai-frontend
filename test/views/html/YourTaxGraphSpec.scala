@@ -16,22 +16,17 @@
 
 package views.html
 
-import uk.gov.hmrc.tai.viewModels.{Band, BandedGraph}
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.TaxRegionConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.{Band, BandedGraph, SimpleTaxView}
 
 class YourTaxGraphSpec extends TaiViewSpec with TaxRegionConstants {
 
   "Your tax graph" should {
 
-    "display heading" in {
-      doc must haveHeadingH3WithText(messages("tai.estimatedIncomeTax.howWeWorkedOut"))
-    }
-
     "display number, chart and tax bars" in {
       doc must haveSpanWithText("£0")
-      doc must haveSpanWithText("£150,000")
       doc must haveSpanWithText("£48,000")
       doc must haveSpanWithText("£3,000")
     }
@@ -39,39 +34,7 @@ class YourTaxGraphSpec extends TaiViewSpec with TaxRegionConstants {
     "display graph table header" in {
       doc must haveThWithText(messages("tai.key"))
       doc must haveThWithText(messages("tai.item"))
-      doc must haveThWithText(messages("tai.percentTax"))
-      doc must haveThWithText(messages("tai.income.currency"))
-      doc must haveThWithText(messages("tai.taxCurrencySymbol"))
-    }
-
-
-    "display graph details" when {
-      "user is scottish" in {
-        doc must haveTdWithText(messages("scottish.bandtype.S"))
-        doc must haveTdWithText("0%")
-        doc must haveTdWithText(messages("scottish.bandtype.TaxedIncome"))
-        doc must haveTdWithText("Check in more detail")
-        doc must haveTdWithText(messages("scottish.bandtype.PSR"))
-        doc must haveTdWithText(messages("scottish.bandtype.SR"))
-      }
-
-      "user is UK user" in {
-        def view: Html = views.html.includes.yourTaxGraph(graphData, UkTaxRegion)
-
-        val ukDoc = doc(view)
-        ukDoc must haveTdWithText(messages("uk.bandtype.S"))
-        ukDoc must haveTdWithText("0%")
-        ukDoc must haveTdWithText(messages("uk.bandtype.TaxedIncome"))
-        ukDoc must haveTdWithText("Check in more detail")
-        ukDoc must haveTdWithText(messages("uk.bandtype.PSR"))
-        ukDoc must haveTdWithText(messages("uk.bandtype.SR"))
-      }
-    }
-
-    "display table footer" in {
-      doc must haveTdWithText(messages("tai.total"))
-      doc must haveTdWithText("48,000")
-      doc must haveTdWithText("15,000.00")
+      doc must haveThWithText(messages("tai.amount"))
     }
 
     "display next band message" in {
@@ -88,5 +51,5 @@ class YourTaxGraphSpec extends TaiViewSpec with TaxRegionConstants {
   private lazy val nextBandMessage = "You can have £102,000 more before your income reaches the next tax band."
   private lazy val graphData = BandedGraph("taxGraph", bands, 0, 150000, 48000, 2.00, 3000, 32.00, 15000, Some(nextBandMessage))
 
-  override def view: Html = views.html.includes.yourTaxGraph(graphData, ScottishTaxRegion)
+  override def view: Html = views.html.includes.yourTaxGraph(graphData, ScottishTaxRegion,SimpleTaxView,48000)
 }
