@@ -1224,7 +1224,7 @@ tai.previous.year.underpayment.para2=Ar gyfer y flwyddyn dreth o 6 Ebrill {0} i 
 tai.previous.year.underpayment.para3=Mae’ch Lwfans Personol wedi’i ostwng £{0} er mwyn casglu’r £{1} sy’n dal i fod yn ddyledus.
 tai.previous.year.underpayment.para4=Mae hyn yn golygu y byddwch yn talu treth ar gyfradd o 20% ar £{0} ychwanegol o’ch incwm. Caiff y swm ei rannu ar draws y flwyddyn dreth a’i gasglu drwy randaliadau cyfartal.
 tai.previous.year.underpayment.para5=Mae’ch cod treth wedi cael ei addasu ar gyfer hyn.
-tai.previous.year.underpayment.return=Yn ôl i'ch swm rhydd o dreth
+tai.previous.year.underpayment.return=Yn ôl i’ch swm rhydd o dreth
 
 tai.paye.lastTaxYear.table.reader.link=Gwirio manylion y cyflog a anfonwyd atom gan {0}
 tai.incomeTaxComparison.tellAboutChange.companyBenefitsReaderText=Rhoi gwybod i ni am fuddiannau cwmni.
