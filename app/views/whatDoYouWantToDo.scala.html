@@ -22,6 +22,8 @@
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
 
+@import includes.forms.card
+
 @(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData], model: WhatDoYouWantToDoViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @radioSequence = @{
@@ -53,7 +55,13 @@
                 }
                 @form(action=controllers.routes.WhatDoYouWantToDoController.handleWhatDoYouWantToDoPage, args = Symbol("data-journey-dynamic-radios") -> "") {
 
-                    @{inputRadioGroupStyling(
+                @card(
+                    url = Some("/check-income-tax/income-summary"),
+                    heading = "Current Tax Year",
+                    bodyContent = Some(Html("<p>Check your current PAYE income</p>"))
+                )
+
+                @{inputRadioGroupStyling(
                         field=wdywtdForm("taxYears"),
                         radioOptions=radioSequence,
                         legend=Messages("tai.whatDoYouWantToDo.legend"),
