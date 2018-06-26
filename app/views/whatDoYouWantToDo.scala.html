@@ -18,26 +18,17 @@
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
-@import includes.forms.inputRadioGroupStyling
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
-
+@import uk.gov.hmrc.tai.model.TaxYear
 @import includes.forms.card
 
 @(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData], model: WhatDoYouWantToDoViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@radioSequence = @{
-    val mandatory = Seq(("currentTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio2",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")), ("lastTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio3")) )
-    if(model.isCyPlusOneEnabled) { ("nextTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio1")) +: mandatory  } else { mandatory }
-}
-    @*"nextTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio1"*@
-    @*"lastTaxYear" -> Messages("tai.WhatDoYouWantToDo.radio3"*@
 @main(
     title = Messages("tai.whatDoYouWantToDo.heading"),
     user = Some(user),
     gaCustomTitle = None) {
-
-    @errorSummary(Messages("tai.income.error.form.summary"), wdywtdForm)
 
     <header class="page-header">
         <h1 class="heading-xlarge" id="whatDoYouWantToDoTitle">@Messages("tai.whatDoYouWantToDo.heading")</h1>
@@ -60,42 +51,26 @@
 
                     @card(
                         url = Some("/check-income-tax/income-summary"),
-                        heading = "Current Tax Year",
-                        bodyContent = Some("Check your current PAYE income sources and Income Tax details for the current tax year, 2018 to 2019.")
+                        heading = Messages("current.tax.year"),
+                        bodyContent = Some(Messages("check.current.income", (TaxYearResolver.currentTaxYear-1).toString, TaxYearResolver.currentTaxYear.toString))
                     )
 
-                    @card(
-                        url = Some("/check-income-tax/income-tax-comparison"),
-                        heading = "Next Year",
-                        bodyContent = Some("Check your estimated PAYE Income Tax details for next year.")
-                    )
+                    @if(model.isCyPlusOneEnabled) {
+                        @card(
+                            url = Some("/check-income-tax/income-tax-comparison"),
+                            heading = Messages("next.year"),
+                            bodyContent = Some(Messages("check.estimated.income"))
+                        )
+                    }
 
                     @card(
-                        url = Some("/check-income-tax/historic-paye/2017"),
-                        heading = "Earlier",
-                        bodyContent = Some("Check the tax you paid on you earnings in previous years.")
+                        url = Some(s"/check-income-tax/historic-paye/${(TaxYearResolver.currentTaxYear-1).toString}"),
+                        heading = Messages("earlier"),
+                        bodyContent = Some(Messages("check.tax.previous.years"))
                     )
 
                 </div>
 
-
-                @{inputRadioGroupStyling(
-                        field=wdywtdForm("taxYears"),
-                        radioOptions=radioSequence,
-                        legend=Messages("tai.whatDoYouWantToDo.legend"),
-                        legendHint=None,
-                        ('_groupDivClass, "form-group" ),
-                        ('_legendClass, "subsection"),
-                        ('_legendSpanClass, "heading-medium display-block flush--top"),
-                        ('_fieldsetAttributes, "id=taxYears" ),
-                        ('_radioOption1Attributes, Html("""data-journey-click="radio - select:What do you want to do?:next year" data-journey-val="next year"""") ),
-                        ('_radioOption2Attributes, Html("""data-journey-click="radio - select:What do you want to do?:current tax year, 2017 to 2018" data-journey-val="current tax year, 2017 to 2018"""") ),
-                        ('_radioOption3Attributes, Html("""data-journey-click="radio - select:What do you want to do?:earlier" data-journey-val="earlier"""") )
-                    )}
-
-                    <p class="subsection">
-                        <input type="submit" class="button" value='@Messages("tai.WhatDoYouWantToDo.submit")' data-journey-click="form - submit:What do you want to do?:" data-journey-target />
-                    </p>
                 }
 
             </div>

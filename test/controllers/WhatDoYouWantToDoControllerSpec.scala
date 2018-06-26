@@ -53,25 +53,25 @@ import scala.util.Random
 
 class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with JsoupMatchers{
 
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+        implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  "Calling the What do you want to do page method" must {
-    "call whatDoYouWantToDoPage() successfully with an authorised session" when {
-      "cy plus one data is available and cy plus one is enabled" in {
-        val testController = createSUT(isCyPlusOneEnabled = true)
-        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
-          TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
-        )
+        "Calling the What do you want to do page method" must {
+          "call whatDoYouWantToDoPage() successfully with an authorised session" when {
+            "cy plus one data is available and cy plus one is enabled" in {
+              val testController = createSUT(isCyPlusOneEnabled = true)
+              when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+              when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+                TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
+              )
 
-        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        val doc = Jsoup.parse(contentAsString(result))
+              val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+              val doc = Jsoup.parse(contentAsString(result))
 
-        status(result) mustBe OK
+              status(result) mustBe OK
 
-        doc.title() must include(Messages("tai.whatDoYouWantToDo.heading"))
-        doc.select("fieldset input").size mustBe 3
-      }
+              doc.title() must include(Messages("tai.whatDoYouWantToDo.heading"))
+              doc.getElementsByClass("card").size mustBe 3
+            }
 
     }
 
@@ -307,7 +307,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         status(result) mustBe OK
 
         doc.title() must include(Messages("tai.whatDoYouWantToDo.heading"))
-        doc.select("fieldset input").size mustBe 2
+        doc.getElementsByClass("card").size mustBe 2
       }
 
       "cy plus one data is available and cy plus one is disabled" in {
@@ -320,7 +320,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         status(result) mustBe OK
 
         doc.title() must include(Messages("tai.whatDoYouWantToDo.heading"))
-        doc.select("fieldset input").size mustBe 2
+        doc.getElementsByClass("card").size mustBe 2
       }
 
       "cy plus one data is not available and cy plus one is disabled" in {
@@ -333,7 +333,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         status(result) mustBe OK
 
         doc.title() must include(Messages("tai.whatDoYouWantToDo.heading"))
-        doc.select("fieldset input").size mustBe 2
+        doc.getElementsByClass("card").size mustBe 2
       }
     }
   }
@@ -427,63 +427,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       }
     }
 
-    "render the what do you want to do page with form errors" when {
-      "no value is present in taxYears and cy plus data is available" in {
-        val testController = createSUT(isCyPlusOneEnabled = true)
-
-        val request = FakeRequest("POST", "").withFormUrlEncodedBody("taxYears" -> "").withSession(
-          SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
-        )
-
-        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
-          TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
-        )
-
-        val result = testController.handleWhatDoYouWantToDoPage()(request)
-
-        status(result) mustBe BAD_REQUEST
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.select("fieldset input").size mustBe 3
-      }
-
-      "no value is present in taxYears and cy plus data is not available" in {
-        val testController = createSUT(isCyPlusOneEnabled = true)
-
-        val request = FakeRequest("POST", "").withFormUrlEncodedBody("taxYears" -> "").withSession(
-          SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
-        )
-
-        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
-          TaiNotFoundResponse("Not found")
-        ))
-
-        val result = testController.handleWhatDoYouWantToDoPage()(request)
-
-        status(result) mustBe BAD_REQUEST
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.select("fieldset input").size mustBe 2
-      }
-      "no value is present in taxYears and cy plus is turned off" in {
-        val testController = createSUT(isCyPlusOneEnabled = false)
-
-        val request = FakeRequest("POST", "").withFormUrlEncodedBody("taxYears" -> "").withSession(
-          SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
-        )
-
-        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
-          TaiNotFoundResponse("Not found")
-        ))
-
-        val result = testController.handleWhatDoYouWantToDoPage()(request)
-
-        status(result) mustBe BAD_REQUEST
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.select("fieldset input").size mustBe 2
-      }
-    }
   }
 
   "employments retrieval for CY-1" must {

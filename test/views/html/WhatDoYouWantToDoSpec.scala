@@ -56,9 +56,6 @@ class WhatDoYouWantToDoSpec extends TaiViewSpec {
       doc(view).select(".panel-indent").size() mustBe 0
     }
 
-    "have 'choose one option' legend" in {
-      doc must haveElementAtPathWithText("legend span[id=radioGroupLegendMain", Messages("tai.whatDoYouWantToDo.legend"))
-    }
 
     "have two radio buttons with relevant text" in {
       doc must haveElementAtPathWithId("form fieldset input", "taxYears-lasttaxyear")
