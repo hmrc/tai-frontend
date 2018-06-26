@@ -55,11 +55,40 @@
                 }
                 @form(action=controllers.routes.WhatDoYouWantToDoController.handleWhatDoYouWantToDoPage, args = Symbol("data-journey-dynamic-radios") -> "") {
 
-                @card(
+                <div class="flex-container grid-row">
+
+                    @card(
                     url = Some("/check-income-tax/income-summary"),
-                    heading = "Current Tax Year",
-                    bodyContent = Some(Html("<p>Check your current PAYE income</p>"))
-                )
+                    cardClass = "card card-full-width",
+                    heading = "Check details of your recent tax code change",
+                    bodyContent = Some("You may have received a letter. Find out why we have recalculated your tax code.")
+                    )
+
+                </div>
+
+                <div class="flex-container grid-row">
+
+
+                    @card(
+                        url = Some("/check-income-tax/income-summary"),
+                        heading = "Current Tax Year",
+                        bodyContent = Some("Check your current PAYE income sources and Income Tax details for the current tax year, 2018 to 2019.")
+                    )
+
+                    @card(
+                        url = Some("/check-income-tax/income-tax-comparison"),
+                        heading = "Next Year",
+                        bodyContent = Some("Check your estimated PAYE Income Tax details for next year.")
+                    )
+
+                    @card(
+                        url = Some("/check-income-tax/historic-paye/2017"),
+                        heading = "Earlier",
+                        bodyContent = Some("Check the tax you paid on you earnings in previous years.")
+                    )
+
+                </div>
+
 
                 @{inputRadioGroupStyling(
                         field=wdywtdForm("taxYears"),

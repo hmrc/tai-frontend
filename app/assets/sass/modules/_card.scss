@@ -20,7 +20,7 @@
 
 @media screen and (min-width:900px) {
   .card {
-    flex-basis: 31%;
+    flex-basis: 46%;
 
     &:nth-child(3n-1) {
       margin-left: 3%;
@@ -34,6 +34,11 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
     flex-basis: 31%;
     margin: 3%;
   }
+}
+
+.card-full-width {
+  flex-basis: 100%;
+  margin-right: 0%;
 }
 
 .card {
