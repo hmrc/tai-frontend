@@ -1238,7 +1238,7 @@ tai.updatePension.decision.legend=A ydych yn cael incwm pensiwn oddi wrth darpar
 
 
 ##Underpayment Previous Year page
-tai.previous.year.underpayment.preHeading=Deall eich treth
+understand.your.tax=Deall eich treth
 tai.previous.year.underpayment.title=Beth yw tandaliad o flwyddyn flaenorol?
 tai.previous.year.underpayment.para1=Mae tandaliad o flwyddyn flaenorol yn golygu na daloch ddigon o Dreth Incwm mewn blwyddyn dreth flaenorol.
 tai.previous.year.underpayment.para2=Ar gyfer y flwyddyn dreth o 6 Ebrill {0} i 5 Ebrill {1} dylech fod wedi talu £{2} ond talwyd £{3} gennych mewn gwirionedd.

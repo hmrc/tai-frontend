@@ -769,7 +769,7 @@ tai.iya.tax-code-change.cy-plus-one.text2=We’ll automatically change your tax 
 tai.iya.tax-code-change.cy-plus-one.text3=We’ll let you know if this amount is right when we calculate your Income Tax for the year after {0}.
 
 ##Underpayment Previous Year page
-tai.previous.year.underpayment.preHeading=Understand your tax
+understand.your.tax=Understand your tax
 tai.previous.year.underpayment.title=What is a previous year underpayment?
 tai.previous.year.underpayment.para1=A previous year underpayment means you didn’t pay enough Income Tax in a previous tax year.
 tai.previous.year.underpayment.para2=For the tax year from 6 April {0} to 5 April {1} you should have paid £{2} but you actually paid £{3}.
