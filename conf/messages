@@ -43,7 +43,7 @@ tai.confirmation.sectionOne.heading=What happens next
 tai.confirmation.paraOne=We will check the information you sent.
 tai.confirmation.paraTwo=If no further information is needed your records will be updated within 3 weeks and you will receive a confirmation.
 tai.confirmation.paraThree=You do not need to call us. We will contact you if we have any questions.
-tai.IncomeTaxSummaryReturn=Return to your Income Tax summary
+return.to.your.income.tax.summary=Return to your Income Tax summary
 tai.canWeContactByPhone.title=Can we call you if we need more information?
 tai.canWeContactByPhone.legend=Can we contact you by phone?
 tai.canWeContactByPhone.explanation=We will only contact you if we need more information about your update. It is the quickest way to resolve any problems.
@@ -58,7 +58,6 @@ tai.pensionNumber=Pension number
 tai.CurrentTaxYear=Current tax year
 tai.NextTaxYear=Next tax year
 tai.notKnown.response=I do not know
-tai.returnToIncomeTaxSummary=Return to your Income Tax Summary
 tai.returnToChooseTaxYear=Choose tax year
 tai.phoneNumber=Phone number
 tai.whatDoYouWantToTell=What do you want to tell us?
@@ -198,7 +197,6 @@ tai.companyCar.confirmation.heading=Your company car update has been submitted
 tai.companyCar.confirmation.sectionOne.heading=What happens next
 tai.companyCar.confirmation.sectionOne.p1=Your information has been submitted and your record has been updated.
 tai.companyCar.confirmation.sectionOne.p2=We will contact you if your tax code has changed.
-tai.companyCar.confirmation.back=Return to your Income Tax Summary
 
 ##No CY income info page
 tai.noCYIncomeError.heading = Your PAYE Income Tax
@@ -253,8 +251,6 @@ tai.updateEmployment.cya.currentlyWorkHere=Currently work here
 
 ##Confirmation page
 tai.employmentConfirmation.heading=Your update about an employment has been received
-tai.employmentConfirmation.back=Return to your Income Tax Summary
-
 
 ##Update Pension Pages
 tai.updatePension.preHeading=Update pension
@@ -949,8 +945,8 @@ tai.tables.column2=Tax (£)
 tai.tables.total=Total
 tai.incomeTax.incomeTaxEstimate.subheading=Income tax estimate
 tai.incomeTax.totalEstimatedIncome.subheading=Total estimated income
-tai.incomeTax.taxFree.link=Check your tax-free amount
-tai.incomeTax.taxCodes.link=Check your tax codes
+check.your.tax.free.amount=Check your tax-free amount
+check.your.tax.codes=Check your tax codes
 tai.incomeTax.calculated.title=How your PAYE Income Tax is calculated
 tai.incomeTax.calculated.heading=How your PAYE Income Tax is calculated
 tai.incomeTax.calculated.subHeading=Tax on your income
