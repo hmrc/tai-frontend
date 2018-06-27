@@ -51,6 +51,7 @@
 
                     @card(
                         url = Some("/check-income-tax/income-summary"),
+                        id = "currentTaxYear",
                         heading = Messages("current.tax.year"),
                         bodyContent = Some(Messages("check.current.income", (TaxYearResolver.currentTaxYear-1).toString, TaxYearResolver.currentTaxYear.toString))
                     )
@@ -58,6 +59,7 @@
                     @if(model.isCyPlusOneEnabled) {
                         @card(
                             url = Some("/check-income-tax/income-tax-comparison"),
+                            id = "nextTaxYear",
                             heading = Messages("next.year"),
                             bodyContent = Some(Messages("check.estimated.income"))
                         )
@@ -65,6 +67,7 @@
 
                     @card(
                         url = Some(s"/check-income-tax/historic-paye/${(TaxYearResolver.currentTaxYear-1).toString}"),
+                        id = "earlierTaxYear",
                         heading = Messages("earlier"),
                         bodyContent = Some(Messages("check.tax.previous.years"))
                     )
