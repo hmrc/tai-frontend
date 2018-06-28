@@ -99,5 +99,5 @@
     <p>@messages("tai.bbsi.account.whatHappensNext.desc2", TaxYear().year.toString, TaxYear().next.year.toString)</p>
 </div>
 
-@Link.toInternalPage(url=controllers.routes.TaxAccountSummaryController.onPageLoad().url,id=Some("returnToSummary"), value=Some(messages("tai.IncomeTaxSummaryReturn"))).toHtml
+@Link.toInternalPage(url=controllers.routes.TaxAccountSummaryController.onPageLoad().url,id=Some("returnToSummary"), value=Some(messages("return.to.your.income.tax.summary"))).toHtml
 }

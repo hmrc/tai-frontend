@@ -87,9 +87,9 @@
                         @Link.toInternalPage(
                             id=Some("taxFreeAmountLink"),
                             url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                            value=Some(Messages("tai.incomeTax.taxFree.link")),
+                            value=Some(Messages("check.your.tax.free.amount")),
                             cssClasses=Some("link-list__item"),
-                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.incomeTax.taxFree.link")}"))).toHtml
+                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("check.your.tax.free.amount")}"))).toHtml
 
                         @Link.toInternalPage(
                             id=Some("taxableIncomeLink"),

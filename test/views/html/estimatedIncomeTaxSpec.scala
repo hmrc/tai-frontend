@@ -113,7 +113,6 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
 
         doc(simpleTaxView).select("#bandType0").text() mustBe messages("uk.bandtype.pa")
         doc(simpleTaxView).select("#bandType1").text() mustBe messages("uk.bandtype.B")
-        println("KRISHNA" + doc(simpleTaxView).select("#bandType2").text())
         doc(simpleTaxView).select("#bandType2").text() mustBe messages("uk.bandtype.D0")
         doc(simpleTaxView).select("#income0").text() mustBe "£11,500"
         doc(simpleTaxView).select("#taxRate0").text() mustBe "0%"
@@ -124,6 +123,15 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
         doc(simpleTaxView).select("#income2").text() mustBe "£36,466"
         doc(simpleTaxView).select("#taxRate2").text() mustBe "40%"
         doc(simpleTaxView).select("#tax2").text() mustBe "£14,586"
+      }
+    }
+    "have view detailed Income tax estimate button" when {
+      "the NINO falls into complex tax estimate type" in {
+        def complexTaxView: Html = views.html.estimatedIncomeTax(viewModel3, Html("<Html><head></head><body>Test</body></Html>"))
+        doc(complexTaxView) must haveLinkElement(
+          "detailEstimateView",
+          routes.TaxFreeAmountController.taxFreeAmount.url,
+          messages("tai.estimatedIncome.detailedEstimate.Link"))
       }
     }
 
@@ -205,6 +213,13 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
         value = Some("tai.estimatedIncome.taxRelief.link")
       ).toHtml)).body
     }
+
+    "display navigational links to other pages in the service" in {
+      doc must haveElementAtPathWithText("nav>h2", messages("tai.taxCode.sideBar.heading"))
+      doc must haveLinkElement("taxCodesSideLink", routes.YourTaxCodeController.taxCodes.url, messages("check.your.tax.codes"))
+      doc must haveLinkElement("taxFreeAmountSideLink", routes.TaxFreeAmountController.taxFreeAmount.url, messages("check.your.tax.free.amount"))
+      doc must haveLinkElement("taxSummarySideLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("return.to.your.income.tax.summary"))
+    }
   }
 
 
@@ -235,9 +250,16 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
       reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, None, None, Some("Test"), "UK", taxViewType = SimpleTaxView,mergedTaxBands = taxBands)
   }
 
+  def createViewModel3(hasCurrentIncome: Boolean, additionalRows: Seq[AdditionalTaxDetailRow],
+                       reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
+    EstimatedIncomeTaxViewModel(hasCurrentIncome, 0, 30000, 11500, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
+      reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, None, None, Some("Test"), "UK", taxViewType = ComplexTaxView, mergedTaxBands = taxBands)
+  }
+
   val viewModel = createViewModel(true, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])
   val viewModel1 = createViewModel1(true, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])
   val viewModel2 = createViewModel2(true, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])
+  val viewModel3 = createViewModel3(true, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])
 
 
   override def view: Html = views.html.estimatedIncomeTax(viewModel, Html("<Html><head></head><body>Test</body></Html>"))
