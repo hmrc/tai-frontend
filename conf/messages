@@ -940,6 +940,7 @@ tai.estimatedIncome.reductionsTax.title=Reductions to your estimate
 tai.estimatedIncome.reductionsTax.desc=So that you don’t pay too much tax your estimate is adjusted for the following items:
 tai.estimatedIncome.ukdividends.lessThanOrEqualToBasic=The first £{0} of dividend income is tax free. All of your dividend income is included in your tax free amount.
 tai.estimatedIncome.ukdividends.moreThanBasic=You pay {0} on all dividends above £{1}.
+tai.estimatedIncome.detailedEstimate.Link=View detailed Income Tax estimate
 tai.tables.column1=Description
 tai.tables.column2=Tax (£)
 tai.tables.total=Total
