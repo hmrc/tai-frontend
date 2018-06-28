@@ -26,6 +26,8 @@ import uk.gov.hmrc.tai.viewModels._
 import scala.math.BigDecimal
 
 object EstimatedIncomeTaxService {
+  def taxBand(totalTax: TotalTax) = totalTax.incomeCategories.flatMap(_.taxBands)
+
 
   def taxViewType(codingComponents: Seq[CodingComponent],
                   totalTax: TotalTax,

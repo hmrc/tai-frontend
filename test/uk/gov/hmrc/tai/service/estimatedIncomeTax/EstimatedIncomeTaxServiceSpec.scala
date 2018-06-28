@@ -22,7 +22,7 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, OtherNonTaxCodeIncome}
-import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxAdjustmentComponent, TaxBand, TotalTax}
+import uk.gov.hmrc.tai.model.domain.tax.{MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.urls.Link
@@ -262,6 +262,28 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
       "isComplexViewType returns false and the totalEstimatedIncome is less than the taxFreeAllowance and the totalEstimatedTax is zero" in{
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
         EstimatedIncomeTaxService.taxViewType(Seq.empty,totalTax,nonTaxCodeIncome,List.empty,0,0,11000,11500,0) mustBe ZeroTaxView
+      }
+    }
+
+    "taxBand" must {
+      "return a sequence of tax bands" when {
+        "income category tax bands exist" in {
+          val taxBands = Seq(TaxBand("D0", "", 0, 0, None, None, 20),
+                             TaxBand("1150L", "1150L", 10000, 500, Some(5000), Some(20000), 10))
+
+          val totalTax = TotalTax(1000,
+            List(IncomeCategory(UkDividendsIncomeCategory, 10, 20, 30, List(TaxBand("D0", "", 0, 0, None, None, 20),
+              TaxBand("1150L", "1150L", 10000, 500, Some(5000), Some(20000), 10)))),
+            None, None, None)
+
+          EstimatedIncomeTaxService.taxBand(totalTax) mustBe taxBands
+        }
+        "return an empty sequence" when {
+          "income categories does not contain any tax bands" in {
+            EstimatedIncomeTaxService.taxBand(totalTax) mustBe Seq.empty
+
+          }
+        }
       }
     }
 

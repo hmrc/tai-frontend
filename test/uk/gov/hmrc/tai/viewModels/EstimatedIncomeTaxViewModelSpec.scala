@@ -640,110 +640,110 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
 
   }
 
-//  "createAdditionalTaxTable" must {
-//    "return additional tax detail rows" when {
-//      "there are additional tax due" in {
-//        val otherTaxDue = Seq(
-//          TaxAdjustmentComponent(tax.ExcessGiftAidTax, 100),
-//          TaxAdjustmentComponent(tax.ExcessWidowsAndOrphans, 100),
-//          TaxAdjustmentComponent(tax.PensionPaymentsAdjustment, 200),
-//          TaxAdjustmentComponent(tax.ChildBenefit, 300)
-//        )
-//        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(700, otherTaxDue)), None, None)
-//        val codingComponents = Seq(
-//          CodingComponent(UnderPaymentFromPreviousYear, None, 100, "", Some(10)),
-//          CodingComponent(EstimatedTaxYouOweThisYear, None, 0, "", Some(50)),
-//          CodingComponent(OutstandingDebt, None, 150, "")
-//        )
-//
-//        val result = EstimatedIncomeTaxViewModel.createAdditionalTaxTable(codingComponents, totalTax)
-//
-//        result mustBe Seq(
-//          AdditionalTaxDetailRow(Messages("tai.taxCalc.UnderpaymentPreviousYear.title"), 10, None),
-//          AdditionalTaxDetailRow(Messages("tai.taxcode.deduction.type-45"), 50, Some(routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url)),
-//          AdditionalTaxDetailRow(Messages("tai.taxCalc.OutstandingDebt.title"), 150, None),
-//          AdditionalTaxDetailRow(Messages("tai.taxCalc.childBenefit.title"), 300, None),
-//          AdditionalTaxDetailRow(Messages("tai.taxCalc.excessGiftAidTax.title"), 100, None),
-//          AdditionalTaxDetailRow(Messages("tai.taxCalc.excessWidowsAndOrphans.title"), 100, None),
-//          AdditionalTaxDetailRow(Messages("tai.taxCalc.pensionPaymentsAdjustment.title"), 200, None)
-//        )
-//      }
-//    }
-//
-//    "return empty row" when {
-//      "there are no additional tax due" in {
-//        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-//
-//        val result = EstimatedIncomeTaxViewModel.createAdditionalTaxTable(Seq.empty[CodingComponent], totalTax)
-//
-//        result mustBe Seq.empty[AdditionalTaxDetailRow]
-//
-//      }
-//    }
-//  }
+  "createAdditionalTaxTable" must {
+    "return additional tax detail rows" when {
+      "there are additional tax due" in {
+        val otherTaxDue = Seq(
+          TaxAdjustmentComponent(tax.ExcessGiftAidTax, 100),
+          TaxAdjustmentComponent(tax.ExcessWidowsAndOrphans, 100),
+          TaxAdjustmentComponent(tax.PensionPaymentsAdjustment, 200),
+          TaxAdjustmentComponent(tax.ChildBenefit, 300)
+        )
+        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(700, otherTaxDue)), None, None)
+        val codingComponents = Seq(
+          CodingComponent(UnderPaymentFromPreviousYear, None, 100, "", Some(10)),
+          CodingComponent(EstimatedTaxYouOweThisYear, None, 0, "", Some(50)),
+          CodingComponent(OutstandingDebt, None, 150, "")
+        )
 
-//  "createReductionsTable" must {
-//    "return reduction tax table" when {
-//      "there are components present which can reduce the tax" in {
-//        val alreadyTaxedAtSource = Seq(
-//          TaxAdjustmentComponent(tax.TaxOnBankBSInterest, 100),
-//          TaxAdjustmentComponent(tax.TaxCreditOnUKDividends, 200),
-//          TaxAdjustmentComponent(tax.TaxCreditOnForeignInterest, 300),
-//          TaxAdjustmentComponent(tax.TaxCreditOnForeignIncomeDividends, 400)
-//        )
-//
-//        val reliefsGivingBackTax = Seq(
-//          TaxAdjustmentComponent(tax.EnterpriseInvestmentSchemeRelief, 500),
-//          TaxAdjustmentComponent(tax.ConcessionalRelief, 600),
-//          TaxAdjustmentComponent(tax.MaintenancePayments, 700),
-//          TaxAdjustmentComponent(tax.MarriedCouplesAllowance, 800),
-//          TaxAdjustmentComponent(tax.DoubleTaxationRelief, 900)
-//        )
-//
-//        val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
-//          Some(tax.TaxAdjustment(3500, reliefsGivingBackTax)),
-//          None,
-//          Some(tax.TaxAdjustment(1000, alreadyTaxedAtSource)),
-//          Some(100))
-//
-//        val codingComponents = Seq(
-//          CodingComponent(MarriedCouplesAllowanceMAE, None, 1200, "", None),
-//          CodingComponent(MaintenancePayments, None, 1200, "", None)
-//        )
-//
-//        val result = EstimatedIncomeTaxViewModel.createReductionsTable(codingComponents, totalTax)
-//
-//        result mustBe Seq(
-//          ReductionTaxRow(Messages("tai.taxCollected.atSource.otherIncome.description"), 100, Messages("tai.taxCollected.atSource.otherIncome.title")),
-//          ReductionTaxRow(Messages("tai.taxCollected.atSource.dividends.description", 10), 200, Messages("tai.taxCollected.atSource.dividends.title")),
-//          ReductionTaxRow(Messages("tai.taxCollected.atSource.bank.description", 20), 100, Messages("tai.taxCollected.atSource.bank.title")),
-//          ReductionTaxRow(Messages("tai.taxCollected.atSource.marriageAllowance.description", MoneyPounds(1200).quantity,
-//            Link.toInternalPage(
-//              url = routes.YourTaxCodeController.taxCodes().toString,
-//              value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
-//            ).toHtml.body), 800, Messages("tai.taxCollected.atSource.marriageAllowance.title")),
-//          ReductionTaxRow(Messages("tai.taxCollected.atSource.maintenancePayments.description", MoneyPounds(1200).quantity,
-//            routes.YourTaxCodeController.taxCodes().url), 700, Messages("tai.taxCollected.atSource.marriageAllowance.title")),
-//          ReductionTaxRow(Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description"),
-//            500, Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title")),
-//          ReductionTaxRow(Messages("tai.taxCollected.atSource.concessionalRelief.description"),
-//            600, Messages("tai.taxCollected.atSource.concessionalRelief.title")),
-//          ReductionTaxRow(Messages("tai.taxCollected.atSource.doubleTaxationRelief.description"),
-//            900, Messages("tai.taxCollected.atSource.doubleTaxationRelief.title"))
-//        )
-//      }
-//    }
-//
-//    "return empty reduction tax table" when {
-//      "there are reduction in tax" in {
-//        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-//
-//        val result = EstimatedIncomeTaxViewModel.createReductionsTable(Seq.empty[CodingComponent], totalTax)
-//
-//        result mustBe Seq.empty[ReductionTaxRow]
-//      }
-//    }
-//  }
+        val result = EstimatedIncomeTaxViewModel.createAdditionalTaxTable(codingComponents, totalTax)
+
+        result mustBe Seq(
+          AdditionalTaxDetailRow(Messages("tai.taxCalc.UnderpaymentPreviousYear.title"), 10, None),
+          AdditionalTaxDetailRow(Messages("tai.taxcode.deduction.type-45"), 50, Some(routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url)),
+          AdditionalTaxDetailRow(Messages("tai.taxCalc.OutstandingDebt.title"), 150, None),
+          AdditionalTaxDetailRow(Messages("tai.taxCalc.childBenefit.title"), 300, None),
+          AdditionalTaxDetailRow(Messages("tai.taxCalc.excessGiftAidTax.title"), 100, None),
+          AdditionalTaxDetailRow(Messages("tai.taxCalc.excessWidowsAndOrphans.title"), 100, None),
+          AdditionalTaxDetailRow(Messages("tai.taxCalc.pensionPaymentsAdjustment.title"), 200, None)
+        )
+      }
+    }
+
+    "return empty row" when {
+      "there are no additional tax due" in {
+        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
+
+        val result = EstimatedIncomeTaxViewModel.createAdditionalTaxTable(Seq.empty[CodingComponent], totalTax)
+
+        result mustBe Seq.empty[AdditionalTaxDetailRow]
+
+      }
+    }
+  }
+
+  "createReductionsTable" must {
+    "return reduction tax table" when {
+      "there are components present which can reduce the tax" in {
+        val alreadyTaxedAtSource = Seq(
+          TaxAdjustmentComponent(tax.TaxOnBankBSInterest, 100),
+          TaxAdjustmentComponent(tax.TaxCreditOnUKDividends, 200),
+          TaxAdjustmentComponent(tax.TaxCreditOnForeignInterest, 300),
+          TaxAdjustmentComponent(tax.TaxCreditOnForeignIncomeDividends, 400)
+        )
+
+        val reliefsGivingBackTax = Seq(
+          TaxAdjustmentComponent(tax.EnterpriseInvestmentSchemeRelief, 500),
+          TaxAdjustmentComponent(tax.ConcessionalRelief, 600),
+          TaxAdjustmentComponent(tax.MaintenancePayments, 700),
+          TaxAdjustmentComponent(tax.MarriedCouplesAllowance, 800),
+          TaxAdjustmentComponent(tax.DoubleTaxationRelief, 900)
+        )
+
+        val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
+          Some(tax.TaxAdjustment(3500, reliefsGivingBackTax)),
+          None,
+          Some(tax.TaxAdjustment(1000, alreadyTaxedAtSource)),
+          Some(100))
+
+        val codingComponents = Seq(
+          CodingComponent(MarriedCouplesAllowanceMAE, None, 1200, "", None),
+          CodingComponent(MaintenancePayments, None, 1200, "", None)
+        )
+
+        val result = EstimatedIncomeTaxViewModel.createReductionsTable(codingComponents, totalTax)
+
+        result mustBe Seq(
+          ReductionTaxRow(Messages("tai.taxCollected.atSource.otherIncome.description"), 100, Messages("tai.taxCollected.atSource.otherIncome.title")),
+          ReductionTaxRow(Messages("tai.taxCollected.atSource.dividends.description", 10), 200, Messages("tai.taxCollected.atSource.dividends.title")),
+          ReductionTaxRow(Messages("tai.taxCollected.atSource.bank.description", 20), 100, Messages("tai.taxCollected.atSource.bank.title")),
+          ReductionTaxRow(Messages("tai.taxCollected.atSource.marriageAllowance.description", MoneyPounds(1200).quantity,
+            Link.toInternalPage(
+              url = routes.YourTaxCodeController.taxCodes().toString,
+              value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
+            ).toHtml.body), 800, Messages("tai.taxCollected.atSource.marriageAllowance.title")),
+          ReductionTaxRow(Messages("tai.taxCollected.atSource.maintenancePayments.description", MoneyPounds(1200).quantity,
+            routes.YourTaxCodeController.taxCodes().url), 700, Messages("tai.taxCollected.atSource.marriageAllowance.title")),
+          ReductionTaxRow(Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description"),
+            500, Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title")),
+          ReductionTaxRow(Messages("tai.taxCollected.atSource.concessionalRelief.description"),
+            600, Messages("tai.taxCollected.atSource.concessionalRelief.title")),
+          ReductionTaxRow(Messages("tai.taxCollected.atSource.doubleTaxationRelief.description"),
+            900, Messages("tai.taxCollected.atSource.doubleTaxationRelief.title"))
+        )
+      }
+    }
+
+    "return empty reduction tax table" when {
+      "there are reduction in tax" in {
+        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
+
+        val result = EstimatedIncomeTaxViewModel.createReductionsTable(Seq.empty[CodingComponent], totalTax)
+
+        result mustBe Seq.empty[ReductionTaxRow]
+      }
+    }
+  }
 
   "incomeTaxReducedToZeroMessage" must {
     "return message" when {
@@ -763,76 +763,76 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
     }
   }
 
-//  "dividends message" must {
-//    "return message" when {
-//      "uk div total income is less than tax free dividend" in {
-//        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq(
-//          OtherNonTaxCodeIncome(UkDividend, None, 100, "")
-//        ))
-//
-//        val totalTax = TotalTax(100, Seq(
-//          IncomeCategory(tax.UkDividendsIncomeCategory, 50, 50, 0, Seq(
-//            tax.TaxBand("SDR", "", 50, 0, None, Some(2000), 0)
-//          ))
-//        ), None, None, None)
-//
-//        val result = EstimatedIncomeTaxViewModel.dividendsMessage(nonTaxCodeIncome, totalTax)
-//
-//        result mustBe Some(Messages("tai.estimatedIncome.ukdividends.lessThanOrEqualToBasic", MoneyPounds(2000, 0).quantity))
-//      }
-//
-//      "uk div total income is equal to tax free dividend" in {
-//        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq(
-//          OtherNonTaxCodeIncome(UkDividend, None, 2000, "")
-//        ))
-//
-//        val totalTax = TotalTax(100, Seq(
-//          IncomeCategory(tax.UkDividendsIncomeCategory, 50, 50, 0, Seq(
-//            tax.TaxBand("SDR", "", 50, 0, None, Some(2000), 0)
-//          ))
-//        ), None, None, None)
-//
-//        val result = EstimatedIncomeTaxViewModel.dividendsMessage(nonTaxCodeIncome, totalTax)
-//
-//        result mustBe Some(Messages("tai.estimatedIncome.ukdividends.lessThanOrEqualToBasic", MoneyPounds(2000, 0).quantity))
-//      }
-//
-//      "uk div total income is greater than tax free dividend and higher rate are present" in {
-//        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq(
-//          OtherNonTaxCodeIncome(UkDividend, None, 3000, "")
-//        ))
-//
-//        val totalTax = TotalTax(100, Seq(
-//          IncomeCategory(tax.UkDividendsIncomeCategory, 50, 50, 0, Seq(
-//            tax.TaxBand("SDR", "", 50, 0, None, Some(2000), 0),
-//            tax.TaxBand("SDR", "", 50, 0, Some(2000), Some(3000), 20),
-//            tax.TaxBand("SDR", "", 50, 0, Some(3000), Some(5000), 40)
-//          ))
-//        ), None, None, None)
-//
-//        val result = EstimatedIncomeTaxViewModel.dividendsMessage(nonTaxCodeIncome, totalTax)
-//
-//        result mustBe Some(Messages("tai.estimatedIncome.ukdividends.moreThanBasic", "20% and 40%",
-//          MoneyPounds(2000, 0).quantity))
-//      }
-//
-//      "uk div total income is greater than tax free dividend and higher rate are not present" in {
-//        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq(
-//          OtherNonTaxCodeIncome(UkDividend, None, 3000, "")
-//        ))
-//
-//        val totalTax = TotalTax(100, Seq(
-//          IncomeCategory(tax.UkDividendsIncomeCategory, 50, 50, 0, Seq(
-//            tax.TaxBand("SDR", "", 50, 0, None, Some(2000), 0)
-//          ))
-//        ), None, None, None)
-//
-//        val result = EstimatedIncomeTaxViewModel.dividendsMessage(nonTaxCodeIncome, totalTax)
-//
-//        result mustBe None
-//      }
-//    }
-//  }
+  "dividends message" must {
+    "return message" when {
+      "uk div total income is less than tax free dividend" in {
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq(
+          OtherNonTaxCodeIncome(UkDividend, None, 100, "")
+        ))
+
+        val totalTax = TotalTax(100, Seq(
+          IncomeCategory(tax.UkDividendsIncomeCategory, 50, 50, 0, Seq(
+            tax.TaxBand("SDR", "", 50, 0, None, Some(2000), 0)
+          ))
+        ), None, None, None)
+
+        val result = EstimatedIncomeTaxViewModel.dividendsMessage(nonTaxCodeIncome, totalTax)
+
+        result mustBe Some(Messages("tai.estimatedIncome.ukdividends.lessThanOrEqualToBasic", MoneyPounds(2000, 0).quantity))
+      }
+
+      "uk div total income is equal to tax free dividend" in {
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq(
+          OtherNonTaxCodeIncome(UkDividend, None, 2000, "")
+        ))
+
+        val totalTax = TotalTax(100, Seq(
+          IncomeCategory(tax.UkDividendsIncomeCategory, 50, 50, 0, Seq(
+            tax.TaxBand("SDR", "", 50, 0, None, Some(2000), 0)
+          ))
+        ), None, None, None)
+
+        val result = EstimatedIncomeTaxViewModel.dividendsMessage(nonTaxCodeIncome, totalTax)
+
+        result mustBe Some(Messages("tai.estimatedIncome.ukdividends.lessThanOrEqualToBasic", MoneyPounds(2000, 0).quantity))
+      }
+
+      "uk div total income is greater than tax free dividend and higher rate are present" in {
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq(
+          OtherNonTaxCodeIncome(UkDividend, None, 3000, "")
+        ))
+
+        val totalTax = TotalTax(100, Seq(
+          IncomeCategory(tax.UkDividendsIncomeCategory, 50, 50, 0, Seq(
+            tax.TaxBand("SDR", "", 50, 0, None, Some(2000), 0),
+            tax.TaxBand("SDR", "", 50, 0, Some(2000), Some(3000), 20),
+            tax.TaxBand("SDR", "", 50, 0, Some(3000), Some(5000), 40)
+          ))
+        ), None, None, None)
+
+        val result = EstimatedIncomeTaxViewModel.dividendsMessage(nonTaxCodeIncome, totalTax)
+
+        result mustBe Some(Messages("tai.estimatedIncome.ukdividends.moreThanBasic", "20% and 40%",
+          MoneyPounds(2000, 0).quantity))
+      }
+
+      "uk div total income is greater than tax free dividend and higher rate are not present" in {
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq(
+          OtherNonTaxCodeIncome(UkDividend, None, 3000, "")
+        ))
+
+        val totalTax = TotalTax(100, Seq(
+          IncomeCategory(tax.UkDividendsIncomeCategory, 50, 50, 0, Seq(
+            tax.TaxBand("SDR", "", 50, 0, None, Some(2000), 0)
+          ))
+        ), None, None, None)
+
+        val result = EstimatedIncomeTaxViewModel.dividendsMessage(nonTaxCodeIncome, totalTax)
+
+        result mustBe None
+      }
+    }
+  }
 
   "findTaxRegion" must {
     "return scottish" when {
@@ -863,74 +863,75 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
   }
 
 
-//  "hasTaxRelief" must {
-//    "return true" when {
-//      "tax relief components are present" in {
-//        val totalTax = TotalTax(100, Seq.empty[IncomeCategory], None, None, None, None,
-//          Some(tax.TaxAdjustment(100, Seq(TaxAdjustmentComponent(tax.PersonalPensionPayment, 100)))))
-//        EstimatedIncomeTaxViewModel.hasTaxRelief(totalTax) mustBe true
-//      }
-//    }
-//
-//    "return false" when {
-//      "tax relief components are not present" in {
-//        val totalTax = TotalTax(100, Seq.empty[IncomeCategory], None, None, None, None, None)
-//        EstimatedIncomeTaxViewModel.hasTaxRelief(totalTax) mustBe false
-//      }
-//    }
-//  }
+  "hasTaxRelief" must {
+    "return true" when {
+      "tax relief components are present" in {
+        val totalTax = TotalTax(100, Seq.empty[IncomeCategory], None, None, None, None,
+          Some(tax.TaxAdjustment(100, Seq(TaxAdjustmentComponent(tax.PersonalPensionPayment, 100)))))
+        EstimatedIncomeTaxViewModel.hasTaxRelief(totalTax) mustBe true
+      }
+    }
 
-//  "fetchIncome" must {
-//    "return income of PSR" in {
-//      val bankIntTaxBand: List[TaxBand] = List(
-//        TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
-//        TaxBand("SR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
-//        TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
-//
-//      val untaxedTaxBand: List[TaxBand] = List(
-//        TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
-//        TaxBand("SDR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0))
-//
-//      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
-//
-//      val income = EstimatedIncomeTaxViewModel.fetchIncome(taxBands, PersonalSavingsRate)
-//
-//      income mustBe Some(10000)
-//
-//    }
-//
-//    "return income of SR" in {
-//      val bankIntTaxBand: List[TaxBand] = List(
-//        TaxBand("SR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
-//        TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
-//
-//      val untaxedTaxBand: List[TaxBand] = List(
-//        TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0)
-//      )
-//      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
-//
-//      val income = EstimatedIncomeTaxViewModel.fetchIncome(taxBands, StarterSavingsRate)
-//
-//      income mustBe Some(5000)
-//    }
-//
-//    "return None" in {
-//      val bankIntTaxBand: List[TaxBand] = List(
-//        TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
-//        TaxBand("SDR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
-//        TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
-//
-//      val untaxedTaxBand: List[TaxBand] = List(
-//        TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
-//        TaxBand("SDR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0))
-//
-//      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
-//
-//      val income = EstimatedIncomeTaxViewModel.fetchIncome(taxBands, StarterSavingsRate)
-//
-//      income mustBe None
-//    }
-//  }
+    "return false" when {
+      "tax relief components are not present" in {
+        val totalTax = TotalTax(100, Seq.empty[IncomeCategory], None, None, None, None, None)
+        EstimatedIncomeTaxViewModel.hasTaxRelief(totalTax) mustBe false
+      }
+    }
+  }
+
+  "fetchIncome" must {
+    "return income of PSR" in {
+      val bankIntTaxBand: List[TaxBand] = List(
+        TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        TaxBand("SR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
+
+      val untaxedTaxBand: List[TaxBand] = List(
+        TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        TaxBand("SDR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0))
+
+      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
+
+      val income = EstimatedIncomeTaxViewModel.fetchIncome(taxBands, PersonalSavingsRate)
+
+      income mustBe Some(10000)
+
+    }
+
+    "return income of SR" in {
+      val bankIntTaxBand: List[TaxBand] = List(
+        TaxBand("SR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
+
+      val untaxedTaxBand: List[TaxBand] = List(
+        TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0)
+      )
+      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
+
+      val income = EstimatedIncomeTaxViewModel.fetchIncome(taxBands, StarterSavingsRate)
+
+      income mustBe Some(5000)
+    }
+
+    "return None" in {
+      val bankIntTaxBand: List[TaxBand] = List(
+        TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        TaxBand("SDR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
+
+      val untaxedTaxBand: List[TaxBand] = List(
+        TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        TaxBand("SDR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0))
+
+      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
+
+      val income = EstimatedIncomeTaxViewModel.fetchIncome(taxBands, StarterSavingsRate)
+
+      income mustBe None
+    }
+  }
+
   private lazy val taxExplanationLink = link(
     copy = Messages("tai.mergedTaxBand.description"),
     altCopy = Some(Messages("tai.mergedTaxBand.link.wording")),
