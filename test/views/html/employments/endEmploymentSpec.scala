@@ -32,8 +32,6 @@ class endEmploymentSpec extends TaiViewSpec {
   private val employmentName = "employer name"
   private val eedf = EmploymentEndDateForm(employmentName)
 
-
-
   private val globalErrorMessage: String = "day error message"
   private val formWithErrors: Form[LocalDate] = eedf.form.withError("", globalErrorMessage)
   private lazy val employmentEndDateForm: Form[LocalDate] = eedf.form.bind(Map(
@@ -122,7 +120,7 @@ class endEmploymentSpec extends TaiViewSpec {
 
         val continueButton = doc(view).select("button[type=submit]").text
 
-        continueButton mustBe Messages("tai.WhatDoYouWantToDo.submit")
+        continueButton mustBe Messages("tai.submit")
     }
   }
 }
