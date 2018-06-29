@@ -1180,6 +1180,7 @@ tai.estimatedIncome.whyEstimate.link=Pam mai amcangyfrif yw hwn
 tai.estimatedIncome.howYouPay.heading=Sut rydych yn talu’ch treth
 tai.estimatedIncomeLow.desc=Rydym yn amcangyfrif y byddwch yn ennill llai na’ch {0} o {1}, mae hyn yn golygu na ddylech dalu unrhyw Dreth Incwm ar eich enillion y flwyddyn hon.
 tai.estimatedIncomeEarning.desc=Gallwch ennill {0} yn fwy cyn i chi gyrraedd haen treth.
+tai.estimatedIncome.detailedEstimate.Link=Bwrw golwg ar amcangyfrif manwl o'ch Treth Incwm
 
 
 #Tax paid elsewhere
