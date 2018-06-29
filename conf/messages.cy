@@ -767,7 +767,6 @@ tai.income.details.incomeReceivedToDate=Incwm a gafwyd hyd yn hyn
 tai.endEmployment.endDateForm.title=Pryd wnaethoch orffen gweithio i {0}?
 tai.payPeriod.title=Pa mor aml ydych yn cael eich talu?
 uk.bandtype.PSR=Lwfans Cynilion Personol
-tai.whatDoYouWantToDo.heading=
 tai.incomeTaxSummary.addMissingIncome.section.heading=Rhywbeth ar goll?
 tai.estimatedIncome.whyEstimate.desc=Mae swm y dreth a dalwch yn dibynnu ar gyfanswm eich incwm ar gyfer y flwyddyn dreth gyfan. Ni allwn roi union ffigur oherwydd ni fyddwn yn gwybod am eich holl incwm tan ar ôl i''r flwyddyn dreth ddod i ben ar {0}.
 tai.phoneNumber=Rhif ffôn
@@ -1249,3 +1248,13 @@ tai.incomeTaxComparison.tellAboutChange.otherIncomeReaderText=Rhoi gwybod i ni a
 tai.updateOrRemove.fromOtherSources=Diweddaru neu ddileu {0}
 tai.mergedTaxBand.link.wording=Gwirio treth ar incwm
 
+##What Do You Want To Do Page
+
+##TODO to be removed when tileView is toggled on
+tai.whatDoYouWantToDo.heading=Dewis blwyddyn dreth
+tai.whatDoYouWantToDo.legend=Gweld manylion Treth Incwm TWE ar gyfer:
+tai.WhatDoYouWantToDo.radio1=blwyddyn nesaf
+tai.WhatDoYouWantToDo.radio2=flwyddyn dreth bresennol, {0} i {1}
+tai.WhatDoYouWantToDo.radio3=yn gynharach
+tai.WhatDoYouWantToDo.submit=Yn eich blaen
+tai.whatDoYouWantToDo.error.selectOption=Dewiswch beth rydych am ei wneud.

@@ -34,53 +34,68 @@ class WhatDoYouWantToDoSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("tai.whatDoYouWantToDo.heading"))
     behave like pageWithHeader(messages("tai.whatDoYouWantToDo.heading"))
 
+    "have an error box on the top of the page with link a to error field" when {
+      "a form with errors is passed into the view" in {
+        val wdywtdForm: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
+        def view: Html = views.html.whatDoYouWantToDo(wdywtdForm, model)
+        doc(view).select(".error-summary--show > ul > li > #taxYears-error-summary").text mustBe Messages("tai.whatDoYouWantToDo.error.selectOption")
+      }
+    }
+
     "display iForms status message when an iForm has not been fully processed" in{
-      def view: Html = views.html.whatDoYouWantToDo(form, modelWithiFormNoCyPlus1)
+      val wdywtdForm: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
+      def view: Html = views.html.whatDoYouWantToDo(wdywtdForm, WhatDoYouWantToDoViewModel(true, false))
       val paragraphs = doc(view).select(".panel-indent > p")
       paragraphs.get(0).text mustBe Messages("tai.whatDoYouWantToDo.iformPanel.p1")
       paragraphs.get(1).text mustBe Messages("tai.whatDoYouWantToDo.iformPanel.p2")
     }
 
     "not display iForms status message when no iForms are in progress" in{
+      val wdywtdForm: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
+      def view: Html = views.html.whatDoYouWantToDo(wdywtdForm, model)
       doc(view).select(".panel-indent").size() mustBe 0
     }
 
+    "have 'choose one option' legend" in {
+      doc must haveElementAtPathWithText("legend span[id=radioGroupLegendMain", Messages("tai.whatDoYouWantToDo.legend"))
+    }
 
-    "display cards correctly" when {
-      "CY+1 is not enabled" in {
+    "have two radio buttons with relevant text" in {
+      doc must haveElementAtPathWithId("form fieldset input", "taxYears-lasttaxyear")
+      doc must haveElementAtPathWithText("form fieldset label[for=taxYears-lasttaxyear]", Messages("tai.WhatDoYouWantToDo.radio3"))
+      doc must haveElementAtPathWithId("form fieldset input", "taxYears-currenttaxyear")
+      doc must haveElementAtPathWithText("form fieldset label[for=taxYears-currenttaxyear]", Messages("tai.WhatDoYouWantToDo.radio2", s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}" ))
+    }
 
-        val cards = doc.getElementsByClass("card")
+    "have error message with the radio buttons" in {
+      doc must haveElementAtPathWithText("form .error-message", Messages("tai.whatDoYouWantToDo.error.selectOption"))
+    }
 
-        cards.size mustBe 2
-        cards.toString must include(Messages("current.tax.year"))
-        cards.toString must include(Messages("check.current.income", (TaxYearResolver.currentTaxYear-1).toString, TaxYearResolver.currentTaxYear.toString))
-        cards.toString mustNot include(Messages("next.year"))
-        cards.toString mustNot include(Messages("check.estimated.income"))
-        cards.toString must include(Messages("earlier"))
-        cards.toString must include(Messages("check.tax.previous.years"))
+    "have 'continue' button" in {
+      val continueButton = doc(view).select("form input.button").attr("type", "submit").attr("value")
 
-      }
+      continueButton mustBe Messages("tai.WhatDoYouWantToDo.submit")
+    }
 
+    "have next year radio button" when {
       "CY+1 is enabled" in {
 
-        val nextYearView: Html = views.html.whatDoYouWantToDo(form, modelNoiFormWithCyPlus1)
-        val cards = doc(nextYearView).getElementsByClass("card")
+        val nextYearView: Html = views.html.whatDoYouWantToDo(form, WhatDoYouWantToDoViewModel(false, true))
+        val nextYearDoc = doc(nextYearView)
 
-        cards.size mustBe 3
-        cards.toString must include(Messages("current.tax.year"))
-        cards.toString must include(Messages("check.current.income", (TaxYearResolver.currentTaxYear-1).toString, TaxYearResolver.currentTaxYear.toString))
-        cards.toString must include(Messages("next.year"))
-        cards.toString must include(Messages("check.estimated.income"))
-        cards.toString must include(Messages("earlier"))
-        cards.toString must include(Messages("check.tax.previous.years"))
+        nextYearDoc must haveElementAtPathWithId("form fieldset input", "taxYears-nexttaxyear")
+        nextYearDoc must haveElementAtPathWithText("form fieldset label[for=taxYears-nexttaxyear]", Messages("tai.WhatDoYouWantToDo.radio1"))
+      }
+    }
+
+   "not have next year radio button" when {
+      "CY+1 is disabled" in {
+        doc must not(haveElementAtPathWithId("form fieldset input", "taxYears-nexttaxyear"))
       }
     }
   }
 
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
-
-  private lazy val modelNoiFormNoCyPlus1 = WhatDoYouWantToDoViewModel(false, false)
-  private lazy val modelNoiFormWithCyPlus1 = WhatDoYouWantToDoViewModel(false, true)
-  private lazy val modelWithiFormNoCyPlus1 = WhatDoYouWantToDoViewModel(true, false)
-  override def view: Html = views.html.whatDoYouWantToDo(form, modelNoiFormNoCyPlus1)
+  private lazy val model = WhatDoYouWantToDoViewModel(false, false)
+  override def view: Html = views.html.whatDoYouWantToDo(form, model)
 }
