@@ -18,16 +18,85 @@ package uk.gov.hmrc.tai.service.estimatedIncomeTax
 
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.income.NonTaxCodeIncome
+import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.{TaxAdjustment, TaxAdjustmentType, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.viewModels.EstimatedIncomeTaxViewModel._
 import uk.gov.hmrc.tai.viewModels._
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ComplexEstimatedIncomeTaxViewModel.{ScottishTaxRegion, UkTaxRegion}
 
 import scala.math.BigDecimal
 
-object EstimatedIncomeTaxService {
-  def taxBand(totalTax: TotalTax) = totalTax.incomeCategories.flatMap(_.taxBands)
+trait EtimatedIncomeTaxServiceTemp{
 
+  def createPABand(taxFreeAllowance: BigDecimal) = {
+    TaxBand(TaxFreeAllowanceBand, "", taxFreeAllowance, 0, Some(0), None, 0)
+  }
+
+  def personalAllowanceAmount(codingComponents: Seq[CodingComponent]) = {
+    codingComponents.find { component =>
+      component.componentType match {
+        case compType if compType == PersonalAllowancePA || compType == PersonalAllowanceAgedPAA || compType == PersonalAllowanceElderlyPAE => true
+        case _ => false
+      }
+    }.map(_.amount)
+  }
+
+  def hasIncome(taxCodeIncomes: Seq[TaxCodeIncome]) = taxCodeIncomes.nonEmpty
+
+
+  def retrieveTaxBands(taxBands: List[TaxBand]): List[TaxBand] = {
+    val mergedPsaBands = mergeAllowanceTaxBands(taxBands, PersonalSavingsRate)
+    val mergedSrBands = mergeAllowanceTaxBands(mergedPsaBands, StarterSavingsRate)
+    val bands = mergeAllowanceTaxBands(mergedSrBands, TaxFreeAllowanceBand)
+    bands.filter(_.income > 0).sortBy(_.rate)
+  }
+
+  def mergeAllowanceTaxBands(taxBands: List[TaxBand], bandType: String) = {
+    val (bands, remBands) = taxBands.partition(_.bandType == bandType)
+    bands match {
+      case Nil => remBands
+      case _ => TaxBand(bands.map(_.bandType).head,
+        bands.map(_.code).head,
+        bands.map(_.income).sum,
+        bands.map(_.tax).sum,
+        bands.map(_.lowerBand).head,
+        bands.map(_.upperBand).head,
+        bands.map(_.rate).head) :: remBands
+    }
+  }
+
+  def findTaxRegion(taxCodeIncomes: Seq[TaxCodeIncome]): String = {
+    if(taxCodeIncomes.exists(_.taxCode.startsWith("S"))) ScottishTaxRegion else UkTaxRegion
+  }
+
+}
+
+
+trait EtimatedIncomeTaxServiceComplex{
+
+  def taxAdjustmentComp(taxAdjustment: Option[TaxAdjustment], adjustmentType: TaxAdjustmentType) = {
+    taxAdjustment.
+      flatMap(_.taxAdjustmentComponents.find(_.taxAdjustmentType == adjustmentType))
+      .map(_.taxAdjustmentAmount)
+  }
+
+  def underPaymentFromPreviousYear(codingComponents: Seq[CodingComponent]) = codingComponents.find(_.componentType == UnderPaymentFromPreviousYear).flatMap(_.inputAmount)
+
+  def inYearAdjustment(codingComponents: Seq[CodingComponent]) = codingComponents.find(_.componentType == EstimatedTaxYouOweThisYear).flatMap(_.inputAmount)
+
+  def outstandingDebt(codingComponents: Seq[CodingComponent]) = codingComponents.find(_.componentType == OutstandingDebt).map(_.amount)
+
+  def fetchIncome(mergedTaxBands: List[TaxBand], bandType: String): Option[BigDecimal] = {
+    mergedTaxBands.find(band => band.bandType == bandType && band.income > 0).map(_.income)
+  }
+}
+
+
+
+
+object EstimatedIncomeTaxService extends EtimatedIncomeTaxServiceComplex with EtimatedIncomeTaxServiceTemp{
+
+  def taxBand(totalTax: TotalTax) = totalTax.incomeCategories.flatMap(_.taxBands)
 
   def taxViewType(codingComponents: Seq[CodingComponent],
                   totalTax: TotalTax,
@@ -58,7 +127,7 @@ object EstimatedIncomeTaxService {
     hasReductions(codingComponents,totalTax) ||
     hasAdditionalTax(codingComponents,totalTax) ||
     hasDividends(nonTaxCodeIncome,totalTax) ||
-    hasPotentialUnderpayment(totalInYearAdjustmentIntoCY, totalInYearAdjustmentIntoCYPlusOne) ||
+    hasPotentialUnderPayment(totalInYearAdjustmentIntoCY, totalInYearAdjustmentIntoCYPlusOne) ||
     hasTaxRelief(totalTax) ||
     hasSSR(taxBands) ||
     hasPSR(taxBands)
@@ -75,9 +144,9 @@ object EstimatedIncomeTaxService {
 
   def hasAdditionalTax(codingComponent: Seq[CodingComponent], totalTax: TotalTax): Boolean = {
 
-    codingComponent.find(_.componentType == UnderPaymentFromPreviousYear).flatMap(_.inputAmount).isDefined ||
-    codingComponent.find(_.componentType == EstimatedTaxYouOweThisYear).flatMap(_.inputAmount).isDefined ||
-    codingComponent.find(_.componentType == OutstandingDebt).map(_.amount).isDefined ||
+    underPaymentFromPreviousYear(codingComponent).isDefined ||
+    inYearAdjustment(codingComponent).isDefined ||
+    outstandingDebt(codingComponent).isDefined ||
     taxAdjustmentComp(totalTax.otherTaxDue, tax.ChildBenefit).isDefined ||
     taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessGiftAidTax).isDefined ||
     taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessWidowsAndOrphans).isDefined ||
@@ -104,7 +173,7 @@ object EstimatedIncomeTaxService {
   }
 
 
-  def hasPotentialUnderpayment(totalInYearAdjustmentIntoCY:BigDecimal, totalInYearAdjustmentIntoCYPlusOne:BigDecimal) =
+  def hasPotentialUnderPayment(totalInYearAdjustmentIntoCY:BigDecimal, totalInYearAdjustmentIntoCYPlusOne:BigDecimal) =
     totalInYearAdjustmentIntoCY <=0 && totalInYearAdjustmentIntoCYPlusOne > 0
 
 
@@ -118,37 +187,6 @@ object EstimatedIncomeTaxService {
 
   def hasPSR(taxBands: List[TaxBand]): Boolean ={
     fetchIncome(retrieveTaxBands(taxBands), PersonalSavingsRate).isDefined
-  }
-
-  private def fetchIncome(mergedTaxBands: List[TaxBand], bandType: String): Option[BigDecimal] = {
-    mergedTaxBands.find(band => band.bandType == bandType && band.income > 0).map(_.income)
-  }
-
-  private def retrieveTaxBands(taxBands: List[TaxBand]): List[TaxBand] = {
-    val mergedPsaBands = mergeAllowanceTaxBands(taxBands, PersonalSavingsRate)
-    val mergedSrBands = mergeAllowanceTaxBands(mergedPsaBands, StarterSavingsRate)
-    val bands = mergeAllowanceTaxBands(mergedSrBands, TaxFreeAllowanceBand)
-    bands.filter(_.income > 0).sortBy(_.rate)
-  }
-
-  private def mergeAllowanceTaxBands(taxBands: List[TaxBand], bandType: String) = {
-    val (bands, remBands) = taxBands.partition(_.bandType == bandType)
-    bands match {
-      case Nil => remBands
-      case _ => TaxBand(bands.map(_.bandType).head,
-        bands.map(_.code).head,
-        bands.map(_.income).sum,
-        bands.map(_.tax).sum,
-        bands.map(_.lowerBand).head,
-        bands.map(_.upperBand).head,
-        bands.map(_.rate).head) :: remBands
-    }
-  }
-
-  private def taxAdjustmentComp(taxAdjustment: Option[TaxAdjustment], adjustmentType: TaxAdjustmentType) = {
-    taxAdjustment.
-      flatMap(_.taxAdjustmentComponents.find(_.taxAdjustmentType == adjustmentType))
-      .map(_.taxAdjustmentAmount)
   }
 
 }

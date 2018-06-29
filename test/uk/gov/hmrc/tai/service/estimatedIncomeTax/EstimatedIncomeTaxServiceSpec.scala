@@ -16,16 +16,15 @@
 
 package uk.gov.hmrc.tai.service.estimatedIncomeTax
 
-import controllers.{FakeTaiPlayApplication, routes}
+import controllers.FakeTaiPlayApplication
+import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, OtherNonTaxCodeIncome}
-import uk.gov.hmrc.tai.model.domain.tax.{MaintenancePayments => _, _}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain.income._
+import uk.gov.hmrc.tai.model.domain.tax.{MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.viewModels._
-import uk.gov.hmrc.urls.Link
 
 import scala.collection.immutable.Seq
 
@@ -56,7 +55,7 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
     "return true" when {
       "totalInYearAdjustmentIntoCY is less than or equal to zero and totalInYearAdjustmentIntoCYPlusOne is greater than zero" in {
         val taxAccountSummary = TaxAccountSummary(0,0,0,0,1)
-        EstimatedIncomeTaxService.hasPotentialUnderpayment(
+        EstimatedIncomeTaxService.hasPotentialUnderPayment(
           taxAccountSummary.totalInYearAdjustment,taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne) mustBe true
       }
     }
@@ -64,7 +63,7 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
     "return false" when {
       "totalInYearAdjustmentIntoCY is greater than zero and totalInYearAdjustmentIntoCYPlusOne is zero" in {
         val taxAccountSummary = TaxAccountSummary(0,0,1,0,0)
-        EstimatedIncomeTaxService.hasPotentialUnderpayment(taxAccountSummary.totalInYearAdjustmentIntoCY,
+        EstimatedIncomeTaxService.hasPotentialUnderPayment(taxAccountSummary.totalInYearAdjustmentIntoCY,
           taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne) mustBe false
       }
     }
@@ -283,6 +282,15 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
             EstimatedIncomeTaxService.taxBand(totalTax) mustBe Seq.empty
 
           }
+        }
+      }
+    }
+
+    "hasCurrentIncome" must {
+      "return true" when{
+        "tax code incomes is not empty" in{
+          val taxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome,Some(1),BigDecimal(39107),"EmploymentIncome","277L","TestName",OtherBasisOperation,Live,None,Some(new LocalDate(2015,11,26)),Some(new LocalDate(2015,11,26))))
+          EstimatedIncomeTaxService.hasIncome(taxCodeIncomes) mustBe true
         }
       }
     }
