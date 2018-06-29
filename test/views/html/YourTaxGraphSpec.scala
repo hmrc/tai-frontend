@@ -19,7 +19,8 @@ package views.html
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.TaxRegionConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.{Band, BandedGraph, SimpleTaxView}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.SimpleTaxView
+import uk.gov.hmrc.tai.viewModels.{Band, BandedGraph}
 
 class YourTaxGraphSpec extends TaiViewSpec with TaxRegionConstants {
 

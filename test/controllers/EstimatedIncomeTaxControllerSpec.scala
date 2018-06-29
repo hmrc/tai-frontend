@@ -38,6 +38,7 @@ import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels._
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.SimpleTaxView
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -99,7 +100,7 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
         status(result) mustBe OK
         println(result.toString)
 
-        contentAsString(result) mustEqual(views.html.estimatedIncomeTax(viewModel,Html("<title/>")).toString())
+        contentAsString(result) mustEqual(views.html.estimatedIncomeTaxTemp(viewModel,Html("<title/>")).toString())
       }
 
       "loading the estimated income tax for a complex view " in {
@@ -156,7 +157,7 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual(views.html.estimatedIncomeTax(viewModel,Html("<title/>")).toString())
+        contentAsString(result) mustEqual(views.html.estimatedIncomeTaxTemp(viewModel,Html("<title/>")).toString())
 
       }
     }

@@ -24,15 +24,12 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.{TaxAdjustment, TaxAdjustmentType, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.util._
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{ComplexTaxView, SimpleTaxView, TaxViewType, ZeroTaxView}
 import uk.gov.hmrc.urls.Link
 import views.html.includes.link
 
 import scala.math.BigDecimal
 
-sealed trait TaxViewType
-case object ZeroTaxView extends TaxViewType
-case object SimpleTaxView extends TaxViewType
-case object ComplexTaxView extends TaxViewType
 
 case class AdditionalTaxDetailRow(
                                    description: String,

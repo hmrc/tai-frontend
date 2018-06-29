@@ -23,6 +23,7 @@ import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels._
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{SimpleTaxView, ZeroTaxView}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 
@@ -70,7 +71,7 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
 
     "have low estimated total income messages" when {
       "the earnings for a NINO were lower than the tax free allowance" in {
-        def lowEarningsView: Html = views.html.estimatedIncomeTax(viewModel1, Html("<Html><head></head><body>Test</body></Html>"))
+        def lowEarningsView: Html = views.html.estimatedIncomeTaxTemp(viewModel1, Html("<Html><head></head><body>Test</body></Html>"))
 
         doc(lowEarningsView) must haveParagraphWithText(Html(messages("tai.estimatedIncomeLow.desc",
           messages("tai.estimatedIncome.taxFree.link"),
@@ -89,7 +90,7 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
 
     "have tax on your employment income section" when {
       "the NINO falls into simple tax estimate type" in {
-        def simpleTaxView: Html = views.html.estimatedIncomeTax(viewModel2, Html("<Html><head></head><body>Test</body></Html>"))
+        def simpleTaxView: Html = views.html.estimatedIncomeTaxTemp(viewModel2, Html("<Html><head></head><body>Test</body></Html>"))
 
         doc(simpleTaxView) must haveH2HeadingWithText(messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading"))
         doc(simpleTaxView) must haveParagraphWithText(Html(messages("tai.estimatedIncome.desc",
@@ -159,7 +160,7 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
         AdditionalTaxDetailRow(Messages("tai.taxCalc.pensionPaymentsAdjustment.title"), 200, None)
       )
       val model = createViewModel(true, additionalRows, Seq.empty[ReductionTaxRow])
-      def additionalDetailView: Html = views.html.estimatedIncomeTax(model, Html("<title/>"))
+      def additionalDetailView: Html = views.html.estimatedIncomeTaxTemp(model, Html("<title/>"))
 
 
       doc(additionalDetailView).select("#additionalTaxTable").size() mustBe 1
@@ -176,7 +177,7 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
       )
 
       val model = createViewModel(true, Seq.empty[AdditionalTaxDetailRow], reductionTaxRows)
-      def reductionTaxDetailView: Html = views.html.estimatedIncomeTax(model, Html("<title/>"))
+      def reductionTaxDetailView: Html = views.html.estimatedIncomeTaxTemp(model, Html("<title/>"))
 
       doc(reductionTaxDetailView).select("#taxPaidElsewhereTable").size() mustBe 1
       doc(reductionTaxDetailView).select("#taxPaidElsewhereTable-heading").text() mustBe Messages("tai.estimatedIncome.reductionsTax.title")
@@ -188,7 +189,7 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
       "there is no current income" in {
         val model = createViewModel(false, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])
 
-        def noCurrentIncomeView: Html = views.html.estimatedIncomeTax(model, Html("<title/>"))
+        def noCurrentIncomeView: Html = views.html.estimatedIncomeTaxTemp(model, Html("<title/>"))
 
         doc(noCurrentIncomeView) must haveParagraphWithText(messages("tai.no.increasesTax"))
       }
@@ -240,5 +241,5 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
   val viewModel2 = createViewModel2(true, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])
 
 
-  override def view: Html = views.html.estimatedIncomeTax(viewModel, Html("<Html><head></head><body>Test</body></Html>"))
+  override def view: Html = views.html.estimatedIncomeTaxTemp(viewModel, Html("<Html><head></head><body>Test</body></Html>"))
 }

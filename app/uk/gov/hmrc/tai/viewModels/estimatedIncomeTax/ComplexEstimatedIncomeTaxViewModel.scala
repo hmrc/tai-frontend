@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.{TaxBand, TotalTax}
-import uk.gov.hmrc.tai.service.estimatedIncomeTax.{EstimatedIncomeTaxService, EtimatedIncomeTaxServiceComplex, EtimatedIncomeTaxServiceTemp}
+import uk.gov.hmrc.tai.service.estimatedIncomeTax.{EstimatedIncomeTaxService}
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.viewModels.{Band, BandedGraph, Swatch}
 import uk.gov.hmrc.urls.Link
@@ -31,10 +31,7 @@ import views.html.includes.link
 
 import scala.math.BigDecimal
 
-sealed trait TaxViewType
-case object ZeroTaxView extends TaxViewType
-case object SimpleTaxView extends TaxViewType
-case object ComplexTaxView extends TaxViewType
+
 
 case class AdditionalTaxDetailRow(
                                    description: String,
@@ -68,7 +65,7 @@ case class ComplexEstimatedIncomeTaxViewModel(
                                         mergedTaxBands:List[TaxBand]
                                       ) extends ViewModelHelper
 
-object ComplexEstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants with EtimatedIncomeTaxServiceTemp with EtimatedIncomeTaxServiceComplex {
+object ComplexEstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants with EstimatedIncomeTaxHelper with ComplexEstimatedIncomeTaxHelper{
 
   def apply(codingComponents: Seq[CodingComponent], taxAccountSummary: TaxAccountSummary,
             totalTax: TotalTax, nonTaxCodeIncome: NonTaxCodeIncome, taxCodeIncomes: Seq[TaxCodeIncome], taxBands:List[TaxBand])(implicit messages: Messages): ComplexEstimatedIncomeTaxViewModel = {
@@ -111,38 +108,6 @@ object ComplexEstimatedIncomeTaxViewModel extends BandTypesConstants with TaxReg
       hasTaxRelief,
       mergedTaxBands)
   }
-
-//  def fetchIncome(mergedTaxBands: List[TaxBand], bandType: String)(implicit messages: Messages): Option[BigDecimal] = {
-//    mergedTaxBands.find(band => band.bandType == bandType && band.income > 0).map(_.income)
-//  }
-
-//  def hasTaxRelief(totalTax: TotalTax)(implicit messages: Messages): Boolean = {
-//    totalTax.taxReliefComponent.isDefined
-//  }
-
-
-
-//  def retrieveTaxBands(taxBands: List[TaxBand])(implicit messages: Messages): List[TaxBand] = {
-//    val mergedPsaBands = mergeAllowanceTaxBands(taxBands, PersonalSavingsRate)
-//    val mergedSrBands = mergeAllowanceTaxBands(mergedPsaBands, StarterSavingsRate)
-//    val bands = mergeAllowanceTaxBands(mergedSrBands, TaxFreeAllowanceBand)
-//    bands.filter(_.income > 0).sortBy(_.rate)
-//  }
-//
-//  private def mergeAllowanceTaxBands(taxBands: List[TaxBand], bandType:  String)(implicit messages: Messages) = {
-//    val (bands, remBands) = taxBands.partition(_.bandType == bandType)
-//    bands match {
-//      case Nil => remBands
-//      case _ => TaxBand(bands.map(_.bandType).head,
-//        bands.map(_.code).head,
-//        bands.map(_.income).sum,
-//        bands.map(_.tax).sum,
-//        bands.map(_.lowerBand).head,
-//        bands.map(_.upperBand).head,
-//        bands.map(_.rate).head) :: remBands
-//    }
-//  }
-
 
   def createBandedGraph(taxBands: List[TaxBand], personalAllowance: Option[BigDecimal] = None,
                         taxFreeAllowanceBandSum: BigDecimal = 0, totalEstimatedIncome: BigDecimal,

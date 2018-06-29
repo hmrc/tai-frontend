@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ComplexEstimatedIncomeTaxViewModel
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{ComplexEstimatedIncomeTaxViewModel, ComplexTaxView, SimpleTaxView, ZeroTaxView}
 
 trait EstimatedIncomeTaxController extends TaiBaseController
   with DelegationAwareActions
@@ -81,16 +81,16 @@ trait EstimatedIncomeTaxController extends TaiBaseController
 
                   taxViewType match {
                     case ComplexTaxView => {
-                      val model = EstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, totalTaxDetails, nonTaxCodeIncome, taxCodeIncomes)
-                      Ok(views.html.estimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
+                      val model = ComplexEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, totalTaxDetails, nonTaxCodeIncome, taxCodeIncomes,taxBands)
+                      Ok(views.html.estimatedIncomeTax.ComplexEstimatedIncomeTax(model, taxViewType, iFormLinks successfulContentOrElse Html("")))
                     }
                     case SimpleTaxView => {
                       val model = EstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, totalTaxDetails, nonTaxCodeIncome, taxCodeIncomes)
-                      Ok(views.html.estimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
+                      Ok(views.html.estimatedIncomeTaxTemp(model, iFormLinks successfulContentOrElse Html("")))
                     }
                     case ZeroTaxView => {
                       val model = EstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, totalTaxDetails, nonTaxCodeIncome, taxCodeIncomes)
-                      Ok(views.html.estimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
+                      Ok(views.html.estimatedIncomeTaxTemp(model, iFormLinks successfulContentOrElse Html("")))
                     }
                   }
                 case _ => throw new RuntimeException("Failed to get tax summary details")
