@@ -9,6 +9,7 @@ GET         /historic-paye/:taxYear                                             
 
 GET         /tax-explanation                                                           controllers.TaxExplanationController.taxExplanationPage
 
+
 GET         /timeout                                                                   controllers.ServiceController.timeoutPage
 GET         /signout                                                                   controllers.ServiceController.serviceSignout
 GET         /tax-estimate-unavailable                                                  controllers.ServiceController.gateKeeper
@@ -140,7 +141,7 @@ GET         /your-tax-free-amount                                               
 
 GET         /tax-codes                                                                 controllers.YourTaxCodeController.taxCodes
 GET         /paye-income-tax-estimate                                                  controllers.EstimatedIncomeTaxController.estimatedIncomeTax
-
+GET         /detailed-income-tax-estimate                                              controllers.DetailedIncomeTaxEstimateController.taxExplanationPage
 
 GET         /income-tax-comparison                                                     controllers.IncomeTaxComparisonController.onPageLoad
 

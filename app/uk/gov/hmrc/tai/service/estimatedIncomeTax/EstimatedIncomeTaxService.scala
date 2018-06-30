@@ -20,12 +20,12 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.NonTaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.tax.{TaxBand, TotalTax}
-import uk.gov.hmrc.tai.viewModels.EstimatedIncomeTaxViewModel._
+import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
 import scala.math.BigDecimal
 
-object EstimatedIncomeTaxService extends ComplexEstimatedIncomeTaxHelper with EstimatedIncomeTaxHelper{
+object EstimatedIncomeTaxService extends ComplexEstimatedIncomeTaxHelper with EstimatedIncomeTaxHelper with BandTypesConstants{
 
   def taxBand(totalTax: TotalTax) = totalTax.incomeCategories.flatMap(_.taxBands)
 

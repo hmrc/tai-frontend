@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxAdjustmentComponent, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.util.{BandTypesConstants, TaxRegionConstants}
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{ComplexTaxView, SimpleTaxView, ZeroTaxView}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{ComplexTaxView, EstimatedIncomeTaxViewModel, SimpleTaxView, ZeroTaxView}
 import uk.gov.hmrc.urls.Link
 import views.html.includes.link
 

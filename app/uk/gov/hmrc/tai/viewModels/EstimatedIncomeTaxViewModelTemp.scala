@@ -43,7 +43,7 @@ case class ReductionTaxRow(
                             title: String
                           )
 
-case class EstimatedIncomeTaxViewModel(
+case class EstimatedIncomeTaxViewModelTemp(
                                         hasCurrentIncome: Boolean,
                                         incomeTaxEstimate: BigDecimal,
                                         incomeEstimate: BigDecimal,
@@ -64,10 +64,10 @@ case class EstimatedIncomeTaxViewModel(
                                         mergedTaxBands:List[TaxBand]
                                       ) extends ViewModelHelper
 
-object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants {
+object EstimatedIncomeTaxViewModelTemp extends BandTypesConstants with TaxRegionConstants {
 
   def apply(codingComponents: Seq[CodingComponent], taxAccountSummary: TaxAccountSummary,
-            totalTax: TotalTax, nonTaxCodeIncome: NonTaxCodeIncome, taxCodeIncomes: Seq[TaxCodeIncome])(implicit messages: Messages): EstimatedIncomeTaxViewModel = {
+            totalTax: TotalTax, nonTaxCodeIncome: NonTaxCodeIncome, taxCodeIncomes: Seq[TaxCodeIncome])(implicit messages: Messages): EstimatedIncomeTaxViewModelTemp = {
     val taxBands = totalTax.incomeCategories.flatMap(_.taxBands)
     val personalAllowance = personalAllowanceAmount(codingComponents)
     val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
@@ -87,7 +87,7 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
       additionalTaxTable.size,reductionTaxTable.size, taxAccountSummary.totalEstimatedIncome, taxAccountSummary.taxFreeAllowance,
       taxAccountSummary.totalEstimatedTax)
 
-    EstimatedIncomeTaxViewModel(taxCodeIncomes.nonEmpty,
+    EstimatedIncomeTaxViewModelTemp(taxCodeIncomes.nonEmpty,
       taxAccountSummary.totalEstimatedTax,
       taxAccountSummary.totalEstimatedIncome,
       taxAccountSummary.taxFreeAllowance,

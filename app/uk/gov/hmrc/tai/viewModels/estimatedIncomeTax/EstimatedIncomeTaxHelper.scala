@@ -20,12 +20,12 @@ import uk.gov.hmrc.tai.model.domain.{PersonalAllowanceAgedPAA, PersonalAllowance
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
-import uk.gov.hmrc.tai.viewModels.EstimatedIncomeTaxViewModel.{PersonalSavingsRate, StarterSavingsRate, TaxFreeAllowanceBand}
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ComplexEstimatedIncomeTaxViewModel.{ScottishTaxRegion, UkTaxRegion}
+import uk.gov.hmrc.tai.util.BandTypesConstants
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.EstimatedIncomeTaxViewModel.{ScottishTaxRegion, UkTaxRegion}
 
 import scala.math.BigDecimal
 
-trait EstimatedIncomeTaxHelper {
+trait EstimatedIncomeTaxHelper extends BandTypesConstants {
 
   def createPABand(taxFreeAllowance: BigDecimal) = {
     TaxBand(TaxFreeAllowanceBand, "", taxFreeAllowance, 0, Some(0), None, 0)
