@@ -149,7 +149,6 @@ tai.taxFreeAmount.table.taxComponent.ForeignPropertyIncome=Incwm o eiddo tramor
 tai.currentYearSummary.heading=Gwirio''ch Treth Incwm
 tai.addPensionProvider.pensionNumber.customGaTitle=A ydych yn gwybod beth yw''ch rhif pensiwn ar gyfer y darparwr pensiwn hwn?
 tai.taxCode.0T=Defnyddiwyd eich Lwfans Personol i gyd, neu rydych wedi dechrau swydd newydd ac nid oes gan eich cyflogwr y manylion sydd eu hangen arnynt i roi cod treth i chi.
-tai.WhatDoYouWantToDo.radio2=flwyddyn dreth bresennol, {0} i {1}
 tai.checkYourAnswers.change.label=Newid
 tai.label.back=Yn ôl
 tai.noPrimary.reasonItem2=mae gennych fwy nag un incwm ac nid ydym yn gwybod pa un yw''ch prif ffynhonnell incwm
@@ -513,7 +512,6 @@ tai.taxFreeAmount.table.taxComponent.Entertaining=Gwesteia
 tai.payPeriod.monthly=Misol
 tai.paye.lastTaxYear.checkTax.link=Gwiriwch nawr
 tai.taxFreeAmount.table.taxComponent.DoubleTaxationRelief=Rhyddhad trethiant dwbl
-tai.WhatDoYouWantToDo.submit=Yn eich blaen
 tai.taxCode.K=Mae gennych incwm heb ei drethu sy''n fwy na''ch lwfans rhydd o dreth. Mae angen ychwanegu''r swm at eich cyflog neu''ch pensiwn fel y gellir casglu''r dreth ychwanegol.
 tai.unableToCalculate.cantCalc=Ymddiheurwn na allwn gyfrifo''ch cyflog ar eich rhan. Dim ond wrth ddefnyddio oriau gwaith rheolaidd y gallwn gyfrifo cyflog blynyddol.
 tai.taxFreeAmount.table.totals.caption=Yn gyffredinol
@@ -539,7 +537,6 @@ tai.incomes.status-1=(Presennol
 tai.income.details.yourEstimatedTaxableIncome.screenReader=Eich incwm trethadwy amcangyfrifedig yw {0}.
 tai.incomes.confirm.save.message.details=Gall newid eich incwm newid eich cod treth a faint o dreth rydych yn ei thalu.
 tai.deceased.post=Post
-tai.WhatDoYouWantToDo.radio1=blwyddyn nesaf
 tai.income.calculation.manual.update.letter.withoutDate=Gwnaethom ddiweddaru''ch incwm ar ôl i''ch llythyr ddod i law.
 tai.bbsi.update.captureInterest.para3=Efallai y bydd o fantais i chi ddefnyddio "cyfrifiannell adlog" ar-lein i weithio allan eich llog.
 tai.payslip.title=Cyfanswm eich cyflog o''ch slip cyflog
@@ -770,7 +767,6 @@ tai.income.details.incomeReceivedToDate=Incwm a gafwyd hyd yn hyn
 tai.endEmployment.endDateForm.title=Pryd wnaethoch orffen gweithio i {0}?
 tai.payPeriod.title=Pa mor aml ydych yn cael eich talu?
 uk.bandtype.PSR=Lwfans Cynilion Personol
-tai.whatDoYouWantToDo.heading=Dewis blwyddyn dreth
 tai.incomeTaxSummary.addMissingIncome.section.heading=Rhywbeth ar goll?
 tai.estimatedIncome.whyEstimate.desc=Mae swm y dreth a dalwch yn dibynnu ar gyfanswm eich incwm ar gyfer y flwyddyn dreth gyfan. Ni allwn roi union ffigur oherwydd ni fyddwn yn gwybod am eich holl incwm tan ar ôl i''r flwyddyn dreth ddod i ben ar {0}.
 tai.phoneNumber=Rhif ffôn
@@ -952,7 +948,6 @@ tai.pension.income.details.updateLinkText.screenReader=Diweddaru neu ddileu''r p
 tai.iya.check.your.tax.code.text=Gwiriwch {0} i gael gwybod beth sydd wedi newid.
 tai.bbsi.update.captureInterest.preHeading=Diweddaru''r amcangyfrif o''r llog
 tai.paye.ceased.pension.CY-1=Mae ein cofnodion yn dangos nad oes gennych incwm trethadwy yn y flwyddyn dreth hon oherwydd bod eich incwm pensiynau wedi dod i ben ar {0}.
-tai.WhatDoYouWantToDo.radio3=yn gynharach
 tai.income.calculation.backLink=Yn ôl
 tai.bonusPayments.error.form.incomes.radioButton.mandatory=Dewiswch ''Iawn'' os yw''ch slip cyflog yn cynnwys taliadau bonws neu oramser
 tai.taxFreeAmount.table.taxComponent.MaintenancePayments=Taliadau Cynhaliaeth
@@ -962,7 +957,6 @@ tai.incomeTax.calculated.heading=Sut y cyfrifir eich Treth Incwm TWE
 tai.taxcode.deduction.type-4=Pensiwn arall
 tai.income.calculation.incomeTable.dateHeader=Dyddiad
 tai.confirmAndSend=Cadarnhau ac anfon
-tai.whatDoYouWantToDo.error.selectOption=Dewiswch beth rydych am ei wneud.
 scottish.bandtype.B=Treth Incwm ar y gyfradd sylfaenol
 tai.pensionNumber=Rhif pensiwn
 tai.income.calculation.eyu.summary.multi=Mae {0} wedi gwneud rhai newidiadau i''r wybodaeth a roddodd i ni yn y lle cyntaf. Daeth y rhain i law ar ôl diwedd y flwyddyn dreth ac felly nid ydynt wedi''u cynnwys yn y tabl:
@@ -1220,8 +1214,6 @@ tai.taxFreeAmount.missing.section.addition=Ychwanegu lwfans neu ryddhad treth sy
 tai.taxFreeAmount.missing.section.benefit=Ychwanegu buddiant cwmni sydd ar goll
 tai.taxFreeAmount.missing.section.income=Ychwanegu incwm o ffynhonnell arall sydd ar goll
 
-tai.whatDoYouWantToDo.legend=Gweld manylion Treth Incwm TWE ar gyfer:
-
 tai.canWeContactByPhone.explanation.pt2=Os dewiswch ''Na'', byddwn yn cysylltu â chi trwy lythyr. Am resymau diogelwch, ni allwn ofyn am fwy o wybodaeth trwy e-bost.
 
 ##Update Pension Pages
@@ -1256,3 +1248,13 @@ tai.incomeTaxComparison.tellAboutChange.otherIncomeReaderText=Rhoi gwybod i ni a
 tai.updateOrRemove.fromOtherSources=Diweddaru neu ddileu {0}
 tai.mergedTaxBand.link.wording=Gwirio treth ar incwm
 
+##What Do You Want To Do Page
+
+##TODO to be removed when tileView is toggled on
+tai.whatDoYouWantToDo.heading=Dewis blwyddyn dreth
+tai.whatDoYouWantToDo.legend=Gweld manylion Treth Incwm TWE ar gyfer:
+tai.WhatDoYouWantToDo.radio1=blwyddyn nesaf
+tai.WhatDoYouWantToDo.radio2=flwyddyn dreth bresennol, {0} i {1}
+tai.WhatDoYouWantToDo.radio3=yn gynharach
+tai.WhatDoYouWantToDo.submit=Yn eich blaen
+tai.whatDoYouWantToDo.error.selectOption=Dewiswch beth rydych am ei wneud.
