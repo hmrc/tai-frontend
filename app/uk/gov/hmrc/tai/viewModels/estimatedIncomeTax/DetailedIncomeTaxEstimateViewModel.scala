@@ -38,7 +38,6 @@ case class DetailedIncomeTaxEstimateViewModel(
                                        incomeEstimate: BigDecimal,
                                        taxFreeEstimate: BigDecimal,
                                        additionalTaxTable: Seq[AdditionalTaxDetailRow],
-                                       additionalTaxTableTotal: BigDecimal,
                                        reductionTaxTable: Seq[ReductionTaxRow],
                                        reductionTaxTableTotal: BigDecimal,
                                        incomeTaxReducedToZeroMessage: Option[String],
@@ -77,7 +76,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
 
 
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
-    val additionalTaxTableTotal = additionalTaxTable.map(_.amount).sum
     val reductionTaxTable = createReductionsTable(codingComponents, totalTax)
     val reductionTaxTableTotal = reductionTaxTable.map(_.amount).sum
     val incomeTaxReducedToZero = incomeTaxReducedToZeroMessage(taxAccountSummary.totalEstimatedTax <= 0 && reductionTaxTable.nonEmpty)
@@ -97,7 +95,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
       taxAccountSummary.totalEstimatedIncome,
       taxAccountSummary.taxFreeAllowance,
       additionalTaxTable,
-      additionalTaxTableTotal,
       reductionTaxTable,
       reductionTaxTableTotal,
       incomeTaxReducedToZero,

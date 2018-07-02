@@ -18,7 +18,6 @@ package uk.gov.hmrc.tai.util
 
 import uk.gov.hmrc.tai.model.domain.AllowanceComponentType
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
 trait TaxAccountCalculator {
 
