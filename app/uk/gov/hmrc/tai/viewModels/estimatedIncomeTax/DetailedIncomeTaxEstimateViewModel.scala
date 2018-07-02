@@ -33,7 +33,7 @@ case class DetailedIncomeTaxEstimateViewModel(
                                        nonSavings: Seq[TaxBand],
                                        savings: Seq[TaxBand],
                                        dividends: Seq[TaxBand],
-                                       bandType: String,
+                                       taxRegion: String,
                                        incomeTaxEstimate: BigDecimal,
                                        incomeEstimate: BigDecimal,
                                        taxFreeEstimate: BigDecimal,
@@ -67,7 +67,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
         category.incomeCategoryType == ForeignDividendsIncomeCategory
     }.flatMap(_.taxBands).filter(_.income > 0).filterNot(_.rate == 0)
 
-    val bandType = if(taxCodeIncomes.exists(_.taxCode.startsWith("S"))) ScottishBands else UkBands
+    val taxRegion = findTaxRegion(taxCodeIncomes)
     val taxBands = EstimatedIncomeTaxService.taxBand(totalTax).toList
     val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = retrieveTaxBands(taxBands :+ paBand)
@@ -92,7 +92,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
       nonSavings,
       savings,
       dividends,
-      bandType,
+      taxRegion,
       taxAccountSummary.totalEstimatedTax,
       taxAccountSummary.totalEstimatedIncome,
       taxAccountSummary.taxFreeAllowance,
