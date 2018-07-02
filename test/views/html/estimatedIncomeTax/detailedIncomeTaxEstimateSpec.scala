@@ -34,22 +34,27 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
   "view" must {
 
     behave like pageWithTitle(messages("tai.estimatedIncome.detailedEstimate.title"))
-    //behave like pageWithCombinedHeader(TaxYearResolver.currentTaxYear.toString,messages("tai.estimatedIncome.detailedEstimate.heading"))
+    behave like pageWithHeader(messages("tai.estimatedIncome.detailedEstimate.heading"))
     behave like pageWithBackLink
   }
 
   "show correct header content" in {
 
-    val accessiblePreHeading = doc.select("""header span[class="visuallyhidden"]""")
-    accessiblePreHeading.text mustBe Messages("tai.estimatedIncome.accessiblePreHeading")
-
     val expectedTaxYearString =  Messages("tai.taxYear",
       nonBreakable(Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)),
       nonBreakable(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)) )
 
+    val accessiblePreHeading = doc.select("""header span[class="visuallyhidden"]""")
+    accessiblePreHeading.text mustBe Messages("tai.estimatedIncome.accessiblePreHeading")
+
     val preHeading = doc.select("header p")
     preHeading.text mustBe s"${Messages("tai.estimatedIncome.accessiblePreHeading")} $expectedTaxYearString"
   }
+
+  "have a heading for the Total Income Tax Estimate" in {
+    doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalIncomeTaxEstimate") + " £18,573")
+  }
+
 
   "display table headers" in {
     doc must haveThWithText(messages("tai.incomeTax.calculated.table.headingOne"))
@@ -156,7 +161,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     }
 
   }
-  val taxAccountSummary = TaxAccountSummary(0,0,0,0,0)
+  val taxAccountSummary = TaxAccountSummary(18573,0,0,0,0)
   val totalTax = TotalTax(0,Seq.empty[IncomeCategory],None,None,None)
   val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax,
     Seq.empty[TaxCodeIncome],taxAccountSummary,Seq.empty[CodingComponent],NonTaxCodeIncome(None,Seq.empty[OtherNonTaxCodeIncome]))
