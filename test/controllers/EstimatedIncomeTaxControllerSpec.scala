@@ -70,7 +70,7 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           basicRateBand,
           higherRateBand)
 
-        val viewModel = EstimatedIncomeTaxViewModel(true, 7834, 47835,11500, viewModelBandedGraph, Seq.empty, 0,
+        val viewModel = EstimatedIncomeTaxViewModelTemp(true, 7834, 47835,11500, viewModelBandedGraph, Seq.empty, 0,
           Seq.empty, 0, None, false, None, None, None, "UK", taxViewType = SimpleTaxView,mergedTaxBands = viewModelTaxBands)
 
         val sut = createSUT
@@ -128,7 +128,7 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           higherRateBand,
           startingSaversRateBand)
 
-        val viewModel = EstimatedIncomeTaxViewModel(true, 7834, 47835,11500, viewModelBandedGraph, Seq.empty, 0,
+        val viewModel = EstimatedIncomeTaxViewModelTemp(true, 7834, 47835,11500, viewModelBandedGraph, Seq.empty, 0,
           Seq.empty, 0, None, false, None, None, None, "UK", taxViewType = SimpleTaxView,mergedTaxBands = viewModelTaxBands)
 
         val sut = createSUT

@@ -72,6 +72,10 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = retrieveTaxBands(taxBands :+ paBand)
 
+
+
+
+
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
     val additionalTaxTableTotal = additionalTaxTable.map(_.amount).sum
     val reductionTaxTable = createReductionsTable(codingComponents, totalTax)

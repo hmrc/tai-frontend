@@ -218,21 +218,21 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
     TaxBand("D0", "", 36466, 14586.4, None, None, 40))
 
   def createViewModel(hasCurrentIncome: Boolean, additionalRows: Seq[AdditionalTaxDetailRow],
-                      reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
-    EstimatedIncomeTaxViewModel(
+                      reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModelTemp = {
+    EstimatedIncomeTaxViewModelTemp(
       hasCurrentIncome, 100, 100, 100, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
       reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, Some(100), Some(100), Some("Test"), "uk", true, ZeroTaxView,List())
   }
 
   def createViewModel1(hasCurrentIncome: Boolean, additionalRows: Seq[AdditionalTaxDetailRow],
-                      reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
-    EstimatedIncomeTaxViewModel(hasCurrentIncome, 0, 9000, 11500, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
+                      reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModelTemp = {
+    EstimatedIncomeTaxViewModelTemp(hasCurrentIncome, 0, 9000, 11500, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
       reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, None, None, Some("Test"), "uk",taxViewType = ZeroTaxView,mergedTaxBands = List())
   }
 
   def createViewModel2(hasCurrentIncome: Boolean, additionalRows: Seq[AdditionalTaxDetailRow],
-                       reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
-    EstimatedIncomeTaxViewModel(hasCurrentIncome, 0, 30000, 11500, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
+                       reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModelTemp = {
+    EstimatedIncomeTaxViewModelTemp(hasCurrentIncome, 0, 30000, 11500, bandedGraph, additionalRows, additionalRows.map(_.amount).sum,
       reductionRows, reductionRows.map(_.amount).sum, Some("Income Tax Reduced to Zero"), true, None, None, Some("Test"), "UK", taxViewType = SimpleTaxView,mergedTaxBands = taxBands)
   }
 

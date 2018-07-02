@@ -19,10 +19,14 @@ package views.html.estimatedIncomeTax
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.tai.model.domain.tax.TaxBand
+import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, OtherNonTaxCodeIncome, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.TaxExplanationViewModel
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
 class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants {
@@ -30,13 +34,10 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
   "view" must {
 
     behave like pageWithTitle(messages("tai.estimatedIncome.detailedEstimate.title"))
-    behave like pageWithCombinedHeader(TaxYearResolver.currentTaxYear.toString,messages("tai.estimatedIncome.detailedEstimate.heading"))
+    //behave like pageWithCombinedHeader(TaxYearResolver.currentTaxYear.toString,messages("tai.estimatedIncome.detailedEstimate.heading"))
     behave like pageWithBackLink
   }
 
-  "display headings" in {
-    doc must haveHeadingH3WithText(messages("tai.incomeTax.calculated.subHeading"))
-  }
   "show correct header content" in {
 
     val accessiblePreHeading = doc.select("""header span[class="visuallyhidden"]""")
@@ -155,5 +156,10 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     }
 
   }
-  override def view: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(TaxExplanationViewModel(Seq.empty[TaxBand], Seq.empty[TaxBand], Seq.empty[TaxBand], ""))
+  val taxAccountSummary = TaxAccountSummary(0,0,0,0,0)
+  val totalTax = TotalTax(0,Seq.empty[IncomeCategory],None,None,None)
+  val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax,
+    Seq.empty[TaxCodeIncome],taxAccountSummary,Seq.empty[CodingComponent],NonTaxCodeIncome(None,Seq.empty[OtherNonTaxCodeIncome]))
+
+  override def view: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
 }

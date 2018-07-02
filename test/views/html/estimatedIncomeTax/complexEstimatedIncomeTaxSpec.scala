@@ -84,8 +84,7 @@ class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
 
   def createViewModel(hasCurrentIncome: Boolean, additionalRows: Seq[AdditionalTaxDetailRow],
                        reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
-    ComplexEstimatedIncomeTaxViewModel(hasCurrentIncome, 15000, 48000, 11500, bandedGraph, Seq.empty, 0,
-      Seq.empty, 0, Some("Income Tax Reduced to Zero"), true, None, None, Some("Test"), "UK", true, taxBands)
+    EstimatedIncomeTaxViewModel(hasCurrentIncome, 15000, 48000, 11500, bandedGraph, "UK")
   }
 
   val viewModel = createViewModel(true, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])
