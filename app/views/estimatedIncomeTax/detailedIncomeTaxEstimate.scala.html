@@ -62,36 +62,7 @@
                 </section>
 
                 <section class="section soft--top">
-                    <h3 id="tax-on-employment-income-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.employmentIncome.subHeading")</h3>
-                    <p id="tax-on-employment-income-desc">
-                        @Html(Messages("tai.estimatedIncome.desc",
-                        pounds(viewModel.incomeEstimate),
-                        Link.toInternalPage(
-                        id=Some("taxFreeAmountLink"),
-                        url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                        value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
-                        pounds(viewModel.taxFreeEstimate)))
-                    </p>
-                    <table id="tax-on-your-employment-income-table">
-                        <thead>
-                        <tr>
-                            <th>@Messages("tai.incomeTax.calculated.table.headingOne")</th>
-                            <th>@Messages("tai.incomeTax.calculated.table.headingTwo")</th>
-                            <th class="text--right">@Messages("tai.incomeTax.calculated.table.headingThree")</th>
-                            <th class="text--right">@Messages("tai.incomeTax.calculated.table.headingFour")</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @for(taxBand <- viewModel.nonSavings.sortBy(_.rate)){
-                        <tr>
-                            <td>@MoneyPounds(taxBand.income,0).quantity</td>
-                            <td>@Messages(s"${viewModel.taxRegion}.${taxBand.bandType}")</td>
-                            <td class="text--right">@taxBand.rate%</td>
-                            <td class="text--right">@MoneyPounds(taxBand.tax,2).quantity</td>
-                        </tr>
-                        }
-                        </tbody>
-                    </table>
+                    @taxOnIncome(viewModel.incomeEstimate,viewModel.incomeTaxEstimate,viewModel.nonSavings,viewModel.taxRegion)
                 </section>
 
 

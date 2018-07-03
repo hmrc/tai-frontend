@@ -55,6 +55,10 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalIncomeTaxEstimate") + " £18,573")
   }
 
+//  "display additional tax related to Self Assessment" in {
+//    doc(view) must haveParagraphWithText()
+//  }
+
 
   "display table headers" in {
     doc must haveThWithText(messages("tai.incomeTax.calculated.table.headingOne"))

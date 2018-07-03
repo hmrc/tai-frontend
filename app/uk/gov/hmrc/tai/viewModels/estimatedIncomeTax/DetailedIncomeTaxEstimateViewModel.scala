@@ -30,7 +30,7 @@ import uk.gov.hmrc.urls.Link
 import scala.math.BigDecimal
 
 case class DetailedIncomeTaxEstimateViewModel(
-                                       nonSavings: Seq[TaxBand],
+                                       nonSavings: List[TaxBand],
                                        savings: Seq[TaxBand],
                                        dividends: Seq[TaxBand],
                                        taxRegion: String,
@@ -54,6 +54,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
 
   def apply(totalTax: TotalTax, taxCodeIncomes: Seq[TaxCodeIncome],taxAccountSummary: TaxAccountSummary, codingComponents: Seq[CodingComponent],
             nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): DetailedIncomeTaxEstimateViewModel = {
+
     val nonSavings = totalTax.incomeCategories.filter(_.incomeCategoryType == NonSavingsIncomeCategory).
       flatMap(_.taxBands).filter(_.income > 0).filterNot(_.rate == 0)
 
@@ -71,11 +72,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val taxBands = EstimatedIncomeTaxService.taxBand(totalTax).toList
     val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = retrieveTaxBands(taxBands :+ paBand)
-
-
-
-
-
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
     val additionalTaxTableTotal = additionalTaxTable.map(_.amount).sum
     val reductionTaxTable = createReductionsTable(codingComponents, totalTax)
@@ -87,9 +83,11 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val psrValue = fetchIncome(mergedTaxBands, PersonalSavingsRate)
     val divMessage = dividendsMessage(nonTaxCodeIncome, totalTax)
     val hasTaxRelief = EstimatedIncomeTaxService.hasTaxRelief(totalTax)
+    val mergedNonSavingsBand = (nonSavings :+ paBand).toList.sortBy(_.rate)
+
 
     DetailedIncomeTaxEstimateViewModel(
-      nonSavings,
+      mergedNonSavingsBand,
       savings,
       dividends,
       taxRegion,
