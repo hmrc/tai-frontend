@@ -24,19 +24,19 @@
 @import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 
 
-@(incomeEstimate:BigDecimal, taxFreeEstimate:BigDecimal, mergedTaxBands:List[TaxBand],taxRegion:String)(implicit messages: Messages)
+@(incomeEstimate:BigDecimal, taxFreeAllowance:BigDecimal, mergedTaxBands:List[TaxBand],taxRegion:String)(implicit messages: Messages)
 
 <h2 class="heading-section">
     @Messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading")
 </h2>
 <p id="taxOnEmploymentIncomeDesc">
     @Html(Messages("tai.estimatedIncome.desc",
-    pounds(incomeEstimate),
-    Link.toInternalPage(
+        pounds(incomeEstimate),
+        Link.toInternalPage(
     id=Some("taxFreeAmountLink"),
     url=routes.TaxFreeAmountController.taxFreeAmount.url,
     value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
-    pounds(taxFreeEstimate)))
+    pounds(taxFreeAllowance)))
 </p>
 <table id="employmentIncomeTaxDetails">
     <thead>

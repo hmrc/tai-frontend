@@ -62,14 +62,14 @@
                 </section>
 
                 <section class="section soft--top">
-                    @taxOnIncome(viewModel.incomeEstimate,viewModel.incomeTaxEstimate,viewModel.nonSavings,viewModel.taxRegion)
+                    @taxOnIncome(viewModel.incomeEstimate,viewModel.taxFreeAllowance,viewModel.nonSavings,viewModel.taxRegion)
                 </section>
 
 
                 <section class="section soft--top">
-                    <h3 id="tax-on-dividend-income-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading")</h3>
+                    <h2 id="tax-on-dividend-income-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading")</h2>
                     <p id="tax-on-dividend-income-desc">
-                        @Messages("tai.estimatedIncome.dividend.para.desc")
+                        @Messages("tai.estimatedIncome.dividend.para.desc", MoneyPounds(viewModel.totalDividendIncome, 0).quantity, MoneyPounds(viewModel.taxFreeDividendAllowance, 0).quantity)
                     </p>
 
                     <table id="tax-on-your-dividend-income">
@@ -153,11 +153,6 @@
                     <p id="personal-savings-allowance-text1">@Html(Messages("tai.estimatedIncome.PSA.text1",
                         psr,
                         Link.toExternalPage(url="https://www.gov.uk/apply-tax-free-interest-on-savings", value=Some(Messages("tai.estimatedIncome.PSA.linkText"))).toHtml))</p>
-                    }
-
-                    @viewModel.dividendsMessage.map { divRateMessage =>
-                    <h3 id="dividends-allowance-title" class="heading-medium">@Messages("tai.estimatedIncome.DIV.title")</h3>
-                    <p id="dividendZeroRateMessage">@divRateMessage</p>
                     }
 
                 </section>

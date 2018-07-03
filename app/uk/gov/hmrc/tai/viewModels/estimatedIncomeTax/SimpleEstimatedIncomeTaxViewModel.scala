@@ -29,7 +29,7 @@ import scala.math.BigDecimal
 case class SimpleEstimatedIncomeTaxViewModel(
                                         incomeTaxEstimate: BigDecimal,
                                         incomeEstimate: BigDecimal,
-                                        taxFreeEstimate: BigDecimal,
+                                        taxFreeAllowance: BigDecimal,
                                         graph: BandedGraph,
                                         taxRegion: String,
                                         mergedTaxBands:List[TaxBand]

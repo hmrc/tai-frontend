@@ -1097,6 +1097,7 @@ tai.estimatedIncome.PSA.linkText=Personal Savings Allowance
 tai.estimatedIncome.DIV.title=Dividend Allowance
 tai.mergedTaxBand.description=Check in more detail
 
+
 #Get Help page
 tai.getHelp.h1=Can’t pay the tax you owe this year
 tai.getHelp.p1=Contact HM Revenue and Customs for help and to arrange ways to pay.
