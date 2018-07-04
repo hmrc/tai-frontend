@@ -58,10 +58,10 @@ class estimatedIncomeTaxSpec extends TaiViewSpec {
       doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.whyEstimate.desc",
         TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))).body)
 
-      doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.howYouPay.desc",
+      doc(view) must haveParagraphWithText(Html(messages("estimatedIncome.howYouPay.desc",
         messages("tai.estimatedIncome.taxCodes.link"))).body)
 
-      doc(view).select("#howYouPayDesc").html() mustBe Html(messages("tai.estimatedIncome.howYouPay.desc",
+      doc(view).select("#howYouPayDesc").html() mustBe Html(messages("estimatedIncome.howYouPay.desc",
         Link.toInternalPage(
           id=Some("taxCodesLink"),
           url=routes.YourTaxCodeController.taxCodes.url.toString,
