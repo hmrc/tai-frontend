@@ -159,7 +159,7 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                         @Messages("tai.estimatedIncome.howYouPay.heading")
                     </h2>
                     <p  id="howYouPayDesc">
-                        @Html(Messages("tai.estimatedIncome.howYouPay.desc",
+                        @Html(Messages("estimatedIncome.howYouPay.desc",
                         Link.toInternalPage(
                         id=Some("taxCodesLink"),
                         url=routes.YourTaxCodeController.taxCodes.url,
