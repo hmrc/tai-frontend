@@ -228,13 +228,16 @@
 
                 @if(viewModel.reductionTaxTable.size > 0){
                 <section class="section soft--top soft--bottom">
-                    <h3 id="taxPaidElsewhereTable-heading" class="heading-medium">@Messages("tai.estimatedIncome.reductionsTax.title")</h3>
+                    <h3 id="taxPaidElsewhereTable-heading" class="heading-medium heading-section">@Messages("tai.estimatedIncome.reductionsTax.title")</h3>
                     <p id="taxPaidElsewhereTable-desc">@Messages("tai.estimatedIncome.reductionsTax.desc")</p>
                     <table id="taxPaidElsewhereTable" class="table-section">
                         <thead>
                         <tr>
-                            <th>@Messages("tai.tables.column1")</th>
-                            <th class="text--right">@Messages("tai.tables.column2")</th>
+                            @if(viewModel.reductionTaxTable.size>1) {
+                            <th colspan="2">@Messages("tax.adjustments")</th>
+                            } else {
+                            <th colspan="2">@Messages("tax.adjustment")</th>
+                            }
                         </tr>
                         </thead>
                         @for(taxPaidElsewhere <- viewModel.reductionTaxTable){
@@ -244,15 +247,9 @@
                                 <p>@Html(taxPaidElsewhere.description)</p>
                                 }
                             </td>
-                            <td class="text--right">-@MoneyPounds(taxPaidElsewhere.amount, 2).quantity</td>
+                            <td class="text--right">-@withPoundPrefix(MoneyPounds(taxPaidElsewhere.amount, 2))</td>
                         </tr>
                         }
-                        <tfoot>
-                        <tr class="table__row--bold">
-                            <td>@Messages("tai.tables.total")</td>
-                            <td class="text--right">-@MoneyPounds(viewModel.reductionTaxTableTotal, 2).quantity</td>
-                        </tr>
-                        </tfoot>
                     </table>
 
                     @viewModel.incomeTaxReducedToZeroMessage.map { incomeTaxReducedToZeroMessage => 

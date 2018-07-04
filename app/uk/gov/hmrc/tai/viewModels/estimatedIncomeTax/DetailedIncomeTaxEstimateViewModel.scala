@@ -39,7 +39,6 @@ case class DetailedIncomeTaxEstimateViewModel(
                                        taxFreeEstimate: BigDecimal,
                                        additionalTaxTable: Seq[AdditionalTaxDetailRow],
                                        reductionTaxTable: Seq[ReductionTaxRow],
-                                       reductionTaxTableTotal: BigDecimal,
                                        incomeTaxReducedToZeroMessage: Option[String],
                                        hasPotentialUnderPayment: Boolean,
                                        ssrValue: Option[BigDecimal],
@@ -77,7 +76,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
 
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
     val reductionTaxTable = createReductionsTable(codingComponents, totalTax)
-    val reductionTaxTableTotal = reductionTaxTable.map(_.amount).sum
     val incomeTaxReducedToZero = incomeTaxReducedToZeroMessage(taxAccountSummary.totalEstimatedTax <= 0 && reductionTaxTable.nonEmpty)
     val hasPotentialUnderPayment = EstimatedIncomeTaxService.hasPotentialUnderPayment(taxAccountSummary.totalInYearAdjustmentIntoCY,
       taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne)
@@ -96,7 +94,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
       taxAccountSummary.taxFreeAllowance,
       additionalTaxTable,
       reductionTaxTable,
-      reductionTaxTableTotal,
       incomeTaxReducedToZero,
       hasPotentialUnderPayment,
       ssrValue,
@@ -156,6 +153,18 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
       Messages("tai.taxCollected.atSource.doubleTaxationRelief.description"),
       Messages("tai.taxCollected.atSource.doubleTaxationRelief.title"))
 
+    val giftAidPayments = taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPayments)
+    val giftAidPaymentsRelief = taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPaymentsRelief)
+    val giftAidPaymentsReliefRow = createReductionTaxRow(giftAidPaymentsRelief,
+      Messages("gift.aid.tax.relief", giftAidPayments.getOrElse(0), giftAidPaymentsRelief.getOrElse(0)),
+      Messages("gift.aid.savings"))
+
+    val personalPensionPayments = taxAdjustmentComp(totalTax.taxReliefComponent, tax.PersonalPensionPayment)
+    val personalPensionPaymentsRelief = taxAdjustmentComp(totalTax.taxReliefComponent, tax.PersonalPensionPaymentRelief)
+    val personalPensionPaymentsReliefRow = createReductionTaxRow(personalPensionPaymentsRelief,
+      Messages("personal.pension.payment.relief", personalPensionPayments.getOrElse(0), personalPensionPaymentsRelief.getOrElse(0)),
+      Messages("personal.pension.payments"))
+
     Seq(
       nonCodedIncomeRow,
       ukDividendRow,
@@ -164,7 +173,9 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
       maintenancePaymentRow,
       enterpriseInvestmentSchemeRow,
       concessionReliefRow,
-      doubleTaxationReliefRow
+      doubleTaxationReliefRow,
+      giftAidPaymentsReliefRow,
+      personalPensionPaymentsReliefRow
     ).flatten
   }
 
