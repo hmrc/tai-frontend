@@ -683,69 +683,6 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
     }
   }
 
-  "createReductionsTable" must {
-    "return reduction tax table" when {
-      "there are components present which can reduce the tax" in {
-        val alreadyTaxedAtSource = Seq(
-          TaxAdjustmentComponent(tax.TaxOnBankBSInterest, 100),
-          TaxAdjustmentComponent(tax.TaxCreditOnUKDividends, 200),
-          TaxAdjustmentComponent(tax.TaxCreditOnForeignInterest, 300),
-          TaxAdjustmentComponent(tax.TaxCreditOnForeignIncomeDividends, 400)
-        )
-
-        val reliefsGivingBackTax = Seq(
-          TaxAdjustmentComponent(tax.EnterpriseInvestmentSchemeRelief, 500),
-          TaxAdjustmentComponent(tax.ConcessionalRelief, 600),
-          TaxAdjustmentComponent(tax.MaintenancePayments, 700),
-          TaxAdjustmentComponent(tax.MarriedCouplesAllowance, 800),
-          TaxAdjustmentComponent(tax.DoubleTaxationRelief, 900)
-        )
-
-        val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
-          Some(tax.TaxAdjustment(3500, reliefsGivingBackTax)),
-          None,
-          Some(tax.TaxAdjustment(1000, alreadyTaxedAtSource)),
-          Some(100))
-
-        val codingComponents = Seq(
-          CodingComponent(MarriedCouplesAllowanceMAE, None, 1200, "", None),
-          CodingComponent(MaintenancePayments, None, 1200, "", None)
-        )
-
-        val result = EstimatedIncomeTaxViewModelTemp.createReductionsTable(codingComponents, totalTax)
-
-        result mustBe Seq(
-          ReductionTaxRow(Messages("tai.taxCollected.atSource.otherIncome.description"), 100, Messages("tai.taxCollected.atSource.otherIncome.title")),
-          ReductionTaxRow(Messages("tai.taxCollected.atSource.dividends.description", 10), 200, Messages("tai.taxCollected.atSource.dividends.title")),
-          ReductionTaxRow(Messages("tai.taxCollected.atSource.bank.description", 20), 100, Messages("tai.taxCollected.atSource.bank.title")),
-          ReductionTaxRow(Messages("tai.taxCollected.atSource.marriageAllowance.description", MoneyPounds(1200).quantity,
-            Link.toInternalPage(
-              url = routes.YourTaxCodeController.taxCodes().toString,
-              value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
-            ).toHtml.body), 800, Messages("tai.taxCollected.atSource.marriageAllowance.title")),
-          ReductionTaxRow(Messages("tai.taxCollected.atSource.maintenancePayments.description", MoneyPounds(1200).quantity,
-            routes.YourTaxCodeController.taxCodes().url), 700, Messages("tai.taxCollected.atSource.marriageAllowance.title")),
-          ReductionTaxRow(Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description"),
-            500, Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title")),
-          ReductionTaxRow(Messages("tai.taxCollected.atSource.concessionalRelief.description"),
-            600, Messages("tai.taxCollected.atSource.concessionalRelief.title")),
-          ReductionTaxRow(Messages("tai.taxCollected.atSource.doubleTaxationRelief.description"),
-            900, Messages("tai.taxCollected.atSource.doubleTaxationRelief.title"))
-        )
-      }
-    }
-
-    "return empty reduction tax table" when {
-      "there are reduction in tax" in {
-        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-
-        val result = EstimatedIncomeTaxViewModelTemp.createReductionsTable(Seq.empty[CodingComponent], totalTax)
-
-        result mustBe Seq.empty[ReductionTaxRow]
-      }
-    }
-  }
-
   "incomeTaxReducedToZeroMessage" must {
     "return message" when {
       "hasTaxReducedToZero is true" in {
