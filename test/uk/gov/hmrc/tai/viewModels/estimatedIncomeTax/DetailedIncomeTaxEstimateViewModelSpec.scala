@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.util.BandTypesConstants
-import uk.gov.hmrc.tai.viewModels.{AdditionalTaxDetailRow, EstimatedIncomeTaxViewModelTemp, ReductionTaxRow}
+import uk.gov.hmrc.tai.viewModels.{AdditionalTaxDetailRow, ReductionTaxRow}
 import uk.gov.hmrc.urls.Link
 
 import scala.collection.immutable.Seq
@@ -64,7 +64,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with BandTypesCons
       "there are no additional tax due" in {
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
 
-        val result = EstimatedIncomeTaxViewModelTemp.createAdditionalTaxTable(Seq.empty[CodingComponent], totalTax)
+        val result = DetailedIncomeTaxEstimateViewModel.createAdditionalTaxTable(Seq.empty[CodingComponent], totalTax)
 
         result mustBe Seq.empty[AdditionalTaxDetailRow]
 
@@ -98,8 +98,9 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with BandTypesCons
           Some(100))
 
         val codingComponents = Seq(
-          CodingComponent(MarriedCouplesAllowanceMAE, None, 1200, "", None),
-          CodingComponent(MaintenancePayments, None, 1200, "", None)
+          CodingComponent(MarriedCouplesAllowanceMAE, None, 1200, "", None)
+//          ,
+//          CodingComponent(MaintenancePayments, None, 1200, "", None)
         )
 
         val result = DetailedIncomeTaxEstimateViewModel.createReductionsTable(codingComponents, totalTax)
@@ -129,7 +130,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with BandTypesCons
       "there are reduction in tax" in {
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
 
-        val result = EstimatedIncomeTaxViewModelTemp.createReductionsTable(Seq.empty[CodingComponent], totalTax)
+        val result = DetailedIncomeTaxEstimateViewModel.createReductionsTable(Seq.empty[CodingComponent], totalTax)
 
         result mustBe Seq.empty[ReductionTaxRow]
       }
