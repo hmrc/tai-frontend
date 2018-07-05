@@ -210,15 +210,18 @@
                         </thead>
                         @for(additionalTaxRow <- viewModel.additionalTaxTable){
                         <tr>
-                            @if(additionalTaxRow.url.isDefined){
-                            @if(additionalTaxRow.description == Messages("tai.taxcode.deduction.type-45")) {
-                            <td><a href="@additionalTaxRow.url" data-journey='link - view:@Messages("tai.estimatedIncome.additionalTax.title"):@Messages("tai.taxcode.deduction.type-45")' data-journey-click='link - click:@Messages("tai.estimatedIncome.additionalTax.title"):@Messages("tai.taxcode.deduction.type-45")'>@additionalTaxRow.description</a></td>
-                            } else {
-                            <td><a href="@additionalTaxRow.url">@additionalTaxRow.description</a></td>
-                            }
-                            } else{
-                            <td>@additionalTaxRow.description</td>
-                            }
+                            <td>
+                                @additionalTaxRow.label.value
+                                @additionalTaxRow.label.link.map { link =>
+                                    @includes.link(
+                                        id=Some(link.id),
+                                        copy=link.value,
+                                        url = link.href,
+                                        linkClasses = Seq("link-list__item"),
+                                        attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${link.value}"))
+                                }
+
+                            </td>
                             <td class="text--right">@withPoundPrefix(MoneyPounds(additionalTaxRow.amount, 2))</td>
                         </tr>
                         }

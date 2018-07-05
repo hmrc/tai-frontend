@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
+import uk.gov.hmrc.tai.viewModels.Label
+
 import scala.math.BigDecimal
 
 case class AdditionalTaxDetailRow(
-                                   description: String,
-                                   amount: BigDecimal,
-                                   url: Option[String] = None
+                                   label: Label,
+                                   amount: BigDecimal
                                  )

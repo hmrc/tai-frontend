@@ -26,6 +26,7 @@ import uk.gov.hmrc.tai.model.domain.{MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.util.{BandTypesConstants, ViewModelHelper}
 import uk.gov.hmrc.urls.Link
+import uk.gov.hmrc.tai.viewModels.{HelpLink, Label, TaxAccountSummaryViewModel}
 
 import scala.math.BigDecimal
 
@@ -106,20 +107,23 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
 
   def createAdditionalTaxTable(codingComponent: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages): Seq[AdditionalTaxDetailRow] = {
 
-    val underPaymentRow = createAdditionalTaxRow(underPaymentFromPreviousYear(codingComponent), Messages("tai.taxCalc.UnderpaymentPreviousYear.title"), None)
-    val inYearRow = createAdditionalTaxRow(inYearAdjustment(codingComponent), Messages("tai.taxcode.deduction.type-45"),
-      Some(routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url))
-    val outstandingDebtRow = createAdditionalTaxRow(outstandingDebt(codingComponent), Messages("tai.taxCalc.OutstandingDebt.title"), None)
-    val childBenefitRow = createAdditionalTaxRow(taxAdjustmentComp(totalTax.otherTaxDue, tax.ChildBenefit), Messages("tai.taxCalc.childBenefit.title"), None)
-    val excessGiftAidRow = createAdditionalTaxRow(taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessGiftAidTax), Messages("tai.taxCalc.excessGiftAidTax.title"), None)
-    val excessWidowAndOrphansRow = createAdditionalTaxRow(taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessWidowsAndOrphans), Messages("tai.taxCalc.excessWidowsAndOrphans.title"), None)
-    val pensionPaymentsRow = createAdditionalTaxRow(taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment), Messages("tai.taxCalc.pensionPaymentsAdjustment.title"), None)
+    val underPaymentRow = createAdditionalTaxRow(underPaymentFromPreviousYear(codingComponent),
+      Label(Messages("tai.taxCalc.UnderpaymentPreviousYear.title"),
+        Some(HelpLink(Messages("what.does.this.mean"), controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString, "underPaymentFromPreviousYear"))))
+    val inYearRow = createAdditionalTaxRow(inYearAdjustment(codingComponent),
+      Label(Messages("tai.taxcode.deduction.type-45"),
+        Some(HelpLink(Messages("what.does.this.mean"), controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString, "estimatedTaxOwedLink"))))
+    val outstandingDebtRow = createAdditionalTaxRow(outstandingDebt(codingComponent), Label(Messages("tai.taxCalc.OutstandingDebt.title")))
+    val childBenefitRow = createAdditionalTaxRow(taxAdjustmentComp(totalTax.otherTaxDue, tax.ChildBenefit), Label(Messages("tai.taxCalc.childBenefit.title")))
+    val excessGiftAidRow = createAdditionalTaxRow(taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessGiftAidTax), Label(Messages("tai.taxCalc.excessGiftAidTax.title")))
+    val excessWidowAndOrphansRow = createAdditionalTaxRow(taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessWidowsAndOrphans), Label(Messages("tai.taxCalc.excessWidowsAndOrphans.title")))
+    val pensionPaymentsRow = createAdditionalTaxRow(taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment), Label(Messages("tai.taxCalc.pensionPaymentsAdjustment.title")))
 
     Seq(underPaymentRow, inYearRow, outstandingDebtRow, childBenefitRow, excessGiftAidRow, excessWidowAndOrphansRow, pensionPaymentsRow).flatten
   }
 
-  private def createAdditionalTaxRow(row: Option[BigDecimal], description: String, url: Option[String]): Option[AdditionalTaxDetailRow] = {
-    row.map(amount => AdditionalTaxDetailRow(description, amount, url))
+  private def createAdditionalTaxRow(row: Option[BigDecimal], label: Label): Option[AdditionalTaxDetailRow] = {
+    row.map(amount => AdditionalTaxDetailRow(label, amount))
   }
 
   def createReductionsTable(codingComponents: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages): Seq[ReductionTaxRow] = {
