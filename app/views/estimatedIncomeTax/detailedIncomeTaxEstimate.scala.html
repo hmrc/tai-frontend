@@ -152,17 +152,6 @@
                 </section>
 
                 <section>
-                    @if(viewModel.hasTaxRelief){
-                    <h3 id="tax-relief-title" class="heading-medium">@Messages("tai.estimatedIncome.taxrelief.title")</h3>
-                    <p id="tax-relief-message">@Html(Messages(
-                        "tai.estimatedIncome.taxRelief",
-                        Link.toInternalPage(
-                        url=routes.EstimatedIncomeTaxController.taxRelief().toString,
-                        value=Some("tai.estimatedIncome.taxRelief.link")
-                        ).toHtml
-                        ))</p>
-                    }
-
                     @if(viewModel.hasPotentialUnderPayment){
                     <div class="panel-indent panel-indent--info panel-indent--gutter">
                         <p id="income-potential-underpayment">@Messages("tai.potentialUnderpayment.title")</p>

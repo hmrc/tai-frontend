@@ -44,8 +44,7 @@ case class DetailedIncomeTaxEstimateViewModel(
                                        hasPotentialUnderPayment: Boolean,
                                        ssrValue: Option[BigDecimal],
                                        psrValue: Option[BigDecimal],
-                                       dividendsMessage: Option[String],
-                                       hasTaxRelief: Boolean = false
+                                       dividendsMessage: Option[String]
                                      ) extends ViewModelHelper {
 }
 
@@ -83,7 +82,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val ssrValue = fetchIncome(mergedTaxBands, StarterSavingsRate)
     val psrValue = fetchIncome(mergedTaxBands, PersonalSavingsRate)
     val divMessage = dividendsMessage(nonTaxCodeIncome, totalTax)
-    val hasTaxRelief = EstimatedIncomeTaxService.hasTaxRelief(totalTax)
 
     DetailedIncomeTaxEstimateViewModel(
       nonSavings,
@@ -99,8 +97,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
       hasPotentialUnderPayment,
       ssrValue,
       psrValue,
-      divMessage,
-      hasTaxRelief
+      divMessage
     )
 
   }
