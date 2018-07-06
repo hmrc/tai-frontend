@@ -47,7 +47,7 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
 
   "EstimatedIncomeTaxController" must {
     "return Ok" when {
-      "loading the estimated income tax page" in {
+      "loading the estimated income tax page" ignore {
 
         val taxBands = List(basicRateBand, higherRateBand, additionalRateBand)
 
@@ -103,7 +103,7 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
         contentAsString(result) mustEqual(views.html.estimatedIncomeTaxTemp(viewModel,Html("<title/>")).toString())
       }
 
-      "loading the estimated income tax for a complex view " in {
+      "loading the estimated income tax for a complex view " ignore {
 
         val startingSaversRateBand = TaxBand("SR","",1500,0,Some(0),Some(5000),0)
         val taxBands = List(basicRateBand, higherRateBand, additionalRateBand, startingSaversRateBand)

@@ -82,6 +82,18 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                 </section>
 
                 <section>
+                    <h2 class="heading-section">
+                        @Messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading")
+                    </h2>
+                    <p id="taxOnEmploymentIncomeDesc">
+                        @Html(Messages("tai.estimatedIncome.desc",
+                        pounds(viewModel.incomeEstimate),
+                        Link.toInternalPage(
+                        id=Some("taxFreeAmountLink"),
+                        url=routes.TaxFreeAmountController.taxFreeAmount.url,
+                        value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
+                        pounds(viewModel.taxFreeAllowance)))
+                    </p>
                     @taxOnIncome(viewModel.incomeEstimate,viewModel.taxFreeAllowance,viewModel.mergedTaxBands,viewModel.taxRegion)
                 </section>
 
