@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.model.domain.{MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.{AdditionalTaxDetailRow, ReductionTaxRow}
+import uk.gov.hmrc.tai.viewModels.{HelpLink, Label, ReductionTaxRow}
 import uk.gov.hmrc.urls.Link
 
 import scala.collection.immutable.Seq
@@ -62,13 +62,17 @@ class DetailedIncomeTaxEstimateViewModelSpec extends TaiViewSpec with BandTypesC
         val result = DetailedIncomeTaxEstimateViewModel.createAdditionalTaxTable(codingComponents, totalTax)
 
         result mustBe Seq(
-          AdditionalTaxDetailRow(Messages("tai.taxCalc.UnderpaymentPreviousYear.title"), 10, None),
-          AdditionalTaxDetailRow(Messages("tai.taxcode.deduction.type-45"), 50, Some(routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url)),
-          AdditionalTaxDetailRow(Messages("tai.taxCalc.OutstandingDebt.title"), 150, None),
-          AdditionalTaxDetailRow(Messages("tai.taxCalc.childBenefit.title"), 300, None),
-          AdditionalTaxDetailRow(Messages("tai.taxCalc.excessGiftAidTax.title"), 100, None),
-          AdditionalTaxDetailRow(Messages("tai.taxCalc.excessWidowsAndOrphans.title"), 100, None),
-          AdditionalTaxDetailRow(Messages("tai.taxCalc.pensionPaymentsAdjustment.title"), 200, None)
+          AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.UnderpaymentPreviousYear.title"),
+            Some(HelpLink(Messages("what.does.this.mean"),
+              controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString, "underPaymentFromPreviousYear"))), 10),
+          AdditionalTaxDetailRow(Label(Messages("tai.taxcode.deduction.type-45"),
+            Some(HelpLink(Messages("what.does.this.mean"),
+              controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString, "estimatedTaxOwedLink"))), 50),
+          AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.OutstandingDebt.title")), 150),
+          AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.childBenefit.title")), 300),
+          AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.excessGiftAidTax.title")), 100),
+          AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.excessWidowsAndOrphans.title")), 100),
+          AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.pensionPaymentsAdjustment.title")), 200)
         )
       }
     }
