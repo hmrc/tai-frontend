@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{DetailedIncomeTaxEstimateViewModel, ZeroTaxView}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{DetailedIncomeTaxEstimateViewModel, ZeroTaxView, AdditionalTaxDetailRow, ReductionTaxRow}
 import uk.gov.hmrc.time.TaxYearResolver
 
 class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants {
@@ -164,25 +164,43 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
   }
 
   "have additional tax table" in {
-//    val additionalRows = Seq(
-//      AdditionalTaxDetailRow(Messages("tai.taxCalc.UnderpaymentPreviousYear.title"), 100, None),
-//      AdditionalTaxDetailRow(Messages("tai.taxcode.deduction.type-45"), 50, Some(routes.PotentialUnderpaymentController.potentialUnderpaymentPage().url)),
-//      AdditionalTaxDetailRow(Messages("tai.taxCalc.OutstandingDebt.title"), 150, None),
-//      AdditionalTaxDetailRow(Messages("tai.taxCalc.childBenefit.title"), 300, None),
-//      AdditionalTaxDetailRow(Messages("tai.taxCalc.excessGiftAidTax.title"), 100, None),
-//      AdditionalTaxDetailRow(Messages("tai.taxCalc.excessWidowsAndOrphans.title"), 100, None),
-//      AdditionalTaxDetailRow(Messages("tai.taxCalc.pensionPaymentsAdjustment.title"), 200, None)
-//    )
-//    val model = createViewModel(true, additionalRows, Seq.empty[ReductionTaxRow])
-//    def additionalDetailView: Html = views.html.estimatedIncomeTaxTemp(model, Html("<title/>"))
-//
-//
-//    doc(additionalDetailView).select("#additionalTaxTable").size() mustBe 1
-//    doc(additionalDetailView).select("#additionalTaxTable-heading").text mustBe Messages("tai.estimatedIncome.additionalTax.title")
-//    doc(additionalDetailView).select("#additionalTaxTable-desc").text() mustBe Messages("tai.estimatedIncome.additionalTax.desc")
-//    doc(additionalDetailView).getElementsMatchingOwnText("TaxDescription").hasAttr("data-journey-click") mustBe false
-//  }
-//
+
+    val additionalRows = Seq(
+      AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.UnderpaymentPreviousYear.title"),
+        Some(HelpLink(Messages("what.does.this.mean"),
+          controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
+            "underPaymentFromPreviousYear"))), 100),
+      AdditionalTaxDetailRow(Label(Messages("tai.taxcode.deduction.type-45"),
+        Some(HelpLink(Messages("what.does.this.mean"),
+          controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
+            "estimatedTaxOwedLink"))), 50),
+      AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.OutstandingDebt.title")), 150),
+      AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.childBenefit.title")), 300),
+      AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.excessGiftAidTax.title")), 100),
+      AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.excessWidowsAndOrphans.title")), 100),
+      AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.pensionPaymentsAdjustment.title")), 200)
+    )
+    val model = createViewModel(additionalRows, Seq.empty[ReductionTaxRow])
+    def additionalDetailView: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
+
+
+    doc(additionalDetailView).select("#additionalTaxTable").size() mustBe 1
+    doc(additionalDetailView).select("#additionalTaxTable-heading").text mustBe Messages("tai.estimatedIncome.additionalTax.title")
+    doc(additionalDetailView).select("#additionalTaxTable-desc").text() mustBe Messages("tai.estimatedIncome.additionalTax.desc")
+    doc(additionalDetailView).getElementsMatchingOwnText("TaxDescription").hasAttr("data-journey-click") mustBe false
+    doc(additionalDetailView) must haveThWithText(messages("tax.adjustments"))
+    doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.OutstandingDebt.title"))
+    doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.childBenefit.title"))
+    doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.excessGiftAidTax.title"))
+    doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.excessWidowsAndOrphans.title"))
+    doc(additionalDetailView) must haveTdWithText(messages("tai.taxCalc.pensionPaymentsAdjustment.title"))
+    doc(additionalDetailView) must haveTdWithText(s"${messages("tai.taxCalc.UnderpaymentPreviousYear.title")} ${messages("what.does.this.mean")}")
+    doc(additionalDetailView).select("#underPaymentFromPreviousYear").attr("href") mustBe controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString
+    doc(additionalDetailView) must haveTdWithText(s"${messages("tai.taxcode.deduction.type-45")} ${messages("what.does.this.mean")}")
+    doc(additionalDetailView).select("#estimatedTaxOwedLink").attr("href") mustBe controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString
+
+  }
+
 //  "have reduction tax table" in {
 //    val  reductionTaxRows = Seq(
 //      ReductionTaxRow(Messages("tai.taxCollected.atSource.otherIncome.description"), 100, Messages("tai.taxCollected.atSource.otherIncome.title")),
@@ -197,7 +215,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 //    doc(reductionTaxDetailView).select("#taxPaidElsewhereTable-heading").text() mustBe Messages("tai.estimatedIncome.reductionsTax.title")
 //    doc(reductionTaxDetailView).select("#taxPaidElsewhereTable-desc").text() mustBe Messages("tai.estimatedIncome.reductionsTax.desc")
 //    doc(reductionTaxDetailView) must haveParagraphWithText(viewModel.incomeTaxReducedToZeroMessage.getOrElse(""))
-  }
+//  }
 
   val taxAccountSummary = TaxAccountSummary(18573,0,0,0,0)
   val totalTax = TotalTax(0,Seq.empty[IncomeCategory],None,None,None)
@@ -206,37 +224,22 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
   override def view: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
 
-  def createViewModel(additionalTaxTable: Seq[AdditionalTaxDetailRow], reductionTaxTable: Seq[ReductionTaxRow]) = {
+  def createViewModel(additionalTaxTable: Seq[AdditionalTaxDetailRow], reductionTaxTable: Seq[ReductionTaxRow]) : DetailedIncomeTaxEstimateViewModel = {
     DetailedIncomeTaxEstimateViewModel(
       nonSavings = Seq.empty[TaxBand],
       savings = Seq.empty[TaxBand],
       dividends = Seq.empty[TaxBand],
-      taxRegion = "",
+      taxRegion = "uk",
       incomeTaxEstimate = 900,
       incomeEstimate = 16000,
       taxFreeEstimate = 11500,
-      additionalTaxTable,
-      reductionTaxTable,
+      additionalTaxTable = additionalTaxTable,
+      reductionTaxTable = reductionTaxTable,
       incomeTaxReducedToZeroMessage = None,
       hasPotentialUnderPayment = false,
       ssrValue = None,
       psrValue = None,
       dividendsMessage = None)
   }
-
-//  nonSavings: Seq[TaxBand],
-//  savings: Seq[TaxBand],
-//  dividends: Seq[TaxBand],
-//  taxRegion: String,
-//  incomeTaxEstimate: BigDecimal,
-//  incomeEstimate: BigDecimal,
-//  taxFreeEstimate: BigDecimal,
-//  additionalTaxTable: Seq[AdditionalTaxDetailRow],
-//  reductionTaxTable: Seq[ReductionTaxRow],
-//  incomeTaxReducedToZeroMessage: Option[String],
-//  hasPotentialUnderPayment: Boolean,
-//  ssrValue: Option[BigDecimal],
-//  psrValue: Option[BigDecimal],
-//  dividendsMessage: Option[String]
 
 }
