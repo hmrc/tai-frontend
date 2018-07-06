@@ -330,7 +330,6 @@ tai.incomes.seeChanges.text=Gallwch weld y newidiadau rydych wedi''u gwneud drwy
 tai.companyCar.checkAnswers.table.rowTwo.description=Dyddiad pan ddaeth y buddiant tanwydd i ben
 tai.incomeTaxSummary.taxCode.prefix=Cod treth: {0}
 tai.incomeTaxComparison.tellAboutChange.description=Os yw''ch manylion fan hyn yn anghywir neu os oes rhywbeth ar goll, rhowch wybod i ni am newidiadau i''ch:
-tai.tables.column1=Disgrifiad
 tai.taxFreeAmount.table.taxComponent.OtherEarnings=Enillion eraill
 tai.service.navTitle=Gwirio''ch Treth Incwm
 tai.getHelp.webchat.p2=Gallwch ddefnyddio''r gwasanaeth i gael sgwrs ar-lein gydag un o''n hymgynghorwyr:
@@ -798,7 +797,6 @@ tai.bbsi.account.preHeading=Cynilion a buddsoddiadau
 uk.bandtype.HSR1=Cynilion ar y gyfradd uwch
 tai.howToUpdate.enterAnnual=Nodwch ffigur blynyddol
 tai.income.details.addMissingCompanyBenefit=Ychwanegu buddiant cwmni sydd ar goll
-tai.tables.column2=Treth (£)
 tai.taxFreeAmount.table.taxComponent.TrustsSettlementsAndEstatesAtTrustRate=Ymddiriedolaethau, setliadau ac ystadau ar gyfradd yr ymddiriedolaeth
 tai.noCYIncomeError.body.missing.employment=Mae ein cofnodion yn dangos nad oes gennych incwm trethadwy yn ystod y flwyddyn dreth hon
 tai.companyCar.confirmation.sectionOne.p2=Byddwn yn cysylltu â chi os yw''ch cod treth wedi newid.
@@ -1182,6 +1180,12 @@ tai.estimatedIncome.howYouPay.heading=Sut rydych yn talu’ch treth
 tai.estimatedIncomeLow.desc=Rydym yn amcangyfrif y byddwch yn ennill llai na’ch {0} o {1}, mae hyn yn golygu na ddylech dalu unrhyw Dreth Incwm ar eich enillion y flwyddyn hon.
 tai.estimatedIncomeEarning.desc=Gallwch ennill {0} yn fwy cyn i chi gyrraedd haen treth.
 
+gift.aid.savings=
+gift.aid.tax.relief=
+personal.pension.payments=
+personal.pension.payment.relief=
+tax.adjustment=
+tax.adjustments=
 
 #Tax paid elsewhere
 tai.taxCollected.atSource.title=Gostyngiadau
