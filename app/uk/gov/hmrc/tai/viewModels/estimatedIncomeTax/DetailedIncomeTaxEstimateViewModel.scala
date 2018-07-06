@@ -51,7 +51,7 @@ case class DetailedIncomeTaxEstimateViewModel(
                                      ) extends ViewModelHelper {
 }
 
-object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with EstimatedIncomeTaxHelper with ComplexEstimatedIncomeTaxHelper {
+object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with EstimatedIncomeTaxBand with TaxAdditionsAndReductions {
 
   def apply(totalTax: TotalTax, taxCodeIncomes: Seq[TaxCodeIncome],taxAccountSummary: TaxAccountSummary, codingComponents: Seq[CodingComponent],
             nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): DetailedIncomeTaxEstimateViewModel = {
@@ -70,7 +70,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     }.flatMap(_.taxBands).filter(_.income > 0).filterNot(_.rate == 0)
 
     val taxRegion = findTaxRegion(taxCodeIncomes)
-    val taxBands = EstimatedIncomeTaxService.taxBand(totalTax).toList
+    val taxBands = totalTax.incomeCategories.flatMap(_.taxBands).toList
     val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = retrieveTaxBands(taxBands :+ paBand)
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
@@ -80,8 +80,8 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val incomeTaxReducedToZero = incomeTaxReducedToZeroMessage(taxAccountSummary.totalEstimatedTax <= 0 && reductionTaxTable.nonEmpty)
     val hasPotentialUnderPayment = EstimatedIncomeTaxService.hasPotentialUnderPayment(taxAccountSummary.totalInYearAdjustmentIntoCY,
       taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne)
-    val ssrValue = fetchIncome(mergedTaxBands, StarterSavingsRate)
-    val psrValue = fetchIncome(mergedTaxBands, PersonalSavingsRate)
+    val ssrValue = EstimatedIncomeTaxService.incomeByBandType(mergedTaxBands, StarterSavingsRate)
+    val psrValue = EstimatedIncomeTaxService.incomeByBandType(mergedTaxBands, PersonalSavingsRate)
     val dividendIncome = totalDividendIncome(totalTax.incomeCategories)
     val taxFreeDividend = taxFreeDividendAllowance(totalTax.incomeCategories)
     val hasTaxRelief = EstimatedIncomeTaxService.hasTaxRelief(totalTax)
@@ -249,7 +249,4 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     case h :: tail if tail.size > 1 => h + "%, " + dividendsAllowanceRates(tail)
     case h :: tail :: Nil => h + "% and " + tail + "%"
   }
-
-
-
 }

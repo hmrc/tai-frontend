@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.model.domain.tax.{TaxAdjustment, TaxAdjustmentType, TaxBa
 
 import scala.math.BigDecimal
 
-trait ComplexEstimatedIncomeTaxHelper {
+trait TaxAdditionsAndReductions {
 
   def taxAdjustmentComp(taxAdjustment: Option[TaxAdjustment], adjustmentType: TaxAdjustmentType) = {
     taxAdjustment.
@@ -35,9 +35,5 @@ trait ComplexEstimatedIncomeTaxHelper {
   def inYearAdjustment(codingComponents: Seq[CodingComponent]) = codingComponents.find(_.componentType == EstimatedTaxYouOweThisYear).flatMap(_.inputAmount)
 
   def outstandingDebt(codingComponents: Seq[CodingComponent]) = codingComponents.find(_.componentType == OutstandingDebt).map(_.amount)
-
-  def fetchIncome(mergedTaxBands: List[TaxBand], bandType: String): Option[BigDecimal] = {
-    mergedTaxBands.find(band => band.bandType == bandType && band.income > 0).map(_.income)
-  }
 
 }

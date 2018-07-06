@@ -22,8 +22,6 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util._
-import uk.gov.hmrc.tai.viewModels.BandedGraph
-
 import scala.math.BigDecimal
 
 case class EstimatedIncomeTaxViewModel(
@@ -35,14 +33,13 @@ case class EstimatedIncomeTaxViewModel(
                                         taxRegion: String
                                       ) extends ViewModelHelper
 
-object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants with EstimatedIncomeTaxHelper with BandedGraphHelper {
+object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants with EstimatedIncomeTaxBand{
 
   def apply(codingComponents: Seq[CodingComponent], taxAccountSummary: TaxAccountSummary, taxCodeIncomes: Seq[TaxCodeIncome], taxBands:List[TaxBand])(implicit messages: Messages): EstimatedIncomeTaxViewModel = {
 
-    val personalAllowance = personalAllowanceAmount(codingComponents)
     val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = retrieveTaxBands(taxBands :+ paBand)
-    val graph = createBandedGraph(mergedTaxBands, personalAllowance, taxAccountSummary.taxFreeAllowance, taxAccountSummary.totalEstimatedIncome, taxAccountSummary.totalEstimatedTax)
+    val graph = BandedGraph(codingComponents,mergedTaxBands,taxAccountSummary.taxFreeAllowance, taxAccountSummary.totalEstimatedIncome, taxAccountSummary.totalEstimatedTax)
     val taxRegion = findTaxRegion(taxCodeIncomes)
 
     EstimatedIncomeTaxViewModel(

@@ -74,9 +74,9 @@ trait EstimatedIncomeTaxController extends TaiBaseController
                 TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax),
                 TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
                 TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
-                  val taxBands = EstimatedIncomeTaxService.taxBand(totalTaxDetails).toList
+                  val taxBands = totalTaxDetails.incomeCategories.flatMap(_.taxBands).toList
                   val taxViewType = EstimatedIncomeTaxService.taxViewType(codingComponents,totalTaxDetails,nonTaxCodeIncome,
-                    taxBands,taxAccountSummary.totalInYearAdjustmentIntoCY,taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne,
+                    taxAccountSummary.totalInYearAdjustmentIntoCY,taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne,
                     taxAccountSummary.totalEstimatedIncome,taxAccountSummary.taxFreeAllowance,taxAccountSummary.totalEstimatedTax,
                     taxCodeIncomes.nonEmpty)
 

@@ -21,8 +21,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{EstimatedIncomeTaxViewModel, SimpleTaxView}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import uk.gov.hmrc.time.TaxYearResolver
 
 class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
@@ -74,7 +73,7 @@ class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
 
   }
 
-  val bandedGraph = BandedGraph("taxGraph", Nil, 0, 0, 0, 0, 0, 0, 0, None)
+  val bandedGraph = BandedGraph("taxGraph", Nil, 0, 0, 0, 0, 0, 0, 0, None, None)
 
   val taxBands = List(
     TaxBand("PSR", "", income = 3000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),

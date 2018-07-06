@@ -234,14 +234,14 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
     "return true" when {
       "one complex scenario is met" when {
         "reductions exist" in{
-          EstimatedIncomeTaxService.isComplexViewType(codingComponents,totalTax,nonTaxCodeIncome,List.empty,0,0) mustBe true
+          EstimatedIncomeTaxService.isComplexViewType(codingComponents,totalTax,nonTaxCodeIncome,0,0) mustBe true
         }
       }
     }
     "return false" when {
       "no complex scenarios exist" in {
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-        EstimatedIncomeTaxService.isComplexViewType(Seq.empty,totalTax,nonTaxCodeIncome,List.empty,0,0) mustBe false
+        EstimatedIncomeTaxService.isComplexViewType(Seq.empty,totalTax,nonTaxCodeIncome,0,0) mustBe false
       }
     }
   }
@@ -251,55 +251,24 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
     "return noIncome" when{
       "there is no current income" in{
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-        EstimatedIncomeTaxService.taxViewType(codingComponents,totalTax,nonTaxCodeIncome,List.empty,0,0,0,0,0, false) mustBe NoIncomeTaxView
+        EstimatedIncomeTaxService.taxViewType(codingComponents,totalTax,nonTaxCodeIncome,0,0,0,0,0, false) mustBe NoIncomeTaxView
       }
     }
     "return complex" when {
       "isComplexViewType returns true" in{
-        EstimatedIncomeTaxService.taxViewType(codingComponents,totalTax,nonTaxCodeIncome,List.empty,0,0,0,11500,0, true) mustBe ComplexTaxView
+        EstimatedIncomeTaxService.taxViewType(codingComponents,totalTax,nonTaxCodeIncome,0,0,0,11500,0, true) mustBe ComplexTaxView
       }
     }
     "return simple" when {
       "the totalEstimatedIncome is greater than the taxFreeAllowance and the totalEstimatedTax is greater than zero" in{
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-        EstimatedIncomeTaxService.taxViewType(Seq.empty,totalTax,nonTaxCodeIncome,List.empty,0,0,12000,11500,100, true) mustBe SimpleTaxView
+        EstimatedIncomeTaxService.taxViewType(Seq.empty,totalTax,nonTaxCodeIncome,0,0,12000,11500,100, true) mustBe SimpleTaxView
       }
     }
     "return zero" when {
       "the totalEstimatedIncome is less than the taxFreeAllowance and the totalEstimatedTax is zero" in{
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-        EstimatedIncomeTaxService.taxViewType(Seq.empty,totalTax,nonTaxCodeIncome,List.empty,0,0,11000,11500,0, true) mustBe ZeroTaxView
-      }
-    }
-
-    "taxBand" must {
-      "return a sequence of tax bands" when {
-        "income category tax bands exist" in {
-          val taxBands = Seq(TaxBand("D0", "", 0, 0, None, None, 20),
-                             TaxBand("1150L", "1150L", 10000, 500, Some(5000), Some(20000), 10))
-
-          val totalTax = TotalTax(1000,
-            List(IncomeCategory(UkDividendsIncomeCategory, 10, 20, 30, List(TaxBand("D0", "", 0, 0, None, None, 20),
-              TaxBand("1150L", "1150L", 10000, 500, Some(5000), Some(20000), 10)))),
-            None, None, None)
-
-          EstimatedIncomeTaxService.taxBand(totalTax) mustBe taxBands
-        }
-        "return an empty sequence" when {
-          "income categories does not contain any tax bands" in {
-            EstimatedIncomeTaxService.taxBand(totalTax) mustBe Seq.empty
-
-          }
-        }
-      }
-    }
-
-    "hasCurrentIncome" must {
-      "return true" when{
-        "tax code incomes is not empty" in{
-          val taxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome,Some(1),BigDecimal(39107),"EmploymentIncome","277L","TestName",OtherBasisOperation,Live,None,Some(new LocalDate(2015,11,26)),Some(new LocalDate(2015,11,26))))
-          EstimatedIncomeTaxService.hasIncome(taxCodeIncomes) mustBe true
-        }
+        EstimatedIncomeTaxService.taxViewType(Seq.empty,totalTax,nonTaxCodeIncome,0,0,11000,11500,0, true) mustBe ZeroTaxView
       }
     }
 

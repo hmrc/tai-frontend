@@ -19,8 +19,7 @@ package views.html
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.TaxRegionConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.SimpleTaxView
-import uk.gov.hmrc.tai.viewModels.{Band, BandedGraph}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{Band, BandedGraph, SimpleTaxView}
 
 class YourTaxGraphSpec extends TaiViewSpec with TaxRegionConstants {
 
@@ -44,13 +43,13 @@ class YourTaxGraphSpec extends TaiViewSpec with TaxRegionConstants {
   }
 
   private lazy val bands = List(
-    Band("TaxFree", 2.00, "0%", 3000, 0, "S"),
-    Band("TaxFree", 2.00, "0%", 3000, 0, "PSR"),
-    Band("TaxFree", 2.00, "0%", 3000, 0, "SR"),
-    Band("Band", 30.00, "Check in more detail", 45000, 15000, "TaxedIncome")
+    Band("TaxFree", 2.00, 3000, 0, "S"),
+    Band("TaxFree", 2.00, 3000, 0, "PSR"),
+    Band("TaxFree", 2.00, 3000, 0, "SR"),
+    Band("Band", 30.00, 45000, 15000, "TaxedIncome")
   )
   private lazy val nextBandMessage = "You can have £102,000 more before your income reaches the next tax band."
-  private lazy val graphData = BandedGraph("taxGraph", bands, 0, 150000, 48000, 2.00, 3000, 32.00, 15000, Some(nextBandMessage))
+  private lazy val graphData = BandedGraph("taxGraph", bands, 0, 150000, 48000, 2.00, 3000, 32.00, 15000, Some(nextBandMessage),None)
 
   override def view: Html = views.html.includes.yourTaxGraph(graphData, ScottishTaxRegion,SimpleTaxView,48000)
 }

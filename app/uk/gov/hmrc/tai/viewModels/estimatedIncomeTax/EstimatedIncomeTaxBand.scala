@@ -16,32 +16,19 @@
 
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
-import uk.gov.hmrc.tai.model.domain.{PersonalAllowanceAgedPAA, PersonalAllowanceElderlyPAE, PersonalAllowancePA}
-import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.model.domain.tax.TaxBand
+import uk.gov.hmrc.tai.model.domain.tax.{TaxBand, TotalTax}
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.EstimatedIncomeTaxViewModel.{ScottishTaxRegion, UkTaxRegion}
 
 import scala.math.BigDecimal
 
-trait EstimatedIncomeTaxHelper extends BandTypesConstants {
+trait EstimatedIncomeTaxBand extends BandTypesConstants {
+
 
   def createPABand(taxFreeAllowance: BigDecimal) = {
     TaxBand(TaxFreeAllowanceBand, "", taxFreeAllowance, 0, Some(0), None, 0)
   }
-
-  def personalAllowanceAmount(codingComponents: Seq[CodingComponent]) = {
-    codingComponents.find { component =>
-      component.componentType match {
-        case compType if compType == PersonalAllowancePA || compType == PersonalAllowanceAgedPAA || compType == PersonalAllowanceElderlyPAE => true
-        case _ => false
-      }
-    }.map(_.amount)
-  }
-
-  def hasIncome(taxCodeIncomes: Seq[TaxCodeIncome]) = taxCodeIncomes.nonEmpty
-
 
   def retrieveTaxBands(taxBands: List[TaxBand]): List[TaxBand] = {
     val mergedPsaBands = mergeAllowanceTaxBands(taxBands, PersonalSavingsRate)
