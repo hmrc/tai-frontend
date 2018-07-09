@@ -27,8 +27,9 @@ import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{DetailedIncomeTaxEstimateViewModel, ZeroTaxView, AdditionalTaxDetailRow, ReductionTaxRow}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow, DetailedIncomeTaxEstimateViewModel, ReductionTaxRow, ZeroTaxView}
 import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.urls.Link
 
 class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants {
 
@@ -183,7 +184,6 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     val model = createViewModel(additionalRows, Seq.empty[ReductionTaxRow])
     def additionalDetailView: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
 
-
     doc(additionalDetailView).select("#additionalTaxTable").size() mustBe 1
     doc(additionalDetailView).select("#additionalTaxTable-heading").text mustBe Messages("tai.estimatedIncome.additionalTax.title")
     doc(additionalDetailView).select("#additionalTaxTable-desc").text() mustBe Messages("tai.estimatedIncome.additionalTax.desc")
@@ -198,14 +198,21 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     doc(additionalDetailView).select("#underPaymentFromPreviousYear").attr("href") mustBe controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString
     doc(additionalDetailView) must haveTdWithText(s"${messages("tai.taxcode.deduction.type-45")} ${messages("what.does.this.mean")}")
     doc(additionalDetailView).select("#estimatedTaxOwedLink").attr("href") mustBe controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString
-
   }
 
   "have reduction tax table" in {
+    val taxCodeLink = Link.toInternalPage(
+      url = routes.YourTaxCodeController.taxCodes().toString,
+      value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
+    ).toHtml.body
+
     val  reductionTaxRows = Seq(
       ReductionTaxRow(Messages("tai.taxCollected.atSource.otherIncome.description"), 100, Messages("tai.taxCollected.atSource.otherIncome.title")),
       ReductionTaxRow(Messages("tai.taxCollected.atSource.dividends.description", 10), 200, Messages("tai.taxCollected.atSource.dividends.title")),
       ReductionTaxRow(Messages("tai.taxCollected.atSource.bank.description", 20), 100, Messages("tai.taxCollected.atSource.bank.title")),
+      ReductionTaxRow(Messages("tai.taxCollected.atSource.marriageAllowance.description", 0, taxCodeLink), 135, Messages("tai.taxCollected.atSource.marriageAllowance.title")),
+      ReductionTaxRow(Messages("tai.taxCollected.atSource.maintenancePayments.description"), 200, Messages("tai.taxCollected.atSource.marriageAllowance.title")),
+      ReductionTaxRow(Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description"), 100, Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title")),
       ReductionTaxRow(Messages("tai.taxCollected.atSource.concessionalRelief.description"), 600, Messages("tai.taxCollected.atSource.concessionalRelief.title")),
       ReductionTaxRow(Messages("tai.taxCollected.atSource.doubleTaxationRelief.description"), 900, Messages("tai.taxCollected.atSource.doubleTaxationRelief.title")),
       ReductionTaxRow(Messages("gift.aid.tax.relief",0,1000), 1000, Messages("gift.aid.savings")),
@@ -221,6 +228,11 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.otherIncome.title")} ${messages("tai.taxCollected.atSource.otherIncome.description")}")
     doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.dividends.title")} ${messages("tai.taxCollected.atSource.dividends.description",10)}")
     doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.bank.title")} ${messages("tai.taxCollected.atSource.bank.description", 20)}")
+    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.marriageAllowance.title")} ${messages("tai.taxCollected.atSource.marriageAllowance.description",
+      0, Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))}")
+    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.marriageAllowance.title")} ${messages("tai.taxCollected.atSource.maintenancePayments.description", 200)}")
+    doc(reductionTaxDetailView) must haveLinkWithText(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
+    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title")} ${messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description", 100)}")
     doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.concessionalRelief.title")} ${messages("tai.taxCollected.atSource.concessionalRelief.description")}")
     doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.doubleTaxationRelief.title")} ${messages("tai.taxCollected.atSource.doubleTaxationRelief.description")}")
     doc(reductionTaxDetailView) must haveTdWithText(s"${messages("gift.aid.savings")} ${messages("gift.aid.tax.relief",0,1000)}")

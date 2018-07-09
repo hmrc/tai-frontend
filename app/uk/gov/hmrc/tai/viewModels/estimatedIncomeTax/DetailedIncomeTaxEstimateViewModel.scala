@@ -180,6 +180,10 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     ).flatten
   }
 
+  private def createReductionTaxRow(row: Option[BigDecimal], description: String, title: String)(implicit messages: Messages) = {
+    row.map(amount => ReductionTaxRow(description, amount, title))
+  }
+
   private def createMarriageAllowanceRow(codingComponents: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages) = {
     val marriageAllowance = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MarriedCouplesAllowance)
     val marriageAllowanceNpsComponent = codingComponents.find { component =>
@@ -212,10 +216,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     Option(hasTaxReducedToZero).collect{
       case true => Messages("tai.estimatedIncome.reductionsTax.incomeTaxReducedToZeroMessage")
     }
-  }
-
-  private def createReductionTaxRow(row: Option[BigDecimal], description: String, title: String)(implicit messages: Messages) = {
-    row.map(amount => ReductionTaxRow(description, amount, title))
   }
 
   def dividendsMessage(nonTaxCodeIncome: NonTaxCodeIncome, totalTax: TotalTax)(implicit messages: Messages): Option[String] = {
