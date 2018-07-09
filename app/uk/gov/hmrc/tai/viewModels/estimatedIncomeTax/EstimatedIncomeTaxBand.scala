@@ -37,7 +37,7 @@ trait EstimatedIncomeTaxBand extends BandTypesConstants {
     bands.filter(_.income > 0).sortBy(_.rate)
   }
 
-  def mergeAllowanceTaxBands(taxBands: List[TaxBand], bandType: String) = {
+  private def mergeAllowanceTaxBands(taxBands: List[TaxBand], bandType: String) = {
     val (bands, remBands) = taxBands.partition(_.bandType == bandType)
     bands match {
       case Nil => remBands
