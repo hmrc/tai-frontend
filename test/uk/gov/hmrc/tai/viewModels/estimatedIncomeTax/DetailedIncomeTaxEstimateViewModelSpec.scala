@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.viewModels
+package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, TaxAccountSummary}
-import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, OtherBasisOperation, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
+import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.util.BandTypesConstants
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow, DetailedIncomeTaxEstimateViewModel, ReductionTaxRow}
 
 class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayApplication with BandTypesConstants with I18nSupport {
 

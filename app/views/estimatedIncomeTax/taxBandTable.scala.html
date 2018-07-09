@@ -19,27 +19,28 @@
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 
-@(totalDividendIncome: BigDecimal, taxFreeDividendAllowance: BigDecimal, dividends: List[TaxBand], taxRegion: String)(implicit messages: Messages)
+@(tableId: String, dividends: List[TaxBand], taxRegion: String)(implicit messages: Messages)
 
 
 
-<table id="tax-on-your-dividend-income">
+<table id=@{tableId}>
+<!--<table id="tax-on-your-dividend-income">-->
     <thead>
-        <tr>
-        <th id="incomeTaxBand">@Messages("tai.incomeTaxBand")</th>
+    <tr>
+        <th id="taxBand">@Messages("tai.incomeTaxBand")</th>
         <th id="taxAmount" class="numeric">@Messages("tai.amount")</th>
         <th id="taxRate" class="numeric">@Messages("tai.taxRate")</th>
         <th id="tax" class="numeric">@Messages("tai.tax")</th>
-        </tr>
+    </tr>
     </thead>
     <tbody>
     @for((taxBand, count) <- dividends.zipWithIndex){
-        <tr>
-            <td id="bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}")</td>
-            <td id="income@{count}" class="numeric">@withPoundPrefix(MoneyPounds(taxBand.income,0))</td>
-            <td id="taxRate@{count}" class="numeric">@taxBand.rate%</td>
-            <td id="tax@{count}" class="numeric">@withPoundPrefix(MoneyPounds(taxBand.tax,0))</td>
-        </tr>
+    <tr>
+        <td id="bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}")</td>
+        <td id="income@{count}" class="numeric">@withPoundPrefix(MoneyPounds(taxBand.income,0))</td>
+        <td id="taxRate@{count}" class="numeric">@taxBand.rate%</td>
+        <td id="tax@{count}" class="numeric">@withPoundPrefix(MoneyPounds(taxBand.tax,0))</td>
+    </tr>
     }
     </tbody>
 </table>

@@ -85,7 +85,7 @@
                             MoneyPounds(viewModel.totalDividendIncome, 0).quantity,
                             MoneyPounds(viewModel.taxFreeDividendAllowance, 0).quantity)
                     </p>
-                    @taxOnDividends(viewModel.totalDividendIncome, viewModel.taxFreeDividendAllowance, viewModel.dividends, viewModel.taxRegion)
+                    @taxBandTable(tableId = "tax-on-your-income", dividends = viewModel.dividends, taxRegion = viewModel.taxRegion)
                 </section>
 
                 <section class="section soft--top">
