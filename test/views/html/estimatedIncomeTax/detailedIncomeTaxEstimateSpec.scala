@@ -201,21 +201,31 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
   }
 
-//  "have reduction tax table" in {
-//    val  reductionTaxRows = Seq(
-//      ReductionTaxRow(Messages("tai.taxCollected.atSource.otherIncome.description"), 100, Messages("tai.taxCollected.atSource.otherIncome.title")),
-//      ReductionTaxRow(Messages("tai.taxCollected.atSource.dividends.description", 10), 200, Messages("tai.taxCollected.atSource.dividends.title")),
-//      ReductionTaxRow(Messages("tai.taxCollected.atSource.bank.description", 20), 100, Messages("tai.taxCollected.atSource.bank.title"))
-//    )
-//
-//    val model = createViewModel(true, Seq.empty[AdditionalTaxDetailRow], reductionTaxRows)
-//    def reductionTaxDetailView: Html = views.html.estimatedIncomeTaxTemp(model, Html("<title/>"))
-//
-//    doc(reductionTaxDetailView).select("#taxPaidElsewhereTable").size() mustBe 1
-//    doc(reductionTaxDetailView).select("#taxPaidElsewhereTable-heading").text() mustBe Messages("tai.estimatedIncome.reductionsTax.title")
-//    doc(reductionTaxDetailView).select("#taxPaidElsewhereTable-desc").text() mustBe Messages("tai.estimatedIncome.reductionsTax.desc")
-//    doc(reductionTaxDetailView) must haveParagraphWithText(viewModel.incomeTaxReducedToZeroMessage.getOrElse(""))
-//  }
+  "have reduction tax table" in {
+    val  reductionTaxRows = Seq(
+      ReductionTaxRow(Messages("tai.taxCollected.atSource.otherIncome.description"), 100, Messages("tai.taxCollected.atSource.otherIncome.title")),
+      ReductionTaxRow(Messages("tai.taxCollected.atSource.dividends.description", 10), 200, Messages("tai.taxCollected.atSource.dividends.title")),
+      ReductionTaxRow(Messages("tai.taxCollected.atSource.bank.description", 20), 100, Messages("tai.taxCollected.atSource.bank.title")),
+      ReductionTaxRow(Messages("tai.taxCollected.atSource.concessionalRelief.description"), 600, Messages("tai.taxCollected.atSource.concessionalRelief.title")),
+      ReductionTaxRow(Messages("tai.taxCollected.atSource.doubleTaxationRelief.description"), 900, Messages("tai.taxCollected.atSource.doubleTaxationRelief.title")),
+      ReductionTaxRow(Messages("gift.aid.tax.relief",0,1000), 1000, Messages("gift.aid.savings")),
+      ReductionTaxRow(Messages("personal.pension.payment.relief",0,1100), 1100, Messages("personal.pension.payments"))
+    )
+
+    val model = createViewModel(Seq.empty[AdditionalTaxDetailRow], reductionTaxRows)
+    def reductionTaxDetailView: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
+
+    doc(reductionTaxDetailView).select("#taxPaidElsewhereTable").size() mustBe 1
+    doc(reductionTaxDetailView).select("#taxPaidElsewhereTable-heading").text() mustBe Messages("tai.estimatedIncome.reductionsTax.title")
+    doc(reductionTaxDetailView).select("#taxPaidElsewhereTable-desc").text() mustBe Messages("tai.estimatedIncome.reductionsTax.desc")
+    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.otherIncome.title")} ${messages("tai.taxCollected.atSource.otherIncome.description")}")
+    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.dividends.title")} ${messages("tai.taxCollected.atSource.dividends.description",10)}")
+    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.bank.title")} ${messages("tai.taxCollected.atSource.bank.description", 20)}")
+    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.concessionalRelief.title")} ${messages("tai.taxCollected.atSource.concessionalRelief.description")}")
+    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("tai.taxCollected.atSource.doubleTaxationRelief.title")} ${messages("tai.taxCollected.atSource.doubleTaxationRelief.description")}")
+    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("gift.aid.savings")} ${messages("gift.aid.tax.relief",0,1000)}")
+    doc(reductionTaxDetailView) must haveTdWithText(s"${messages("personal.pension.payments")} ${messages("personal.pension.payment.relief",0,1100)}")
+  }
 
   val taxAccountSummary = TaxAccountSummary(18573,0,0,0,0)
   val totalTax = TotalTax(0,Seq.empty[IncomeCategory],None,None,None)
