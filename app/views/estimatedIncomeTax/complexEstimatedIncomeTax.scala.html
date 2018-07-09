@@ -52,63 +52,58 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
     webChat = true,
     gaCustomTitle = None){
 
-    @if(viewModel.hasCurrentIncome) {
-        <div class="grid-row">
-            <div class="grid grid-2-3">
-                <div class="inner-block">
-                    <section class="soft--top flush--bottom">
-                        <div class="grid-row">
-                            <div class="column-one-half">
-                                <h2 class="flush--bottom">
-                                    @Messages("tai.incomeTax.totalEstimatedIncome.subheading")
-                                    <span id="total-estimated-income" class="display-block heading-48 section faded-text flush section--narrow">
-                                        @pounds(viewModel.incomeEstimate)
-                                    </span>
-                                </h2>
-                            </div>
-                            <div class="column-one-half">
-                                <h2 class="flush--bottom">
-                                    @Messages("tai.incomeTax.incomeTaxEstimate.subheading")
-                                    <span id="income-tax-estimate" class="display-block heading-48 section faded-text flush section--narrow">
-                                        @pounds(viewModel.incomeTaxEstimate)
-                                    </span>
-                                </h2>
-                            </div>
+    <div class="grid-row">
+        <div class="grid grid-2-3">
+            <div class="inner-block">
+                <section class="soft--top flush--bottom">
+                    <div class="grid-row">
+                        <div class="column-one-half">
+                            <h2 class="flush--bottom">
+                                @Messages("tai.incomeTax.totalEstimatedIncome.subheading")
+                                <span id="total-estimated-income" class="display-block heading-48 section faded-text flush section--narrow">
+                                    @pounds(viewModel.incomeEstimate)
+                                </span>
+                            </h2>
                         </div>
-                    </section>
+                        <div class="column-one-half">
+                            <h2 class="flush--bottom">
+                                @Messages("tai.incomeTax.incomeTaxEstimate.subheading")
+                                <span id="income-tax-estimate" class="display-block heading-48 section faded-text flush section--narrow">
+                                    @pounds(viewModel.incomeTaxEstimate)
+                                </span>
+                            </h2>
+                        </div>
+                    </div>
+                </section>
 
-                    <section>
-                        @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,ComplexTaxView, viewModel.incomeEstimate)
-                    </section>
+                <section>
+                    @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,ComplexTaxView, viewModel.incomeEstimate)
+                </section>
 
-                    <section>
-                        @Link.toInternalPage(
-                        id=Some("detailEstimateView"),
-                        value=Some(Messages("tai.estimatedIncome.detailedEstimate.Link")),
-                        url = routes.DetailedIncomeTaxEstimateController.taxExplanationPage.url,
-                        cssClasses=Some("button")
-                        ).toHtml
-                    </section>
+                <section>
+                    @Link.toInternalPage(
+                    id=Some("detailEstimateView"),
+                    value=Some(Messages("tai.estimatedIncome.detailedEstimate.Link")),
+                    url = routes.DetailedIncomeTaxEstimateController.taxExplanationPage.url,
+                    cssClasses=Some("button")
+                    ).toHtml
+                </section>
 
-                    <section>
-                        @whyThisIsAnEstimateDesc()
-                        @howYouPayYourTaxDesc()
-                    </section>
-                </div>
-                <div id ="iForms" class="inner-block">
-                    @iFormLinks
-                </div>
+                <section>
+                    @whyThisIsAnEstimateDesc()
+                    @howYouPayYourTaxDesc()
+                </section>
             </div>
-
-            <section>
-                @navigationLinks(gaEventActionString)
-            </section>
-
-
+            <div id ="iForms" class="inner-block">
+                @iFormLinks
+            </div>
         </div>
-    } else {
-        <p  id="no-increase-tax">@Messages("tai.no.increasesTax")</p>
-    }
 
+        <section>
+            @navigationLinks(gaEventActionString)
+        </section>
+
+
+    </div>
 
 }

@@ -34,7 +34,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
 
 
   "Estimated Income Tax View Model" must {
-   "return a valid view model" in {
+   "return a valid view model for valid input" in {
 
      val taxAccountSummary = TaxAccountSummary(700,11500,0,0,0,16500,11500)
 
@@ -52,15 +52,15 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
        TaxBand("SR","",1500,0,Some(0),Some(5000),45)
      )
 
-     val bandedGraph = BandedGraph("taxGraph",
+     val bandedGraph = BandedGraph(TaxGraph,
        List(
-         Band("TaxFree",69.69,11500,0,"ZeroBand"),
-         Band("Band",30.30,5000,700,"NonZeroBand"))
+         Band(TaxFree,69.69,11500,0,ZeroBand),
+         Band("Band",30.30,5000,700,NonZeroBand))
        ,0,16500,16500,69.69,11500,99.99,700,
        None,
        Some(Swatch(4.24,700)))
 
-     val expectedViewModel = EstimatedIncomeTaxViewModel(true,700,16500,11500,bandedGraph,"UK")
+     val expectedViewModel = EstimatedIncomeTaxViewModel(700,16500,11500,bandedGraph,UkTaxRegion)
 
      EstimatedIncomeTaxViewModel(codingComponents,taxAccountSummary,taxCodeIncome,taxBands) mustBe expectedViewModel
 

@@ -25,7 +25,6 @@ import uk.gov.hmrc.tai.util._
 import scala.math.BigDecimal
 
 case class EstimatedIncomeTaxViewModel(
-                                        hasCurrentIncome: Boolean,
                                         incomeTaxEstimate: BigDecimal,
                                         incomeEstimate: BigDecimal,
                                         taxFreeEstimate: BigDecimal,
@@ -43,7 +42,6 @@ object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionCons
     val taxRegion = findTaxRegion(taxCodeIncomes)
 
     EstimatedIncomeTaxViewModel(
-      taxCodeIncomes.nonEmpty,
       taxAccountSummary.totalEstimatedTax,
       taxAccountSummary.totalEstimatedIncome,
       taxAccountSummary.taxFreeAllowance,

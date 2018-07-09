@@ -57,16 +57,6 @@ class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
 
     }
 
-    "show no increases tax message" when {
-      "there is no current income" in {
-        val model = createViewModel(false, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])
-
-        def noCurrentIncomeView: Html = views.html.estimatedIncomeTax.complexEstimatedIncomeTax(model, Html("<title/>"))
-
-        doc(noCurrentIncomeView) must haveParagraphWithText(messages("tai.no.increasesTax"))
-      }
-    }
-
     "show iform links" in {
       doc.select("#iForms").text() mustBe "Test"
     }
@@ -81,12 +71,7 @@ class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
     TaxBand("D0", "", income = 30000, tax = 12000, lowerBand = Some(32000), upperBand = Some(147000), rate = 40)
   )
 
-  def createViewModel(hasCurrentIncome: Boolean, additionalRows: Seq[AdditionalTaxDetailRow],
-                       reductionRows: Seq[ReductionTaxRow]): EstimatedIncomeTaxViewModel = {
-    EstimatedIncomeTaxViewModel(hasCurrentIncome, 15000, 48000, 11500, bandedGraph, "UK")
-  }
-
-  val viewModel = createViewModel(true, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow])
+  val viewModel = EstimatedIncomeTaxViewModel(15000, 48000, 11500, bandedGraph, "UK")
 
 
   override def view: Html = views.html.estimatedIncomeTax.complexEstimatedIncomeTax(viewModel,Html("<Html><head></head><body>Test</body></Html>"))
