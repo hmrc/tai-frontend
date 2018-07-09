@@ -64,17 +64,10 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
         category.incomeCategoryType == BankInterestIncomeCategory || category.incomeCategoryType == ForeignInterestIncomeCategory
     }.flatMap(_.taxBands).filter(_.income > 0).filterNot(_.rate == 0)
 
-//    val dividends = totalTax.incomeCategories.filter {
-//      category => category.incomeCategoryType == UkDividendsIncomeCategory ||
-//        category.incomeCategoryType == ForeignDividendsIncomeCategory
-//    }.flatMap(_.taxBands).filter(_.income > 0).filterNot(_.rate == 0).toList
-
     val dividends = totalTax.incomeCategories.filter {
         category => category.incomeCategoryType == UkDividendsIncomeCategory ||
           category.incomeCategoryType == ForeignDividendsIncomeCategory
       }.flatMap(_.taxBands).filter(_.income > 0).toList
-
-
 
     val filteredCategories = totalTax.incomeCategories.filter {
       category => category.incomeCategoryType == UkDividendsIncomeCategory ||
@@ -82,14 +75,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     }
     val taxbandsNonzeroIncome = filteredCategories.flatMap(_.taxBands).filter(_.income > 0)
     val taxbandsNonzeroRate = taxbandsNonzeroIncome.filterNot(_.rate == 0)
-
-    println("******" + totalTax.incomeCategories)
-    println("****** filteredCategories: " + filteredCategories)
-    println("****** taxbandsNonzeroIncome: " + taxbandsNonzeroIncome)
-    println("****** taxbandsNonzeroRate: " + taxbandsNonzeroRate)
-    println("******" + dividends)
-
-
 
     val taxRegion = findTaxRegion(taxCodeIncomes)
     val taxBands = EstimatedIncomeTaxService.taxBand(totalTax).toList
@@ -132,20 +117,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     )
 
   }
-
-//  val dividends = totalTax.incomeCategories.filter {
-//    category => category.incomeCategoryType == UkDividendsIncomeCategory ||
-//      category.incomeCategoryType == ForeignDividendsIncomeCategory
-//  }.flatMap(_.taxBands).filter(_.income > 0).filterNot(_.rate == 0).toList
-//
-
-  def dividendTaxBands(incomeCategories: Seq[IncomeCategory]): Seq[TaxBand] = {
-    incomeCategories.filter {
-      category => category.incomeCategoryType == UkDividendsIncomeCategory ||
-        category.incomeCategoryType == ForeignDividendsIncomeCategory
-    }.flatMap(_.taxBands).filter(_.income > 0)
-  }
-
 
   def createAdditionalTaxTable(codingComponent: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages): Seq[AdditionalTaxDetailRow] = {
 

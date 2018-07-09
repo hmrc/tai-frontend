@@ -16,67 +16,97 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.model.domain.EmploymentIncome
-import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome}
+import play.api.i18n.{I18nSupport, MessagesApi}
+import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, TaxAccountSummary}
+import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, OtherBasisOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.util.BandTypesConstants
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow, DetailedIncomeTaxEstimateViewModel, ReductionTaxRow}
 
-class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with BandTypesConstants {
+class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayApplication with BandTypesConstants with I18nSupport {
 
-  "DetailedIncomeTaxEstimateViewModel" must {
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-    "return the total income from dividends" in {
-      val taxBand = Seq(TaxBand(bandType = "", code = "", income = 100, tax = 0, lowerBand = None, upperBand = None, rate = 20))
+  "DetailedIncomeTaxEstimateViewModel" when {
 
-      val incomeCategories = Seq(
-                IncomeCategory(NonSavingsIncomeCategory, 0, 1000, 10, taxBand),
-                IncomeCategory(UntaxedInterestIncomeCategory, 0, 2000, 20, taxBand),
-                IncomeCategory(ForeignDividendsIncomeCategory, 0, 3000, 4000, taxBand),
-                IncomeCategory(ForeignInterestIncomeCategory, 0, 4000, 30, taxBand),
-                IncomeCategory(BankInterestIncomeCategory, 0, 5000, 40, taxBand),
-                IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 5000, taxBand)
-              )
+    "looking at dividends" when {
 
-      DetailedIncomeTaxEstimateViewModel.totalDividendIncome(incomeCategories) mustEqual 9000
+      "totalDividendIncome is called" must {
 
-    }
+        "return the total income from dividends" in {
+          val taxBand = Seq(TaxBand(bandType = "", code = "", income = 100, tax = 0, lowerBand = None, upperBand = None, rate = 20))
 
-    "return the tax free dividend allowance when there is one" in {
+          val incomeCategories = Seq(
+            IncomeCategory(NonSavingsIncomeCategory, 0, 1000, 10, taxBand),
+            IncomeCategory(UntaxedInterestIncomeCategory, 0, 2000, 20, taxBand),
+            IncomeCategory(ForeignDividendsIncomeCategory, 0, 3000, 4000, taxBand),
+            IncomeCategory(ForeignInterestIncomeCategory, 0, 4000, 30, taxBand),
+            IncomeCategory(BankInterestIncomeCategory, 0, 5000, 40, taxBand),
+            IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 5000, taxBand)
+          )
 
-      val taxBand = Seq(
-        TaxBand(bandType = DividendZeroRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
-        TaxBand(bandType = PersonalSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
-        TaxBand(bandType = StarterSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20)
-      )
+          DetailedIncomeTaxEstimateViewModel.totalDividendIncome(incomeCategories) mustEqual 9000
 
-      val incomeCategories = Seq(
-        IncomeCategory(NonSavingsIncomeCategory, 0, 1000, 10, taxBand),
-        IncomeCategory(UntaxedInterestIncomeCategory, 0, 2000, 20, taxBand),
-        IncomeCategory(ForeignDividendsIncomeCategory, 0, 3000, 4000, taxBand),
-        IncomeCategory(ForeignInterestIncomeCategory, 0, 4000, 30, taxBand),
-        IncomeCategory(BankInterestIncomeCategory, 0, 5000, 40, taxBand),
-        IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 5000, taxBand)
-      )
+        }
+      }
 
-      DetailedIncomeTaxEstimateViewModel.taxFreeDividendAllowance(incomeCategories) mustEqual 5000
+      "taxFreeDividendAllowance is called" must {
+        "return the tax free dividend allowance when there is one" in {
 
-    }
+          val taxBand = Seq(
+            TaxBand(bandType = DividendZeroRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
+            TaxBand(bandType = PersonalSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
+            TaxBand(bandType = StarterSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20)
+          )
 
-    "return zero free dividend allowance when there is not one" in {
+          val incomeCategories = Seq(
+            IncomeCategory(NonSavingsIncomeCategory, 0, 1000, 10, taxBand),
+            IncomeCategory(UntaxedInterestIncomeCategory, 0, 2000, 20, taxBand),
+            IncomeCategory(ForeignDividendsIncomeCategory, 0, 3000, 4000, taxBand),
+            IncomeCategory(ForeignInterestIncomeCategory, 0, 4000, 30, taxBand),
+            IncomeCategory(BankInterestIncomeCategory, 0, 5000, 40, taxBand),
+            IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 5000, taxBand)
+          )
 
-      val taxBand = Seq(
-        TaxBand(bandType = PersonalSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
-        TaxBand(bandType = StarterSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20)
-      )
+          DetailedIncomeTaxEstimateViewModel.taxFreeDividendAllowance(incomeCategories) mustEqual 5000
 
-      val incomeCategories = Seq(
-        IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 5000, taxBand)
-      )
+        }
 
-      DetailedIncomeTaxEstimateViewModel.taxFreeDividendAllowance(incomeCategories) mustEqual 0
+        "return zero free dividend allowance when there is not one" in {
 
+          val taxBand = Seq(
+            TaxBand(bandType = PersonalSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
+            TaxBand(bandType = StarterSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20)
+          )
+
+          val incomeCategories = Seq(
+            IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 5000, taxBand)
+          )
+
+          DetailedIncomeTaxEstimateViewModel.taxFreeDividendAllowance(incomeCategories) mustEqual 0
+
+        }
+      }
+
+      "return all dividend bands that have an income" in {
+
+        val taxBands = Seq(
+          TaxBand(bandType = DividendZeroRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 0),
+          TaxBand(bandType = DividendBasicRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 10),
+          TaxBand(bandType = DividendHigherRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
+          TaxBand(bandType = DividendAdditionalRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 30)
+        )
+        val incomeCategories = Seq(
+          IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 0, taxBands)
+        )
+        val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
+        val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
+
+        model.dividends must contain theSameElementsAs(taxBands)
+
+      }
     }
 
 
@@ -93,15 +123,15 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with BandTypesCons
       )
       val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
 
-      val model = TaxExplanationViewModel(totalTax, Seq.empty[TaxCodeIncome])
+      val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
 
-      model.nonSavings mustBe taxBand
-      model.savings mustBe  taxBand ++ taxBand ++ taxBand
-      model.dividends mustBe taxBand ++ taxBand
+      model.nonSavings mustEqual Seq(TaxBand(TaxFreeAllowanceBand,"",0,0,Some(0),None,0)) ++ taxBand
+      model.savings mustEqual  taxBand ++ taxBand ++ taxBand
+      model.dividends mustEqual taxBand ++ taxBand
     }
 
-    "return empty tax bands"  when {
-      "only zero rate bands are present" in {
+    "return empty tax bands"  ignore {
+      "only zero rate bands are present with no income" in {
         val taxBand = Seq(TaxBand(bandType = "", code = "", income = 100, tax = 0, lowerBand = None, upperBand = None, rate = 0))
         val incomeCategories = Seq(
           IncomeCategory(NonSavingsIncomeCategory, 0, 1000, 0, taxBand),
@@ -113,7 +143,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with BandTypesCons
         )
         val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
 
-        val model = TaxExplanationViewModel(totalTax, Seq.empty[TaxCodeIncome])
+        val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
 
         model.nonSavings mustBe Seq.empty[TaxBand]
         model.savings mustBe  Seq.empty[TaxBand]
@@ -132,68 +162,20 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with BandTypesCons
         )
         val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
 
-        val model = TaxExplanationViewModel(totalTax, Seq.empty[TaxCodeIncome])
+        val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
 
         model.nonSavings mustBe Seq.empty[TaxBand]
         model.savings mustBe  Seq.empty[TaxBand]
         model.dividends mustBe Seq.empty[TaxBand]
       }
     }
-
-    "return band type" when {
-      "tax code contains S" in {
-        val taxCodeIncomes = Seq(
-          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOperation, Live),
-          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "1150L", "employer", OtherBasisOperation, Live)
-        )
-
-        val model = TaxExplanationViewModel(TotalTax(100, Seq.empty[IncomeCategory], None, None, None), taxCodeIncomes)
-
-        model.bandType mustBe ScottishBands
-      }
-
-      "tax code doesn't contains S" in {
-        val taxCodeIncomes = Seq(
-          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "1050L", "employer", OtherBasisOperation, Live),
-          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "1150L", "employer", OtherBasisOperation, Live)
-        )
-
-        val model = TaxExplanationViewModel(TotalTax(100, Seq.empty[IncomeCategory], None, None, None), taxCodeIncomes)
-
-        model.bandType mustBe UkBands
-      }
-    }
   }
 
-  "dividendTaxBands" must {
+  private val totalTax = TotalTax(100, Seq.empty[IncomeCategory], None, None, None)
+  private val taxCodeIncomes = Seq.empty[TaxCodeIncome]
+  private val taxCodeSummary = TaxAccountSummary(0,0,0,0,0,0,0)
+  private val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty)
 
-    "return only dividend tax bands from dividends categories that have some income" in {
+  val basicModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
 
-      val dividendZeroRateBand = TaxBand(DividendZeroRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 10)
-      val personalSavingsRateBand = dividendZeroRateBand.copy(bandType = PersonalSavingsRate, rate = 20)
-      val starterSavingsRateBand = dividendZeroRateBand.copy(bandType = StarterSavingsRate, rate = 30)
-      val zeroIncomeBand = dividendZeroRateBand.copy(income = 0)
-
-      val bands = Seq(
-        dividendZeroRateBand,
-        personalSavingsRateBand,
-        starterSavingsRateBand,
-        zeroIncomeBand)
-
-      val incomeCategories = Seq(
-        IncomeCategory(NonSavingsIncomeCategory, 0, 1000, 10, bands),
-        IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 5000, bands),
-        IncomeCategory(ForeignDividendsIncomeCategory, 0, 6000, 5000, bands)
-      )
-
-      DetailedIncomeTaxEstimateViewModel.dividendTaxBands(incomeCategories) mustEqual Seq(
-        dividendZeroRateBand,
-        personalSavingsRateBand,
-        starterSavingsRateBand,
-        dividendZeroRateBand,
-        personalSavingsRateBand,
-        starterSavingsRateBand)
-
-    }
-  }
 }
