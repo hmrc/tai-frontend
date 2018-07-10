@@ -59,6 +59,9 @@
                             </h2>
                         </div>
                     </div>
+                    @viewModel.selfAssessmentAndPayeText.map(paragraphText =>
+                        <p>{paragraphText}</p>
+                    )
                 </section>
 
                 <section class="section soft--top">

@@ -57,9 +57,13 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalIncomeTaxEstimate") + " £18,573")
     }
 
-    //  "display additional tax related to Self Assessment" in {
-    //    doc(view) must haveParagraphWithText()
-    //  }
+    "paragraph with additional Income Tax payable not being included in estimate" should {
+      "be shown when text is provided" in {
+        val vm = defaultViewModel.copy(selfAssessmentAndPayeText = Some("Stub addition Income Payable Text"))
+
+        doc(view(vm)) must haveParagraphWithText("Stub addition Income Payable Text")
+      }
+    }
 
     "display table headers" in {
       doc must haveThWithText(messages("tai.incomeTax.calculated.table.headingOne"))
@@ -223,8 +227,9 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     TaxBand("B", "", 32010, 6402, None, None, 20),
     TaxBand("D0", "", 36466, 14586.4, None, None, 40))
 
-  val viewModel = DetailedIncomeTaxEstimateViewModel(ukTaxBands, Seq.empty[TaxBand], List.empty[TaxBand], "UK", 18573, 68476,
-    11500, Seq.empty[AdditionalTaxDetailRow], 0, Seq.empty[ReductionTaxRow], 0, None, false, None, None, 20000, 5000, false)
+  val defaultViewModel = DetailedIncomeTaxEstimateViewModel(ukTaxBands, Seq.empty[TaxBand], List.empty[TaxBand], "UK", 18573, 68476,
+    11500, Seq.empty[AdditionalTaxDetailRow], 0, Seq.empty[ReductionTaxRow], 0, None, false, None, None, 20000, 5000, None, false)
 
-  override def view: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
+  def view(vm: DetailedIncomeTaxEstimateViewModel = defaultViewModel): Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(vm)
+  override def view: Html = view(defaultViewModel)
 }
