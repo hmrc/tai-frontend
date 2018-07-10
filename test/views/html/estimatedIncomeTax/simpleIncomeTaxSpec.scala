@@ -85,7 +85,7 @@ class simpleIncomeTaxSpec extends TaiViewSpec {
         ).toHtml,
         "£11,500")).body
       doc(view).select("#employmentIncomeTaxDetails").size() mustBe 1
-      doc(view) must haveTableThWithIdAndText("incomeTaxBand", messages("tai.incomeTaxBand"))
+      doc(view) must haveTableThWithIdAndText("taxBand", messages("tai.incomeTaxBand"))
       doc(view) must haveTableThWithIdAndText("taxAmount", messages("tai.amount"))
       doc(view) must haveTableThWithIdAndText("taxRate", messages("tai.taxRate"))
       doc(view) must haveTableThWithIdAndText("tax", messages("tai.tax"))
