@@ -16,19 +16,17 @@
 
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
-import controllers.FakeTaiPlayApplication
+import controllers.{FakeTaiPlayApplication, routes}
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, NonCodedIncome, TaxAccountSummary}
-import uk.gov.hmrc.tai.model.domain.income._
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, EstimatedTaxYouOweThisYear, MarriedCouplesAllowanceMAE, OutstandingDebt, TaxAccountSummary, UnderPaymentFromPreviousYear}
-import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, OtherBasisOperation, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome, _}
 import uk.gov.hmrc.tai.model.domain.tax._
+import uk.gov.hmrc.tai.model.domain.{ChildBenefit => _, DoubleTaxationRelief => _, MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.util.BandTypesConstants
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow, DetailedIncomeTaxEstimateViewModel, ReductionTaxRow}
+import uk.gov.hmrc.tai.viewModels.{HelpLink, Label}
+import uk.gov.hmrc.urls.Link
 
 class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayApplication with BandTypesConstants with I18nSupport {
 
@@ -125,7 +123,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
             TaxAdjustmentComponent(PensionPaymentsAdjustment, 200),
             TaxAdjustmentComponent(ChildBenefit, 300)
           )
-          val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, Some(TaxAdjustment(700, otherTaxDue)), None, None)
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(700, otherTaxDue)), None, None)
           val codingComponents = Seq(
             CodingComponent(UnderPaymentFromPreviousYear, None, 100, "", Some(10)),
             CodingComponent(EstimatedTaxYouOweThisYear, None, 0, "", Some(50)),
@@ -189,11 +187,11 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
           )
 
           val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
-            Some(TaxAdjustment(3500, reliefsGivingBackTax)),
+            Some(tax.TaxAdjustment(3500, reliefsGivingBackTax)),
             None,
-            Some(TaxAdjustment(1000, alreadyTaxedAtSource)),
+            Some(tax.TaxAdjustment(1000, alreadyTaxedAtSource)),
             Some(100),
-            Some(TaxAdjustment(2100, taxReliefComponent))
+            Some(tax.TaxAdjustment(2100, taxReliefComponent))
           )
 
           val codingComponents = Seq(
