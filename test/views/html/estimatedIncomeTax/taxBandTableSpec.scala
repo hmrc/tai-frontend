@@ -16,12 +16,10 @@
 
 package views.html.estimatedIncomeTax
 
-import org.jsoup.Jsoup
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.util.{BandTypesConstants, TaxRegionConstants}
-import uk.gov.hmrc.tai.viewModels._
 
 class taxBandTableSpec extends TaiViewSpec with BandTypesConstants with TaxRegionConstants {
 
