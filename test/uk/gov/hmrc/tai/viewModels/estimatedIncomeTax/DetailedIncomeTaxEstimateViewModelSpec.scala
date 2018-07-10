@@ -16,8 +16,11 @@
 
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
-import controllers.{FakeTaiPlayApplication, routes}
+import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
+import play.api.i18n.{I18nSupport, MessagesApi}
+import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, NonCodedIncome, TaxAccountSummary}
+import uk.gov.hmrc.tai.model.domain.income._
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -26,8 +29,6 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, NonTaxCodeIncome, OtherBasisOp
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow, DetailedIncomeTaxEstimateViewModel, ReductionTaxRow}
-import uk.gov.hmrc.tai.viewModels.{HelpLink, Label}
-import uk.gov.hmrc.urls.Link
 
 class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayApplication with BandTypesConstants with I18nSupport {
 
@@ -298,6 +299,22 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
         model.dividends mustBe Seq.empty[TaxBand]
       }
     }
+
+    "additional Income Tax Self Assessment text" should {
+      "be returned when Non-Coded Income is present" in {
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, List(OtherNonTaxCodeIncome(NonCodedIncome,None,0,"")))
+        val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
+
+        model.selfAssessmentAndPayeText mustEqual Some(messagesApi("tai.estimatedIncome.selfAssessmentAndPayeText"))
+      }
+
+      "not returned when Non-Coded Income is absent" in {
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, List.empty)
+        val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
+
+        model.selfAssessmentAndPayeText mustEqual None
+      }
+    }
   }
 
   private val totalTax = TotalTax(100, Seq.empty[IncomeCategory], None, None, None)
@@ -305,6 +322,6 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
   private val taxCodeSummary = TaxAccountSummary(0,0,0,0,0,0,0)
   private val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty)
 
-  val basicModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxCodeSummary, Seq.empty, nonTaxCodeIncome)
+  val basicModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
 
 }
