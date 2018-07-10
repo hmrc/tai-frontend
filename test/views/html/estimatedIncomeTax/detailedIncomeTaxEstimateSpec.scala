@@ -299,26 +299,27 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     TaxBand("D0", "", 36466, 14586.4, None, None, 40))
 
   val viewModel = DetailedIncomeTaxEstimateViewModel(ukTaxBands, Seq.empty[TaxBand], List.empty[TaxBand], "UK", 18573, 68476,
-    11500, Seq.empty[AdditionalTaxDetailRow], 0, Seq.empty[ReductionTaxRow], 0, None, false, None, None, 20000, 5000, false)
+    11500, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow], None, false, None, None, 20000, 5000)
 
   override def view: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
 
   def createViewModel(additionalTaxTable: Seq[AdditionalTaxDetailRow], reductionTaxTable: Seq[ReductionTaxRow]) : DetailedIncomeTaxEstimateViewModel = {
     DetailedIncomeTaxEstimateViewModel(
-      nonSavings = Seq.empty[TaxBand],
+      nonSavings = List.empty[TaxBand],
       savings = Seq.empty[TaxBand],
-      dividends = Seq.empty[TaxBand],
+      dividends = List.empty[TaxBand],
       taxRegion = "uk",
       incomeTaxEstimate = 900,
       incomeEstimate = 16000,
-      taxFreeEstimate = 11500,
+      taxFreeAllowance = 11500,
       additionalTaxTable = additionalTaxTable,
       reductionTaxTable = reductionTaxTable,
       incomeTaxReducedToZeroMessage = None,
       hasPotentialUnderPayment = false,
       ssrValue = None,
       psrValue = None,
-      dividendsMessage = None)
+      totalDividendIncome = 0,
+      taxFreeDividendAllowance = 0)
   }
 
 }

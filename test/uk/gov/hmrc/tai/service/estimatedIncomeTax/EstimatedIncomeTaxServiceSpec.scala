@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{ComplexTaxView, NoIncomeTa
 
 import scala.collection.immutable.Seq
 
-class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport{
+class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -51,19 +51,18 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
   }
 
 
-
   "hasPotentialUnderpayment" must {
     "return true" when {
       "totalInYearAdjustmentIntoCY is less than or equal to zero and totalInYearAdjustmentIntoCYPlusOne is greater than zero" in {
-        val taxAccountSummary = TaxAccountSummary(0,0,0,0,1)
+        val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 1)
         EstimatedIncomeTaxService.hasPotentialUnderPayment(
-          taxAccountSummary.totalInYearAdjustment,taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne) mustBe true
+          taxAccountSummary.totalInYearAdjustment, taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne) mustBe true
       }
     }
 
     "return false" when {
       "totalInYearAdjustmentIntoCY is greater than zero and totalInYearAdjustmentIntoCYPlusOne is zero" in {
-        val taxAccountSummary = TaxAccountSummary(0,0,1,0,0)
+        val taxAccountSummary = TaxAccountSummary(0, 0, 1, 0, 0)
         EstimatedIncomeTaxService.hasPotentialUnderPayment(taxAccountSummary.totalInYearAdjustmentIntoCY,
           taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne) mustBe false
       }
@@ -72,10 +71,10 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
 
 
   "hasSSR" must {
-    "return true" when{
+    "return true" when {
       "starter service rate tax band exists" in {
 
-        val taxBands:List[TaxBand] = List(
+        val taxBands: List[TaxBand] = List(
           TaxBand("SR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
           TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
 
@@ -83,11 +82,11 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
       }
     }
 
-    "return false" when{
+    "return false" when {
       "starter service rate tax band does not exist" in {
 
-        val taxBands:List[TaxBand] = List(
-          TaxBand("D0","", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        val taxBands: List[TaxBand] = List(
+          TaxBand("D0", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
           TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
 
         EstimatedIncomeTaxService.hasSSR(taxBands) mustBe false
@@ -96,10 +95,10 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
   }
 
   "hasPSR" must {
-    "return true" when{
+    "return true" when {
       "starter service rate tax band exists" in {
 
-        val taxBands:List[TaxBand] = List(
+        val taxBands: List[TaxBand] = List(
           TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
           TaxBand("SR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
           TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
@@ -108,11 +107,11 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
       }
     }
 
-    "return false" when{
+    "return false" when {
       "starter service rate tax band does not exist" in {
 
-        val taxBands:List[TaxBand] = List(
-          TaxBand("D0","", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+        val taxBands: List[TaxBand] = List(
+          TaxBand("D0", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
           TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
 
         EstimatedIncomeTaxService.hasSSR(taxBands) mustBe false
@@ -141,13 +140,13 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
       "uk div total income is equal to tax free dividend" in {
         val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq(
           OtherNonTaxCodeIncome(UkDividend, None, 2000, "")
-          ))
+        ))
 
-          val totalTax = TotalTax(100, Seq(
-            IncomeCategory(tax.UkDividendsIncomeCategory, 50, 50, 0, Seq(
-              tax.TaxBand("SDR", "", 50, 0, None, Some(2000), 0)
-            ))
-          ), None, None, None)
+        val totalTax = TotalTax(100, Seq(
+          IncomeCategory(tax.UkDividendsIncomeCategory, 50, 50, 0, Seq(
+            tax.TaxBand("SDR", "", 50, 0, None, Some(2000), 0)
+          ))
+        ), None, None, None)
         EstimatedIncomeTaxService.hasDividends(nonTaxCodeIncome, totalTax) mustBe true
 
       }
@@ -233,42 +232,42 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
   "isComplexViewType" must {
     "return true" when {
       "one complex scenario is met" when {
-        "reductions exist" in{
-          EstimatedIncomeTaxService.isComplexViewType(codingComponents,totalTax,nonTaxCodeIncome,List.empty,0,0) mustBe true
+        "reductions exist" in {
+          EstimatedIncomeTaxService.isComplexViewType(codingComponents, totalTax, nonTaxCodeIncome, List.empty, 0, 0) mustBe true
         }
       }
     }
     "return false" when {
       "no complex scenarios exist" in {
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-        EstimatedIncomeTaxService.isComplexViewType(Seq.empty,totalTax,nonTaxCodeIncome,List.empty,0,0) mustBe false
+        EstimatedIncomeTaxService.isComplexViewType(Seq.empty, totalTax, nonTaxCodeIncome, List.empty, 0, 0) mustBe false
       }
     }
   }
 
   "taxViewType" must {
 
-    "return noIncome" when{
-      "there is no current income" in{
+    "return noIncome" when {
+      "there is no current income" in {
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-        EstimatedIncomeTaxService.taxViewType(codingComponents,totalTax,nonTaxCodeIncome,List.empty,0,0,0,0,0, false) mustBe NoIncomeTaxView
+        EstimatedIncomeTaxService.taxViewType(codingComponents, totalTax, nonTaxCodeIncome, List.empty, 0, 0, 0, 0, 0, false) mustBe NoIncomeTaxView
       }
     }
     "return complex" when {
-      "isComplexViewType returns true" in{
-        EstimatedIncomeTaxService.taxViewType(codingComponents,totalTax,nonTaxCodeIncome,List.empty,0,0,0,11500,0, true) mustBe ComplexTaxView
+      "isComplexViewType returns true" in {
+        EstimatedIncomeTaxService.taxViewType(codingComponents, totalTax, nonTaxCodeIncome, List.empty, 0, 0, 0, 11500, 0, true) mustBe ComplexTaxView
       }
     }
     "return simple" when {
-      "the totalEstimatedIncome is greater than the taxFreeAllowance and the totalEstimatedTax is greater than zero" in{
+      "the totalEstimatedIncome is greater than the taxFreeAllowance and the totalEstimatedTax is greater than zero" in {
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-        EstimatedIncomeTaxService.taxViewType(Seq.empty,totalTax,nonTaxCodeIncome,List.empty,0,0,12000,11500,100, true) mustBe SimpleTaxView
+        EstimatedIncomeTaxService.taxViewType(Seq.empty, totalTax, nonTaxCodeIncome, List.empty, 0, 0, 12000, 11500, 100, true) mustBe SimpleTaxView
       }
     }
     "return zero" when {
-      "the totalEstimatedIncome is less than the taxFreeAllowance and the totalEstimatedTax is zero" in{
+      "the totalEstimatedIncome is less than the taxFreeAllowance and the totalEstimatedTax is zero" in {
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-        EstimatedIncomeTaxService.taxViewType(Seq.empty,totalTax,nonTaxCodeIncome,List.empty,0,0,11000,11500,0, true) mustBe ZeroTaxView
+        EstimatedIncomeTaxService.taxViewType(Seq.empty, totalTax, nonTaxCodeIncome, List.empty, 0, 0, 11000, 11500, 0, true) mustBe ZeroTaxView
       }
     }
 
@@ -276,7 +275,7 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
       "return a sequence of tax bands" when {
         "income category tax bands exist" in {
           val taxBands = Seq(TaxBand("D0", "", 0, 0, None, None, 20),
-                             TaxBand("1150L", "1150L", 10000, 500, Some(5000), Some(20000), 10))
+            TaxBand("1150L", "1150L", 10000, 500, Some(5000), Some(20000), 10))
 
           val totalTax = TotalTax(1000,
             List(IncomeCategory(UkDividendsIncomeCategory, 10, 20, 30, List(TaxBand("D0", "", 0, 0, None, None, 20),
@@ -295,9 +294,9 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
     }
 
     "hasCurrentIncome" must {
-      "return true" when{
-        "tax code incomes is not empty" in{
-          val taxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome,Some(1),BigDecimal(39107),"EmploymentIncome","277L","TestName",OtherBasisOperation,Live,None,Some(new LocalDate(2015,11,26)),Some(new LocalDate(2015,11,26))))
+      "return true" when {
+        "tax code incomes is not empty" in {
+          val taxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome, Some(1), BigDecimal(39107), "EmploymentIncome", "277L", "TestName", OtherBasisOperation, Live, None, Some(new LocalDate(2015, 11, 26)), Some(new LocalDate(2015, 11, 26))))
           EstimatedIncomeTaxService.hasIncome(taxCodeIncomes) mustBe true
         }
       }

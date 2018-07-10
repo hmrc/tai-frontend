@@ -22,7 +22,7 @@ import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{EstimatedIncomeTaxViewModel, SimpleTaxView}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{EstimatedIncomeTaxViewModel, ReductionTaxRow, SimpleTaxView}
 import uk.gov.hmrc.time.TaxYearResolver
 
 class complexEstimatedIncomeTaxSpec extends TaiViewSpec {

@@ -103,7 +103,7 @@ class simpleIncomeTaxSpec extends TaiViewSpec {
       doc(view).select("#tax2").text() mustBe "£14,586"
 
     }
-    
+
     "show iform links" in {
       doc.select("#iForms").text() mustBe "Test"
     }
@@ -116,10 +116,10 @@ class simpleIncomeTaxSpec extends TaiViewSpec {
     TaxBand("pa", "", 11500, 0, None, None, 0),
     TaxBand("B", "", 32010, 6402, None, None, 20),
     TaxBand("D0", "", 36466, 14586.4, None, None, 40))
-  
+
 
   val ukViewModel = SimpleEstimatedIncomeTaxViewModel(20988.40, 68476, 11500, bandedGraph,"UK",ukTaxBands)
 
-  
+
   override def view: Html = views.html.estimatedIncomeTax.simpleEstimatedIncomeTax(ukViewModel, Html("<Html><head></head><body>Test</body></Html>"))
 }

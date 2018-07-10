@@ -23,7 +23,7 @@ import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{SimpleTaxView, ZeroTaxView}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{ReductionTaxRow, SimpleTaxView, ZeroTaxView}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 

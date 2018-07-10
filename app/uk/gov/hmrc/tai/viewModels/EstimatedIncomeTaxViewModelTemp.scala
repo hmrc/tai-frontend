@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.{TaxAdjustment, TaxAdjustmentType, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.util._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{ComplexTaxView, SimpleTaxView, TaxViewType, ZeroTaxView}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import uk.gov.hmrc.urls.Link
 import views.html.includes.link
 
@@ -36,12 +36,6 @@ case class AdditionalTaxDetailRow(
                                    amount: BigDecimal,
                                    url: Option[String] = None
                                  )
-
-case class ReductionTaxRow(
-                            description: String,
-                            amount: BigDecimal,
-                            title: String
-                          )
 
 case class EstimatedIncomeTaxViewModelTemp(
                                         hasCurrentIncome: Boolean,
