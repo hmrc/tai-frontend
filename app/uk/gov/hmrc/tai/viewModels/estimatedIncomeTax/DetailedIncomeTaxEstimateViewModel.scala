@@ -60,7 +60,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val savings = totalTax.incomeCategories.filter {
       category => category.incomeCategoryType == UntaxedInterestIncomeCategory ||
         category.incomeCategoryType == BankInterestIncomeCategory || category.incomeCategoryType == ForeignInterestIncomeCategory
-    }.flatMap(_.taxBands).filter(_.income > 0).filterNot(_.rate == 0)
+    }.flatMap(_.taxBands).filter(_.income > 0)//.filterNot(_.rate == 0)
 
     val dividends = totalTax.incomeCategories.filter {
         category => category.incomeCategoryType == UkDividendsIncomeCategory ||
