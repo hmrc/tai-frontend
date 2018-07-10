@@ -953,6 +953,7 @@ tai.estimatedIncome.detailedEstimate.heading=Your detailed PAYE Income Tax estim
 tai.estimatedIncome.detailedEstimate.employmentIncome.subHeading=Tax on your employment income
 tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading=Tax on dividend income
 tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading=Tax on savings interest
+tai.estimatedIncome.selfAssessmentAndPayeText = You have additional Income Tax payable this year which is not included in this estimate. This should be included in your Self Assessment. It will not be collected by PAYE.
 
 tai.tables.column1=Description
 tai.tables.column2=Tax (£)

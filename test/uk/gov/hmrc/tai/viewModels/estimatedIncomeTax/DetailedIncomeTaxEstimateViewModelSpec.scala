@@ -19,10 +19,11 @@ package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
-import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, NonCodedIncome, TaxAccountSummary}
+import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.util.BandTypesConstants
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow, DetailedIncomeTaxEstimateViewModel, ReductionTaxRow}
 
 class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayApplication with BandTypesConstants with I18nSupport {
 
@@ -166,6 +167,22 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
         model.nonSavings mustBe Seq.empty[TaxBand]
         model.savings mustBe  Seq.empty[TaxBand]
         model.dividends mustBe Seq.empty[TaxBand]
+      }
+    }
+
+    "additional Income Tax Self Assessment text" should {
+      "be returned when Non-Coded Income is present" in {
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, List(OtherNonTaxCodeIncome(NonCodedIncome,None,0,"")))
+        val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
+
+        model.selfAssessmentAndPayeText mustEqual Some(messagesApi("tai.estimatedIncome.selfAssessmentAndPayeText"))
+      }
+
+      "not returned when Non-Coded Income is absent" in {
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, List.empty)
+        val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
+
+        model.selfAssessmentAndPayeText mustEqual None
       }
     }
   }
