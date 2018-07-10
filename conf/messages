@@ -1062,6 +1062,13 @@ uk.bandtype.HDR2=Dividend additional rate
 uk.bandtype.NA=Not applicable
 uk.bandtype.TaxedIncome=Taxed income
 
+## Tax estimate page tax band labels
+# Income
+estimate.uk.bandtype.pa=Tax-free allowance
+estimate.uk.bandtype.B=Income basic rate
+estimate.uk.bandtype.D0=Income higher rate
+estimate.uk.bandtype.D1=Income additional rate
+# Dividends
 estimate.uk.bandtype.SDR=Tax-free allowance
 estimate.uk.bandtype.LDR=Basic rate
 estimate.uk.bandtype.HDR1=Higher rate

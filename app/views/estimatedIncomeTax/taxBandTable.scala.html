@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 
-@(tableId: String, dividends: List[TaxBand], taxRegion: String)(implicit messages: Messages)
+@(tableId: String, taxBands: List[TaxBand], taxRegion: String)(implicit messages: Messages)
 
 
 
@@ -34,7 +34,7 @@
     </tr>
     </thead>
     <tbody>
-    @for((taxBand, count) <- dividends.zipWithIndex){
+    @for((taxBand, count) <- taxBands.zipWithIndex){
     <tr>
         <td id="bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}")</td>
         <td id="income@{count}" class="numeric">@withPoundPrefix(MoneyPounds(taxBand.income,0))</td>

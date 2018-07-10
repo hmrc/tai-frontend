@@ -74,7 +74,8 @@
                         value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
                         pounds(viewModel.taxFreeAllowance)))
                     </p>
-                    @taxOnIncome(viewModel.incomeEstimate,viewModel.taxFreeAllowance,viewModel.nonSavings,viewModel.taxRegion)
+
+                    @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.nonSavings, taxRegion = viewModel.taxRegion)
                 </section>
 
 
@@ -85,7 +86,7 @@
                             MoneyPounds(viewModel.totalDividendIncome, 0).quantity,
                             MoneyPounds(viewModel.taxFreeDividendAllowance, 0).quantity)
                     </p>
-                    @taxBandTable(tableId = "tax-on-your-income", dividends = viewModel.dividends, taxRegion = viewModel.taxRegion)
+                    @taxBandTable(tableId = "tax-on-your-income", taxBands = viewModel.dividends, taxRegion = viewModel.taxRegion)
                 </section>
 
                 <section class="section soft--top">
