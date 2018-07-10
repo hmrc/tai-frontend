@@ -80,6 +80,8 @@ trait EstimatedIncomeTaxController extends TaiBaseController
                     taxAccountSummary.totalEstimatedIncome,taxAccountSummary.taxFreeAllowance,taxAccountSummary.totalEstimatedTax,
                     taxCodeIncomes.nonEmpty)
 
+                  println(totalTaxDetails)
+
                   taxViewType match {
                     case NoIncomeTaxView => Ok(views.html.estimatedIncomeTax.noCurrentIncome())
                     case ComplexTaxView => {
