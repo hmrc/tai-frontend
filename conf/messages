@@ -930,7 +930,7 @@ tai.estimatedIncome.whyEstimate.link=Why this is an estimate
 tai.estimatedIncome.whyEstimate.desc=The amount of tax you pay depends on your total income for the whole tax year. We can’t give an exact figure because we won’t know about all your income until after the tax year ends on {0}.
 tai.estimatedIncome.taxOnEmploymentIncome.subHeading=Tax on your employment income
 tai.estimatedIncome.desc=Your total income from employment is estimated at {0} this tax year. You have a {1} for your employment income. This means the first {2} of your employment earnings are tax free.
-tai.estimatedIncome.dividend.para.desc=Your total income from dividends this tax year is estimated at {0}. The first {1} of dividend income in each tax year is tax free.
+tai.estimatedIncome.dividend.para.desc=Your total income from dividends this tax year is estimated at £{0}. The first £{1} of dividend income in each tax year is tax free.
 tai.estimatedIncome.savings.desc=Your total income from savings this tax year is estimated at {0}.
 tai.estimatedIncomeLow.desc=We estimate that you will earn less than your {0} of {1}, this means you should pay no income Tax on your earnings this year.
 tai.estimatedIncome.taxFree.link=tax-free amount
@@ -1065,6 +1065,15 @@ uk.bandtype.HDR2=Dividend additional rate
 uk.bandtype.NA=Not applicable
 uk.bandtype.TaxedIncome=Taxed income
 
+estimate.uk.bandtype.SDR=Tax-free allowance
+estimate.uk.bandtype.LDR=Basic rate
+estimate.uk.bandtype.HDR1=Higher rate
+estimate.uk.bandtype.HDR2=Additional rate
+estimate.scottish.bandtype.SDR=Tax-free allowance
+estimate.scottish.bandtype.LDR=Basic rate
+estimate.scottish.bandtype.HDR1=Higher rate
+estimate.scottish.bandtype.HDR2=Additional rate
+
 #Scottish Band types
 scottish.bandtype.B=Income basic rate
 scottish.bandtype.D0=Income intermediate rate
@@ -1099,6 +1108,7 @@ tai.estimatedIncome.PSA.text1=You may also get up to £{0} of interest tax-free 
 tai.estimatedIncome.PSA.linkText=Personal Savings Allowance
 tai.estimatedIncome.DIV.title=Dividend Allowance
 tai.mergedTaxBand.description=Check in more detail
+
 
 #Get Help page
 tai.getHelp.h1=Can’t pay the tax you owe this year

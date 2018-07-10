@@ -36,14 +36,21 @@ object EstimatedIncomeTaxService extends ComplexEstimatedIncomeTaxHelper with Es
                   totalInYearAdjustmentIntoCY:BigDecimal,
                   totalInYearAdjustmentIntoCYPlusOne:BigDecimal,
                   totalEstimatedIncome:BigDecimal,
-                  taxFreeAllowance:BigDecimal,totalEstimatedTax:BigDecimal): TaxViewType = {
+                  taxFreeAllowance:BigDecimal,totalEstimatedTax:BigDecimal,
+                  hasCurrentIncome:Boolean): TaxViewType = {
 
-    isComplexViewType(codingComponents, totalTax, nonTaxCodeIncome, taxBands, totalInYearAdjustmentIntoCY, totalInYearAdjustmentIntoCYPlusOne) match {
-      case true => ComplexTaxView
-      case false => {
-        (totalEstimatedIncome < taxFreeAllowance) && totalEstimatedTax == 0 match {
-          case true => ZeroTaxView
-          case false => SimpleTaxView
+
+    hasCurrentIncome match {
+      case false => NoIncomeTaxView
+      case true => {
+        isComplexViewType(codingComponents, totalTax, nonTaxCodeIncome, taxBands, totalInYearAdjustmentIntoCY, totalInYearAdjustmentIntoCYPlusOne) match {
+          case true => ComplexTaxView
+          case false => {
+            (totalEstimatedIncome < taxFreeAllowance) && totalEstimatedTax == 0 match {
+              case true => ZeroTaxView
+              case false => SimpleTaxView
+            }
+          }
         }
       }
     }

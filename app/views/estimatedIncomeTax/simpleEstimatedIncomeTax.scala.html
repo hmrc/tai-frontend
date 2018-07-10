@@ -52,95 +52,66 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
     webChat = true,
     gaCustomTitle = None){
 
-    @if(viewModel.hasCurrentIncome) {
-        <div class="grid-row">
-            <div class="grid grid-2-3">
-                <div class="inner-block">
-                    <section class="soft--top flush--bottom">
-                        <div class="grid-row">
-                            <div class="column-one-half">
-                                <h2 class="flush--bottom">
-                                    @Messages("tai.incomeTax.totalEstimatedIncome.subheading")
-                                    <span id="total-estimated-income" class="display-block heading-48 section faded-text flush section--narrow">
-                                        @pounds(viewModel.incomeEstimate)
-                                    </span>
-                                </h2>
-                            </div>
-                            <div class="column-one-half">
-                                <h2 class="flush--bottom">
-                                    @Messages("tai.incomeTax.incomeTaxEstimate.subheading")
-                                    <span id="income-tax-estimate" class="display-block heading-48 section faded-text flush section--narrow">
-                                        @pounds(viewModel.incomeTaxEstimate)
-                                    </span>
-                                </h2>
-                            </div>
+
+    <div class="grid-row">
+        <div class="grid grid-2-3">
+            <div class="inner-block">
+                <section class="soft--top flush--bottom">
+                    <div class="grid-row">
+                        <div class="column-one-half">
+                            <h2 class="flush--bottom">
+                                @Messages("tai.incomeTax.totalEstimatedIncome.subheading")
+                                <span id="total-estimated-income" class="display-block heading-48 section faded-text flush section--narrow">
+                                    @pounds(viewModel.incomeEstimate)
+                                </span>
+                            </h2>
                         </div>
-                    </section>
+                        <div class="column-one-half">
+                            <h2 class="flush--bottom">
+                                @Messages("tai.incomeTax.incomeTaxEstimate.subheading")
+                                <span id="income-tax-estimate" class="display-block heading-48 section faded-text flush section--narrow">
+                                    @pounds(viewModel.incomeTaxEstimate)
+                                </span>
+                            </h2>
+                        </div>
+                    </div>
+                </section>
 
-                    <section>
-                        @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,SimpleTaxView, viewModel.incomeEstimate)
-                    </section>
+                <section>
+                    @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,SimpleTaxView, viewModel.incomeEstimate)
+                </section>
 
-                    <section>
-                        <h2 class="heading-section">
-                            @Messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading")
-                        </h2>
-                        <p id="taxOnEmploymentIncomeDesc">
-                            @Html(Messages("tai.estimatedIncome.desc",
-                            pounds(viewModel.incomeEstimate),
-                            Link.toInternalPage(
-                            id=Some("taxFreeAmountLink"),
-                            url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                            value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
-                            pounds(viewModel.taxFreeEstimate)))
-                        </p>
-                        <table id="employmentIncomeTaxDetails">
-                            <thead>
-                            <tr>
-                                <th id="incomeTaxBand">@Messages("tai.incomeTaxBand")</th>
-                                <th id="taxAmount" class="numeric">@Messages("tai.amount")</th>
-                                <th id="taxRate" class="numeric">@Messages("tai.taxRate")</th>
-                                <th id="tax" class="numeric">@Messages("tai.tax")</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @for((band, count) <- viewModel.mergedTaxBands.zipWithIndex){
-                            <tr>
-                                <td id="bandType@{count}">
-                                    @if(viewModel.taxRegion.equals(UkTaxRegion)){
-                                    @Messages(s"uk.bandtype.${band.bandType}")
-                                    } else {
-                                    @Messages(s"scottish.bandtype.${band.bandType}")
-                                    }
-                                </td>
-                                <td id="income@{count}" class="numeric">@withPoundPrefix(MoneyPounds(band.income, 0))</td>
-                                <td id="taxRate@{count}" class="numeric">@{band.rate}%</td>
-                                <td id="tax@{count}" class="numeric">@withPoundPrefix(MoneyPounds(band.tax, 0))</td>
-                            </tr>
-                            }
-                            </tbody>
-                        </table>
-                    </section>
+                <section>
+                    <h2 class="heading-section">
+                        @Messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading")
+                    </h2>
+                    <p id="taxOnEmploymentIncomeDesc">
+                        @Html(Messages("tai.estimatedIncome.desc",
+                        pounds(viewModel.incomeEstimate),
+                        Link.toInternalPage(
+                        id=Some("taxFreeAmountLink"),
+                        url=routes.TaxFreeAmountController.taxFreeAmount.url,
+                        value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
+                        pounds(viewModel.taxFreeAllowance)))
+                    </p>
+                    @taxOnIncome(viewModel.incomeEstimate,viewModel.taxFreeAllowance,viewModel.mergedTaxBands,viewModel.taxRegion)
+                </section>
 
-                    <section>
-                        @whyThisIsAnEstimateDesc()
-                        @howYouPayYourTaxDesc()
-                    </section>
-                </div>
-                <div id ="iForms" class="inner-block">
-                    @iFormLinks
-                </div>
+                <section>
+                    @whyThisIsAnEstimateDesc()
+                    @howYouPayYourTaxDesc()
+                </section>
             </div>
-
-            <section>
-                @navigationLinks(gaEventActionString)
-            </section>
-
-
+            <div id ="iForms" class="inner-block">
+                @iFormLinks
+            </div>
         </div>
-    } else {
-        <p  id="no-increase-tax">@Messages("tai.no.increasesTax")</p>
-    }
 
+        <section>
+            @navigationLinks(gaEventActionString)
+        </section>
+
+
+    </div>
 
 }

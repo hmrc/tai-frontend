@@ -16,26 +16,20 @@
 
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
-import controllers.routes
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
-import uk.gov.hmrc.tai.model.domain.tax.{TaxBand, TotalTax}
-import uk.gov.hmrc.tai.service.estimatedIncomeTax.{EstimatedIncomeTaxService}
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util._
-import uk.gov.hmrc.tai.viewModels.{Band, BandedGraph, Swatch}
-import uk.gov.hmrc.urls.Link
-import views.html.includes.link
+import uk.gov.hmrc.tai.viewModels.BandedGraph
 
 import scala.math.BigDecimal
 
 case class SimpleEstimatedIncomeTaxViewModel(
-                                        hasCurrentIncome: Boolean,
                                         incomeTaxEstimate: BigDecimal,
                                         incomeEstimate: BigDecimal,
-                                        taxFreeEstimate: BigDecimal,
+                                        taxFreeAllowance: BigDecimal,
                                         graph: BandedGraph,
                                         taxRegion: String,
                                         mergedTaxBands:List[TaxBand]
@@ -53,7 +47,6 @@ object SimpleEstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegi
     val taxRegion = findTaxRegion(taxCodeIncomes)
 
     SimpleEstimatedIncomeTaxViewModel(
-      taxCodeIncomes.nonEmpty,
       taxAccountSummary.totalEstimatedTax,
       taxAccountSummary.totalEstimatedIncome,
       taxAccountSummary.taxFreeAllowance,

@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax.{MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.viewModels._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{ComplexTaxView, SimpleTaxView, ZeroTaxView}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{ComplexTaxView, NoIncomeTaxView, SimpleTaxView, ZeroTaxView}
 
 import scala.collection.immutable.Seq
 
@@ -247,21 +247,28 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
   }
 
   "taxViewType" must {
+
+    "return noIncome" when{
+      "there is no current income" in{
+        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
+        EstimatedIncomeTaxService.taxViewType(codingComponents,totalTax,nonTaxCodeIncome,List.empty,0,0,0,0,0, false) mustBe NoIncomeTaxView
+      }
+    }
     "return complex" when {
       "isComplexViewType returns true" in{
-        EstimatedIncomeTaxService.taxViewType(codingComponents,totalTax,nonTaxCodeIncome,List.empty,0,0,0,11500,0) mustBe ComplexTaxView
+        EstimatedIncomeTaxService.taxViewType(codingComponents,totalTax,nonTaxCodeIncome,List.empty,0,0,0,11500,0, true) mustBe ComplexTaxView
       }
     }
     "return simple" when {
-      "isComplexViewType returns false and the totalEstimatedIncome is greater than the taxFreeAllowance and the totalEstimatedTax is greater than zero" in{
+      "the totalEstimatedIncome is greater than the taxFreeAllowance and the totalEstimatedTax is greater than zero" in{
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-        EstimatedIncomeTaxService.taxViewType(Seq.empty,totalTax,nonTaxCodeIncome,List.empty,0,0,12000,11500,100) mustBe SimpleTaxView
+        EstimatedIncomeTaxService.taxViewType(Seq.empty,totalTax,nonTaxCodeIncome,List.empty,0,0,12000,11500,100, true) mustBe SimpleTaxView
       }
     }
     "return zero" when {
-      "isComplexViewType returns false and the totalEstimatedIncome is less than the taxFreeAllowance and the totalEstimatedTax is zero" in{
+      "the totalEstimatedIncome is less than the taxFreeAllowance and the totalEstimatedTax is zero" in{
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-        EstimatedIncomeTaxService.taxViewType(Seq.empty,totalTax,nonTaxCodeIncome,List.empty,0,0,11000,11500,0) mustBe ZeroTaxView
+        EstimatedIncomeTaxService.taxViewType(Seq.empty,totalTax,nonTaxCodeIncome,List.empty,0,0,11000,11500,0, true) mustBe ZeroTaxView
       }
     }
 

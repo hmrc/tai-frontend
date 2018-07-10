@@ -77,9 +77,11 @@ trait EstimatedIncomeTaxController extends TaiBaseController
                   val taxBands = EstimatedIncomeTaxService.taxBand(totalTaxDetails).toList
                   val taxViewType = EstimatedIncomeTaxService.taxViewType(codingComponents,totalTaxDetails,nonTaxCodeIncome,
                     taxBands,taxAccountSummary.totalInYearAdjustmentIntoCY,taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne,
-                    taxAccountSummary.totalEstimatedIncome,taxAccountSummary.taxFreeAllowance,taxAccountSummary.totalEstimatedTax)
+                    taxAccountSummary.totalEstimatedIncome,taxAccountSummary.taxFreeAllowance,taxAccountSummary.totalEstimatedTax,
+                    taxCodeIncomes.nonEmpty)
 
                   taxViewType match {
+                    case NoIncomeTaxView => Ok(views.html.estimatedIncomeTax.noCurrentIncome())
                     case ComplexTaxView => {
                       val model = EstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary,taxCodeIncomes,taxBands)
                       Ok(views.html.estimatedIncomeTax.complexEstimatedIncomeTax(model,iFormLinks successfulContentOrElse Html("")))

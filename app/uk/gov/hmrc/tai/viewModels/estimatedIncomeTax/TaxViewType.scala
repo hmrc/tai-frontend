@@ -20,3 +20,4 @@ sealed trait TaxViewType
 case object ZeroTaxView extends TaxViewType
 case object SimpleTaxView extends TaxViewType
 case object ComplexTaxView extends TaxViewType
+case object NoIncomeTaxView extends TaxViewType
