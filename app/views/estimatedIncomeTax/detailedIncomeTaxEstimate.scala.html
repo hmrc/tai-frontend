@@ -80,13 +80,13 @@
 
 
                 <section class="section soft--top">
-                    <h2 id="tax-on-dividend-income-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading")</h2>
+                    <h2 id="tax-on-dividend-income-text" class="heading-section">@Messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading")</h2>
                     <p id="tax-on-dividend-income-desc">
                         @Messages("tai.estimatedIncome.dividend.para.desc",
                             MoneyPounds(viewModel.totalDividendIncome, 0).quantity,
                             MoneyPounds(viewModel.taxFreeDividendAllowance, 0).quantity)
                     </p>
-                    @taxBandTable(tableId = "tax-on-your-income", taxBands = viewModel.dividends, taxRegion = viewModel.taxRegion)
+                    @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.dividends, taxRegion = viewModel.taxRegion)
                 </section>
 
                 <section class="section soft--top">
@@ -94,26 +94,9 @@
                     <p id="tax-on-savings-desc">
                         @Messages("tai.estimatedIncome.savings.desc")
                     </p>
-                    <table id="tax-on-your-income">
-                        <thead>
-                            <tr>
-                            <th>@Messages("tai.incomeTax.calculated.table.headingOne")</th>
-                            <th>@Messages("tai.incomeTax.calculated.table.headingTwo")</th>
-                            <th class="text--right">@Messages("tai.incomeTax.calculated.table.headingThree")</th>
-                            <th class="text--right">@Messages("tai.incomeTax.calculated.table.headingFour")</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @for(taxBand <- viewModel.savings.sortBy(_.rate)){
-                        <tr>
-                            <td>@MoneyPounds(taxBand.income,0).quantity</td>
-                            <td>@Messages(s"${viewModel.taxRegion}.${taxBand.bandType}")</td>
-                            <td class="text--right">@taxBand.rate%</td>
-                            <td class="text--right">@MoneyPounds(taxBand.tax,2).quantity</td>
-                        </tr>
-                        }
-                        </tbody>
-                    </table>
+
+                    @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.savings.toList, taxRegion = viewModel.taxRegion)
+
                 </section>
 
                 <section>

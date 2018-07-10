@@ -1045,17 +1045,17 @@ tai.bandtype.zeroBand.incomeDetails=Tax-free amount for employment
 tai.bandtype.nonZeroBand.incomeDetails=Basic Rate
 
 #UK Band types
+uk.bandtype.pa=Tax-free allowance
+uk.bandtype.S=Income starter rate
 uk.bandtype.B=Income basic rate
 uk.bandtype.D0=Income higher rate
 uk.bandtype.D1=Income additional rate
-uk.bandtype.pa=Tax-free allowance
-uk.bandtype.SR=Starting rate for savings
 uk.bandtype.PSR=Personal Savings Allowance
-uk.bandtype.S=Income starter rate
-uk.bandtype.SDR=Dividend Allowance
+uk.bandtype.SR=Starting rate for savings
 uk.bandtype.LSR=Savings basic rate
 uk.bandtype.HSR1=Savings higher rate
 uk.bandtype.HSR2=Savings additional rate
+uk.bandtype.SDR=Dividend Allowance
 uk.bandtype.LDR=Dividend basic rate
 uk.bandtype.HDR1=Dividend higher rate
 uk.bandtype.HDR2=Dividend additional rate
@@ -1065,9 +1065,10 @@ uk.bandtype.TaxedIncome=Taxed income
 ## Tax estimate page tax band labels
 # Income
 estimate.uk.bandtype.pa=Tax-free allowance
-estimate.uk.bandtype.B=Income basic rate
-estimate.uk.bandtype.D0=Income higher rate
-estimate.uk.bandtype.D1=Income additional rate
+estimate.uk.bandtype.S=Starter rate
+estimate.uk.bandtype.B=Basic rate
+estimate.uk.bandtype.D0=Higher rate
+estimate.uk.bandtype.D1=Additional rate
 # Dividends
 estimate.uk.bandtype.SDR=Tax-free allowance
 estimate.uk.bandtype.LDR=Basic rate
@@ -1077,6 +1078,12 @@ estimate.scottish.bandtype.SDR=Tax-free allowance
 estimate.scottish.bandtype.LDR=Basic rate
 estimate.scottish.bandtype.HDR1=Higher rate
 estimate.scottish.bandtype.HDR2=Additional rate
+# Savings
+estimate.uk.bandtype.PSR=Personal Savings Allowance
+estimate.uk.bandtype.SR=Starting rate
+estimate.uk.bandtype.LSR=Basic rate
+estimate.uk.bandtype.HSR1=Higher rate
+estimate.uk.bandtype.HSR2=Additional rate
 
 #Scottish Band types
 scottish.bandtype.B=Income basic rate

@@ -24,7 +24,6 @@
 
 
 <table id=@{tableId}>
-<!--<table id="tax-on-your-dividend-income">-->
     <thead>
     <tr>
         <th id="taxBand">@Messages("tai.incomeTaxBand")</th>
@@ -34,7 +33,7 @@
     </tr>
     </thead>
     <tbody>
-    @for((taxBand, count) <- taxBands.zipWithIndex){
+    @for((taxBand, count) <- taxBands.sortBy(_.rate).zipWithIndex){
     <tr>
         <td id="bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}")</td>
         <td id="income@{count}" class="numeric">@withPoundPrefix(MoneyPounds(taxBand.income,0))</td>
