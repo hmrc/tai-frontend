@@ -57,32 +57,21 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalIncomeTaxEstimate") + " £18,573")
     }
 
-    //  "display additional tax related to Self Assessment" in {
-    //    doc(view) must haveParagraphWithText()
-    //  }
-
-    "display table headers" in {
-      doc must haveThWithText(messages("tai.incomeTax.calculated.table.headingOne"))
-      doc must haveThWithText(messages("tai.incomeTax.calculated.table.headingTwo"))
-      doc must haveThWithText(messages("tai.incomeTax.calculated.table.headingThree"))
-      doc must haveThWithText(messages("tai.incomeTax.calculated.table.headingFour"))
-    }
-
     "display table body" when {
       "UK user have non-savings" in {
         val nonSavings = List(
           TaxBand("B", "", 32010, 6402, None, None, 20),
           TaxBand("D0", "", 36466, 36466, None, None, 40)
         )
-        val viewWithSavings: Html = views.html.howIncomeTaxIsCalculated(TaxExplanationViewModel(nonSavings, Seq.empty[TaxBand], Seq.empty[TaxBand], UkBands))
-        doc(viewWithSavings) must haveTdWithText("32,010")
-        doc(viewWithSavings) must haveTdWithText(messages("uk.bandtype.B"))
-        doc(viewWithSavings) must haveTdWithText("20%")
-        doc(viewWithSavings) must haveTdWithText("6,402.00")
-        doc(viewWithSavings) must haveTdWithText("36,466")
-        doc(viewWithSavings) must haveTdWithText(messages("uk.bandtype.D0"))
-        doc(viewWithSavings) must haveTdWithText("40%")
-        doc(viewWithSavings) must haveTdWithText("36,466.00")
+        val viewWithNonSavings: Html = views.html.howIncomeTaxIsCalculated(TaxExplanationViewModel(nonSavings, Seq.empty[TaxBand], Seq.empty[TaxBand], UkBands))
+        doc(viewWithNonSavings) must haveTdWithText("32,010")
+        doc(viewWithNonSavings) must haveTdWithText(messages("uk.bandtype.B"))
+        doc(viewWithNonSavings) must haveTdWithText("20%")
+        doc(viewWithNonSavings) must haveTdWithText("6,402.00")
+        doc(viewWithNonSavings) must haveTdWithText("36,466")
+        doc(viewWithNonSavings) must haveTdWithText(messages("uk.bandtype.D0"))
+        doc(viewWithNonSavings) must haveTdWithText("40%")
+        doc(viewWithNonSavings) must haveTdWithText("36,466.00")
       }
 
       "Scottish user have non-savings" in {
@@ -90,15 +79,15 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
           TaxBand("B", "", 32010, 6402, None, None, 20),
           TaxBand("D0", "", 36466, 36466, None, None, 40)
         )
-        val viewWithSavings: Html = views.html.howIncomeTaxIsCalculated(TaxExplanationViewModel(nonSavings, Seq.empty[TaxBand], Seq.empty[TaxBand], ScottishBands))
-        doc(viewWithSavings) must haveTdWithText("32,010")
-        doc(viewWithSavings) must haveTdWithText(messages("scottish.bandtype.B"))
-        doc(viewWithSavings) must haveTdWithText("20%")
-        doc(viewWithSavings) must haveTdWithText("6,402.00")
-        doc(viewWithSavings) must haveTdWithText("36,466")
-        doc(viewWithSavings) must haveTdWithText(messages("scottish.bandtype.D0"))
-        doc(viewWithSavings) must haveTdWithText("40%")
-        doc(viewWithSavings) must haveTdWithText("36,466.00")
+        val viewWithNonSavings: Html = views.html.howIncomeTaxIsCalculated(TaxExplanationViewModel(nonSavings, Seq.empty[TaxBand], Seq.empty[TaxBand], ScottishBands))
+        doc(viewWithNonSavings) must haveTdWithText("32,010")
+        doc(viewWithNonSavings) must haveTdWithText(messages("scottish.bandtype.B"))
+        doc(viewWithNonSavings) must haveTdWithText("20%")
+        doc(viewWithNonSavings) must haveTdWithText("6,402.00")
+        doc(viewWithNonSavings) must haveTdWithText("36,466")
+        doc(viewWithNonSavings) must haveTdWithText(messages("scottish.bandtype.D0"))
+        doc(viewWithNonSavings) must haveTdWithText("40%")
+        doc(viewWithNonSavings) must haveTdWithText("36,466.00")
       }
 
       "UK user have savings" in {
@@ -138,15 +127,15 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
           TaxBand("LDR", "", 32010, 6402, None, None, 20),
           TaxBand("HDR1", "", 36466, 36466, None, None, 40)
         )
-        val viewWithSavings: Html = views.html.howIncomeTaxIsCalculated(TaxExplanationViewModel(Seq.empty[TaxBand], Seq.empty[TaxBand], dividends, UkBands))
-        doc(viewWithSavings) must haveTdWithText("32,010")
-        doc(viewWithSavings) must haveTdWithText(messages("uk.bandtype.LDR"))
-        doc(viewWithSavings) must haveTdWithText("20%")
-        doc(viewWithSavings) must haveTdWithText("6,402.00")
-        doc(viewWithSavings) must haveTdWithText("36,466")
-        doc(viewWithSavings) must haveTdWithText(messages("uk.bandtype.HDR1"))
-        doc(viewWithSavings) must haveTdWithText("40%")
-        doc(viewWithSavings) must haveTdWithText("36,466.00")
+        val viewWithDividends: Html = views.html.howIncomeTaxIsCalculated(TaxExplanationViewModel(Seq.empty[TaxBand], Seq.empty[TaxBand], dividends, UkBands))
+        doc(viewWithDividends) must haveTdWithText("32,010")
+        doc(viewWithDividends) must haveTdWithText(messages("uk.bandtype.LDR"))
+        doc(viewWithDividends) must haveTdWithText("20%")
+        doc(viewWithDividends) must haveTdWithText("6,402.00")
+        doc(viewWithDividends) must haveTdWithText("36,466")
+        doc(viewWithDividends) must haveTdWithText(messages("uk.bandtype.HDR1"))
+        doc(viewWithDividends) must haveTdWithText("40%")
+        doc(viewWithDividends) must haveTdWithText("36,466.00")
       }
 
       "scottish user have dividends" in {
@@ -154,15 +143,15 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
           TaxBand("LDR", "", 32010, 6402, None, None, 20),
           TaxBand("HDR1", "", 36466, 36466, None, None, 40)
         )
-        val viewWithSavings: Html = views.html.howIncomeTaxIsCalculated(TaxExplanationViewModel(Seq.empty[TaxBand], Seq.empty[TaxBand], dividends, UkBands))
-        doc(viewWithSavings) must haveTdWithText("32,010")
-        doc(viewWithSavings) must haveTdWithText(messages("scottish.bandtype.LDR"))
-        doc(viewWithSavings) must haveTdWithText("20%")
-        doc(viewWithSavings) must haveTdWithText("6,402.00")
-        doc(viewWithSavings) must haveTdWithText("36,466")
-        doc(viewWithSavings) must haveTdWithText(messages("scottish.bandtype.HDR1"))
-        doc(viewWithSavings) must haveTdWithText("40%")
-        doc(viewWithSavings) must haveTdWithText("36,466.00")
+        val viewWithDividends: Html = views.html.howIncomeTaxIsCalculated(TaxExplanationViewModel(Seq.empty[TaxBand], Seq.empty[TaxBand], dividends, UkBands))
+        doc(viewWithDividends) must haveTdWithText("32,010")
+        doc(viewWithDividends) must haveTdWithText(messages("scottish.bandtype.LDR"))
+        doc(viewWithDividends) must haveTdWithText("20%")
+        doc(viewWithDividends) must haveTdWithText("6,402.00")
+        doc(viewWithDividends) must haveTdWithText("36,466")
+        doc(viewWithDividends) must haveTdWithText(messages("scottish.bandtype.HDR1"))
+        doc(viewWithDividends) must haveTdWithText("40%")
+        doc(viewWithDividends) must haveTdWithText("36,466.00")
       }
 
     }
@@ -174,34 +163,6 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
         "£68,476",
         messages("tai.estimatedIncome.taxFree.link"),
         "£11,500")).body)
-
-      doc(view).select("#taxOnEmploymentIncomeDesc").html() mustBe Html(Messages("tai.estimatedIncome.desc",
-        "£68,476",
-        Link.toInternalPage(
-          id = Some("taxFreeAmountLink"),
-          url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
-          value = Some("tai.estimatedIncome.taxFree.link")
-        ).toHtml,
-        "£11,500")).body
-      doc(view).select("#employmentIncomeTaxDetails").size() mustBe 1
-//      doc(view) must haveTableThWithIdAndText("incomeTaxBand", messages("tai.incomeTaxBand"))
-//      doc(view) must haveTableThWithIdAndText("taxAmount", messages("tai.amount"))
-//      doc(view) must haveTableThWithIdAndText("taxRate", messages("tai.taxRate"))
-//      doc(view) must haveTableThWithIdAndText("tax", messages("tai.tax"))
-//      doc(view).select("#bandType0").text() mustBe messages("uk.bandtype.SDR")
-//      doc(view).select("#bandType1").text() mustBe messages("uk.bandtype.LDR")
-//      doc(view).select("#bandType2").text() mustBe messages("uk.bandtype.HDR1")
-//      doc(view).select("#bandType3").text() mustBe messages("uk.bandtype.HDR2")
-//      doc(view).select("#income0").text() mustBe "£11,500"
-//      doc(view).select("#taxRate0").text() mustBe "0%"
-//      doc(view).select("#tax0").text() mustBe "£0"
-//      doc(view).select("#income1").text() mustBe "£32,010"
-//      doc(view).select("#taxRate1").text() mustBe "20%"
-//      doc(view).select("#tax1").text() mustBe "£6,402"
-//      doc(view).select("#income2").text() mustBe "£36,466"
-//      doc(view).select("#taxRate2").text() mustBe "40%"
-//      doc(view).select("#tax2").text() mustBe "£14,586"
-
     }
 
     "have tax on your dividend income section" when{
@@ -214,6 +175,15 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       }
     }
 
+    "have tax on your savings income section" when{
+
+      "dividends income exists " in {
+
+        doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading"))
+        doc(view) must haveParagraphWithText(messages("tai.estimatedIncome.dividend.para.desc","20,000","5,000"))
+
+      }
+    }
 
 
   }

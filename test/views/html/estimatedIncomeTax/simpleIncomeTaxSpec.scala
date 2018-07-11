@@ -84,14 +84,14 @@ class simpleIncomeTaxSpec extends TaiViewSpec {
           value = Some("tai.estimatedIncome.taxFree.link")
         ).toHtml,
         "£11,500")).body
-      doc(view).select("#employmentIncomeTaxDetails").size() mustBe 1
-      doc(view) must haveTableThWithIdAndText("incomeTaxBand", messages("tai.incomeTaxBand"))
+      doc(view).select("#tax-on-your-income").size() mustBe 1
+      doc(view) must haveTableThWithIdAndText("taxBand", messages("tai.incomeTaxBand"))
       doc(view) must haveTableThWithIdAndText("taxAmount", messages("tai.amount"))
       doc(view) must haveTableThWithIdAndText("taxRate", messages("tai.taxRate"))
       doc(view) must haveTableThWithIdAndText("tax", messages("tai.tax"))
-      doc(view).select("#bandType0").text() mustBe messages("uk.bandtype.pa")
-      doc(view).select("#bandType1").text() mustBe messages("uk.bandtype.B")
-      doc(view).select("#bandType2").text() mustBe messages("uk.bandtype.D0")
+      doc(view).select("#bandType0").text() mustBe messages("estimate.uk.bandtype.pa")
+      doc(view).select("#bandType1").text() mustBe messages("estimate.uk.bandtype.B")
+      doc(view).select("#bandType2").text() mustBe messages("estimate.uk.bandtype.D0")
       doc(view).select("#income0").text() mustBe "£11,500"
       doc(view).select("#taxRate0").text() mustBe "0%"
       doc(view).select("#tax0").text() mustBe "£0"
@@ -107,7 +107,6 @@ class simpleIncomeTaxSpec extends TaiViewSpec {
     "show iform links" in {
       doc.select("#iForms").text() mustBe "Test"
     }
-
   }
 
   val bandedGraph = BandedGraph("taxGraph", Nil, 0, 0, 0, 0, 0, 0, 0, None)
