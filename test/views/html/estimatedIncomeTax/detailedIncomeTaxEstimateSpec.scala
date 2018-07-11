@@ -65,13 +65,6 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       }
     }
 
-    "display table headers" in {
-      doc must haveThWithText(messages("tai.incomeTax.calculated.table.headingOne"))
-      doc must haveThWithText(messages("tai.incomeTax.calculated.table.headingTwo"))
-      doc must haveThWithText(messages("tai.incomeTax.calculated.table.headingThree"))
-      doc must haveThWithText(messages("tai.incomeTax.calculated.table.headingFour"))
-    }
-
     "display table body" when {
       "UK user have non-savings" in {
         val nonSavings = List(
