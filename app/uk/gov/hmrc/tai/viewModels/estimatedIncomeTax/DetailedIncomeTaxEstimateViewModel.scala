@@ -89,9 +89,9 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val dividendIncome = totalDividendIncome(totalTax.incomeCategories)
     val taxFreeDividend = taxFreeDividendAllowance(totalTax.incomeCategories)
     val mergedNonSavingsBand = (nonSavings :+ paBand).toList.sortBy(_.rate)
-
-    val nonCodedIncomePresent = !nonTaxCodeIncome.otherNonTaxCodeIncomes.filter(_.incomeComponentType == NonCodedIncome).isEmpty
-    val additionIncomePayableText: Option[String] = if (nonCodedIncomePresent) Option(messages("tai.estimatedIncome.selfAssessmentAndPayeText")) else None
+    val additionIncomePayableText = nonTaxCodeIncome.otherNonTaxCodeIncomes
+      .find(_.incomeComponentType == NonCodedIncome)
+      .map(_ => messages("tai.estimatedIncome.selfAssessmentAndPayeText"))
 
     DetailedIncomeTaxEstimateViewModel(
       mergedNonSavingsBand,
