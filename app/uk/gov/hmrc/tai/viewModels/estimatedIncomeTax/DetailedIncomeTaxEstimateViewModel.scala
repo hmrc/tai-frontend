@@ -45,7 +45,8 @@ case class DetailedIncomeTaxEstimateViewModel(
                                        ssrValue: Option[BigDecimal],
                                        psrValue: Option[BigDecimal],
                                        totalDividendIncome: BigDecimal,
-                                       taxFreeDividendAllowance: BigDecimal
+                                       taxFreeDividendAllowance: BigDecimal,
+                                       selfAssessmentAndPayeText: Option[String]
                                      ) extends ViewModelHelper {
 }
 
@@ -88,7 +89,9 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val dividendIncome = totalDividendIncome(totalTax.incomeCategories)
     val taxFreeDividend = taxFreeDividendAllowance(totalTax.incomeCategories)
     val mergedNonSavingsBand = (nonSavings :+ paBand).toList.sortBy(_.rate)
-
+    val additionIncomePayableText = nonTaxCodeIncome.otherNonTaxCodeIncomes
+      .find(_.incomeComponentType == NonCodedIncome)
+      .map(_ => messages("tai.estimatedIncome.selfAssessmentAndPayeText"))
 
     DetailedIncomeTaxEstimateViewModel(
       mergedNonSavingsBand,
@@ -105,9 +108,9 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
       ssrValue,
       psrValue,
       dividendIncome,
-      taxFreeDividend
+      taxFreeDividend,
+      additionIncomePayableText
     )
-
   }
 
   def createAdditionalTaxTable(codingComponent: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages): Seq[AdditionalTaxDetailRow] = {
