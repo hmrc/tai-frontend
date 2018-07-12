@@ -16,13 +16,17 @@
 
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
-import controllers.FakeTaiPlayApplication
+import controllers.{FakeTaiPlayApplication, routes}
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
-import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome, _}
 import uk.gov.hmrc.tai.model.domain.tax._
+import uk.gov.hmrc.tai.model.domain.{ChildBenefit => _, DoubleTaxationRelief => _, MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.util.BandTypesConstants
+import uk.gov.hmrc.tai.viewModels.{HelpLink, Label}
+import uk.gov.hmrc.urls.Link
 
 class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayApplication with BandTypesConstants with I18nSupport {
 
@@ -108,6 +112,131 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
       }
     }
 
+    "createAdditionalTaxTable" must {
+
+      "return additional tax detail rows" when {
+
+        "there are additional tax due" in {
+          val otherTaxDue = Seq(
+            TaxAdjustmentComponent(ExcessGiftAidTax, 100),
+            TaxAdjustmentComponent(ExcessWidowsAndOrphans, 100),
+            TaxAdjustmentComponent(PensionPaymentsAdjustment, 200),
+            TaxAdjustmentComponent(ChildBenefit, 300)
+          )
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(700, otherTaxDue)), None, None)
+          val codingComponents = Seq(
+            CodingComponent(UnderPaymentFromPreviousYear, None, 100, "", Some(10)),
+            CodingComponent(EstimatedTaxYouOweThisYear, None, 0, "", Some(50)),
+            CodingComponent(OutstandingDebt, None, 150, "")
+          )
+
+          val result = DetailedIncomeTaxEstimateViewModel.createAdditionalTaxTable(codingComponents, totalTax)
+
+          result mustBe Seq(
+            AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.UnderpaymentPreviousYear.title"),
+              Some(HelpLink(Messages("what.does.this.mean"),
+                controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString, "underPaymentFromPreviousYear"))), 10),
+            AdditionalTaxDetailRow(Label(Messages("tai.taxcode.deduction.type-45"),
+              Some(HelpLink(Messages("what.does.this.mean"),
+                controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString, "estimatedTaxOwedLink"))), 50),
+            AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.OutstandingDebt.title")), 150),
+            AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.childBenefit.title")), 300),
+            AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.excessGiftAidTax.title")), 100),
+            AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.excessWidowsAndOrphans.title")), 100),
+            AdditionalTaxDetailRow(Label(Messages("tai.taxCalc.pensionPaymentsAdjustment.title")), 200)
+          )
+        }
+      }
+
+      "return empty row" when {
+
+        "there is no additional tax due" in {
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
+
+          val result = DetailedIncomeTaxEstimateViewModel.createAdditionalTaxTable(Seq.empty[CodingComponent], totalTax)
+
+          result mustBe Seq.empty[AdditionalTaxDetailRow]
+        }
+      }
+    }
+
+    "createReductionsTable" must {
+
+      "return reduction tax table" when {
+
+        "there are components present which can reduce the tax" in {
+
+          val alreadyTaxedAtSource = Seq(
+            TaxAdjustmentComponent(TaxOnBankBSInterest, 100),
+            TaxAdjustmentComponent(TaxCreditOnUKDividends, 200),
+            TaxAdjustmentComponent(TaxCreditOnForeignInterest, 300),
+            TaxAdjustmentComponent(TaxCreditOnForeignIncomeDividends, 400)
+          )
+
+          val reliefsGivingBackTax = Seq(
+            TaxAdjustmentComponent(EnterpriseInvestmentSchemeRelief, 500),
+            TaxAdjustmentComponent(ConcessionalRelief, 600),
+            TaxAdjustmentComponent(MaintenancePayments, 700),
+            TaxAdjustmentComponent(MarriedCouplesAllowance, 800),
+            TaxAdjustmentComponent(DoubleTaxationRelief, 900)
+          )
+
+          val taxReliefComponent = Seq(
+            TaxAdjustmentComponent(GiftAidPaymentsRelief, 1000),
+            TaxAdjustmentComponent(PersonalPensionPaymentRelief, 1100)
+          )
+
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
+            Some(tax.TaxAdjustment(3500, reliefsGivingBackTax)),
+            None,
+            Some(tax.TaxAdjustment(1000, alreadyTaxedAtSource)),
+            Some(100),
+            Some(tax.TaxAdjustment(2100, taxReliefComponent))
+          )
+
+          val codingComponents = Seq(
+            CodingComponent(MarriedCouplesAllowanceMAE, None, 1200, "", None)
+          )
+
+          val result: Seq[ReductionTaxRow] = DetailedIncomeTaxEstimateViewModel.createReductionsTable(codingComponents, totalTax)
+
+          result mustBe Seq(
+            ReductionTaxRow(Messages("tai.taxCollected.atSource.otherIncome.description"), 100, Messages("tai.taxCollected.atSource.otherIncome.title")),
+            ReductionTaxRow(Messages("tai.taxCollected.atSource.dividends.description", 10), 200, Messages("tai.taxCollected.atSource.dividends.title")),
+            ReductionTaxRow(Messages("tai.taxCollected.atSource.bank.description", 20), 100, Messages("tai.taxCollected.atSource.bank.title")),
+            ReductionTaxRow(Messages("tai.taxCollected.atSource.marriageAllowance.description", MoneyPounds(1200).quantity,
+              Link.toInternalPage(
+                url = routes.YourTaxCodeController.taxCodes().toString,
+                value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
+              ).toHtml.body), 800, Messages("tai.taxCollected.atSource.marriageAllowance.title")),
+            ReductionTaxRow(Messages("tai.taxCollected.atSource.maintenancePayments.description", MoneyPounds(1200).quantity,
+              routes.YourTaxCodeController.taxCodes().url), 700, Messages("tai.taxCollected.atSource.marriageAllowance.title")),
+            ReductionTaxRow(Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description"),
+              500, Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title")),
+            ReductionTaxRow(Messages("tai.taxCollected.atSource.concessionalRelief.description"),
+              600, Messages("tai.taxCollected.atSource.concessionalRelief.title")),
+            ReductionTaxRow(Messages("tai.taxCollected.atSource.doubleTaxationRelief.description"),
+              900, Messages("tai.taxCollected.atSource.doubleTaxationRelief.title")),
+            ReductionTaxRow(Messages("gift.aid.tax.relief",0,1000),
+              1000, Messages("gift.aid.savings")),
+            ReductionTaxRow(Messages("personal.pension.payment.relief",0,1100),
+              1100, Messages("personal.pension.payments"))
+          )
+        }
+      }
+
+      "return empty reduction tax table" when {
+
+        "there is no reduction in tax" in {
+
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
+          val result = DetailedIncomeTaxEstimateViewModel.createReductionsTable(Seq.empty[CodingComponent], totalTax)
+
+          result mustBe Seq.empty[ReductionTaxRow]
+        }
+      }
+    }
+
 
 
     "return tax bands from all categories" in {
@@ -166,6 +295,22 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
         model.nonSavings mustBe Seq.empty[TaxBand]
         model.savings mustBe  Seq.empty[TaxBand]
         model.dividends mustBe Seq.empty[TaxBand]
+      }
+    }
+
+    "additional Income Tax Self Assessment text" should {
+      "be returned when Non-Coded Income is present" in {
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, List(OtherNonTaxCodeIncome(NonCodedIncome,None,0,"")))
+        val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
+
+        model.selfAssessmentAndPayeText mustEqual Some(messagesApi("tai.estimatedIncome.selfAssessmentAndPayeText"))
+      }
+
+      "not returned when Non-Coded Income is absent" in {
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, List.empty)
+        val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes,taxCodeSummary,Seq.empty,nonTaxCodeIncome)
+
+        model.selfAssessmentAndPayeText mustEqual None
       }
     }
   }

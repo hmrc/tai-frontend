@@ -597,8 +597,7 @@ tai.taxFreeAmount.missing.section.benefit=Add a missing company benefit
 tai.taxFreeAmount.missing.section.income=Add a missing income from another source
 
 ##Your Tax Free Allowance Page
-tai.taxFreeAmount.summarysection.EstimatedTaxYouOweThisYear=What does this mean?
-tai.taxFreeAmount.summarysection.UnderPaymentFromPreviousYear=What does this mean?
+what.does.this.mean=What does this mean?
 
 ##Scenarios
 
@@ -941,9 +940,9 @@ tai.estimatedIncome.howYouPay.desc=Your employer or pension provider takes off I
 tai.estimatedIncomeEarning.desc=You can earn {0} more before you reach a tax band.
 tai.estimatedIncome.taxRelief=Because you’ve made a gift aid payment or personal pension payment you can have more income at a lower tax rate. This is called {0}.
 tai.estimatedIncome.taxRelief.link=Tax Relief
-tai.estimatedIncome.additionalTax.title=Additional tax due
-tai.estimatedIncome.additionalTax.desc=We adjust your tax code so you pay the tax due on the following.
-tai.estimatedIncome.reductionsTax.title=Reductions to your estimate
+tai.estimatedIncome.additionalTax.title=Additions to your Income Tax
+tai.estimatedIncome.additionalTax.desc=The following all increase the amount of tax you will pay this year.
+tai.estimatedIncome.reductionsTax.title=Deductions and savings taken away from the Income Tax you pay
 tai.estimatedIncome.reductionsTax.desc=So that you don’t pay too much tax your estimate is adjusted for the following items:
 tai.estimatedIncome.ukdividends.lessThanOrEqualToBasic=The first £{0} of dividend income is tax free. All of your dividend income is included in your tax free amount.
 tai.estimatedIncome.ukdividends.moreThanBasic=You pay {0} on all dividends above £{1}.
@@ -953,9 +952,14 @@ tai.estimatedIncome.detailedEstimate.heading=Your detailed PAYE Income Tax estim
 tai.estimatedIncome.detailedEstimate.employmentIncome.subHeading=Tax on your employment income
 tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading=Tax on dividend income
 tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading=Tax on savings interest
+tai.estimatedIncome.selfAssessmentAndPayeText = You have additional Income Tax payable this year which is not included in this estimate. This should be included in your Self Assessment. It will not be collected by PAYE.
+gift.aid.savings=Gift Aid savings
+gift.aid.tax.relief=You made Gift Aid donations of £{0} during this tax year which give you tax-relief and an Income Tax saving of £{1}.
+personal.pension.payment.relief=You made personal pension payments of £{0} during this tax year which give you tax-relief and an Income Tax saving of £{1}.
+personal.pension.payments=Personal pension payments
 
-tai.tables.column1=Description
-tai.tables.column2=Tax (£)
+tax.adjustment=Tax adjustment
+tax.adjustments=Tax adjustments
 tai.tables.total=Total
 tai.incomeTax.incomeTaxEstimate.subheading=Income tax estimate
 tai.incomeTax.totalEstimatedIncome.subheading=Total estimated income

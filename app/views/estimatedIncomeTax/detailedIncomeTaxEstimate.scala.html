@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.tai.util.ViewModelHelper._
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
@@ -59,6 +60,9 @@
                             </h2>
                         </div>
                     </div>
+                    @viewModel.selfAssessmentAndPayeText.map(paragraphText =>
+                        <p>{paragraphText}</p>
+                    )
                 </section>
 
                 <section class="section soft--top">
@@ -100,17 +104,6 @@
                 </section>
 
                 <section>
-                    @if(viewModel.hasTaxRelief){
-                    <h3 id="tax-relief-title" class="heading-medium">@Messages("tai.estimatedIncome.taxrelief.title")</h3>
-                    <p id="tax-relief-message">@Html(Messages(
-                        "tai.estimatedIncome.taxRelief",
-                        Link.toInternalPage(
-                        url=routes.EstimatedIncomeTaxController.taxRelief().toString,
-                        value=Some("tai.estimatedIncome.taxRelief.link")
-                        ).toHtml
-                        ))</p>
-                    }
-
                     @if(viewModel.hasPotentialUnderPayment){
                     <div class="panel-indent panel-indent--info panel-indent--gutter">
                         <p id="income-potential-underpayment">@Messages("tai.potentialUnderpayment.title")</p>
@@ -137,49 +130,53 @@
 
                 @if(viewModel.additionalTaxTable.size>0){
                 <section>
-                    <h3 id ="additionalTaxTable-heading" class="heading-medium">
+                    <h3 id ="additionalTaxTable-heading" class="heading-medium heading-section">
                         @Messages("tai.estimatedIncome.additionalTax.title")</h3>
                     <p id="additionalTaxTable-desc">@Messages("tai.estimatedIncome.additionalTax.desc")</p>
                     <table id="additionalTaxTable" class="table-section">
                         <thead>
                         <tr>
-                            <th>@Messages("tai.tables.column1")</th>
-                            <th class="text--right">@Messages("tai.tables.column2")</th>
+                            @if(viewModel.additionalTaxTable.size>1) {
+                                <th colspan="2">@Messages("tax.adjustments")</th>
+                            } else {
+                                <th colspan="2">@Messages("tax.adjustment")</th>
+                            }
+
                         </tr>
                         </thead>
                         @for(additionalTaxRow <- viewModel.additionalTaxTable){
                         <tr>
-                            @if(additionalTaxRow.url.isDefined){
-                            @if(additionalTaxRow.description == Messages("tai.taxcode.deduction.type-45")) {
-                            <td><a href="@additionalTaxRow.url" data-journey='link - view:@Messages("tai.estimatedIncome.additionalTax.title"):@Messages("tai.taxcode.deduction.type-45")' data-journey-click='link - click:@Messages("tai.estimatedIncome.additionalTax.title"):@Messages("tai.taxcode.deduction.type-45")'>@additionalTaxRow.description</a></td>
-                            } else {
-                            <td><a href="@additionalTaxRow.url">@additionalTaxRow.description</a></td>
-                            }
-                            } else{
-                            <td>@additionalTaxRow.description</td>
-                            }
-                            <td class="text--right">@MoneyPounds(additionalTaxRow.amount, 2).quantity</td>
+                            <td>
+                                @additionalTaxRow.label.value
+                                @additionalTaxRow.label.link.map { link =>
+                                    @includes.link(
+                                        id=Some(link.id),
+                                        copy=link.value,
+                                        url = link.href,
+                                        linkClasses = Seq("link-list__item"),
+                                        attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${link.value}"))
+                                }
+
+                            </td>
+                            <td class="text--right">@withPoundPrefix(MoneyPounds(additionalTaxRow.amount, 2))</td>
                         </tr>
                         }
-                        <tfoot>
-                        <tr class="table__row--bold">
-                            <td>@Messages("tai.tables.total")</td>
-                            <td class="text--right">@MoneyPounds(viewModel.additionalTaxTableTotal,2).quantity</td>
-                        </tr>
-                        </tfoot>
                     </table>
                 </section>
                 }
 
                 @if(viewModel.reductionTaxTable.size > 0){
                 <section class="section soft--top soft--bottom">
-                    <h3 id="taxPaidElsewhereTable-heading" class="heading-medium">@Messages("tai.estimatedIncome.reductionsTax.title")</h3>
+                    <h3 id="taxPaidElsewhereTable-heading" class="heading-medium heading-section">@Messages("tai.estimatedIncome.reductionsTax.title")</h3>
                     <p id="taxPaidElsewhereTable-desc">@Messages("tai.estimatedIncome.reductionsTax.desc")</p>
                     <table id="taxPaidElsewhereTable" class="table-section">
                         <thead>
                         <tr>
-                            <th>@Messages("tai.tables.column1")</th>
-                            <th class="text--right">@Messages("tai.tables.column2")</th>
+                            @if(viewModel.reductionTaxTable.size>1) {
+                            <th colspan="2">@Messages("tax.adjustments")</th>
+                            } else {
+                            <th colspan="2">@Messages("tax.adjustment")</th>
+                            }
                         </tr>
                         </thead>
                         @for(taxPaidElsewhere <- viewModel.reductionTaxTable){
@@ -189,15 +186,9 @@
                                 <p>@Html(taxPaidElsewhere.description)</p>
                                 }
                             </td>
-                            <td class="text--right">-@MoneyPounds(taxPaidElsewhere.amount, 2).quantity</td>
+                            <td class="text--right">-@withPoundPrefix(MoneyPounds(taxPaidElsewhere.amount, 2))</td>
                         </tr>
                         }
-                        <tfoot>
-                        <tr class="table__row--bold">
-                            <td>@Messages("tai.tables.total")</td>
-                            <td class="text--right">-@MoneyPounds(viewModel.reductionTaxTableTotal, 2).quantity</td>
-                        </tr>
-                        </tfoot>
                     </table>
 
                     @viewModel.incomeTaxReducedToZeroMessage.map { incomeTaxReducedToZeroMessage => 
