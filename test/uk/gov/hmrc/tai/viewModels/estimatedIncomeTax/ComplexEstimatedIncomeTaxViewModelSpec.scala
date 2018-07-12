@@ -28,12 +28,12 @@ import uk.gov.hmrc.tai.util.{BandTypesConstants, TaxRegionConstants}
 
 import scala.language.postfixOps
 
-class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with TaxRegionConstants with BandTypesConstants {
+class ComplexEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with TaxRegionConstants with BandTypesConstants {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
 
-  "Estimated Income Tax View Model" must {
+  "ComplexEstimatedIncomeTaxViewModel" must {
     "return a valid view model" in {
 
       val taxAccountSummary = TaxAccountSummary(700, 11500, 0, 0, 0, 16500, 11500)
@@ -55,23 +55,23 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         None,
         Some(Swatch(4.24, 700)))
 
-      val expectedViewModel = EstimatedIncomeTaxViewModel(700, 16500, 11500, bandedGraph, UkTaxRegion)
+      val expectedViewModel = ComplexEstimatedIncomeTaxViewModel(700, 16500, 11500, bandedGraph, UkTaxRegion)
 
-      EstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, ukTaxCodeIncome, taxBands) mustBe expectedViewModel
+      ComplexEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, ukTaxCodeIncome, taxBands) mustBe expectedViewModel
 
     }
   }
 
   "createPABand must return a Personal Allowance Taxband for a given Tax Free Allowance" in {
-    EstimatedIncomeTaxViewModel.createPABand(11500) mustBe TaxBand(TaxFreeAllowanceBand, "", 11500, 0, Some(0), None, 0)
+    ComplexEstimatedIncomeTaxViewModel.createPABand(11500) mustBe TaxBand(TaxFreeAllowanceBand, "", 11500, 0, Some(0), None, 0)
   }
 
   "findTaxRegion" must {
     "return UK when a UK TaxCode is present" in {
-       EstimatedIncomeTaxViewModel.findTaxRegion(ukTaxCodeIncome) mustBe UkTaxRegion
+       ComplexEstimatedIncomeTaxViewModel.findTaxRegion(ukTaxCodeIncome) mustBe UkTaxRegion
     }
     "return Scottish when a Scottish TaxCode is Present" in {
-      EstimatedIncomeTaxViewModel.findTaxRegion(ScottishTaxCodeIncome) mustBe ScottishTaxRegion
+      ComplexEstimatedIncomeTaxViewModel.findTaxRegion(ScottishTaxCodeIncome) mustBe ScottishTaxRegion
     }
   }
 
@@ -85,7 +85,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         TaxBand("D1", "", income = 30000, tax = 2250, lowerBand = Some(150000), upperBand = Some(0), rate = 45)
       )
 
-      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(taxBand)
+      val taxBands = ComplexEstimatedIncomeTaxViewModel.retrieveTaxBands(taxBand)
 
       taxBands mustBe taxBand
 
@@ -98,7 +98,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         TaxBand("D0", "", income = 150000, tax = 60000, lowerBand = Some(32000), upperBand = Some(150000), rate = 40)
       )
 
-      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(taxBand)
+      val taxBands = ComplexEstimatedIncomeTaxViewModel.retrieveTaxBands(taxBand)
 
       taxBands mustBe List(
         TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20),
@@ -116,7 +116,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         upperBand = Some(11000), rate = 0))
 
 
-      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
+      val taxBands = ComplexEstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
 
       taxBands mustBe List(TaxBand("PSR", "", 10000, 0, Some(0), Some(11000), 0),
         TaxBand("B", "", 15000, 3000, Some(11000), Some(32000), 20))
@@ -133,7 +133,7 @@ class EstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApplicati
         TaxBand("SDR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0))
 
 
-      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
+      val taxBands = ComplexEstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
 
       val resBands = List(TaxBand("SR", "", 5000, 0, Some(0), Some(11000), 0),
         TaxBand("PSR", "", 10000, 0, Some(0), Some(11000), 0),

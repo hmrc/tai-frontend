@@ -154,7 +154,7 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           Some("You can earn £28,500 more before your income reaches the next tax band."),
           Some(Swatch(4.24,700)))
 
-        val expectedViewModel = EstimatedIncomeTaxViewModel(700, 16500,11500, viewModelBandedGraph, UkTaxRegion)
+        val expectedViewModel = ComplexEstimatedIncomeTaxViewModel(700, 16500,11500, viewModelBandedGraph, UkTaxRegion)
 
         val sut = createSUT
         when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).
@@ -228,7 +228,7 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
         )
         val viewModelBandedGraph = BandedGraph("taxGraph", viewModelBands, 0, 11500, 11500,78.26,11500, 78.26,0,None,None)
 
-        val expectedViewModel = EstimatedIncomeTaxViewModel(0, 9000,11500, viewModelBandedGraph, UkTaxRegion)
+        val expectedViewModel = ZeroTaxEstimatedIncomeTaxViewModel(0, 9000,11500, viewModelBandedGraph, UkTaxRegion)
 
         val sut = createSUT
         when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).

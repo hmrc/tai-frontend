@@ -120,70 +120,44 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
     }
   }
 
-  "hasDividends" must {
-    "return true" when {
-      "ukDivTotalIncome is less than taxFreeDividend" in {
+//  "dividends" must {
+//
+//    "return an empty list when zero dividend categories exists " in {
+//
+//      EstimatedIncomeTaxService.dividends(List.empty[IncomeCategory]) mustEqual List.empty[TaxBand]
+//    }
+//
+//    "return a list of dividends when a dividend category exists with an income greater than zero" in {
+//
+//      val dividendsTaxBands = List()
+//
+//        List(IncomeCategory(UkDividendsIncomeCategory,0,0,8000,nonSavingsTaxBands),
+//          IncomeCategory(UntaxedInterestIncomeCategory,0,0,1000,untaxedInterestTaxBands)
+//
+//    }
+//  }
 
-        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq(
-          OtherNonTaxCodeIncome(UkDividend, None, 100, "")
-        ))
-
-        val totalTax = TotalTax(100, Seq(
-          IncomeCategory(tax.UkDividendsIncomeCategory, 50, 50, 0, Seq(
-            tax.TaxBand("SDR", "", 50, 0, None, Some(2000), 0)
-          ))
-        ), None, None, None)
-
-        EstimatedIncomeTaxService.hasDividends(nonTaxCodeIncome, totalTax) mustBe true
-
-      }
-
-      "uk div total income is equal to tax free dividend" in {
-        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq(
-          OtherNonTaxCodeIncome(UkDividend, None, 2000, "")
-          ))
-
-          val totalTax = TotalTax(100, Seq(
-            IncomeCategory(tax.UkDividendsIncomeCategory, 50, 50, 0, Seq(
-              tax.TaxBand("SDR", "", 50, 0, None, Some(2000), 0)
-            ))
-          ), None, None, None)
-        EstimatedIncomeTaxService.hasDividends(nonTaxCodeIncome, totalTax) mustBe true
-
-      }
-
-      "uk div total income is greater than tax free dividend and higher rate are present" in {
-        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq(
-          OtherNonTaxCodeIncome(UkDividend, None, 3000, "")
-        ))
-
-        val totalTax = TotalTax(100, Seq(
-          IncomeCategory(tax.UkDividendsIncomeCategory, 50, 50, 0, Seq(
-            tax.TaxBand("SDR", "", 50, 0, None, Some(2000), 0),
-            tax.TaxBand("SDR", "", 50, 0, Some(2000), Some(3000), 20),
-            tax.TaxBand("SDR", "", 50, 0, Some(3000), Some(5000), 40)
-          ))
-        ), None, None, None)
-
-        EstimatedIncomeTaxService.hasDividends(nonTaxCodeIncome, totalTax) mustBe true
-
-      }
-    }
-
-    "return false" when {
-      "uk div total income is greater than tax free dividend and higher rate are not present" in {
-
-        val totalTax = TotalTax(100, Seq(
-          IncomeCategory(tax.UkDividendsIncomeCategory, 50, 50, 0, Seq(
-            tax.TaxBand("SDR", "", 50, 0, None, Some(2000), 0)
-          ))
-        ), None, None, None)
-
-        EstimatedIncomeTaxService.hasDividends(nonTaxCodeIncome, totalTax) mustBe false
-
-      }
-    }
-  }
+//  "hasDividends" must {
+//    "return true" when {
+//      "there are dividends present with an income greater than zero" in {
+//
+//
+//
+//
+//      }
+//
+//
+//      }
+//    }
+//
+//    "return false" when {
+//      "uk div total income is greater than tax free dividend and higher rate are not present" in {
+//
+//
+//
+//      }
+//    }
+//  }
 
   "hasAdditionalTax" must {
     "return true" when {

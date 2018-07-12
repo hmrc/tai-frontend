@@ -71,7 +71,7 @@ class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
     TaxBand("D0", "", income = 30000, tax = 12000, lowerBand = Some(32000), upperBand = Some(147000), rate = 40)
   )
 
-  val viewModel = EstimatedIncomeTaxViewModel(15000, 48000, 11500, bandedGraph, "UK")
+  val viewModel = ComplexEstimatedIncomeTaxViewModel(15000, 48000, 11500, bandedGraph, "UK")
 
 
   override def view: Html = views.html.estimatedIncomeTax.complexEstimatedIncomeTax(viewModel,Html("<Html><head></head><body>Test</body></Html>"))

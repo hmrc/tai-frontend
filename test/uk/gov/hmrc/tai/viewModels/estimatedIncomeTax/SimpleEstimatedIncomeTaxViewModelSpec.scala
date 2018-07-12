@@ -75,15 +75,15 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApp
   }
 
   "createPABand must return a Personal Allowance Taxband for a given Tax Free Allowance" in {
-    EstimatedIncomeTaxViewModel.createPABand(11500) mustBe TaxBand(TaxFreeAllowanceBand, "", 11500, 0, Some(0), None, 0)
+    SimpleEstimatedIncomeTaxViewModel.createPABand(11500) mustBe TaxBand(TaxFreeAllowanceBand, "", 11500, 0, Some(0), None, 0)
   }
 
   "findTaxRegion" must {
     "return UK when a UK TaxCode is present" in {
-      EstimatedIncomeTaxViewModel.findTaxRegion(ukTaxCodeIncome) mustBe UkTaxRegion
+      SimpleEstimatedIncomeTaxViewModel.findTaxRegion(ukTaxCodeIncome) mustBe UkTaxRegion
     }
     "return Scottish when a Scottish TaxCode is Present" in {
-      EstimatedIncomeTaxViewModel.findTaxRegion(ScottishTaxCodeIncome) mustBe ScottishTaxRegion
+      SimpleEstimatedIncomeTaxViewModel.findTaxRegion(ScottishTaxCodeIncome) mustBe ScottishTaxRegion
     }
   }
 
@@ -97,7 +97,7 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApp
         TaxBand("D1", "", income = 30000, tax = 2250, lowerBand = Some(150000), upperBand = Some(0), rate = 45)
       )
 
-      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(taxBand)
+      val taxBands = SimpleEstimatedIncomeTaxViewModel.retrieveTaxBands(taxBand)
 
       taxBands mustBe taxBand
 
@@ -110,7 +110,7 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApp
         TaxBand("D0", "", income = 150000, tax = 60000, lowerBand = Some(32000), upperBand = Some(150000), rate = 40)
       )
 
-      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(taxBand)
+      val taxBands = SimpleEstimatedIncomeTaxViewModel.retrieveTaxBands(taxBand)
 
       taxBands mustBe List(
         TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20),
@@ -128,7 +128,7 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApp
         upperBand = Some(11000), rate = 0))
 
 
-      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
+      val taxBands = SimpleEstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
 
       taxBands mustBe List(TaxBand("PSR", "", 10000, 0, Some(0), Some(11000), 0),
         TaxBand("B", "", 15000, 3000, Some(11000), Some(32000), 20))
@@ -145,7 +145,7 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApp
         TaxBand("SDR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0))
 
 
-      val taxBands = EstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
+      val taxBands = SimpleEstimatedIncomeTaxViewModel.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
 
       val resBands = List(TaxBand("SR", "", 5000, 0, Some(0), Some(11000), 0),
         TaxBand("PSR", "", 10000, 0, Some(0), Some(11000), 0),

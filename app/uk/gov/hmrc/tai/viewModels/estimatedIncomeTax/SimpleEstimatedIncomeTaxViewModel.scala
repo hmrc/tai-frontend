@@ -40,8 +40,7 @@ object SimpleEstimatedIncomeTaxViewModel extends EstimatedIncomeTaxBand{
 
     val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = retrieveTaxBands(taxBands :+ paBand)
-    val graph = BandedGraph(codingComponents,mergedTaxBands, taxAccountSummary.taxFreeAllowance,
-      taxAccountSummary.totalEstimatedIncome, taxAccountSummary.totalEstimatedTax)
+    val graph = BandedGraph(codingComponents,mergedTaxBands, taxAccountSummary.taxFreeAllowance, taxAccountSummary.totalEstimatedTax, taxViewType = SimpleTaxView)
     val taxRegion = findTaxRegion(taxCodeIncomes)
 
     SimpleEstimatedIncomeTaxViewModel(

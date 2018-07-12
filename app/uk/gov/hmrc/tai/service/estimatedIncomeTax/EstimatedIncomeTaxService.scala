@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.service.estimatedIncomeTax
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
-import uk.gov.hmrc.tai.model.domain.tax.{TaxBand, TotalTax}
+import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
@@ -63,7 +63,7 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
 
     hasReductions(codingComponents,totalTax) ||
     hasAdditionalTax(codingComponents,totalTax) ||
-    hasDividends(nonTaxCodeIncome,totalTax) ||
+    hasDividends(totalTax.incomeCategories) ||
     hasPotentialUnderPayment(totalInYearAdjustmentIntoCY, totalInYearAdjustmentIntoCYPlusOne) ||
     hasTaxRelief(totalTax) ||
     hasSSR(taxBands) ||
@@ -91,22 +91,30 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
 
   }
 
-  def hasDividends(nonTaxCodeIncome: NonTaxCodeIncome, totalTax: TotalTax): Boolean = {
-    val ukDividend = nonTaxCodeIncome.otherNonTaxCodeIncomes.find(_.incomeComponentType == UkDividend).map(_.amount)
+  def hasDividends(incomeCategories:Seq[IncomeCategory]): Boolean = {
+//    val ukDividend = nonTaxCodeIncome.otherNonTaxCodeIncomes.find(_.incomeComponentType == UkDividend).map(_.amount)
+//
+//    ukDividend map { ukDivTotalIncome =>
+//      val taxBands = totalTax.incomeCategories.filter(_.incomeCategoryType == tax.UkDividendsIncomeCategory).flatMap(_.taxBands)
+//      val taxFreeDividend = taxBands.find(_.bandType == DividendZeroRate).flatMap(_.upperBand).getOrElse(BigDecimal(0))
+//      val higherTaxRates = taxBands.filter(taxBand => taxBand.income > 0 && taxBand.rate > 0).map(_.rate)
+//
+//      (ukDivTotalIncome <= taxFreeDividend) || ((ukDivTotalIncome > taxFreeDividend) && higherTaxRates.nonEmpty) match {
+//        case true => true
+//        case _ => false
+//      }
+//    } match {
+//      case Some(true) => true
+//      case _ => false
+//    }
+    totalDividendIncome(incomeCategories) > 0
+  }
 
-    ukDividend map { ukDivTotalIncome =>
-      val taxBands = totalTax.incomeCategories.filter(_.incomeCategoryType == tax.UkDividendsIncomeCategory).flatMap(_.taxBands)
-      val taxFreeDividend = taxBands.find(_.bandType == DividendZeroRate).flatMap(_.upperBand).getOrElse(BigDecimal(0))
-      val higherTaxRates = taxBands.filter(taxBand => taxBand.income > 0 && taxBand.rate > 0).map(_.rate)
-
-      (ukDivTotalIncome <= taxFreeDividend) || ((ukDivTotalIncome > taxFreeDividend) && higherTaxRates.nonEmpty) match {
-        case true => true
-        case _ => false
-      }
-    } match {
-      case Some(true) => true
-      case _ => false
-    }
+  def totalDividendIncome(incomeCategories: Seq[IncomeCategory]): BigDecimal = {
+    incomeCategories.filter {
+      category => category.incomeCategoryType == UkDividendsIncomeCategory ||
+        category.incomeCategoryType == ForeignDividendsIncomeCategory
+    }.map(_.totalIncome).sum
   }
 
 

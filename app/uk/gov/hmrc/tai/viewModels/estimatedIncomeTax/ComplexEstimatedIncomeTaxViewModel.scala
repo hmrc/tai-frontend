@@ -17,14 +17,15 @@
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util._
+
 import scala.math.BigDecimal
 
-case class EstimatedIncomeTaxViewModel(
+case class ComplexEstimatedIncomeTaxViewModel(
                                         incomeTaxEstimate: BigDecimal,
                                         incomeEstimate: BigDecimal,
                                         taxFreeEstimate: BigDecimal,
@@ -32,16 +33,17 @@ case class EstimatedIncomeTaxViewModel(
                                         taxRegion: String
                                       ) extends ViewModelHelper
 
-object EstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants with EstimatedIncomeTaxBand{
+object ComplexEstimatedIncomeTaxViewModel extends BandTypesConstants with TaxRegionConstants with EstimatedIncomeTaxBand{
 
-  def apply(codingComponents: Seq[CodingComponent], taxAccountSummary: TaxAccountSummary, taxCodeIncomes: Seq[TaxCodeIncome], taxBands:List[TaxBand])(implicit messages: Messages): EstimatedIncomeTaxViewModel = {
+  def apply(codingComponents: Seq[CodingComponent], taxAccountSummary: TaxAccountSummary, taxCodeIncomes: Seq[TaxCodeIncome],
+            taxBands:List[TaxBand])(implicit messages: Messages): ComplexEstimatedIncomeTaxViewModel = {
 
     val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = retrieveTaxBands(taxBands :+ paBand)
-    val graph = BandedGraph(codingComponents,mergedTaxBands,taxAccountSummary.taxFreeAllowance, taxAccountSummary.totalEstimatedTax,taxViewType = )
+    val graph = BandedGraph(codingComponents,mergedTaxBands,taxAccountSummary.taxFreeAllowance, taxAccountSummary.totalEstimatedTax,taxViewType = ComplexTaxView)
     val taxRegion = findTaxRegion(taxCodeIncomes)
 
-    EstimatedIncomeTaxViewModel(
+    ComplexEstimatedIncomeTaxViewModel(
       taxAccountSummary.totalEstimatedTax,
       taxAccountSummary.totalEstimatedIncome,
       taxAccountSummary.taxFreeAllowance,
