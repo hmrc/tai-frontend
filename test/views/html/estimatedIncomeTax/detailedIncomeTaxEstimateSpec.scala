@@ -20,14 +20,14 @@ import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
+import uk.gov.hmrc.tai.model.domain.{PensionIncome, TaxAccountSummary}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, OtherNonTaxCodeIncome, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow, DetailedIncomeTaxEstimateViewModel, ReductionTaxRow, ZeroTaxView, SimpleEstimatedIncomeTaxViewModel}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow => _, _}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 
@@ -57,6 +57,33 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalIncomeTaxEstimate") + " £18,573")
     }
 
+    "heading and text for non savings income section displays" should {
+
+      "be 'Tax on your employment income' when income is only from employment" in {
+        doc(view) must haveH2HeadingWithText("Tax on your employment income")
+      }
+
+      "be 'Tax on your private pension income' when income is only from pension" in {
+//        case object EmploymentIncome extends TaxCodeIncomeComponentType
+//        case object PensionIncome  extends TaxCodeIncomeComponentType
+//        case object JobSeekerAllowanceIncome extends TaxCodeIncomeComponentType
+//        case object OtherIncome extends TaxCodeIncomeComponentType
+
+        val totalTax = TotalTax(0,Seq.empty[IncomeCategory],None, None, None, None, None)
+        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(PensionIncome, None, 0, "", "", "", OtherBasisOperation, Live))
+        val taxAccountSummary = TaxAccountSummary(0,0,0,0,0)
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+        val theThing = doc(view)
+
+        // assertion
+        theThing must haveH2HeadingWithText("Tax on your private pension income")
+      }
+
+      "be 'Tax on your   AYE income' when income is only from any other combination" ignore {
+
+      }
+    }
     "display table body" when {
       "UK user have non-savings" in {
         val nonSavings = List(

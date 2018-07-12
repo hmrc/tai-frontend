@@ -51,7 +51,10 @@ case class DetailedIncomeTaxEstimateViewModel(
 
 object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with EstimatedIncomeTaxHelper with ComplexEstimatedIncomeTaxHelper {
 
-  def apply(totalTax: TotalTax, taxCodeIncomes: Seq[TaxCodeIncome],taxAccountSummary: TaxAccountSummary, codingComponents: Seq[CodingComponent],
+  def apply(totalTax: TotalTax,
+            taxCodeIncomes: Seq[TaxCodeIncome],
+            taxAccountSummary: TaxAccountSummary,
+            codingComponents: Seq[CodingComponent],
             nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): DetailedIncomeTaxEstimateViewModel = {
 
     val nonSavings = totalTax.incomeCategories.filter(_.incomeCategoryType == NonSavingsIncomeCategory).
