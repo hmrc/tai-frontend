@@ -94,7 +94,7 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                         value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
                         pounds(viewModel.taxFreeAllowance)))
                     </p>
-                    @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.mergedTaxBands, taxRegion = viewModel.taxRegion)
+                    @taxBandTable(tableId = "tax-on-your-income", taxBands = viewModel.mergedTaxBands, taxRegion = viewModel.taxRegion)
                 </section>
 
                 <section>

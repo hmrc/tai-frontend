@@ -22,6 +22,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.model.domain.{PersonalAllowanceAgedPAA, PersonalAllowanceElderlyPAE, PersonalAllowancePA}
 import uk.gov.hmrc.tai.util.{BandTypesConstants, TaiConstants}
+import uk.gov.hmrc.tai.viewModels.Label
 
 import scala.math.BigDecimal
 
@@ -42,9 +43,8 @@ case class Band(
 case class Swatch(barPercentage:BigDecimal = 0,taxAmount:BigDecimal = 0)
 
 case class AdditionalTaxDetailRow(
-                                   description: String,
-                                   amount: BigDecimal,
-                                   url: Option[String] = None
+                                   label: Label,
+                                   amount: BigDecimal
                                  )
 
 case class ReductionTaxRow(
