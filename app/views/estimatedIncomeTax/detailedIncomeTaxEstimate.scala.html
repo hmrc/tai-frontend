@@ -67,16 +67,10 @@
 
                 <section class="section soft--top">
                     <h2 class="heading-section">
-                        @Messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading")
+                        @viewModel.taxOnIncomeTypeHeading
                     </h2>
                     <p id="taxOnEmploymentIncomeDesc">
-                        @Html(Messages("tai.estimatedIncome.desc",
-                        pounds(viewModel.incomeEstimate),
-                        Link.toInternalPage(
-                        id=Some("taxFreeAmountLink"),
-                        url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                        value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
-                        pounds(viewModel.taxFreeAllowance)))
+                        @Html(viewModel.taxOnIncomeTypeDescription)
                     </p>
 
                     @taxBandTable(
