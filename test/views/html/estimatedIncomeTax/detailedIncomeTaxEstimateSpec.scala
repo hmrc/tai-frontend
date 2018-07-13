@@ -26,8 +26,8 @@ import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow => _, _}
+import uk.gov.hmrc.tai.viewModels.{HelpLink, Label, TaxExplanationViewModel}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow, DetailedIncomeTaxEstimateViewModel, ReductionTaxRow, SimpleEstimatedIncomeTaxViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 
@@ -57,6 +57,15 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalIncomeTaxEstimate") + " £18,573")
     }
 
+
+    "paragraph with additional Income Tax payable not being included in estimate" should {
+      "be shown when text is provided" in {
+        val vm = defaultViewModel.copy(selfAssessmentAndPayeText = Some("Stub addition Income Payable Text"))
+
+        doc(view(vm)) must haveParagraphWithText("Stub addition Income Payable Text")
+      }
+    }
+
     "heading and text for non savings income section displays" should {
 
       "be 'Tax on your employment income' when income is only from employment" in {
@@ -84,6 +93,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
       }
     }
+
     "display table body" when {
       "UK user have non-savings" in {
         val nonSavings = List(
@@ -295,10 +305,11 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     TaxBand("B", "", 32010, 6402, None, None, 20),
     TaxBand("D0", "", 36466, 14586.4, None, None, 40))
 
-  val viewModel = DetailedIncomeTaxEstimateViewModel(ukTaxBands, Seq.empty[TaxBand], List.empty[TaxBand], "UK", 18573, 68476,
-    11500, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow], None, false, None, None, 20000, 5000)
+  val defaultViewModel = DetailedIncomeTaxEstimateViewModel(ukTaxBands, Seq.empty[TaxBand], List.empty[TaxBand], "UK", 18573, 68476,
+    11500, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow], None, false, None, None, 20000, 5000, None)
 
-  override def view: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
+  def view(vm: DetailedIncomeTaxEstimateViewModel = defaultViewModel): Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(vm)
+  override def view: Html = view(defaultViewModel)
 
   def createViewModel(additionalTaxTable: Seq[AdditionalTaxDetailRow], reductionTaxTable: Seq[ReductionTaxRow]) : DetailedIncomeTaxEstimateViewModel = {
     DetailedIncomeTaxEstimateViewModel(
@@ -316,7 +327,9 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       ssrValue = None,
       psrValue = None,
       totalDividendIncome = 0,
-      taxFreeDividendAllowance = 0)
+      taxFreeDividendAllowance = 0,
+      selfAssessmentAndPayeText = None
+    )
   }
 
 }

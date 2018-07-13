@@ -23,7 +23,7 @@ import uk.gov.hmrc.play.views.formatting.Dates
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.SimpleEstimatedIncomeTaxViewModel
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{BandedGraph, SimpleEstimatedIncomeTaxViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 
@@ -109,7 +109,7 @@ class simpleIncomeTaxSpec extends TaiViewSpec {
     }
   }
 
-  val bandedGraph = BandedGraph("taxGraph", Nil, 0, 0, 0, 0, 0, 0, 0, None)
+  val bandedGraph = BandedGraph("taxGraph", Nil, 0, 0, 0, 0, 0, 0, 0, None, None)
 
   val ukTaxBands = List(
     TaxBand("pa", "", 11500, 0, None, None, 0),

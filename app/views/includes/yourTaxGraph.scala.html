@@ -14,14 +14,15 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.tai.viewModels.{Swatch}
+@import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.Swatch
 @import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{ZeroTaxView,TaxViewType}
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.tai.util.TaxRegionConstants._
 @import uk.gov.hmrc.tai.util.ViewModelHelper.{withPoundPrefix}
 
-@(graph: uk.gov.hmrc.tai.viewModels.BandedGraph, taxRegion: String, taxViewType:TaxViewType,incomeEstimate:BigDecimal)(implicit request: Request[_], messages: Messages)
+@(graph: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.BandedGraph, taxRegion: String, taxViewType:TaxViewType,
+    incomeEstimate:Option[BigDecimal] = None)(implicit request: Request[_], messages: Messages)
 
 @swatchLeftPadding=@{ graph.swatch.foldLeft(BigDecimal(100))((acc: BigDecimal, next: Swatch) => acc - next.barPercentage)}
 
@@ -56,7 +57,7 @@
 
             <div class="number-bar">
                 @if(taxViewType == ZeroTaxView) {
-                  <span id="totalEstimateIncome" class="left" style="left:@graph.zeroIncomeAsPercentage%">@pounds(incomeEstimate)</span>
+                  <span id="totalEstimateIncome" class="left" style="left:@graph.zeroIncomeAsPercentage%">@pounds(incomeEstimate.get)</span>
                 }else{
                   <span id="zeroIncomeTotal" class="left" style="left:@graph.zeroIncomeAsPercentage%">@pounds(graph.zeroIncomeTotal)</span>
                 }

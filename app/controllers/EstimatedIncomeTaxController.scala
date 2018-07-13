@@ -74,16 +74,15 @@ trait EstimatedIncomeTaxController extends TaiBaseController
                 TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax),
                 TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
                 TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
-                  val taxBands = EstimatedIncomeTaxService.taxBand(totalTaxDetails).toList
+                  val taxBands = totalTaxDetails.incomeCategories.flatMap(_.taxBands).toList
                   val taxViewType = EstimatedIncomeTaxService.taxViewType(codingComponents,totalTaxDetails,nonTaxCodeIncome,
-                    taxBands,taxAccountSummary.totalInYearAdjustmentIntoCY,taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne,
+                    taxAccountSummary.totalInYearAdjustmentIntoCY,taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne,
                     taxAccountSummary.totalEstimatedIncome,taxAccountSummary.taxFreeAllowance,taxAccountSummary.totalEstimatedTax,
                     taxCodeIncomes.nonEmpty)
-
                   taxViewType match {
                     case NoIncomeTaxView => Ok(views.html.estimatedIncomeTax.noCurrentIncome())
                     case ComplexTaxView => {
-                      val model = EstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary,taxCodeIncomes,taxBands)
+                      val model = ComplexEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary,taxCodeIncomes,taxBands)
                       Ok(views.html.estimatedIncomeTax.complexEstimatedIncomeTax(model,iFormLinks successfulContentOrElse Html("")))
                     }
                     case SimpleTaxView => {
@@ -91,7 +90,7 @@ trait EstimatedIncomeTaxController extends TaiBaseController
                       Ok(views.html.estimatedIncomeTax.simpleEstimatedIncomeTax(model,iFormLinks successfulContentOrElse Html("")))
                     }
                     case ZeroTaxView => {
-                      val model = EstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary,taxCodeIncomes,taxBands)
+                      val model = ZeroTaxEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary,taxCodeIncomes,taxBands)
                       Ok(views.html.estimatedIncomeTax.zeroTaxEstimatedIncomeTax(model,iFormLinks successfulContentOrElse Html("")))
                     }
                   }
