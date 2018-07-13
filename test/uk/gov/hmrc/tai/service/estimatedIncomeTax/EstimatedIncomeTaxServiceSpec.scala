@@ -17,19 +17,18 @@
 package uk.gov.hmrc.tai.service.estimatedIncomeTax
 
 import controllers.FakeTaiPlayApplication
-import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax.{MaintenancePayments => _, _}
-import uk.gov.hmrc.tai.viewModels._
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{ComplexTaxView, NoIncomeTaxView, SimpleTaxView, ZeroTaxView}
+import uk.gov.hmrc.tai.util.BandTypesConstants
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
 import scala.collection.immutable.Seq
 
-class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport{
+class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with BandTypesConstants{
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -144,9 +143,9 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
         val foreignDividend = IncomeCategory(ForeignDividendsIncomeCategory,0,0,15000,
           Seq(TaxBand("SDR", "", 15000, 0, Some(14000), Some(32000), 0)))
 
-        val incomeCategory = Seq(UKDividend,foreignDividend)
+        val incomeCategories = Seq(UKDividend,foreignDividend)
 
-        EstimatedIncomeTaxService.hasDividends(incomeCategory) mustBe true
+        EstimatedIncomeTaxService.hasDividends(incomeCategories) mustBe true
       }
 
 
@@ -178,6 +177,43 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
       }
     }
   }
+
+  "totalDividendIncome" must {
+
+    "return the total income from dividends" in {
+      val taxBand = Seq(TaxBand(bandType = "", code = "", income = 100, tax = 0, lowerBand = None, upperBand = None, rate = 20))
+
+      val incomeCategories = Seq(
+        IncomeCategory(NonSavingsIncomeCategory, 0, 1000, 10, taxBand),
+        IncomeCategory(UntaxedInterestIncomeCategory, 0, 2000, 20, taxBand),
+        IncomeCategory(ForeignDividendsIncomeCategory, 0, 3000, 4000, taxBand),
+        IncomeCategory(ForeignInterestIncomeCategory, 0, 4000, 30, taxBand),
+        IncomeCategory(BankInterestIncomeCategory, 0, 5000, 40, taxBand),
+        IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 5000, taxBand)
+      )
+
+      EstimatedIncomeTaxService.totalDividendIncome(incomeCategories) mustEqual 9000
+
+    }
+  }
+
+  "retrieveDividends" must {
+    "retrieve all dividend bands that have an income" in {
+
+      val taxBands = Seq(
+        TaxBand(bandType = DividendZeroRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 0),
+        TaxBand(bandType = DividendBasicRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 10),
+        TaxBand(bandType = DividendHigherRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
+        TaxBand(bandType = DividendAdditionalRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 30)
+      )
+      val incomeCategories = Seq(
+        IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 0, taxBands)
+      )
+
+      EstimatedIncomeTaxService.retrieveDividends(incomeCategories) must contain theSameElementsAs (taxBands)
+    }
+  }
+
 
   "hasAdditionalTax" must {
     "return true" when {

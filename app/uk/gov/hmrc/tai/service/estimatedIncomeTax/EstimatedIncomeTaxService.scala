@@ -25,7 +25,8 @@ import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
 import scala.math.BigDecimal
 
-object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with EstimatedIncomeTaxBand with BandTypesConstants{
+object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with EstimatedIncomeTaxBand with BandTypesConstants
+  with Dividends{
 
 
   def taxViewType(codingComponents: Seq[CodingComponent],
@@ -89,17 +90,6 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessWidowsAndOrphans).isDefined ||
     taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment).isDefined
 
-  }
-
-  def hasDividends(incomeCategories:Seq[IncomeCategory]): Boolean = {
-    totalDividendIncome(incomeCategories) > 0
-  }
-
-  def totalDividendIncome(incomeCategories: Seq[IncomeCategory]): BigDecimal = {
-    incomeCategories.filter {
-      category => category.incomeCategoryType == UkDividendsIncomeCategory ||
-        category.incomeCategoryType == ForeignDividendsIncomeCategory
-    }.map(_.totalIncome).sum
   }
 
 
