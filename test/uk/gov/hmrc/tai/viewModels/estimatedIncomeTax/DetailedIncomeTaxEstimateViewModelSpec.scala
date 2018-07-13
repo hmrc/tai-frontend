@@ -113,7 +113,63 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
       }
     }
 
-    "createAdditionalTaxTable" must {
+    "looking at savings" when {
+      "savingsDescription1 is called must return the correct message" when {
+        "bandType is SR" in {
+          val taxBand = TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+          val savingsBands = Seq(taxBand)
+
+          DetailedIncomeTaxEstimateViewModel.savingsDescription1(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc", 500)
+        }
+        "bandType is LSR" in {
+          val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
+          val taxBandLSR = TaxBand(bandType = "LSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 20)
+          val savingsBands = Seq(taxBandPSR, taxBandLSR)
+
+          DetailedIncomeTaxEstimateViewModel.savingsDescription1(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR", 600)
+        }
+        "bandType is HSR1" in {
+          val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
+          val taxBandLSR = TaxBand(bandType = "HSR1", code = "", income = 7000, tax = 0, lowerBand = None, upperBand = Some(10000), rate = 20)
+          val savingsBands = Seq(taxBandPSR, taxBandLSR)
+
+          DetailedIncomeTaxEstimateViewModel.savingsDescription1(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR", 7500)
+        }
+        "bandType is HSR2" in {
+          val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
+          val taxBandLSR = TaxBand(bandType = "HSR2", code = "", income = 8000, tax = 0, lowerBand = None, upperBand = Some(11000), rate = 20)
+          val savingsBands = Seq(taxBandPSR, taxBandLSR)
+
+          DetailedIncomeTaxEstimateViewModel.savingsDescription1(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR", 8500)
+        }
+      }
+
+      "savingsDescription2 is called must return the correct message" when {
+        "bandType is LSR" in {
+          val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
+          val taxBandLSR = TaxBand(bandType = "LSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 20)
+          val savingsBands = Seq(taxBandPSR, taxBandLSR)
+
+          DetailedIncomeTaxEstimateViewModel.savingsDescription2(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR2", 1000)
+        }
+        "bandType is HSR1" in {
+          val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
+          val taxBandLSR = TaxBand(bandType = "HSR1", code = "", income = 7000, tax = 0, lowerBand = None, upperBand = Some(10000), rate = 20)
+          val savingsBands = Seq(taxBandPSR, taxBandLSR)
+
+          DetailedIncomeTaxEstimateViewModel.savingsDescription2(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR2extra", 1000)
+        }
+//        "bandType is HSR2" in {
+//          val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
+//          val taxBandLSR = TaxBand(bandType = "HSR2", code = "", income = 8000, tax = 0, lowerBand = None, upperBand = Some(11000), rate = 20)
+//          val savingsBands = Seq(taxBandPSR, taxBandLSR)
+//
+//          DetailedIncomeTaxEstimateViewModel.savingsDescription2(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR2", 1000)
+//        }
+      }
+    }
+
+    "createAdditionalTaxTable is called" must {
 
       "return additional tax detail rows" when {
 
@@ -161,7 +217,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
       }
     }
 
-    "createReductionsTable" must {
+    "createReductionsTable is called" must {
 
       "return reduction tax table" when {
 

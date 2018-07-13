@@ -246,4 +246,38 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     case h :: tail :: Nil => h + "% and " + tail + "%"
   }
 
+  def savingsDescription1(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
+
+    val isStartingRate = savingsBands.exists(_.bandType == "SR")
+
+    val startingRateAllowance = savingsBands.find(_.bandType == "SR").flatMap(_.upperBand).getOrElse(0)
+    val personalSavingsAllowanceIncome: BigDecimal = savingsBands.find(_.bandType == "PSR").map(_.income).getOrElse(0)
+    val basicRateSavingsIncome: BigDecimal = savingsBands.find(
+      x => x.bandType == "LSR" || x.bandType == "HSR1" || x.bandType == "HSR2"
+    ).map(_.income).getOrElse(0)
+
+    val totalBasicRateSavingsIncome = personalSavingsAllowanceIncome + basicRateSavingsIncome
+
+    if(isStartingRate) {
+      Messages("tai.estimatedIncome.savings.desc", startingRateAllowance)
+    } else {
+      Messages("tai.estimatedIncome.savings.desc.BRHR", totalBasicRateSavingsIncome)
+    }
+  }
+
+  def savingsDescription2(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
+    val isBasicRate = savingsBands.exists(_.bandType == "LSR")
+    val taxFreeAllowance = savingsBands.find(_.bandType == "PSR").flatMap(_.upperBand).getOrElse(0)
+    if(isBasicRate) {
+      Messages("tai.estimatedIncome.savings.desc.BRHR2", taxFreeAllowance)
+    } else {
+      Messages("tai.estimatedIncome.savings.desc.BRHR2extra", taxFreeAllowance)
+    }
+  }
+
+  def savingsDescription3(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
+    val higherRate = savingsBands.find(_.bandType != "SR").map(_.rate).getOrElse(0)
+    Messages("tai.estimatedIncome.savings.desc.BRHR3", higherRate)
+  }
+
 }
