@@ -120,44 +120,64 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
     }
   }
 
-//  "dividends" must {
-//
-//    "return an empty list when zero dividend categories exists " in {
-//
-//      EstimatedIncomeTaxService.dividends(List.empty[IncomeCategory]) mustEqual List.empty[TaxBand]
-//    }
-//
-//    "return a list of dividends when a dividend category exists with an income greater than zero" in {
-//
-//      val dividendsTaxBands = List()
-//
-//        List(IncomeCategory(UkDividendsIncomeCategory,0,0,8000,nonSavingsTaxBands),
-//          IncomeCategory(UntaxedInterestIncomeCategory,0,0,1000,untaxedInterestTaxBands)
-//
-//    }
-//  }
+  "hasDividends" must {
+    "return true" when {
+      "there are UK dividends present with an income greater than zero" in {
+        val incomeCategory = Seq(IncomeCategory(UkDividendsIncomeCategory,0,0,15000,
+          Seq(TaxBand("SDR", "", 15000, 0, Some(14000), Some(32000), 0))))
 
-//  "hasDividends" must {
-//    "return true" when {
-//      "there are dividends present with an income greater than zero" in {
-//
-//
-//
-//
-//      }
-//
-//
-//      }
-//    }
-//
-//    "return false" when {
-//      "uk div total income is greater than tax free dividend and higher rate are not present" in {
-//
-//
-//
-//      }
-//    }
-//  }
+        EstimatedIncomeTaxService.hasDividends(incomeCategory) mustBe true
+
+      }
+
+      "there are Foreign dividends present with an income greater than zero" in {
+        val incomeCategory = Seq(IncomeCategory(ForeignDividendsIncomeCategory,0,0,15000,
+          Seq(TaxBand("SDR", "", 15000, 0, Some(14000), Some(32000), 0))))
+
+        EstimatedIncomeTaxService.hasDividends(incomeCategory) mustBe true
+      }
+
+      "there are a mixture of dividends present with an income greater than zero" in {
+        val UKDividend = IncomeCategory(UkDividendsIncomeCategory,0,0,15000,
+          Seq(TaxBand("SDR", "", 15000, 0, Some(14000), Some(32000), 0)))
+
+        val foreignDividend = IncomeCategory(ForeignDividendsIncomeCategory,0,0,15000,
+          Seq(TaxBand("SDR", "", 15000, 0, Some(14000), Some(32000), 0)))
+
+        val incomeCategory = Seq(UKDividend,foreignDividend)
+
+        EstimatedIncomeTaxService.hasDividends(incomeCategory) mustBe true
+      }
+
+
+    }
+
+    "return false" when {
+      "there are no dividends present which have no income" in {
+        val incomeCategory = List(IncomeCategory(UkDividendsIncomeCategory,0,0,0,
+          Seq(TaxBand("SDR", "", 0, 0, Some(14000), Some(32000), 0))))
+
+        EstimatedIncomeTaxService.hasDividends(incomeCategory) mustBe false
+
+      }
+
+      "there are no dividends present" in {
+
+        val taxBands = Seq(TaxBand("PSR", "", 10000, 0, Some(0), Some(11000), 0),
+        TaxBand("SR", "", 10000, 0, Some(11000), Some(14000), 0),
+        TaxBand("B", "", 10000, 3000, Some(14000), Some(32000), 20))
+
+        val incomeCategory = List(IncomeCategory(UntaxedInterestIncomeCategory,3000,3000,30000,taxBands))
+
+        EstimatedIncomeTaxService.hasDividends(incomeCategory) mustBe false
+
+      }
+
+      "an empty sequence is returned" in {
+        EstimatedIncomeTaxService.hasDividends(Seq.empty[IncomeCategory]) mustBe false
+      }
+    }
+  }
 
   "hasAdditionalTax" must {
     "return true" when {

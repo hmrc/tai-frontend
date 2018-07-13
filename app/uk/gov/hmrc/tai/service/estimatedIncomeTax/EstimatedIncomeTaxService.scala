@@ -92,21 +92,6 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
   }
 
   def hasDividends(incomeCategories:Seq[IncomeCategory]): Boolean = {
-//    val ukDividend = nonTaxCodeIncome.otherNonTaxCodeIncomes.find(_.incomeComponentType == UkDividend).map(_.amount)
-//
-//    ukDividend map { ukDivTotalIncome =>
-//      val taxBands = totalTax.incomeCategories.filter(_.incomeCategoryType == tax.UkDividendsIncomeCategory).flatMap(_.taxBands)
-//      val taxFreeDividend = taxBands.find(_.bandType == DividendZeroRate).flatMap(_.upperBand).getOrElse(BigDecimal(0))
-//      val higherTaxRates = taxBands.filter(taxBand => taxBand.income > 0 && taxBand.rate > 0).map(_.rate)
-//
-//      (ukDivTotalIncome <= taxFreeDividend) || ((ukDivTotalIncome > taxFreeDividend) && higherTaxRates.nonEmpty) match {
-//        case true => true
-//        case _ => false
-//      }
-//    } match {
-//      case Some(true) => true
-//      case _ => false
-//    }
     totalDividendIncome(incomeCategories) > 0
   }
 
