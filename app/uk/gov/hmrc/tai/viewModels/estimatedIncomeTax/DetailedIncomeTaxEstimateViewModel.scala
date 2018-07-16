@@ -218,7 +218,7 @@ with Dividends{
     createReductionTaxRow(maintenancePayment,
       Messages("tai.taxCollected.atSource.maintenancePayments.description", MoneyPounds(maintenancePaymentGross).quantity,
         routes.YourTaxCodeController.taxCodes().url),
-      Messages("tai.taxCollected.atSource.marriageAllowance.title"))
+      Messages("tai.taxCollected.atSource.maintenancePayments.title"))
   }
 
   def incomeTaxReducedToZeroMessage(hasTaxReducedToZero: Boolean)(implicit messages: Messages): Option[String] = {
