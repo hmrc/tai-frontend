@@ -38,11 +38,6 @@ class previousYearUnderpaymentViewSpec extends TaiViewSpec {
 
     behave like pageWithBackLink
 
-    "have a link to return to tax-free amount page" in {
-//      doc must haveLinkURL(routes.TaxFreeAmountController.taxFreeAmount().url)
-      doc.getElementsByAttribute("href").toString must include(routes.TaxFreeAmountController.taxFreeAmount().url)
-    }
-
     "display paragraphs" in {
 
       doc must haveParagraphWithText(Messages("tai.previous.year.underpayment.para1"))
