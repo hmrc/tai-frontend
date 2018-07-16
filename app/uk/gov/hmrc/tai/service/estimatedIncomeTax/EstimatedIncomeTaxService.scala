@@ -18,21 +18,20 @@ package uk.gov.hmrc.tai.service.estimatedIncomeTax
 
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.income.NonTaxCodeIncome
-import uk.gov.hmrc.tai.model.domain.tax.{TaxBand, TotalTax}
+import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
 import scala.math.BigDecimal
 
-object EstimatedIncomeTaxService extends ComplexEstimatedIncomeTaxHelper with EstimatedIncomeTaxHelper with BandTypesConstants{
+object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with EstimatedIncomeTaxBand with BandTypesConstants
+  with Dividends{
 
-  def taxBand(totalTax: TotalTax) = totalTax.incomeCategories.flatMap(_.taxBands)
 
   def taxViewType(codingComponents: Seq[CodingComponent],
                   totalTax: TotalTax,
                   nonTaxCodeIncome: NonTaxCodeIncome,
-                  taxBands: List[TaxBand],
                   totalInYearAdjustmentIntoCY:BigDecimal,
                   totalInYearAdjustmentIntoCYPlusOne:BigDecimal,
                   totalEstimatedIncome:BigDecimal,
@@ -43,7 +42,7 @@ object EstimatedIncomeTaxService extends ComplexEstimatedIncomeTaxHelper with Es
     hasCurrentIncome match {
       case false => NoIncomeTaxView
       case true => {
-        isComplexViewType(codingComponents, totalTax, nonTaxCodeIncome, taxBands, totalInYearAdjustmentIntoCY, totalInYearAdjustmentIntoCYPlusOne) match {
+        isComplexViewType(codingComponents, totalTax, nonTaxCodeIncome, totalInYearAdjustmentIntoCY, totalInYearAdjustmentIntoCYPlusOne) match {
           case true => ComplexTaxView
           case false => {
             (totalEstimatedIncome < taxFreeAllowance) && totalEstimatedTax == 0 match {
@@ -59,12 +58,13 @@ object EstimatedIncomeTaxService extends ComplexEstimatedIncomeTaxHelper with Es
   def isComplexViewType(codingComponents: Seq[CodingComponent],
                         totalTax: TotalTax,
                         nonTaxCodeIncome: NonTaxCodeIncome,
-                        taxBands: List[TaxBand],
                         totalInYearAdjustmentIntoCY:BigDecimal, totalInYearAdjustmentIntoCYPlusOne:BigDecimal) :Boolean ={
+
+    val taxBands = totalTax.incomeCategories.flatMap(_.taxBands).toList
 
     hasReductions(codingComponents,totalTax) ||
     hasAdditionalTax(codingComponents,totalTax) ||
-    hasDividends(nonTaxCodeIncome,totalTax) ||
+    hasDividends(totalTax.incomeCategories) ||
     hasPotentialUnderPayment(totalInYearAdjustmentIntoCY, totalInYearAdjustmentIntoCYPlusOne) ||
     hasTaxRelief(totalTax) ||
     hasSSR(taxBands) ||
@@ -92,24 +92,6 @@ object EstimatedIncomeTaxService extends ComplexEstimatedIncomeTaxHelper with Es
 
   }
 
-  def hasDividends(nonTaxCodeIncome: NonTaxCodeIncome, totalTax: TotalTax): Boolean = {
-    val ukDividend = nonTaxCodeIncome.otherNonTaxCodeIncomes.find(_.incomeComponentType == UkDividend).map(_.amount)
-
-    ukDividend map { ukDivTotalIncome =>
-      val taxBands = totalTax.incomeCategories.filter(_.incomeCategoryType == tax.UkDividendsIncomeCategory).flatMap(_.taxBands)
-      val taxFreeDividend = taxBands.find(_.bandType == DividendZeroRate).flatMap(_.upperBand).getOrElse(BigDecimal(0))
-      val higherTaxRates = taxBands.filter(taxBand => taxBand.income > 0 && taxBand.rate > 0).map(_.rate)
-
-      (ukDivTotalIncome <= taxFreeDividend) || ((ukDivTotalIncome > taxFreeDividend) && higherTaxRates.nonEmpty) match {
-        case true => true
-        case _ => false
-      }
-    } match {
-      case Some(true) => true
-      case _ => false
-    }
-  }
-
 
   def hasPotentialUnderPayment(totalInYearAdjustmentIntoCY:BigDecimal, totalInYearAdjustmentIntoCYPlusOne:BigDecimal) =
     totalInYearAdjustmentIntoCY <=0 && totalInYearAdjustmentIntoCYPlusOne > 0
@@ -120,11 +102,15 @@ object EstimatedIncomeTaxService extends ComplexEstimatedIncomeTaxHelper with Es
   }
 
   def hasSSR(taxBands: List[TaxBand]): Boolean ={
-    fetchIncome(retrieveTaxBands(taxBands), StarterSavingsRate).isDefined
+    incomeByBandType(retrieveTaxBands(taxBands), StarterSavingsRate).isDefined
   }
 
   def hasPSR(taxBands: List[TaxBand]): Boolean ={
-    fetchIncome(retrieveTaxBands(taxBands), PersonalSavingsRate).isDefined
+    incomeByBandType(retrieveTaxBands(taxBands), PersonalSavingsRate).isDefined
+  }
+
+  def incomeByBandType(taxBands: List[TaxBand], bandType: String): Option[BigDecimal] = {
+    taxBands.find(band => band.bandType == bandType && band.income > 0).map(_.income)
   }
 
 }

@@ -25,8 +25,8 @@ import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.model.domain.{MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.util.{BandTypesConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.viewModels.{HelpLink, Label}
 import uk.gov.hmrc.urls.Link
-import uk.gov.hmrc.tai.viewModels.{HelpLink, Label, TaxAccountSummaryViewModel}
 
 import scala.math.BigDecimal
 
@@ -45,11 +45,13 @@ case class DetailedIncomeTaxEstimateViewModel(
                                        ssrValue: Option[BigDecimal],
                                        psrValue: Option[BigDecimal],
                                        totalDividendIncome: BigDecimal,
-                                       taxFreeDividendAllowance: BigDecimal
+                                       taxFreeDividendAllowance: BigDecimal,
+                                       selfAssessmentAndPayeText: Option[String]
                                      ) extends ViewModelHelper {
 }
 
-object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with EstimatedIncomeTaxHelper with ComplexEstimatedIncomeTaxHelper {
+object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with EstimatedIncomeTaxBand with TaxAdditionsAndReductions
+with Dividends{
 
   def apply(totalTax: TotalTax, taxCodeIncomes: Seq[TaxCodeIncome],taxAccountSummary: TaxAccountSummary, codingComponents: Seq[CodingComponent],
             nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): DetailedIncomeTaxEstimateViewModel = {
@@ -62,10 +64,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
         category.incomeCategoryType == BankInterestIncomeCategory || category.incomeCategoryType == ForeignInterestIncomeCategory
     }.flatMap(_.taxBands).filter(_.income > 0)//.filterNot(_.rate == 0)
 
-    val dividends = totalTax.incomeCategories.filter {
-        category => category.incomeCategoryType == UkDividendsIncomeCategory ||
-          category.incomeCategoryType == ForeignDividendsIncomeCategory
-      }.flatMap(_.taxBands).filter(_.income > 0).toList
+    val dividends = retrieveDividends(totalTax.incomeCategories)
 
     val filteredCategories = totalTax.incomeCategories.filter {
       category => category.incomeCategoryType == UkDividendsIncomeCategory ||
@@ -75,7 +74,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val taxbandsNonzeroRate = taxbandsNonzeroIncome.filterNot(_.rate == 0)
 
     val taxRegion = findTaxRegion(taxCodeIncomes)
-    val taxBands = EstimatedIncomeTaxService.taxBand(totalTax).toList
+    val taxBands = totalTax.incomeCategories.flatMap(_.taxBands).toList
     val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
     val mergedTaxBands = retrieveTaxBands(taxBands :+ paBand)
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
@@ -83,12 +82,14 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val incomeTaxReducedToZero = incomeTaxReducedToZeroMessage(taxAccountSummary.totalEstimatedTax <= 0 && reductionTaxTable.nonEmpty)
     val hasPotentialUnderPayment = EstimatedIncomeTaxService.hasPotentialUnderPayment(taxAccountSummary.totalInYearAdjustmentIntoCY,
       taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne)
-    val ssrValue = fetchIncome(mergedTaxBands, StarterSavingsRate)
-    val psrValue = fetchIncome(mergedTaxBands, PersonalSavingsRate)
+    val ssrValue = EstimatedIncomeTaxService.incomeByBandType(mergedTaxBands, StarterSavingsRate)
+    val psrValue = EstimatedIncomeTaxService.incomeByBandType(mergedTaxBands, PersonalSavingsRate)
     val dividendIncome = totalDividendIncome(totalTax.incomeCategories)
     val taxFreeDividend = taxFreeDividendAllowance(totalTax.incomeCategories)
     val mergedNonSavingsBand = (nonSavings :+ paBand).toList.sortBy(_.rate)
-
+    val additionIncomePayableText = nonTaxCodeIncome.otherNonTaxCodeIncomes
+      .find(_.incomeComponentType == NonCodedIncome)
+      .map(_ => messages("tai.estimatedIncome.selfAssessmentAndPayeText"))
 
     DetailedIncomeTaxEstimateViewModel(
       mergedNonSavingsBand,
@@ -105,9 +106,9 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
       ssrValue,
       psrValue,
       dividendIncome,
-      taxFreeDividend
+      taxFreeDividend,
+      additionIncomePayableText
     )
-
   }
 
   def createAdditionalTaxTable(codingComponent: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages): Seq[AdditionalTaxDetailRow] = {
@@ -226,25 +227,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     }
   }
 
-  def totalDividendIncome(incomeCategories: Seq[IncomeCategory]): BigDecimal = {
-    incomeCategories.filter {
-            category => category.incomeCategoryType == UkDividendsIncomeCategory ||
-              category.incomeCategoryType == ForeignDividendsIncomeCategory
-          }.map(_.totalIncome).sum
-  }
-
-  def taxFreeDividendAllowance(incomeCategories: Seq[IncomeCategory]): BigDecimal = {
-    val taxBands = incomeCategories.flatMap(_.taxBands)
-
-    taxBands.find(_.bandType == DividendZeroRate).flatMap(_.upperBand).getOrElse(BigDecimal(0))
-
-  }
-
-  def dividendsAllowanceRates(list: List[BigDecimal]): String = list match {
-    case h :: Nil => h + "%"
-    case h :: tail if tail.size > 1 => h + "%, " + dividendsAllowanceRates(tail)
-    case h :: tail :: Nil => h + "% and " + tail + "%"
-  }
 
   def savingsDescription1(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
 

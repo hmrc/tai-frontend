@@ -956,6 +956,7 @@ tai.estimatedIncome.detailedEstimate.heading=Your detailed PAYE Income Tax estim
 tai.estimatedIncome.detailedEstimate.employmentIncome.subHeading=Tax on your employment income
 tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading=Tax on dividend income
 tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading=Tax on savings interest
+tai.estimatedIncome.selfAssessmentAndPayeText = You have additional Income Tax payable this year which is not included in this estimate. This should be included in your Self Assessment. It will not be collected by PAYE.
 gift.aid.savings=Gift Aid savings
 gift.aid.tax.relief=You made Gift Aid donations of £{0} during this tax year which give you tax-relief and an Income Tax saving of £{1}.
 personal.pension.payment.relief=You made personal pension payments of £{0} during this tax year which give you tax-relief and an Income Tax saving of £{1}.
