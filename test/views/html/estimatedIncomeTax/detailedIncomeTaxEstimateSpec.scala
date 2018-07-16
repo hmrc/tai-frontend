@@ -74,11 +74,11 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
         val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
         val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
         val document = doc(view(viewModel))
-        val message = Messages("tai.estimatedIncome.desc",
+        val message = Messages("your.total.income.from.employment.desc",
                               "£0",
-                              "tax-free amount","£0", "employment")
+                              "tax-free amount","£0")
 
-        document must haveH2HeadingWithText(messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading", "employment"))
+        document must haveH2HeadingWithText(messages("tax.on.your.employment.income"))
         document must haveParagraphWithText(message)
       }
 
@@ -89,11 +89,11 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
         val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
         val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
         val document = doc(view(viewModel))
-        val message = Messages("tai.estimatedIncome.desc",
-          "£0",
-          "tax-free amount","£0","private pension")
+        val message = Messages("your.total.income.from.private.pension.desc",
+                              "£0",
+                              "tax-free amount","£0")
 
-        document must haveH2HeadingWithText(messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading", "private pension"))
+        document must haveH2HeadingWithText(messages("tax.on.your.private.pension.income"))
         document must haveParagraphWithText(message)
       }
 
@@ -105,11 +105,11 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
           val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
           val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
           val document = doc(view(viewModel))
-          val message = Messages("tai.estimatedIncome.desc",
-            "£0",
-            "tax-free amount","£0","PAYE")
+          val message = Messages("your.total.income.from.paye.desc",
+                                "£0",
+                                "tax-free amount","£0")
 
-          document must haveH2HeadingWithText(messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading", "PAYE"))
+          document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
           document must haveParagraphWithText(message)
         }
 
@@ -120,11 +120,11 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
           val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
           val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
           val document = doc(view(viewModel))
-          val message = Messages("tai.estimatedIncome.desc",
-            "£0",
-            "tax-free amount","£0","PAYE")
+          val message = Messages("your.total.income.from.paye.desc",
+                                "£0",
+                                "tax-free amount","£0","PAYE")
 
-          document must haveH2HeadingWithText(messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading", "PAYE"))
+          document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
           document must haveParagraphWithText(message)
         }
 
@@ -135,11 +135,11 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
           val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
           val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
           val document = doc(view(viewModel))
-          val message = Messages("tai.estimatedIncome.desc",
-            "£0",
-            "tax-free amount","£0","PAYE")
+          val message = Messages("your.total.income.from.paye.desc",
+                                "£0",
+                                "tax-free amount","£0","PAYE")
 
-          document must haveH2HeadingWithText(messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading", "PAYE"))
+          document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
           document must haveParagraphWithText(message)
         }
       }
@@ -246,8 +246,8 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
     "have tax on your employment income section" in {
 
-      doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading"))
-      doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.desc",
+      doc(view) must haveH2HeadingWithText(messages("tax.on.your.employment.income"))
+      doc(view) must haveParagraphWithText(Html(messages("your.total.income.from.employment.desc",
         "£68,476",
         messages("tai.estimatedIncome.taxFree.link"),
         "£11,500")).body)
@@ -357,8 +357,8 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     TaxBand("D0", "", 36466, 14586.4, None, None, 40))
 
   val defaultViewModel = DetailedIncomeTaxEstimateViewModel(ukTaxBands, Seq.empty[TaxBand], List.empty[TaxBand], "UK", 18573, 68476,
-    11500, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow], None, false, None, None, 20000, 5000, None,messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading"),
-    messages("tai.estimatedIncome.desc",
+    11500, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow], None, false, None, None, 20000, 5000, None,messages("tax.on.your.employment.income"),
+    messages("your.total.income.from.employment.desc",
       "£68,476",
       messages("tai.estimatedIncome.taxFree.link"),
       "£11,500"))

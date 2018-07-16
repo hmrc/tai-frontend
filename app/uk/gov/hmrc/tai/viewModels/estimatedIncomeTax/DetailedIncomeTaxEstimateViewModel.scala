@@ -24,10 +24,11 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.model.domain.{MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
-import uk.gov.hmrc.tai.util.{BandTypesConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{BandTypesConstants, IncomeTaxEstimateHelper, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.{HelpLink, Label}
 import uk.gov.hmrc.urls.Link
 import uk.gov.hmrc.play.views.formatting.Money._
+
 import scala.math.BigDecimal
 
 case class DetailedIncomeTaxEstimateViewModel(
@@ -52,7 +53,7 @@ case class DetailedIncomeTaxEstimateViewModel(
                                      ) extends ViewModelHelper
 
 
-object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with EstimatedIncomeTaxBand with TaxAdditionsAndReductions {
+object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with EstimatedIncomeTaxBand with TaxAdditionsAndReductions with IncomeTaxEstimateHelper {
 
   def apply(totalTax: TotalTax,
             taxCodeIncomes: Seq[TaxCodeIncome],
@@ -97,13 +98,13 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val additionIncomePayableText = nonTaxCodeIncome.otherNonTaxCodeIncomes
       .find(_.incomeComponentType == NonCodedIncome)
       .map(_ => messages("tai.estimatedIncome.selfAssessmentAndPayeText"))
-    val taxOnIncomeTypeHeading = Messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading",getTaxOnIncomeTypeHeading(taxCodeIncomes))
-    val taxOnIncomeTypeDescription = Messages("tai.estimatedIncome.desc",
+    val taxOnIncomeTypeHeading = Messages(s"tax.on.your.${getTaxOnIncomeTypeHeading(taxCodeIncomes)}.income")
+    val taxOnIncomeTypeDescription = Messages(s"your.total.income.from.${getTaxOnIncomeTypeHeading(taxCodeIncomes)}.desc",
                                               pounds(taxAccountSummary.totalEstimatedIncome),
                                               Link.toInternalPage(id=Some("taxFreeAmountLink"),
                                                                   url=routes.TaxFreeAmountController.taxFreeAmount.url,
                                                                   value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
-                                                                  pounds(taxAccountSummary.taxFreeAllowance),getTaxOnIncomeTypeHeading(taxCodeIncomes))
+                                              pounds(taxAccountSummary.taxFreeAllowance))
 
     DetailedIncomeTaxEstimateViewModel(
       mergedNonSavingsBand,
@@ -125,20 +126,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
       taxOnIncomeTypeHeading,
       taxOnIncomeTypeDescription
     )
-  }
-
-  private def getTaxOnIncomeTypeHeading(taxCodeIncomes: Seq[TaxCodeIncome])(implicit messages: Messages): String = {
-
-    val employments: Boolean = taxCodeIncomes.exists(x => x.componentType == EmploymentIncome)
-    val pensions: Boolean = taxCodeIncomes.exists(x => x.componentType == PensionIncome)
-    val other: Boolean = taxCodeIncomes.exists(x => x.componentType == JobSeekerAllowanceIncome ||  x.componentType == OtherIncome)
-
-    (employments, pensions, other) match {
-      case (true, false, false) => "employment"
-      case (false, true, false) => "private pension"
-      case (_, _, _)            => "PAYE"
-    }
-
   }
 
 

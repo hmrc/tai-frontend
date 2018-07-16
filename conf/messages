@@ -928,8 +928,6 @@ tai.estimatedIncome.title=Your PAYE Income Tax estimate
 tai.estimatedIncome.accessiblePreHeading=This section is your income tax estimate for
 tai.estimatedIncome.whyEstimate.link=Why this is an estimate
 tai.estimatedIncome.whyEstimate.desc=The amount of tax you pay depends on your total income for the whole tax year. We can’t give an exact figure because we won’t know about all your income until after the tax year ends on {0}.
-tai.estimatedIncome.taxOnEmploymentIncome.subHeading=Tax on your {0} income
-tai.estimatedIncome.desc=Your total income from {3} is estimated at {0} this tax year. You have a {1} for your {3} income. This means the first {2} of your {3} earnings are tax free.
 tai.estimatedIncome.dividend.para.desc=Your total income from dividends this tax year is estimated at £{0}. The first £{1} of dividend income in each tax year is tax free.
 tai.estimatedIncome.savings.desc=Your total income from savings this tax year is estimated at {0}.
 tai.estimatedIncomeLow.desc=We estimate that you will earn less than your {0} of {1}, this means you should pay no income Tax on your earnings this year.
@@ -957,6 +955,13 @@ gift.aid.savings=Gift Aid savings
 gift.aid.tax.relief=You made Gift Aid donations of £{0} during this tax year which give you tax-relief and an Income Tax saving of £{1}.
 personal.pension.payment.relief=You made personal pension payments of £{0} during this tax year which give you tax-relief and an Income Tax saving of £{1}.
 personal.pension.payments=Personal pension payments
+
+tax.on.your.employment.income=Tax on your employment income
+tax.on.your.private.pension.income=Tax on your private pension income
+tax.on.your.paye.income=Tax on your PAYE income
+your.total.income.from.employment.desc=Your total income from employment is estimated at {0} this tax year. You have a {1} for your employment income. This means the first {2} of your employment earnings are tax free.
+your.total.income.from.private.pension.desc=Your total income from private pension is estimated at {0} this tax year. You have a {1} for your private pension income. This means the first {2} of your private pension earnings are tax free.
+your.total.income.from.paye.desc=Your total income from PAYE is estimated at {0} this tax year. You have a {1} for your PAYE income. This means the first {2} of your PAYE earnings are tax free.
 
 
 tax.adjustment=Tax adjustment
