@@ -104,15 +104,6 @@
                 </section>
 
                 <section>
-                    @if(viewModel.hasPotentialUnderPayment){
-                    <div class="panel-indent panel-indent--info panel-indent--gutter">
-                        <p id="income-potential-underpayment">@Messages("tai.potentialUnderpayment.title")</p>
-                        <p id="link-potential-underpayment" data-journey='link - view:@Messages("tai.estimatedIncomeTax.howWeWorkedOut"):@Messages("tai.view.PotentialUnderpayment")' class="text">@Link.toInternalPage(url=routes.PotentialUnderpaymentController.potentialUnderpaymentPage.toString,
-                            value=Some("tai.view.PotentialUnderpayment"),
-                            dataAttributes=Some(Map("journey-click"->s"link - click:${Messages("tai.estimatedIncomeTax.howWeWorkedOut")}:${Messages("tai.view.PotentialUnderpayment")}."))
-                            ).toHtml</p>
-                    </div>
-                    }
 
                     @viewModel.ssrValue.map { ssr =>
                     <h3 id="starting-rate-savings-title" class="heading-medium">@Messages("tai.estimatedIncome.SSR.title")</h3>
