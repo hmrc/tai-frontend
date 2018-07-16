@@ -25,6 +25,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.{BandTypesConstants, TaxRegionConstants}
+import uk.gov.hmrc.play.views.formatting.Money.pounds
 
 import scala.language.postfixOps
 
@@ -67,17 +68,16 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApp
         Some("You can earn £102,165 more before your income reaches the next tax band."),
         Some(Swatch(16.37, 7834)))
 
-      val expectedViewModel = SimpleEstimatedIncomeTaxViewModel(7834, 47835, 11500, bandedGraph, UkTaxRegion, mergedTaxBands, Messages("tax.on.your.employment.income"),
-        Messages("your.total.income.from.employment.desc", "£47,835", Messages("tai.estimatedIncome.taxFree.link"), "£11,500"))
+      val expectedViewModel = SimpleEstimatedIncomeTaxViewModel(7834, 47835, 11500, bandedGraph, UkTaxRegion,
+        mergedTaxBands, Messages("tax.on.your.employment.income"),
+        Messages("your.total.income.from.employment.desc",
+          pounds(47835),
+          "<a id=\"taxFreeAmountLink\" href=\"/check-income-tax/tax-free-allowance\" target=\"_self\" data-sso=\"false\">tax-free amount</a>",
+          pounds(11500)))
 
       val result = SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, ukTaxCodeIncome, taxBands)
 
-      result.incomeTaxEstimate mustBe expectedViewModel.incomeTaxEstimate
-      result.incomeEstimate mustBe expectedViewModel.incomeEstimate
-      result.taxFreeAllowance mustBe expectedViewModel.taxFreeAllowance
-      result.graph mustBe expectedViewModel.graph
-      result.taxRegion mustBe expectedViewModel.taxRegion
-      result.mergedTaxBands mustBe expectedViewModel.mergedTaxBands
+      result mustBe expectedViewModel
     }
   }
 
