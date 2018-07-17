@@ -100,7 +100,7 @@
                     </p>
                     @if(viewModel.savings.exists(_.bandType != "SR")){
                     <p id="tax-on-savings-desc2">
-                        @viewModel.savingsDescription2(viewModel.savings)
+                        @DetailedIncomeTaxEstimateViewModel.savingsDescription2(viewModel.savings)
                     </p>
                     <p id="tax-on-savings-desc3">
                         @DetailedIncomeTaxEstimateViewModel.savingsDescription3(viewModel.savings)
