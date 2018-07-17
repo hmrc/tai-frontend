@@ -50,27 +50,6 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
     }
   }
 
-
-
-  "hasPotentialUnderpayment" must {
-    "return true" when {
-      "totalInYearAdjustmentIntoCY is less than or equal to zero and totalInYearAdjustmentIntoCYPlusOne is greater than zero" in {
-        val taxAccountSummary = TaxAccountSummary(0,0,0,0,1)
-        EstimatedIncomeTaxService.hasPotentialUnderPayment(
-          taxAccountSummary.totalInYearAdjustment,taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne) mustBe true
-      }
-    }
-
-    "return false" when {
-      "totalInYearAdjustmentIntoCY is greater than zero and totalInYearAdjustmentIntoCYPlusOne is zero" in {
-        val taxAccountSummary = TaxAccountSummary(0,0,1,0,0)
-        EstimatedIncomeTaxService.hasPotentialUnderPayment(taxAccountSummary.totalInYearAdjustmentIntoCY,
-          taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne) mustBe false
-      }
-    }
-  }
-
-
   "hasSSR" must {
     "return true" when{
       "starter service rate tax band exists" in {
@@ -218,25 +197,6 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
 
   "hasAdditionalTax" must {
     "return true" when {
-//      "there is an underpayment" in {
-//
-//
-//        val otherTaxDue = Seq(
-//          TaxAdjustmentComponent(tax.ExcessGiftAidTax, 100),
-//          TaxAdjustmentComponent(tax.ExcessWidowsAndOrphans, 100),
-//          TaxAdjustmentComponent(tax.PensionPaymentsAdjustment, 200),
-//          TaxAdjustmentComponent(tax.ChildBenefit, 300)
-//        )
-//        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(700, otherTaxDue)), None, None)
-//        val codingComponents = Seq(
-//          CodingComponent(UnderPaymentFromPreviousYear, None, 100, "", Some(10)),
-//          CodingComponent(EstimatedTaxYouOweThisYear, None, 0, "", Some(50)),
-//          CodingComponent(OutstandingDebt, None, 150, "")
-//        )
-//
-//        EstimatedIncomeTaxService.hasAdditionalTax(codingComponents, totalTax) mustBe true
-//      }
-
       "there is an underpayment" in {
 
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None)
