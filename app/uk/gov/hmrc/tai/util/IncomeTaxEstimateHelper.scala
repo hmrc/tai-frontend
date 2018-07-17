@@ -25,14 +25,19 @@ import uk.gov.hmrc.urls.Link
 
 trait IncomeTaxEstimateHelper {
 
-  def getTaxOnIncomeTypeHeading(taxCodeIncomes: Seq[TaxCodeIncome])(implicit messages:Messages): String = {
+  private def determineIncomeTypes(taxCodeIncomes: Seq[TaxCodeIncome]): (Boolean, Boolean, Boolean) = {
 
     val employments: Boolean = taxCodeIncomes.exists(taxCodeIncome => taxCodeIncome.componentType == EmploymentIncome)
     val pensions: Boolean = taxCodeIncomes.exists(taxCodeIncome => taxCodeIncome.componentType == PensionIncome)
     val other: Boolean = taxCodeIncomes.exists(taxCodeIncome => taxCodeIncome.componentType == JobSeekerAllowanceIncome ||
-                                                                taxCodeIncome.componentType == OtherIncome)
+      taxCodeIncome.componentType == OtherIncome)
 
-    (employments, pensions, other) match {
+    (employments, pensions, other)
+  }
+
+  def getTaxOnIncomeTypeHeading(taxCodeIncomes: Seq[TaxCodeIncome])(implicit messages:Messages): String = {
+
+    determineIncomeTypes(taxCodeIncomes) match {
       case (true, false, false) => Messages(s"tax.on.your.employment.income")
       case (false, true, false) => Messages(s"tax.on.your.private.pension.income")
       case (_, _, _)            => Messages(s"tax.on.your.paye.income")
@@ -41,22 +46,17 @@ trait IncomeTaxEstimateHelper {
 
   def getTaxOnIncomeTypeDescription(taxCodeIncomes: Seq[TaxCodeIncome], taxAccountSummary: TaxAccountSummary)(implicit messages:Messages): String = {
 
-    val employments: Boolean = taxCodeIncomes.exists(taxCodeIncome => taxCodeIncome.componentType == EmploymentIncome)
-    val pensions: Boolean = taxCodeIncomes.exists(taxCodeIncome => taxCodeIncome.componentType == PensionIncome)
-    val other: Boolean = taxCodeIncomes.exists(taxCodeIncome => taxCodeIncome.componentType == JobSeekerAllowanceIncome ||
-      taxCodeIncome.componentType == OtherIncome)
-
-    val incomeType = (employments, pensions, other) match {
+    val incomeType = determineIncomeTypes(taxCodeIncomes) match {
       case (true, false, false) => "employment"
       case (false, true, false) => "private.pension"
       case (_, _, _)            => "paye"
     }
 
     Messages(s"your.total.income.from.$incomeType.desc", pounds(taxAccountSummary.totalEstimatedIncome),
-              Link.toInternalPage(id=Some("taxFreeAmountLink"),
-                                  url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                                  value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
-              pounds(taxAccountSummary.taxFreeAllowance))
+      Link.toInternalPage(id=Some("taxFreeAmountLink"),
+        url=routes.TaxFreeAmountController.taxFreeAmount.url,
+        value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
+      pounds(taxAccountSummary.taxFreeAllowance))
 
   }
 }
