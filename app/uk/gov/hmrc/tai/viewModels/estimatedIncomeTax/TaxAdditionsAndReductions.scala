@@ -16,11 +16,9 @@
 
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
-import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, OutstandingDebt, UnderPaymentFromPreviousYear}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.tax.{TaxAdjustment, TaxAdjustmentType, TaxBand}
-
-import scala.math.BigDecimal
+import uk.gov.hmrc.tai.model.domain.tax.{TaxAdjustment, TaxAdjustmentType}
+import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, OutstandingDebt, UnderPaymentFromPreviousYear}
 
 trait TaxAdditionsAndReductions {
 

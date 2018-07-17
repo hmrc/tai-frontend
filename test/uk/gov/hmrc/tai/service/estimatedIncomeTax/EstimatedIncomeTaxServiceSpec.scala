@@ -22,9 +22,10 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.domain.tax.{MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
+import uk.gov.hmrc.tai.model.domain.tax
+import uk.gov.hmrc.tai.model.domain.tax.{DoubleTaxationRelief, MaintenancePayments => _, _}
 
 import scala.collection.immutable.Seq
 
@@ -217,22 +218,93 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
 
   "hasAdditionalTax" must {
     "return true" when {
-      "there are additional tax due" in {
-        val otherTaxDue = Seq(
-          TaxAdjustmentComponent(tax.ExcessGiftAidTax, 100),
-          TaxAdjustmentComponent(tax.ExcessWidowsAndOrphans, 100),
-          TaxAdjustmentComponent(tax.PensionPaymentsAdjustment, 200),
-          TaxAdjustmentComponent(tax.ChildBenefit, 300)
-        )
-        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(700, otherTaxDue)), None, None)
+//      "there is an underpayment" in {
+//
+//
+//        val otherTaxDue = Seq(
+//          TaxAdjustmentComponent(tax.ExcessGiftAidTax, 100),
+//          TaxAdjustmentComponent(tax.ExcessWidowsAndOrphans, 100),
+//          TaxAdjustmentComponent(tax.PensionPaymentsAdjustment, 200),
+//          TaxAdjustmentComponent(tax.ChildBenefit, 300)
+//        )
+//        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(700, otherTaxDue)), None, None)
+//        val codingComponents = Seq(
+//          CodingComponent(UnderPaymentFromPreviousYear, None, 100, "", Some(10)),
+//          CodingComponent(EstimatedTaxYouOweThisYear, None, 0, "", Some(50)),
+//          CodingComponent(OutstandingDebt, None, 150, "")
+//        )
+//
+//        EstimatedIncomeTaxService.hasAdditionalTax(codingComponents, totalTax) mustBe true
+//      }
+
+      "there is an underpayment" in {
+
+        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None)
         val codingComponents = Seq(
-          CodingComponent(UnderPaymentFromPreviousYear, None, 100, "", Some(10)),
-          CodingComponent(EstimatedTaxYouOweThisYear, None, 0, "", Some(50)),
+          CodingComponent(UnderPaymentFromPreviousYear, None, 100, "", Some(10))
+        )
+
+        EstimatedIncomeTaxService.hasAdditionalTax(codingComponents, totalTax) mustBe true
+      }
+
+      "there is an inYearAdjustment" in {
+
+        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None)
+        val codingComponents = Seq(
+          CodingComponent(EstimatedTaxYouOweThisYear, None, 0, "", Some(50))
+        )
+
+        EstimatedIncomeTaxService.hasAdditionalTax(codingComponents, totalTax) mustBe true
+      }
+
+      "there is outstanding debt" in {
+
+        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None)
+        val codingComponents = Seq(
           CodingComponent(OutstandingDebt, None, 150, "")
         )
 
         EstimatedIncomeTaxService.hasAdditionalTax(codingComponents, totalTax) mustBe true
       }
+
+      "there is childBenefit" in {
+
+        val otherTaxDue = Seq(
+          TaxAdjustmentComponent(tax.ChildBenefit, 300)
+        )
+        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(300, otherTaxDue)), None, None)
+        EstimatedIncomeTaxService.hasAdditionalTax(Seq.empty[CodingComponent], totalTax) mustBe true
+      }
+
+      "there is excessGiftAid" in {
+
+        val otherTaxDue = Seq(
+          TaxAdjustmentComponent(tax.ExcessGiftAidTax, 100)
+        )
+        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(100, otherTaxDue)), None, None)
+        EstimatedIncomeTaxService.hasAdditionalTax(Seq.empty[CodingComponent], totalTax) mustBe true
+      }
+
+      "there is excessWidowAndOrphans" in {
+
+        val otherTaxDue = Seq(
+          TaxAdjustmentComponent(tax.ExcessWidowsAndOrphans, 100)
+        )
+        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(100, otherTaxDue)), None, None)
+        EstimatedIncomeTaxService.hasAdditionalTax(Seq.empty[CodingComponent], totalTax) mustBe true
+      }
+
+      "there are pensionPaymentsAdjustments" in {
+
+        val otherTaxDue = Seq(
+          TaxAdjustmentComponent(tax.PensionPaymentsAdjustment, 200)
+        )
+        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, Some(tax.TaxAdjustment(200, otherTaxDue)), None, None)
+        EstimatedIncomeTaxService.hasAdditionalTax(Seq.empty[CodingComponent], totalTax) mustBe true
+      }
+
+
+
     }
     "return false" when {
       "there are no additional tax due" in {
@@ -245,17 +317,161 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
 
   "hasReductions" must {
     "return true" when {
-      "there are components present which can reduce the tax" in {
+        "there are non coded incomes" in{
 
-        EstimatedIncomeTaxService.hasReductions(codingComponents, totalTax) mustBe true
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
+            None,
+            None,
+            None,
+            Some(100),
+            None)
 
-      }
+          EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
+        }
+
+        "there are UKDividends" in {
+
+          val alreadyTaxedAtSource = Seq(
+            TaxAdjustmentComponent(TaxCreditOnUKDividends, 200)
+          )
+
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
+            None,
+            None,
+            Some(tax.TaxAdjustment(3500, alreadyTaxedAtSource)),
+            None,
+            None)
+
+          EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
+        }
+
+        "there is bank interest" in {
+
+          val alreadyTaxedAtSource = Seq(
+            TaxAdjustmentComponent(TaxOnBankBSInterest, 200)
+          )
+
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
+            None,
+            None,
+            Some(tax.TaxAdjustment(3500, alreadyTaxedAtSource)),
+            None,
+            None)
+
+          EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
+        }
+
+        "there is marriage allowance" in {
+
+          val reliefsGivingBackTax = Seq(
+            TaxAdjustmentComponent(MarriedCouplesAllowance, 800)
+          )
+
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
+            Some(tax.TaxAdjustment(800, reliefsGivingBackTax)),
+            None,
+            None,
+            None,
+            None)
+
+          EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
+        }
+
+        "there are maintenance payments " in {
+          val reliefsGivingBackTax = Seq(
+            TaxAdjustmentComponent(uk.gov.hmrc.tai.model.domain.tax.MaintenancePayments, 800)
+          )
+
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
+            Some(tax.TaxAdjustment(800, reliefsGivingBackTax)),
+            None,
+            None,
+            None,
+            None)
+
+          EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
+        }
+
+        "there is enterpriseInvestmentScheme " in {
+          val reliefsGivingBackTax = Seq(
+            TaxAdjustmentComponent(EnterpriseInvestmentSchemeRelief, 500)
+          )
+
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
+            Some(tax.TaxAdjustment(500, reliefsGivingBackTax)),
+            None,
+            None,
+            None,
+            None)
+
+          EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
+        }
+
+        "there is concessionRelief " in {
+          val reliefsGivingBackTax = Seq(
+            TaxAdjustmentComponent(ConcessionalRelief, 600)
+          )
+
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
+            Some(tax.TaxAdjustment(600, reliefsGivingBackTax)),
+            None,
+            None,
+            None,
+            None)
+
+          EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
+        }
+
+        "there is doubleTaxationRelief " in {
+          val reliefsGivingBackTax = Seq(
+            TaxAdjustmentComponent(DoubleTaxationRelief, 900)
+          )
+
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
+            Some(tax.TaxAdjustment(900, reliefsGivingBackTax)),
+            None,
+            None,
+            None,
+            None)
+
+          EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
+        }
+
+        "there is giftAidPaymentsRelief " in {
+          val taxReliefComponent = Seq(
+            TaxAdjustmentComponent(GiftAidPaymentsRelief, 1000)
+          )
+
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
+            None,
+            None,
+            None,
+            None,
+            Some(tax.TaxAdjustment(1000, taxReliefComponent)))
+
+          EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
+        }
+
+        "there is personalPensionPaymentsRelief " in {
+          val taxReliefComponent = Seq(
+            TaxAdjustmentComponent(PersonalPensionPaymentRelief, 1000)
+          )
+
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory],
+            None,
+            None,
+            None,
+            None,
+            Some(tax.TaxAdjustment(1000, taxReliefComponent)))
+
+          EstimatedIncomeTaxService.hasReductions(totalTax) mustBe true
+        }
     }
 
     "return false" when {
       "there are no reductions" in {
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-        EstimatedIncomeTaxService.hasReductions(Seq.empty[CodingComponent], totalTax) mustBe false
+        EstimatedIncomeTaxService.hasReductions(totalTax) mustBe false
       }
     }
   }
