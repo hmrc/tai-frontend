@@ -32,24 +32,6 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  "hasTaxRelief" must {
-    "return true" when {
-      "tax relief components are present" in {
-        val totalTax = TotalTax(100, Seq.empty[IncomeCategory], None, None, None, None,
-          Some(tax.TaxAdjustment(100, Seq(TaxAdjustmentComponent(tax.PersonalPensionPayment, 100)))))
-        EstimatedIncomeTaxService.hasTaxRelief(totalTax) mustBe true
-      }
-    }
-
-    "return false" when {
-      "tax relief components are not present" in {
-        val totalTax = TotalTax(100, Seq.empty[IncomeCategory], None, None, None, None, None)
-        EstimatedIncomeTaxService.hasTaxRelief(totalTax) mustBe false
-      }
-    }
-  }
-
-
   "hasSSR" must {
     "return true" when{
       "starter service rate tax band exists" in {
@@ -225,10 +207,9 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
 
   "hasReductions" must {
     "return true" when {
-      "there are components present which can reduce the tax" in {
-
-        EstimatedIncomeTaxService.hasReductions(codingComponents, totalTax) mustBe true
-
+      "there is non coded income present which can reduce the tax" in {
+        EstimatedIncomeTaxService.hasReductions(Seq.empty[CodingComponent],
+          TotalTax(0, Seq.empty[IncomeCategory], None, None, None, Some(100))) mustBe true
       }
     }
 

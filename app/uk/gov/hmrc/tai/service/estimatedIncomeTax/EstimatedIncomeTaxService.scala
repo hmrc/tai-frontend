@@ -65,7 +65,6 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     hasReductions(codingComponents,totalTax) ||
     hasAdditionalTax(codingComponents,totalTax) ||
     hasDividends(totalTax.incomeCategories) ||
-    hasTaxRelief(totalTax) ||
     hasSSR(taxBands) ||
     hasPSR(taxBands)
   }
@@ -76,7 +75,11 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxOnBankBSInterest).isDefined ||
     taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.EnterpriseInvestmentSchemeRelief).isDefined ||
     taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.ConcessionalRelief).isDefined ||
-    taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.DoubleTaxationRelief).isDefined
+    taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.DoubleTaxationRelief).isDefined ||
+    taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPaymentsRelief).isDefined ||
+    taxAdjustmentComp(totalTax.taxReliefComponent, tax.PersonalPensionPaymentRelief).isDefined ||
+    taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MarriedCouplesAllowance).isDefined ||
+    taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MaintenancePayments).isDefined
   }
 
   def hasAdditionalTax(codingComponent: Seq[CodingComponent], totalTax: TotalTax): Boolean = {
@@ -88,11 +91,6 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessGiftAidTax).isDefined ||
     taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessWidowsAndOrphans).isDefined ||
     taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment).isDefined
-
-  }
-
-  def hasTaxRelief(totalTax: TotalTax): Boolean = {
-    totalTax.taxReliefComponent.isDefined
   }
 
   def hasSSR(taxBands: List[TaxBand]): Boolean ={
