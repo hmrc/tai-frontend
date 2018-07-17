@@ -53,7 +53,7 @@ case class DetailedIncomeTaxEstimateViewModel(
                                      ) extends ViewModelHelper
 
 
-object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with EstimatedIncomeTaxBand with TaxAdditionsAndReductions with IncomeTaxEstimateHelper {
+object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with EstimatedIncomeTaxBand with TaxAdditionsAndReductions with IncomeTaxEstimateHelper with Dividends {
 
   def apply(totalTax: TotalTax,
             taxCodeIncomes: Seq[TaxCodeIncome],
@@ -69,10 +69,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
         category.incomeCategoryType == BankInterestIncomeCategory || category.incomeCategoryType == ForeignInterestIncomeCategory
     }.flatMap(_.taxBands).filter(_.income > 0)//.filterNot(_.rate == 0)
 
-    val dividends = totalTax.incomeCategories.filter {
-        category => category.incomeCategoryType == UkDividendsIncomeCategory ||
-          category.incomeCategoryType == ForeignDividendsIncomeCategory
-      }.flatMap(_.taxBands).filter(_.income > 0).toList
+    val dividends = retrieveDividends(totalTax.incomeCategories)
 
     val filteredCategories = totalTax.incomeCategories.filter {
       category => category.incomeCategoryType == UkDividendsIncomeCategory ||
@@ -246,24 +243,39 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     }
   }
 
-  def totalDividendIncome(incomeCategories: Seq[IncomeCategory]): BigDecimal = {
-    incomeCategories.filter {
-            category => category.incomeCategoryType == UkDividendsIncomeCategory ||
-              category.incomeCategoryType == ForeignDividendsIncomeCategory
-          }.map(_.totalIncome).sum
+
+  def savingsDescription1(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
+
+    val isStartingRate = savingsBands.exists(_.bandType == StarterSavingsRate)
+
+    val startingRateAllowance = savingsBands.find(_.bandType == StarterSavingsRate).flatMap(_.upperBand).getOrElse(0)
+    val personalSavingsAllowanceIncome: BigDecimal = savingsBands.find(_.bandType == PersonalSavingsRate).map(_.income).getOrElse(0)
+    val basicRateSavingsIncome: BigDecimal = savingsBands.find(
+      x => x.bandType == SavingsBasicRate || x.bandType == SavingsHigherRate || x.bandType == SavingsAdditionalRate
+    ).map(_.income).getOrElse(0)
+
+    val totalBasicRateSavingsIncome = personalSavingsAllowanceIncome + basicRateSavingsIncome
+
+    if(isStartingRate) {
+      Messages("tai.estimatedIncome.savings.desc", startingRateAllowance)
+    } else {
+      Messages("tai.estimatedIncome.savings.desc.BRHR", totalBasicRateSavingsIncome)
+    }
   }
 
-  def taxFreeDividendAllowance(incomeCategories: Seq[IncomeCategory]): BigDecimal = {
-    val taxBands = incomeCategories.flatMap(_.taxBands)
-
-    taxBands.find(_.bandType == DividendZeroRate).flatMap(_.upperBand).getOrElse(BigDecimal(0))
-
+  def savingsDescription2(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
+    val isBasicRate = savingsBands.exists(_.bandType == SavingsBasicRate)
+    val taxFreeAllowance = savingsBands.find(_.bandType == PersonalSavingsRate).flatMap(_.upperBand).getOrElse(0)
+    if(isBasicRate) {
+      Messages("tai.estimatedIncome.savings.desc.BRHR2", taxFreeAllowance)
+    } else {
+      Messages("tai.estimatedIncome.savings.desc.BRHR2extra", taxFreeAllowance)
+    }
   }
 
-  def dividendsAllowanceRates(list: List[BigDecimal]): String = list match {
-    case h :: Nil => h + "%"
-    case h :: tail if tail.size > 1 => h + "%, " + dividendsAllowanceRates(tail)
-    case h :: tail :: Nil => h + "% and " + tail + "%"
+  def savingsDescription3(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
+    val higherRate = savingsBands.find(_.bandType != StarterSavingsRate).map(_.rate).getOrElse(0)
+    Messages("tai.estimatedIncome.savings.desc.BRHR3", higherRate)
   }
 
 }

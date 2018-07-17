@@ -25,7 +25,8 @@ import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
 import scala.math.BigDecimal
 
-object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with EstimatedIncomeTaxBand with BandTypesConstants{
+object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with EstimatedIncomeTaxBand with BandTypesConstants
+  with Dividends{
 
 
   def taxViewType(codingComponents: Seq[CodingComponent],
@@ -61,7 +62,7 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
 
     val taxBands = totalTax.incomeCategories.flatMap(_.taxBands).toList
 
-    hasReductions(codingComponents,totalTax) ||
+    hasReductions(totalTax) ||
     hasAdditionalTax(codingComponents,totalTax) ||
     hasDividends(totalTax.incomeCategories) ||
     hasPotentialUnderPayment(totalInYearAdjustmentIntoCY, totalInYearAdjustmentIntoCYPlusOne) ||
@@ -70,51 +71,37 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     hasPSR(taxBands)
   }
 
-  def hasReductions(codingComponents: Seq[CodingComponent], totalTax: TotalTax): Boolean = {
-    totalTax.taxOnOtherIncome.isDefined ||
-    taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxCreditOnUKDividends).isDefined ||
-    taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxOnBankBSInterest).isDefined ||
-    taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.EnterpriseInvestmentSchemeRelief).isDefined ||
-    taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.ConcessionalRelief).isDefined ||
-    taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.DoubleTaxationRelief).isDefined
+  def hasReductions(totalTax: TotalTax): Boolean = {
+
+    val nonCodedIncome = totalTax.taxOnOtherIncome
+    val ukDividend = taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxCreditOnUKDividends)
+    val bankInterest = taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxOnBankBSInterest)
+    val marriageAllowance = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MarriedCouplesAllowance)
+    val maintenancePayment = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MaintenancePayments)
+    val enterpriseInvestmentScheme = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.EnterpriseInvestmentSchemeRelief)
+    val concessionRelief = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.ConcessionalRelief)
+    val doubleTaxationRelief = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.DoubleTaxationRelief)
+    val giftAidPaymentsRelief = taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPaymentsRelief)
+    val personalPensionPaymentsRelief = taxAdjustmentComp(totalTax.taxReliefComponent, tax.PersonalPensionPaymentRelief)
+
+    nonCodedIncome.isDefined || ukDividend.isDefined || bankInterest.isDefined || marriageAllowance.isDefined ||
+      maintenancePayment.isDefined || enterpriseInvestmentScheme.isDefined || concessionRelief.isDefined ||
+      doubleTaxationRelief.isDefined  || giftAidPaymentsRelief.isDefined || personalPensionPaymentsRelief.isDefined
+
   }
 
   def hasAdditionalTax(codingComponent: Seq[CodingComponent], totalTax: TotalTax): Boolean = {
 
-    underPaymentFromPreviousYear(codingComponent).isDefined ||
-    inYearAdjustment(codingComponent).isDefined ||
-    outstandingDebt(codingComponent).isDefined ||
-    taxAdjustmentComp(totalTax.otherTaxDue, tax.ChildBenefit).isDefined ||
-    taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessGiftAidTax).isDefined ||
-    taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessWidowsAndOrphans).isDefined ||
-    taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment).isDefined
+    val underPayment = underPaymentFromPreviousYear(codingComponent)
+    val inYearAdjust = inYearAdjustment(codingComponent)
+    val debtOutstanding = outstandingDebt(codingComponent)
+    val childBenefit = taxAdjustmentComp(totalTax.otherTaxDue, tax.ChildBenefit)
+    val excessGiftAid = taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessGiftAidTax)
+    val excessWidowAndOrphans = taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessWidowsAndOrphans)
+    val pensionPayments = taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment)
 
-  }
-
-  def hasDividends(incomeCategories:Seq[IncomeCategory]): Boolean = {
-//    val ukDividend = nonTaxCodeIncome.otherNonTaxCodeIncomes.find(_.incomeComponentType == UkDividend).map(_.amount)
-//
-//    ukDividend map { ukDivTotalIncome =>
-//      val taxBands = totalTax.incomeCategories.filter(_.incomeCategoryType == tax.UkDividendsIncomeCategory).flatMap(_.taxBands)
-//      val taxFreeDividend = taxBands.find(_.bandType == DividendZeroRate).flatMap(_.upperBand).getOrElse(BigDecimal(0))
-//      val higherTaxRates = taxBands.filter(taxBand => taxBand.income > 0 && taxBand.rate > 0).map(_.rate)
-//
-//      (ukDivTotalIncome <= taxFreeDividend) || ((ukDivTotalIncome > taxFreeDividend) && higherTaxRates.nonEmpty) match {
-//        case true => true
-//        case _ => false
-//      }
-//    } match {
-//      case Some(true) => true
-//      case _ => false
-//    }
-    totalDividendIncome(incomeCategories) > 0
-  }
-
-  def totalDividendIncome(incomeCategories: Seq[IncomeCategory]): BigDecimal = {
-    incomeCategories.filter {
-      category => category.incomeCategoryType == UkDividendsIncomeCategory ||
-        category.incomeCategoryType == ForeignDividendsIncomeCategory
-    }.map(_.totalIncome).sum
+    underPayment.isDefined || inYearAdjust.isDefined || debtOutstanding.isDefined || childBenefit.isDefined ||
+      excessGiftAid.isDefined || excessWidowAndOrphans.isDefined || pensionPayments.isDefined
   }
 
 

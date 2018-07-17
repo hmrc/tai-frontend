@@ -91,10 +91,18 @@
                 </section>
 
                 <section class="section soft--top">
-                    <h3 id="tax-on-savings-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")</h3>
-                    <p id="tax-on-savings-desc">
-                        @Messages("tai.estimatedIncome.savings.desc")
+                    <h2 id="tax-on-savings-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")</h2>
+                    <p id="tax-on-savings-desc1">
+                        @DetailedIncomeTaxEstimateViewModel.savingsDescription1(viewModel.savings)
                     </p>
+                    @if(viewModel.savings.exists(_.bandType != "SR")){
+                    <p id="tax-on-savings-desc2">
+                        @viewModel.savingsDescription2(viewModel.savings)
+                    </p>
+                    <p id="tax-on-savings-desc3">
+                        @DetailedIncomeTaxEstimateViewModel.savingsDescription3(viewModel.savings)
+                    </p>
+                    }
 
                     @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.savings.toList, taxRegion = viewModel.taxRegion)
 

@@ -265,15 +265,40 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
     "have tax on your savings income section" when{
 
-      "dividends income exists " in {
+      val savingsPara1Id = "tax-on-savings-desc1"
+      val savingsPara2Id = "tax-on-savings-desc2"
+      val savingsPara3Id = "tax-on-savings-desc3"
 
-        doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading"))
-        doc(view) must haveParagraphWithText(messages("tai.estimatedIncome.dividend.para.desc","20,000","5,000"))
+
+      "savings income at SR band type " in {
+        val taxBand = TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+        val savingsBands = Seq(taxBand)
+        val model = defaultViewModel.copy(savings = savingsBands)
+        def view = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
+
+        doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading"))
+
+        doc(view) must haveElementWithId(savingsPara1Id)
+        doc(view) mustNot haveElementWithId(savingsPara2Id)
+        doc(view) mustNot haveElementWithId(savingsPara3Id)
+
+      }
+
+      "savings income at LSR band type " in {
+        val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
+        val taxBandLSR = TaxBand(bandType = "LSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 20)
+        val savingsBands = Seq(taxBandPSR, taxBandLSR)
+        val model = defaultViewModel.copy(savings = savingsBands)
+        def view = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
+
+        doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading"))
+
+        doc(view) must haveElementWithId(savingsPara1Id)
+        doc(view) must haveElementWithId(savingsPara2Id)
+        doc(view) must haveElementWithId(savingsPara3Id)
 
       }
     }
-
-
   }
 
   "have additional tax table" in {
