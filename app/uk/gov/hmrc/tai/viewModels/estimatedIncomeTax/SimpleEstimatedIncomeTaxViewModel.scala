@@ -48,13 +48,8 @@ object SimpleEstimatedIncomeTaxViewModel extends EstimatedIncomeTaxBand with Inc
     val mergedTaxBands = retrieveTaxBands(taxBands :+ paBand)
     val graph = BandedGraph(codingComponents,mergedTaxBands, taxAccountSummary.taxFreeAllowance, taxAccountSummary.totalEstimatedTax, taxViewType = SimpleTaxView)
     val taxRegion = findTaxRegion(taxCodeIncomes)
-    val taxOnIncomeTypeHeading = Messages(s"tax.on.your.${getTaxOnIncomeTypeHeading(taxCodeIncomes)}.income")
-    val taxOnIncomeTypeDescription = Messages(s"your.total.income.from.${getTaxOnIncomeTypeHeading(taxCodeIncomes)}.desc",
-      pounds(taxAccountSummary.totalEstimatedIncome),
-      Link.toInternalPage(id=Some("taxFreeAmountLink"),
-        url=routes.TaxFreeAmountController.taxFreeAmount.url,
-        value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
-      pounds(taxAccountSummary.taxFreeAllowance))
+    val taxOnIncomeTypeHeading = getTaxOnIncomeTypeHeading(taxCodeIncomes)
+    val taxOnIncomeTypeDescription = getTaxOnIncomeTypeDescription(taxCodeIncomes,taxAccountSummary)
 
     SimpleEstimatedIncomeTaxViewModel(
       taxAccountSummary.totalEstimatedTax,
