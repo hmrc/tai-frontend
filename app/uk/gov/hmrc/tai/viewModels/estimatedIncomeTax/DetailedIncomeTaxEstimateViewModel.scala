@@ -24,9 +24,10 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.model.domain.{MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
-import uk.gov.hmrc.tai.util.{BandTypesConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{BandTypesConstants, IncomeTaxEstimateHelper, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.{HelpLink, Label}
 import uk.gov.hmrc.urls.Link
+import uk.gov.hmrc.play.views.formatting.Money._
 
 import scala.math.BigDecimal
 
@@ -45,14 +46,18 @@ case class DetailedIncomeTaxEstimateViewModel(
                                        psrValue: Option[BigDecimal],
                                        totalDividendIncome: BigDecimal,
                                        taxFreeDividendAllowance: BigDecimal,
-                                       selfAssessmentAndPayeText: Option[String]
-                                     ) extends ViewModelHelper {
-}
+                                       selfAssessmentAndPayeText: Option[String],
+                                       taxOnIncomeTypeHeading: String,
+                                       taxOnIncomeTypeDescription: String
+                                     ) extends ViewModelHelper
 
-object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with EstimatedIncomeTaxBand with TaxAdditionsAndReductions
-with Dividends{
 
-  def apply(totalTax: TotalTax, taxCodeIncomes: Seq[TaxCodeIncome],taxAccountSummary: TaxAccountSummary, codingComponents: Seq[CodingComponent],
+object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with EstimatedIncomeTaxBand with TaxAdditionsAndReductions with IncomeTaxEstimateHelper with Dividends {
+
+  def apply(totalTax: TotalTax,
+            taxCodeIncomes: Seq[TaxCodeIncome],
+            taxAccountSummary: TaxAccountSummary,
+            codingComponents: Seq[CodingComponent],
             nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): DetailedIncomeTaxEstimateViewModel = {
 
     val nonSavings = totalTax.incomeCategories.filter(_.incomeCategoryType == NonSavingsIncomeCategory).
@@ -87,6 +92,8 @@ with Dividends{
     val additionIncomePayableText = nonTaxCodeIncome.otherNonTaxCodeIncomes
       .find(_.incomeComponentType == NonCodedIncome)
       .map(_ => messages("tai.estimatedIncome.selfAssessmentAndPayeText"))
+    val taxOnIncomeTypeHeading = getTaxOnIncomeTypeHeading(taxCodeIncomes)
+    val taxOnIncomeTypeDescription = getTaxOnIncomeTypeDescription(taxCodeIncomes,taxAccountSummary)
 
     DetailedIncomeTaxEstimateViewModel(
       mergedNonSavingsBand,
@@ -103,9 +110,13 @@ with Dividends{
       psrValue,
       dividendIncome,
       taxFreeDividend,
-      additionIncomePayableText
+      additionIncomePayableText,
+      taxOnIncomeTypeHeading,
+      taxOnIncomeTypeDescription
     )
   }
+
+
 
   def createAdditionalTaxTable(codingComponent: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages): Seq[AdditionalTaxDetailRow] = {
 
@@ -221,6 +232,41 @@ with Dividends{
     Option(hasTaxReducedToZero).collect{
       case true => Messages("tai.estimatedIncome.reductionsTax.incomeTaxReducedToZeroMessage")
     }
+  }
+
+
+  def savingsDescription1(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
+
+    val isStartingRate = savingsBands.exists(_.bandType == StarterSavingsRate)
+
+    val startingRateAllowance = savingsBands.find(_.bandType == StarterSavingsRate).flatMap(_.upperBand).getOrElse(0)
+    val personalSavingsAllowanceIncome: BigDecimal = savingsBands.find(_.bandType == PersonalSavingsRate).map(_.income).getOrElse(0)
+    val basicRateSavingsIncome: BigDecimal = savingsBands.find(
+      x => x.bandType == SavingsBasicRate || x.bandType == SavingsHigherRate || x.bandType == SavingsAdditionalRate
+    ).map(_.income).getOrElse(0)
+
+    val totalBasicRateSavingsIncome = personalSavingsAllowanceIncome + basicRateSavingsIncome
+
+    if(isStartingRate) {
+      Messages("tai.estimatedIncome.savings.desc", startingRateAllowance)
+    } else {
+      Messages("tai.estimatedIncome.savings.desc.BRHR", totalBasicRateSavingsIncome)
+    }
+  }
+
+  def savingsDescription2(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
+    val isBasicRate = savingsBands.exists(_.bandType == SavingsBasicRate)
+    val taxFreeAllowance = savingsBands.find(_.bandType == PersonalSavingsRate).flatMap(_.upperBand).getOrElse(0)
+    if(isBasicRate) {
+      Messages("tai.estimatedIncome.savings.desc.BRHR2", taxFreeAllowance)
+    } else {
+      Messages("tai.estimatedIncome.savings.desc.BRHR2extra", taxFreeAllowance)
+    }
+  }
+
+  def savingsDescription3(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
+    val higherRate = savingsBands.find(_.bandType != StarterSavingsRate).map(_.rate).getOrElse(0)
+    Messages("tai.estimatedIncome.savings.desc.BRHR3", higherRate)
   }
 
 }
