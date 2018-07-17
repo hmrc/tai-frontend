@@ -41,7 +41,6 @@ case class DetailedIncomeTaxEstimateViewModel(
                                        additionalTaxTable: Seq[AdditionalTaxDetailRow],
                                        reductionTaxTable: Seq[ReductionTaxRow],
                                        incomeTaxReducedToZeroMessage: Option[String],
-                                       hasPotentialUnderPayment: Boolean,
                                        ssrValue: Option[BigDecimal],
                                        psrValue: Option[BigDecimal],
                                        totalDividendIncome: BigDecimal,
@@ -80,8 +79,6 @@ with Dividends{
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
     val reductionTaxTable = createReductionsTable(codingComponents, totalTax)
     val incomeTaxReducedToZero = incomeTaxReducedToZeroMessage(taxAccountSummary.totalEstimatedTax <= 0 && reductionTaxTable.nonEmpty)
-    val hasPotentialUnderPayment = EstimatedIncomeTaxService.hasPotentialUnderPayment(taxAccountSummary.totalInYearAdjustmentIntoCY,
-      taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne)
     val ssrValue = EstimatedIncomeTaxService.incomeByBandType(mergedTaxBands, StarterSavingsRate)
     val psrValue = EstimatedIncomeTaxService.incomeByBandType(mergedTaxBands, PersonalSavingsRate)
     val dividendIncome = totalDividendIncome(totalTax.incomeCategories)
@@ -102,7 +99,6 @@ with Dividends{
       additionalTaxTable,
       reductionTaxTable,
       incomeTaxReducedToZero,
-      hasPotentialUnderPayment,
       ssrValue,
       psrValue,
       dividendIncome,

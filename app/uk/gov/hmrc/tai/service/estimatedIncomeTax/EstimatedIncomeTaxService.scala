@@ -65,7 +65,6 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     hasReductions(codingComponents,totalTax) ||
     hasAdditionalTax(codingComponents,totalTax) ||
     hasDividends(totalTax.incomeCategories) ||
-    hasPotentialUnderPayment(totalInYearAdjustmentIntoCY, totalInYearAdjustmentIntoCYPlusOne) ||
     hasTaxRelief(totalTax) ||
     hasSSR(taxBands) ||
     hasPSR(taxBands)
@@ -91,11 +90,6 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment).isDefined
 
   }
-
-
-  def hasPotentialUnderPayment(totalInYearAdjustmentIntoCY:BigDecimal, totalInYearAdjustmentIntoCYPlusOne:BigDecimal) =
-    totalInYearAdjustmentIntoCY <=0 && totalInYearAdjustmentIntoCYPlusOne > 0
-
 
   def hasTaxRelief(totalTax: TotalTax): Boolean = {
     totalTax.taxReliefComponent.isDefined

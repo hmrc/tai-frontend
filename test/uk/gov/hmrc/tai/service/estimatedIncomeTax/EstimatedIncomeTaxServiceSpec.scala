@@ -50,26 +50,6 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
   }
 
 
-
-  "hasPotentialUnderpayment" must {
-    "return true" when {
-      "totalInYearAdjustmentIntoCY is less than or equal to zero and totalInYearAdjustmentIntoCYPlusOne is greater than zero" in {
-        val taxAccountSummary = TaxAccountSummary(0,0,0,0,1)
-        EstimatedIncomeTaxService.hasPotentialUnderPayment(
-          taxAccountSummary.totalInYearAdjustment,taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne) mustBe true
-      }
-    }
-
-    "return false" when {
-      "totalInYearAdjustmentIntoCY is greater than zero and totalInYearAdjustmentIntoCYPlusOne is zero" in {
-        val taxAccountSummary = TaxAccountSummary(0,0,1,0,0)
-        EstimatedIncomeTaxService.hasPotentialUnderPayment(taxAccountSummary.totalInYearAdjustmentIntoCY,
-          taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne) mustBe false
-      }
-    }
-  }
-
-
   "hasSSR" must {
     "return true" when{
       "starter service rate tax band exists" in {

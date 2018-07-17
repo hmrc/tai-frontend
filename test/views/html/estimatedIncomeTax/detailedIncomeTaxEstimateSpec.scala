@@ -277,7 +277,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     TaxBand("D0", "", 36466, 14586.4, None, None, 40))
 
   val defaultViewModel = DetailedIncomeTaxEstimateViewModel(ukTaxBands, Seq.empty[TaxBand], List.empty[TaxBand], "UK", 18573, 68476,
-    11500, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow], None, false, None, None, 20000, 5000, None)
+    11500, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow], None, None, None, 20000, 5000, None)
 
   def view(vm: DetailedIncomeTaxEstimateViewModel = defaultViewModel): Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(vm)
   override def view: Html = view(defaultViewModel)
@@ -294,7 +294,6 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       additionalTaxTable = additionalTaxTable,
       reductionTaxTable = reductionTaxTable,
       incomeTaxReducedToZeroMessage = None,
-      hasPotentialUnderPayment = false,
       ssrValue = None,
       psrValue = None,
       totalDividendIncome = 0,
