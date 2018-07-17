@@ -149,11 +149,6 @@ class simpleIncomeTaxSpec extends TaiViewSpec {
     }
     "have tax on your employment income section" in {
 
-      //      doc(view) must haveH2HeadingWithText(messages("tax.on.your.employment.income"))
-      //      doc(view) must haveParagraphWithText(Html(messages("your.total.income.from.employment.desc",
-      //        "£68,476",
-      //        messages("tai.estimatedIncome.taxFree.link"),
-      //        "£11,500")).body)
       val document = doc(view)
       document.select("#taxOnEmploymentIncomeDesc").html() mustBe Html(Messages("your.total.income.from.employment.desc",
         "47,835",
