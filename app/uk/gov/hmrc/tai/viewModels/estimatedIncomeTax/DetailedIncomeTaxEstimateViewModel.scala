@@ -248,7 +248,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val totalBasicRateSavingsIncome = personalSavingsAllowanceIncome + basicRateSavingsIncome
 
     if(isStartingRate) {
-      Messages("tai.estimatedIncome.savings.desc", startingRateAllowance)
+      Messages("tai.estimatedIncome.savings.desc.SR", startingRateAllowance)
     } else {
       Messages("tai.estimatedIncome.savings.desc.BRHR", totalBasicRateSavingsIncome)
     }
