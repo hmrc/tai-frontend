@@ -391,17 +391,9 @@ tai.income.error.form.incomes.radioButton.mandatory=Please select an income or t
 tai.yourTaxableIncome=Your annual income would be updated to £{0}
 tai.no.increasesTax=You don’t have any current income.
 tai.extendedTaxReliefs=Your estimate includes any <a href="{0}">tax relief</a> you may be entitled to.
-tai.extendedTaxReliefs.heading=Your tax relief payments
-tai.extendedTaxReliefs.description=Tax relief means you pay less tax to take account of money you’ve spent on Gift Aid donations or personal pension payments.
 tai.extendedTaxReliefs.payments=Payment
 tai.extendedTaxReliefs.source=Amount&nbsp;paid (£)
 tai.extendedTaxReliefs.relief=Tax&nbsp;saving (£)
-tai.extendedTaxReliefs.ppr.title=Personal Pension payments
-tai.extendedTaxReliefs.ppr.description=This is the tax relief you’ve claimed for your Personal Pension payments if you pay higher rate tax. Basic rate tax relief is given at source by your pension provider.
-tai.extendedTaxReliefs.giftAid.title=Gift Aid
-tai.extendedTaxReliefs.giftAid.BR.description=As a basic rate tax payer you don’t get tax relief on donations to charity or to community amateur sports clubs (CASCs). If you start to pay higher rate tax you may get tax relief on them.
-tai.extendedTaxReliefs.giftAid.HR.description=Your donations to charity or to community amateur sports clubs (CASCs) are tax-free. As we expect you to pay some higher rate tax you’ll be entitled to relief on your donations to charity.
-tai.extendedTaxReliefs.giftAid.NoTax.description=You can’t get tax relief on these payments as your income is too low to pay Income Tax.
 tai.yourIncome.heading=Your income
 tai.yourIncome.preHeading=Understanding your tax
 

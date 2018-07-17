@@ -29,11 +29,10 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
-import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, PersonService, TaxAccountService}
-import uk.gov.hmrc.tai.viewModels.TaxReliefViewModel
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
 trait EstimatedIncomeTaxController extends TaiBaseController
@@ -58,25 +57,21 @@ trait EstimatedIncomeTaxController extends TaiBaseController
             val taxSummaryFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
             val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
             val codingComponentFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-            val nonTaxCodeIncomeFuture = taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
             val taxCodeIncomeFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
 
             for {
               taxSummary <- taxSummaryFuture
               codingComponents <- codingComponentFuture
               totalTax <- totalTaxFuture
-              nonTaxCode <- nonTaxCodeIncomeFuture
               taxCodeIncomes <- taxCodeIncomeFuture
               iFormLinks <- partialService.getIncomeTaxPartial
             } yield {
-              (taxSummary, totalTax, nonTaxCode, taxCodeIncomes) match {
+              (taxSummary, totalTax, taxCodeIncomes) match {
                 case (TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
                 TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax),
-                TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
                 TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
                   val taxBands = totalTaxDetails.incomeCategories.flatMap(_.taxBands).toList
-                  val taxViewType = EstimatedIncomeTaxService.taxViewType(codingComponents,totalTaxDetails,nonTaxCodeIncome,
-                    taxAccountSummary.totalInYearAdjustmentIntoCY,taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne,
+                  val taxViewType = EstimatedIncomeTaxService.taxViewType(codingComponents,totalTaxDetails,
                     taxAccountSummary.totalEstimatedIncome,taxAccountSummary.taxFreeAllowance,taxAccountSummary.totalEstimatedTax,
                     taxCodeIncomes.nonEmpty)
                   taxViewType match {
@@ -99,29 +94,6 @@ trait EstimatedIncomeTaxController extends TaiBaseController
             }
           }
   }
-
-  def taxRelief(): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            val nino = Nino(user.getNino)
-            val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
-            val codingComponentFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-            for {
-              codingComponents <- codingComponentFuture
-              totalTax <- totalTaxFuture
-            } yield {
-              totalTax match {
-                case TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax) =>
-                  val model = TaxReliefViewModel(codingComponents, totalTaxDetails)
-                  Ok(views.html.reliefs(model))
-                case _ => throw new RuntimeException("Failed to get total tax details")
-              }
-            }
-          }
-  }
-
 }
 // $COVERAGE-OFF$
 object EstimatedIncomeTaxController extends EstimatedIncomeTaxController with AuthenticationConnectors {
