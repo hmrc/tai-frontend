@@ -92,13 +92,13 @@ import uk.gov.hmrc.urls.Link
 //      "the NINO falls into simple tax estimate type" in {
 //        def simpleTaxView: Html = views.html.estimatedIncomeTaxTemp(viewModel2, Html("<Html><head></head><body>Test</body></Html>"))
 //
-//        doc(simpleTaxView) must haveH2HeadingWithText(messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading"))
-//        doc(simpleTaxView) must haveParagraphWithText(Html(messages("tai.estimatedIncome.desc",
+//        doc(simpleTaxView) must haveH2HeadingWithText(messages("tax.on.your.employment.income"))
+//        doc(simpleTaxView) must haveParagraphWithText(Html(messages("your.total.income.from.employment.desc",
 //          "£30,000",
 //          messages("tai.estimatedIncome.taxFree.link"),
 //          "£11,500")).body)
 //
-//        doc(simpleTaxView).select("#taxOnEmploymentIncomeDesc").html() mustBe Html(Messages("tai.estimatedIncome.desc",
+//        doc(simpleTaxView).select("#taxOnEmploymentIncomeDesc").html() mustBe Html(Messages("your.total.income.from.employment.desc",
 //          "£30,000",
 //          Link.toInternalPage(
 //            id = Some("taxFreeAmountLink"),

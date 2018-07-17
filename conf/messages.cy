@@ -1171,14 +1171,20 @@ tai.bandtype.nonZeroBand=Incwm yr ydych yn talu treth arno
 tai.bandtype.nonZeroBand.incomeDetails=Cyfradd Sylfaenol
 tai.bandtype.incomeTaxEstimate=Amcangyfrif o''r Dreth Incwm
 
-tai.estimatedIncome.desc=Mae cyfanswm eich incwm o gyflogaeth wedi ei amcangyfrif yn {0} am y flwyddyn dreth hon. Mae gennych {1} am eich incwm cyflogaeth. Mae hyn yn golygu bod y {2} cyntaf o''ch enillion o gyflogaeth yn rhydd o dreth.
-tai.estimatedIncome.taxOnEmploymentIncome.subHeading=Treth ar eich incwm cyflogaeth
 tai.estimatedIncome.taxFree.link=swm rhydd o dreth
 tai.estimatedIncome.taxCodes.link=Eich cod treth
 tai.estimatedIncome.whyEstimate.link=Pam mai amcangyfrif yw hwn
 tai.estimatedIncome.howYouPay.heading=Sut rydych yn talu’ch treth
 tai.estimatedIncomeLow.desc=Rydym yn amcangyfrif y byddwch yn ennill llai na’ch {0} o {1}, mae hyn yn golygu na ddylech dalu unrhyw Dreth Incwm ar eich enillion y flwyddyn hon.
 tai.estimatedIncomeEarning.desc=Gallwch ennill {0} yn fwy cyn i chi gyrraedd haen treth.
+
+tax.on.your.employment.income=Treth ar eich incwm cyflogaeth
+tax.on.your.private.pension.income=
+tax.on.your.paye.income=
+your.total.income.from.employment.desc=Mae cyfanswm eich incwm o gyflogaeth wedi ei amcangyfrif yn {0} am y flwyddyn dreth hon. Mae gennych {1} am eich incwm cyflogaeth. Mae hyn yn golygu bod y {2} cyntaf o''ch enillion o gyflogaeth yn rhydd o dreth.
+your.total.income.from.private.pension.desc=
+your.total.income.from.paye.desc=
+
 tai.estimatedIncome.selfAssessmentAndPayeText = Mae gennych Dreth Incwm ychwanegol yn daladwy'r flwyddyn hon sydd heb ei chynnwys yn yr amcangyfrif hwn. Dylid ei chynnwys yn eich Hunanasesiad. Ni chaiff ei chasglu drwy TWE.
 
 gift.aid.savings=

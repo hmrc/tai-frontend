@@ -67,19 +67,16 @@
 
                 <section class="section soft--top">
                     <h2 class="heading-section">
-                        @Messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading")
+                        @viewModel.taxOnIncomeTypeHeading
                     </h2>
                     <p id="taxOnEmploymentIncomeDesc">
-                        @Html(Messages("tai.estimatedIncome.desc",
-                        pounds(viewModel.incomeEstimate),
-                        Link.toInternalPage(
-                        id=Some("taxFreeAmountLink"),
-                        url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                        value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
-                        pounds(viewModel.taxFreeAllowance)))
+                        @Html(viewModel.taxOnIncomeTypeDescription)
                     </p>
 
-                    @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.nonSavings, taxRegion = viewModel.taxRegion)
+                    @taxBandTable(
+                        tableId = "employmentIncomeTaxDetails",
+                        taxBands = viewModel.nonSavings,
+                        taxRegion = viewModel.taxRegion)
                 </section>
 
 
@@ -100,7 +97,7 @@
                     </p>
                     @if(viewModel.savings.exists(_.bandType != "SR")){
                     <p id="tax-on-savings-desc2">
-                        @viewModel.savingsDescription2(viewModel.savings)
+                        @DetailedIncomeTaxEstimateViewModel.savingsDescription2(viewModel.savings)
                     </p>
                     <p id="tax-on-savings-desc3">
                         @DetailedIncomeTaxEstimateViewModel.savingsDescription3(viewModel.savings)
