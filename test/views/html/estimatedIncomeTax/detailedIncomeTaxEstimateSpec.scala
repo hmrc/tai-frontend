@@ -450,6 +450,13 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     doc(reductionTaxDetailView) must haveTdWithText(s"${messages("personal.pension.payments")} ${messages("personal.pension.payment.relief",0,1100)}")
   }
 
+  "display navigational links to other pages in the service" in {
+    doc must haveElementAtPathWithText("nav>h2", messages("tai.taxCode.sideBar.heading"))
+    doc must haveLinkElement("taxCodesSideLink", routes.YourTaxCodeController.taxCodes.url, messages("check.your.tax.codes"))
+    doc must haveLinkElement("taxFreeAmountSideLink", routes.TaxFreeAmountController.taxFreeAmount.url, messages("check.your.tax.free.amount"))
+    doc must haveLinkElement("taxSummarySideLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("return.to.your.income.tax.summary"))
+  }
+
   val ukTaxBands = List(
     TaxBand("pa", "", 11500, 0, None, None, 0),
     TaxBand("B", "", 32010, 6402, None, None, 20),

@@ -61,6 +61,13 @@ class complexEstimatedIncomeTaxSpec extends TaiViewSpec {
       doc.select("#iForms").text() mustBe "Test"
     }
 
+    "display navigational links to other pages in the service" in {
+      doc must haveElementAtPathWithText("nav>h2", messages("tai.taxCode.sideBar.heading"))
+      doc must haveLinkElement("taxCodesSideLink", routes.YourTaxCodeController.taxCodes.url, messages("check.your.tax.codes"))
+      doc must haveLinkElement("taxFreeAmountSideLink", routes.TaxFreeAmountController.taxFreeAmount.url, messages("check.your.tax.free.amount"))
+      doc must haveLinkElement("taxSummarySideLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("return.to.your.income.tax.summary"))
+    }
+
   }
 
   val bandedGraph = BandedGraph("taxGraph", Nil, 0, 0, 0, 0, 0, 0, 0, None, None)

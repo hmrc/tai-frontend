@@ -83,6 +83,13 @@ class zeroTaxEstimatedIncomeTaxSpec extends TaiViewSpec {
           "£2,500")).body
       }
     }
+
+    "display navigational links to other pages in the service" in {
+      doc must haveElementAtPathWithText("nav>h2", messages("tai.taxCode.sideBar.heading"))
+      doc must haveLinkElement("taxCodesSideLink", routes.YourTaxCodeController.taxCodes.url, messages("check.your.tax.codes"))
+      doc must haveLinkElement("taxFreeAmountSideLink", routes.TaxFreeAmountController.taxFreeAmount.url, messages("check.your.tax.free.amount"))
+      doc must haveLinkElement("taxSummarySideLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("return.to.your.income.tax.summary"))
+    }
   }
 
 
