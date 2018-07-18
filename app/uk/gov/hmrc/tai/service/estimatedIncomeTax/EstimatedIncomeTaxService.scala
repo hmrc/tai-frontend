@@ -59,11 +59,13 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     val additionalTaxDue = hasAdditionalTax(codingComponents,totalTax)
     val dividendsExist = hasDividends(totalTax.incomeCategories)
     val nonCodedIncomeExists = hasNonCodedIncome(nonTaxCodeIncome.otherNonTaxCodeIncomes)
+    val savingsExist = hasSavings(totalTax)
 
     reductionsExist ||
     additionalTaxDue ||
     dividendsExist ||
-    nonCodedIncomeExists
+    nonCodedIncomeExists ||
+    savingsExist
   }
 
   def hasReductions(totalTax: TotalTax): Boolean = {
