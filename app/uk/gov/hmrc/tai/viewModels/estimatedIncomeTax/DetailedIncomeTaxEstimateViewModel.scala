@@ -50,7 +50,7 @@ case class DetailedIncomeTaxEstimateViewModel(
                                      ) extends ViewModelHelper
 
 
-object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with EstimatedIncomeTaxBand with IncomeTaxEstimateHelper{
+object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with IncomeTaxEstimateHelper{
 
   def apply(totalTax: TotalTax,
             taxCodeIncomes: Seq[TaxCodeIncome],
@@ -78,8 +78,8 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val taxbandsNonzeroIncome = filteredCategories.flatMap(_.taxBands).filter(_.income > 0)
     val taxbandsNonzeroRate = taxbandsNonzeroIncome.filterNot(_.rate == 0)
 
-    val taxRegion = findTaxRegion(taxCodeIncomes)
-    val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
+    val taxRegion = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
+    val paBand = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
     val reductionTaxTable = createReductionsTable(codingComponents, totalTax)
     val incomeTaxReducedToZero = incomeTaxReducedToZeroMessage(taxAccountSummary.totalEstimatedTax <= 0 && reductionTaxTable.nonEmpty)
