@@ -67,6 +67,7 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
         val higherRateBand = TaxBand("D0","",2835,1134,Some(33500),Some(150000),40)
         val additionalRateBand = TaxBand("D1","",0,0,Some(150000),Some(0),45)
 
+        val nonTaxCodeIncome = NonTaxCodeIncome(None,List.empty)
 
         val taxBands = List(basicRateBand, higherRateBand, additionalRateBand)
 
@@ -106,6 +107,10 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           )))
         when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).
           thenReturn(Future.successful(codingComponents))
+        when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
+            nonTaxCodeIncome
+          )))
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(
             Seq(taxCodeIncome)
@@ -126,6 +131,8 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           OtherBasisOperation,Live,None,None,None)
 
         val taxAccountSummary = TaxAccountSummary(700,11500,0,0,0,16500,11500)
+
+        val nonTaxCodeIncome = NonTaxCodeIncome(None,List.empty)
 
         val codingComponents = Seq(
           CodingComponent(PersonalAllowancePA,None,11500,"Personal Allowance",Some(11500))
@@ -170,6 +177,10 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           )))
         when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).
           thenReturn(Future.successful(codingComponents))
+        when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
+            nonTaxCodeIncome
+          )))
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(
             Seq(taxCodeIncome)
@@ -193,6 +204,8 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           OtherBasisOperation,Live,None,None,None)
 
         val taxAccountSummary = TaxAccountSummary(0,10500,0,0,0,9000,11500)
+
+        val nonTaxCodeIncome = NonTaxCodeIncome(None,List.empty)
 
         val codingComponents = Seq(
           CodingComponent(PersonalAllowancePA,None,11500,"Personal Allowance",Some(11500)),
@@ -238,6 +251,10 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           )))
         when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).
           thenReturn(Future.successful(codingComponents))
+        when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
+            nonTaxCodeIncome
+          )))
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(
             Seq(taxCodeIncome)
@@ -268,6 +285,10 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           )))
         when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).
           thenReturn(Future.successful(Seq.empty[CodingComponent]))
+        when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
+            NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+          )))
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(
             Seq.empty[TaxCodeIncome]

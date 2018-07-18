@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
-import uk.gov.hmrc.tai.model.domain.income.{TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, PersonService, TaxAccountService}
@@ -57,21 +57,24 @@ trait EstimatedIncomeTaxController extends TaiBaseController
             val taxSummaryFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
             val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
             val codingComponentFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
+            val nonTaxCodeIncomeFuture = taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
             val taxCodeIncomeFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
 
             for {
               taxSummary <- taxSummaryFuture
               codingComponents <- codingComponentFuture
               totalTax <- totalTaxFuture
+              nonTaxCode <- nonTaxCodeIncomeFuture
               taxCodeIncomes <- taxCodeIncomeFuture
               iFormLinks <- partialService.getIncomeTaxPartial
             } yield {
-              (taxSummary, totalTax, taxCodeIncomes) match {
+              (taxSummary, totalTax, nonTaxCode, taxCodeIncomes) match {
                 case (TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
                 TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax),
+                TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
                 TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
                   val taxBands = totalTaxDetails.incomeCategories.flatMap(_.taxBands).toList
-                  val taxViewType = EstimatedIncomeTaxService.taxViewType(codingComponents,totalTaxDetails,
+                  val taxViewType = EstimatedIncomeTaxService.taxViewType(codingComponents,totalTaxDetails,nonTaxCodeIncome,
                     taxAccountSummary.totalEstimatedIncome,taxAccountSummary.taxFreeAllowance,taxAccountSummary.totalEstimatedTax,
                     taxCodeIncomes.nonEmpty)
                   taxViewType match {
