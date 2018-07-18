@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{BandedGraph, SimpleEstimat
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 
-class simpleIncomeTaxSpec extends TaiViewSpec {
+class simpleEstimatedIncomeTaxSpec extends TaiViewSpec {
 
   "Estimated Income Tax Page" must {
     behave like pageWithCombinedHeader(
@@ -194,6 +194,5 @@ class simpleIncomeTaxSpec extends TaiViewSpec {
   def view(vm: SimpleEstimatedIncomeTaxViewModel): Html = views.html.estimatedIncomeTax.simpleEstimatedIncomeTax(vm, Html("<Html><head></head><body>Test</body></Html>"))
 
   override def view: Html = view(ukViewModel)
-
 
 }
