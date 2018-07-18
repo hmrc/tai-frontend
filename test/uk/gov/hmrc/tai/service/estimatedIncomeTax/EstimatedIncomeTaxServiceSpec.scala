@@ -126,23 +126,6 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
     }
   }
 
-  "retrieveDividends" must {
-    "retrieve all dividend bands that have an income" in {
-
-      val taxBands = Seq(
-        TaxBand(bandType = DividendZeroRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 0),
-        TaxBand(bandType = DividendBasicRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 10),
-        TaxBand(bandType = DividendHigherRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
-        TaxBand(bandType = DividendAdditionalRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 30)
-      )
-      val incomeCategories = Seq(
-        IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 0, taxBands)
-      )
-
-      EstimatedIncomeTaxService.retrieveDividends(incomeCategories) must contain theSameElementsAs (taxBands)
-    }
-  }
-
 
   "hasAdditionalTax" must {
     "return true" when {

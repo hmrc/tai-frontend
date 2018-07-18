@@ -24,6 +24,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome, _}
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.model.domain.{ChildBenefit => _, DoubleTaxationRelief => _, MaintenancePayments => _, _}
+import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.viewModels.{HelpLink, Label}
 import uk.gov.hmrc.urls.Link
@@ -50,7 +51,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
             IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 5000, taxBand)
           )
 
-          DetailedIncomeTaxEstimateViewModel.totalDividendIncome(incomeCategories) mustEqual 9000
+          EstimatedIncomeTaxService.totalDividendIncome(incomeCategories) mustEqual 9000
 
         }
       }
