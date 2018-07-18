@@ -20,9 +20,11 @@ import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.play.views.formatting.Dates
-import uk.gov.hmrc.tai.model.domain.tax.TaxBand
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.income._
+import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{BandedGraph, SimpleEstimatedIncomeTaxViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
@@ -35,8 +37,8 @@ class simpleIncomeTaxSpec extends TaiViewSpec {
         "tai.taxYear",
         Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear).replace(" ", "\u00A0"),
         Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear).replace(" ", "\u00A0")),
-        messages("tai.estimatedIncome.title"),
-        Some(messages("tai.estimatedIncome.accessiblePreHeading")
+      messages("tai.estimatedIncome.title"),
+      Some(messages("tai.estimatedIncome.accessiblePreHeading")
       )
     )
 
@@ -63,44 +65,113 @@ class simpleIncomeTaxSpec extends TaiViewSpec {
 
       doc(view).select("#howYouPayDesc").html() mustBe Html(messages("tai.estimatedIncome.howYouPay.desc",
         Link.toInternalPage(
-          id=Some("taxCodesLink"),
-          url=routes.YourTaxCodeController.taxCodes.url.toString,
-          value=Some(Messages("tai.estimatedIncome.taxCodes.link"))).toHtml)).body
+          id = Some("taxCodesLink"),
+          url = routes.YourTaxCodeController.taxCodes.url.toString,
+          value = Some(Messages("tai.estimatedIncome.taxCodes.link"))).toHtml)).body
     }
+    "heading and text for non savings income section displays" should {
+      "be 'Tax on your employment income' when income is only from employment" in {
+        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
+        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(EmploymentIncome, None, 0, "", "", "", OtherBasisOperation, Live))
+        val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val viewModel = SimpleEstimatedIncomeTaxViewModel( Seq.empty[CodingComponent], taxAccountSummary,taxCodeIncome,List.empty[TaxBand])
+        val document = doc(view(viewModel))
+        val message = Messages("your.total.income.from.employment.desc",
+          "£0",
+          "tax-free amount", "£0")
 
+        document must haveH2HeadingWithText(messages("tax.on.your.employment.income"))
+        document must haveParagraphWithText(message)
+      }
+
+      "be 'Tax on your private pension income' when income is only from pension" in {
+        val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
+        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(PensionIncome, None, 0, "", "", "", OtherBasisOperation, Live))
+        val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val viewModel =  SimpleEstimatedIncomeTaxViewModel( Seq.empty[CodingComponent], taxAccountSummary,taxCodeIncome,List.empty[TaxBand])
+        val document = doc(view(viewModel))
+        val message = Messages("your.total.income.from.private.pension.desc",
+          "£0",
+          "tax-free amount", "£0")
+
+        document must haveH2HeadingWithText(messages("tax.on.your.private.pension.income"))
+        document must haveParagraphWithText(message)
+      }
+
+      "be 'Tax on your PAYE income' when income is only from any other combination" when {
+        "Employment and pension income" in {
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
+          val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(PensionIncome, None, 0, "", "", "", OtherBasisOperation, Live), TaxCodeIncome(EmploymentIncome, None, 0, "", "", "", OtherBasisOperation, Live))
+          val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
+          val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+          val viewModel =  SimpleEstimatedIncomeTaxViewModel( Seq.empty[CodingComponent], taxAccountSummary,taxCodeIncome,List.empty[TaxBand])
+          val document = doc(view(viewModel))
+          val message = Messages("your.total.income.from.paye.desc",
+            "£0",
+            "tax-free amount", "£0")
+
+          document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
+          document must haveParagraphWithText(message)
+        }
+
+        "JSA income" in {
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
+          val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(JobSeekerAllowanceIncome, None, 0, "", "", "", OtherBasisOperation, Live))
+          val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
+          val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+          val viewModel =  SimpleEstimatedIncomeTaxViewModel( Seq.empty[CodingComponent], taxAccountSummary,taxCodeIncome,List.empty[TaxBand])
+          val document = doc(view(viewModel))
+          val message = Messages("your.total.income.from.paye.desc",
+            "£0",
+            "tax-free amount", "£0", "PAYE")
+
+          document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
+          document must haveParagraphWithText(message)
+        }
+
+        "Other income" in {
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
+          val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(OtherIncome, None, 0, "", "", "", OtherBasisOperation, Live))
+          val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
+          val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+          val viewModel =  SimpleEstimatedIncomeTaxViewModel( Seq.empty[CodingComponent], taxAccountSummary,taxCodeIncome,List.empty[TaxBand])
+          val document = doc(view(viewModel))
+          val message = Messages("your.total.income.from.paye.desc",
+            "£0",
+            "tax-free amount", "£0", "PAYE")
+
+          document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
+          document must haveParagraphWithText(message)
+        }
+      }
+    }
     "have tax on your employment income section" in {
 
-      doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading"))
-      doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.desc",
-        "£68,476",
-        messages("tai.estimatedIncome.taxFree.link"),
-        "£11,500")).body)
-
-      doc(view).select("#taxOnEmploymentIncomeDesc").html() mustBe Html(Messages("tai.estimatedIncome.desc",
-        "£68,476",
-        Link.toInternalPage(
-          id = Some("taxFreeAmountLink"),
-          url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
-          value = Some("tai.estimatedIncome.taxFree.link")
-        ).toHtml,
+      val document = doc(view)
+      document.select("#taxOnEmploymentIncomeDesc").html() mustBe Html(Messages("your.total.income.from.employment.desc",
+        "47,835",
+        "tax-free amount",
         "£11,500")).body
-      doc(view).select("#tax-on-your-income").size() mustBe 1
-      doc(view) must haveTableThWithIdAndText("taxBand", messages("tai.incomeTaxBand"))
-      doc(view) must haveTableThWithIdAndText("taxAmount", messages("tai.amount"))
-      doc(view) must haveTableThWithIdAndText("taxRate", messages("tai.taxRate"))
-      doc(view) must haveTableThWithIdAndText("tax", messages("tai.tax"))
-      doc(view).select("#bandType0").text() mustBe messages("estimate.uk.bandtype.pa")
-      doc(view).select("#bandType1").text() mustBe messages("estimate.uk.bandtype.B")
-      doc(view).select("#bandType2").text() mustBe messages("estimate.uk.bandtype.D0")
-      doc(view).select("#income0").text() mustBe "£11,500"
-      doc(view).select("#taxRate0").text() mustBe "0%"
-      doc(view).select("#tax0").text() mustBe "£0"
-      doc(view).select("#income1").text() mustBe "£32,010"
-      doc(view).select("#taxRate1").text() mustBe "20%"
-      doc(view).select("#tax1").text() mustBe "£6,402"
-      doc(view).select("#income2").text() mustBe "£36,466"
-      doc(view).select("#taxRate2").text() mustBe "40%"
-      doc(view).select("#tax2").text() mustBe "£14,586"
+
+      document.select("#tax-on-your-income").size() mustBe 1
+      document must haveTableThWithIdAndText("taxBand", messages("tai.incomeTaxBand"))
+      document must haveTableThWithIdAndText("taxAmount", messages("tai.amount"))
+      document must haveTableThWithIdAndText("taxRate", messages("tai.taxRate"))
+      document must haveTableThWithIdAndText("tax", messages("tai.tax"))
+      document.select("#bandType0").text() mustBe messages("estimate.uk.bandtype.pa")
+      document.select("#bandType1").text() mustBe messages("estimate.uk.bandtype.B")
+      document.select("#bandType2").text() mustBe messages("estimate.uk.bandtype.D0")
+      document.select("#income0").text() mustBe "£11,500"
+      document.select("#taxRate0").text() mustBe "0%"
+      document.select("#tax0").text() mustBe "£0"
+      document.select("#income1").text() mustBe "£32,010"
+      document.select("#taxRate1").text() mustBe "20%"
+      document.select("#tax1").text() mustBe "£6,402"
+      document.select("#income2").text() mustBe "£36,466"
+      document.select("#taxRate2").text() mustBe "40%"
+      document.select("#tax2").text() mustBe "£14,586"
 
     }
 
@@ -117,8 +188,12 @@ class simpleIncomeTaxSpec extends TaiViewSpec {
     TaxBand("D0", "", 36466, 14586.4, None, None, 40))
 
 
-  val ukViewModel = SimpleEstimatedIncomeTaxViewModel(20988.40, 68476, 11500, bandedGraph,"UK",ukTaxBands)
+  val ukViewModel = SimpleEstimatedIncomeTaxViewModel(20988.40, 68476, 11500, bandedGraph, "UK", ukTaxBands, messages("tax.on.your.employment.income"),
+    messages("your.total.income.from.employment.desc", "47,835", messages("tai.estimatedIncome.taxFree.link"), "£11,500"))
+
+  def view(vm: SimpleEstimatedIncomeTaxViewModel): Html = views.html.estimatedIncomeTax.simpleEstimatedIncomeTax(vm, Html("<Html><head></head><body>Test</body></Html>"))
+
+  override def view: Html = view(ukViewModel)
 
 
-  override def view: Html = views.html.estimatedIncomeTax.simpleEstimatedIncomeTax(ukViewModel, Html("<Html><head></head><body>Test</body></Html>"))
 }

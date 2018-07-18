@@ -24,9 +24,10 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.model.domain.{MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
-import uk.gov.hmrc.tai.util.{BandTypesConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{BandTypesConstants, IncomeTaxEstimateHelper, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.{HelpLink, Label}
 import uk.gov.hmrc.urls.Link
+import uk.gov.hmrc.play.views.formatting.Money._
 
 import scala.math.BigDecimal
 
@@ -41,19 +42,22 @@ case class DetailedIncomeTaxEstimateViewModel(
                                        additionalTaxTable: Seq[AdditionalTaxDetailRow],
                                        reductionTaxTable: Seq[ReductionTaxRow],
                                        incomeTaxReducedToZeroMessage: Option[String],
-                                       hasPotentialUnderPayment: Boolean,
                                        ssrValue: Option[BigDecimal],
                                        psrValue: Option[BigDecimal],
                                        totalDividendIncome: BigDecimal,
                                        taxFreeDividendAllowance: BigDecimal,
-                                       selfAssessmentAndPayeText: Option[String]
-                                     ) extends ViewModelHelper {
-}
+                                       selfAssessmentAndPayeText: Option[String],
+                                       taxOnIncomeTypeHeading: String,
+                                       taxOnIncomeTypeDescription: String
+                                     ) extends ViewModelHelper
 
-object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with EstimatedIncomeTaxBand with TaxAdditionsAndReductions
-with Dividends {
 
-  def apply(totalTax: TotalTax, taxCodeIncomes: Seq[TaxCodeIncome],taxAccountSummary: TaxAccountSummary, codingComponents: Seq[CodingComponent],
+object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with EstimatedIncomeTaxBand with TaxAdditionsAndReductions with IncomeTaxEstimateHelper with Dividends {
+
+  def apply(totalTax: TotalTax,
+            taxCodeIncomes: Seq[TaxCodeIncome],
+            taxAccountSummary: TaxAccountSummary,
+            codingComponents: Seq[CodingComponent],
             nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): DetailedIncomeTaxEstimateViewModel = {
 
     val nonSavings = totalTax.incomeCategories.filter(_.incomeCategoryType == NonSavingsIncomeCategory).
@@ -80,8 +84,6 @@ with Dividends {
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
     val reductionTaxTable = createReductionsTable(codingComponents, totalTax)
     val incomeTaxReducedToZero = incomeTaxReducedToZeroMessage(taxAccountSummary.totalEstimatedTax <= 0 && reductionTaxTable.nonEmpty)
-    val hasPotentialUnderPayment = EstimatedIncomeTaxService.hasPotentialUnderPayment(taxAccountSummary.totalInYearAdjustmentIntoCY,
-      taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne)
     val ssrValue = EstimatedIncomeTaxService.incomeByBandType(mergedTaxBands, StarterSavingsRate)
     val psrValue = EstimatedIncomeTaxService.incomeByBandType(mergedTaxBands, PersonalSavingsRate)
     val dividendIncome = totalDividendIncome(totalTax.incomeCategories)
@@ -90,6 +92,8 @@ with Dividends {
     val additionIncomePayableText = nonTaxCodeIncome.otherNonTaxCodeIncomes
       .find(_.incomeComponentType == NonCodedIncome)
       .map(_ => messages("tai.estimatedIncome.selfAssessmentAndPayeText"))
+    val taxOnIncomeTypeHeading = getTaxOnIncomeTypeHeading(taxCodeIncomes)
+    val taxOnIncomeTypeDescription = getTaxOnIncomeTypeDescription(taxCodeIncomes,taxAccountSummary)
 
     DetailedIncomeTaxEstimateViewModel(
       mergedNonSavingsBand,
@@ -102,14 +106,17 @@ with Dividends {
       additionalTaxTable,
       reductionTaxTable,
       incomeTaxReducedToZero,
-      hasPotentialUnderPayment,
       ssrValue,
       psrValue,
       dividendIncome,
       taxFreeDividend,
-      additionIncomePayableText
+      additionIncomePayableText,
+      taxOnIncomeTypeHeading,
+      taxOnIncomeTypeDescription
     )
   }
+
+
 
   def createAdditionalTaxTable(codingComponent: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages): Seq[AdditionalTaxDetailRow] = {
 
@@ -241,7 +248,7 @@ with Dividends {
     val totalBasicRateSavingsIncome = personalSavingsAllowanceIncome + basicRateSavingsIncome
 
     if(isStartingRate) {
-      Messages("tai.estimatedIncome.savings.desc", startingRateAllowance)
+      Messages("tai.estimatedIncome.savings.desc.SR", startingRateAllowance)
     } else {
       Messages("tai.estimatedIncome.savings.desc.BRHR", totalBasicRateSavingsIncome)
     }

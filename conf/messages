@@ -391,17 +391,9 @@ tai.income.error.form.incomes.radioButton.mandatory=Please select an income or t
 tai.yourTaxableIncome=Your annual income would be updated to £{0}
 tai.no.increasesTax=You don’t have any current income.
 tai.extendedTaxReliefs=Your estimate includes any <a href="{0}">tax relief</a> you may be entitled to.
-tai.extendedTaxReliefs.heading=Your tax relief payments
-tai.extendedTaxReliefs.description=Tax relief means you pay less tax to take account of money you’ve spent on Gift Aid donations or personal pension payments.
 tai.extendedTaxReliefs.payments=Payment
 tai.extendedTaxReliefs.source=Amount&nbsp;paid (£)
 tai.extendedTaxReliefs.relief=Tax&nbsp;saving (£)
-tai.extendedTaxReliefs.ppr.title=Personal Pension payments
-tai.extendedTaxReliefs.ppr.description=This is the tax relief you’ve claimed for your Personal Pension payments if you pay higher rate tax. Basic rate tax relief is given at source by your pension provider.
-tai.extendedTaxReliefs.giftAid.title=Gift Aid
-tai.extendedTaxReliefs.giftAid.BR.description=As a basic rate tax payer you don’t get tax relief on donations to charity or to community amateur sports clubs (CASCs). If you start to pay higher rate tax you may get tax relief on them.
-tai.extendedTaxReliefs.giftAid.HR.description=Your donations to charity or to community amateur sports clubs (CASCs) are tax-free. As we expect you to pay some higher rate tax you’ll be entitled to relief on your donations to charity.
-tai.extendedTaxReliefs.giftAid.NoTax.description=You can’t get tax relief on these payments as your income is too low to pay Income Tax.
 tai.yourIncome.heading=Your income
 tai.yourIncome.preHeading=Understanding your tax
 
@@ -928,8 +920,6 @@ tai.estimatedIncome.title=Your PAYE Income Tax estimate
 tai.estimatedIncome.accessiblePreHeading=This section is your income tax estimate for
 tai.estimatedIncome.whyEstimate.link=Why this is an estimate
 tai.estimatedIncome.whyEstimate.desc=The amount of tax you pay depends on your total income for the whole tax year. We can’t give an exact figure because we won’t know about all your income until after the tax year ends on {0}.
-tai.estimatedIncome.taxOnEmploymentIncome.subHeading=Tax on your employment income
-tai.estimatedIncome.desc=Your total income from employment is estimated at {0} this tax year. You have a {1} for your employment income. This means the first {2} of your employment earnings are tax free.
 tai.estimatedIncome.dividend.para.desc=Your total income from dividends this tax year is estimated at £{0}. The first £{1} of dividend income in each tax year is tax free.
 tai.estimatedIncome.savings.desc.SR=Based on your current estimated income you are entitled to £{0} of savings interest tax free.
 tai.estimatedIncome.savings.desc.BRHR=Your total income from savings this tax year is estimated at £{0}.
@@ -961,6 +951,14 @@ gift.aid.savings=Gift Aid savings
 gift.aid.tax.relief=You made Gift Aid donations of £{0} during this tax year which give you tax-relief and an Income Tax saving of £{1}.
 personal.pension.payment.relief=You made personal pension payments of £{0} during this tax year which give you tax-relief and an Income Tax saving of £{1}.
 personal.pension.payments=Personal pension payments
+
+tax.on.your.employment.income=Tax on your employment income
+tax.on.your.private.pension.income=Tax on your private pension income
+tax.on.your.paye.income=Tax on your PAYE income
+your.total.income.from.employment.desc=Your total income from employment is estimated at {0} this tax year. You have a {1} for your employment income. This means the first {2} of your employment earnings are tax free.
+your.total.income.from.private.pension.desc=Your total income from private pension is estimated at {0} this tax year. You have a {1} for your private pension income. This means the first {2} of your private pension earnings are tax free.
+your.total.income.from.paye.desc=Your total income from PAYE is estimated at {0} this tax year. You have a {1} for your PAYE income. This means the first {2} of your PAYE earnings are tax free.
+
 
 tax.adjustment=Tax adjustment
 tax.adjustments=Tax adjustments

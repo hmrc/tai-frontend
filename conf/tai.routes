@@ -89,7 +89,6 @@ GET         /update-employment/success                                          
 
 GET         /previous-underpayment                                                     controllers.UnderpaymentFromPreviousYearController.underpaymentExplanation
 GET         /underpayment-estimate                                                     controllers.PotentialUnderpaymentController.potentialUnderpaymentPage
-GET         /tax-relief                                                                controllers.EstimatedIncomeTaxController.taxRelief
 
 
 ## Savings Income

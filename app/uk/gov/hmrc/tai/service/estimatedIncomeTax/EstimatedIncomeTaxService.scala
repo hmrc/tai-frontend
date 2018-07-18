@@ -31,9 +31,6 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
 
   def taxViewType(codingComponents: Seq[CodingComponent],
                   totalTax: TotalTax,
-                  nonTaxCodeIncome: NonTaxCodeIncome,
-                  totalInYearAdjustmentIntoCY:BigDecimal,
-                  totalInYearAdjustmentIntoCYPlusOne:BigDecimal,
                   totalEstimatedIncome:BigDecimal,
                   taxFreeAllowance:BigDecimal,totalEstimatedTax:BigDecimal,
                   hasCurrentIncome:Boolean): TaxViewType = {
@@ -42,7 +39,7 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     hasCurrentIncome match {
       case false => NoIncomeTaxView
       case true => {
-        isComplexViewType(codingComponents, totalTax, nonTaxCodeIncome, totalInYearAdjustmentIntoCY, totalInYearAdjustmentIntoCYPlusOne) match {
+        isComplexViewType(codingComponents, totalTax) match {
           case true => ComplexTaxView
           case false => {
             (totalEstimatedIncome < taxFreeAllowance) && totalEstimatedTax == 0 match {
@@ -56,17 +53,13 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
   }
 
   def isComplexViewType(codingComponents: Seq[CodingComponent],
-                        totalTax: TotalTax,
-                        nonTaxCodeIncome: NonTaxCodeIncome,
-                        totalInYearAdjustmentIntoCY:BigDecimal, totalInYearAdjustmentIntoCYPlusOne:BigDecimal) :Boolean ={
+                        totalTax: TotalTax) :Boolean ={
 
     val taxBands = totalTax.incomeCategories.flatMap(_.taxBands).toList
 
     hasReductions(totalTax) ||
     hasAdditionalTax(codingComponents,totalTax) ||
     hasDividends(totalTax.incomeCategories) ||
-    hasPotentialUnderPayment(totalInYearAdjustmentIntoCY, totalInYearAdjustmentIntoCYPlusOne) ||
-    hasTaxRelief(totalTax) ||
     hasSSR(taxBands) ||
     hasPSR(taxBands)
   }
@@ -84,9 +77,16 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     val giftAidPaymentsRelief = taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPaymentsRelief)
     val personalPensionPaymentsRelief = taxAdjustmentComp(totalTax.taxReliefComponent, tax.PersonalPensionPaymentRelief)
 
-    nonCodedIncome.isDefined || ukDividend.isDefined || bankInterest.isDefined || marriageAllowance.isDefined ||
-      maintenancePayment.isDefined || enterpriseInvestmentScheme.isDefined || concessionRelief.isDefined ||
-      doubleTaxationRelief.isDefined  || giftAidPaymentsRelief.isDefined || personalPensionPaymentsRelief.isDefined
+    nonCodedIncome.isDefined ||
+    ukDividend.isDefined ||
+    bankInterest.isDefined ||
+    marriageAllowance.isDefined ||
+    maintenancePayment.isDefined ||
+    enterpriseInvestmentScheme.isDefined ||
+    concessionRelief.isDefined ||
+    doubleTaxationRelief.isDefined  ||
+    giftAidPaymentsRelief.isDefined ||
+    personalPensionPaymentsRelief.isDefined
 
   }
 
@@ -100,17 +100,13 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     val excessWidowAndOrphans = taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessWidowsAndOrphans)
     val pensionPayments = taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment)
 
-    underPayment.isDefined || inYearAdjust.isDefined || debtOutstanding.isDefined || childBenefit.isDefined ||
-      excessGiftAid.isDefined || excessWidowAndOrphans.isDefined || pensionPayments.isDefined
-  }
-
-
-  def hasPotentialUnderPayment(totalInYearAdjustmentIntoCY:BigDecimal, totalInYearAdjustmentIntoCYPlusOne:BigDecimal) =
-    totalInYearAdjustmentIntoCY <=0 && totalInYearAdjustmentIntoCYPlusOne > 0
-
-
-  def hasTaxRelief(totalTax: TotalTax): Boolean = {
-    totalTax.taxReliefComponent.isDefined
+    underPayment.isDefined ||
+    inYearAdjust.isDefined ||
+    debtOutstanding.isDefined ||
+    childBenefit.isDefined ||
+    excessGiftAid.isDefined ||
+    excessWidowAndOrphans.isDefined ||
+    pensionPayments.isDefined
   }
 
   def hasSSR(taxBands: List[TaxBand]): Boolean ={

@@ -16,6 +16,7 @@
 
 package controllers
 
+import uk.gov.hmrc.play.views.formatting.Money.pounds
 import builders.{AuthBuilder, RequestBuilder, UserBuilder}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
@@ -39,6 +40,7 @@ import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.{BandTypesConstants, TaxRegionConstants}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
+import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -65,7 +67,6 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
         val higherRateBand = TaxBand("D0","",2835,1134,Some(33500),Some(150000),40)
         val additionalRateBand = TaxBand("D1","",0,0,Some(150000),Some(0),45)
 
-        val nonTaxCodeIncome = NonTaxCodeIncome(None,List.empty)
 
         val taxBands = List(basicRateBand, higherRateBand, additionalRateBand)
 
@@ -84,7 +85,15 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           basicRateBand,
           higherRateBand)
 
-        val viewModel = SimpleEstimatedIncomeTaxViewModel(7834, 47835,11500, viewModelBandedGraph, UkTaxRegion, viewModelTaxBands)
+        val viewModel = SimpleEstimatedIncomeTaxViewModel(7834, 47835,11500, viewModelBandedGraph, UkTaxRegion, viewModelTaxBands,messages("tax.on.your.employment.income"),
+          messages("your.total.income.from.employment.desc",
+            pounds(47835),
+            Link.toInternalPage(
+              id = Some("taxFreeAmountLink"),
+              url = routes.TaxFreeAmountController.taxFreeAmount.url.toString,
+              value = Some("tai.estimatedIncome.taxFree.link")
+            ).toHtml,
+            pounds(11500)))
 
         val sut = createSUT
         when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).
@@ -97,10 +106,6 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           )))
         when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).
           thenReturn(Future.successful(codingComponents))
-        when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            nonTaxCodeIncome
-          )))
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(
             Seq(taxCodeIncome)
@@ -112,7 +117,7 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
 
         status(result) mustBe OK
 
-        contentAsString(result) mustEqual(views.html.estimatedIncomeTax.simpleEstimatedIncomeTax(viewModel,Html("<title/>")).toString())
+        contentAsString(result) mustEqual views.html.estimatedIncomeTax.simpleEstimatedIncomeTax(viewModel, Html("<title/>")).toString()
       }
 
       "loading the complex view" in {
@@ -121,8 +126,6 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           OtherBasisOperation,Live,None,None,None)
 
         val taxAccountSummary = TaxAccountSummary(700,11500,0,0,0,16500,11500)
-
-        val nonTaxCodeIncome = NonTaxCodeIncome(None,List.empty)
 
         val codingComponents = Seq(
           CodingComponent(PersonalAllowancePA,None,11500,"Personal Allowance",Some(11500))
@@ -167,10 +170,6 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           )))
         when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).
           thenReturn(Future.successful(codingComponents))
-        when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            nonTaxCodeIncome
-          )))
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(
             Seq(taxCodeIncome)
@@ -194,8 +193,6 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           OtherBasisOperation,Live,None,None,None)
 
         val taxAccountSummary = TaxAccountSummary(0,10500,0,0,0,9000,11500)
-
-        val nonTaxCodeIncome = NonTaxCodeIncome(None,List.empty)
 
         val codingComponents = Seq(
           CodingComponent(PersonalAllowancePA,None,11500,"Personal Allowance",Some(11500)),
@@ -241,10 +238,6 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           )))
         when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).
           thenReturn(Future.successful(codingComponents))
-        when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            nonTaxCodeIncome
-          )))
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(
             Seq(taxCodeIncome)
@@ -275,10 +268,6 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           )))
         when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).
           thenReturn(Future.successful(Seq.empty[CodingComponent]))
-        when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
-          )))
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(
             Seq.empty[TaxCodeIncome]
@@ -316,39 +305,6 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
           )))
 
         val result = sut.estimatedIncomeTax()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
-    }
-  }
-
-
-  "Tax Relief" must {
-    "return Ok" when {
-      "loading the tax relief page" in {
-        val sut = createSUT
-        when(sut.taxAccountService.totalTax(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            TotalTax(0 , Seq.empty[IncomeCategory], None, None, None)
-          )))
-        when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).
-          thenReturn(Future.successful(Seq.empty[CodingComponent]))
-
-        val result = sut.taxRelief()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe OK
-      }
-    }
-
-    "return error" when {
-      "failed to fetch details" in {
-        val sut = createSUT
-        when(sut.taxAccountService.totalTax(any(), any())(any())).
-          thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
-        when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).
-          thenReturn(Future.successful(Seq.empty[CodingComponent]))
-
-        val result = sut.taxRelief()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }

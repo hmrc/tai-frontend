@@ -67,19 +67,16 @@
 
                 <section class="section soft--top">
                     <h2 class="heading-section">
-                        @Messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading")
+                        @viewModel.taxOnIncomeTypeHeading
                     </h2>
                     <p id="taxOnEmploymentIncomeDesc">
-                        @Html(Messages("tai.estimatedIncome.desc",
-                        pounds(viewModel.incomeEstimate),
-                        Link.toInternalPage(
-                        id=Some("taxFreeAmountLink"),
-                        url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                        value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
-                        pounds(viewModel.taxFreeAllowance)))
+                        @Html(viewModel.taxOnIncomeTypeDescription)
                     </p>
 
-                    @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.nonSavings, taxRegion = viewModel.taxRegion)
+                    @taxBandTable(
+                        tableId = "employmentIncomeTaxDetails",
+                        taxBands = viewModel.nonSavings,
+                        taxRegion = viewModel.taxRegion)
                 </section>
 
 
@@ -108,31 +105,6 @@
                     }
 
                     @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.savings.toList, taxRegion = viewModel.taxRegion)
-
-                </section>
-
-                <section>
-                    @if(viewModel.hasPotentialUnderPayment){
-                    <div class="panel-indent panel-indent--info panel-indent--gutter">
-                        <p id="income-potential-underpayment">@Messages("tai.potentialUnderpayment.title")</p>
-                        <p id="link-potential-underpayment" data-journey='link - view:@Messages("tai.estimatedIncomeTax.howWeWorkedOut"):@Messages("tai.view.PotentialUnderpayment")' class="text">@Link.toInternalPage(url=routes.PotentialUnderpaymentController.potentialUnderpaymentPage.toString,
-                            value=Some("tai.view.PotentialUnderpayment"),
-                            dataAttributes=Some(Map("journey-click"->s"link - click:${Messages("tai.estimatedIncomeTax.howWeWorkedOut")}:${Messages("tai.view.PotentialUnderpayment")}."))
-                            ).toHtml</p>
-                    </div>
-                    }
-
-                    @viewModel.ssrValue.map { ssr =>
-                    <h3 id="starting-rate-savings-title" class="heading-medium">@Messages("tai.estimatedIncome.SSR.title")</h3>
-                    <p id="starting-rate-savings-text1">@Messages("tai.estimatedIncome.SSR.text1", ssr)</p>
-                    }
-
-                    @viewModel.psrValue.map { psr =>
-                    <h3 id="personal-savings-allowance-title" class="heading-medium">@Messages("tai.estimatedIncome.PSA.title")</h3>
-                    <p id="personal-savings-allowance-text1">@Html(Messages("tai.estimatedIncome.PSA.text1",
-                        psr,
-                        Link.toExternalPage(url="https://www.gov.uk/apply-tax-free-interest-on-savings", value=Some(Messages("tai.estimatedIncome.PSA.linkText"))).toHtml))</p>
-                    }
 
                 </section>
 
@@ -206,5 +178,10 @@
                 }
             </div>
         </div>
+
+        <section>
+            @navigationLinks(gaEventActionString)
+        </section>
+
     </div>
 }

@@ -20,9 +20,9 @@ import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, OtherNonTaxCodeIncome, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -57,11 +57,91 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTax.totalIncomeTaxEstimate") + " £18,573")
     }
 
+
     "paragraph with additional Income Tax payable not being included in estimate" should {
       "be shown when text is provided" in {
         val vm = defaultViewModel.copy(selfAssessmentAndPayeText = Some("Stub addition Income Payable Text"))
 
         doc(view(vm)) must haveParagraphWithText("Stub addition Income Payable Text")
+      }
+    }
+
+    "heading and text for non savings income section displays" should {
+      "be 'Tax on your employment income' when income is only from employment" in {
+        val totalTax = TotalTax(0,Seq.empty[IncomeCategory],None, None, None, None, None)
+        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(EmploymentIncome, None, 0, "", "", "", OtherBasisOperation, Live))
+        val taxAccountSummary = TaxAccountSummary(0,0,0,0,0)
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+        val document = doc(view(viewModel))
+        val message = Messages("your.total.income.from.employment.desc",
+                              "£0",
+                              "tax-free amount","£0")
+
+        document must haveH2HeadingWithText(messages("tax.on.your.employment.income"))
+        document must haveParagraphWithText(message)
+      }
+
+      "be 'Tax on your private pension income' when income is only from pension" in {
+        val totalTax = TotalTax(0,Seq.empty[IncomeCategory],None, None, None, None, None)
+        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(PensionIncome, None, 0, "", "", "", OtherBasisOperation, Live))
+        val taxAccountSummary = TaxAccountSummary(0,0,0,0,0)
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+        val document = doc(view(viewModel))
+        val message = Messages("your.total.income.from.private.pension.desc",
+                              "£0",
+                              "tax-free amount","£0")
+
+        document must haveH2HeadingWithText(messages("tax.on.your.private.pension.income"))
+        document must haveParagraphWithText(message)
+      }
+
+      "be 'Tax on your PAYE income' when income is only from any other combination" when {
+        "Employment and pension income" in {
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
+          val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(PensionIncome, None, 0, "", "", "", OtherBasisOperation, Live), TaxCodeIncome(EmploymentIncome, None, 0, "", "", "", OtherBasisOperation, Live))
+          val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
+          val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+          val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+          val document = doc(view(viewModel))
+          val message = Messages("your.total.income.from.paye.desc",
+                                "£0",
+                                "tax-free amount","£0")
+
+          document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
+          document must haveParagraphWithText(message)
+        }
+
+        "JSA income" in {
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
+          val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(JobSeekerAllowanceIncome, None, 0, "", "", "", OtherBasisOperation, Live))
+          val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
+          val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+          val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+          val document = doc(view(viewModel))
+          val message = Messages("your.total.income.from.paye.desc",
+                                "£0",
+                                "tax-free amount","£0","PAYE")
+
+          document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
+          document must haveParagraphWithText(message)
+        }
+
+        "Other income" in {
+          val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None, None, None)
+          val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(OtherIncome, None, 0, "", "", "", OtherBasisOperation, Live))
+          val taxAccountSummary = TaxAccountSummary(0, 0, 0, 0, 0)
+          val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+          val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+          val document = doc(view(viewModel))
+          val message = Messages("your.total.income.from.paye.desc",
+                                "£0",
+                                "tax-free amount","£0","PAYE")
+
+          document must haveH2HeadingWithText(messages("tax.on.your.paye.income"))
+          document must haveParagraphWithText(message)
+        }
       }
     }
 
@@ -166,8 +246,8 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
     "have tax on your employment income section" in {
 
-      doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading"))
-      doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.desc",
+      doc(view) must haveH2HeadingWithText(messages("tax.on.your.employment.income"))
+      doc(view) must haveParagraphWithText(Html(messages("your.total.income.from.employment.desc",
         "£68,476",
         messages("tai.estimatedIncome.taxFree.link"),
         "£11,500")).body)
@@ -302,7 +382,11 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     TaxBand("D0", "", 36466, 14586.4, None, None, 40))
 
   val defaultViewModel = DetailedIncomeTaxEstimateViewModel(ukTaxBands, Seq.empty[TaxBand], List.empty[TaxBand], "UK", 18573, 68476,
-    11500, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow], None, false, None, None, 20000, 5000, None)
+    11500, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow], None, None, None, 20000, 5000, None,messages("tax.on.your.employment.income"),
+    messages("your.total.income.from.employment.desc",
+      "£68,476",
+      messages("tai.estimatedIncome.taxFree.link"),
+      "£11,500"))
 
   def view(vm: DetailedIncomeTaxEstimateViewModel = defaultViewModel): Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(vm)
   override def view: Html = view(defaultViewModel)
@@ -319,12 +403,13 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       additionalTaxTable = additionalTaxTable,
       reductionTaxTable = reductionTaxTable,
       incomeTaxReducedToZeroMessage = None,
-      hasPotentialUnderPayment = false,
       ssrValue = None,
       psrValue = None,
       totalDividendIncome = 0,
       taxFreeDividendAllowance = 0,
-      selfAssessmentAndPayeText = None
+      selfAssessmentAndPayeText = None,
+      taxOnIncomeTypeHeading = "",
+      taxOnIncomeTypeDescription = ""
     )
   }
 

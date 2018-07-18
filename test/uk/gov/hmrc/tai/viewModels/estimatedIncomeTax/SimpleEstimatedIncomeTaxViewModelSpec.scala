@@ -19,12 +19,13 @@ package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.{BandTypesConstants, TaxRegionConstants}
+import uk.gov.hmrc.play.views.formatting.Money.pounds
 
 import scala.language.postfixOps
 
@@ -36,41 +37,47 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApp
   "Simple Estimated Income Tax View Model" must {
     "return a valid view model for valid input" in {
 
-      val taxAccountSummary = TaxAccountSummary(7834,2772,0,0,0,47835,11500)
+      val taxAccountSummary = TaxAccountSummary(7834, 2772, 0, 0, 0, 47835, 11500)
 
-       val codingComponents = Seq(
-         CodingComponent(PersonalAllowancePA,None,11500,"Personal Allowance",Some(11500)),
-         CodingComponent(CarBenefit,Some(1),8026,"Car Benefit",None),
-         CodingComponent(MedicalInsurance,Some(1),637,"Medical Insurance",None),
-         CodingComponent(OtherItems,Some(1),65,"Other Items",None)
-       )
+      val codingComponents = Seq(
+        CodingComponent(PersonalAllowancePA, None, 11500, "Personal Allowance", Some(11500)),
+        CodingComponent(CarBenefit, Some(1), 8026, "Car Benefit", None),
+        CodingComponent(MedicalInsurance, Some(1), 637, "Medical Insurance", None),
+        CodingComponent(OtherItems, Some(1), 65, "Other Items", None)
+      )
 
-       val basicRateTaxBand = TaxBand("B","",33500,6700,Some(0),Some(33500),20)
-       val higherRateTaxBand = TaxBand("D0","",2835,1134,Some(33500),Some(150000),40)
+      val basicRateTaxBand = TaxBand("B", "", 33500, 6700, Some(0), Some(33500), 20)
+      val higherRateTaxBand = TaxBand("D0", "", 2835, 1134, Some(33500), Some(150000), 40)
 
-       val taxBands = List(
-         basicRateTaxBand,
-         higherRateTaxBand
-       )
+      val taxBands = List(
+        basicRateTaxBand,
+        higherRateTaxBand
+      )
 
-       val mergedTaxBands = List(
-         TaxBand("pa","",11500,0,Some(0),None,0),
-         basicRateTaxBand,
-         higherRateTaxBand
-       )
+      val mergedTaxBands = List(
+        TaxBand("pa", "", 11500, 0, Some(0), None, 0),
+        basicRateTaxBand,
+        higherRateTaxBand
+      )
 
-       val bandedGraph = BandedGraph(TaxGraph,
-         List(
-           Band(TaxFree,24.04,11500,0,ZeroBand),
-           Band("Band",75.95,36335,7834,NonZeroBand))
-         ,0,150000,47835,24.04,11500,99.99,7834,
-         Some("You can earn £102,165 more before your income reaches the next tax band."),
-         Some(Swatch(16.37,7834)))
+      val bandedGraph = BandedGraph(TaxGraph,
+        List(
+          Band(TaxFree, 24.04, 11500, 0, ZeroBand),
+          Band("Band", 75.95, 36335, 7834, NonZeroBand))
+        , 0, 150000, 47835, 24.04, 11500, 99.99, 7834,
+        Some("You can earn £102,165 more before your income reaches the next tax band."),
+        Some(Swatch(16.37, 7834)))
 
-       val expectedViewModel = SimpleEstimatedIncomeTaxViewModel(7834,47835,11500,bandedGraph,UkTaxRegion,mergedTaxBands)
+      val expectedViewModel = SimpleEstimatedIncomeTaxViewModel(7834, 47835, 11500, bandedGraph, UkTaxRegion,
+        mergedTaxBands, Messages("tax.on.your.employment.income"),
+        Messages("your.total.income.from.employment.desc",
+          pounds(47835),
+          "<a id=\"taxFreeAmountLink\" href=\"/check-income-tax/tax-free-allowance\" target=\"_self\" data-sso=\"false\">tax-free amount</a>",
+          pounds(11500)))
 
-       SimpleEstimatedIncomeTaxViewModel(codingComponents,taxAccountSummary,ukTaxCodeIncome,taxBands) mustBe expectedViewModel
+      val result = SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, ukTaxCodeIncome, taxBands)
 
+      result mustBe expectedViewModel
     }
   }
 
@@ -157,13 +164,13 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApp
   }
 
   val ukTaxCodeIncome = Seq(
-    TaxCodeIncome(EmploymentIncome,Some(1),BigDecimal(15000),"EmploymentIncome","1150L","TestName",
-      OtherBasisOperation,Live,None,Some(new LocalDate(2015,11,26)),Some(new LocalDate(2015,11,26)))
+    TaxCodeIncome(EmploymentIncome, Some(1), BigDecimal(15000), "EmploymentIncome", "1150L", "TestName",
+      OtherBasisOperation, Live, None, Some(new LocalDate(2015, 11, 26)), Some(new LocalDate(2015, 11, 26)))
   )
 
   val ScottishTaxCodeIncome = Seq(
-    TaxCodeIncome(EmploymentIncome,Some(1),BigDecimal(99999),"EmploymentIncome","SK723","TestName",
-      OtherBasisOperation,Live,None,Some(new LocalDate(2015,11,26)),Some(new LocalDate(2015,11,26)))
+    TaxCodeIncome(EmploymentIncome, Some(1), BigDecimal(99999), "EmploymentIncome", "SK723", "TestName",
+      OtherBasisOperation, Live, None, Some(new LocalDate(2015, 11, 26)), Some(new LocalDate(2015, 11, 26)))
   )
 
 }
