@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
 import scala.math.BigDecimal
 
-object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with EstimatedIncomeTaxBand with BandTypesConstants{
+object EstimatedIncomeTaxService extends EstimatedIncomeTaxBand with BandTypesConstants{
 
 
   def taxViewType(codingComponents: Seq[CodingComponent],
@@ -125,4 +125,16 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
         category.incomeCategoryType == ForeignDividendsIncomeCategory
     }.map(_.totalIncome).sum
   }
+
+  def taxAdjustmentComp(taxAdjustment: Option[TaxAdjustment], adjustmentType: TaxAdjustmentType) = {
+    taxAdjustment.
+      flatMap(_.taxAdjustmentComponents.find(_.taxAdjustmentType == adjustmentType))
+      .map(_.taxAdjustmentAmount)
+  }
+
+  def underPaymentFromPreviousYear(codingComponents: Seq[CodingComponent]) = codingComponents.find(_.componentType == UnderPaymentFromPreviousYear).flatMap(_.inputAmount)
+
+  def inYearAdjustment(codingComponents: Seq[CodingComponent]) = codingComponents.find(_.componentType == EstimatedTaxYouOweThisYear).flatMap(_.inputAmount)
+
+  def outstandingDebt(codingComponents: Seq[CodingComponent]) = codingComponents.find(_.componentType == OutstandingDebt).map(_.amount)
 }
