@@ -26,14 +26,14 @@ import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import scala.math.BigDecimal
 
 object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with EstimatedIncomeTaxBand with BandTypesConstants
-  with Dividends{
+  with Dividends {
 
 
   def taxViewType(codingComponents: Seq[CodingComponent],
                   totalTax: TotalTax,
-                  totalEstimatedIncome:BigDecimal,
-                  taxFreeAllowance:BigDecimal,totalEstimatedTax:BigDecimal,
-                  hasCurrentIncome:Boolean): TaxViewType = {
+                  totalEstimatedIncome: BigDecimal,
+                  taxFreeAllowance: BigDecimal, totalEstimatedTax: BigDecimal,
+                  hasCurrentIncome: Boolean): TaxViewType = {
 
 
     hasCurrentIncome match {
@@ -53,15 +53,15 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
   }
 
   def isComplexViewType(codingComponents: Seq[CodingComponent],
-                        totalTax: TotalTax) :Boolean ={
+                        totalTax: TotalTax): Boolean = {
 
     val taxBands = totalTax.incomeCategories.flatMap(_.taxBands).toList
 
     hasReductions(totalTax) ||
-    hasAdditionalTax(codingComponents,totalTax) ||
-    hasDividends(totalTax.incomeCategories) ||
-    hasSSR(taxBands) ||
-    hasPSR(taxBands)
+      hasAdditionalTax(codingComponents, totalTax) ||
+      hasDividends(totalTax.incomeCategories) ||
+      hasSSR(taxBands) ||
+      hasPSR(taxBands)
   }
 
   def hasReductions(totalTax: TotalTax): Boolean = {
@@ -78,15 +78,15 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     val personalPensionPaymentsRelief = taxAdjustmentComp(totalTax.taxReliefComponent, tax.PersonalPensionPaymentRelief)
 
     nonCodedIncome.isDefined ||
-    ukDividend.isDefined ||
-    bankInterest.isDefined ||
-    marriageAllowance.isDefined ||
-    maintenancePayment.isDefined ||
-    enterpriseInvestmentScheme.isDefined ||
-    concessionRelief.isDefined ||
-    doubleTaxationRelief.isDefined  ||
-    giftAidPaymentsRelief.isDefined ||
-    personalPensionPaymentsRelief.isDefined
+      ukDividend.isDefined ||
+      bankInterest.isDefined ||
+      marriageAllowance.isDefined ||
+      maintenancePayment.isDefined ||
+      enterpriseInvestmentScheme.isDefined ||
+      concessionRelief.isDefined ||
+      doubleTaxationRelief.isDefined ||
+      giftAidPaymentsRelief.isDefined ||
+      personalPensionPaymentsRelief.isDefined
 
   }
 
@@ -101,19 +101,19 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     val pensionPayments = taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment)
 
     underPayment.isDefined ||
-    inYearAdjust.isDefined ||
-    debtOutstanding.isDefined ||
-    childBenefit.isDefined ||
-    excessGiftAid.isDefined ||
-    excessWidowAndOrphans.isDefined ||
-    pensionPayments.isDefined
+      inYearAdjust.isDefined ||
+      debtOutstanding.isDefined ||
+      childBenefit.isDefined ||
+      excessGiftAid.isDefined ||
+      excessWidowAndOrphans.isDefined ||
+      pensionPayments.isDefined
   }
 
-  def hasSSR(taxBands: List[TaxBand]): Boolean ={
+  def hasSSR(taxBands: List[TaxBand]): Boolean = {
     incomeByBandType(retrieveTaxBands(taxBands), StarterSavingsRate).isDefined
   }
 
-  def hasPSR(taxBands: List[TaxBand]): Boolean ={
+  def hasPSR(taxBands: List[TaxBand]): Boolean = {
     incomeByBandType(retrieveTaxBands(taxBands), PersonalSavingsRate).isDefined
   }
 
@@ -121,4 +121,15 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     taxBands.find(band => band.bandType == bandType && band.income > 0).map(_.income)
   }
 
+  def savingsBands(totalTax: TotalTax) = {
+    totalTax.incomeCategories.filter {
+      category =>
+        category.incomeCategoryType == UntaxedInterestIncomeCategory ||
+          category.incomeCategoryType == BankInterestIncomeCategory || category.incomeCategoryType == ForeignInterestIncomeCategory
+    }.flatMap(_.taxBands).filter(_.income > 0)
+  }
+
+  def hasSavings(totalTax: TotalTax): Boolean = {
+    savingsBands(totalTax).nonEmpty
+  }
 }
