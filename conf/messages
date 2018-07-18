@@ -1118,11 +1118,6 @@ scottish.bandtype.TaxedIncome=Taxed income
 
 #estimated income tax page
 tai.estimatedIncome.taxrelief.title=Tax relief payments
-tai.estimatedIncome.SSR.title=Starting rate for savings
-tai.estimatedIncome.SSR.text1=This varies depending on your income. Based on your current estimated income you are entitled to £{0} of interest tax free.
-tai.estimatedIncome.PSA.title=Personal Savings Allowance
-tai.estimatedIncome.PSA.text1=You may also get up to £{0} of interest tax-free depending on which Income Tax band you’re in. This is your {1}.
-tai.estimatedIncome.PSA.linkText=Personal Savings Allowance
 tai.estimatedIncome.DIV.title=Dividend Allowance
 tai.mergedTaxBand.description=Check in more detail
 
