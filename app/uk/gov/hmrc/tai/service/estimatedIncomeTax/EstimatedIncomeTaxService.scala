@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.service.estimatedIncomeTax
 
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, OtherNonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
@@ -31,6 +31,7 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
 
   def taxViewType(codingComponents: Seq[CodingComponent],
                   totalTax: TotalTax,
+                  nonTaxCodeIncome: NonTaxCodeIncome,
                   totalEstimatedIncome:BigDecimal,
                   taxFreeAllowance:BigDecimal,totalEstimatedTax:BigDecimal,
                   hasCurrentIncome:Boolean): TaxViewType = {
@@ -39,7 +40,7 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     hasCurrentIncome match {
       case false => NoIncomeTaxView
       case true => {
-        isComplexViewType(codingComponents, totalTax) match {
+        isComplexViewType(codingComponents, totalTax, nonTaxCodeIncome) match {
           case true => ComplexTaxView
           case false => {
             (totalEstimatedIncome < taxFreeAllowance) && totalEstimatedTax == 0 match {
@@ -52,16 +53,23 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     }
   }
 
-  def isComplexViewType(codingComponents: Seq[CodingComponent],
-                        totalTax: TotalTax) :Boolean ={
+  def isComplexViewType(codingComponents: Seq[CodingComponent], totalTax: TotalTax, nonTaxCodeIncome: NonTaxCodeIncome) :Boolean ={
 
     val taxBands = totalTax.incomeCategories.flatMap(_.taxBands).toList
 
-    hasReductions(totalTax) ||
-    hasAdditionalTax(codingComponents,totalTax) ||
-    hasDividends(totalTax.incomeCategories) ||
-    hasSSR(taxBands) ||
-    hasPSR(taxBands)
+    val reductionsExist = hasReductions(totalTax)
+    val additionalTaxDue = hasAdditionalTax(codingComponents,totalTax)
+    val dividendsExist = hasDividends(totalTax.incomeCategories)
+    val nonCodedIncomeExists = hasNonCodedIncome(nonTaxCodeIncome.otherNonTaxCodeIncomes)
+    val ssr = hasSSR(taxBands)
+    val psr = hasPSR(taxBands)
+
+    reductionsExist ||
+    additionalTaxDue ||
+    dividendsExist ||
+    nonCodedIncomeExists ||
+    ssr ||
+    psr
   }
 
   def hasReductions(totalTax: TotalTax): Boolean = {
@@ -107,6 +115,10 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     excessGiftAid.isDefined ||
     excessWidowAndOrphans.isDefined ||
     pensionPayments.isDefined
+  }
+
+  def hasNonCodedIncome(otherNonTaxCodeIncomes: Seq[OtherNonTaxCodeIncome]): Boolean = {
+    otherNonTaxCodeIncomes.exists(_.incomeComponentType == NonCodedIncome)
   }
 
   def hasSSR(taxBands: List[TaxBand]): Boolean ={

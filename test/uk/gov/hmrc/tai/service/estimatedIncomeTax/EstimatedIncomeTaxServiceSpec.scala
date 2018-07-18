@@ -82,6 +82,21 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
     }
   }
 
+  "hasNonCodedIncome" must {
+    "return true when NonCodedIncome exists" in {
+      EstimatedIncomeTaxService.hasNonCodedIncome(Seq(OtherNonTaxCodeIncome(NonCodedIncome,None,0,""))) mustBe true
+    }
+
+    "return false when no NonCodedIncome exists" in {
+      EstimatedIncomeTaxService.hasNonCodedIncome(Seq(OtherNonTaxCodeIncome(PartTimeEarnings,None,0,""))) mustBe false
+    }
+
+    "return false when an empty sequence is returned" in {
+      EstimatedIncomeTaxService.hasNonCodedIncome(Seq.empty[OtherNonTaxCodeIncome]) mustBe false
+    }
+
+  }
+
   "hasDividends" must {
     "return true" when {
       "there are UK dividends present with an income greater than zero" in {
@@ -423,14 +438,14 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
     "return true" when {
       "one complex scenario is met" when {
         "reductions exist" in{
-          EstimatedIncomeTaxService.isComplexViewType(codingComponents,totalTax) mustBe true
+          EstimatedIncomeTaxService.isComplexViewType(codingComponents,totalTax, nonTaxCodeIncome) mustBe true
         }
       }
     }
     "return false" when {
       "no complex scenarios exist" in {
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-        EstimatedIncomeTaxService.isComplexViewType(Seq.empty,totalTax) mustBe false
+        EstimatedIncomeTaxService.isComplexViewType(Seq.empty,totalTax, nonTaxCodeIncome) mustBe false
       }
     }
   }
@@ -440,24 +455,24 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
     "return noIncome" when{
       "there is no current income" in{
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-        EstimatedIncomeTaxService.taxViewType(codingComponents,totalTax,0,0,0,false) mustBe NoIncomeTaxView
+        EstimatedIncomeTaxService.taxViewType(codingComponents,totalTax,nonTaxCodeIncome,0,0,0,false) mustBe NoIncomeTaxView
       }
     }
     "return complex" when {
       "isComplexViewType returns true" in{
-        EstimatedIncomeTaxService.taxViewType(codingComponents,totalTax,0,11500,0, true) mustBe ComplexTaxView
+        EstimatedIncomeTaxService.taxViewType(codingComponents,totalTax,nonTaxCodeIncome,0,11500,0, true) mustBe ComplexTaxView
       }
     }
     "return simple" when {
       "the totalEstimatedIncome is greater than the taxFreeAllowance and the totalEstimatedTax is greater than zero" in{
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-        EstimatedIncomeTaxService.taxViewType(Seq.empty,totalTax,12000,11500,100, true) mustBe SimpleTaxView
+        EstimatedIncomeTaxService.taxViewType(Seq.empty,totalTax,nonTaxCodeIncome,12000,11500,100, true) mustBe SimpleTaxView
       }
     }
     "return zero" when {
       "the totalEstimatedIncome is less than the taxFreeAllowance and the totalEstimatedTax is zero" in{
         val totalTax = TotalTax(0, Seq.empty[IncomeCategory], None, None, None)
-        EstimatedIncomeTaxService.taxViewType(Seq.empty,totalTax,11000,11500,0, true) mustBe ZeroTaxView
+        EstimatedIncomeTaxService.taxViewType(Seq.empty,totalTax,nonTaxCodeIncome,11000,11500,0, true) mustBe ZeroTaxView
       }
     }
 
