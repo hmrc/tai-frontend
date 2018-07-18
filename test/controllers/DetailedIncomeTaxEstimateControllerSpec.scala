@@ -27,47 +27,59 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
+import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TotalTax}
-import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, PersonService, TaxAccountService}
 
 import scala.concurrent.Future
 import scala.util.Random
 
 class DetailedIncomeTaxEstimateControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
 
-  "Tax Explanation Controller" must {
-    "return OK" when {
+  "Detailed Income Tax Estimate Controller" must {
+    "return OK when responses are " when {
       "there are bands present" in {
         val sut = createSUT
-        when(sut.taxAccountService.totalTax(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            TotalTax(0 , Seq.empty[IncomeCategory], None, None, None)
-          )))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            Seq.empty[TaxCodeIncome]
-          )))
-
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
         status(result) mustBe OK
       }
     }
 
-    "return error" when {
-      "failed to fetch tax bands" in {
+    "return Internal server error" when {
+      "fetch total tax details fails" in {
         val sut = createSUT
-        when(sut.taxAccountService.totalTax(any(), any())(any())).
-          thenReturn(Future.successful(TaiTaxAccountFailureResponse("FAILED")))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(
-            Seq.empty[TaxCodeIncome]
-          )))
-
+        when(sut.taxAccountService.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("testFailure")))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
 
+      "fetch tax code incomes fails" in {
+        val sut = createSUT
+        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("testFailure")))
+        val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+
+      "fetch tax account summary fails" in {
+        val sut = createSUT
+        when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("testFailure")))
+        val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+
+      "fetch of non-tax code incomes fails" in {
+        val sut = createSUT
+        when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("testFailure")))
+        val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+
+      "fetch of tax free amount components" in {
+        val sut = createSUT
+        when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.failed(new Error))
+        val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
@@ -77,9 +89,11 @@ class DetailedIncomeTaxEstimateControllerSpec extends PlaySpec with MockitoSugar
   val nino: Nino = new Generator(new Random).nextNino
   private def createSUT = new SUT
 
-  class SUT extends TaxExplanationController {
+  class SUT extends DetailedIncomeTaxEstimateController {
     override val personService: PersonService = mock[PersonService]
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
+    override val codingComponentService: CodingComponentService = mock[CodingComponentService]
+
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
@@ -87,6 +101,11 @@ class DetailedIncomeTaxEstimateControllerSpec extends PlaySpec with MockitoSugar
 
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
+    when(taxAccountService.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(TotalTax(0, Seq.empty, None, None, None))))
+    when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome])))
+    when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(TaxAccountSummary(0,0,0,0,0))))
+    when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(NonTaxCodeIncome(None, Seq.empty))))
+    when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
   }
 }
 
