@@ -46,9 +46,10 @@ object PreviousYearUnderpaymentViewModel extends ViewModelHelper {
       case CodingComponent(UnderPaymentFromPreviousYear, _, amount, _, _) => amount
     }.getOrElse(BigDecimal(0))
 
-    val rate: BigDecimal = totalTax.incomeCategories.flatMap(_.taxBands).find(_.bandType == "D0").map(_.rate / 100).getOrElse(0.2)
+    val taxRate: BigDecimal = totalTax.incomeCategories.filter(_.incomeCategoryType == NonSavingsIncomeCategory)
+      .flatMap(_.taxBands).find(_.bandType == "B").map(_.rate / 100).getOrElse(0.2)
 
-    val amountDue = allowanceReducedBy * rate
+    val amountDue = allowanceReducedBy * taxRate
 
     val shouldHavePaid = actuallyPaid + amountDue
 
