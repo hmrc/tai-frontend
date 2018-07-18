@@ -17,19 +17,21 @@
 package uk.gov.hmrc.tai.service.estimatedIncomeTax
 
 import controllers.FakeTaiPlayApplication
+import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.util.BandTypesConstants
+import uk.gov.hmrc.tai.util.{BandTypesConstants, TaxRegionConstants}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import uk.gov.hmrc.tai.model.domain.tax
 import uk.gov.hmrc.tai.model.domain.tax.{DoubleTaxationRelief, MaintenancePayments => _, _}
 
 import scala.collection.immutable.Seq
 
-class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with BandTypesConstants{
+class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with BandTypesConstants
+with TaxRegionConstants{
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -123,23 +125,6 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
 
       EstimatedIncomeTaxService.totalDividendIncome(incomeCategories) mustEqual 9000
 
-    }
-  }
-
-  "retrieveDividends" must {
-    "retrieve all dividend bands that have an income" in {
-
-      val taxBands = Seq(
-        TaxBand(bandType = DividendZeroRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 0),
-        TaxBand(bandType = DividendBasicRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 10),
-        TaxBand(bandType = DividendHigherRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
-        TaxBand(bandType = DividendAdditionalRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 30)
-      )
-      val incomeCategories = Seq(
-        IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 0, taxBands)
-      )
-
-      EstimatedIncomeTaxService.retrieveDividends(incomeCategories) must contain theSameElementsAs (taxBands)
     }
   }
 
@@ -463,6 +448,88 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
       }
     }
 
+    "createPABand must return a Personal Allowance Taxband for a given Tax Free Allowance" in {
+      EstimatedIncomeTaxService.createPABand(11500) mustBe TaxBand(TaxFreeAllowanceBand, "", 11500, 0, Some(0), None, 0)
+    }
+
+    "findTaxRegion" must {
+      "return UK when a UK TaxCode is present" in {
+        EstimatedIncomeTaxService.findTaxRegion(ukTaxCodeIncome) mustBe UkTaxRegion
+      }
+      "return Scottish when a Scottish TaxCode is Present" in {
+        EstimatedIncomeTaxService.findTaxRegion(ScottishTaxCodeIncome) mustBe ScottishTaxRegion
+      }
+    }
+
+    "retrieve tax bands" must {
+
+      "return tax bands" in {
+        val taxBand = List(
+          TaxBand("pa", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+          TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20),
+          TaxBand("D0", "", income = 150000, tax = 60000, lowerBand = Some(32000), upperBand = Some(150000), rate = 40),
+          TaxBand("D1", "", income = 30000, tax = 2250, lowerBand = Some(150000), upperBand = Some(0), rate = 45)
+        )
+
+        val taxBands = EstimatedIncomeTaxService.retrieveTaxBands(taxBand)
+
+        taxBands mustBe taxBand
+
+      }
+
+      "return sorted tax bands" in {
+        val taxBand = List(
+          TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20),
+          TaxBand("D1", "", income = 30000, tax = 2250, lowerBand = Some(150000), upperBand = Some(0), rate = 45),
+          TaxBand("D0", "", income = 150000, tax = 60000, lowerBand = Some(32000), upperBand = Some(150000), rate = 40)
+        )
+
+        val taxBands = EstimatedIncomeTaxService.retrieveTaxBands(taxBand)
+
+        taxBands mustBe List(
+          TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20),
+          TaxBand("D0", "", income = 150000, tax = 60000, lowerBand = Some(32000), upperBand = Some(150000), rate = 40),
+          TaxBand("D1", "", income = 30000, tax = 2250, lowerBand = Some(150000), upperBand = Some(0), rate = 45)
+        )
+      }
+
+      "return merged tax bands for multiple PSR bands" in {
+        val bankIntTaxBand = List(
+          TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+          TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
+
+        val untaxedTaxBand = List(TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0),
+          upperBand = Some(11000), rate = 0))
+
+
+        val taxBands = EstimatedIncomeTaxService.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
+
+        taxBands mustBe List(TaxBand("PSR", "", 10000, 0, Some(0), Some(11000), 0),
+          TaxBand("B", "", 15000, 3000, Some(11000), Some(32000), 20))
+      }
+
+      "return ordered tax bands for multiple PSR SR SDR bands" in {
+        val bankIntTaxBand = List(
+          TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+          TaxBand("SR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+          TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
+
+        val untaxedTaxBand = List(
+          TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
+          TaxBand("SDR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0))
+
+
+        val taxBands = EstimatedIncomeTaxService.retrieveTaxBands(bankIntTaxBand ::: untaxedTaxBand)
+
+        val resBands = List(TaxBand("SR", "", 5000, 0, Some(0), Some(11000), 0),
+          TaxBand("PSR", "", 10000, 0, Some(0), Some(11000), 0),
+          TaxBand("SDR", "", 5000, 0, Some(0), Some(11000), 0),
+          TaxBand("B", "", 15000, 3000, Some(11000), Some(32000), 20))
+
+        taxBands mustBe resBands
+      }
+    }
+
   }
 
   val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq(
@@ -493,6 +560,16 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
   val codingComponents = Seq(
     CodingComponent(MarriedCouplesAllowanceMAE, None, 1200, "", None),
     CodingComponent(MaintenancePayments, None, 1200, "", None)
+  )
+
+  val ukTaxCodeIncome = Seq(
+    TaxCodeIncome(EmploymentIncome,Some(1),BigDecimal(15000),"EmploymentIncome","1150L","TestName",
+      OtherBasisOperation,Live,None,Some(new LocalDate(2015,11,26)),Some(new LocalDate(2015,11,26)))
+  )
+
+  val ScottishTaxCodeIncome = Seq(
+    TaxCodeIncome(EmploymentIncome,Some(1),BigDecimal(99999),"EmploymentIncome","SK723","TestName",
+      OtherBasisOperation,Live,None,Some(new LocalDate(2015,11,26)),Some(new LocalDate(2015,11,26)))
   )
 
 }

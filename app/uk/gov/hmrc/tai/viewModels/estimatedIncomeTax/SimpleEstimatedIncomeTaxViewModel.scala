@@ -16,15 +16,13 @@
 
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
-import controllers.routes
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.views.formatting.Money.pounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
+import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.util._
-import uk.gov.hmrc.urls.Link
 
 import scala.math.BigDecimal
 
@@ -39,15 +37,15 @@ case class SimpleEstimatedIncomeTaxViewModel(
                                               taxOnIncomeTypeDescription: String
                                       ) extends ViewModelHelper
 
-object SimpleEstimatedIncomeTaxViewModel extends EstimatedIncomeTaxBand with IncomeTaxEstimateHelper {
+object SimpleEstimatedIncomeTaxViewModel extends IncomeTaxEstimateHelper {
 
   def apply(codingComponents: Seq[CodingComponent], taxAccountSummary: TaxAccountSummary, taxCodeIncomes: Seq[TaxCodeIncome],
             taxBands:List[TaxBand])(implicit messages: Messages): SimpleEstimatedIncomeTaxViewModel = {
 
-    val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
-    val mergedTaxBands = retrieveTaxBands(taxBands :+ paBand)
+    val paBand = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
+    val mergedTaxBands = EstimatedIncomeTaxService.retrieveTaxBands(taxBands :+ paBand)
     val graph = BandedGraph(codingComponents,mergedTaxBands, taxAccountSummary.taxFreeAllowance, taxAccountSummary.totalEstimatedTax, taxViewType = SimpleTaxView)
-    val taxRegion = findTaxRegion(taxCodeIncomes)
+    val taxRegion = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
     val taxOnIncomeTypeHeading = getTaxOnIncomeTypeHeading(taxCodeIncomes)
     val taxOnIncomeTypeDescription = getTaxOnIncomeTypeDescription(taxCodeIncomes,taxAccountSummary)
 

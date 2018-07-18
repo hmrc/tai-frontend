@@ -50,7 +50,7 @@ case class DetailedIncomeTaxEstimateViewModel(
                                      ) extends ViewModelHelper
 
 
-object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with EstimatedIncomeTaxBand with TaxAdditionsAndReductions with IncomeTaxEstimateHelper with Dividends {
+object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with IncomeTaxEstimateHelper{
 
   def apply(totalTax: TotalTax,
             taxCodeIncomes: Seq[TaxCodeIncome],
@@ -66,7 +66,10 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
         category.incomeCategoryType == BankInterestIncomeCategory || category.incomeCategoryType == ForeignInterestIncomeCategory
     }.flatMap(_.taxBands).filter(_.income > 0)
 
-    val dividends = retrieveDividends(totalTax.incomeCategories)
+    val dividends = totalTax.incomeCategories.filter {
+      category => category.incomeCategoryType == UkDividendsIncomeCategory ||
+        category.incomeCategoryType == ForeignDividendsIncomeCategory
+    }.flatMap(_.taxBands).filter(_.income > 0).toList
 
     val filteredCategories = totalTax.incomeCategories.filter {
       category => category.incomeCategoryType == UkDividendsIncomeCategory ||
@@ -75,14 +78,12 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val taxbandsNonzeroIncome = filteredCategories.flatMap(_.taxBands).filter(_.income > 0)
     val taxbandsNonzeroRate = taxbandsNonzeroIncome.filterNot(_.rate == 0)
 
-    val taxRegion = findTaxRegion(taxCodeIncomes)
-    val taxBands = totalTax.incomeCategories.flatMap(_.taxBands).toList
-    val paBand = createPABand(taxAccountSummary.taxFreeAllowance)
-    val mergedTaxBands = retrieveTaxBands(taxBands :+ paBand)
+    val taxRegion = EstimatedIncomeTaxService.findTaxRegion(taxCodeIncomes)
+    val paBand = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
     val reductionTaxTable = createReductionsTable(codingComponents, totalTax)
     val incomeTaxReducedToZero = incomeTaxReducedToZeroMessage(taxAccountSummary.totalEstimatedTax <= 0 && reductionTaxTable.nonEmpty)
-    val dividendIncome = totalDividendIncome(totalTax.incomeCategories)
+    val dividendIncome = EstimatedIncomeTaxService.totalDividendIncome(totalTax.incomeCategories)
     val taxFreeDividend = taxFreeDividendAllowance(totalTax.incomeCategories)
     val mergedNonSavingsBand = (nonSavings :+ paBand).toList.sortBy(_.rate)
     val additionIncomePayableText = nonTaxCodeIncome.otherNonTaxCodeIncomes
@@ -114,17 +115,17 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
 
   def createAdditionalTaxTable(codingComponent: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages): Seq[AdditionalTaxDetailRow] = {
 
-    val underPaymentRow = createAdditionalTaxRow(underPaymentFromPreviousYear(codingComponent),
+    val underPaymentRow = createAdditionalTaxRow(EstimatedIncomeTaxService.underPaymentFromPreviousYear(codingComponent),
       Label(Messages("tai.taxCalc.UnderpaymentPreviousYear.title"),
         Some(HelpLink(Messages("what.does.this.mean"), controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString, "underPaymentFromPreviousYear"))))
-    val inYearRow = createAdditionalTaxRow(inYearAdjustment(codingComponent),
+    val inYearRow = createAdditionalTaxRow(EstimatedIncomeTaxService.inYearAdjustment(codingComponent),
       Label(Messages("tai.taxcode.deduction.type-45"),
         Some(HelpLink(Messages("what.does.this.mean"), controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString, "estimatedTaxOwedLink"))))
-    val outstandingDebtRow = createAdditionalTaxRow(outstandingDebt(codingComponent), Label(Messages("tai.taxCalc.OutstandingDebt.title")))
-    val childBenefitRow = createAdditionalTaxRow(taxAdjustmentComp(totalTax.otherTaxDue, tax.ChildBenefit), Label(Messages("tai.taxCalc.childBenefit.title")))
-    val excessGiftAidRow = createAdditionalTaxRow(taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessGiftAidTax), Label(Messages("tai.taxCalc.excessGiftAidTax.title")))
-    val excessWidowAndOrphansRow = createAdditionalTaxRow(taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessWidowsAndOrphans), Label(Messages("tai.taxCalc.excessWidowsAndOrphans.title")))
-    val pensionPaymentsRow = createAdditionalTaxRow(taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment), Label(Messages("tai.taxCalc.pensionPaymentsAdjustment.title")))
+    val outstandingDebtRow = createAdditionalTaxRow(EstimatedIncomeTaxService.outstandingDebt(codingComponent), Label(Messages("tai.taxCalc.OutstandingDebt.title")))
+    val childBenefitRow = createAdditionalTaxRow(EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.otherTaxDue, tax.ChildBenefit), Label(Messages("tai.taxCalc.childBenefit.title")))
+    val excessGiftAidRow = createAdditionalTaxRow(EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessGiftAidTax), Label(Messages("tai.taxCalc.excessGiftAidTax.title")))
+    val excessWidowAndOrphansRow = createAdditionalTaxRow(EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessWidowsAndOrphans), Label(Messages("tai.taxCalc.excessWidowsAndOrphans.title")))
+    val pensionPaymentsRow = createAdditionalTaxRow(EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment), Label(Messages("tai.taxCalc.pensionPaymentsAdjustment.title")))
 
     Seq(underPaymentRow, inYearRow, outstandingDebtRow, childBenefitRow, excessGiftAidRow, excessWidowAndOrphansRow, pensionPaymentsRow).flatten
   }
@@ -138,40 +139,40 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val nonCodedIncomeRow = createReductionTaxRow(nonCodedIncome, Messages("tai.taxCollected.atSource.otherIncome.description"),
       Messages("tai.taxCollected.atSource.otherIncome.title"))
 
-    val ukDividend = taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxCreditOnUKDividends)
+    val ukDividend = EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxCreditOnUKDividends)
     val ukDividendRow = createReductionTaxRow(ukDividend, Messages("tai.taxCollected.atSource.dividends.description", 10),
       Messages("tai.taxCollected.atSource.dividends.title"))
 
-    val bankInterest = taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxOnBankBSInterest)
+    val bankInterest = EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxOnBankBSInterest)
     val bankInterestRow = createReductionTaxRow(bankInterest, Messages("tai.taxCollected.atSource.bank.description", 20),
       Messages("tai.taxCollected.atSource.bank.title"))
 
     val marriageAllowanceRow = createMarriageAllowanceRow(codingComponents, totalTax)
     val maintenancePaymentRow = createMaintenancePaymentRow(codingComponents, totalTax)
 
-    val enterpriseInvestmentScheme = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.EnterpriseInvestmentSchemeRelief)
+    val enterpriseInvestmentScheme = EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.EnterpriseInvestmentSchemeRelief)
     val enterpriseInvestmentSchemeRow = createReductionTaxRow(enterpriseInvestmentScheme,
       Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description"),
       Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title"))
 
-    val concessionRelief = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.ConcessionalRelief)
+    val concessionRelief = EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.ConcessionalRelief)
     val concessionReliefRow = createReductionTaxRow(concessionRelief,
       Messages("tai.taxCollected.atSource.concessionalRelief.description"),
       Messages("tai.taxCollected.atSource.concessionalRelief.title"))
 
-    val doubleTaxationRelief = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.DoubleTaxationRelief)
+    val doubleTaxationRelief = EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.DoubleTaxationRelief)
     val doubleTaxationReliefRow = createReductionTaxRow(doubleTaxationRelief,
       Messages("tai.taxCollected.atSource.doubleTaxationRelief.description"),
       Messages("tai.taxCollected.atSource.doubleTaxationRelief.title"))
 
-    val giftAidPayments = taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPayments)
-    val giftAidPaymentsRelief = taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPaymentsRelief)
+    val giftAidPayments = EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPayments)
+    val giftAidPaymentsRelief = EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPaymentsRelief)
     val giftAidPaymentsReliefRow = createReductionTaxRow(giftAidPaymentsRelief,
       Messages("gift.aid.tax.relief", giftAidPayments.getOrElse(0), giftAidPaymentsRelief.getOrElse(0)),
       Messages("gift.aid.savings"))
 
-    val personalPensionPayments = taxAdjustmentComp(totalTax.taxReliefComponent, tax.PersonalPensionPayment)
-    val personalPensionPaymentsRelief = taxAdjustmentComp(totalTax.taxReliefComponent, tax.PersonalPensionPaymentRelief)
+    val personalPensionPayments = EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.taxReliefComponent, tax.PersonalPensionPayment)
+    val personalPensionPaymentsRelief = EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.taxReliefComponent, tax.PersonalPensionPaymentRelief)
     val personalPensionPaymentsReliefRow = createReductionTaxRow(personalPensionPaymentsRelief,
       Messages("personal.pension.payment.relief", personalPensionPayments.getOrElse(0), personalPensionPaymentsRelief.getOrElse(0)),
       Messages("personal.pension.payments"))
@@ -195,7 +196,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
   }
 
   def createMarriageAllowanceRow(codingComponents: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages) = {
-    val marriageAllowance = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MarriedCouplesAllowance)
+    val marriageAllowance = EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MarriedCouplesAllowance)
     val marriageAllowanceNpsComponent = codingComponents.find { component =>
       component.componentType match {
         case compType if compType == MarriedCouplesAllowanceMAE ||
@@ -213,7 +214,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
   }
 
   def createMaintenancePaymentRow(codingComponents: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages) = {
-    val maintenancePayment = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MaintenancePayments)
+    val maintenancePayment = EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MaintenancePayments)
     val maintenancePaymentGross = codingComponents.find(_.componentType == MaintenancePayments).map(_.amount).getOrElse(BigDecimal(0))
 
     createReductionTaxRow(maintenancePayment,
@@ -261,6 +262,13 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
   def savingsDescription3(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
     val higherRate = savingsBands.find(_.bandType != StarterSavingsRate).map(_.rate).getOrElse(0)
     Messages("tai.estimatedIncome.savings.desc.BRHR3", higherRate)
+  }
+
+  def taxFreeDividendAllowance(incomeCategories: Seq[IncomeCategory]): BigDecimal = {
+    val taxBands = incomeCategories.flatMap(_.taxBands)
+
+    taxBands.find(_.bandType == DividendZeroRate).flatMap(_.upperBand).getOrElse(BigDecimal(0))
+
   }
 
 }
