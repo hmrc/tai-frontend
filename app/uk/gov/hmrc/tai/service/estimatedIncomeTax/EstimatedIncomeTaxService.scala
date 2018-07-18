@@ -55,21 +55,16 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
 
   def isComplexViewType(codingComponents: Seq[CodingComponent], totalTax: TotalTax, nonTaxCodeIncome: NonTaxCodeIncome) :Boolean ={
 
-    val taxBands = totalTax.incomeCategories.flatMap(_.taxBands).toList
-
     val reductionsExist = hasReductions(totalTax)
     val additionalTaxDue = hasAdditionalTax(codingComponents,totalTax)
     val dividendsExist = hasDividends(totalTax.incomeCategories)
     val nonCodedIncomeExists = hasNonCodedIncome(nonTaxCodeIncome.otherNonTaxCodeIncomes)
-    val ssr = hasSSR(taxBands)
-    val psr = hasPSR(taxBands)
+
 
     reductionsExist ||
     additionalTaxDue ||
     dividendsExist ||
-    nonCodedIncomeExists ||
-    ssr ||
-    psr
+    nonCodedIncomeExists
   }
 
   def hasReductions(totalTax: TotalTax): Boolean = {
@@ -120,17 +115,4 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
   def hasNonCodedIncome(otherNonTaxCodeIncomes: Seq[OtherNonTaxCodeIncome]): Boolean = {
     otherNonTaxCodeIncomes.exists(_.incomeComponentType == NonCodedIncome)
   }
-
-  def hasSSR(taxBands: List[TaxBand]): Boolean ={
-    incomeByBandType(retrieveTaxBands(taxBands), StarterSavingsRate).isDefined
-  }
-
-  def hasPSR(taxBands: List[TaxBand]): Boolean ={
-    incomeByBandType(retrieveTaxBands(taxBands), PersonalSavingsRate).isDefined
-  }
-
-  def incomeByBandType(taxBands: List[TaxBand], bandType: String): Option[BigDecimal] = {
-    taxBands.find(band => band.bandType == bandType && band.income > 0).map(_.income)
-  }
-
 }

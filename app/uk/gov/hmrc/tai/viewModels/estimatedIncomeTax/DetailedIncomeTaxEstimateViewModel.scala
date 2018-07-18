@@ -42,8 +42,6 @@ case class DetailedIncomeTaxEstimateViewModel(
                                        additionalTaxTable: Seq[AdditionalTaxDetailRow],
                                        reductionTaxTable: Seq[ReductionTaxRow],
                                        incomeTaxReducedToZeroMessage: Option[String],
-                                       ssrValue: Option[BigDecimal],
-                                       psrValue: Option[BigDecimal],
                                        totalDividendIncome: BigDecimal,
                                        taxFreeDividendAllowance: BigDecimal,
                                        selfAssessmentAndPayeText: Option[String],
@@ -84,8 +82,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
     val reductionTaxTable = createReductionsTable(codingComponents, totalTax)
     val incomeTaxReducedToZero = incomeTaxReducedToZeroMessage(taxAccountSummary.totalEstimatedTax <= 0 && reductionTaxTable.nonEmpty)
-    val ssrValue = EstimatedIncomeTaxService.incomeByBandType(mergedTaxBands, StarterSavingsRate)
-    val psrValue = EstimatedIncomeTaxService.incomeByBandType(mergedTaxBands, PersonalSavingsRate)
     val dividendIncome = totalDividendIncome(totalTax.incomeCategories)
     val taxFreeDividend = taxFreeDividendAllowance(totalTax.incomeCategories)
     val mergedNonSavingsBand = (nonSavings :+ paBand).toList.sortBy(_.rate)
@@ -106,8 +102,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Estima
       additionalTaxTable,
       reductionTaxTable,
       incomeTaxReducedToZero,
-      ssrValue,
-      psrValue,
       dividendIncome,
       taxFreeDividend,
       additionIncomePayableText,

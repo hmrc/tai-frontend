@@ -33,55 +33,6 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  "hasSSR" must {
-    "return true" when{
-      "starter service rate tax band exists" in {
-
-        val taxBands:List[TaxBand] = List(
-          TaxBand("SR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
-          TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
-
-        EstimatedIncomeTaxService.hasSSR(taxBands) mustBe true
-      }
-    }
-
-    "return false" when{
-      "starter service rate tax band does not exist" in {
-
-        val taxBands:List[TaxBand] = List(
-          TaxBand("D0","", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
-          TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
-
-        EstimatedIncomeTaxService.hasSSR(taxBands) mustBe false
-      }
-    }
-  }
-
-  "hasPSR" must {
-    "return true" when{
-      "starter service rate tax band exists" in {
-
-        val taxBands:List[TaxBand] = List(
-          TaxBand("PSR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
-          TaxBand("SR", "", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
-          TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
-
-        EstimatedIncomeTaxService.hasPSR(taxBands) mustBe true
-      }
-    }
-
-    "return false" when{
-      "starter service rate tax band does not exist" in {
-
-        val taxBands:List[TaxBand] = List(
-          TaxBand("D0","", income = 5000, tax = 0, lowerBand = Some(0), upperBand = Some(11000), rate = 0),
-          TaxBand("B", "", income = 15000, tax = 3000, lowerBand = Some(11000), upperBand = Some(32000), rate = 20))
-
-        EstimatedIncomeTaxService.hasSSR(taxBands) mustBe false
-      }
-    }
-  }
-
   "hasNonCodedIncome" must {
     "return true when NonCodedIncome exists" in {
       EstimatedIncomeTaxService.hasNonCodedIncome(Seq(OtherNonTaxCodeIncome(NonCodedIncome,None,0,""))) mustBe true
