@@ -155,7 +155,7 @@ class simpleIncomeTaxSpec extends TaiViewSpec {
         "tax-free amount",
         "£11,500")).body
 
-      document.select("#tax-on-your-income").size() mustBe 1
+      document.select("#employmentIncomeTaxDetails").size() mustBe 1
       document must haveTableThWithIdAndText("taxBand", messages("tai.incomeTaxBand"))
       document must haveTableThWithIdAndText("taxAmount", messages("tai.amount"))
       document must haveTableThWithIdAndText("taxRate", messages("tai.taxRate"))
