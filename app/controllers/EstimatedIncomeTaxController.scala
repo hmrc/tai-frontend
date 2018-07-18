@@ -33,7 +33,6 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, PersonService, TaxAccountService}
-import uk.gov.hmrc.tai.viewModels.TaxReliefViewModel
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
 trait EstimatedIncomeTaxController extends TaiBaseController
@@ -76,7 +75,6 @@ trait EstimatedIncomeTaxController extends TaiBaseController
                 TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
                   val taxBands = totalTaxDetails.incomeCategories.flatMap(_.taxBands).toList
                   val taxViewType = EstimatedIncomeTaxService.taxViewType(codingComponents,totalTaxDetails,nonTaxCodeIncome,
-                    taxAccountSummary.totalInYearAdjustmentIntoCY,taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne,
                     taxAccountSummary.totalEstimatedIncome,taxAccountSummary.taxFreeAllowance,taxAccountSummary.totalEstimatedTax,
                     taxCodeIncomes.nonEmpty)
                   taxViewType match {
@@ -99,29 +97,6 @@ trait EstimatedIncomeTaxController extends TaiBaseController
             }
           }
   }
-
-  def taxRelief(): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            val nino = Nino(user.getNino)
-            val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
-            val codingComponentFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-            for {
-              codingComponents <- codingComponentFuture
-              totalTax <- totalTaxFuture
-            } yield {
-              totalTax match {
-                case TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax) =>
-                  val model = TaxReliefViewModel(codingComponents, totalTaxDetails)
-                  Ok(views.html.reliefs(model))
-                case _ => throw new RuntimeException("Failed to get total tax details")
-              }
-            }
-          }
-  }
-
 }
 // $COVERAGE-OFF$
 object EstimatedIncomeTaxController extends EstimatedIncomeTaxController with AuthenticationConnectors {

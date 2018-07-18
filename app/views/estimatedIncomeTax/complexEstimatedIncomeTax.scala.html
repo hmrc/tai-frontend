@@ -79,8 +79,8 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                 <section>
                     @includes.yourTaxGraph(viewModel.graph, viewModel.taxRegion,ComplexTaxView)
                 </section>
-
-                <section>
+                
+                <section class="margin-top">
                     @Link.toInternalPage(
                     id=Some("detailEstimateView"),
                     value=Some(Messages("tai.estimatedIncome.detailedEstimate.Link")),

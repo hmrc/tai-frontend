@@ -67,19 +67,16 @@
 
                 <section class="section soft--top">
                     <h2 class="heading-section">
-                        @Messages("tai.estimatedIncome.taxOnEmploymentIncome.subHeading")
+                        @viewModel.taxOnIncomeTypeHeading
                     </h2>
                     <p id="taxOnEmploymentIncomeDesc">
-                        @Html(Messages("tai.estimatedIncome.desc",
-                        pounds(viewModel.incomeEstimate),
-                        Link.toInternalPage(
-                        id=Some("taxFreeAmountLink"),
-                        url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                        value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
-                        pounds(viewModel.taxFreeAllowance)))
+                        @Html(viewModel.taxOnIncomeTypeDescription)
                     </p>
 
-                    @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.nonSavings, taxRegion = viewModel.taxRegion)
+                    @taxBandTable(
+                        tableId = "employmentIncomeTaxDetails",
+                        taxBands = viewModel.nonSavings,
+                        taxRegion = viewModel.taxRegion)
                 </section>
 
 
@@ -94,28 +91,20 @@
                 </section>
 
                 <section class="section soft--top">
-                    <h3 id="tax-on-savings-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")</h3>
-                    <p id="tax-on-savings-desc">
-                        @Messages("tai.estimatedIncome.savings.desc")
+                    <h2 id="tax-on-savings-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")</h2>
+                    <p id="tax-on-savings-desc1">
+                        @DetailedIncomeTaxEstimateViewModel.savingsDescription1(viewModel.savings)
                     </p>
+                    @if(viewModel.savings.exists(_.bandType != "SR")){
+                    <p id="tax-on-savings-desc2">
+                        @DetailedIncomeTaxEstimateViewModel.savingsDescription2(viewModel.savings)
+                    </p>
+                    <p id="tax-on-savings-desc3">
+                        @DetailedIncomeTaxEstimateViewModel.savingsDescription3(viewModel.savings)
+                    </p>
+                    }
 
                     @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.savings.toList, taxRegion = viewModel.taxRegion)
-
-                </section>
-
-                <section>
-
-                    @viewModel.ssrValue.map { ssr =>
-                    <h3 id="starting-rate-savings-title" class="heading-medium">@Messages("tai.estimatedIncome.SSR.title")</h3>
-                    <p id="starting-rate-savings-text1">@Messages("tai.estimatedIncome.SSR.text1", ssr)</p>
-                    }
-
-                    @viewModel.psrValue.map { psr =>
-                    <h3 id="personal-savings-allowance-title" class="heading-medium">@Messages("tai.estimatedIncome.PSA.title")</h3>
-                    <p id="personal-savings-allowance-text1">@Html(Messages("tai.estimatedIncome.PSA.text1",
-                        psr,
-                        Link.toExternalPage(url="https://www.gov.uk/apply-tax-free-interest-on-savings", value=Some(Messages("tai.estimatedIncome.PSA.linkText"))).toHtml))</p>
-                    }
 
                 </section>
 
@@ -189,5 +178,10 @@
                 }
             </div>
         </div>
+
+        <section>
+            @navigationLinks(gaEventActionString)
+        </section>
+
     </div>
 }

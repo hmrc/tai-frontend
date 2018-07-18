@@ -18,22 +18,19 @@ package uk.gov.hmrc.tai.service.estimatedIncomeTax
 
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, OtherNonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax._
-import uk.gov.hmrc.tai.util.BandTypesConstants
+import uk.gov.hmrc.tai.util.{BandTypesConstants, TaxRegionConstants}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
 import scala.math.BigDecimal
 
-object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with EstimatedIncomeTaxBand with BandTypesConstants
-  with Dividends{
+object EstimatedIncomeTaxService extends TaxRegionConstants with BandTypesConstants{
 
 
   def taxViewType(codingComponents: Seq[CodingComponent],
                   totalTax: TotalTax,
                   nonTaxCodeIncome: NonTaxCodeIncome,
-                  totalInYearAdjustmentIntoCY:BigDecimal,
-                  totalInYearAdjustmentIntoCYPlusOne:BigDecimal,
                   totalEstimatedIncome:BigDecimal,
                   taxFreeAllowance:BigDecimal,totalEstimatedTax:BigDecimal,
                   hasCurrentIncome:Boolean): TaxViewType = {
@@ -42,7 +39,7 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     hasCurrentIncome match {
       case false => NoIncomeTaxView
       case true => {
-        isComplexViewType(codingComponents, totalTax, nonTaxCodeIncome, totalInYearAdjustmentIntoCY, totalInYearAdjustmentIntoCYPlusOne) match {
+        isComplexViewType(codingComponents, totalTax, nonTaxCodeIncome) match {
           case true => ComplexTaxView
           case false => {
             (totalEstimatedIncome < taxFreeAllowance) && totalEstimatedTax == 0 match {
@@ -55,54 +52,130 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     }
   }
 
-  def isComplexViewType(codingComponents: Seq[CodingComponent],
-                        totalTax: TotalTax,
-                        nonTaxCodeIncome: NonTaxCodeIncome,
-                        totalInYearAdjustmentIntoCY:BigDecimal, totalInYearAdjustmentIntoCYPlusOne:BigDecimal) :Boolean ={
+  def isComplexViewType(codingComponents: Seq[CodingComponent], totalTax: TotalTax, nonTaxCodeIncome: NonTaxCodeIncome) :Boolean ={
 
-    val taxBands = totalTax.incomeCategories.flatMap(_.taxBands).toList
+    val reductionsExist = hasReductions(totalTax)
+    val additionalTaxDue = hasAdditionalTax(codingComponents,totalTax)
+    val dividendsExist = hasDividends(totalTax.incomeCategories)
+    val nonCodedIncomeExists = hasNonCodedIncome(nonTaxCodeIncome.otherNonTaxCodeIncomes)
+    val savingsExist = hasSavings(totalTax)
 
-    hasReductions(codingComponents,totalTax) ||
-    hasAdditionalTax(codingComponents,totalTax) ||
-    hasDividends(totalTax.incomeCategories) ||
-    hasSSR(taxBands) ||
-    hasPSR(taxBands)
+    reductionsExist ||
+    additionalTaxDue ||
+    dividendsExist ||
+    nonCodedIncomeExists ||
+    savingsExist
   }
 
-  def hasReductions(codingComponents: Seq[CodingComponent], totalTax: TotalTax): Boolean = {
-    totalTax.taxOnOtherIncome.isDefined ||
-    taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxCreditOnUKDividends).isDefined ||
-    taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxOnBankBSInterest).isDefined ||
-    taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.EnterpriseInvestmentSchemeRelief).isDefined ||
-    taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.ConcessionalRelief).isDefined ||
-    taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.DoubleTaxationRelief).isDefined ||
-    taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPaymentsRelief).isDefined ||
-    taxAdjustmentComp(totalTax.taxReliefComponent, tax.PersonalPensionPaymentRelief).isDefined ||
-    taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MarriedCouplesAllowance).isDefined ||
-    taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MaintenancePayments).isDefined
+  def hasReductions(totalTax: TotalTax): Boolean = {
+
+    val nonCodedIncome = totalTax.taxOnOtherIncome
+    val ukDividend = taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxCreditOnUKDividends)
+    val bankInterest = taxAdjustmentComp(totalTax.alreadyTaxedAtSource, tax.TaxOnBankBSInterest)
+    val marriageAllowance = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MarriedCouplesAllowance)
+    val maintenancePayment = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MaintenancePayments)
+    val enterpriseInvestmentScheme = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.EnterpriseInvestmentSchemeRelief)
+    val concessionRelief = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.ConcessionalRelief)
+    val doubleTaxationRelief = taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.DoubleTaxationRelief)
+    val giftAidPaymentsRelief = taxAdjustmentComp(totalTax.taxReliefComponent, tax.GiftAidPaymentsRelief)
+    val personalPensionPaymentsRelief = taxAdjustmentComp(totalTax.taxReliefComponent, tax.PersonalPensionPaymentRelief)
+
+    nonCodedIncome.isDefined ||
+    ukDividend.isDefined ||
+    bankInterest.isDefined ||
+    marriageAllowance.isDefined ||
+    maintenancePayment.isDefined ||
+    enterpriseInvestmentScheme.isDefined ||
+    concessionRelief.isDefined ||
+    doubleTaxationRelief.isDefined  ||
+    giftAidPaymentsRelief.isDefined ||
+    personalPensionPaymentsRelief.isDefined
+
   }
 
   def hasAdditionalTax(codingComponent: Seq[CodingComponent], totalTax: TotalTax): Boolean = {
 
-    underPaymentFromPreviousYear(codingComponent).isDefined ||
-    inYearAdjustment(codingComponent).isDefined ||
-    outstandingDebt(codingComponent).isDefined ||
-    taxAdjustmentComp(totalTax.otherTaxDue, tax.ChildBenefit).isDefined ||
-    taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessGiftAidTax).isDefined ||
-    taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessWidowsAndOrphans).isDefined ||
-    taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment).isDefined
+    val underPayment = underPaymentFromPreviousYear(codingComponent)
+    val inYearAdjust = inYearAdjustment(codingComponent)
+    val debtOutstanding = outstandingDebt(codingComponent)
+    val childBenefit = taxAdjustmentComp(totalTax.otherTaxDue, tax.ChildBenefit)
+    val excessGiftAid = taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessGiftAidTax)
+    val excessWidowAndOrphans = taxAdjustmentComp(totalTax.otherTaxDue, tax.ExcessWidowsAndOrphans)
+    val pensionPayments = taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment)
+
+    underPayment.isDefined ||
+    inYearAdjust.isDefined ||
+    debtOutstanding.isDefined ||
+    childBenefit.isDefined ||
+    excessGiftAid.isDefined ||
+    excessWidowAndOrphans.isDefined ||
+    pensionPayments.isDefined
   }
 
-  def hasSSR(taxBands: List[TaxBand]): Boolean ={
-    incomeByBandType(retrieveTaxBands(taxBands), StarterSavingsRate).isDefined
+  def savingsBands(totalTax: TotalTax) = {
+    totalTax.incomeCategories.filter {
+      category =>
+        category.incomeCategoryType == UntaxedInterestIncomeCategory ||
+          category.incomeCategoryType == BankInterestIncomeCategory || category.incomeCategoryType == ForeignInterestIncomeCategory
+    }.flatMap(_.taxBands).filter(_.income > 0)
   }
 
-  def hasPSR(taxBands: List[TaxBand]): Boolean ={
-    incomeByBandType(retrieveTaxBands(taxBands), PersonalSavingsRate).isDefined
+  def hasSavings(totalTax: TotalTax): Boolean = {
+    savingsBands(totalTax).nonEmpty
+  }
+  def hasNonCodedIncome(otherNonTaxCodeIncomes: Seq[OtherNonTaxCodeIncome]): Boolean = {
+    otherNonTaxCodeIncomes.exists(_.incomeComponentType == NonCodedIncome)
   }
 
-  def incomeByBandType(taxBands: List[TaxBand], bandType: String): Option[BigDecimal] = {
-    taxBands.find(band => band.bandType == bandType && band.income > 0).map(_.income)
+  def hasDividends(incomeCategories:Seq[IncomeCategory]): Boolean = {
+    totalDividendIncome(incomeCategories) > 0
   }
 
+  def totalDividendIncome(incomeCategories: Seq[IncomeCategory]): BigDecimal = {
+    incomeCategories.filter {
+      category => category.incomeCategoryType == UkDividendsIncomeCategory ||
+        category.incomeCategoryType == ForeignDividendsIncomeCategory
+    }.map(_.totalIncome).sum
+  }
+
+  def taxAdjustmentComp(taxAdjustment: Option[TaxAdjustment], adjustmentType: TaxAdjustmentType) = {
+    taxAdjustment.
+      flatMap(_.taxAdjustmentComponents.find(_.taxAdjustmentType == adjustmentType))
+      .map(_.taxAdjustmentAmount)
+  }
+
+  def underPaymentFromPreviousYear(codingComponents: Seq[CodingComponent]) = codingComponents.find(_.componentType == UnderPaymentFromPreviousYear).flatMap(_.inputAmount)
+
+  def inYearAdjustment(codingComponents: Seq[CodingComponent]) = codingComponents.find(_.componentType == EstimatedTaxYouOweThisYear).flatMap(_.inputAmount)
+
+  def outstandingDebt(codingComponents: Seq[CodingComponent]) = codingComponents.find(_.componentType == OutstandingDebt).map(_.amount)
+
+  def createPABand(taxFreeAllowance: BigDecimal) = {
+    TaxBand(TaxFreeAllowanceBand, "", taxFreeAllowance, 0, Some(0), None, 0)
+  }
+
+  def retrieveTaxBands(taxBands: List[TaxBand]): List[TaxBand] = {
+    val mergedPsaBands = mergeAllowanceTaxBands(taxBands, PersonalSavingsRate)
+    val mergedSrBands = mergeAllowanceTaxBands(mergedPsaBands, StarterSavingsRate)
+    val bands = mergeAllowanceTaxBands(mergedSrBands, TaxFreeAllowanceBand)
+    bands.filter(_.income > 0).sortBy(_.rate)
+  }
+
+  private def mergeAllowanceTaxBands(taxBands: List[TaxBand], bandType: String) = {
+    val (bands, remBands) = taxBands.partition(_.bandType == bandType)
+    bands match {
+      case Nil => remBands
+      case _ => TaxBand(bands.map(_.bandType).head,
+        bands.map(_.code).head,
+        bands.map(_.income).sum,
+        bands.map(_.tax).sum,
+        bands.map(_.lowerBand).head,
+        bands.map(_.upperBand).head,
+        bands.map(_.rate).head) :: remBands
+    }
+  }
+
+  def findTaxRegion(taxCodeIncomes: Seq[TaxCodeIncome]): String = {
+    if(taxCodeIncomes.exists(_.taxCode.startsWith("S"))) ScottishTaxRegion else UkTaxRegion
+  }
 }
