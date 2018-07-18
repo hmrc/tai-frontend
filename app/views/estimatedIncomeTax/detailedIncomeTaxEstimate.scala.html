@@ -79,16 +79,17 @@
                         taxRegion = viewModel.taxRegion)
                 </section>
 
-
-                <section class="section soft--top">
-                    <h2 id="tax-on-dividend-income-text" class="heading-section">@Messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading")</h2>
-                    <p id="tax-on-dividend-income-desc">
-                        @Messages("tai.estimatedIncome.dividend.para.desc",
+                @viewModel.dividends.map{_ =>
+                    <section class="section soft--top">
+                        <h2 id="tax-on-dividend-income-text" class="heading-section">@Messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading")</h2>
+                        <p id="tax-on-dividend-income-desc">
+                            @Messages("tai.estimatedIncome.dividend.para.desc",
                             MoneyPounds(viewModel.totalDividendIncome, 0).quantity,
                             MoneyPounds(viewModel.taxFreeDividendAllowance, 0).quantity)
-                    </p>
-                    @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.dividends, taxRegion = viewModel.taxRegion)
-                </section>
+                        </p>
+                        @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.dividends, taxRegion = viewModel.taxRegion)
+                    </section>
+                }
 
                 <section class="section soft--top">
                     <h2 id="tax-on-savings-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")</h2>

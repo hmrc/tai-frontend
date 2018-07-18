@@ -215,16 +215,10 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
         val startingSaversRateBand = TaxBand("SR","",0,0,Some(0),Some(5000),0)
         val personalSaversRateBand = TaxBand("PSR","",0,0,Some(0),Some(5000),0)
 
-
-        val basicRateBand = TaxBand("B","",0,0,Some(0),Some(33500),20)
-        val higherRateBand = TaxBand("D0","",0,0,Some(33500),Some(150000),40)
-        val additionalRateBand = TaxBand("D1","",0,0,Some(150000),Some(0),45)
-
-        val nonSavingsTaxBands = List(basicRateBand, higherRateBand, additionalRateBand)
         val untaxedInterestTaxBands = List(startingSaversRateBand, personalSaversRateBand)
 
         val totalTax = TotalTax(0,
-          List(IncomeCategory(NonSavingsIncomeCategory,0,0,8000,nonSavingsTaxBands),
+          List(IncomeCategory(NonSavingsIncomeCategory,0,0,8000,List.empty[TaxBand]),
             IncomeCategory(UntaxedInterestIncomeCategory,0,0,1000,untaxedInterestTaxBands)
           ),
           None,
