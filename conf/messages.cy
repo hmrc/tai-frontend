@@ -41,7 +41,7 @@ tai.income.previousYears.decision.paragraph.one=Mae''ch cyflogwr neu ddarparwr e
 tai.taxCollected.atSource.marriageAllowance.description=Mae Lwfans Pâr Priod yn lleihau''r dreth a dalwch. Byddwch yn cael rhyddhad treth ar 10% o''ch Lwfans Pâr Priod o £{0}. Efallai y bydd y swm a ddangosir yn eich cyfrifiad {1} yn wahanol er mwyn sicrhau eich bod yn cael y swm cywir ar gyfer eich cyfradd dreth.
 tai.taxFreeAmount.table.taxComponent.LossRelief=Rhyddhad ar golledion
 tai.deceased.post.address2=Cyllid a Thollau EM
-tai.estimatedIncome.additionalTax.title=Treth ychwanegol sy''n ddyledus
+tai.estimatedIncome.additionalTax.title=Ychwanegiadau i’ch Treth Incwm
 tai.taxFreeAmount.summarysection.heading=Eich swm blynyddol sy''n rhydd o dreth yw
 label.find_out_about_call_charges=Gwybodaeth am gostau galwadau
 tai.income.previousYears.decision.paragraph.three=Gallwch ddiweddaru''ch manylion os na allwch gysylltu â''ch cyflogwr neu ddarparwr eich pensiwn.
@@ -452,7 +452,7 @@ uk.bandtype.LSR=Cynilion ar y gyfradd sylfaenol
 tai.bbsi.account.desc2=Dylech ddiweddaru''r manylion hyn os ydynt yn anghywir neu efallai y byddwch yn talu''r swm anghywir o dreth.
 tai.taxFreeAmount.table.taxComponent.CarFuelBenefit=Buddiant tanwydd car
 tai.noPrimary.heading=Mae''n ddrwg gennym, mae yna broblem wedi codi felly ni allwch ddefnyddio''r gwasanaeth hwn
-tai.estimatedIncome.additionalTax.desc=Rydym yn addasu''ch cod treth fel eich bod yn talu''r dreth sy''n ddyledus ar y canlynol.
+tai.estimatedIncome.additionalTax.desc=Mae’r canlynol i gyd yn cynyddu swm y dreth y byddwch yn ei thalu y flwyddyn hon
 tai.income.calculation.potentially.ceased.lede=Nid yw''r cyflogwr hwn wedi rhoi unrhyw fanylion am eich cyflog terfynol eto.
 tai.income.calculation.totalNotMatching.pension.message=Anfonodd darparwr eich pensiwn y symiau unigol a''r cyfanswm yn y tabl uchod.
 tai.taxcode.S=Mae S yn golygu eich bod yn talu cyfradd yr Alban o Dreth Incwm.
@@ -760,7 +760,7 @@ tai.whatDoYouWantToDo.heading=Dewis blwyddyn dreth
 tai.incomeTaxSummary.addMissingIncome.section.heading=Rhywbeth ar goll?
 tai.estimatedIncome.whyEstimate.desc=Mae swm y dreth a dalwch yn dibynnu ar gyfanswm eich incwm ar gyfer y flwyddyn dreth gyfan. Ni allwn roi union ffigur oherwydd ni fyddwn yn gwybod am eich holl incwm tan ar ôl i''r flwyddyn dreth ddod i ben ar {0}.
 tai.phoneNumber=Rhif ffôn
-tai.estimatedIncome.reductionsTax.title=Gostyngiadau i''ch amcangyfrif
+tai.estimatedIncome.reductionsTax.title=Didyniadau a chynilion gaiff eu tynnu allan o’r Dreth Incwm rydych yn ei thalu
 tai.taxcode.deduction.type-45=Amcangyfrif o''r dreth sydd arnoch y flwyddyn hon
 tai.employmentName.error.blank=Rhowch enw''ch cyflogwr
 tai.paye.lastTaxYear.otherDetailsWrongIform=Os yw incwm gan gyflogwr neu ddarparwr pensiwn ar goll neu''n anghywir, cysylltwch â nhw yn y lle cyntaf. Gofynnwch iddynt anfon y manylion cywir i CThEM.
@@ -1174,12 +1174,12 @@ your.total.income.from.paye.desc=
 
 tai.estimatedIncome.selfAssessmentAndPayeText = Mae gennych Dreth Incwm ychwanegol yn daladwy'r flwyddyn hon sydd heb ei chynnwys yn yr amcangyfrif hwn. Dylid ei chynnwys yn eich Hunanasesiad. Ni chaiff ei chasglu drwy TWE.
 
-gift.aid.savings=
-gift.aid.tax.relief=
-personal.pension.payments=
-personal.pension.payment.relief=
-tax.adjustment=
-tax.adjustments=
+gift.aid.savings=Cynilion Rhodd Cymorth
+gift.aid.tax.relief=Gwnaethoch gyfraniadau Rhodd Cymorth o £{0} yn ystod y flwyddyn dreth hon sy’n rhoi rhyddhad treth i chi ac yn arbed £{1} o Dreth Incwm
+personal.pension.payments=Taliadau pensiwn personol
+personal.pension.payment.relief=Gwnaethoch daliadau pensiwn personol o £{0} yn ystod y flwyddyn dreth hon sy’n rhoi rhyddhad treth i chi ac yn arbed £{1} o Dreth Incwm.
+tax.adjustment=Addasiad treth
+tax.adjustments=Addasiadau treth
 
 #Tax paid elsewhere
 tai.taxCollected.atSource.title=Gostyngiadau
