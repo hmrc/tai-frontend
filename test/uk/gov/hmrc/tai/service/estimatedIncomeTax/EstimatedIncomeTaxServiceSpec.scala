@@ -401,6 +401,42 @@ class EstimatedIncomeTaxServiceSpec extends PlaySpec with FakeTaiPlayApplication
     }
   }
 
+  "hasSavings" must {
+    "return true when there are savings present in totalTax" in {
+      val taxBands = Seq(
+        TaxBand(bandType = DividendZeroRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 0),
+        TaxBand(bandType = DividendBasicRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 10),
+        TaxBand(bandType = DividendHigherRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
+        TaxBand(bandType = DividendAdditionalRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 30)
+      )
+      val incomeCategories = Seq(
+        IncomeCategory(UntaxedInterestIncomeCategory, 0, 6000, 0, taxBands),
+        IncomeCategory(BankInterestIncomeCategory, 0, 6000, 0, taxBands),
+        IncomeCategory(ForeignInterestIncomeCategory, 0, 6000, 0, taxBands)
+      )
+      val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
+
+      EstimatedIncomeTaxService.hasSavings(totalTax) mustBe true
+
+    }
+
+    "return false when there are no savings present in totalTax" in {
+      val taxBands = Seq(
+        TaxBand(bandType = DividendZeroRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 0),
+        TaxBand(bandType = DividendBasicRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 10),
+        TaxBand(bandType = DividendHigherRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
+        TaxBand(bandType = DividendAdditionalRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 30)
+      )
+      val incomeCategories = Seq(
+        IncomeCategory(UkDividendsIncomeCategory, 0, 6000, 0, taxBands)
+      )
+      val totalTax = TotalTax(100, incomeCategories, None, None, None, None)
+
+      EstimatedIncomeTaxService.hasSavings(totalTax) mustBe false
+
+    }
+  }
+
   "taxViewType" must {
 
     "return noIncome" when{

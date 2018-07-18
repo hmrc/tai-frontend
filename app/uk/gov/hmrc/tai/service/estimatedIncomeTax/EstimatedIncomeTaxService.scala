@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import scala.math.BigDecimal
 
 object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with EstimatedIncomeTaxBand with BandTypesConstants
-  with Dividends{
+  with Dividends {
 
 
   def taxViewType(codingComponents: Seq[CodingComponent],
@@ -60,7 +60,6 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     val dividendsExist = hasDividends(totalTax.incomeCategories)
     val nonCodedIncomeExists = hasNonCodedIncome(nonTaxCodeIncome.otherNonTaxCodeIncomes)
 
-
     reductionsExist ||
     additionalTaxDue ||
     dividendsExist ||
@@ -81,15 +80,15 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     val personalPensionPaymentsRelief = taxAdjustmentComp(totalTax.taxReliefComponent, tax.PersonalPensionPaymentRelief)
 
     nonCodedIncome.isDefined ||
-    ukDividend.isDefined ||
-    bankInterest.isDefined ||
-    marriageAllowance.isDefined ||
-    maintenancePayment.isDefined ||
-    enterpriseInvestmentScheme.isDefined ||
-    concessionRelief.isDefined ||
-    doubleTaxationRelief.isDefined  ||
-    giftAidPaymentsRelief.isDefined ||
-    personalPensionPaymentsRelief.isDefined
+      ukDividend.isDefined ||
+      bankInterest.isDefined ||
+      marriageAllowance.isDefined ||
+      maintenancePayment.isDefined ||
+      enterpriseInvestmentScheme.isDefined ||
+      concessionRelief.isDefined ||
+      doubleTaxationRelief.isDefined ||
+      giftAidPaymentsRelief.isDefined ||
+      personalPensionPaymentsRelief.isDefined
 
   }
 
@@ -104,14 +103,25 @@ object EstimatedIncomeTaxService extends TaxAdditionsAndReductions with Estimate
     val pensionPayments = taxAdjustmentComp(totalTax.otherTaxDue, tax.PensionPaymentsAdjustment)
 
     underPayment.isDefined ||
-    inYearAdjust.isDefined ||
-    debtOutstanding.isDefined ||
-    childBenefit.isDefined ||
-    excessGiftAid.isDefined ||
-    excessWidowAndOrphans.isDefined ||
-    pensionPayments.isDefined
+      inYearAdjust.isDefined ||
+      debtOutstanding.isDefined ||
+      childBenefit.isDefined ||
+      excessGiftAid.isDefined ||
+      excessWidowAndOrphans.isDefined ||
+      pensionPayments.isDefined
   }
 
+  def savingsBands(totalTax: TotalTax) = {
+    totalTax.incomeCategories.filter {
+      category =>
+        category.incomeCategoryType == UntaxedInterestIncomeCategory ||
+          category.incomeCategoryType == BankInterestIncomeCategory || category.incomeCategoryType == ForeignInterestIncomeCategory
+    }.flatMap(_.taxBands).filter(_.income > 0)
+  }
+
+  def hasSavings(totalTax: TotalTax): Boolean = {
+    savingsBands(totalTax).nonEmpty
+  }
   def hasNonCodedIncome(otherNonTaxCodeIncomes: Seq[OtherNonTaxCodeIncome]): Boolean = {
     otherNonTaxCodeIncomes.exists(_.incomeComponentType == NonCodedIncome)
   }
