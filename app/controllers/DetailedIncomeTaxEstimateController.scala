@@ -54,6 +54,7 @@ trait DetailedIncomeTaxEstimateController extends TaiBaseController
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
+
             val nino = Nino(user.getNino)
             val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
             val taxCodeIncomeFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
@@ -77,7 +78,6 @@ trait DetailedIncomeTaxEstimateController extends TaiBaseController
                 ) =>
                   val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxAccountSummary, codingComponents, nonTaxCodeIncome)
                   Ok(views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model))
-
                 case _ => throw new RuntimeException("Failed to fetch total tax details")
               }
             }
