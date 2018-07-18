@@ -23,10 +23,10 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TaxBand, TotalTax}
+import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.{HelpLink, Label, TaxExplanationViewModel}
+import uk.gov.hmrc.tai.viewModels.{HelpLink, Label}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow, DetailedIncomeTaxEstimateViewModel, ReductionTaxRow, SimpleEstimatedIncomeTaxViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
@@ -147,99 +147,173 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
     "display table body" when {
       "UK user have non-savings" in {
-        val nonSavings = List(
+
+        val taxBands = List(
           TaxBand("B", "", 32010, 6402, None, None, 20),
           TaxBand("D0", "", 36466, 36466, None, None, 40)
         )
-        val viewWithNonSavings: Html = views.html.howIncomeTaxIsCalculated(TaxExplanationViewModel(nonSavings, Seq.empty[TaxBand], Seq.empty[TaxBand], UkBands))
-        doc(viewWithNonSavings) must haveTdWithText("32,010")
-        doc(viewWithNonSavings) must haveTdWithText(messages("uk.bandtype.B"))
+
+        val incomeCategories = Seq(
+          IncomeCategory(NonSavingsIncomeCategory, 42868, 42868, 68476, taxBands)
+        )
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
+        val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0,68476,11500)
+        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(OtherIncome, None, 0, "", "1150L", "", OtherBasisOperation, Live))
+
+        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+
+        val viewWithNonSavings: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
+        doc(viewWithNonSavings) must haveTdWithText("£32,010")
+        doc(viewWithNonSavings) must haveTdWithText(messages("estimate.uk.bandtype.B"))
         doc(viewWithNonSavings) must haveTdWithText("20%")
-        doc(viewWithNonSavings) must haveTdWithText("6,402.00")
-        doc(viewWithNonSavings) must haveTdWithText("36,466")
-        doc(viewWithNonSavings) must haveTdWithText(messages("uk.bandtype.D0"))
+        doc(viewWithNonSavings) must haveTdWithText("£6,402")
+        doc(viewWithNonSavings) must haveTdWithText("£36,466")
+        doc(viewWithNonSavings) must haveTdWithText(messages("estimate.uk.bandtype.D0"))
         doc(viewWithNonSavings) must haveTdWithText("40%")
-        doc(viewWithNonSavings) must haveTdWithText("36,466.00")
+        doc(viewWithNonSavings) must haveTdWithText("£36,466")
       }
 
       "Scottish user have non-savings" in {
-        val nonSavings = List(
+
+        val taxBands = List(
           TaxBand("B", "", 32010, 6402, None, None, 20),
           TaxBand("D0", "", 36466, 36466, None, None, 40)
         )
-        val viewWithNonSavings: Html = views.html.howIncomeTaxIsCalculated(TaxExplanationViewModel(nonSavings, Seq.empty[TaxBand], Seq.empty[TaxBand], ScottishBands))
-        doc(viewWithNonSavings) must haveTdWithText("32,010")
-        doc(viewWithNonSavings) must haveTdWithText(messages("scottish.bandtype.B"))
+
+        val incomeCategories = Seq(
+          IncomeCategory(NonSavingsIncomeCategory, 42868, 42868, 68476, taxBands)
+        )
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
+        val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0,68476,11500)
+        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOperation, Live))
+
+        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+
+        val viewWithNonSavings: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
+
+        doc(viewWithNonSavings) must haveTdWithText("£32,010")
+        doc(viewWithNonSavings) must haveTdWithText(messages("estimate.scottish.bandtype.B"))
         doc(viewWithNonSavings) must haveTdWithText("20%")
-        doc(viewWithNonSavings) must haveTdWithText("6,402.00")
-        doc(viewWithNonSavings) must haveTdWithText("36,466")
-        doc(viewWithNonSavings) must haveTdWithText(messages("scottish.bandtype.D0"))
+        doc(viewWithNonSavings) must haveTdWithText("£6,402")
+        doc(viewWithNonSavings) must haveTdWithText("£36,466")
+        doc(viewWithNonSavings) must haveTdWithText(messages("estimate.scottish.bandtype.D0"))
         doc(viewWithNonSavings) must haveTdWithText("40%")
-        doc(viewWithNonSavings) must haveTdWithText("36,466.00")
+        doc(viewWithNonSavings) must haveTdWithText("£36,466")
       }
 
       "UK user have savings" in {
-        val savings = List(
+        val taxBands = List(
           TaxBand("LSR", "", 32010, 6402, None, None, 20),
           TaxBand("HSR1", "", 36466, 36466, None, None, 40)
         )
-        val viewWithSavings: Html = views.html.howIncomeTaxIsCalculated(TaxExplanationViewModel(Seq.empty[TaxBand], savings, Seq.empty[TaxBand], UkBands))
-        doc(viewWithSavings) must haveTdWithText("32,010")
-        doc(viewWithSavings) must haveTdWithText(messages("uk.bandtype.LSR"))
+
+        val incomeCategories = Seq(
+          IncomeCategory(UntaxedInterestIncomeCategory, 42868, 42868, 68476, taxBands)
+        )
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
+        val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0,68476,11500)
+        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(OtherIncome, None, 0, "", "1150L", "", OtherBasisOperation, Live))
+
+        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+
+        val viewWithSavings: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
+
+        doc(viewWithSavings) must haveTdWithText("£32,010")
+        doc(viewWithSavings) must haveTdWithText(messages("estimate.uk.bandtype.LSR"))
         doc(viewWithSavings) must haveTdWithText("20%")
-        doc(viewWithSavings) must haveTdWithText("6,402.00")
-        doc(viewWithSavings) must haveTdWithText("36,466")
-        doc(viewWithSavings) must haveTdWithText(messages("uk.bandtype.HSR1"))
+        doc(viewWithSavings) must haveTdWithText("£6,402")
+        doc(viewWithSavings) must haveTdWithText("£36,466")
+        doc(viewWithSavings) must haveTdWithText(messages("estimate.uk.bandtype.HSR1"))
         doc(viewWithSavings) must haveTdWithText("40%")
-        doc(viewWithSavings) must haveTdWithText("36,466.00")
+        doc(viewWithSavings) must haveTdWithText("£36,466")
       }
 
       "Scottish user have savings" in {
-        val savings = List(
+        val taxBands = List(
           TaxBand("LSR", "", 32010, 6402, None, None, 20),
           TaxBand("HSR1", "", 36466, 36466, None, None, 40)
         )
-        val viewWithSavings: Html = views.html.howIncomeTaxIsCalculated(TaxExplanationViewModel(Seq.empty[TaxBand], savings, Seq.empty[TaxBand], ScottishBands))
-        doc(viewWithSavings) must haveTdWithText("32,010")
-        doc(viewWithSavings) must haveTdWithText(messages("scottish.bandtype.LSR"))
+
+        val incomeCategories = Seq(
+          IncomeCategory(UntaxedInterestIncomeCategory, 42868, 42868, 68476, taxBands)
+        )
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
+        val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0,68476,11500)
+        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOperation, Live))
+
+        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+
+        val viewWithSavings: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
+
+        doc(viewWithSavings) must haveTdWithText("£32,010")
+        doc(viewWithSavings) must haveTdWithText(messages("estimate.scottish.bandtype.LSR"))
         doc(viewWithSavings) must haveTdWithText("20%")
-        doc(viewWithSavings) must haveTdWithText("6,402.00")
-        doc(viewWithSavings) must haveTdWithText("36,466")
-        doc(viewWithSavings) must haveTdWithText(messages("scottish.bandtype.HSR1"))
+        doc(viewWithSavings) must haveTdWithText("£6,402")
+        doc(viewWithSavings) must haveTdWithText("£36,466")
+        doc(viewWithSavings) must haveTdWithText(messages("estimate.scottish.bandtype.HSR1"))
         doc(viewWithSavings) must haveTdWithText("40%")
-        doc(viewWithSavings) must haveTdWithText("36,466.00")
+        doc(viewWithSavings) must haveTdWithText("£36,466")
       }
 
       "UK user have dividends" in {
-        val dividends = List(
+        val taxBands = List(
           TaxBand("LDR", "", 32010, 6402, None, None, 20),
           TaxBand("HDR1", "", 36466, 36466, None, None, 40)
         )
-        val viewWithDividends: Html = views.html.howIncomeTaxIsCalculated(TaxExplanationViewModel(Seq.empty[TaxBand], Seq.empty[TaxBand], dividends, UkBands))
-        doc(viewWithDividends) must haveTdWithText("32,010")
-        doc(viewWithDividends) must haveTdWithText(messages("uk.bandtype.LDR"))
+
+        val incomeCategories = Seq(
+          IncomeCategory(UkDividendsIncomeCategory, 42868, 42868, 68476, taxBands)
+        )
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
+        val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0,68476,11500)
+        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(OtherIncome, None, 0, "", "1150L", "", OtherBasisOperation, Live))
+
+        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+
+        val viewWithDividends: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
+
+        doc(viewWithDividends) must haveTdWithText("£32,010")
+        doc(viewWithDividends) must haveTdWithText(messages("estimate.uk.bandtype.LDR"))
         doc(viewWithDividends) must haveTdWithText("20%")
-        doc(viewWithDividends) must haveTdWithText("6,402.00")
-        doc(viewWithDividends) must haveTdWithText("36,466")
-        doc(viewWithDividends) must haveTdWithText(messages("uk.bandtype.HDR1"))
+        doc(viewWithDividends) must haveTdWithText("£6,402")
+        doc(viewWithDividends) must haveTdWithText("£36,466")
+        doc(viewWithDividends) must haveTdWithText(messages("estimate.uk.bandtype.HDR1"))
         doc(viewWithDividends) must haveTdWithText("40%")
-        doc(viewWithDividends) must haveTdWithText("36,466.00")
+        doc(viewWithDividends) must haveTdWithText("£36,466")
       }
 
       "scottish user have dividends" in {
-        val dividends = List(
+
+        val taxBands = List(
           TaxBand("LDR", "", 32010, 6402, None, None, 20),
           TaxBand("HDR1", "", 36466, 36466, None, None, 40)
         )
-        val viewWithDividends: Html = views.html.howIncomeTaxIsCalculated(TaxExplanationViewModel(Seq.empty[TaxBand], Seq.empty[TaxBand], dividends, UkBands))
-        doc(viewWithDividends) must haveTdWithText("32,010")
-        doc(viewWithDividends) must haveTdWithText(messages("scottish.bandtype.LDR"))
+
+        val incomeCategories = Seq(
+          IncomeCategory(UkDividendsIncomeCategory, 42868, 42868, 68476, taxBands)
+        )
+        val nonTaxCodeIncome = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
+        val totalTax = TotalTax(0, incomeCategories, None, None, None, None, None)
+        val taxAccountSummary = TaxAccountSummary(42868, 11500, 0, 0, 0,68476,11500)
+        val taxCodeIncome: Seq[TaxCodeIncome] = List(TaxCodeIncome(OtherIncome, None, 0, "", "S1150L", "", OtherBasisOperation, Live))
+
+        val viewModel = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncome, taxAccountSummary, Seq.empty[CodingComponent], nonTaxCodeIncome)
+
+        val viewWithDividends: Html = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(viewModel)
+
+        doc(viewWithDividends) must haveTdWithText("£32,010")
+        doc(viewWithDividends) must haveTdWithText(messages("estimate.scottish.bandtype.LDR"))
         doc(viewWithDividends) must haveTdWithText("20%")
-        doc(viewWithDividends) must haveTdWithText("6,402.00")
-        doc(viewWithDividends) must haveTdWithText("36,466")
-        doc(viewWithDividends) must haveTdWithText(messages("scottish.bandtype.HDR1"))
+        doc(viewWithDividends) must haveTdWithText("£6,402")
+        doc(viewWithDividends) must haveTdWithText("£36,466")
+        doc(viewWithDividends) must haveTdWithText(messages("estimate.scottish.bandtype.HDR1"))
         doc(viewWithDividends) must haveTdWithText("40%")
-        doc(viewWithDividends) must haveTdWithText("36,466.00")
+        doc(viewWithDividends) must haveTdWithText("£36,466")
       }
 
     }
