@@ -267,7 +267,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
                 value = Some(Messages("tai.taxCollected.atSource.marriageAllowance.description.linkText"))
               ).toHtml.body), 800, Messages("tai.taxCollected.atSource.marriageAllowance.title")),
             ReductionTaxRow(Messages("tai.taxCollected.atSource.maintenancePayments.description", MoneyPounds(1200).quantity,
-              routes.YourTaxCodeController.taxCodes().url), 700, Messages("tai.taxCollected.atSource.marriageAllowance.title")),
+              routes.YourTaxCodeController.taxCodes().url), 700, Messages("tai.taxCollected.atSource.maintenancePayments.title")),
             ReductionTaxRow(Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.description"),
               500, Messages("tai.taxCollected.atSource.enterpriseInvestmentSchemeRelief.title")),
             ReductionTaxRow(Messages("tai.taxCollected.atSource.concessionalRelief.description"),

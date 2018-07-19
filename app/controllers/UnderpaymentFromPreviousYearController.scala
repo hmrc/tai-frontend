@@ -26,8 +26,10 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, EmploymentService, PersonService}
+import uk.gov.hmrc.tai.model.domain.tax.TotalTax
+import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.AuditConstants
 import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 import views.html.previousYearUnderpayment
@@ -40,8 +42,13 @@ trait UnderpaymentFromPreviousYearController extends TaiBaseController
   with AuditConstants {
 
   def personService: PersonService
+
   def auditService: AuditService
+
+  def taxAccountService: TaxAccountService
+
   def employmentService: EmploymentService
+
   def codingComponentService: CodingComponentService
 
   def underpaymentExplanation = authorisedForTai(personService).async {
@@ -51,13 +58,22 @@ trait UnderpaymentFromPreviousYearController extends TaiBaseController
 
           val nino = Nino(user.getNino)
           val year = TaxYear()
+          val totalTaxFuture = taxAccountService.totalTax(nino, year)
+          val employmentsFuture = employmentService.employments(nino, year.prev)
+          val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, year)
 
           for {
-            employments <- employmentService.employments(nino, year.prev)
-            codingComponents <- codingComponentService.taxFreeAmountComponents(nino, year)
+            employments <- employmentsFuture
+            codingComponents <- codingComponentsFuture
+            totalTax <- totalTaxFuture
           } yield {
-            Ok(previousYearUnderpayment(PreviousYearUnderpaymentViewModel(codingComponents, employments)))
+            totalTax match {
+              case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
+                Ok(previousYearUnderpayment(PreviousYearUnderpaymentViewModel(codingComponents, employments, totalTax)))
+              case _ => throw new RuntimeException("Failed to fetch total tax details")
+            }
           }
+
   }
 }
 
@@ -65,6 +81,7 @@ trait UnderpaymentFromPreviousYearController extends TaiBaseController
 object UnderpaymentFromPreviousYearController extends UnderpaymentFromPreviousYearController with AuthenticationConnectors {
   override def personService: PersonService = PersonService
   override def auditService: AuditService = AuditService
+  override def taxAccountService: TaxAccountService = TaxAccountService
   override def employmentService: EmploymentService = EmploymentService
   override def codingComponentService: CodingComponentService = CodingComponentService
   override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer

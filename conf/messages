@@ -365,7 +365,6 @@ tai.paye.ceased.emp.contact=Our records show you have no taxable income in this 
 tai.paye.ceased.pension.contact=Our records show you have no taxable income in this year, and the previous two tax years, because your pensions income ended on {0}.
 
 ##CurrentYear page
-tai.estimatedIncomeTax.howWeWorkedOut=Tax on your income
 tai.estimatedIncomeTax.paperlessActivation.returnLinkText=Go to Estimated Income Tax
 
 ##Tell us about your employments page
@@ -384,8 +383,6 @@ tai.currentYearSummary.heading=Check your Income Tax
 tai.income.personalAllowance=Personal Allowance
 tai.income.statePension.title=State Pension or other state benefits
 tai.income.statePensionLumpSum.total=State Pension lump sum
-tai.potentialUnderpayment.title=You may be paying too little tax for the current tax year.
-tai.view.PotentialUnderpayment=View underpayment estimate
 tai.income.error.form.summary=There is a problem
 tai.income.error.form.incomes.radioButton.mandatory=Please select an income or taxable benefit to update
 tai.yourTaxableIncome=Your annual income would be updated to £{0}
