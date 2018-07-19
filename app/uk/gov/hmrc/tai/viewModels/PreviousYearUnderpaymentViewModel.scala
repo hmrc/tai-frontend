@@ -47,7 +47,7 @@ object PreviousYearUnderpaymentViewModel extends ViewModelHelper {
     }.getOrElse(BigDecimal(0))
 
     val taxRate: BigDecimal = totalTax.incomeCategories.filter(_.incomeCategoryType == NonSavingsIncomeCategory)
-      .flatMap(_.taxBands).find(_.bandType == "B").map(_.rate / 100).getOrElse(0.2)
+      .flatMap(_.taxBands).find(_.bandType == "B").map(_.rate / 100).get
 
     val amountDue = allowanceReducedBy * taxRate
 

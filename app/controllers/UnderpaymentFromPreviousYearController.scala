@@ -58,11 +58,13 @@ trait UnderpaymentFromPreviousYearController extends TaiBaseController
 
           val nino = Nino(user.getNino)
           val year = TaxYear()
-          val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
+          val totalTaxFuture = taxAccountService.totalTax(nino, year)
+          val employmentsFuture = employmentService.employments(nino, year.prev)
+          val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, year)
 
           for {
-            employments <- employmentService.employments(nino, year.prev)
-            codingComponents <- codingComponentService.taxFreeAmountComponents(nino, year)
+            employments <- employmentsFuture
+            codingComponents <- codingComponentsFuture
             totalTax <- totalTaxFuture
           } yield {
             totalTax match {
