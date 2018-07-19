@@ -21,6 +21,35 @@ Requirements
 
 This service is written in [Scala 2.11](http://www.scala-lang.org/) and [Play 2.5](http://playframework.com/), so needs at least a [JRE 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index.html) to run. In addition to Scala and JRE dependencies, the service also depends on [node.js 4.8.4](https://nodejs.org/en/) and [npm 2.15.11](https://www.npmjs.com/).
 
+How to install node on Ubuntu
+-----------------------------
+sudo apt-get update
+sudo apt-get install nodejs
+
+< check whether npm came along >
+
+npm -version
+
+..if it isn't there ..
+
+
+sudo apt-get install npm
+
+also
+
+sudo apt-get install nodejs-legacy
+..which will give you an alias of 'node' instead of 'nodejs'
+
+THEN
+
+sudo npm install -g n
+
+(will install the 'n' utility - allowing switching of node versions)
+
+
+sudo n 4.8.4
+
+..which will install the version of node we need for TAI-FRONTEND
 
 Authentication
 ------------

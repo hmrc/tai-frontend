@@ -24,15 +24,16 @@
 @gaEventActionString = @{"Income Tax comparison: current and next tax years"}
 @backLinkToChooseTaxYear = {
     <p class="flush--bottom">
-    @Link.toInternalPage(
-        id=Some("returnToChooseTaxYearLink"),
-        url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-        value=Some(Messages("tai.returnToChooseTaxYear")),
-        cssClasses=Some("link-back"),
-        dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToChooseTaxYear")}"))
-    ).toHtml
+        @Link.toInternalPage(
+            id=Some("returnToChooseTaxYearLink"),
+            url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+            value=Some(Messages("tai.returnToChooseTaxYear")),
+            cssClasses=Some("link-back"),
+            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToChooseTaxYear")}"))
+        ).toHtml
     </p>
 }
+
 @header = @{
     ptaHeader(
         displayBackLink = true,
@@ -41,7 +42,6 @@
         preHeadingText = incomeTaxComparisonViewModel.username,
         preHeadingAccessibleAnnouncement = messages("tai.incomeTaxComparison.preHeading.screenReader"),
         customBackLinkContent = Some(backLinkToChooseTaxYear))
-
 }
 
 @main(title = messages("tai.incomeTaxComparison.heading"),

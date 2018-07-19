@@ -43,7 +43,7 @@ tai.confirmation.sectionOne.heading=What happens next
 tai.confirmation.paraOne=We will check the information you sent.
 tai.confirmation.paraTwo=If no further information is needed your records will be updated within 3 weeks and you will receive a confirmation.
 tai.confirmation.paraThree=You do not need to call us. We will contact you if we have any questions.
-tai.IncomeTaxSummaryReturn=Return to your Income Tax summary
+return.to.your.income.tax.summary=Return to your Income Tax summary
 tai.canWeContactByPhone.title=Can we call you if we need more information?
 tai.canWeContactByPhone.legend=Can we contact you by phone?
 tai.canWeContactByPhone.explanation=We will only contact you if we need more information about your update. It is the quickest way to resolve any problems.
@@ -64,7 +64,6 @@ tai.phoneNumber=Phone number
 tai.whatDoYouWantToTell=What do you want to tell us?
 tai.whatDoYouWantToDo=What do you want to do?
 tai.inPounds= in pounds.
-return.to.your.income.tax.summary=Return to your Income Tax summary
 
 tai.heading.taxYear.interval={0} to {1}
 
@@ -158,11 +157,22 @@ tai.hmrc.enquiry.url=https://www.gov.uk/government/organisations/hm-revenue-cust
 ##Home page
 
 ##What Do You Want To Do page
+your.paye.income.tax.overview=Your PAYE Income Tax overview
+tai.whatDoYouWantToDo.iformPanel.p1=You recently updated your details.
+tai.whatDoYouWantToDo.iformPanel.p2=It can take up to 3 weeks for the changes to be shown here.
+current.tax.year=Current Tax Year
+next.year=Next Year
+earlier=Earlier
+check.current.income=Check your current PAYE income sources and Income Tax details for the current tax year, {0} to {1}.
+check.estimated.income=Check your estimated PAYE Income Tax details for next year.
+check.tax.previous.years=Check the tax you paid on your earnings in previous years.
+
+##TODO to be removed when tileView is toggled on
 tai.whatDoYouWantToDo.heading=Choose tax year
 tai.whatDoYouWantToDo.legend=View PAYE Income Tax details for:
 tai.WhatDoYouWantToDo.radio1=next year
 tai.WhatDoYouWantToDo.radio2=current tax year, {0} to {1}
-tai.WhatDoYouWantToDo.radio3=earlier 
+tai.WhatDoYouWantToDo.radio3=earlier
 tai.WhatDoYouWantToDo.submit=Continue
 tai.whatDoYouWantToDo.error.selectOption=Choose what you want to do.
 tai.whatDoYouWantToDo.iformPanel.p1=You recently updated your details.
@@ -758,7 +768,7 @@ tai.iya.tax-code-change.cy-plus-one.text2=We’ll automatically change your tax 
 tai.iya.tax-code-change.cy-plus-one.text3=We’ll let you know if this amount is right when we calculate your Income Tax for the year after {0}.
 
 ##Underpayment Previous Year page
-tai.previous.year.underpayment.preHeading=Understand your tax
+understand.your.tax=Understand your tax
 tai.previous.year.underpayment.title=What is a previous year underpayment?
 tai.previous.year.underpayment.para1=A previous year underpayment means you didn’t pay enough Income Tax in a previous tax year.
 tai.previous.year.underpayment.para2=For the tax year from 6 April {0} to 5 April {1} you should have paid £{2} but you actually paid £{3}.
@@ -1048,6 +1058,7 @@ uk.bandtype.D0=Income higher rate
 uk.bandtype.D1=Income additional rate
 uk.bandtype.PSR=Personal Savings Allowance
 uk.bandtype.SR=Starting rate for savings
+uk.bandtype.SDR=Dividend Allowance
 uk.bandtype.LSR=Savings basic rate
 uk.bandtype.HSR1=Savings higher rate
 uk.bandtype.HSR2=Savings additional rate
@@ -1108,9 +1119,13 @@ estimate.uk.bandtype.HSR2=Additional rate
 
 #estimated income tax page
 tai.estimatedIncome.taxrelief.title=Tax relief payments
+tai.estimatedIncome.SSR.title=Starting rate for savings
+tai.estimatedIncome.SSR.text1=This varies depending on your income. Based on your current estimated income you are entitled to £{0} of interest tax free.
+tai.estimatedIncome.PSA.title=Personal Savings Allowance
+tai.estimatedIncome.PSA.text1=You may also get up to £{0} of interest tax-free depending on which Income Tax band you’re in. This is your {1}.
+tai.estimatedIncome.PSA.linkText=Personal Savings Allowance
 tai.estimatedIncome.DIV.title=Dividend Allowance
 tai.mergedTaxBand.description=Check in more detail
-
 
 #Get Help page
 tai.getHelp.h1=Can’t pay the tax you owe this year
