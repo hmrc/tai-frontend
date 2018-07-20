@@ -130,7 +130,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
     Seq(underPaymentRow, inYearRow, outstandingDebtRow, childBenefitRow, excessGiftAidRow, excessWidowAndOrphansRow, pensionPaymentsRow).flatten
   }
 
-  def createAdditionalTaxRow(row: Option[BigDecimal], label: Label): Option[AdditionalTaxDetailRow] = {
+  private def createAdditionalTaxRow(row: Option[BigDecimal], label: Label): Option[AdditionalTaxDetailRow] = {
     row.map(amount => AdditionalTaxDetailRow(label, amount))
   }
 
@@ -191,11 +191,11 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
     ).flatten
   }
 
-  def createReductionTaxRow(row: Option[BigDecimal], description: String, title: String)(implicit messages: Messages) = {
+  private def createReductionTaxRow(row: Option[BigDecimal], description: String, title: String)(implicit messages: Messages) = {
     row.map(amount => ReductionTaxRow(description, amount, title))
   }
 
-  def createMarriageAllowanceRow(codingComponents: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages) = {
+  private def createMarriageAllowanceRow(codingComponents: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages) = {
     val marriageAllowance = EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MarriedCouplesAllowance)
     val marriageAllowanceNpsComponent = codingComponents.find { component =>
       component.componentType match {
@@ -213,7 +213,7 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
       Messages("tai.taxCollected.atSource.marriageAllowance.title"))
   }
 
-  def createMaintenancePaymentRow(codingComponents: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages) = {
+  private def createMaintenancePaymentRow(codingComponents: Seq[CodingComponent], totalTax: TotalTax)(implicit messages: Messages) = {
     val maintenancePayment = EstimatedIncomeTaxService.taxAdjustmentComp(totalTax.reliefsGivingBackTax, tax.MaintenancePayments)
     val maintenancePaymentGross = codingComponents.find(_.componentType == MaintenancePayments).map(_.amount).getOrElse(BigDecimal(0))
 

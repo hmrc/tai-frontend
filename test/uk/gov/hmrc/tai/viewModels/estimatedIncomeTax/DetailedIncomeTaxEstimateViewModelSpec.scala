@@ -159,13 +159,13 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
 
           DetailedIncomeTaxEstimateViewModel.savingsDescription2(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR2extra", 1000)
         }
-//        "bandType is HSR2" in {
-//          val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
-//          val taxBandLSR = TaxBand(bandType = "HSR2", code = "", income = 8000, tax = 0, lowerBand = None, upperBand = Some(11000), rate = 20)
-//          val savingsBands = Seq(taxBandPSR, taxBandLSR)
-//
-//          DetailedIncomeTaxEstimateViewModel.savingsDescription2(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR2", 1000)
-//        }
+        "bandType is HSR2" in {
+          val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
+          val taxBandLSR = TaxBand(bandType = "HSR2", code = "", income = 8000, tax = 0, lowerBand = None, upperBand = Some(11000), rate = 20)
+          val savingsBands = Seq(taxBandPSR, taxBandLSR)
+
+          DetailedIncomeTaxEstimateViewModel.savingsDescription2(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR2extra", 1000)
+        }
       }
     }
 

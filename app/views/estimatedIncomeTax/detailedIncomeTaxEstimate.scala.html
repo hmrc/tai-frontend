@@ -79,7 +79,7 @@
                         taxRegion = viewModel.taxRegion)
                 </section>
 
-                @viewModel.dividends.map{_ =>
+                @if(viewModel.dividends.nonEmpty){
                     <section class="section soft--top">
                         <h2 id="tax-on-dividend-income-text" class="heading-section">@Messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading")</h2>
                         <p id="tax-on-dividend-income-desc">
@@ -91,25 +91,27 @@
                     </section>
                 }
 
-                <section class="section soft--top">
-                    <h2 id="tax-on-savings-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")</h2>
-                    <p id="tax-on-savings-desc1">
-                        @DetailedIncomeTaxEstimateViewModel.savingsDescription1(viewModel.savings)
-                    </p>
-                    @if(viewModel.savings.exists(_.bandType != "SR")){
-                    <p id="tax-on-savings-desc2">
-                        @DetailedIncomeTaxEstimateViewModel.savingsDescription2(viewModel.savings)
-                    </p>
-                    <p id="tax-on-savings-desc3">
-                        @DetailedIncomeTaxEstimateViewModel.savingsDescription3(viewModel.savings)
-                    </p>
-                    }
+                @if(viewModel.savings.nonEmpty){
+                    <section class="section soft--top">
+                        <h2 id="tax-on-savings-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")</h2>
+                        <p id="tax-on-savings-desc1">
+                            @DetailedIncomeTaxEstimateViewModel.savingsDescription1(viewModel.savings)
+                        </p>
+                        @if(viewModel.savings.exists(_.bandType != "SR")){
+                        <p id="tax-on-savings-desc2">
+                            @DetailedIncomeTaxEstimateViewModel.savingsDescription2(viewModel.savings)
+                        </p>
+                        <p id="tax-on-savings-desc3">
+                            @DetailedIncomeTaxEstimateViewModel.savingsDescription3(viewModel.savings)
+                        </p>
+                        }
 
-                    @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.savings.toList, taxRegion = viewModel.taxRegion)
+                        @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.savings.toList, taxRegion = viewModel.taxRegion)
 
-                </section>
+                    </section>
+                }
 
-                @if(viewModel.additionalTaxTable.size>0){
+                @if(viewModel.additionalTaxTable.nonEmpty){
                 <section>
                     <h3 id ="additionalTaxTable-heading" class="heading-medium heading-section">
                         @Messages("tai.estimatedIncome.additionalTax.title")</h3>
@@ -146,7 +148,7 @@
                 </section>
                 }
 
-                @if(viewModel.reductionTaxTable.size > 0){
+                @if(viewModel.reductionTaxTable.nonEmpty){
                 <section class="section soft--top soft--bottom">
                     <h3 id="taxPaidElsewhereTable-heading" class="heading-medium heading-section">@Messages("tai.estimatedIncome.reductionsTax.title")</h3>
                     <p id="taxPaidElsewhereTable-desc">@Messages("tai.estimatedIncome.reductionsTax.desc")</p>

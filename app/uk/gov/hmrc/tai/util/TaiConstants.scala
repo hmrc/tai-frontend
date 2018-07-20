@@ -212,6 +212,7 @@ trait BandTypesConstants {
   val NonZeroBand = "NonZeroBand"
   val TaxGraph = "taxGraph"
   val TaxFree = "TaxFree"
+  val BasicRate = "B"
 }
 
 trait TaxRegionConstants {
