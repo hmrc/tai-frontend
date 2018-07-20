@@ -58,8 +58,8 @@ tai.pensionNumber=Pension number
 tai.CurrentTaxYear=Current tax year
 tai.NextTaxYear=Next tax year
 tai.notKnown.response=I do not know
-tai.returnToIncomeTaxSummary=Return to your Income Tax Summary
 tai.returnToChooseTaxYear=Choose tax year
+tai.returnToIncomeTaxSummary=Return to your Income Tax Summary
 tai.phoneNumber=Phone number
 tai.whatDoYouWantToTell=What do you want to tell us?
 tai.whatDoYouWantToDo=What do you want to do?
@@ -1101,6 +1101,7 @@ estimate.uk.bandtype.S=Starter rate
 estimate.uk.bandtype.B=Basic rate
 estimate.uk.bandtype.D0=Higher rate
 estimate.uk.bandtype.D1=Additional rate
+
 # Dividends
 estimate.uk.bandtype.SDR=Tax-free allowance
 estimate.uk.bandtype.LDR=Basic rate
@@ -1110,6 +1111,7 @@ estimate.scottish.bandtype.SDR=Tax-free allowance
 estimate.scottish.bandtype.LDR=Basic rate
 estimate.scottish.bandtype.HDR1=Higher rate
 estimate.scottish.bandtype.HDR2=Additional rate
+
 # Savings
 estimate.uk.bandtype.PSR=Personal Savings Allowance
 estimate.uk.bandtype.SR=Starting rate
@@ -1117,7 +1119,7 @@ estimate.uk.bandtype.LSR=Basic rate
 estimate.uk.bandtype.HSR1=Higher rate
 estimate.uk.bandtype.HSR2=Additional rate
 
-#estimated income tax page
+# Estimated income tax page
 tai.estimatedIncome.taxrelief.title=Tax relief payments
 tai.estimatedIncome.SSR.title=Starting rate for savings
 tai.estimatedIncome.SSR.text1=This varies depending on your income. Based on your current estimated income you are entitled to £{0} of interest tax free.
