@@ -54,6 +54,16 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     }
   }
 
+  "yourTaxFreeAmount" must {
+    "show 'Your tax-free amount' page" when {
+      "the request has an authorised session" in {
+        val SUT = createSUT
+        val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+      }
+    }
+  }
+
   private def createSUT = new SUT
   def generateNino: Nino = new Generator(new Random).nextNino
 

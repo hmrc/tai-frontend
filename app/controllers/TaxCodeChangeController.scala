@@ -16,11 +16,10 @@
 
 package controllers
 
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -45,6 +44,15 @@ trait TaxCodeChangeController extends TaiBaseController
               Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
           }
 
+  }
+
+  def yourTaxFreeAmount: Action[AnyContent] = authorisedForTai(personService).async {
+  implicit user =>
+    implicit person =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          Future.successful(Ok(views.html.taxCodeChange.yourTaxFreeAmount()))
+        }
   }
 
 }
