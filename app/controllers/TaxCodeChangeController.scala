@@ -55,6 +55,15 @@ trait TaxCodeChangeController extends TaiBaseController
         }
   }
 
+  def taxCodeComparison: Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison()))
+          }
+  }
+
 }
 
 object TaxCodeChangeController extends TaxCodeChangeController with AuthenticationConnectors{
