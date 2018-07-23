@@ -16,6 +16,9 @@
 
 package controllers
 
+import play.api.Play.current
+import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.mvc.{Action, AnyContent}
@@ -39,7 +42,7 @@ trait TaxCodeChangeController extends TaiBaseController
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-              Future.successful(Ok(""))
+              Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
           }
 
   }
