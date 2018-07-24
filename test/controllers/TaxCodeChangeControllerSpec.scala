@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package controllers.pensions
+package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import controllers.{FakeTaiPlayApplication, TaxCodeChangeController}
 import mocks.MockTemplateRenderer
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.when
