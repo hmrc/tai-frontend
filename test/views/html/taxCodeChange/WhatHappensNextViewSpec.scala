@@ -20,6 +20,12 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class WhatHappensNextViewSpec extends TaiViewSpec {
 
+  "what happens next" should {
+    behave like pageWithTitle(messages("taxCode.change.whatHappensNext.title"))
+
+
+  }
+
   override def view = views.html.taxCodeChange.whatHappensNext()
 
 }

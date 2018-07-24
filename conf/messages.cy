@@ -1216,6 +1216,9 @@ tai.taxFreeAmount.missing.section.income=Ychwanegu incwm o ffynhonnell arall syd
 
 tai.canWeContactByPhone.explanation.pt2=Os dewiswch ''Na'', byddwn yn cysylltu â chi trwy lythyr. Am resymau diogelwch, ni allwn ofyn am fwy o wybodaeth trwy e-bost.
 
+# tax code change
+taxCode.change.whatHappensNext.title=Yr hyn sy’n digwydd nesaf
+
 ##Update Pension Pages
 tai.updatePension.preHeading=Diweddaru pensiwn
 tai.updatePension.cya.currentlyReceivePension=Ar hyn o bryd yn cael y pensiwn hwn

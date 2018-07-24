@@ -19,11 +19,12 @@ package controllers.pensions
 import builders.{AuthBuilder, RequestBuilder}
 import controllers.{FakeTaiPlayApplication, TaxCodeChangeController}
 import mocks.MockTemplateRenderer
+import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -44,11 +45,11 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  "whatHappensNext" must {
-    "show 'What happens next' page" when {
+  "taxCodeComparison" must {
+    "show 'Your tax code comparison' page" when {
       "the request has an authorised session" in {
         val SUT = createSUT
-        val result = SUT.whatHappensNext()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
       }
     }
@@ -64,12 +65,15 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     }
   }
 
-  "taxCodeComparison" must {
-    "show 'Your tax code comparison' page" when {
+  "whatHappensNext" must {
+    "show 'What happens next' page" when {
       "the request has an authorised session" in {
         val SUT = createSUT
-        val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = SUT.whatHappensNext()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messagesApi("taxCode.change.whatHappensNext.title"))
       }
     }
   }

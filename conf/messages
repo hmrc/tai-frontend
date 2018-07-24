@@ -1373,6 +1373,11 @@ tai.taxCollected.atSource.otherIncome.description=Tax on other income not collec
 tai.taxCollected.byPAYE.title=Tax collected through your tax code
 tai.taxCollected.byPAYE.description=Pay As You Earn (PAYE) does not include tax paid elsewhere. The tax you’ll pay through PAYE is £{0}.
 
+
+# tax code change
+taxCode.change.whatHappensNext.title=What happens next
+
+
 # NonTaxCodeIncomeComponentType display decodes..
 tai.typeDecodes.NonCodedIncome=Non Coded Income
 tai.typeDecodes.Commission=Commission
@@ -1410,3 +1415,4 @@ language.day.plural=days
 
 tai.updateOrRemove.fromOtherSources=Update or remove {0}
 tai.mergedTaxBand.link.wording=Check tax on income
+
