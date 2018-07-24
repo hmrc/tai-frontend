@@ -20,8 +20,10 @@ import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import TaiConstants.encodedMinusSign
 import controllers.FakeTaiPlayApplication
+import org.joda.time.LocalDate
 import uk.gov.hmrc.time.TaxYearResolver
 import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlayApplication {
 
@@ -87,6 +89,24 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlay
   "calling url encoder" must {
     "encode the url" in {
       urlEncode("http://foo") mustBe "http%3A%2F%2Ffoo"
+    }
+  }
+
+  "dynamicDateRangeHtmlNonBreak " must {
+    "given two dates return a formatted string" in {
+      val now = new LocalDate()
+      val endOfTaxYear = TaxYearResolver.endOfCurrentTaxYear
+      val expectedNow = htmlNonBroken(Dates.formatDate(now))
+      val expectedEnd = htmlNonBroken(Dates.formatDate(endOfTaxYear))
+
+      dynamicDateRangeHtmlNonBreak(now,endOfTaxYear) mustBe s"${expectedNow} to ${expectedEnd}"
+    }
+
+    "throw an exception if 'from' date is after the 'to' date" in {
+      val now = new LocalDate()
+      val yesterday = now.minusDays(1)
+
+      an [IllegalArgumentException] should be thrownBy dynamicDateRangeHtmlNonBreak(now, yesterday)
     }
   }
 }

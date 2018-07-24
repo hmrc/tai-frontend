@@ -1261,3 +1261,10 @@ tai.WhatDoYouWantToDo.radio3=yn gynharach
 tai.WhatDoYouWantToDo.submit=Yn eich blaen
 tai.whatDoYouWantToDo.error.selectOption=Dewiswch beth rydych am ei wneud.
 
+## Tax Code Change
+taxCode.change.whatHappensNext.preHeading= Newid yn eich cod treth
+taxCode.change.yourTaxFreeAmount.title=Eich swm rhydd o dreth
+taxCode.change.yourTaxFreeAmount.desc=
+taxCode.change.yourTaxFreeAmount.dates=
+
+

@@ -22,18 +22,21 @@
     ptaHeader(
     formForErrorSummary = None,
     displayBackLink = true,
-    mainHeadingText = Messages(""),
-    preHeadingText = Messages(""))
+    mainHeadingText = Messages("taxCode.change.yourTaxFreeAmount.title"),
+    preHeadingText = Messages("taxCode.change.journey.preHeading"))
 }
 
 @main(
-    title = Messages(""),
-    articleClasses = None,
+    title = Messages("taxCode.change.yourTaxFreeAmount.title"),
+    articleClasses = Some("full-width"),
     pageHeader = Some(header),
     user = Some(user),
     gaCustomTitle = None
 ){
-<div>
 
-</div>
+    <p>@Messages("taxCode.change.yourTaxFreeAmount.desc")</p>
+
+    <h2>@Messages("taxCode.change.yourTaxFreeAmount.dates")</h2>
+
+
 }

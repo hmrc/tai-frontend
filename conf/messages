@@ -1410,3 +1410,11 @@ language.day.plural=days
 
 tai.updateOrRemove.fromOtherSources=Update or remove {0}
 tai.mergedTaxBand.link.wording=Check tax on income
+
+# Tax Code Change
+taxCode.change.journey.preHeading= Your tax code change
+taxCode.change.yourTaxFreeAmount.title=Your tax-free amount
+taxCode.change.yourTaxFreeAmount.desc=Your tax-free amount is the income you can have before paying tax. It is used to work out your tax codes.
+taxCode.change.yourTaxFreeAmount.dates=Your tax-free amount for {0}
+
+
