@@ -329,10 +329,22 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
     "have tax on your dividend income section" when{
 
-      "dividends income exists " in {
+      "dividends income exists for a higher rate taxpayer" in {
+
+        val higherDividends = List(TaxBand(DividendHigherRate, "", 11500, 0, None, None, 32.5))
+        val model = defaultViewModel.copy(dividends = higherDividends)
+        def view = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
 
         doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading"))
         doc(view) must haveParagraphWithText(messages("tai.estimatedIncome.dividend.para.desc","20,000","5,000"))
+        doc(view) must haveParagraphWithText(messages("estimatedIncome.dividend.para.higher", "32.5"))
+
+      }
+      "dividends income exists for a non-higher rate taxpayer" in {
+
+        doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading"))
+        doc(view) must haveParagraphWithText(messages("tai.estimatedIncome.dividend.para.desc","20,000","5,000"))
+        doc(view).toString mustNot include("Because you are a higher rate taxpayer your dividend income is taxed at the higher dividend rate of")
 
       }
     }

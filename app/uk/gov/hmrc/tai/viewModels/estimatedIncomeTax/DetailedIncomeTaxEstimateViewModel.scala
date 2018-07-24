@@ -271,4 +271,13 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
 
   }
 
+  def maxDividendsRate(dividends: List[TaxBand]): BigDecimal = {
+    dividends.map(_.rate).max
+  }
+
+  def hasHigherRateDividends(dividends: List[TaxBand]): Boolean = {
+    val bandTypes = dividends.map(_.bandType)
+    bandTypes.contains(DividendHigherRate) || bandTypes.contains(DividendAdditionalRate)
+  }
+
 }

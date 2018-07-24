@@ -928,6 +928,7 @@ tai.estimatedIncome.accessiblePreHeading=This section is your income tax estimat
 tai.estimatedIncome.whyEstimate.link=Why this is an estimate
 tai.estimatedIncome.whyEstimate.desc=The amount of tax you pay depends on your total income for the whole tax year. We can’t give an exact figure because we won’t know about all your income until after the tax year ends on {0}.
 tai.estimatedIncome.dividend.para.desc=Your total income from dividends this tax year is estimated at £{0}. The first £{1} of dividend income in each tax year is tax free.
+estimatedIncome.dividend.para.higher=Because you are a higher rate taxpayer your dividend income is taxed at the higher dividend rate of {0}%.
 tai.estimatedIncome.savings.desc.SR=Based on your current estimated income you are entitled to £{0} of savings interest tax free.
 tai.estimatedIncome.savings.desc.BRHR=Your total income from savings this tax year is estimated at £{0}.
 tai.estimatedIncome.savings.desc.BRHR2=The first £{0} of your savings interest income in each tax year is tax-free. This is your Personal Savings Allowance.
