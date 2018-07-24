@@ -20,5 +20,9 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class YourTaxFreeAmountViewSpec extends TaiViewSpec{
 
+  "your tax free amount" should {
+    behave like pageWithBackLink
+  }
+
   override def view = views.html.taxCodeChange.yourTaxFreeAmount()
 }

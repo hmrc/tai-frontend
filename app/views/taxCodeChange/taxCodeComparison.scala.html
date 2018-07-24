@@ -14,11 +14,22 @@
  * limitations under the License.
  *@
 
+@import includes.ptaHeader
+
 @()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@header = @{
+    ptaHeader(
+    formForErrorSummary = None,
+    displayBackLink = true,
+    mainHeadingText = Messages(""),
+    preHeadingText = Messages(""))
+}
 
 @main(
     title = Messages(""),
-    articleClasses = Some("full-width"),
+    articleClasses = None,
+    pageHeader = Some(header),
     user = Some(user),
     gaCustomTitle = None
 ){
