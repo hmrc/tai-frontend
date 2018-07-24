@@ -20,6 +20,10 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class TaxCodeComparisonViewSpec extends TaiViewSpec{
 
+  "tax code comparison" should {
+    behave like pageWithBackLink
+  }
+
   override def view = views.html.taxCodeChange.taxCodeComparison()
 
 
