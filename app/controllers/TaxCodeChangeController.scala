@@ -36,14 +36,13 @@ trait TaxCodeChangeController extends TaiBaseController
 {
   def personService: PersonService
 
-  def whatHappensNext : Action[AnyContent] = authorisedForTai(personService).async {
+  def taxCodeComparison: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-              Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
+            Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison()))
           }
-
   }
 
   def yourTaxFreeAmount: Action[AnyContent] = authorisedForTai(personService).async {
@@ -55,13 +54,14 @@ trait TaxCodeChangeController extends TaiBaseController
         }
   }
 
-  def taxCodeComparison: Action[AnyContent] = authorisedForTai(personService).async {
+  def whatHappensNext : Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison()))
+            Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
           }
+
   }
 
 }
