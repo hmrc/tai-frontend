@@ -87,9 +87,6 @@
                             MoneyPounds(viewModel.totalDividendIncome, 0).quantity,
                             MoneyPounds(viewModel.taxFreeDividendAllowance, 0).quantity)
                         </p>
-                        @if(DetailedIncomeTaxEstimateViewModel.hasHigherRateDividends(viewModel.dividends)) {
-                        <p>@Messages("estimatedIncome.dividend.para.higher", DetailedIncomeTaxEstimateViewModel.maxDividendsRate(viewModel.dividends))</p>
-                        }
                         @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.dividends, taxRegion = viewModel.taxRegion)
                     </section>
                 }

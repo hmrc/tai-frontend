@@ -111,39 +111,6 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
         model.dividends must contain theSameElementsAs(taxBands)
 
       }
-
-      "maxDividendsRate is called" must {
-        "return the max dividends rate" in {
-          val taxBands = Seq(
-            TaxBand(bandType = DividendZeroRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 0),
-            TaxBand(bandType = DividendBasicRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 10),
-            TaxBand(bandType = DividendHigherRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
-            TaxBand(bandType = DividendAdditionalRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 30)
-          )
-
-          DetailedIncomeTaxEstimateViewModel.maxDividendsRate(taxBands.toList) mustBe 30
-        }
-      }
-      "hasHigherRateDividends is called" must {
-        "return true when a higher or additional rate band is present" in {
-          val taxBands = Seq(
-            TaxBand(bandType = DividendZeroRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 0),
-            TaxBand(bandType = DividendBasicRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 10),
-            TaxBand(bandType = DividendHigherRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 20),
-            TaxBand(bandType = DividendAdditionalRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 30)
-          )
-
-          DetailedIncomeTaxEstimateViewModel.hasHigherRateDividends(taxBands.toList) mustBe true
-        }
-        "return false when a higher or additional rate band is not present" in {
-          val taxBands = Seq(
-            TaxBand(bandType = DividendZeroRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 0),
-            TaxBand(bandType = DividendBasicRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(5000), rate = 10)
-          )
-
-          DetailedIncomeTaxEstimateViewModel.hasHigherRateDividends(taxBands.toList) mustBe false
-        }
-      }
     }
 
     "looking at savings" when {

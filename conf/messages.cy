@@ -1241,6 +1241,8 @@ tai.updateOrRemove.fromOtherSources=Diweddaru neu ddileu {0}
 tai.mergedTaxBand.link.wording=Gwirio treth ar incwm
 
 estimatedIncome.howYouPay.desc=Mae''ch cyflogwr neu''ch darparwr pensiwn yn tynnu Treth Incwm cyn iddo''ch talu. Yr enw a roddir ar hyn yw Talu Wrth Ennill (TWE). Mae {0} yn rhoi gwybod iddo faint o incwm rhydd o dreth y gallwch ei gael cyn iddo ddidynnu Treth Incwm.
+estimate.uk.bandtype.pa=Lwfans rhydd o dreth
+estimate.uk.bandtype.SDR=Lwfans rhydd o dreth
 
 ##What Do You Want To Do Page
 
