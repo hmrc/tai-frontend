@@ -75,7 +75,7 @@ trait TaxCodeChangeController extends TaiBaseController
         implicit request =>
           if(taxCodeChangeEnabled) {
             ServiceCheckLite.personDetailsCheck {
-              Future.successful (Ok (views.html.taxCodeChange.whatHappensNext () ) )
+              Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
             }
           }
           else {
