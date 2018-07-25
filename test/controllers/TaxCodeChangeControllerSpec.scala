@@ -30,7 +30,10 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.service.PersonService
+import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity}
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.service.benefits.CompanyCarService
+import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -57,6 +60,9 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     "show 'Your tax-free amount' page" when {
       "the request has an authorised session" in {
         val SUT = createSUT
+        when(SUT.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(codingComponents))
+        when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
+        when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
         val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
       }
@@ -77,12 +83,19 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   private def createSUT = new SUT
   def generateNino: Nino = new Generator(new Random).nextNino
 
+  val codingComponents = Seq(CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
+    CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description"))
+
+
 
   private class SUT extends TaxCodeChangeController {
 
     override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override val personService: PersonService = mock[PersonService]
+    override val codingComponentService: CodingComponentService = mock[CodingComponentService]
+    override val employmentService: EmploymentService = mock[EmploymentService]
+    override val companyCarService: CompanyCarService = mock[CompanyCarService]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]

@@ -66,6 +66,10 @@ tai.inPounds= in pounds.
 
 tai.heading.taxYear.interval={0} to {1}
 
+#view model helper
+viewModelHelper.invalidDateRange.text=From date:{0} cannot be after To date:{1}
+
+
 #Income Tax Summary
 tai.incomeTaxSummary.incomeAmount.prefix=Your estimated taxable income is
 tai.incomeTaxSummary.ceasedIncomeAmount.prefix=Your taxable income to date is
@@ -1416,5 +1420,6 @@ taxCode.change.journey.preHeading= Your tax code change
 taxCode.change.yourTaxFreeAmount.title=Your tax-free amount
 taxCode.change.yourTaxFreeAmount.desc=Your tax-free amount is the income you can have before paying tax. It is used to work out your tax codes.
 taxCode.change.yourTaxFreeAmount.dates=Your tax-free amount for {0}
+
 
 

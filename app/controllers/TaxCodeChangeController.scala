@@ -18,14 +18,20 @@ package controllers
 
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
+import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.PersonService
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.service.benefits.CompanyCarService
+import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService}
+import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
 import scala.concurrent.Future
 
@@ -35,6 +41,9 @@ trait TaxCodeChangeController extends TaiBaseController
   with Auditable
 {
   def personService: PersonService
+  def codingComponentService: CodingComponentService
+  def employmentService: EmploymentService
+  def companyCarService: CompanyCarService
 
   def taxCodeComparison: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -50,7 +59,15 @@ trait TaxCodeChangeController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          Future.successful(Ok(views.html.taxCodeChange.yourTaxFreeAmount()))
+          val nino = Nino(user.getNino)
+          for {
+            codingComponents <- codingComponentService.taxFreeAmountComponents(nino, TaxYear())
+            employmentNames <- employmentService.employmentNames(nino, TaxYear())
+            companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
+          } yield {
+            val viewModel = YourTaxFreeAmountViewModel(new LocalDate())
+            Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
+          }
         }
   }
 
@@ -71,5 +88,8 @@ object TaxCodeChangeController extends TaxCodeChangeController with Authenticati
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override implicit val templateRenderer = LocalTemplateRenderer
   override val personService: PersonService = PersonService
+  override val codingComponentService: CodingComponentService = CodingComponentService
+  override val employmentService: EmploymentService = EmploymentService
+  override val companyCarService: CompanyCarService = CompanyCarService
 
 }

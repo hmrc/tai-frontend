@@ -18,9 +18,11 @@ package views.html.taxCodeChange
 
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
+import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
 class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
@@ -38,10 +40,23 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     "have h2 heading showing the date period for tax-free amount" in {
       val fromDate = new LocalDate()
       val toDate = TaxYearResolver.endOfCurrentTaxYear
-      doc(view) must haveH2HeadingWithText(Messages("taxCode.change.yourTaxFreeAmount.dates", ViewModelHelper.dynamicDateRangeHtmlNonBreak(fromDate, toDate)))
+
+      doc(viewP2Date) must haveH2HeadingWithText(Messages("taxCode.change.yourTaxFreeAmount.dates",
+        ViewModelHelper.dynamicDateRangeHtmlNonBreak(fromDate, toDate)))
+
+      def viewP2Date: Html = views.html.taxCodeChange.yourTaxFreeAmount(createViewModel(fromDate))
     }
+
+
+
+
+
 
   }
 
-  override def view = views.html.taxCodeChange.yourTaxFreeAmount()
+  private def createViewModel(p2IssuedDate:LocalDate = new LocalDate()):YourTaxFreeAmountViewModel = {
+    YourTaxFreeAmountViewModel(p2IssuedDate)
+  }
+
+  override def view = views.html.taxCodeChange.yourTaxFreeAmount(createViewModel())
 }

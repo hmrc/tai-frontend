@@ -15,8 +15,8 @@
  *@
 
 @import includes.ptaHeader
-
-@()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
+@(viewModel:YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
     ptaHeader(
@@ -36,7 +36,7 @@
 
     <p>@Messages("taxCode.change.yourTaxFreeAmount.desc")</p>
 
-    <h2>@Messages("taxCode.change.yourTaxFreeAmount.dates")</h2>
+    <h2>@Messages("taxCode.change.yourTaxFreeAmount.dates",viewModel.taxCodeDateRange)</h2>
 
 
 }

@@ -21,6 +21,7 @@ import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import TaiConstants.encodedMinusSign
 import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
+import play.api.i18n.Messages
 import uk.gov.hmrc.time.TaxYearResolver
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
@@ -110,7 +111,7 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlay
         dynamicDateRangeHtmlNonBreak(now, yesterday)
       }
 
-      caught.getMessage mustBe s"From date:$now cannot be after To date:$yesterday"
+      caught.getMessage mustBe Messages("viewModelHelper.invalidDateRange")
     }
   }
 }

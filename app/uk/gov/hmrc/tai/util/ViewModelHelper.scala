@@ -63,9 +63,9 @@ trait ViewModelHelper {
 
   def dynamicDateRangeHtmlNonBreak(from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {
     if(from isAfter to) {
-      throw new IllegalArgumentException(s"From date:$from cannot be after To date:$to")
+      throw new IllegalArgumentException(messages("viewModelHelper.invalidDateRange"))
     } else {
-      messages("tai.taxYear",
+        messages("tai.taxYear",
         htmlNonBroken(Dates.formatDate(from)),
         htmlNonBroken(Dates.formatDate(to)))
     }
