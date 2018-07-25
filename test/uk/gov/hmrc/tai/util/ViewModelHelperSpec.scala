@@ -106,7 +106,11 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlay
       val now = new LocalDate()
       val yesterday = now.minusDays(1)
 
-      an [IllegalArgumentException] should be thrownBy dynamicDateRangeHtmlNonBreak(now, yesterday)
+      val caught = intercept[IllegalArgumentException]{
+        dynamicDateRangeHtmlNonBreak(now, yesterday)
+      }
+
+      caught.getMessage mustBe s"From date:$now cannot be after To date:$yesterday"
     }
   }
 }
