@@ -114,57 +114,77 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
     }
 
     "looking at savings" when {
-      "savingsDescription1 is called must return the correct message" when {
-        "bandType is SR" in {
+
+      "isStartingRateOnly is called" must {
+        "return true when the only taxBand present is starting Rate band" in {
           val taxBand = TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
           val savingsBands = Seq(taxBand)
-
-          DetailedIncomeTaxEstimateViewModel.savingsDescription1(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.SR", 500)
+          DetailedIncomeTaxEstimateViewModel.isStartingRateOnly(savingsBands) mustBe true
         }
+        "return false when other taxBands are present as well as starting Rate band" in {
+          val startingRateBand = TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+          val otherRateBand = TaxBand(bandType = "PSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+          val savingsBands = Seq(startingRateBand, otherRateBand)
+          DetailedIncomeTaxEstimateViewModel.isStartingRateOnly(savingsBands) mustBe false
+        }
+      }
+      "savingsDescriptionStartingRateOnly is called must return the correct message" in {
+        val taxBand = TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+        val savingsBands = Seq(taxBand)
+
+        DetailedIncomeTaxEstimateViewModel.savingsDescriptionStartingRateOnly(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.SR", 500)
+      }
+
+      "savingsDescription1 is called must return the correct message" when {
         "bandType is LSR" in {
           val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
           val taxBandLSR = TaxBand(bandType = "LSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 20)
           val savingsBands = Seq(taxBandPSR, taxBandLSR)
 
-          DetailedIncomeTaxEstimateViewModel.savingsDescription1(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR", 600)
+          DetailedIncomeTaxEstimateViewModel.totalSavingsIncomePara(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate", 600)
         }
         "bandType is HSR1" in {
           val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
-          val taxBandLSR = TaxBand(bandType = "HSR1", code = "", income = 7000, tax = 0, lowerBand = None, upperBand = Some(10000), rate = 20)
-          val savingsBands = Seq(taxBandPSR, taxBandLSR)
+          val taxBandLSR = TaxBand(bandType = "LSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 20)
+          val taxBandHSR1 = TaxBand(bandType = "HSR1", code = "", income = 7000, tax = 0, lowerBand = None, upperBand = Some(10000), rate = 20)
+          val savingsBands = Seq(taxBandPSR, taxBandLSR, taxBandHSR1)
 
-          DetailedIncomeTaxEstimateViewModel.savingsDescription1(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR", 7500)
+          DetailedIncomeTaxEstimateViewModel.totalSavingsIncomePara(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate", 7600)
         }
         "bandType is HSR2" in {
           val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
-          val taxBandLSR = TaxBand(bandType = "HSR2", code = "", income = 8000, tax = 0, lowerBand = None, upperBand = Some(11000), rate = 20)
-          val savingsBands = Seq(taxBandPSR, taxBandLSR)
+          val taxBandLSR = TaxBand(bandType = "LSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 20)
+          val taxBandHSR1 = TaxBand(bandType = "HSR1", code = "", income = 7000, tax = 0, lowerBand = None, upperBand = Some(10000), rate = 20)
+          val taxBandHSR2 = TaxBand(bandType = "HSR2", code = "", income = 8000, tax = 0, lowerBand = None, upperBand = Some(11000), rate = 20)
+          val savingsBands = Seq(taxBandPSR, taxBandLSR, taxBandHSR1, taxBandHSR2)
 
-          DetailedIncomeTaxEstimateViewModel.savingsDescription1(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR", 8500)
+          DetailedIncomeTaxEstimateViewModel.totalSavingsIncomePara(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate", 15600)
         }
       }
 
-      "savingsDescription2 is called must return the correct message" when {
+      "personalAllowancePara is called must return the correct message" when {
         "bandType is LSR" in {
           val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
+          val taxBandSR = TaxBand(bandType = "SR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
           val taxBandLSR = TaxBand(bandType = "LSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 20)
-          val savingsBands = Seq(taxBandPSR, taxBandLSR)
+          val savingsBands = Seq(taxBandPSR, taxBandSR, taxBandLSR)
 
-          DetailedIncomeTaxEstimateViewModel.savingsDescription2(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR2", 1000)
+          DetailedIncomeTaxEstimateViewModel.personalAllowancePara(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR2", 2000)
         }
         "bandType is HSR1" in {
           val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
+          val taxBandSR = TaxBand(bandType = "SR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
           val taxBandLSR = TaxBand(bandType = "HSR1", code = "", income = 7000, tax = 0, lowerBand = None, upperBand = Some(10000), rate = 20)
-          val savingsBands = Seq(taxBandPSR, taxBandLSR)
+          val savingsBands = Seq(taxBandPSR, taxBandSR, taxBandLSR)
 
-          DetailedIncomeTaxEstimateViewModel.savingsDescription2(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR2extra", 1000)
+          DetailedIncomeTaxEstimateViewModel.personalAllowancePara(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR2extra", 2000)
         }
         "bandType is HSR2" in {
           val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
           val taxBandLSR = TaxBand(bandType = "HSR2", code = "", income = 8000, tax = 0, lowerBand = None, upperBand = Some(11000), rate = 20)
           val savingsBands = Seq(taxBandPSR, taxBandLSR)
 
-          DetailedIncomeTaxEstimateViewModel.savingsDescription2(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR2extra", 1000)
+          DetailedIncomeTaxEstimateViewModel.personalAllowancePara(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR2extra", 1000)
         }
       }
     }

@@ -229,39 +229,34 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
     }
   }
 
-
-  def savingsDescription1(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
-
-    val isStartingRate = savingsBands.exists(_.bandType == StarterSavingsRate)
-
-    val startingRateAllowance = savingsBands.find(_.bandType == StarterSavingsRate).flatMap(_.upperBand).getOrElse(0)
-    val personalSavingsAllowanceIncome: BigDecimal = savingsBands.find(_.bandType == PersonalSavingsRate).map(_.income).getOrElse(0)
-    val basicRateSavingsIncome: BigDecimal = savingsBands.find(
-      x => x.bandType == SavingsBasicRate || x.bandType == SavingsHigherRate || x.bandType == SavingsAdditionalRate
-    ).map(_.income).getOrElse(0)
-
-    val totalBasicRateSavingsIncome = personalSavingsAllowanceIncome + basicRateSavingsIncome
-
-    if(isStartingRate) {
-      Messages("tai.estimatedIncome.savings.desc.SR", startingRateAllowance)
-    } else {
-      Messages("tai.estimatedIncome.savings.desc.BRHR", totalBasicRateSavingsIncome)
-    }
+  def isStartingRateOnly(savingsBands: Seq[TaxBand]): Boolean = {
+    savingsBands.exists(_.bandType == StarterSavingsRate) && !(savingsBands.length>1)
   }
 
-  def savingsDescription2(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
+  def savingsDescriptionStartingRateOnly(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
+
+    val startingRateAllowance = savingsBands.find(_.bandType == StarterSavingsRate).flatMap(_.upperBand).getOrElse(0)
+    Messages("tai.estimatedIncome.savings.desc.SR", startingRateAllowance)
+
+  }
+
+  def totalSavingsIncomePara(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
+
+    val totalSavingsIncome = savingsBands.map(_.income).sum
+    Messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate", totalSavingsIncome)
+  }
+
+  def personalAllowancePara(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
     val isBasicRate = savingsBands.exists(_.bandType == SavingsBasicRate)
-    val taxFreeAllowance = savingsBands.find(_.bandType == PersonalSavingsRate).flatMap(_.upperBand).getOrElse(0)
+    val PSRAllowance: BigDecimal = savingsBands.find(_.bandType == PersonalSavingsRate).flatMap(_.upperBand).getOrElse(0)
+    val SRAllowance: BigDecimal = savingsBands.find(_.bandType == StarterSavingsRate).flatMap(_.upperBand).getOrElse(0)
+    val taxFreeAllowance = PSRAllowance + SRAllowance
+
     if(isBasicRate) {
       Messages("tai.estimatedIncome.savings.desc.BRHR2", taxFreeAllowance)
     } else {
       Messages("tai.estimatedIncome.savings.desc.BRHR2extra", taxFreeAllowance)
     }
-  }
-
-  def savingsDescription3(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
-    val higherRate = savingsBands.find(_.bandType != StarterSavingsRate).map(_.rate).getOrElse(0)
-    Messages("tai.estimatedIncome.savings.desc.BRHR3", higherRate)
   }
 
   def taxFreeDividendAllowance(incomeCategories: Seq[IncomeCategory]): BigDecimal = {

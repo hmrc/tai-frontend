@@ -94,16 +94,19 @@
                 @if(viewModel.savings.nonEmpty){
                     <section class="section soft--top">
                         <h2 id="tax-on-savings-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")</h2>
-                        <p id="tax-on-savings-desc1">
-                            @DetailedIncomeTaxEstimateViewModel.savingsDescription1(viewModel.savings)
-                        </p>
-                        @if(viewModel.savings.exists(_.bandType != "SR")){
-                        <p id="tax-on-savings-desc2">
-                            @DetailedIncomeTaxEstimateViewModel.savingsDescription2(viewModel.savings)
-                        </p>
-                        <p id="tax-on-savings-desc3">
-                            @DetailedIncomeTaxEstimateViewModel.savingsDescription3(viewModel.savings)
-                        </p>
+                        @if(DetailedIncomeTaxEstimateViewModel.isStartingRateOnly(viewModel.savings)) {
+                            <p id="tax-on-savings-desc-sr-only">
+                                @DetailedIncomeTaxEstimateViewModel.savingsDescriptionStartingRateOnly(viewModel.savings)
+                            </p>
+                        } else {
+                            <p id="tax-on-savings-desc1">
+                                @DetailedIncomeTaxEstimateViewModel.totalSavingsIncomePara(viewModel.savings)
+                            </p>
+                            @if(viewModel.savings.exists(_.bandType != "SR")){
+                                <p id="tax-on-savings-desc2">
+                                    @DetailedIncomeTaxEstimateViewModel.personalAllowancePara(viewModel.savings)
+                                </p>
+                            }
                         }
 
                         @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.savings.toList, taxRegion = viewModel.taxRegion)

@@ -339,12 +339,12 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
     "have tax on your savings income section" when{
 
-      val savingsPara1Id = "tax-on-savings-desc1"
-      val savingsPara2Id = "tax-on-savings-desc2"
-      val savingsPara3Id = "tax-on-savings-desc3"
+      val savingsSrBandParaId = "tax-on-savings-desc-sr-only"
+      val totalSavingsIncomeParaId = "tax-on-savings-desc1"
+      val personalAllowanceParaId = "tax-on-savings-desc2"
 
 
-      "savings income at SR band type " in {
+      "savings income is SR band type only" in {
         val taxBand = TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
         val savingsBands = Seq(taxBand)
         val model = defaultViewModel.copy(savings = savingsBands)
@@ -352,9 +352,9 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
         doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading"))
 
-        doc(view) must haveElementWithId(savingsPara1Id)
-        doc(view) mustNot haveElementWithId(savingsPara2Id)
-        doc(view) mustNot haveElementWithId(savingsPara3Id)
+        doc(view) must haveElementWithId(savingsSrBandParaId)
+        doc(view) mustNot haveElementWithId(totalSavingsIncomeParaId)
+        doc(view) mustNot haveElementWithId(personalAllowanceParaId)
 
       }
 
@@ -367,9 +367,9 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
         doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading"))
 
-        doc(view) must haveElementWithId(savingsPara1Id)
-        doc(view) must haveElementWithId(savingsPara2Id)
-        doc(view) must haveElementWithId(savingsPara3Id)
+        doc(view) mustNot haveElementWithId(savingsSrBandParaId)
+        doc(view) must haveElementWithId(totalSavingsIncomeParaId)
+        doc(view) must haveElementWithId(personalAllowanceParaId)
 
       }
     }
