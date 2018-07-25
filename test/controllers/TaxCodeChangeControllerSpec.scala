@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package controllers.pensions
+package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import controllers.{FakeTaiPlayApplication, TaxCodeChangeController}
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector

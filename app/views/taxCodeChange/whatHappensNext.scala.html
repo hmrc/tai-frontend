@@ -15,6 +15,7 @@
  *@
 
 @import includes.ptaHeader
+@import uk.gov.hmrc.urls.Link
 
 @()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -22,18 +23,50 @@
     ptaHeader(
     formForErrorSummary = None,
     displayBackLink = true,
-    mainHeadingText = Messages(""),
-    preHeadingText = Messages(""))
+    mainHeadingText = Messages("taxCode.change.whatHappensNext.title"),
+    preHeadingText = Messages("taxCode.change.journey.preHeading"))
 }
 
 @main(
     title = Messages("taxCode.change.whatHappensNext.title"),
-    articleClasses = None,
+    articleClasses = Some("full-width"),
     pageHeader = Some(header),
     user = Some(user),
     gaCustomTitle = None
 ){
-<div>
 
+<div class="grid-row">
+    <div class="grid grid-2-3">
+        <div class="inner-block">
+            <section id="tax-code-correct" class="section flush--bottom">
+                <p id="lede-message" class="flush--top">
+                    <span class="lede">@Messages("taxCode.change.whatHappensNext.paragragh1")</span>
+                </p>
+
+                <p id="check-income-tax-estimate">
+                    @Html(Messages("taxCode.change.whatHappensNext.paragragh2",
+                    Link.toInternalPage(
+                    id=Some("income-tax-estimate-link"),
+                    url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
+                    value=Some(Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link"))).toHtml))
+                </p>
+
+            </section>
+
+            <section id="tax-code-incorrect" class="section flush--bottom">
+                <h2 class="heading-medium">@Messages("taxCode.change.whatHappensNext.wrongInformation.text")</h2>
+
+                <p id="update-current-income-or-benefits">
+                    @Html(Messages("taxCode.change.whatHappensNext.paragragh3",
+                    Link.toInternalPage(
+                    id=Some("update-current-income-or-benefits-link"),
+                    url=routes.TaxAccountSummaryController.onPageLoad.url.toString,
+                    value=Some(Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link"))).toHtml))
+                </p>
+            </section>
+
+
+        </div>
+    </div>
 </div>
 }

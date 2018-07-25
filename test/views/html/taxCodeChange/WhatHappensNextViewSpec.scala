@@ -16,13 +16,36 @@
 
 package views.html.taxCodeChange
 
+import controllers.routes
+import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.urls.Link
 
 class WhatHappensNextViewSpec extends TaiViewSpec {
 
   "what happens next" should {
     behave like pageWithTitle(messages("taxCode.change.whatHappensNext.title"))
+    behave like pageWithBackLink
+    behave like pageWithCombinedHeader(messages("taxCode.change.journey.preHeading"), messages("taxCode.change.whatHappensNext.title"))
 
+    "display static messages" in {
+      doc must haveParagraphWithText(messages("taxCode.change.whatHappensNext.paragragh1"))
+
+      doc(view).select("#check-income-tax-estimate").html() mustBe Html(messages("taxCode.change.whatHappensNext.paragragh2",
+        Link.toInternalPage(
+          id = Some("income-tax-estimate-link"),
+          url = routes.EstimatedIncomeTaxController.estimatedIncomeTax().url.toString,
+          value = Some(messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link"))).toHtml)).body
+
+
+      doc must haveH2HeadingWithText(messages("taxCode.change.whatHappensNext.wrongInformation.text"))
+
+      doc(view).select("#update-current-income-or-benefits").html() mustBe Html(messages("taxCode.change.whatHappensNext.paragragh3",
+        Link.toInternalPage(
+          id = Some("update-current-income-or-benefits-link"),
+          url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
+          value = Some(messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link"))).toHtml)).body
+    }
 
   }
 

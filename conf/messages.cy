@@ -1217,7 +1217,15 @@ tai.taxFreeAmount.missing.section.income=Ychwanegu incwm o ffynhonnell arall syd
 tai.canWeContactByPhone.explanation.pt2=Os dewiswch ''Na'', byddwn yn cysylltu â chi trwy lythyr. Am resymau diogelwch, ni allwn ofyn am fwy o wybodaeth trwy e-bost.
 
 # tax code change
+taxCode.change.journey.preHeading= Newid yn eich cod treth
 taxCode.change.whatHappensNext.title=Yr hyn sy’n digwydd nesaf
+taxCode.change.whatHappensNext.paragragh1=Os yw’r wybodaeth am eich cod treth yn gywir, nid oes angen i chi wneud unrhyw beth
+taxCode.change.whatHappensNext.paragragh2=
+taxCode.change.whatHappensNext.paragragh3=
+taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link=
+taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link=
+taxCode.change.whatHappensNext.wrongInformation.text=Os yw’r wybodaeth yr ydych wedi’i gweld yn anghywir
+
 
 ##Update Pension Pages
 tai.updatePension.preHeading=Diweddaru pensiwn
