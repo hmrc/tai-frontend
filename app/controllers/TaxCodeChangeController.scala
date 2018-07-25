@@ -41,8 +41,15 @@ trait TaxCodeChangeController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison()))
+          if(taxCodeChangeEnabled) {
+            ServiceCheckLite.personDetailsCheck {
+              Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison()))
+            }
+          }
+          else {
+            ServiceCheckLite.personDetailsCheck {
+              Future.successful(NotFound)
+            }
           }
   }
 
@@ -50,8 +57,15 @@ trait TaxCodeChangeController extends TaiBaseController
   implicit user =>
     implicit person =>
       implicit request =>
-        ServiceCheckLite.personDetailsCheck {
-          Future.successful(Ok(views.html.taxCodeChange.yourTaxFreeAmount()))
+        if(taxCodeChangeEnabled) {
+          ServiceCheckLite.personDetailsCheck {
+            Future.successful(Ok(views.html.taxCodeChange.yourTaxFreeAmount()))
+          }
+        }
+        else {
+          ServiceCheckLite.personDetailsCheck {
+            Future.successful(NotFound)
+          }
         }
   }
 

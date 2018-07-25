@@ -55,7 +55,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
     "don't show 'What happens next' page if 'tax code change journey' is toggled off" when {
       "the request has an authorised session" in {
-        val SUT = createSUT(false)
+        val SUT = createSUT()
         val result = SUT.whatHappensNext()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe NOT_FOUND
       }
@@ -65,9 +65,17 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   "yourTaxFreeAmount" must {
     "show 'Your tax-free amount' page" when {
       "the request has an authorised session" in {
-        val SUT = createSUT()
+        val SUT = createSUT(true)
         val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
+      }
+    }
+
+    "don't show 'Your tax-free amount' page if 'tax code change journey' is toggled off" when {
+      "the request has an authorised session" in {
+        val SUT = createSUT()
+        val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe NOT_FOUND
       }
     }
   }
@@ -75,9 +83,17 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   "taxCodeComparison" must {
     "show 'Your tax code comparison' page" when {
       "the request has an authorised session" in {
-        val SUT = createSUT()
+        val SUT = createSUT(true)
         val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
+      }
+    }
+
+    "don't show 'Your tax code comparison' page if 'tax code change journey' is toggled off" when {
+      "the request has an authorised session" in {
+        val SUT = createSUT()
+        val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe NOT_FOUND
       }
     }
   }
