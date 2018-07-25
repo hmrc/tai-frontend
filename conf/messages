@@ -1109,7 +1109,7 @@ estimate.scottish.bandtype.HDR1=Higher rate
 estimate.scottish.bandtype.HDR2=Additional rate
 # Savings
 estimate.uk.bandtype.PSR=Personal Savings Allowance
-estimate.uk.bandtype.SR=Starting rate
+estimate.uk.bandtype.SR=Starting rate for savings
 estimate.uk.bandtype.LSR=Basic rate
 estimate.uk.bandtype.HSR1=Higher rate
 estimate.uk.bandtype.HSR2=Additional rate
