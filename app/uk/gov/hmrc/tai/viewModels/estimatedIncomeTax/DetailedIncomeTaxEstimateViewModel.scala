@@ -229,14 +229,22 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
     }
   }
 
-  def isStartingRateOnly(savingsBands: Seq[TaxBand]): Boolean = {
-    savingsBands.exists(_.bandType == StarterSavingsRate) && !(savingsBands.length>1)
+  def isSRorPSR(band: TaxBand): Boolean = {
+    band.bandType == StarterSavingsRate || band.bandType == PersonalSavingsRate
   }
 
-  def savingsDescriptionStartingRateOnly(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
+  def isSROrPSROnly(savingsBands: Seq[TaxBand]): Boolean = {
+
+    val bandsNotSRorPSR = savingsBands.filterNot(x =>
+      isSRorPSR(x)
+    )
+    bandsNotSRorPSR.isEmpty
+  }
+
+  def savingsDescriptionTaxFreeEntitled(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
 
     val startingRateAllowance = savingsBands.find(_.bandType == StarterSavingsRate).flatMap(_.upperBand).getOrElse(0)
-    Messages("tai.estimatedIncome.savings.desc.SR", startingRateAllowance)
+    Messages("tai.estimatedIncome.savings.desc.taxFreeEntitled", startingRateAllowance)
 
   }
 

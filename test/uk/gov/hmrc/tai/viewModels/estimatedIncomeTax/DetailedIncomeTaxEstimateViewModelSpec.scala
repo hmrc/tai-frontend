@@ -115,24 +115,34 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
 
     "looking at savings" when {
 
-      "isStartingRateOnly is called" must {
+      "isSROrPSROnly is called" must {
         "return true when the only taxBand present is starting Rate band" in {
-          val taxBand = TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+          val taxBand = TaxBand(bandType = StarterSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
           val savingsBands = Seq(taxBand)
-          DetailedIncomeTaxEstimateViewModel.isStartingRateOnly(savingsBands) mustBe true
+          DetailedIncomeTaxEstimateViewModel.isSROrPSROnly(savingsBands) mustBe true
+        }
+        "return true when the only taxBand present is PSR band" in {
+          val taxBand = TaxBand(bandType = PersonalSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+          val savingsBands = Seq(taxBand)
+          DetailedIncomeTaxEstimateViewModel.isSROrPSROnly(savingsBands) mustBe true
+        }
+        "return true when both PSR and SR bands are present" in {
+          val taxBandPSR = TaxBand(bandType = PersonalSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+          val taxBandSR = TaxBand(bandType = StarterSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+          val savingsBands = Seq(taxBandPSR, taxBandSR)
+          DetailedIncomeTaxEstimateViewModel.isSROrPSROnly(savingsBands) mustBe true
         }
         "return false when other taxBands are present as well as starting Rate band" in {
-          val startingRateBand = TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
-          val otherRateBand = TaxBand(bandType = "PSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+          val startingRateBand = TaxBand(bandType = StarterSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+          val otherRateBand = TaxBand(bandType = SavingsHigherRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
           val savingsBands = Seq(startingRateBand, otherRateBand)
-          DetailedIncomeTaxEstimateViewModel.isStartingRateOnly(savingsBands) mustBe false
+          DetailedIncomeTaxEstimateViewModel.isSROrPSROnly(savingsBands) mustBe false
         }
       }
       "savingsDescriptionStartingRateOnly is called must return the correct message" in {
-        val taxBand = TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+        val taxBand = TaxBand(bandType = StarterSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
         val savingsBands = Seq(taxBand)
-
-        DetailedIncomeTaxEstimateViewModel.savingsDescriptionStartingRateOnly(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.SR", 500)
+        DetailedIncomeTaxEstimateViewModel.savingsDescriptionTaxFreeEntitled(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.taxFreeEntitled", 500)
       }
 
       "savingsDescription1 is called must return the correct message" when {

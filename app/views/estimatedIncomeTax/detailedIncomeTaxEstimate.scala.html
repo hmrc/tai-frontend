@@ -94,9 +94,9 @@
                 @if(viewModel.savings.nonEmpty){
                     <section class="section soft--top">
                         <h2 id="tax-on-savings-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")</h2>
-                        @if(DetailedIncomeTaxEstimateViewModel.isStartingRateOnly(viewModel.savings)) {
+                        @if(DetailedIncomeTaxEstimateViewModel.isSROrPSROnly(viewModel.savings)) {
                             <p id="tax-on-savings-desc-sr-only">
-                                @DetailedIncomeTaxEstimateViewModel.savingsDescriptionStartingRateOnly(viewModel.savings)
+                                @DetailedIncomeTaxEstimateViewModel.savingsDescriptionTaxFreeEntitled(viewModel.savings)
                             </p>
                         } else {
                             <p id="tax-on-savings-desc1">
