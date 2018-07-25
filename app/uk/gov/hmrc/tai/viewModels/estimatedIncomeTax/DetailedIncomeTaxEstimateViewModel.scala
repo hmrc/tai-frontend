@@ -229,14 +229,16 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
     }
   }
 
-  def isSRorPSR(band: TaxBand): Boolean = {
-    band.bandType == StarterSavingsRate || band.bandType == PersonalSavingsRate
+
+
+  def isHSR1orHSR2(band: TaxBand): Boolean = {
+    band.bandType == SavingsHigherRate || band.bandType == SavingsAdditionalRate
   }
 
-  def isSROrPSROnly(savingsBands: Seq[TaxBand]): Boolean = {
+  def containsHSR1orHSR2(savingsBands: Seq[TaxBand]): Boolean = {
 
     val bandsNotSRorPSR = savingsBands.filterNot(x =>
-      isSRorPSR(x)
+      isHSR1orHSR2(x)
     )
     bandsNotSRorPSR.isEmpty
   }
@@ -253,6 +255,9 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
     val totalSavingsIncome = savingsBands.map(_.income).sum
     Messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate", totalSavingsIncome)
   }
+
+
+
 
   def personalAllowancePara(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
     val isBasicRate = savingsBands.exists(_.bandType == SavingsBasicRate)

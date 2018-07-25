@@ -115,28 +115,16 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
 
     "looking at savings" when {
 
-      "isSROrPSROnly is called" must {
-        "return true when the only taxBand present is starting Rate band" in {
+      "hasHSR1orHSR2 is called" must {
+        "return false when HSR1 or HSR2 are NOT present" in {
           val taxBand = TaxBand(bandType = StarterSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
           val savingsBands = Seq(taxBand)
-          DetailedIncomeTaxEstimateViewModel.isSROrPSROnly(savingsBands) mustBe true
+          DetailedIncomeTaxEstimateViewModel.containsHSR1orHSR2(savingsBands) mustBe false
         }
-        "return true when the only taxBand present is PSR band" in {
-          val taxBand = TaxBand(bandType = PersonalSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+        "return false when HSR1 or HSR2 are present" in {
+          val taxBand = TaxBand(bandType = SavingsHigherRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
           val savingsBands = Seq(taxBand)
-          DetailedIncomeTaxEstimateViewModel.isSROrPSROnly(savingsBands) mustBe true
-        }
-        "return true when both PSR and SR bands are present" in {
-          val taxBandPSR = TaxBand(bandType = PersonalSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
-          val taxBandSR = TaxBand(bandType = StarterSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
-          val savingsBands = Seq(taxBandPSR, taxBandSR)
-          DetailedIncomeTaxEstimateViewModel.isSROrPSROnly(savingsBands) mustBe true
-        }
-        "return false when other taxBands are present as well as starting Rate band" in {
-          val startingRateBand = TaxBand(bandType = StarterSavingsRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
-          val otherRateBand = TaxBand(bandType = SavingsHigherRate, code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
-          val savingsBands = Seq(startingRateBand, otherRateBand)
-          DetailedIncomeTaxEstimateViewModel.isSROrPSROnly(savingsBands) mustBe false
+          DetailedIncomeTaxEstimateViewModel.containsHSR1orHSR2(savingsBands) mustBe true
         }
       }
       "savingsDescriptionStartingRateOnly is called must return the correct message" in {
