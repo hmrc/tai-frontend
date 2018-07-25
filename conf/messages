@@ -1095,17 +1095,17 @@ scottish.bandtype.TaxedIncome=Taxed income
 
 ## Tax estimate page tax band labels
 # Income
-estimate.uk.bandtype.pa=Tax-free allowance
+estimate.uk.bandtype.pa=Tax-free amount
 estimate.uk.bandtype.S=Starter rate
 estimate.uk.bandtype.B=Basic rate
 estimate.uk.bandtype.D0=Higher rate
 estimate.uk.bandtype.D1=Additional rate
 # Dividends
-estimate.uk.bandtype.SDR=Tax-free allowance
+estimate.uk.bandtype.SDR=Tax-free amount
 estimate.uk.bandtype.LDR=Basic rate
 estimate.uk.bandtype.HDR1=Higher rate
 estimate.uk.bandtype.HDR2=Additional rate
-estimate.scottish.bandtype.SDR=Tax-free allowance
+estimate.scottish.bandtype.SDR=Tax-free amount
 estimate.scottish.bandtype.LDR=Basic rate
 estimate.scottish.bandtype.HDR1=Higher rate
 estimate.scottish.bandtype.HDR2=Additional rate
