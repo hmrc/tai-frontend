@@ -95,10 +95,14 @@
                     <section class="section soft--top">
                         <h2 id="tax-on-savings-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")</h2>
 
-                        <p id="tax-on-savings-desc-sr-only">
-                            @DetailedIncomeTaxEstimateViewModel.savingsDescriptionTaxFreeEntitled(viewModel.savings)
+                        <p id="income-from-savings">
+                            @Messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate", viewModel.savings.map(_.income).sum)
                         </p>
-
+                        @if(DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(viewModel.savings)) {
+                            <p id="higher-rate-para">
+                                @Messages("tai.estimatedIncome.savings.desc.higherRate", DetailedIncomeTaxEstimateViewModel.taxFreeSavingsIncome(viewModel.savings))
+                            </p>
+                        }
                         @taxBandTable(tableId = "employmentIncomeTaxDetails", taxBands = viewModel.savings.toList, taxRegion = viewModel.taxRegion)
 
                     </section>

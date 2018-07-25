@@ -229,47 +229,14 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
     }
   }
 
-
-
-  def isHSR1orHSR2(band: TaxBand): Boolean = {
-    band.bandType == SavingsHigherRate || band.bandType == SavingsAdditionalRate
+  def containsHRS1orHRS2(taxBands: Seq[TaxBand]) = {
+    val bandTypes = taxBands.map(_.bandType)
+    bandTypes.contains(SavingsHigherRate) || bandTypes.contains(SavingsAdditionalRate)
   }
 
-  def containsHSR1orHSR2(savingsBands: Seq[TaxBand]): Boolean = {
-
-    val bandsNotSRorPSR = savingsBands.filterNot(x =>
-      isHSR1orHSR2(x)
-    )
-    bandsNotSRorPSR.isEmpty
-  }
-
-  def savingsDescriptionTaxFreeEntitled(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
-
-    val startingRateAllowance = savingsBands.find(_.bandType == StarterSavingsRate).flatMap(_.upperBand).getOrElse(0)
-    Messages("tai.estimatedIncome.savings.desc.taxFreeEntitled", startingRateAllowance)
-
-  }
-
-  def totalSavingsIncomePara(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
-
-    val totalSavingsIncome = savingsBands.map(_.income).sum
-    Messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate", totalSavingsIncome)
-  }
-
-
-
-
-  def personalAllowancePara(savingsBands: Seq[TaxBand])(implicit messages: Messages): String = {
-    val isBasicRate = savingsBands.exists(_.bandType == SavingsBasicRate)
-    val PSRAllowance: BigDecimal = savingsBands.find(_.bandType == PersonalSavingsRate).flatMap(_.upperBand).getOrElse(0)
-    val SRAllowance: BigDecimal = savingsBands.find(_.bandType == StarterSavingsRate).flatMap(_.upperBand).getOrElse(0)
-    val taxFreeAllowance = PSRAllowance + SRAllowance
-
-    if(isBasicRate) {
-      Messages("tai.estimatedIncome.savings.desc.BRHR2", taxFreeAllowance)
-    } else {
-      Messages("tai.estimatedIncome.savings.desc.BRHR2extra", taxFreeAllowance)
-    }
+  def taxFreeSavingsIncome(taxBands: Seq[TaxBand]) = {
+    taxBands.filter(band => band.bandType == PersonalSavingsRate || band.bandType == StarterSavingsRate)
+      .map(_.income).sum
   }
 
   def taxFreeDividendAllowance(incomeCategories: Seq[IncomeCategory]): BigDecimal = {
