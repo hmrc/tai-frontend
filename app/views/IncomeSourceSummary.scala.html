@@ -204,9 +204,9 @@
             @Link.toInternalPage(
                 id=Some("addMissingCompanyBenefitLink"),
                 url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url,
-                value=Some(Messages("tai.income.details.addMissingCompanyBenefit")),
+                value=Some(Messages("add.missing.company.benefit")),
                 cssClasses=Some(""),
-                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.income.details.addMissingCompanyBenefit")}"))).toHtml
+                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("add.missing.company.benefit")}"))).toHtml
         </p>
 
         @if(model.displayAddCompanyCarLink) {

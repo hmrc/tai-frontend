@@ -1,3 +1,4 @@
+add.missing.company.benefit=Ychwanegu buddiant cwmni sydd ar goll
 account.closed=Cyfrif wedi cau
 action=Camau i''w cymryd
 check.current.income=Gwiriwch eich ffynonellau Incwm TWE presennol a’ch manylion Treth Incwm ar gyfer y flwyddyn dreth bresennol, {0} i {1}.
@@ -584,7 +585,7 @@ tai.income.calculation.update.pension=Gallwch {0} ar gyfer y darparwr pensiwn hw
 tai.income.calculation.update.regular=Gallwch {0} ar gyfer y cyflogwr hwn os yw''n anghywir.
 tai.income.calculation.updateLink.regular=diweddarwch eich incwm trethadwy amcangyfrifedig
 tai.income.currency=Swm (£)
-tai.income.details.addMissingCompanyBenefit=Ychwanegu buddiant cwmni sydd ar goll
+
 tai.income.details.addMissingCompanyCar=Ychwanegu car cwmni sydd ar goll
 tai.income.details.benefit.amount.announce=
 tai.income.details.benefit.name.announce=
@@ -963,7 +964,6 @@ tai.taxFree.total=Cyfanswm
 tai.taxFreeAmount.detailsection.heading=Sut mae''ch swm rhydd o dreth yn cael ei gyfrifo
 tai.taxFreeAmount.heading.pt1=Eich swm rhydd o dreth ar gyfer
 tai.taxFreeAmount.missing.section.addition=Ychwanegu lwfans neu ryddhad treth sydd ar goll
-tai.taxFreeAmount.missing.section.benefit=Ychwanegu buddiant cwmni sydd ar goll
 tai.taxFreeAmount.missing.section.income=Ychwanegu incwm o ffynhonnell arall sydd ar goll
 tai.taxFreeAmount.summarysection.bullet1=yn uwch os ydych yn gymwys ar gyfer rhai lwfansau neu ryddhad treth
 tai.taxFreeAmount.summarysection.bullet2=wedi gostwng i gasglu treth sy''n ddyledus ar gyfer buddiannau cwmni neu incwm o ffynonellau eraill
