@@ -291,7 +291,6 @@ tai.closeBankAccount.closingInterest.heading=A ydych yn gwybod faint o log a eni
 tai.closeBankAccount.closingInterest.label=Swm y llog
 tai.closeBankAccount.closingInterest.legend=A ydych yn gwybod faint o log yr ydych wedi''i ennill?
 tai.closeBankAccount.closingInterest.notKnown=Dwi ddim yn gwybod
-
 tai.companyCar.checkAnswers.heading=Gwiriwch eich atebion
 tai.companyCar.checkAnswers.panel.withoutFuel=Bydd y dyddiad pan gafodd ei roi yn ôl ({0}) ond yn cael ei ddefnyddio i amcangyfrif treth ar eich buddiannau car cwmni ar gyfer blwyddyn dreth {1} i {2}.
 tai.companyCar.checkAnswers.panel=Bydd y dyddiad pan gafodd ei roi yn ôl ({0}) a''r dyddiad pan ddaeth y buddiant tanwydd i ben ({1}) ond yn cael eu defnyddio i amcangyfrif y dreth ar eich buddiannau car cwmni ar gyfer blwyddyn dreth {2} i {3}.
@@ -584,7 +583,6 @@ tai.income.calculation.update.pension=Gallwch {0} ar gyfer y darparwr pensiwn hw
 tai.income.calculation.update.regular=Gallwch {0} ar gyfer y cyflogwr hwn os yw''n anghywir.
 tai.income.calculation.updateLink.regular=diweddarwch eich incwm trethadwy amcangyfrifedig
 tai.income.currency=Swm (£)
-
 tai.income.details.addMissingCompanyCar=Ychwanegu car cwmni sydd ar goll
 tai.income.details.benefit.amount.announce=
 tai.income.details.benefit.name.announce=
