@@ -33,6 +33,7 @@
     </tr>
     </thead>
     <tbody>
+
     @for((taxBand, count) <- taxBands.sortBy(_.rate).zipWithIndex){
     <tr>
         <td id="bandType@{count}">@Messages(s"estimate.${taxRegion.toLowerCase}.bandtype.${taxBand.bandType}")</td>

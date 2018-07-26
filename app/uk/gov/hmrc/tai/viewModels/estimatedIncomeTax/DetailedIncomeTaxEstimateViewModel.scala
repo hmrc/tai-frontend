@@ -245,5 +245,4 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
     taxBands.find(_.bandType == DividendZeroRate).flatMap(_.upperBand).getOrElse(BigDecimal(0))
 
   }
-
 }

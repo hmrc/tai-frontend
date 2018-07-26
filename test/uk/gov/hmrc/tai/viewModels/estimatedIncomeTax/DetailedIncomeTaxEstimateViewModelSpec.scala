@@ -376,6 +376,7 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
         model.selfAssessmentAndPayeText mustEqual None
       }
     }
+
   }
 
   private val totalTax = TotalTax(100, Seq.empty[IncomeCategory], None, None, None)
