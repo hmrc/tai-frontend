@@ -19,6 +19,7 @@ package views.html.taxCodeChange
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.tai.util.ViewModelHelper
@@ -54,8 +55,10 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
   }
 
-  private def createViewModel(p2IssuedDate:LocalDate = new LocalDate()):YourTaxFreeAmountViewModel = {
-    YourTaxFreeAmountViewModel(p2IssuedDate)
+  private def createViewModel(p2IssuedDate:LocalDate = new LocalDate(), codingComponents:Seq[CodingComponent] =
+                              Seq.empty[CodingComponent]):YourTaxFreeAmountViewModel = {
+
+    YourTaxFreeAmountViewModel(p2IssuedDate,codingComponents)
   }
 
   override def view = views.html.taxCodeChange.yourTaxFreeAmount(createViewModel())

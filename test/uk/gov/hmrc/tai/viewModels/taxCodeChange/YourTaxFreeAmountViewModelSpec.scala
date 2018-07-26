@@ -19,9 +19,13 @@ package uk.gov.hmrc.tai.viewModels.taxCodeChange
 import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.util.TaiConstants.encodedMinusSign
 import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
 /**
@@ -30,18 +34,74 @@ import uk.gov.hmrc.time.TaxYearResolver
 class YourTaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication with ViewModelHelper with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  val p2IssueDate = new LocalDate()
 
   "YourTaxFreeAmountViewModel" must {
 
     "return a range of dates as a formatted string" in {
 
-      val p2IssueDate = new LocalDate()
-      val viewModel = YourTaxFreeAmountViewModel(p2IssueDate)
+
+      val viewModel = YourTaxFreeAmountViewModel(p2IssueDate,Seq.empty[CodingComponent])
       val expectedDateRange = messagesApi("tai.taxYear",htmlNonBroken(Dates.formatDate(p2IssueDate)),
         htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)))
 
       viewModel.taxCodeDateRange mustBe expectedDateRange
     }
+
+    "has formatted positive tax free amount" when {
+      "calculated TaxFreeAmount is positive" in {
+        val taxComponents = Seq(
+          CodingComponent(PersonalAllowancePA, Some(234), 11500, "Personal Allowance"),
+          CodingComponent(EmployerProvidedServices, Some(12), 1000, "Benefit"),
+          CodingComponent(ForeignDividendIncome, Some(12), 300, "Income"),
+          CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
+
+        val sut = YourTaxFreeAmountViewModel(p2IssueDate, taxComponents)
+
+        sut.annualTaxFreeAmount mustBe "£10,000"
+      }
+      "calculated TaxFreeAmount is positive and two Personal allowances are present" in {
+        val taxComponents = Seq(
+          CodingComponent(PersonalAllowancePA, Some(234), 11500, "Personal Allowance"),
+          CodingComponent(PersonalAllowanceAgedPAA, Some(234), 1000, "Personal Allowance"),
+          CodingComponent(EmployerProvidedServices, Some(12), 1000, "Benefit"),
+          CodingComponent(ForeignDividendIncome, Some(12), 300, "Income"),
+          CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
+
+        val sut = YourTaxFreeAmountViewModel(p2IssueDate, taxComponents)
+
+        sut.annualTaxFreeAmount mustBe "£11,000"
+      }
+      "calculated TaxFreeAmount is positive and all Personal allowances are present" in {
+        val taxComponents = Seq(
+          CodingComponent(PersonalAllowancePA, Some(234), 11500, "Personal Allowance"),
+          CodingComponent(PersonalAllowanceAgedPAA, Some(234), 1000, "Personal Allowance"),
+          CodingComponent(PersonalAllowanceElderlyPAE, Some(234), 2000, "Personal Allowance"),
+          CodingComponent(EmployerProvidedServices, Some(12), 1000, "Benefit"),
+          CodingComponent(ForeignDividendIncome, Some(12), 300, "Income"),
+          CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
+
+        val sut = YourTaxFreeAmountViewModel(p2IssueDate, taxComponents)
+
+        sut.annualTaxFreeAmount mustBe "£13,000"
+      }
+    }
+
+    "has formatted negative tax free amount" when {
+      "calculated TaxFreeAmount is negative" in {
+        val taxComponents = Seq(
+          CodingComponent(PersonalAllowancePA, Some(234), 100, "Personal Allowance"),
+          CodingComponent(EmployerProvidedServices, Some(12), 100, "Benefit"),
+          CodingComponent(ForeignDividendIncome, Some(12), 1000, "Income"),
+          CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
+
+        val sut = YourTaxFreeAmountViewModel(p2IssueDate, taxComponents)
+
+        sut.annualTaxFreeAmount mustBe s"${encodedMinusSign}£1,200"
+      }
+    }
+
+
 
   }
 

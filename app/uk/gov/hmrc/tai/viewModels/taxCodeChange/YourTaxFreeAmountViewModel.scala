@@ -18,21 +18,25 @@ package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.util.{TaxAccountCalculator, ViewModelHelper}
+import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel.withPoundPrefixAndSign
 import uk.gov.hmrc.time.TaxYearResolver
 
 /**
   * Created by digital032748 on 25/07/18.
   */
-case class YourTaxFreeAmountViewModel(taxCodeDateRange: String){}
+case class YourTaxFreeAmountViewModel(taxCodeDateRange: String, annualTaxFreeAmount:String){}
 
-object YourTaxFreeAmountViewModel extends ViewModelHelper {
+object YourTaxFreeAmountViewModel extends ViewModelHelper with TaxAccountCalculator {
 
-  def apply(p2IssuedDate: LocalDate)(implicit messages: Messages): YourTaxFreeAmountViewModel = {
+  def apply(p2IssuedDate: LocalDate, codingComponents: Seq[CodingComponent])(implicit messages: Messages): YourTaxFreeAmountViewModel = {
 
     val taxCodeDateRange = dynamicDateRangeHtmlNonBreak(p2IssuedDate, TaxYearResolver.endOfCurrentTaxYear)
+    val annualTaxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxFreeAmount(codingComponents), 0))
 
-    YourTaxFreeAmountViewModel(taxCodeDateRange)
+    YourTaxFreeAmountViewModel(taxCodeDateRange, annualTaxFreeAmount)
   }
 }
 
