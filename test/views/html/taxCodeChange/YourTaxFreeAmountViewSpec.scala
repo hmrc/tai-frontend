@@ -58,6 +58,12 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       def viewTaxFreeAmount: Html = views.html.taxCodeChange.yourTaxFreeAmount(createViewModel(annualTaxFreeAmount = taxFreeAmount))
     }
 
+      "have h2 heading for how tax-free amount is calculated" in {
+
+        doc(view) must haveH2HeadingWithText(Messages("taxCode.change.yourTaxFreeAmount.summaryHeading"))
+
+      }
+
   }
 
   private def createViewModel(taxCodeDateRange: String = "", annualTaxFreeAmount: String = ""): YourTaxFreeAmountViewModel = {
