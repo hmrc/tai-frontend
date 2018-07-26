@@ -1154,11 +1154,7 @@ tai.estimatedIncomeEarning.desc=Gallwch ennill {0} yn fwy cyn i chi gyrraedd hae
 tai.estimatedIncome.detailedEstimate.Link=Bwrw golwg ar amcangyfrif manwl o'ch Treth Incwm
 
 tax.on.your.employment.income=Treth ar eich incwm cyflogaeth
-tax.on.your.private.pension.income=
-tax.on.your.paye.income=
 your.total.income.from.employment.desc=Mae cyfanswm eich incwm o gyflogaeth wedi ei amcangyfrif yn {0} am y flwyddyn dreth hon. Mae gennych {1} am eich incwm cyflogaeth. Mae hyn yn golygu bod y {2} cyntaf o''ch enillion o gyflogaeth yn rhydd o dreth.
-your.total.income.from.private.pension.desc=
-your.total.income.from.paye.desc=
 
 tai.estimatedIncome.selfAssessmentAndPayeText = Mae gennych Dreth Incwm ychwanegol yn daladwy'r flwyddyn hon sydd heb ei chynnwys yn yr amcangyfrif hwn. Dylid ei chynnwys yn eich Hunanasesiad. Ni chaiff ei chasglu drwy TWE.
 
@@ -1245,6 +1241,69 @@ estimate.uk.bandtype.pa=Lwfans rhydd o dreth
 estimate.uk.bandtype.SDR=Lwfans rhydd o dreth
 
 ##What Do You Want To Do Page
+
+
+check.current.income=Gwiriwch eich ffynonellau Incwm TWE presennol a’ch manylion Treth Incwm ar gyfer y flwyddyn dreth bresennol, {0} i {1}.
+check.estimated.income=Gwiriwch eich manylion Treth Incwm TWE  amcangyfrifedig ar gyfer y flwyddyn nesaf.
+check.tax.previous.years=Gwiriwch y dreth a dalwyd gennych ar eich enillion yn y blynyddoedd blaenorol.
+current.tax.year=Y Flwyddyn Dreth Bresennol
+earlier=Yn gynharach
+
+
+## Tax estimate page tax band labels
+# Income
+estimate.uk.bandtype.pa=Lwfans rhydd o dreth
+estimate.uk.bandtype.B=Cyfradd sylfaenol
+estimate.uk.bandtype.D0=Cyfradd uwch
+
+# Dividends
+estimate.uk.bandtype.SDR=Lwfans rhydd o dreth
+estimate.uk.bandtype.LDR=Cyfradd sylfaenol
+estimate.scottish.bandtype.HDR1=Cyfradd uwch
+estimate.scottish.bandtype.SDR=Lwfans rhydd o dreth
+estimate.scottish.bandtype.LDR=Cyfradd sylfaenol
+estimate.uk.bandtype.HDR1=Cyfradd uwch
+
+
+# Savings
+estimate.uk.bandtype.PSR=Lwfans Cynilion Personol
+estimate.uk.bandtype.LSR=Cyfradd sylfaenol
+estimate.uk.bandtype.HSR1=Cyfradd uwch
+tai.estimatedIncome.savings.desc.SR=Fel trethdalwr ar y gyfradd uwch mae’r £?? cyntaf o’ch incwm o log ar gynilion ym mhob blwyddyn dreth yn rhydd o dreth. Dyma’ch Lwfans Cynilion Personol.
+tai.estimatedIncome.savings.desc.BRHR3=Caiff unrhyw swm uwchben eich Lwfans Cynilion Personol ei drethu ar y gyfradd sylfaenol o {0}%.
+tai.estimatedIncome.savings.desc.BRHR2extra=Fel trethdalwr ar y gyfradd uwch mae’r £{0} cyntaf o’ch incwm o log ar gynilion ym mhob blwyddyn dreth yn rhydd o dreth. Dyma’ch Lwfans Cynilion Personol.
+tai.estimatedIncome.savings.desc.BRHR2=Mae’r £{0} cyntaf o’ch incwm o log ar gynilion ym mhob blwyddyn dreth yn rhydd o dreth. Dyma’ch Lwfans Cynilion Personol.
+tai.estimatedIncome.savings.desc.BRHR=Amcangyfrifir bod cyfanswm eich incwm o gynilion yn £{0} am y flwyddyn dreth hon.
+
+
+# Estimated income tax page
+tai.estimatedIncome.PSA.title=Lwfans Cynilion Personol
+tai.estimatedIncome.PSA.text1=Efallai y byddwch hefyd yn cael hyd at £{0} o log yn rhydd o dreth yn dibynnu ar ba haen Treth Incwm yr ydych ynddi. Dyma''ch {1}.
+tai.estimatedIncome.PSA.linkText=Lwfans Cynilion Personol
+tai.estimatedIncome.SSR.title=Cyfradd gychwynnol ar gyfer cynilion
+
+
+# What do you want to do
+next.year=Y Flwyddyn Nesaf
+
+tai.estimatedIncome.detailedEstimate.dividendIncome.subHeading=Treth ar incwm o ddifidendau
+tai.estimatedIncome.detailedEstimate.employmentIncome.subHeading=Treth ar eich incwm o gyflogaeth
+tai.estimatedIncome.detailedEstimate.heading=Amcangyfrif manwl o'ch Treth Incwm TWE
+tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading=Treth ar log ar gynilion
+tai.estimatedIncome.detailedEstimate.title=Amcangyfrif manwl o'ch Treth Incwm TWE
+tai.estimatedIncome.dividend.para.desc=Amcangyfrifir bod cyfanswm eich incwm o ddifidendau yn £{0} am y flwyddyn dreth hon. Mae’r £{1} cyntaf o incwm o ddifidendau ym mhob blwyddyn dreth yn rhydd o dreth.
+tai.estimatedIncome.howYouPay.desc=Mae’ch cyflogwr neu’ch darparwr pensiwn yn tynnu Treth Incwm cyn iddo’ch talu. Yr enw a roddir ar hyn yw Talu Wrth Ennill (TWE). Mae {0} yn rhoi gwybod iddo faint o incwm rhydd o dreth y gallwch ei gael cyn iddo ddidynnu Treth Incwm
+tai.estimatedIncome.SSR.text1=Mae hyn yn amrywio yn dibynnu ar eich incwm. Yn seiliedig ar eich incwm amcangyfrifedig presennol, mae gennych hawl i gael £{0} o log yn rhydd o dreth.
+
+
+tai.incomeTax.taxCodes.link=Gwirio''ch codau treth
+tai.incomeTax.totalIncomeTaxEstimate=Cyfanswm Amcangyfrif Treth Incwm
+your.paye.income.tax.overview=Trosolwg o’ch Treth Incwm TWE
+
+
+tai.companyCar.confirmation.back = Dychwelyd i''ch Crynodeb Treth Incwm
+tai.employmentConfirmation.back = Dychwelyd i''ch Crynodeb Treth Incwm
+tai.returnToIncomeTaxSummary=Dychwelyd i''ch Crynodeb Treth Incwm
 
 ##TODO to be removed when tileView is toggled on
 tai.whatDoYouWantToDo.heading=Dewis blwyddyn dreth
