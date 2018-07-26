@@ -1242,18 +1242,17 @@ tax.on.your.paye.income=Treth ar eich incwm TWE
 tax.on.your.private.pension.income=Treth ar eich incwm o bensiwn preifat
 uk.bandtype.SDR=Lwfans Difidend
 your.total.income.from.paye.desc=Amcangyfrifir y bydd cyfanswm eich incwm TWE yn {0} am y flwyddyn dreth hon. Mae gennych {1} ar gyfer eich incwm TWE. Golyga hyn fod y {2} cyntaf o’ch incwm TWE yn rhydd o dreth.
-
+your.total.income.from.private.pension.desc=Amcangyfrifir y bydd cyfanswm eich incwm o bensiynau preifat yn {0} am y flwyddyn dreth hon. Mae gennych {1} ar gyfer eich incwm o bensiwn preifat. Golyga hyn fod y {2} cyntaf o’ch incwm o bensiwn preifat yn rhydd o dreth.
+estimate.scottish.bandtype.HDR2=Cyfradd Ychwanegol
+estimate.uk.bandtype.D1=Cyfradd Ychwanegol
+estimate.uk.bandtype.HDR2=Cyfradd Ychwanegol
+estimate.uk.bandtype.HSR2=Cyfradd Ychwanegol
+estimate.uk.bandtype.S=Cyfradd Cychwyn
+tai.estimatedIncome.savings.desc.totalIncomeEstimate=Amcangyfrifir bod cyfanswm eich incwm o gynilion yn {0} am y flwyddyn dreth hon.
+estimate.uk.bandtype.SR=Cyfradd gychwynnol ar gyfer cynilion
 ###
 tai.income.details.benefit.amount.announce=
 tai.income.details.benefit.name.announce=
 tai.taxCode.definition.announce=
 tai.taxCode.part.announce=
-your.total.income.from.private.pension.desc=
-estimate.scottish.bandtype.HDR2=
-estimate.uk.bandtype.D1=
-estimate.uk.bandtype.HDR2=
-estimate.uk.bandtype.HSR2=
-estimate.uk.bandtype.S=
 tai.estimatedIncome.savings.desc.higherRate=
-tai.estimatedIncome.savings.desc.totalIncomeEstimate=
-estimate.uk.bandtype.SR=
