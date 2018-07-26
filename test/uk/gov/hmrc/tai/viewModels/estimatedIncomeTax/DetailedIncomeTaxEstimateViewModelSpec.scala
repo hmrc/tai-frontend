@@ -17,6 +17,9 @@
 package uk.gov.hmrc.tai.viewModels.estimatedIncomeTax
 
 import controllers.{FakeTaiPlayApplication, routes}
+import org.scalacheck.Gen
+import org.scalacheck.Arbitrary.arbitrary
+import org.scalatest.prop.PropertyChecks
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
@@ -29,7 +32,7 @@ import uk.gov.hmrc.tai.util.BandTypesConstants
 import uk.gov.hmrc.tai.viewModels.{HelpLink, Label}
 import uk.gov.hmrc.urls.Link
 
-class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayApplication with BandTypesConstants with I18nSupport {
+class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayApplication with BandTypesConstants with I18nSupport with PropertyChecks {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -114,59 +117,62 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
     }
 
     "looking at savings" when {
-      "savingsDescription1 is called must return the correct message" when {
-        "bandType is SR" in {
-          val taxBand = TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
-          val savingsBands = Seq(taxBand)
 
-          DetailedIncomeTaxEstimateViewModel.savingsDescription1(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.SR", 500)
+      "containsHSR1orHSR2 is called" must {
+
+        val nonHigherTaxBandGen: Gen[TaxBand] = for {
+          bandType <- Gen.oneOf(
+            StarterSavingsRate,
+            PersonalSavingsRate,
+            SavingsBasicRate
+          )
+          code      <- arbitrary[String]
+          income    <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
+          tax       <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
+          lowerBand <- Gen.option(Gen.chooseNum(0, 100000).map(BigDecimal(_)))
+          upperBand <- Gen.option(Gen.chooseNum(0, 100000).map(BigDecimal(_)))
+          rate      <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
+        } yield TaxBand(bandType, code, income, tax, lowerBand, upperBand, rate)
+
+        val higherTaxBandGen: Gen[TaxBand] = for {
+          bandType <- Gen.oneOf(
+            SavingsHigherRate,
+            SavingsAdditionalRate
+          )
+          code      <- arbitrary[String]
+          income    <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
+          tax       <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
+          lowerBand <- Gen.option(Gen.chooseNum(0, 100000).map(BigDecimal(_)))
+          upperBand <- Gen.option(Gen.chooseNum(0, 100000).map(BigDecimal(_)))
+          rate      <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
+        } yield TaxBand(bandType, code, income, tax, lowerBand, upperBand, rate)
+
+        "return true when the sequence contains HSR1 or HSR2" in {
+
+          val gen: Gen[Seq[TaxBand]] = for {
+            higherBands <- Gen.nonEmptyListOf(higherTaxBandGen)
+            nonHigherBands <- Gen.listOf(nonHigherTaxBandGen)
+          } yield higherBands ++ nonHigherBands
+
+          forAll(gen) {
+            taxBands =>
+              DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(taxBands) mustEqual true
+          }
         }
-        "bandType is LSR" in {
-          val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
-          val taxBandLSR = TaxBand(bandType = "LSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 20)
-          val savingsBands = Seq(taxBandPSR, taxBandLSR)
 
-          DetailedIncomeTaxEstimateViewModel.savingsDescription1(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR", 600)
-        }
-        "bandType is HSR1" in {
-          val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
-          val taxBandLSR = TaxBand(bandType = "HSR1", code = "", income = 7000, tax = 0, lowerBand = None, upperBand = Some(10000), rate = 20)
-          val savingsBands = Seq(taxBandPSR, taxBandLSR)
+        "return false when the sequence does not contain HSR1 or HSR2" in {
 
-          DetailedIncomeTaxEstimateViewModel.savingsDescription1(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR", 7500)
-        }
-        "bandType is HSR2" in {
-          val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
-          val taxBandLSR = TaxBand(bandType = "HSR2", code = "", income = 8000, tax = 0, lowerBand = None, upperBand = Some(11000), rate = 20)
-          val savingsBands = Seq(taxBandPSR, taxBandLSR)
+          val gen: Gen[Seq[TaxBand]] =
+            Gen.listOf[TaxBand](nonHigherTaxBandGen)
 
-          DetailedIncomeTaxEstimateViewModel.savingsDescription1(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR", 8500)
+          forAll(gen) {
+            taxBands =>
+
+              DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(taxBands) mustEqual false
+          }
         }
       }
 
-      "savingsDescription2 is called must return the correct message" when {
-        "bandType is LSR" in {
-          val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
-          val taxBandLSR = TaxBand(bandType = "LSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 20)
-          val savingsBands = Seq(taxBandPSR, taxBandLSR)
-
-          DetailedIncomeTaxEstimateViewModel.savingsDescription2(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR2", 1000)
-        }
-        "bandType is HSR1" in {
-          val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
-          val taxBandLSR = TaxBand(bandType = "HSR1", code = "", income = 7000, tax = 0, lowerBand = None, upperBand = Some(10000), rate = 20)
-          val savingsBands = Seq(taxBandPSR, taxBandLSR)
-
-          DetailedIncomeTaxEstimateViewModel.savingsDescription2(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR2extra", 1000)
-        }
-        "bandType is HSR2" in {
-          val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
-          val taxBandLSR = TaxBand(bandType = "HSR2", code = "", income = 8000, tax = 0, lowerBand = None, upperBand = Some(11000), rate = 20)
-          val savingsBands = Seq(taxBandPSR, taxBandLSR)
-
-          DetailedIncomeTaxEstimateViewModel.savingsDescription2(savingsBands) mustEqual Messages("tai.estimatedIncome.savings.desc.BRHR2extra", 1000)
-        }
-      }
     }
 
     "createAdditionalTaxTable is called" must {
