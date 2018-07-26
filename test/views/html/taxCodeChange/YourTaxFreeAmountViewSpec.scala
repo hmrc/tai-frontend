@@ -41,24 +41,27 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     "have h2 heading showing the date period for tax-free amount" in {
       val fromDate = new LocalDate()
       val toDate = TaxYearResolver.endOfCurrentTaxYear
+      val expectedDateRange = ViewModelHelper.dynamicDateRangeHtmlNonBreak(fromDate, toDate)
+      val expectedMessage = Messages("taxCode.change.yourTaxFreeAmount.dates", expectedDateRange)
 
-      doc(viewP2Date) must haveH2HeadingWithText(Messages("taxCode.change.yourTaxFreeAmount.dates",
-        ViewModelHelper.dynamicDateRangeHtmlNonBreak(fromDate, toDate)))
+      doc(viewP2Date) must haveH2HeadingWithText(expectedMessage)
 
-      def viewP2Date: Html = views.html.taxCodeChange.yourTaxFreeAmount(createViewModel(fromDate))
+      def viewP2Date: Html = views.html.taxCodeChange.yourTaxFreeAmount(createViewModel(expectedDateRange))
     }
 
 
+    "display figure for Your tax-free amount" in {
+      val taxFreeAmount = "£11,500"
 
+      doc(viewTaxFreeAmount) must haveSpanWithText(taxFreeAmount)
 
-
+      def viewTaxFreeAmount: Html = views.html.taxCodeChange.yourTaxFreeAmount(createViewModel(annualTaxFreeAmount = taxFreeAmount))
+    }
 
   }
 
-  private def createViewModel(p2IssuedDate:LocalDate = new LocalDate(), codingComponents:Seq[CodingComponent] =
-                              Seq.empty[CodingComponent]):YourTaxFreeAmountViewModel = {
-
-    YourTaxFreeAmountViewModel(p2IssuedDate,codingComponents)
+  private def createViewModel(taxCodeDateRange: String = "", annualTaxFreeAmount: String = ""): YourTaxFreeAmountViewModel = {
+    YourTaxFreeAmountViewModel(taxCodeDateRange, annualTaxFreeAmount)
   }
 
   override def view = views.html.taxCodeChange.yourTaxFreeAmount(createViewModel())

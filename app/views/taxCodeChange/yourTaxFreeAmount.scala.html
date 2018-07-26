@@ -36,7 +36,9 @@
 
     <p>@Messages("taxCode.change.yourTaxFreeAmount.desc")</p>
 
-    <h2>@Messages("taxCode.change.yourTaxFreeAmount.dates",viewModel.taxCodeDateRange)</h2>
+    <h2 class="flush--bottom">@Messages("taxCode.change.yourTaxFreeAmount.dates", viewModel.taxCodeDateRange)
+        <span class="display-block bold-large section section--narrow flush--bottom">@viewModel.annualTaxFreeAmount</span>
+    </h2>
 
 
 }
