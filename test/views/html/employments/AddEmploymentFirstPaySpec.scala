@@ -28,7 +28,7 @@ class AddEmploymentFirstPaySpec extends TaiViewSpec with FormValuesConstants {
   "Add first pay form page" must {
     behave like pageWithTitle(messages("tai.addEmployment.employmentFirstPay.title", employerName))
     behave like pageWithCombinedHeader(
-      messages("tai.addEmployment.addEmploymentJourneyLink"),
+      messages("add.missing.employment"),
       messages("tai.addEmployment.employmentFirstPay.title", employerName))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-first-pay")

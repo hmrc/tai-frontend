@@ -1,4 +1,5 @@
 add.missing.company.benefit=Ychwanegu buddiant cwmni sydd ar goll
+add.missing.employment=Ychwanegu Cyflogaeth sydd ar goll
 account.closed=Cyfrif wedi cau
 action=Camau i''w cymryd
 check.current.income=Gwiriwch eich ffynonellau Incwm TWE presennol a’ch manylion Treth Incwm ar gyfer y flwyddyn dreth bresennol, {0} i {1}.
@@ -90,9 +91,7 @@ tai.WhatDoYouWantToDo.radio2=flwyddyn dreth bresennol, {0} i {1}
 tai.WhatDoYouWantToDo.radio3=yn gynharach
 tai.WhatDoYouWantToDo.submit=Yn eich blaen
 tai.add.date.error.blank=Rhowch y dyddiad y dechreuoch weithio i {0}
-tai.addEmployment.addEmploymentJourneyLink=Ychwanegu Cyflogaeth sydd ar goll
 tai.addEmployment.addNameForm.title=Beth yw enw''r cyflogwr yr hoffech ei ychwanegu?
-tai.addEmployment.cya.preHeading=Ychwanegu cyflogaeth sydd ar goll
 tai.addEmployment.cya.q1=Enw''r cyflogwr
 tai.addEmployment.cya.q2=Dyddiad dechrau
 tai.addEmployment.cya.q3=Rhif cyflogres
