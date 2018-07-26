@@ -339,39 +339,42 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
     "have tax on your savings income section" when{
 
-      val savingsPara1Id = "tax-on-savings-desc1"
-      val savingsPara2Id = "tax-on-savings-desc2"
-      val savingsPara3Id = "tax-on-savings-desc3"
+      val incomeFromSavingsId = "income-from-savings"
+      val higherRateParaId = "higher-rate-para"
 
 
-      "savings income at SR band type " in {
-        val taxBand = TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
-        val savingsBands = Seq(taxBand)
+      "savings income does NOT include HSR1 or HSR2 bands" in {
+        val taxBandSR = TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+        val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+        val savingsBands = Seq(taxBandSR, taxBandPSR)
         val model = defaultViewModel.copy(savings = savingsBands)
         def view = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
 
         doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading"))
 
-        doc(view) must haveElementWithId(savingsPara1Id)
-        doc(view) mustNot haveElementWithId(savingsPara2Id)
-        doc(view) mustNot haveElementWithId(savingsPara3Id)
+        doc(view) must haveElementWithId(incomeFromSavingsId)
+        doc(view) must haveParagraphWithText(messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate", "600"))
+        doc(view) mustNot haveElementWithId(higherRateParaId)
 
       }
 
-      "savings income at LSR band type " in {
-        val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(1000), rate = 0)
-        val taxBandLSR = TaxBand(bandType = "LSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 20)
-        val savingsBands = Seq(taxBandPSR, taxBandLSR)
+      "savings income does include HSR1 or HSR2 bands" in {
+        val taxBandPSR = TaxBand(bandType = "PSR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+        val taxBandSR = TaxBand(bandType = "SR", code = "", income = 100, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+        val taxBandHSR1 = TaxBand(bandType = "HSR1", code = "", income = 500, tax = 0, lowerBand = None, upperBand = Some(500), rate = 0)
+        val savingsBands = Seq(taxBandSR, taxBandPSR, taxBandHSR1)
         val model = defaultViewModel.copy(savings = savingsBands)
         def view = views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model)
 
         doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading"))
 
-        doc(view) must haveElementWithId(savingsPara1Id)
-        doc(view) must haveElementWithId(savingsPara2Id)
-        doc(view) must haveElementWithId(savingsPara3Id)
+        doc(view) must haveElementWithId(incomeFromSavingsId)
+        doc(view) must haveParagraphWithText(messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate", "700"))
+        doc(view) must haveElementWithId(higherRateParaId)
+        doc(view) must haveParagraphWithText(messages("tai.estimatedIncome.savings.desc.higherRate", "200"))
 
       }
+
     }
   }
 
