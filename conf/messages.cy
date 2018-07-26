@@ -1238,14 +1238,16 @@ understand.your.tax=Deall eich treth
 what.does.this.mean=Beth mae hyn yn ei olygu?
 your.paye.income.tax.overview=Trosolwg o’ch Treth Incwm TWE
 your.total.income.from.employment.desc=Mae cyfanswm eich incwm o gyflogaeth wedi ei amcangyfrif yn {0} am y flwyddyn dreth hon. Mae gennych {1} am eich incwm cyflogaeth. Mae hyn yn golygu bod y {2} cyntaf o''ch enillion o gyflogaeth yn rhydd o dreth.
+tax.on.your.paye.income=Treth ar eich incwm TWE
+tax.on.your.private.pension.income=Treth ar eich incwm o bensiwn preifat
+uk.bandtype.SDR=Lwfans Difidend
+your.total.income.from.paye.desc=Amcangyfrifir y bydd cyfanswm eich incwm TWE yn {0} am y flwyddyn dreth hon. Mae gennych {1} ar gyfer eich incwm TWE. Golyga hyn fod y {2} cyntaf o’ch incwm TWE yn rhydd o dreth.
+
+###
 tai.income.details.benefit.amount.announce=
 tai.income.details.benefit.name.announce=
 tai.taxCode.definition.announce=
 tai.taxCode.part.announce=
-tax.on.your.paye.income=
-tax.on.your.private.pension.income=
-uk.bandtype.SDR=
-your.total.income.from.paye.desc=
 your.total.income.from.private.pension.desc=
 estimate.scottish.bandtype.HDR2=
 estimate.uk.bandtype.D1=
