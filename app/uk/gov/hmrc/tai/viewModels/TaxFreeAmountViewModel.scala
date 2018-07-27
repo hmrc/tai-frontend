@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.util.{TaxAccountCalculator, ViewModelHelper}
 case class TaxFreeAmountViewModel(header: String,
                                      title: String,
                                      annualTaxFreeAmount: String,
-                                     summaryItems: Seq[TaxFreeAmountSummaryCategoryViewModel])
+                                     taxFreeAmountSummary: TaxFreeAmountSummaryViewModel)
 
 object TaxFreeAmountViewModel extends TaxAccountCalculator with ViewModelHelper {
 
@@ -45,12 +45,14 @@ object TaxFreeAmountViewModel extends TaxAccountCalculator with ViewModelHelper 
 
     val taxFreeAmountTotal: BigDecimal = taxFreeAmount(codingComponents)
 
-    val personalAllowance = personalAllowanceVM(codingComponents)
-    val additions = additionsVM(codingComponents, employmentName, companyCarBenefits)
-    val deductions = deductionsVM(codingComponents, employmentName, companyCarBenefits)
-    val total = totalRow(taxFreeAmountTotal)
+//    val personalAllowance = personalAllowanceVM(codingComponents)
+//    val additions = additionsVM(codingComponents, employmentName, companyCarBenefits)
+//    val deductions = deductionsVM(codingComponents, employmentName, companyCarBenefits)
+//    val total = totalRow(taxFreeAmountTotal)
+//
+//    val vmList = Seq(personalAllowance, additions, deductions, total)
 
-    val vmList = Seq(personalAllowance, additions, deductions, total)
+    val vmList = TaxFreeAmountSummaryViewModel(codingComponents, employmentName, companyCarBenefits, taxFreeAmountTotal)
 
     TaxFreeAmountViewModel(headerWithAdditionalMarkup, title, withPoundPrefixAndSign(MoneyPounds(taxFreeAmountTotal, 0)), vmList)
   }
