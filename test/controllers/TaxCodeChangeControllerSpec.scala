@@ -17,7 +17,6 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import controllers.{FakeTaiPlayApplication, TaxCodeChangeController}
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
