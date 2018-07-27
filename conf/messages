@@ -1383,6 +1383,8 @@ taxCode.change.whatHappensNext.paragragh3=You can {0} in your PAYE Income Tax su
 taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link=your Income Tax estimate
 taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link=update your current income or benefits
 taxCode.change.whatHappensNext.wrongInformation.text=If the information you have seen is wrong
+taxCode.change.yourTaxFreeAmount.title=Your tax-free amount
+taxCode.change.yourTaxFreeAmount.whatHappensNext.link=See what happens next
 
 
 # NonTaxCodeIncomeComponentType display decodes..

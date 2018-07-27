@@ -1220,11 +1220,13 @@ tai.canWeContactByPhone.explanation.pt2=Os dewiswch ''Na'', byddwn yn cysylltu �
 taxCode.change.journey.preHeading= Newid yn eich cod treth
 taxCode.change.whatHappensNext.title=Yr hyn sy’n digwydd nesaf
 taxCode.change.whatHappensNext.paragragh1=Os yw’r wybodaeth am eich cod treth yn gywir, nid oes angen i chi wneud unrhyw beth
-taxCode.change.whatHappensNext.paragragh2=
-taxCode.change.whatHappensNext.paragragh3=
-taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link=
-taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link=
+taxCode.change.whatHappensNext.paragragh2=Gallwch wirio {0} i weld faint o dreth y byddwch yn ei thalu yn ein barn ni.
+taxCode.change.whatHappensNext.paragragh3=Gallwch {0} yn eich crynodeb o’ch Treth Incwm TWE. Os yw hyn yn effeithio ar eich cod treth, cewch un newydd.
+taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link=amcangyfrif o’ch Treth Incwm
+taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link=ddiweddaru’ch incwm neu’ch buddiannau presennol
 taxCode.change.whatHappensNext.wrongInformation.text=Os yw’r wybodaeth yr ydych wedi’i gweld yn anghywir
+taxCode.change.yourTaxFreeAmount.title=Eich swm rhydd o dreth
+taxCode.change.yourTaxFreeAmount.whatHappensNext.link=Gweler beth fydd yn digwydd nesaf
 
 
 ##Update Pension Pages

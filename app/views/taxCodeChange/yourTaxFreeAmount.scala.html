@@ -15,25 +15,31 @@
  *@
 
 @import includes.ptaHeader
+@import uk.gov.hmrc.urls.Link
 
 @()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
-    ptaHeader(
-    formForErrorSummary = None,
-    displayBackLink = true,
-    mainHeadingText = Messages(""),
-    preHeadingText = Messages(""))
+ptaHeader(
+formForErrorSummary = None,
+displayBackLink = true,
+mainHeadingText = Messages("taxCode.change.yourTaxFreeAmount.title"),
+preHeadingText = Messages("taxCode.change.journey.preHeading"))
 }
 
 @main(
-    title = Messages(""),
-    articleClasses = None,
-    pageHeader = Some(header),
-    user = Some(user),
-    gaCustomTitle = None
+title = Messages("taxCode.change.yourTaxFreeAmount.title"),
+articleClasses = Some("full-width"),
+pageHeader = Some(header),
+user = Some(user),
+gaCustomTitle = None
 ){
-<div>
 
-</div>
+@Link.toInternalPage(
+id=Some("checkWhatHappensNext"),
+value=Some(Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link")),
+url = routes.TaxCodeChangeController.whatHappensNext.url,
+cssClasses=Some("button")
+).toHtml
+
 }
