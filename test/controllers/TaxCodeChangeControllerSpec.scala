@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
+import controllers.{FakeTaiPlayApplication, TaxCodeChangeController}
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
@@ -26,7 +27,6 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -44,30 +44,10 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  "taxCodeComparison" must {
-    "show 'Your tax code comparison' page" when {
-      "the request has an authorised session" in {
-        val SUT = createSUT
-        val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe OK
-      }
-    }
-  }
-
-  "yourTaxFreeAmount" must {
-    "show 'Your tax-free amount' page" when {
-      "the request has an authorised session" in {
-        val SUT = createSUT
-        val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe OK
-      }
-    }
-  }
-
   "whatHappensNext" must {
     "show 'What happens next' page" when {
       "the request has an authorised session" in {
-        val SUT = createSUT
+        val SUT = createSUT(true)
         val result = SUT.whatHappensNext()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
@@ -75,14 +55,58 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         doc.title() must include(messagesApi("taxCode.change.whatHappensNext.title"))
       }
     }
+
+    "don't show 'What happens next' page if 'tax code change journey' is toggled off" when {
+      "the request has an authorised session" in {
+        val SUT = createSUT()
+        val result = SUT.whatHappensNext()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe NOT_FOUND
+      }
+    }
+  }
+
+  "yourTaxFreeAmount" must {
+    "show 'Your tax-free amount' page" when {
+      "the request has an authorised session" in {
+        val SUT = createSUT(true)
+        val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+      }
+    }
+
+    "don't show 'Your tax-free amount' page if 'tax code change journey' is toggled off" when {
+      "the request has an authorised session" in {
+        val SUT = createSUT()
+        val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe NOT_FOUND
+      }
+    }
+  }
+
+  "taxCodeComparison" must {
+    "show 'Your tax code comparison' page" when {
+      "the request has an authorised session" in {
+        val SUT = createSUT(true)
+        val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+      }
+    }
+
+    "don't show 'Your tax code comparison' page if 'tax code change journey' is toggled off" when {
+      "the request has an authorised session" in {
+        val SUT = createSUT()
+        val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe NOT_FOUND
+      }
+    }
   }
 
 
-  private def createSUT = new SUT
+  private def createSUT(taxCodeChangeJourneyEnabled: Boolean = false) = new SUT(taxCodeChangeJourneyEnabled)
+
   def generateNino: Nino = new Generator(new Random).nextNino
 
-
-  private class SUT extends TaxCodeChangeController {
+  class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController {
 
     override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
@@ -90,6 +114,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
+    override val taxCodeChangeEnabled: Boolean = taxCodeChangeJourneyEnabled
 
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)

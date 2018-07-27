@@ -23,7 +23,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.service.PersonService
 
@@ -33,6 +33,7 @@ trait TaxCodeChangeController extends TaiBaseController
   with WithAuthorisedForTaiLite
   with DelegationAwareActions
   with Auditable
+  with FeatureTogglesConfig
 {
   def personService: PersonService
 
@@ -40,8 +41,15 @@ trait TaxCodeChangeController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison()))
+          if(taxCodeChangeEnabled) {
+            ServiceCheckLite.personDetailsCheck {
+              Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison()))
+            }
+          }
+          else {
+            ServiceCheckLite.personDetailsCheck {
+              Future.successful(NotFound)
+            }
           }
   }
 
@@ -49,8 +57,15 @@ trait TaxCodeChangeController extends TaiBaseController
   implicit user =>
     implicit person =>
       implicit request =>
-        ServiceCheckLite.personDetailsCheck {
-          Future.successful(Ok(views.html.taxCodeChange.yourTaxFreeAmount()))
+        if(taxCodeChangeEnabled) {
+          ServiceCheckLite.personDetailsCheck {
+            Future.successful(Ok(views.html.taxCodeChange.yourTaxFreeAmount()))
+          }
+        }
+        else {
+          ServiceCheckLite.personDetailsCheck {
+            Future.successful(NotFound)
+          }
         }
   }
 
@@ -58,10 +73,16 @@ trait TaxCodeChangeController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
+          if(taxCodeChangeEnabled) {
+            ServiceCheckLite.personDetailsCheck {
+              Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
+            }
           }
-
+          else {
+            ServiceCheckLite.personDetailsCheck {
+              Future.successful(NotFound)
+            }
+          }
   }
 
 }
