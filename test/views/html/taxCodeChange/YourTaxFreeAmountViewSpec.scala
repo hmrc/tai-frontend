@@ -16,6 +16,7 @@
 
 package views.html.taxCodeChange
 
+import controllers.routes
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import play.twirl.api.Html
@@ -35,7 +36,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     behave like pageWithCombinedHeader(Messages("taxCode.change.journey.preHeading"), Messages("taxCode.change.yourTaxFreeAmount.title"))
 
     "have explanation of tax-free amount" in {
-      doc(view) must haveParagraphWithText(Messages("taxCode.change.yourTaxFreeAmount.desc"))
+      doc must haveParagraphWithText(Messages("taxCode.change.yourTaxFreeAmount.desc"))
     }
 
     "have h2 heading showing the date period for tax-free amount" in {
@@ -58,11 +59,30 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       def viewTaxFreeAmount: Html = views.html.taxCodeChange.yourTaxFreeAmount(createViewModel(annualTaxFreeAmount = taxFreeAmount))
     }
 
-      "have h2 heading for how tax-free amount is calculated" in {
+    "have h2 heading for how tax-free amount is calculated" in {
 
-        doc(view) must haveH2HeadingWithText(Messages("taxCode.change.yourTaxFreeAmount.summaryHeading"))
+      doc must haveH2HeadingWithText(Messages("taxCode.change.yourTaxFreeAmount.summaryHeading"))
 
-      }
+    }
+
+//    "display a detail section" which {
+//
+//      "contains one group per summary category view model" in {
+//        doc.select(".govuk-check-your-answers").size() mustBe 4
+//        doc must haveElementWithId("summaryTable1")
+//        doc must haveElementWithId("summaryTable2")
+//        doc must haveElementWithId("summaryTable3")
+//        doc must haveElementWithId("summaryTable4")
+//      }
+//    }
+
+    "have a 'check what happens next' button" in {
+
+      doc must haveLinkElement(
+        "checkWhatHappensNext",
+        routes.TaxCodeChangeController.whatHappensNext.url,
+        messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link"))
+    }
 
   }
 

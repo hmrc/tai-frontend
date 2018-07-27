@@ -16,6 +16,9 @@
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
+@import includes.taxFreeAmountSummary
+@import uk.gov.hmrc.urls.Link
+
 @(viewModel:YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
@@ -40,6 +43,17 @@
         <span class="display-block bold-large section section--narrow flush--bottom">@viewModel.annualTaxFreeAmount</span>
     </h2>
 
-    <h2 class="flush--bottom">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</h2>
+    <section>
+
+        <h2 class="flush--bottom">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</h2>
+
+    </section>
+
+    @Link.toInternalPage(
+        id=Some("checkWhatHappensNext"),
+        value=Some(Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link")),
+        url = routes.TaxCodeChangeController.whatHappensNext.url,
+        cssClasses=Some("button")
+    ).toHtml
 
 }
