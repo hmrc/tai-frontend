@@ -86,10 +86,9 @@
 
             <p>
                 @Link.toInternalPage(
-                    id=Some("blah"),
-                    value=Some("Update your current income or benefits"),
-                    url = routes.TaxCodeChangeController.whatHappensNext.url,
-                    cssClasses=None
+                    id=Some("updateYourCurrentIncome"),
+                    value=Some(Messages("taxCode.change.yourTaxFreeAmount.updateYourCurrentIncome.link")),
+                    url = routes.TaxCodeChangeController.whatHappensNext.url
                 ).toHtml
             </p>
 

@@ -147,14 +147,14 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
     TaxFreeAmountSummaryRowViewModel("Some Other Allowance", "£12,322", ChangeLinkViewModel(true, "context2", "/dummy/url2")),
     TaxFreeAmountSummaryRowViewModel("Blah Blah Random Extra Row Content", "£11,111", ChangeLinkViewModel(false))
   )
-  val summaryItemViewModels: TaxFreeAmountSummaryViewModel =
+  val taxFreeAmountSummaryViewModel: TaxFreeAmountSummaryViewModel =
     TaxFreeAmountSummaryViewModel(Seq(
       TaxFreeAmountSummaryCategoryViewModel("header1", "header2", false, true, messages("tai.taxFreeAmount.table.allowances.caption"), Seq(TaxFreeAmountSummaryRowViewModel("Personal Allowance" , "£11,500", ChangeLinkViewModel(false)))),
       TaxFreeAmountSummaryCategoryViewModel("header3", "header4", true, false, "Additions to your Personal Allowance", rowViewModels),
       TaxFreeAmountSummaryCategoryViewModel("header5", "header6", true, false, "Deductions from your Personal Allowance", Seq(TaxFreeAmountSummaryRowViewModel("An example single deduction benefit", "£12,300", ChangeLinkViewModel(true, "context1", "/dummy/url1")))),
       TaxFreeAmountSummaryCategoryViewModel("header7", "header8", true, true, messages("tai.taxFreeAmount.table.totals.caption"), Seq(TaxFreeAmountSummaryRowViewModel("Your total tax-free amount", "£11,500", ChangeLinkViewModel(false))))
   ))
-  val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", summaryItemViewModels)
+  val viewModel: TaxFreeAmountViewModel = TaxFreeAmountViewModel("main heading", "main heading", "£2020", taxFreeAmountSummaryViewModel)
 
   override def view = views.html.taxFreeAmount(viewModel)
 }

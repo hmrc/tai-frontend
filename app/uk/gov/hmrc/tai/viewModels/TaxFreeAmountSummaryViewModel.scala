@@ -48,6 +48,7 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
 
     val personalAllowance = personalAllowanceVM(codingComponents)
     val additions = additionsVM(codingComponents, employmentName, companyCarBenefits)
+    println(additions)
     val deductions = deductionsVM(codingComponents, employmentName, companyCarBenefits)
     val total = totalRow(taxFreeAmountTotal)
 

@@ -1266,5 +1266,8 @@ taxCode.change.whatHappensNext.preHeading= Newid yn eich cod treth
 taxCode.change.yourTaxFreeAmount.title=Eich swm rhydd o dreth
 taxCode.change.yourTaxFreeAmount.desc=
 taxCode.change.yourTaxFreeAmount.dates=
+taxCode.change.yourTaxFreeAmount.summaryHeading=
+taxCode.change.yourTaxFreeAmount.whatHappensNext.link=
+taxCode.change.yourTaxFreeAmount.updateYourCurrentIncome.link=
 
 
