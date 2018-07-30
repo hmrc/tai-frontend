@@ -58,7 +58,7 @@ class simpleEstimatedIncomeTaxSpec extends TaiViewSpec {
       doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.howYouPay.heading"))
 
       doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.whyEstimate.desc",
-        TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))).body)
+        messages("taxyear.day.month", TaxYearResolver.currentTaxYear.toString))).body)
 
       doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.howYouPay.desc",
         messages("tai.estimatedIncome.taxCodes.link"))).body)

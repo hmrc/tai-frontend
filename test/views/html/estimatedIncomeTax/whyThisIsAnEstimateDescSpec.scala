@@ -26,8 +26,8 @@ class whyThisIsAnEstimateDescSpec extends TaiViewSpec {
 
     doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.whyEstimate.link"))
 
-    doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.whyEstimate.desc",
-      TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))).body)
+    doc(view) must haveParagraphWithText(Html(
+      messages("tai.estimatedIncome.whyEstimate.desc", messages("taxyear.day.month", TaxYearResolver.currentTaxYear.toString))).body)
 
   }
 
