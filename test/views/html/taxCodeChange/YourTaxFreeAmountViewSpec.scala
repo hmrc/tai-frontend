@@ -23,6 +23,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec{
 
   "your tax free amount" should {
     behave like pageWithBackLink
+    behave like pageWithCombinedHeader(messages("taxCode.change.journey.preHeading"), messages("taxCode.change.yourTaxFreeAmount.title"))
   }
 
   "have a 'check what happens next' button" in {
