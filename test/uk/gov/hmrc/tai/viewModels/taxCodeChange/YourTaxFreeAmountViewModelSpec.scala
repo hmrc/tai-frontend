@@ -22,6 +22,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.TaiConstants.encodedMinusSign
 import uk.gov.hmrc.tai.util.ViewModelHelper
@@ -34,14 +35,25 @@ import uk.gov.hmrc.time.TaxYearResolver
 class YourTaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication with ViewModelHelper with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  val p2IssueDate = new LocalDate()
+
+  private val p2IssueDate = new LocalDate()
+  private val defaultCodingComponents = Seq.empty[CodingComponent]
+  private val defaultEmploymentName : Map[Int, String] = Map(0 -> "")
+  private val defaultCompanyCarBenefits : Seq[CompanyCarBenefit] = Seq.empty[CompanyCarBenefit]
+
+  private def createViewModel(p2date: LocalDate = p2IssueDate,
+                              codingComponents: Seq[CodingComponent] = defaultCodingComponents,
+                              employmentName: Map[Int, String] = defaultEmploymentName,
+                              companyCarBenefits: Seq[CompanyCarBenefit] = defaultCompanyCarBenefits) : YourTaxFreeAmountViewModel = {
+    YourTaxFreeAmountViewModel(p2date, codingComponents, employmentName, companyCarBenefits)
+  }
 
   "YourTaxFreeAmountViewModel" must {
 
     "return a range of dates as a formatted string" in {
 
 
-      val viewModel = YourTaxFreeAmountViewModel(p2IssueDate,Seq.empty[CodingComponent])
+      val viewModel = createViewModel()
       val expectedDateRange = messagesApi("tai.taxYear",htmlNonBroken(Dates.formatDate(p2IssueDate)),
         htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)))
 
@@ -56,9 +68,9 @@ class YourTaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
           CodingComponent(ForeignDividendIncome, Some(12), 300, "Income"),
           CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
 
-        val sut = YourTaxFreeAmountViewModel(p2IssueDate, taxComponents)
+        val viewModel = createViewModel(codingComponents = taxComponents)
 
-        sut.annualTaxFreeAmount mustBe "£10,000"
+        viewModel.annualTaxFreeAmount mustBe "£10,000"
       }
       "calculated TaxFreeAmount is positive and two Personal allowances are present" in {
         val taxComponents = Seq(
@@ -68,9 +80,9 @@ class YourTaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
           CodingComponent(ForeignDividendIncome, Some(12), 300, "Income"),
           CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
 
-        val sut = YourTaxFreeAmountViewModel(p2IssueDate, taxComponents)
+        val viewModel = createViewModel(codingComponents = taxComponents)
 
-        sut.annualTaxFreeAmount mustBe "£11,000"
+        viewModel.annualTaxFreeAmount mustBe "£11,000"
       }
       "calculated TaxFreeAmount is positive and all Personal allowances are present" in {
         val taxComponents = Seq(
@@ -81,9 +93,9 @@ class YourTaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
           CodingComponent(ForeignDividendIncome, Some(12), 300, "Income"),
           CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
 
-        val sut = YourTaxFreeAmountViewModel(p2IssueDate, taxComponents)
+        val viewModel = createViewModel(codingComponents = taxComponents)
 
-        sut.annualTaxFreeAmount mustBe "£13,000"
+        viewModel.annualTaxFreeAmount mustBe "£13,000"
       }
     }
 
@@ -95,13 +107,11 @@ class YourTaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
           CodingComponent(ForeignDividendIncome, Some(12), 1000, "Income"),
           CodingComponent(MarriageAllowanceTransferred, Some(31), 200, "Deduction"))
 
-        val sut = YourTaxFreeAmountViewModel(p2IssueDate, taxComponents)
+        val viewModel = createViewModel(codingComponents = taxComponents)
 
-        sut.annualTaxFreeAmount mustBe s"${encodedMinusSign}£1,200"
+        viewModel.annualTaxFreeAmount mustBe s"${encodedMinusSign}£1,200"
       }
     }
-
-
 
   }
 

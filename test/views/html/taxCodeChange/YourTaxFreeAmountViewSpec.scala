@@ -24,6 +24,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.viewModels.{TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryViewModel}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
 class YourTaxFreeAmountViewSpec extends TaiViewSpec {
@@ -86,8 +87,12 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
   }
 
-  private def createViewModel(taxCodeDateRange: String = "", annualTaxFreeAmount: String = ""): YourTaxFreeAmountViewModel = {
-    YourTaxFreeAmountViewModel(taxCodeDateRange, annualTaxFreeAmount)
+  val taxFreeAmountSummaryVM = TaxFreeAmountSummaryViewModel(Seq.empty[TaxFreeAmountSummaryCategoryViewModel])
+
+  private def createViewModel(taxCodeDateRange: String = "",
+                              annualTaxFreeAmount: String = "",
+                              taxFreeAmountSummary: TaxFreeAmountSummaryViewModel = taxFreeAmountSummaryVM): YourTaxFreeAmountViewModel = {
+    YourTaxFreeAmountViewModel(taxCodeDateRange, annualTaxFreeAmount, taxFreeAmountSummary)
   }
 
   override def view = views.html.taxCodeChange.yourTaxFreeAmount(createViewModel())

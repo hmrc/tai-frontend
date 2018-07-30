@@ -97,10 +97,11 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             expectedHeader,
             expectedTitle,
             "£0",
-            Seq(emptyPersonalAllowanceItem,
+            TaxFreeAmountSummaryViewModel(Seq(
+              emptyPersonalAllowanceItem,
               emptyAdditionsItem,
               emptyDeductionsItem,
-              emptyTotalsItem))
+              emptyTotalsItem)))
         }
       }
 
@@ -119,7 +120,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             ))
 
           val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits)
-          val additionRows = sut.summaryItems(1).rows
+          val additionRows = sut.taxFreeAmountSummary.summaryItems(1).rows
           additionRows mustBe result
         }
       }
@@ -133,7 +134,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             expectedHeader,
             expectedTitle,
             "£11,500",
-            Seq(
+            TaxFreeAmountSummaryViewModel(Seq(
               TaxFreeAmountSummaryCategoryViewModel(
                 Messages("tai.taxFreeAmount.table.columnOneHeader"),
                 Messages("tai.taxFreeAmount.table.columnTwoHeader"),
@@ -149,7 +150,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
               emptyAdditionsItem,
               emptyDeductionsItem,
               totalsItem("£11,500")
-            ))
+            )))
         }
       }
 
@@ -168,7 +169,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             expectedHeader,
             expectedTitle,
             "£1,300",
-            Seq(
+            TaxFreeAmountSummaryViewModel(Seq(
               emptyPersonalAllowanceItem,
               TaxFreeAmountSummaryCategoryViewModel(
                 Messages("tai.taxFreeAmount.table.columnOneHeader"),
@@ -209,7 +210,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
               emptyDeductionsItem,
               totalsItem("£1,300")
             )
-          )
+          ))
         }
       }
 
@@ -225,7 +226,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
             expectedHeader,
             expectedTitle,
             s"${encodedMinusSign}£6,200",
-            Seq(
+            TaxFreeAmountSummaryViewModel(Seq(
               emptyPersonalAllowanceItem,
               emptyAdditionsItem,
               TaxFreeAmountSummaryCategoryViewModel(
@@ -260,7 +261,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
                   ))),
               totalsItem(s"${encodedMinusSign}£6,200")
             )
-          )
+          ))
         }
       }
 
@@ -276,7 +277,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
           )
 
           val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits)
-          sut.summaryItems.last mustBe
+          sut.taxFreeAmountSummary.summaryItems.last mustBe
             TaxFreeAmountSummaryCategoryViewModel(
               Messages("tai.taxFreeAmount.table.columnOneHeader"),
               Messages("tai.taxFreeAmount.table.columnTwoHeader"),
@@ -304,7 +305,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
           )
 
           val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits)
-          sut.summaryItems.last mustBe
+          sut.taxFreeAmountSummary.summaryItems.last mustBe
             TaxFreeAmountSummaryCategoryViewModel(
               Messages("tai.taxFreeAmount.table.columnOneHeader"),
               Messages("tai.taxFreeAmount.table.columnTwoHeader"),
@@ -332,7 +333,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
           )
 
           val sut = TaxFreeAmountViewModel(taxComponents, employmentNames, companyCarBenefits)
-          sut.summaryItems.last mustBe
+          sut.taxFreeAmountSummary.summaryItems.last mustBe
             TaxFreeAmountSummaryCategoryViewModel(
               Messages("tai.taxFreeAmount.table.columnOneHeader"),
               Messages("tai.taxFreeAmount.table.columnTwoHeader"),
@@ -440,10 +441,10 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
 
           val expectedTotalsItem = totalsItem("£2,000")
 
-          sut.summaryItems(0) mustBe expectedPersonalAllowanceItem
-          sut.summaryItems(1) mustBe expectedAdditionsItem
-          sut.summaryItems(2) mustBe expectedDeductionsItem
-          sut.summaryItems(3) mustBe expectedTotalsItem
+          sut.taxFreeAmountSummary.summaryItems(0) mustBe expectedPersonalAllowanceItem
+          sut.taxFreeAmountSummary.summaryItems(1) mustBe expectedAdditionsItem
+          sut.taxFreeAmountSummary.summaryItems(2) mustBe expectedDeductionsItem
+          sut.taxFreeAmountSummary.summaryItems(3) mustBe expectedTotalsItem
         }
       }
 

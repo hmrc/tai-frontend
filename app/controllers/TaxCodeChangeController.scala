@@ -65,7 +65,7 @@ trait TaxCodeChangeController extends TaiBaseController
             employmentNames <- employmentService.employmentNames(nino, TaxYear())
             companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
           } yield {
-            val viewModel = YourTaxFreeAmountViewModel(new LocalDate(),codingComponents)
+            val viewModel = YourTaxFreeAmountViewModel(new LocalDate(), codingComponents, employmentNames, companyCarBenefits)
             Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
           }
         }

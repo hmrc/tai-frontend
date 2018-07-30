@@ -187,6 +187,8 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
     }
   }
 
+
+
   val employmentNames = Map(1 -> "Employer1", 2 -> "Employer2", 3 -> "Employer3")
 
   val companyCarBenefit10 = CompanyCarBenefit(10, 1000, List(CompanyCar(10,"Make Model1", true, None, None, None)), Some(1))
