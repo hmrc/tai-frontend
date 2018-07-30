@@ -21,6 +21,8 @@
 
 @(viewModel:YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
+@gaEventActionString = @{"Your tax free amount"}
+
 @header = @{
     ptaHeader(
     formForErrorSummary = None,
@@ -37,23 +39,60 @@
     gaCustomTitle = None
 ){
 
-    <p>@Messages("taxCode.change.yourTaxFreeAmount.desc")</p>
+    <div class="grid-row">
 
-    <h2 class="flush--bottom">@Messages("taxCode.change.yourTaxFreeAmount.dates", viewModel.taxCodeDateRange)
-        <span class="display-block bold-large section section--narrow flush--bottom">@viewModel.annualTaxFreeAmount</span>
-    </h2>
+        <div class="column-two-thirds">
 
-    <section>
+            <p class="lede">@Messages("taxCode.change.yourTaxFreeAmount.desc")</p>
 
-        <h2 class="flush--bottom">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</h2>
+        </div>
 
-    </section>
+    </div>
 
-    @Link.toInternalPage(
-        id=Some("checkWhatHappensNext"),
-        value=Some(Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link")),
-        url = routes.TaxCodeChangeController.whatHappensNext.url,
-        cssClasses=Some("button")
-    ).toHtml
+    <div class="grid-row">
 
+        <div class="column-two-thirds">
+
+            <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.dates", viewModel.taxCodeDateRange)
+                <span class="display-block bold-large section section--narrow flush--bottom">@viewModel.annualTaxFreeAmount</span>
+            </h2>
+
+            <section>
+
+                <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</h2>
+
+                <div class="margin-bottom-large">
+                    @taxFreeAmountSummary(viewModel.taxFreeAmountSummary.summaryItems, gaEventActionString)
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+
+
+            <div class="form-group">
+                @Link.toInternalPage(
+                    id=Some("checkWhatHappensNext"),
+                    value=Some(Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link")),
+                    url = routes.TaxCodeChangeController.whatHappensNext.url,
+                    cssClasses=Some("button")
+                ).toHtml
+            </div>
+
+            <p>
+                @Link.toInternalPage(
+                    id=Some("blah"),
+                    value=Some("Update your current income or benefits"),
+                    url = routes.TaxCodeChangeController.whatHappensNext.url,
+                    cssClasses=None
+                ).toHtml
+            </p>
+
+        </div>
+    </div>
 }

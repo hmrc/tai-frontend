@@ -52,7 +52,6 @@ class YourTaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
     "return a range of dates as a formatted string" in {
 
-
       val viewModel = createViewModel()
       val expectedDateRange = messagesApi("tai.taxYear",htmlNonBroken(Dates.formatDate(p2IssueDate)),
         htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)))
