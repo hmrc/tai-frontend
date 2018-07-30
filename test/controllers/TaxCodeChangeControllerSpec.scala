@@ -22,7 +22,7 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
@@ -31,6 +31,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.ApplicationGlobal
 import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.Future
@@ -56,11 +57,17 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       }
     }
 
+
     "don't show 'What happens next' page if 'tax code change journey' is toggled off" when {
       "the request has an authorised session" in {
         val SUT = createSUT()
         val result = SUT.whatHappensNext()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe NOT_FOUND
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messagesApi("global.error.pageNotFound404.title"))
+
       }
     }
   }
@@ -78,7 +85,11 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val SUT = createSUT()
         val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe NOT_FOUND
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messagesApi("global.error.pageNotFound404.title"))
       }
     }
   }
@@ -96,7 +107,11 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val SUT = createSUT()
         val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe NOT_FOUND
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messagesApi("global.error.pageNotFound404.title"))
       }
     }
   }

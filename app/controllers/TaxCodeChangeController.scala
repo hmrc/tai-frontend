@@ -19,13 +19,15 @@ package controllers
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
+import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.service.PersonService
+import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
 
@@ -48,7 +50,7 @@ trait TaxCodeChangeController extends TaiBaseController
           }
           else {
             ServiceCheckLite.personDetailsCheck {
-              Future.successful(NotFound)
+              Future.successful(Ok(notFoundView))
             }
           }
   }
@@ -64,7 +66,7 @@ trait TaxCodeChangeController extends TaiBaseController
         }
         else {
           ServiceCheckLite.personDetailsCheck {
-            Future.successful(NotFound)
+            Future.successful(Ok(notFoundView))
           }
         }
   }
@@ -80,10 +82,17 @@ trait TaxCodeChangeController extends TaiBaseController
           }
           else {
             ServiceCheckLite.personDetailsCheck {
-              Future.successful(NotFound)
+              Future.successful(Ok(notFoundView))
             }
           }
   }
+
+  private def notFoundView(implicit request: Request[_]) = views.html.error_template_noauth(Messages("global.error.pageNotFound404.title"),
+    Messages("tai.errorMessage.heading"),
+    Messages("tai.errorMessage.frontend404",Link.toInternalPage(
+      url=routes.TaxAccountSummaryController.onPageLoad().url,
+      value=Some(Messages("tai.errorMessage.startAgain"))
+    ).toHtml))
 
 }
 
