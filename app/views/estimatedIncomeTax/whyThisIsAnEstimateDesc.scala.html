@@ -18,11 +18,11 @@
 
 @()(implicit messages: Messages)
 
-@defining(TaxYearResolver.currentTaxYear.toString()) { x =>
+@defining(TaxYearResolver.currentTaxYear.toString()) { currentTaxYear =>
 
  <h2 class="heading-section">
     @Messages("tai.estimatedIncome.whyEstimate.link")
  </h2>
-    <p id="whyEstimateDesc">@Messages("tai.estimatedIncome.whyEstimate.desc", Messages("taxyear.day.month",x))</p>
+    <p id="whyEstimateDesc">@Messages("tai.estimatedIncome.whyEstimate.desc", Messages("taxyear.day.month",currentTaxYear))</p>
 
 }
