@@ -92,19 +92,12 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       }
 
       "displays a group with multiple rows as an unordered list of items" in {
-        doc must haveElementAtPathWithId("#taxFreeAmountDetail ul", "summaryTable2Body")
+        doc must haveElementAtPathWithId("#yourTaxFreeAmount ul", "summaryTable2Body")
       }
 
       "displays a group with a single row as a plain div" in {
-        doc must not(haveElementAtPathWithId("#taxFreeAmountDetail ul", "summaryTable3Body"))
-        doc must haveElementAtPathWithId("#taxFreeAmountDetail div", "summaryTable3Body")
-      }
-
-      "displays a link & inner link element, where present in the view model" in {
-        doc must haveElementWithId("summaryTable2Row1ChangeLinkCell")
-        doc must haveLinkWithUrlWithID("summaryTable2Row1ChangeLink", "/dummy/url1")
-        doc must haveElementAtPathWithClass("a[id=summaryTable2Row1ChangeLink] > span", "visually-hidden")
-        doc must haveElementAtPathWithText("a[id=summaryTable2Row1ChangeLink] > span", messages("tai.updateOrRemove") + " context1")
+        doc must not(haveElementAtPathWithId("#yourTaxFreeAmount ul", "summaryTable3Body"))
+        doc must haveElementAtPathWithId("#yourTaxFreeAmount div", "summaryTable3Body")
       }
 
       "excludes a link cell from table rows, where instructed by the view model" in {
