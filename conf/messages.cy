@@ -1219,7 +1219,7 @@ tai.canWeContactByPhone.explanation.pt2=Os dewiswch ''Na'', byddwn yn cysylltu �
 # tax code change
 taxCode.change.journey.preHeading= Newid yn eich cod treth
 taxCode.change.whatHappensNext.title=Yr hyn sy’n digwydd nesaf
-taxCode.change.whatHappensNext.paragragh1=Os yw’r wybodaeth am eich cod treth yn gywir, nid oes angen i chi wneud unrhyw beth
+taxCode.change.whatHappensNext.paragragh1=Os yw’r wybodaeth am eich cod treth yn gywir, nid oes angen i chi wneud unrhyw beth.
 taxCode.change.whatHappensNext.paragragh2=Gallwch wirio {0} i weld faint o dreth y byddwch yn ei thalu yn ein barn ni.
 taxCode.change.whatHappensNext.paragragh3=Gallwch {0} yn eich crynodeb o’ch Treth Incwm TWE. Os yw hyn yn effeithio ar eich cod treth, cewch un newydd.
 taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link=amcangyfrif o’ch Treth Incwm
