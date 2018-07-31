@@ -1267,7 +1267,7 @@ taxCode.change.yourTaxFreeAmount.title=Eich swm rhydd o dreth
 taxCode.change.yourTaxFreeAmount.desc=Eich swm rhydd o dreth yw''r incwm y gallwch ei gael cyn i chi ddechrau talu treth. Defnyddir hwn i gyfrifo''ch cod treth.
 taxCode.change.yourTaxFreeAmount.dates=Eich swm rhydd o dreth ar gyfer {0}
 taxCode.change.yourTaxFreeAmount.summaryHeading=Sut caiff eich swm rhydd o dreth ei gyfrifo
-taxCode.change.yourTaxFreeAmount.whatHappensNext.link=
+taxCode.change.yourTaxFreeAmount.whatHappensNext.link=Gweler beth fydd yn digwydd nesaf
 taxCode.change.yourTaxFreeAmount.updateYourCurrentIncome.link=
 
 
