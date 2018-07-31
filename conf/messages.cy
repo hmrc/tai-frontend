@@ -1262,11 +1262,11 @@ tai.WhatDoYouWantToDo.submit=Yn eich blaen
 tai.whatDoYouWantToDo.error.selectOption=Dewiswch beth rydych am ei wneud.
 
 ## Tax Code Change
-taxCode.change.whatHappensNext.preHeading= Newid yn eich cod treth
+taxCode.change.journey.preHeading= Newid yn eich cod treth
 taxCode.change.yourTaxFreeAmount.title=Eich swm rhydd o dreth
-taxCode.change.yourTaxFreeAmount.desc=
-taxCode.change.yourTaxFreeAmount.dates=
-taxCode.change.yourTaxFreeAmount.summaryHeading=
+taxCode.change.yourTaxFreeAmount.desc=Eich swm rhydd o dreth yw''r incwm y gallwch ei gael cyn i chi ddechrau talu treth. Defnyddir hwn i gyfrifo''ch cod treth.
+taxCode.change.yourTaxFreeAmount.dates=Eich swm rhydd o dreth ar gyfer {0}
+taxCode.change.yourTaxFreeAmount.summaryHeading=Sut caiff eich swm rhydd o dreth ei gyfrifo
 taxCode.change.yourTaxFreeAmount.whatHappensNext.link=
 taxCode.change.yourTaxFreeAmount.updateYourCurrentIncome.link=
 
