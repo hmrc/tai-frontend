@@ -50,7 +50,8 @@ private object AppDependencies {
         "org.jsoup"          %    "jsoup"      %  "1.8.3"  % scope,
         "org.mockito"      % "mockito-all" % "1.9.5" % scope,
         "org.mockito" % "mockito-core" % "1.9.0" % scope,
-        "com.typesafe.play" %% "play-test" % PlayVersion.current % scope
+        "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
+        "com.github.tomakehurst" % "wiremock" % "2.15.0" % scope
       )
     }.test
   }
