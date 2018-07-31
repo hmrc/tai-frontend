@@ -7,8 +7,6 @@ GET         /income-tax/no-info                                                 
 GET         /last-year-paye                                                            controllers.PayeControllerHistoric.lastYearPaye()
 GET         /historic-paye/:taxYear                                                    controllers.PayeControllerHistoric.payePage(taxYear: uk.gov.hmrc.tai.model.TaxYear)
 
-GET         /tax-explanation                                                           controllers.TaxExplanationController.taxExplanationPage
-
 GET         /timeout                                                                   controllers.ServiceController.timeoutPage
 GET         /signout                                                                   controllers.ServiceController.serviceSignout
 GET         /tax-estimate-unavailable                                                  controllers.ServiceController.gateKeeper
@@ -88,7 +86,6 @@ GET         /update-employment/success                                          
 
 GET         /previous-underpayment                                                     controllers.UnderpaymentFromPreviousYearController.underpaymentExplanation
 GET         /underpayment-estimate                                                     controllers.PotentialUnderpaymentController.potentialUnderpaymentPage
-GET         /tax-relief                                                                controllers.EstimatedIncomeTaxController.taxRelief
 
 
 ## Savings Income
@@ -140,7 +137,7 @@ GET         /your-tax-free-amount                                               
 
 GET         /tax-codes                                                                 controllers.YourTaxCodeController.taxCodes
 GET         /paye-income-tax-estimate                                                  controllers.EstimatedIncomeTaxController.estimatedIncomeTax
-
+GET         /detailed-income-tax-estimate                                              controllers.DetailedIncomeTaxEstimateController.taxExplanationPage
 
 GET         /income-tax-comparison                                                     controllers.IncomeTaxComparisonController.onPageLoad
 

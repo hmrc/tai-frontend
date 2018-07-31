@@ -26,7 +26,7 @@ class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
   "End BBSI check your answers page" must {
     behave like pageWithTitle(messages("tai.checkYourAnswers"))
     behave like pageWithCombinedHeader(
-      messages("tai.bbsi.end.checkYourAnswers.preHeading"),
+      messages("account.closed"),
       messages("tai.checkYourAnswers"))
 
     behave like pageWithButtonForm(

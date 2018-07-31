@@ -61,7 +61,7 @@ trait AddEmploymentController extends TaiBaseController
   def successfulJourneyCacheService: JourneyCacheService
 
   def telephoneNumberViewModel(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
-    messages("tai.addEmployment.cya.preHeading"),
+    messages("add.missing.employment"),
     messages("tai.canWeContactByPhone.title"),
     controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url,
     controllers.employments.routes.AddEmploymentController.submitTelephoneNumber().url,
@@ -274,7 +274,7 @@ trait AddEmploymentController extends TaiBaseController
               Seq(AddEmployment_TelephoneNumberKey)
             ) map tupled { (mandatoryVals, optionalVals) =>
               val model =
-                IncomeCheckYourAnswersViewModel(Messages("tai.addEmployment.cya.preHeading"), mandatoryVals.head, mandatoryVals(1), mandatoryVals(2), mandatoryVals(3), optionalVals.head,
+                IncomeCheckYourAnswersViewModel(Messages("add.missing.employment"), mandatoryVals.head, mandatoryVals(1), mandatoryVals(2), mandatoryVals(3), optionalVals.head,
                   controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url,
                   controllers.employments.routes.AddEmploymentController.submitYourAnswers().url,
                   controllers.routes.TaxAccountSummaryController.onPageLoad().url)

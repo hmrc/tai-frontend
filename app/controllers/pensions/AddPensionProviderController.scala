@@ -58,7 +58,7 @@ trait AddPensionProviderController extends TaiBaseController
 
   private def contactPhonePensionProvider(implicit messages: Messages): CanWeContactByPhoneViewModel = {
     CanWeContactByPhoneViewModel(
-      messages("tai.addPensionProvider.preHeadingText"),
+      messages("add.missing.pension"),
       messages("tai.canWeContactByPhone.title"),
       controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url,
       controllers.pensions.routes.AddPensionProviderController.submitTelephoneNumber().url,

@@ -264,7 +264,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithAttribute("#addMissingIncomeSourceSection a", "href", controllers.employments.routes.AddEmploymentController.addEmploymentName().url)
     }
     "display an IForm link to add a missing pension" in {
-      doc must haveElementAtPathWithText("#addMissingIncomeSourceSection a", messages("tai.incomeTaxSummary.addMissingIncome.section.pensionLink"))
+      doc must haveElementAtPathWithText("#addMissingIncomeSourceSection a", messages("add.missing.pension"))
       doc must haveElementAtPathWithAttribute("#addMissingIncomeSourceSection a", "href", controllers.pensions.routes.AddPensionProviderController.addPensionProviderName().url)
     }
     "display an IForm link to add a missing income source" in {

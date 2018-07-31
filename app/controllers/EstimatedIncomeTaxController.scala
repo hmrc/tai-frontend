@@ -31,8 +31,9 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
+import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, PersonService, TaxAccountService}
-import uk.gov.hmrc.tai.viewModels.{EstimatedIncomeTaxViewModel, TaxReliefViewModel}
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
 trait EstimatedIncomeTaxController extends TaiBaseController
   with DelegationAwareActions
@@ -72,36 +73,30 @@ trait EstimatedIncomeTaxController extends TaiBaseController
                 TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax),
                 TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
                 TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
-                  val model = EstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, totalTaxDetails, nonTaxCodeIncome, taxCodeIncomes)
-                  Ok(views.html.estimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
+                  val taxBands = totalTaxDetails.incomeCategories.flatMap(_.taxBands).toList
+                  val taxViewType = EstimatedIncomeTaxService.taxViewType(codingComponents,totalTaxDetails,nonTaxCodeIncome,
+                    taxAccountSummary.totalEstimatedIncome,taxAccountSummary.taxFreeAllowance,taxAccountSummary.totalEstimatedTax,
+                    taxCodeIncomes.nonEmpty)
+                  taxViewType match {
+                    case NoIncomeTaxView => Ok(views.html.estimatedIncomeTax.noCurrentIncome())
+                    case ComplexTaxView => {
+                      val model = ComplexEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary,taxCodeIncomes,taxBands)
+                      Ok(views.html.estimatedIncomeTax.complexEstimatedIncomeTax(model,iFormLinks successfulContentOrElse Html("")))
+                    }
+                    case SimpleTaxView => {
+                      val model = SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary,taxCodeIncomes,taxBands)
+                      Ok(views.html.estimatedIncomeTax.simpleEstimatedIncomeTax(model,iFormLinks successfulContentOrElse Html("")))
+                    }
+                    case ZeroTaxView => {
+                      val model = ZeroTaxEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary,taxCodeIncomes,taxBands)
+                      Ok(views.html.estimatedIncomeTax.zeroTaxEstimatedIncomeTax(model,iFormLinks successfulContentOrElse Html("")))
+                    }
+                  }
                 case _ => throw new RuntimeException("Failed to get tax summary details")
               }
             }
           }
   }
-
-  def taxRelief(): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            val nino = Nino(user.getNino)
-            val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
-            val codingComponentFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-            for {
-              codingComponents <- codingComponentFuture
-              totalTax <- totalTaxFuture
-            } yield {
-              totalTax match {
-                case TaiSuccessResponseWithPayload(totalTaxDetails: TotalTax) =>
-                  val model = TaxReliefViewModel(codingComponents, totalTaxDetails)
-                  Ok(views.html.reliefs(model))
-                case _ => throw new RuntimeException("Failed to get total tax details")
-              }
-            }
-          }
-  }
-
 }
 // $COVERAGE-OFF$
 object EstimatedIncomeTaxController extends EstimatedIncomeTaxController with AuthenticationConnectors {
