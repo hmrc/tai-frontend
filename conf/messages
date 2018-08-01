@@ -1249,3 +1249,14 @@ your.paye.income.tax.overview=Your PAYE Income Tax overview
 your.total.income.from.employment.desc=Your total income from employment is estimated at {0} this tax year. You have a {1} for your employment income. This means the first {2} of your employment earnings are tax free.
 your.total.income.from.paye.desc=Your total income from PAYE is estimated at {0} this tax year. You have a {1} for your PAYE income. This means the first {2} of your PAYE earnings are tax free.
 your.total.income.from.private.pension.desc=Your total income from private pension is estimated at {0} this tax year. You have a {1} for your private pension income. This means the first {2} of your private pension earnings are tax free.
+
+taxCode.change.journey.preHeading= Your tax code change
+taxCode.change.whatHappensNext.paragragh1=If the information about your tax code is right, you do not need to do anything.
+taxCode.change.whatHappensNext.paragragh2=You can check {0} to see how much tax we think you will pay.
+taxCode.change.whatHappensNext.paragragh3=You can {0} in your PAYE Income Tax summary. If this affects your tax code, you will get a new one.
+taxCode.change.whatHappensNext.title=What happens next
+taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link=update your current income or benefits
+taxCode.change.whatHappensNext.wrongInformation.text=If the information you have seen is wrong
+taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link=your Income Tax estimate
+taxCode.change.yourTaxFreeAmount.title=Your tax-free amount
+taxCode.change.yourTaxFreeAmount.whatHappensNext.link=See what happens next

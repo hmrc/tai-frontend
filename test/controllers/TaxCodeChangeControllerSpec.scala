@@ -18,6 +18,7 @@ package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
 import mocks.MockTemplateRenderer
+import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
@@ -49,14 +50,23 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         val SUT = createSUT(true)
         val result = SUT.whatHappensNext()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messagesApi("taxCode.change.whatHappensNext.title"))
       }
     }
+
 
     "don't show 'What happens next' page if 'tax code change journey' is toggled off" when {
       "the request has an authorised session" in {
         val SUT = createSUT()
         val result = SUT.whatHappensNext()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe NOT_FOUND
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messagesApi("global.error.pageNotFound404.title"))
+
       }
     }
   }
@@ -74,7 +84,11 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val SUT = createSUT()
         val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe NOT_FOUND
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messagesApi("global.error.pageNotFound404.title"))
       }
     }
   }
@@ -92,7 +106,11 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val SUT = createSUT()
         val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe NOT_FOUND
+
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messagesApi("global.error.pageNotFound404.title"))
       }
     }
   }

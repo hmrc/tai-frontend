@@ -16,13 +16,24 @@
 
 package views.html.taxCodeChange
 
+import controllers.routes
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class YourTaxFreeAmountViewSpec extends TaiViewSpec{
 
   "your tax free amount" should {
     behave like pageWithBackLink
+    behave like pageWithCombinedHeader(messages("taxCode.change.journey.preHeading"), messages("taxCode.change.yourTaxFreeAmount.title"))
   }
+
+  "have a 'check what happens next' button" in {
+
+    doc must haveLinkElement(
+      "checkWhatHappensNext",
+      routes.TaxCodeChangeController.whatHappensNext.url,
+      messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link"))
+  }
+
 
   override def view = views.html.taxCodeChange.yourTaxFreeAmount()
 }
