@@ -23,6 +23,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 
 class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -32,7 +33,7 @@ class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApp
     "given only employments within CY-1" must {
       "return an instance with a shouldHavePaid drawn from the totalEstimatedTax value of the supplied TaxAccountSummary" in {
 
-        val result = PreviousYearUnderpaymentViewModel(codingComponents, sampleEmployments)
+        val result = PreviousYearUnderpaymentViewModel(codingComponents, sampleEmployments, totalTax)
 
         result.allowanceReducedBy mustEqual 500.00
         result.shouldHavePaid mustEqual 1000.00
@@ -43,7 +44,7 @@ class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApp
     "given employments accross multiple years" must {
       "return an instance with a shouldHavePaid drawn from the totalEstimatedTax value of the supplied TaxAccountSummary" in {
 
-        val result = PreviousYearUnderpaymentViewModel(codingComponents, sampleEmployments2)
+        val result = PreviousYearUnderpaymentViewModel(codingComponents, sampleEmployments2, totalTax)
 
         result.allowanceReducedBy mustEqual 500.00
         result.amountDue mustEqual 100.00
@@ -59,6 +60,10 @@ class PreviousYearUnderpaymentViewModelSpec extends PlaySpec with FakeTaiPlayApp
   val codingComponents = Seq(
     CodingComponent(UnderPaymentFromPreviousYear, Some(1), 500.00, "UnderPaymentFromPreviousYear"),
     CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear"))
+
+  val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
+  val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
+  val totalTax : TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
 
   val empName = "employer name"
   val previousYear = uk.gov.hmrc.tai.model.TaxYear().prev

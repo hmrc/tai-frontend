@@ -22,17 +22,17 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
-import play.api.i18n.I18nSupport
-import play.api.test.Helpers._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, EmploymentService, PersonService}
-import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
+import uk.gov.hmrc.tai.service._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -46,6 +46,10 @@ class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
   def injector = app.injector
 
   val nino = new Generator().nextNino
+
+  val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
+  val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
+  val totalTax : TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
 
   "UnderPaymentFromPreviousYearController" should {
     "respond with OK" when {
@@ -72,6 +76,7 @@ class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
     override val personService: PersonService = mock[PersonService]
     override val auditService: AuditService = mock[AuditService]
     override val employmentService: EmploymentService = mock[EmploymentService]
+    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override val codingComponentService: CodingComponentService = mock[CodingComponentService]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val authConnector: AuthConnector = mock[AuthConnector]
@@ -83,6 +88,7 @@ class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
+    when(taxAccountService.totalTax(any(), any())(any())).thenReturn(Future(TaiSuccessResponseWithPayload(totalTax)))
     when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
 
   }
