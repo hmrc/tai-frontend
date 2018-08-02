@@ -36,7 +36,7 @@ trait TaxCodeChangeConnector {
   def taxCodeHistory(nino:Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     httpHandler.getFromApi(taxCodeHistoryUrl(nino.nino)) map (
       json =>
-        TaiSuccessResponseWithPayload((json \ "data").as[Seq[TaxCodeHistory]])
+        TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeHistory])
       ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve tax code history for $nino with exception:${e.getMessage}")

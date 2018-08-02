@@ -53,7 +53,7 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
         val taxCodeHistoryUrl = s"/tai/${nino.nino}/tax-account/tax-code-history"
 
         val json = Json.obj(
-          "data" -> JsArray(Seq(Json.obj(
+          "data" -> Json.obj(
             "nino" -> nino.nino,
             "taxCodeRecords" -> Seq(
               Json.obj(
@@ -64,12 +64,11 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
                 "p2Date" -> "2017-06-23"
               )
             )
-          ))),
+          ),
           "links" -> JsArray(Seq()))
 
 
-        val expectedResult = List(
-          TaxCodeHistory(nino,List(TaxCodeRecord("1185L","Employer 1",true,"2017-06-23")))
+        val expectedResult = TaxCodeHistory(nino,List(TaxCodeRecord("1185L","Employer 1",true,"2017-06-23"))
         )
 
         server.stubFor(

@@ -17,13 +17,14 @@
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 import org.joda.time.LocalDate
+import org.joda.time.format.DateTimeFormat
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.model.domain.{TaxCodeHistory, TaxCodeRecord}
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.{TaxAccountCalculator, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
-import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel.{taxFreeAmount, withPoundPrefixAndSign}
 import uk.gov.hmrc.time.TaxYearResolver
 
 /**
@@ -33,10 +34,13 @@ case class YourTaxFreeAmountViewModel(taxCodeDateRange: String, annualTaxFreeAmo
 
 object YourTaxFreeAmountViewModel extends ViewModelHelper with TaxAccountCalculator {
 
-  def apply(p2IssuedDate: LocalDate, codingComponents: Seq[CodingComponent], employmentName: Map[Int, String],
+  def apply(taxCodeRecords: Seq[TaxCodeRecord], codingComponents: Seq[CodingComponent], employmentName: Map[Int, String],
             companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages): YourTaxFreeAmountViewModel = {
 
-    val taxCodeDateRange = dynamicDateRangeHtmlNonBreak(p2IssuedDate, TaxYearResolver.endOfCurrentTaxYear)
+    val p2IssuedDate = taxCodeRecords.map(_.p2Date).sorted.reverse.head
+
+    val taxCodeDateRange = dynamicDateRangeHtmlNonBreak(LocalDate.parse(p2IssuedDate,DateTimeFormat.forPattern("yyyy-MM-dd")),
+    TaxYearResolver.endOfCurrentTaxYear)
     val annualTaxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxFreeAmount(codingComponents), 0))
     val taxFreeAmountTotal: BigDecimal = taxFreeAmount(codingComponents)
     val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(codingComponents, employmentName, companyCarBenefits, taxFreeAmountTotal)

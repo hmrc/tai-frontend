@@ -18,16 +18,19 @@ package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
+import org.joda.time.format.DateTimeFormat
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.TaiConstants.encodedMinusSign
 import uk.gov.hmrc.tai.util.ViewModelHelper
-import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
 import uk.gov.hmrc.time.TaxYearResolver
+
+import scala.util.Random
 
 /**
   * Created by digital032748 on 25/07/18.
@@ -36,27 +39,42 @@ class YourTaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  private val p2IssueDate = new LocalDate()
   private val defaultCodingComponents = Seq.empty[CodingComponent]
   private val defaultEmploymentName : Map[Int, String] = Map(0 -> "")
   private val defaultCompanyCarBenefits : Seq[CompanyCarBenefit] = Seq.empty[CompanyCarBenefit]
 
-  private def createViewModel(p2date: LocalDate = p2IssueDate,
+  private def createViewModel(taxCodeRecord: Seq[TaxCodeRecord] = Seq.empty[TaxCodeRecord],
                               codingComponents: Seq[CodingComponent] = defaultCodingComponents,
                               employmentName: Map[Int, String] = defaultEmploymentName,
                               companyCarBenefits: Seq[CompanyCarBenefit] = defaultCompanyCarBenefits) : YourTaxFreeAmountViewModel = {
-    YourTaxFreeAmountViewModel(p2date, codingComponents, employmentName, companyCarBenefits)
+    YourTaxFreeAmountViewModel(taxCodeRecord, codingComponents, employmentName, companyCarBenefits)
   }
+
+  private def generateNino: Nino = new Generator(new Random).nextNino
 
   "YourTaxFreeAmountViewModel" must {
 
-    "return a range of dates as a formatted string" in {
+    "return the latest P2 Issued Date in a date range" in {
 
-      val viewModel = createViewModel()
-      val expectedDateRange = messagesApi("tai.taxYear",htmlNonBroken(Dates.formatDate(p2IssueDate)),
-        htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)))
+      val nino = generateNino
+      val taxYearStartDate = TaxYearResolver.startOfCurrentTaxYear.getYear
+      val taxYearEndDate = TaxYearResolver.endOfCurrentTaxYear.getYear
+      val latestDate = s"${taxYearEndDate}-03-25"
+
+
+      val taxCodeRecords = Seq(
+        TaxCodeRecord("1185L","Employer 1",true,s"${taxYearStartDate}-01-24"),
+        TaxCodeRecord("1185L","Employer 1",true,latestDate),
+        TaxCodeRecord("1185L","Employer 1",true,s"${taxYearEndDate}-02-23")
+      )
+
+      val viewModel = createViewModel(taxCodeRecord = taxCodeRecords)
+
+      val expectedDateRange = messagesApi("tai.taxYear",htmlNonBroken(Dates.formatDate(LocalDate.parse(latestDate,
+        DateTimeFormat.forPattern("yyyy-MM-dd")))), htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)))
 
       viewModel.taxCodeDateRange mustBe expectedDateRange
+
     }
 
     "has formatted positive tax free amount" when {
