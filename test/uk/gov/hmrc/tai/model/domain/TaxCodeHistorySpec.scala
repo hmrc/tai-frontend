@@ -42,7 +42,7 @@ class TaxCodeHistorySpec extends PlaySpec{
 
   val taxCodeHistoryJson = Json.obj(
     "nino" -> nino.nino,
-      "taxCodeRecords" -> Seq(
+      "taxCodeRecord" -> Seq(
         Json.obj(
           "taxCode" -> "1185L",
           "employerName" -> "Employer 1",
@@ -54,7 +54,7 @@ class TaxCodeHistorySpec extends PlaySpec{
 
   val emptyTaxCodeRecordsJson = Json.obj(
     "nino" -> nino.nino,
-    "taxCodeRecords" -> Seq(JsNull)
+    "taxCodeRecord" -> Seq(JsNull)
   )
 
   private def generateNino: Nino = new Generator(new Random).nextNino

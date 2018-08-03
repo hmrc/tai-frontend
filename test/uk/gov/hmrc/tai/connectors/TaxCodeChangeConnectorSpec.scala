@@ -55,7 +55,7 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
         val json = Json.obj(
           "data" -> Json.obj(
             "nino" -> nino.nino,
-            "taxCodeRecords" -> Seq(
+            "taxCodeRecord" -> Seq(
               Json.obj(
                 "taxCode" -> "1185L",
                 "employerName" -> "Employer 1",

@@ -21,13 +21,13 @@ import play.api.libs.json.Reads._
 import play.api.libs.json.{JsPath, Reads}
 import uk.gov.hmrc.domain.Nino
 
-case class TaxCodeHistory(nino: Nino, taxCodeRecords: Option[Seq[TaxCodeRecord]])
+case class TaxCodeHistory(nino: Nino, taxCodeRecord: Option[Seq[TaxCodeRecord]])
 
 object TaxCodeHistory {
 
   implicit val reads: Reads[TaxCodeHistory] = (
     (JsPath \ "nino").read[Nino] and
-      (JsPath \ "taxCodeRecords").readNullable[Seq[TaxCodeRecord]](minLength[Seq[TaxCodeRecord]](1))
+      (JsPath \ "taxCodeRecord").readNullable[Seq[TaxCodeRecord]](minLength[Seq[TaxCodeRecord]](1))
     )(TaxCodeHistory.apply _)
 }
 
