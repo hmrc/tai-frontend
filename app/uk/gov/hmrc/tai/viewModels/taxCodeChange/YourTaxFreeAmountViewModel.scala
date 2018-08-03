@@ -37,7 +37,7 @@ object YourTaxFreeAmountViewModel extends ViewModelHelper with TaxAccountCalcula
   def apply(taxCodeRecords: Seq[TaxCodeRecord], codingComponents: Seq[CodingComponent], employmentName: Map[Int, String],
             companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages): YourTaxFreeAmountViewModel = {
 
-    val p2IssuedDate = taxCodeRecords.map(_.p2Date).sorted.reverse.head
+    val p2IssuedDate = taxCodeRecords.map(_.p2Date).sorted.last
 
     val taxCodeDateRange = dynamicDateRangeHtmlNonBreak(LocalDate.parse(p2IssuedDate,DateTimeFormat.forPattern("yyyy-MM-dd")),
     TaxYearResolver.endOfCurrentTaxYear)

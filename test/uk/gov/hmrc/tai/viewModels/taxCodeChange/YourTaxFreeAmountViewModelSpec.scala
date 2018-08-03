@@ -39,36 +39,35 @@ class YourTaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
+  private def generateNino: Nino = new Generator(new Random).nextNino
+
+  private val nino = generateNino
+  private val taxYearStartDate = TaxYearResolver.startOfCurrentTaxYear.getYear
+  private val taxYearEndDate = TaxYearResolver.endOfCurrentTaxYear.getYear
+  private val latestDate = s"${taxYearEndDate}-03-25"
+
+  private val defaultTaxCodeRecords = Seq(
+    TaxCodeRecord("1185L","Employer 1","operated",s"${taxYearStartDate}-01-24"),
+    TaxCodeRecord("1185L","Employer 1","operated",latestDate),
+    TaxCodeRecord("1185L","Employer 1","operated",s"${taxYearEndDate}-02-23")
+  )
+
   private val defaultCodingComponents = Seq.empty[CodingComponent]
   private val defaultEmploymentName : Map[Int, String] = Map(0 -> "")
   private val defaultCompanyCarBenefits : Seq[CompanyCarBenefit] = Seq.empty[CompanyCarBenefit]
 
-  private def createViewModel(taxCodeRecord: Seq[TaxCodeRecord] = Seq.empty[TaxCodeRecord],
+  private def createViewModel(taxCodeRecord: Seq[TaxCodeRecord] = defaultTaxCodeRecords,
                               codingComponents: Seq[CodingComponent] = defaultCodingComponents,
                               employmentName: Map[Int, String] = defaultEmploymentName,
                               companyCarBenefits: Seq[CompanyCarBenefit] = defaultCompanyCarBenefits) : YourTaxFreeAmountViewModel = {
     YourTaxFreeAmountViewModel(taxCodeRecord, codingComponents, employmentName, companyCarBenefits)
   }
 
-  private def generateNino: Nino = new Generator(new Random).nextNino
-
   "YourTaxFreeAmountViewModel" must {
 
     "return the latest P2 Issued Date in a date range" in {
 
-      val nino = generateNino
-      val taxYearStartDate = TaxYearResolver.startOfCurrentTaxYear.getYear
-      val taxYearEndDate = TaxYearResolver.endOfCurrentTaxYear.getYear
-      val latestDate = s"${taxYearEndDate}-03-25"
-
-
-      val taxCodeRecords = Seq(
-        TaxCodeRecord("1185L","Employer 1",true,s"${taxYearStartDate}-01-24"),
-        TaxCodeRecord("1185L","Employer 1",true,latestDate),
-        TaxCodeRecord("1185L","Employer 1",true,s"${taxYearEndDate}-02-23")
-      )
-
-      val viewModel = createViewModel(taxCodeRecord = taxCodeRecords)
+      val viewModel = createViewModel()
 
       val expectedDateRange = messagesApi("tai.taxYear",htmlNonBroken(Dates.formatDate(LocalDate.parse(latestDate,
         DateTimeFormat.forPattern("yyyy-MM-dd")))), htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)))

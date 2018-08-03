@@ -80,6 +80,7 @@ trait TaxCodeChangeController extends TaiBaseController
                       Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
                 }
               }
+              case _ => throw new RuntimeException("No TaxCodeRecord sequence returned")
             }
 
           }

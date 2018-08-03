@@ -16,19 +16,24 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads._
-import play.api.libs.json.{JsPath, Reads}
-import uk.gov.hmrc.domain.Nino
+import org.scalatestplus.play.PlaySpec
+import play.api.libs.json.Json
 
-case class TaxCodeHistory(nino: Nino, taxCodeRecords: Option[Seq[TaxCodeRecord]])
+class TaxCodeRecordSpec extends PlaySpec {
 
-object TaxCodeHistory {
+  "TaxCodeRecord" should {
+    "return a valid TaxCodeRecord object when given valid Json" in {
+      val expectedModel = TaxCodeRecord("1185L","Employer 1","operated","2017-06-23")
+      taxCodeRecordJson.as[TaxCodeRecord] mustEqual expectedModel
 
-  implicit val reads: Reads[TaxCodeHistory] = (
-    (JsPath \ "nino").read[Nino] and
-      (JsPath \ "taxCodeRecords").readNullable[Seq[TaxCodeRecord]](minLength[Seq[TaxCodeRecord]](1))
-    )(TaxCodeHistory.apply _)
+    }
+  }
+
+  private val taxCodeRecordJson =
+    Json.obj(
+      "taxCode" -> "1185L",
+      "employerName" -> "Employer 1",
+      "operatedTaxCode" -> "operated",
+      "p2Date" -> "2017-06-23"
+    )
 }
-
-
