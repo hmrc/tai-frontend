@@ -25,7 +25,7 @@ class AddEmploymentErrorPageSpec extends TaiViewSpec {
   "Display error page when employment cannot be added" must {
     behave like pageWithTitle(messages("tai.addEmployment.employmentErrorPage.title"))
     behave like pageWithCombinedHeader(
-      messages("tai.addEmployment.addEmploymentJourneyLink"),
+      messages("add.missing.employment"),
       messages("tai.addEmployment.employmentErrorPage.title"))
 
     "have link" in {

@@ -33,7 +33,7 @@ class AddPensionNumberSpec extends TaiViewSpec with FormValuesConstants {
   "Add payroll number form page" must {
     behave like pageWithTitle(messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
     behave like pageWithCombinedHeader(
-      messages("tai.addPensionProvider.preHeadingText"),
+      messages("add.missing.pension"),
       messages("tai.addPensionProvider.pensionNumber.title", pensionProviderName))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/pension-number")

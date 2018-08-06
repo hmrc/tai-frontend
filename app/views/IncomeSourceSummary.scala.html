@@ -102,7 +102,7 @@
     <div class="grid-row">
         <div class="column-one-half subsection--wide">
                 <h2 class="flush">@messages("tai.income.details.estimatedTaxableIncome")</h2>
-                <p class="break-word">@messages("tai.income.details.estimatedTaxableIncome.desc", model.empOrPensionName)</p>
+                <p class="break-word">@messages("tai.income.details.estimatedTaxableIncome.desc")</p>
                 <span class="heading-48 faded-text-dark" aria-hidden="true">@pounds(model.estimatedTaxableIncome)</span>
                 <span class="visuallyhidden">@Html(messages("tai.income.details.yourEstimatedTaxableIncome.screenReader", pounds(model.estimatedTaxableIncome)))</span>
                 <p  aria-hidden="true">
@@ -204,9 +204,9 @@
             @Link.toInternalPage(
                 id=Some("addMissingCompanyBenefitLink"),
                 url=controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.CompanyBenefitsIform).url,
-                value=Some(Messages("tai.income.details.addMissingCompanyBenefit")),
+                value=Some(Messages("add.missing.company.benefit")),
                 cssClasses=Some(""),
-                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.income.details.addMissingCompanyBenefit")}"))).toHtml
+                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("add.missing.company.benefit")}"))).toHtml
         </p>
 
         @if(model.displayAddCompanyCarLink) {

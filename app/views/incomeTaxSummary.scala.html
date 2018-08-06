@@ -177,9 +177,9 @@
                             @Link.toInternalPage(
                                 id=Some("addPensionLink"),
                                 url=controllers.pensions.routes.AddPensionProviderController.addPensionProviderName.toString,
-                                value=Some(Messages("tai.incomeTaxSummary.addMissingIncome.section.pensionLink")),
+                                value=Some(Messages("add.missing.pension")),
                                 cssClasses=Some(""),
-                                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.incomeTaxSummary.addMissingIncome.section.pensionLink")}"))).toHtml
+                                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("add.missing.pension")}"))).toHtml
                         </p>
                     </li>
                     <li>

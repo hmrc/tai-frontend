@@ -56,14 +56,6 @@
             <p>@Messages("tai.previous.year.underpayment.para4", viewModel.allowanceReducedBy)</p>
             <p>@Messages("tai.previous.year.underpayment.para5")</p>
 
-            <p>@Link.toInternalPage(
-                id=Some(Messages("returnToTaxFreePageLink")),
-                url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                value=Some(Messages("tai.previous.year.underpayment.return")),
-                cssClasses=Some(""),
-                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.previous.year.underpayment.return")}"))).toHtml
-            </p>
-
         </div>
     </div>
 </div>

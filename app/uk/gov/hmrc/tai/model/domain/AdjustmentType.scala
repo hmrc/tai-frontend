@@ -25,7 +25,8 @@ case object NationalInsuranceAdjustment extends AdjustmentType
 
 case object TaxAdjustment extends AdjustmentType
 
-case object IncomeAdjustment extends AdjustmentType
+case object
+IncomeAdjustment extends AdjustmentType
 
 object AdjustmentType extends AdjustmentType {
   implicit val formatAdjustmentType = new Format[AdjustmentType] {

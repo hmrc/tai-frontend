@@ -75,7 +75,7 @@ object ApplicationConfig extends ServicesConfig {
   lazy val webchatAvailabilityUrl = s"${configuration.getString(s"govuk-tax.$env.services.webchat-frontend.url").getOrElse("")}/$webchatEntryPoint"
   lazy val scottishRateIncomeTaxUrl: String = "https://www.gov.uk/scottish-rate-income-tax"
 
-  lazy val frontendTemplatePath: String = configuration.getString("frontend-template-provider.path").getOrElse("/template/mustache")
+  lazy val frontendTemplatePath: String = configuration.getString(s"govuk-tax.$env.services.frontend-template-provider.path").getOrElse("/template/mustache")
 
   def fetchUrl(service: String) = {
     try {
@@ -94,6 +94,7 @@ trait FeatureTogglesConfig extends ServicesConfig {
   val welshLanguageEnabled =  configuration.getBoolean("tai.feature.welshLanguage.enabled").getOrElse(false)
   val companyCarForceRedirectEnabled = configuration.getBoolean("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
   val tileViewEnabled = configuration.getBoolean("tai.tileView.enabled").getOrElse(false)
+  val taxCodeChangeEnabled = configuration.getBoolean("tai.taxCodeChange.enabled").getOrElse(false)
 }
 
 object FeatureTogglesConfig extends FeatureTogglesConfig

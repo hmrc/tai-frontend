@@ -111,7 +111,7 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlay
         dynamicDateRangeHtmlNonBreak(now, yesterday)
       }
 
-      caught.getMessage mustBe Messages("viewModelHelper.invalidDateRange")
+      caught.getMessage mustBe s"From date:$now cannot be after To date:$yesterday"
     }
   }
 }

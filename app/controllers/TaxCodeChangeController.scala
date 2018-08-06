@@ -19,12 +19,13 @@ package controllers
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
+import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
@@ -32,6 +33,7 @@ import uk.gov.hmrc.tai.model.domain.TaxCodeHistory
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
+import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
 
@@ -39,6 +41,7 @@ trait TaxCodeChangeController extends TaiBaseController
   with WithAuthorisedForTaiLite
   with DelegationAwareActions
   with Auditable
+  with FeatureTogglesConfig
 {
   def personService: PersonService
   def codingComponentService: CodingComponentService
@@ -50,8 +53,15 @@ trait TaxCodeChangeController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison()))
+          if(taxCodeChangeEnabled) {
+            ServiceCheckLite.personDetailsCheck {
+              Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison()))
+            }
+          }
+          else {
+            ServiceCheckLite.personDetailsCheck {
+              Future.successful(Ok(notFoundView))
+            }
           }
   }
 
@@ -59,30 +69,36 @@ trait TaxCodeChangeController extends TaiBaseController
   implicit user =>
     implicit person =>
       implicit request =>
-        ServiceCheckLite.personDetailsCheck {
-          val nino = Nino(user.getNino)
+        if(taxCodeChangeEnabled) {
+          ServiceCheckLite.personDetailsCheck {
+            val nino = Nino(user.getNino)
 
-          val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
-          val taxCodeChangeFuture = taxCodeChangeService.taxCodeHistory(nino)
+            val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
+            val taxCodeChangeFuture = taxCodeChangeService.taxCodeHistory(nino)
 
-          for {
-            employmentNames <- employmentNameFuture
-            taxCodeChange <- taxCodeChangeFuture
-            codingComponents <- codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-            companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
+            for {
+              employmentNames <- employmentNameFuture
+              taxCodeChange <- taxCodeChangeFuture
+              codingComponents <- codingComponentService.taxFreeAmountComponents(nino, TaxYear())
+              companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
 
-          } yield {
-            (taxCodeChange) match {
-              case (TaiSuccessResponseWithPayload(taxCodeHistory: TaxCodeHistory)) => {
-                taxCodeHistory.taxCodeRecord match {
-                  case Some(taxCodeRecords) =>
+            } yield {
+              (taxCodeChange) match {
+                case (TaiSuccessResponseWithPayload(taxCodeHistory: TaxCodeHistory)) => {
+                  taxCodeHistory.taxCodeRecord match {
+                    case Some(taxCodeRecords) =>
                       val viewModel = YourTaxFreeAmountViewModel(taxCodeRecords, codingComponents, employmentNames, companyCarBenefits)
                       Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
+                  }
                 }
+                case _ => throw new RuntimeException("No TaxCodeRecord sequence returned")
               }
-              case _ => throw new RuntimeException("No TaxCodeRecord sequence returned")
-            }
 
+            }
+          }
+        } else {
+          ServiceCheckLite.personDetailsCheck {
+            Future.successful(Ok(notFoundView))
           }
         }
   }
@@ -91,11 +107,24 @@ trait TaxCodeChangeController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
+          if(taxCodeChangeEnabled) {
+            ServiceCheckLite.personDetailsCheck {
+              Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
+            }
           }
-
+          else {
+            ServiceCheckLite.personDetailsCheck {
+              Future.successful(Ok(notFoundView))
+            }
+          }
   }
+
+  private def notFoundView(implicit request: Request[_]) = views.html.error_template_noauth(Messages("global.error.pageNotFound404.title"),
+    Messages("tai.errorMessage.heading"),
+    Messages("tai.errorMessage.frontend404",Link.toInternalPage(
+      url=routes.TaxAccountSummaryController.onPageLoad().url,
+      value=Some(Messages("tai.errorMessage.startAgain"))
+    ).toHtml))
 
 }
 
