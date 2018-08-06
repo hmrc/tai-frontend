@@ -71,6 +71,10 @@ class zeroTaxEstimatedIncomeTaxSpec extends TaiViewSpec {
           messages("tai.estimatedIncome.taxFree.link"),
           "£11,500 ")).body)
 
+        println("****** " + messages("tai.estimatedIncomeLow.desc",
+          messages("tai.estimatedIncome.taxFree.link"),
+          "£11,500 "))
+
         doc(view).select("#estimatedIncomeLowDesc").html() mustBe Html(Messages("tai.estimatedIncomeLow.desc",
           Link.toInternalPage(
             id = Some("taxFreeAmountLink"),
@@ -91,7 +95,6 @@ class zeroTaxEstimatedIncomeTaxSpec extends TaiViewSpec {
       doc must haveLinkElement("taxSummarySideLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url, messages("return.to.your.income.tax.summary"))
     }
   }
-
 
   val defaultViewModel = {
     val bandedGraph = BandedGraph("taxGraph", List.empty[Band], 0, 0, 0, 0, 0, 0, 0, None, None)
