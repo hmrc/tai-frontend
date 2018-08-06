@@ -370,7 +370,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
         doc(view) must haveElementWithId(incomeFromSavingsId)
         doc(view) must haveParagraphWithText(messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate", "£700"))
         doc(view) must haveElementWithId(higherRateParaId)
-        doc(view) must haveParagraphWithText(messages("tai.estimatedIncome.savings.desc.higherRate", "£200"))
+        doc(view) must haveParagraphWithText(messages("tai.estimatedIncome.savings.desc.higherRate", "200"))
 
       }
 
