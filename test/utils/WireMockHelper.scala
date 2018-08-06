@@ -28,12 +28,6 @@ trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach {
   protected val server: WireMockServer = new WireMockServer(wireMockConfig().dynamicPort())
 
 
-//  protected lazy val app: Application =
-//    new GuiceApplicationBuilder()
-//      .configure(
-//        "jira.host" -> s"http://localhost:${server.port()}"
-//      ).build()
-
   override def beforeAll(): Unit = {
     server.start()
     super.beforeAll()
