@@ -33,7 +33,7 @@ trait TaxCodeChangeConnector {
 
   def taxCodeHistoryUrl(nino: String): String = s"$serviceUrl/tai/$nino/tax-account/tax-code-history"
 
-  def taxCodeHistory(nino:Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+  def taxCodeHistory(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     httpHandler.getFromApi(taxCodeHistoryUrl(nino.nino)) map (
       json =>
         TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeHistory])
