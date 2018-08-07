@@ -80,7 +80,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val SUT = createSUT(true)
 
-        val taxCodeHistory = TaxCodeHistory(generateNino.nino, Some(List(TaxCodeRecord("1185L","Employer 1","operated","2017-06-23"))))
+        val taxCodeHistory = TaxCodeHistory(generateNino.nino, List(TaxCodeRecord("1185L","Employer 1","operated","2017-06-23")))
 
         when(SUT.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(codingComponents))
         when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))

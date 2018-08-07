@@ -26,7 +26,7 @@ class TaxCodeHistorySpec extends PlaySpec{
 
   "TaxCodeHistory" should {
     "return a valid TaxCodeHistory object when given valid Json" in {
-      val expectedModel = TaxCodeHistory(nino.nino, Some(Seq(TaxCodeRecord("1185L","Employer 1","operated","2017-06-23"))))
+      val expectedModel = TaxCodeHistory(nino.nino, Seq(TaxCodeRecord("1185L","Employer 1","operated","2017-06-23")))
 
       taxCodeHistoryJson.as[TaxCodeHistory] mustEqual expectedModel
 
