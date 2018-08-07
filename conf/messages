@@ -1264,3 +1264,4 @@ taxCode.change.yourTaxFreeAmount.desc=Your tax-free amount is the income you can
 taxCode.change.yourTaxFreeAmount.dates=Your tax-free amount for {0}
 taxCode.change.yourTaxFreeAmount.summaryHeading=How your tax-free amount is calculated
 taxCode.change.yourTaxFreeAmount.updateYourCurrentIncome.link=Update your current income or benefits
+taxCode.change.yourTaxCodeChanged.h1=Your tax code changed on {0}

@@ -18,6 +18,7 @@ package controllers
 
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
+import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
@@ -58,7 +59,11 @@ trait TaxCodeChangeController extends TaiBaseController
         implicit request =>
           if (taxCodeChangeEnabled) {
             ServiceCheckLite.personDetailsCheck {
-              Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison()))
+
+              val taxCodeHistory = TaxCodeHistory("nino", Seq(TaxCodeRecord("","","", new LocalDate(2018,6,11))))
+              val taxCodeChangeDate = taxCodeChangeService.latestTaxCodeChangeDate(taxCodeHistory)
+
+              Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison(taxCodeChangeDate.toString("dd MMMM yyyy"))))
             }
           }
           else {
@@ -135,9 +140,6 @@ object TaxCodeChangeController extends TaxCodeChangeController with Authenticati
   override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override implicit val templateRenderer = LocalTemplateRenderer
   override val personService: PersonService = PersonService
-  override val codingComponentService: CodingComponentService = CodingComponentService
-  override val employmentService: EmploymentService = EmploymentService
-  override val companyCarService: CompanyCarService = CompanyCarService
   override val taxCodeChangeService: TaxCodeChangeService = TaxCodeChangeService
 
 }

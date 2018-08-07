@@ -16,15 +16,23 @@
 
 package views.html.taxCodeChange
 
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class TaxCodeComparisonViewSpec extends TaiViewSpec{
 
+  val changeDate = "11 June 2018"
+
+  override def view = views.html.taxCodeChange.taxCodeComparison(changeDate)
+
   "tax code comparison" should {
     behave like pageWithBackLink
+
+    behave like pageWithTitle(Messages("taxCode.change.journey.preHeading"))
+
+    behave like pageWithCombinedHeader(
+      preHeaderText = Messages("taxCode.change.journey.preHeading"),
+      mainHeaderText = Messages("taxCode.change.yourTaxCodeChanged.h1", changeDate))
   }
-
-  override def view = views.html.taxCodeChange.taxCodeComparison()
-
 
 }

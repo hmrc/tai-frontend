@@ -16,18 +16,18 @@
 
 @import includes.ptaHeader
 
-@()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(changeDate: String)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
     ptaHeader(
     formForErrorSummary = None,
     displayBackLink = true,
-    mainHeadingText = Messages(""),
-    preHeadingText = Messages(""))
+    mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", changeDate),
+    preHeadingText = Messages("taxCode.change.journey.preHeading"))
 }
 
 @main(
-    title = Messages(""),
+    title = Messages("taxCode.change.journey.preHeading"),
     articleClasses = None,
     pageHeader = Some(header),
     user = Some(user),

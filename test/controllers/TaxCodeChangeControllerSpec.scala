@@ -18,6 +18,7 @@ package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
 import mocks.MockTemplateRenderer
+import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.when
@@ -36,6 +37,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity, TaxCodeHistory, TaxCodeRecord}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxCodeChangeService}
+import uk.gov.hmrc.tai.service.{PersonService, TaxCodeChangeService}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -156,6 +158,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
+    when(taxCodeChangeService.latestTaxCodeChangeDate(any())).thenReturn(new LocalDate(2018,6,11))
   }
 
 }
