@@ -165,7 +165,7 @@ object TaxFreeAmountSummaryViewModel extends ViewModelHelper {
   }
 
   private def isPersonalAllowanceComponent(codingComponent: CodingComponent): Boolean = codingComponent.componentType match {
-    case PersonalAllowancePA | PersonalAllowanceAgedPAA | PersonalAllowanceElderlyPAE => true
+    case PersonalAllowancePA || PersonalAllowanceAgedPAA || PersonalAllowanceElderlyPAE => true
     case _ => false
   }
 }

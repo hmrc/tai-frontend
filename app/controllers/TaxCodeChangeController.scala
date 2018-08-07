@@ -78,11 +78,12 @@ trait TaxCodeChangeController extends TaiBaseController
 
               val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
               val taxCodeChangeFuture = taxCodeChangeService.taxCodeHistory(nino)
+              val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
 
               for {
                 employmentNames <- employmentNameFuture
                 taxCodeChange <- taxCodeChangeFuture
-                codingComponents <- codingComponentService.taxFreeAmountComponents(nino, TaxYear())
+                codingComponents <- codingComponentsFuture
                 companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
 
               } yield {
