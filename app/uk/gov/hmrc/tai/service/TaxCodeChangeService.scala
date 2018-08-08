@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.tai.service
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
-import uk.gov.hmrc.tai.connectors.responses.TaiResponse
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.TaxCodeHistory
 
 import scala.concurrent.Future
@@ -33,6 +34,12 @@ trait TaxCodeChangeService {
     taxCodeChangeConnector.taxCodeHistory(nino)
   }
 
+
+  def latestTaxCodeChangeDate(nino: Nino)(implicit hc: HeaderCarrier): Future[LocalDate] = {
+    taxCodeHistory(nino) map { taxCodeHistoryPayload: TaiSuccessResponseWithPayload[TaxCodeHistory] =>
+      new LocalDate(taxCodeHistoryPayload.payload.latestP2Date)
+    }
+  }
 
 
 }

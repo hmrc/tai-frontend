@@ -20,7 +20,7 @@ import builders.{AuthBuilder, RequestBuilder}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers.{any, eq => mockEq}
+import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -158,7 +158,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
-    when(taxCodeChangeService.latestTaxCodeChangeDate(any())).thenReturn(new LocalDate(2018,6,11))
+    when(taxCodeChangeService.latestTaxCodeChangeDate).thenReturn(Future.successful(new LocalDate(2018,6,11)))
   }
 
 }
