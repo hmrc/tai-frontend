@@ -16,10 +16,12 @@
 
 package uk.gov.hmrc.tai.service
 
+import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse
+import uk.gov.hmrc.tai.model.domain.TaxCodeHistory
 
 import scala.concurrent.Future
 
@@ -30,6 +32,12 @@ trait TaxCodeChangeService {
   def taxCodeHistory(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     taxCodeChangeConnector.taxCodeHistory(nino)
   }
+
+  implicit def dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
+
+  def latestTaxCodeChangeDate(taxCodeHistory: TaxCodeHistory) =
+    taxCodeHistory.taxCodeRecord.map(_.p2Date).max
+
 }
 
 object TaxCodeChangeService extends TaxCodeChangeService {

@@ -42,34 +42,24 @@ class YourTaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
   private def generateNino: Nino = new Generator(new Random).nextNino
 
   private val nino = generateNino
-  private val taxYearStartDate = TaxYearResolver.startOfCurrentTaxYear.getYear
-  private val taxYearEndDate = TaxYearResolver.endOfCurrentTaxYear.getYear
-  private val latestDate = s"${taxYearEndDate}-03-25"
-
-  private val defaultTaxCodeRecords = Seq(
-    TaxCodeRecord("1185L","Employer 1","operated",s"${taxYearStartDate}-01-24"),
-    TaxCodeRecord("1185L","Employer 1","operated",latestDate),
-    TaxCodeRecord("1185L","Employer 1","operated",s"${taxYearEndDate}-02-23")
-  )
-
+  private val defaultP2Date = new LocalDate().toString
   private val defaultCodingComponents = Seq.empty[CodingComponent]
   private val defaultEmploymentName : Map[Int, String] = Map(0 -> "")
   private val defaultCompanyCarBenefits : Seq[CompanyCarBenefit] = Seq.empty[CompanyCarBenefit]
 
-  private def createViewModel(taxCodeRecord: Seq[TaxCodeRecord] = defaultTaxCodeRecords,
+  private def createViewModel(p2Date: String = defaultP2Date,
                               codingComponents: Seq[CodingComponent] = defaultCodingComponents,
                               employmentName: Map[Int, String] = defaultEmploymentName,
                               companyCarBenefits: Seq[CompanyCarBenefit] = defaultCompanyCarBenefits) : YourTaxFreeAmountViewModel = {
-    YourTaxFreeAmountViewModel(taxCodeRecord, codingComponents, employmentName, companyCarBenefits)
+    YourTaxFreeAmountViewModel(p2Date, codingComponents, employmentName, companyCarBenefits)
   }
 
   "YourTaxFreeAmountViewModel" must {
 
-    "return the latest P2 Issued Date in a date range" in {
-
+    "return the P2 Issued Date in a date range" in {
       val viewModel = createViewModel()
 
-      val expectedDateRange = messagesApi("tai.taxYear",htmlNonBroken(Dates.formatDate(LocalDate.parse(latestDate,
+      val expectedDateRange = messagesApi("tai.taxYear",htmlNonBroken(Dates.formatDate(LocalDate.parse(defaultP2Date,
         DateTimeFormat.forPattern("yyyy-MM-dd")))), htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)))
 
       viewModel.taxCodeDateRange mustBe expectedDateRange

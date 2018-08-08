@@ -77,19 +77,20 @@ trait TaxCodeChangeController extends TaiBaseController
               val nino = Nino(user.getNino)
 
               val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
-              val taxCodeChangeFuture = taxCodeChangeService.taxCodeHistory(nino)
+              val taxCodeHistoryFuture = taxCodeChangeService.taxCodeHistory(nino)
               val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
 
               for {
                 employmentNames <- employmentNameFuture
-                taxCodeChange <- taxCodeChangeFuture
+                taxCodeHistory <- taxCodeHistoryFuture
                 codingComponents <- codingComponentsFuture
                 companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
 
               } yield {
-                (taxCodeChange) match {
-                  case (TaiSuccessResponseWithPayload(TaxCodeHistory(_, taxCodeRecords))) => {
-                    val viewModel = YourTaxFreeAmountViewModel(taxCodeRecords, codingComponents, employmentNames, companyCarBenefits)
+                (taxCodeHistory) match {
+                  case (TaiSuccessResponseWithPayload(taxCodeHistory: TaxCodeHistory)) => {
+                    val p2Date = taxCodeChangeService.latestTaxCodeChangeDate(taxCodeHistory)
+                    val viewModel = YourTaxFreeAmountViewModel(p2Date, codingComponents, employmentNames, companyCarBenefits)
                     Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
                   }
                   case _ => throw new RuntimeException("Could not retrieve tax code history")
