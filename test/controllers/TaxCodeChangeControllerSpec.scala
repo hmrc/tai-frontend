@@ -86,7 +86,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
         when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
         when(SUT.taxCodeChangeService.taxCodeHistory(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeHistory)))
-        when(SUT.taxCodeChangeService.latestTaxCodeChangeDate(any())).thenReturn("2018-05-05")
 
         val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

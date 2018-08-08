@@ -33,10 +33,7 @@ trait TaxCodeChangeService {
     taxCodeChangeConnector.taxCodeHistory(nino)
   }
 
-  implicit def dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
 
-  def latestTaxCodeChangeDate(taxCodeHistory: TaxCodeHistory) =
-    taxCodeHistory.taxCodeRecord.map(_.p2Date).max
 
 }
 
