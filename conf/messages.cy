@@ -1248,7 +1248,6 @@ your.paye.income.tax.overview=Trosolwg o’ch Treth Incwm TWE
 your.total.income.from.employment.desc=Mae cyfanswm eich incwm o gyflogaeth wedi ei amcangyfrif yn {0} am y flwyddyn dreth hon. Mae gennych {1} am eich incwm cyflogaeth. Mae hyn yn golygu bod y {2} cyntaf o''ch enillion o gyflogaeth yn rhydd o dreth.
 your.total.income.from.paye.desc=Amcangyfrifir y bydd cyfanswm eich incwm TWE yn {0} am y flwyddyn dreth hon. Mae gennych {1} ar gyfer eich incwm TWE. Golyga hyn fod y {2} cyntaf o’ch incwm TWE yn rhydd o dreth.
 your.total.income.from.private.pension.desc=Amcangyfrifir y bydd cyfanswm eich incwm o bensiynau preifat yn {0} am y flwyddyn dreth hon. Mae gennych {1} ar gyfer eich incwm o bensiwn preifat. Golyga hyn fod y {2} cyntaf o’ch incwm o bensiwn preifat yn rhydd o dreth.
-
 taxCode.change.journey.preHeading= Newid yn eich cod treth
 taxCode.change.whatHappensNext.paragragh1=Os yw’r wybodaeth am eich cod treth yn gywir, nid oes angen i chi wneud unrhyw beth.
 taxCode.change.whatHappensNext.paragragh2=Gallwch wirio {0} i weld faint o dreth y byddwch yn ei thalu yn ein barn ni.
@@ -1258,4 +1257,8 @@ taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link=ddiweddaru’c
 taxCode.change.whatHappensNext.wrongInformation.text=Os yw’r wybodaeth yr ydych wedi’i gweld yn anghywir
 taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link=amcangyfrif o’ch Treth Incwm
 taxCode.change.yourTaxFreeAmount.title=Eich swm rhydd o dreth
+taxCode.change.yourTaxFreeAmount.desc=Eich swm rhydd o dreth yw''r incwm y gallwch ei gael cyn i chi ddechrau talu treth. Defnyddir hwn i gyfrifo''ch cod treth.
+taxCode.change.yourTaxFreeAmount.dates=Eich swm rhydd o dreth ar gyfer {0}
+taxCode.change.yourTaxFreeAmount.summaryHeading=Sut caiff eich swm rhydd o dreth ei gyfrifo
 taxCode.change.yourTaxFreeAmount.whatHappensNext.link=Gweler beth fydd yn digwydd nesaf
+taxCode.change.yourTaxFreeAmount.updateYourCurrentIncome.link=Diweddaru''ch incwm neu''ch buddiannau presennol

@@ -16,7 +16,7 @@
 
 @import uk.gov.hmrc.urls.Link
 
-@(items: Seq[uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryCategoryViewModel], gaEventActionString: String)(implicit m: Messages)
+@(items: Seq[uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryCategoryViewModel], gaEventActionString: String, taxCodeChange: Boolean = false)(implicit m: Messages)
 
 @oneOrMoreLinksPresent = @{
     items.flatMap(item => item.rows.map(row => row.link.isDisplayed).filter(_ == true)).nonEmpty
@@ -56,20 +56,21 @@
                                 @row.value
                             </div>
 
-                            @if(row.link.isDisplayed) {
-                            <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ChangeLinkCell" class="cya-change">
-                                @includes.link(
-                                    id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
-                                    url = row.link.href,
-                                    copy=Messages("tai.updateOrRemove"),
-                                    altCopy=Some(Messages("tai.updateOrRemove") + " " + row.link.value),
-                                    attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${row.link.value}")
-                                )
-                            </div>
-                            } else @{if(oneOrMoreLinksPresent) {
-                                <div class="cya-change"></div>
-                            }}
-
+                            @if(!taxCodeChange) {
+                                @if(row.link.isDisplayed ) {
+                                <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ChangeLinkCell" class="cya-change">
+                                    @includes.link(
+                                        id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
+                                        url = row.link.href,
+                                        copy=Messages("tai.updateOrRemove"),
+                                        altCopy=Some(Messages("tai.updateOrRemove") + " " + row.link.value),
+                                        attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${row.link.value}")
+                                    )
+                                </div>
+                                } else @{if(oneOrMoreLinksPresent) {
+                                    <div class="cya-change"></div>
+                                }}
+                            }
                         </li>
                     }
                 </ul>
@@ -108,6 +109,7 @@
                             @item.rows(0).value
                         </div>
 
+                    @if(!taxCodeChange) {
                         @if(item.rows(0).link.isDisplayed) {
                         <div id="summaryTable@{itemIdx.toString}Row1ChangeLinkCell" class="cya-change">
                             @includes.link(
@@ -121,6 +123,7 @@
                         } else @{if(oneOrMoreLinksPresent) {
                         <div class="cya-change"></div>
                         }}
+                    }
 
                     </div>
                 </div>
