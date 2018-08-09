@@ -38,6 +38,7 @@ import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity, TaxCod
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.service.{PersonService, TaxCodeChangeService}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -112,7 +113,11 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     "show 'Your tax code comparison' page" when {
       "the request has an authorised session" in {
         val SUT = createSUT(true)
+
+        when(SUT.taxCodeChangeService.latestTaxCodeChangeDate(any())(any())).thenReturn(Future.successful(new LocalDate))
+
         val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
         status(result) mustBe OK
       }
     }
@@ -140,7 +145,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val codingComponents = Seq(CodingComponent(GiftAidPayments, None, giftAmount, "GiftAidPayments description"),
     CodingComponent(GiftsSharesCharity, None, giftAmount, "GiftsSharesCharity description"))
 
-
   private class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController {
 
     override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
@@ -155,10 +159,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val taxCodeChangeEnabled: Boolean = taxCodeChangeJourneyEnabled
 
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
-    when(taxCodeChangeService.latestTaxCodeChangeDate).thenReturn(Future.successful(new LocalDate(2018,6,11)))
+    when(taxCodeChangeService.latestTaxCodeChangeDate(generateNino)).thenReturn(Future.successful(new LocalDate(2018,6,11)))
   }
 
 }

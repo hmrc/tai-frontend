@@ -59,7 +59,9 @@ trait TaxCodeChangeController extends TaiBaseController
         implicit request =>
           if (taxCodeChangeEnabled) {
             ServiceCheckLite.personDetailsCheck {
-              taxCodeChangeService.latestTaxCodeChangeDate map { date =>
+              val nino: Nino = Nino(user.getNino)
+
+              taxCodeChangeService.latestTaxCodeChangeDate(nino) map { date =>
                 Ok(views.html.taxCodeChange.taxCodeComparison(date.toString("dd MMMM yyyy")))
               }
             }
@@ -139,5 +141,7 @@ object TaxCodeChangeController extends TaxCodeChangeController with Authenticati
   override implicit val templateRenderer = LocalTemplateRenderer
   override val personService: PersonService = PersonService
   override val taxCodeChangeService: TaxCodeChangeService = TaxCodeChangeService
-
+  override val codingComponentService: CodingComponentService = CodingComponentService
+  override val employmentService: EmploymentService = EmploymentService
+  override val companyCarService: CompanyCarService = CompanyCarService
 }
