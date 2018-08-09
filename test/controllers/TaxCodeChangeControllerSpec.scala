@@ -39,6 +39,7 @@ import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.service.{PersonService, TaxCodeChangeService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.model.TaxYear
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -83,7 +84,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val SUT = createSUT(true)
 
-        val taxCodeHistory = TaxCodeHistory(generateNino.nino, List(TaxCodeRecord("1185L","Employer 1","operated","2017-06-23")))
+        val taxCodeHistory = TaxCodeHistory(generateNino.nino, List(TaxCodeRecord(TaxYear(2017), 1, "1185L", new LocalDate(2017,6,23), new LocalDate(2017,7,23),"Employer 1")))
 
         when(SUT.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(codingComponents))
         when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))

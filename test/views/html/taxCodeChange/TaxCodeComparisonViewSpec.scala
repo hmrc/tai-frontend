@@ -19,7 +19,7 @@ package views.html.taxCodeChange
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class TaxCodeComparisonViewSpec extends TaiViewSpec{
+class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
   val changeDate = "11 June 2018"
 
@@ -33,6 +33,10 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec{
     behave like pageWithCombinedHeader(
       preHeaderText = Messages("taxCode.change.journey.preHeading"),
       mainHeaderText = Messages("taxCode.change.yourTaxCodeChanged.h1", changeDate))
+
+    "display the correct paragraphs" in {
+      doc(view) must haveParagraphWithText(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
+    }
   }
 
 }

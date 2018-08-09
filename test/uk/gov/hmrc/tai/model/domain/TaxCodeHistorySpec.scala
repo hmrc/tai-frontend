@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.tai.model.domain
 
+import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsNull, JsResultException, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.tai.model.TaxYear
 
 import scala.util.Random
 
@@ -26,7 +28,7 @@ class TaxCodeHistorySpec extends PlaySpec{
 
   "TaxCodeHistory" should {
     "return a valid TaxCodeHistory object when given valid Json" in {
-      val expectedModel = TaxCodeHistory(nino.nino, Seq(TaxCodeRecord("1185L","Employer 1","operated","2017-06-23")))
+      val expectedModel = TaxCodeHistory(nino.nino, Seq(TaxCodeRecord(TaxYear(2018), 1, "A1111", date, date.plusDays(1),"Employer 1")))
 
       taxCodeHistoryJson.as[TaxCodeHistory] mustEqual expectedModel
 
@@ -36,26 +38,29 @@ class TaxCodeHistorySpec extends PlaySpec{
       an [JsResultException] should be thrownBy emptyTaxCodeRecordsJson.as[TaxCodeHistory]
     }
 
-    "return the latest P2 date from a sequence of tax code records" in {
-      val expectedModel = TaxCodeHistory(nino.nino, Seq(TaxCodeRecord("1185L","Employer 1","operated","2017-05-23"),
-                                                        TaxCodeRecord("1185L","Employer 2","operated","2017-06-23"),
-                                                        TaxCodeRecord("1185L","Employer 3","operated","2017-04-23")))
+    "return the latest tax code change date from a sequence of tax code records" in {
+      val expectedModel = TaxCodeHistory(nino.nino, Seq(TaxCodeRecord(TaxYear(2018), 1, "A1111", date, date.plusDays(1),"Employer 1"),
+                                                        TaxCodeRecord(TaxYear(2018), 1, "A1111", date.plusMonths(1), date.plusMonths(1).plusDays(1),"Employer 1"),
+                                                        TaxCodeRecord(TaxYear(2018), 1, "A1111", date.plusMonths(2), date.plusMonths(2).plusDays(1),"Employer 1")))
 
-      expectedModel.latestP2Date mustEqual "2017-06-23"
+      expectedModel.mostRecentTaxCodeChangeDate mustEqual date.plusMonths(2)
 
     }
   }
 
   val nino = generateNino
+  val date = new LocalDate(2018, 5, 23)
 
   val taxCodeHistoryJson = Json.obj(
     "nino" -> nino.nino,
       "taxCodeRecord" -> Seq(
         Json.obj(
-          "taxCode" -> "1185L",
-          "employerName" -> "Employer 1",
-          "operatedTaxCode" -> "operated",
-          "p2Date" -> "2017-06-23"
+          "taxYear" -> 2018,
+          "taxCodeId" -> 1,
+          "taxCode" -> "A1111",
+          "startDate" -> "2018-05-23",
+          "endDate" -> "2018-05-24",
+          "employerName" -> "Employer 1"
         )
       )
     )

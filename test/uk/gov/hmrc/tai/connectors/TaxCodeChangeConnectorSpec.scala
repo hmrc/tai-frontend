@@ -18,12 +18,14 @@ package uk.gov.hmrc.tai.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, serverError, urlEqualTo}
 import controllers.FakeTaiPlayApplication
+import org.joda.time.LocalDate
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsArray, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{TaxCodeHistory, TaxCodeRecord}
 import utils.WireMockHelper
 
@@ -35,10 +37,10 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
 
   "tax code history url" must {
     "fetch the url to connect to TAI to retrieve tax code history" in {
-      val sut = createSUT
+      val testConnector = createTestConnector
       val nino = generateNino.nino
 
-      sut.taxCodeHistoryUrl(nino) mustBe s"${sut.serviceUrl}/tai/$nino/tax-account/tax-code-history"
+      testConnector.taxCodeHistoryUrl(nino) mustBe s"${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-history"
 
     }
   }
@@ -47,7 +49,7 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
     "fetch the tax code history" when {
       "provided with valid nino" in {
 
-        val sut = createSUT
+        val testConnector = createTestConnector
         val nino = generateNino
 
         val taxCodeHistoryUrl = s"/tai/${nino.nino}/tax-account/tax-code-history"
@@ -57,30 +59,31 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
             "nino" -> nino.nino,
             "taxCodeRecord" -> Seq(
               Json.obj(
-                "taxCode" -> "1185L",
-                "employerName" -> "Employer 1",
-                "operatedTaxCode" -> "operated",
-                "p2Date" -> "2017-06-23"
+                "taxYear" -> 2018,
+                "taxCodeId" -> 1,
+                "taxCode" -> "A1111",
+                "startDate" -> "2018-07-11",
+                "endDate" -> "2018-07-11",
+                "employerName" -> "Employer name"
               )
             )
           ),
           "links" -> JsArray(Seq()))
 
-
-        val expectedResult = TaxCodeHistory(nino.nino, Seq(TaxCodeRecord("1185L","Employer 1","operated","2017-06-23")))
+        val expectedResult = TaxCodeHistory(nino.nino, Seq(TaxCodeRecord(TaxYear(2018), 1, "A1111", new LocalDate("2018-07-11"), new LocalDate("2018-07-11"), "Employer name")))
 
         server.stubFor(
           get(urlEqualTo(taxCodeHistoryUrl)).willReturn(ok(json.toString()))
         )
 
-       val result = Await.result(sut.taxCodeHistory(nino), 5 seconds)
+       val result = Await.result(testConnector.taxCodeHistory(nino), 5 seconds)
         result mustEqual TaiSuccessResponseWithPayload(expectedResult)
       }
     }
 
     "return failure" when {
       "tax code history returns 500" in {
-        val sut = createSUT
+        val testConnector = createTestConnector
         val nino = generateNino
 
         val taxCodeHistoryUrl = s"/tai/${nino.nino}/tax-account/tax-code-history"
@@ -89,8 +92,8 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
           get(urlEqualTo(taxCodeHistoryUrl)).willReturn(serverError())
         )
 
-        val expectedMessage = s"GET of '${sut.serviceUrl}/tai/$nino/tax-account/tax-code-history' returned 500. Response body: ''"
-        val result = Await.result(sut.taxCodeHistory(nino), 5 seconds)
+        val expectedMessage = s"GET of '${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-history' returned 500. Response body: ''"
+        val result = Await.result(testConnector.taxCodeHistory(nino), 5 seconds)
 
         result mustBe TaiTaxAccountFailureResponse(expectedMessage)
       }
@@ -99,10 +102,10 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
 
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
-  private def createSUT = new SUT
+  private def createTestConnector = new testTaxCodeChangeConnector
   private def generateNino: Nino = new Generator(new Random).nextNino
 
-  private class SUT extends TaxCodeChangeConnector {
+  private class testTaxCodeChangeConnector extends TaxCodeChangeConnector {
     override val serviceUrl: String = s"http://localhost:${server.port()}"
     override val httpHandler: HttpHandler = HttpHandler
   }

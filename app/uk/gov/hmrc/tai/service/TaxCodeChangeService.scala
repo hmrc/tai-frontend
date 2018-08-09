@@ -36,7 +36,7 @@ trait TaxCodeChangeService {
 
   def latestTaxCodeChangeDate(nino: Nino)(implicit hc: HeaderCarrier): Future[LocalDate] = {
     taxCodeHistory(nino) map {
-      case TaiSuccessResponseWithPayload(taxCodeHistory: TaxCodeHistory) => new LocalDate(taxCodeHistory.latestP2Date)
+      case TaiSuccessResponseWithPayload(taxCodeHistory: TaxCodeHistory) => new LocalDate(taxCodeHistory.mostRecentTaxCodeChangeDate)
       case _ => throw new RuntimeException("Could not fetch tax code history")
     }
   }

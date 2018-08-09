@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import org.joda.time.LocalDate
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
@@ -24,7 +25,9 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{TaxCodeHistory, TaxCodeRecord}
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
@@ -36,7 +39,7 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
       val sut = createSut
       val nino = generateNino
 
-      val taxCodeHistory = TaxCodeHistory(nino.nino, Seq(TaxCodeRecord("1185L","Employer 1","operated","2017-06-23")))
+      val taxCodeHistory = TaxCodeHistory(nino.nino, Seq(TaxCodeRecord(TaxYear(2017), 1, "1185L", new LocalDate(2017,6,23), new LocalDate(2017,6,24), "Employer 1")))
 
       when(sut.taxCodeChangeConnector.taxCodeHistory(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeHistory)))
 

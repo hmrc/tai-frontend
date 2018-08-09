@@ -34,10 +34,13 @@ case class YourTaxFreeAmountViewModel(taxCodeDateRange: String, annualTaxFreeAmo
 
 object YourTaxFreeAmountViewModel extends ViewModelHelper with TaxAccountCalculator {
 
-  def apply(p2IssuedDate: String, codingComponents: Seq[CodingComponent], employmentName: Map[Int, String],
-            companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages): YourTaxFreeAmountViewModel = {
+  def apply(p2IssuedDate: LocalDate,
+            codingComponents: Seq[CodingComponent],
+            employmentName: Map[Int, String],
+            companyCarBenefits: Seq[CompanyCarBenefit])
+           (implicit messages: Messages): YourTaxFreeAmountViewModel = {
 
-    val taxCodeDateRange = dynamicDateRangeHtmlNonBreak(LocalDate.parse(p2IssuedDate,DateTimeFormat.forPattern("yyyy-MM-dd")),
+    val taxCodeDateRange = dynamicDateRangeHtmlNonBreak(p2IssuedDate,
     TaxYearResolver.endOfCurrentTaxYear)
     val annualTaxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxFreeAmount(codingComponents), 0))
     val taxFreeAmountTotal: BigDecimal = taxFreeAmount(codingComponents)
@@ -45,6 +48,11 @@ object YourTaxFreeAmountViewModel extends ViewModelHelper with TaxAccountCalcula
 
     YourTaxFreeAmountViewModel(taxCodeDateRange, annualTaxFreeAmount, taxFreeAmountSummary)
   }
+
+
+
+
+
 }
 
 

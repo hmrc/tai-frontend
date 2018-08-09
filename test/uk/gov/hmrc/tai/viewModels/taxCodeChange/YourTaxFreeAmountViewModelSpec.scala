@@ -42,12 +42,12 @@ class YourTaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
   private def generateNino: Nino = new Generator(new Random).nextNino
 
   private val nino = generateNino
-  private val defaultP2Date = new LocalDate().toString
+  private val defaultP2Date = new LocalDate()
   private val defaultCodingComponents = Seq.empty[CodingComponent]
   private val defaultEmploymentName : Map[Int, String] = Map(0 -> "")
   private val defaultCompanyCarBenefits : Seq[CompanyCarBenefit] = Seq.empty[CompanyCarBenefit]
 
-  private def createViewModel(p2Date: String = defaultP2Date,
+  private def createViewModel(p2Date: LocalDate = defaultP2Date,
                               codingComponents: Seq[CodingComponent] = defaultCodingComponents,
                               employmentName: Map[Int, String] = defaultEmploymentName,
                               companyCarBenefits: Seq[CompanyCarBenefit] = defaultCompanyCarBenefits) : YourTaxFreeAmountViewModel = {
@@ -59,8 +59,8 @@ class YourTaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
     "return the P2 Issued Date in a date range" in {
       val viewModel = createViewModel()
 
-      val expectedDateRange = messagesApi("tai.taxYear",htmlNonBroken(Dates.formatDate(LocalDate.parse(defaultP2Date,
-        DateTimeFormat.forPattern("yyyy-MM-dd")))), htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)))
+      val expectedDateRange = messagesApi("tai.taxYear",htmlNonBroken(Dates.formatDate(defaultP2Date)),
+      htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)))
 
       viewModel.taxCodeDateRange mustBe expectedDateRange
 

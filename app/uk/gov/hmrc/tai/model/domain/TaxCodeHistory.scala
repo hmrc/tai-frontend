@@ -22,9 +22,9 @@ import play.api.libs.json.Reads._
 import play.api.libs.json.{JsPath, Reads}
 
 case class TaxCodeHistory(nino: String, taxCodeRecords: Seq[TaxCodeRecord]){
-  def latestP2Date: String = {
+  def mostRecentTaxCodeChangeDate: LocalDate = {
     implicit val dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
-    taxCodeRecords.map(_.p2Date).max
+    taxCodeRecords.map(_.startDate).max
   }
 }
 

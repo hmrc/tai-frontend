@@ -94,7 +94,7 @@ trait TaxCodeChangeController extends TaiBaseController
               } yield {
                 taxCodeHistory match {
                   case TaiSuccessResponseWithPayload(taxCodeHistory: TaxCodeHistory) => {
-                    val p2Date = taxCodeHistory.latestP2Date
+                    val p2Date = taxCodeHistory.mostRecentTaxCodeChangeDate
                     val viewModel = YourTaxFreeAmountViewModel(p2Date, codingComponents, employmentNames, companyCarBenefits)
                     Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
                   }
