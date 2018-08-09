@@ -96,7 +96,7 @@
                         <h2 id="tax-on-savings-text" class="heading-medium heading-section">@Messages("tai.estimatedIncome.detailedEstimate.savingsInterest.subHeading")</h2>
 
                         <p id="income-from-savings">
-                            @Messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate", viewModel.savings.map(_.income).sum)
+                            @Messages("tai.estimatedIncome.savings.desc.totalIncomeEstimate", withPoundPrefix(MoneyPounds(viewModel.savings.map(_.income).sum,0)))
                         </p>
                         @if(DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(viewModel.savings)) {
                             <p id="higher-rate-para">
