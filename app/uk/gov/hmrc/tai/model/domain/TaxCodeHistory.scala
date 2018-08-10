@@ -19,19 +19,22 @@ package uk.gov.hmrc.tai.model.domain
 import org.joda.time.LocalDate
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
-import play.api.libs.json.{JsPath, Reads}
+import play.api.libs.json.{JsPath, Json, Reads}
 
-case class TaxCodeHistory(nino: String, taxCodeRecords: Seq[TaxCodeRecord]){
-  def mostRecentTaxCodeChangeDate: LocalDate = {
-    implicit val dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
-    taxCodeRecords.map(_.startDate).max
-  }
+case class TaxCodeHistory(previous: TaxCodeRecord, current: TaxCodeRecord){
+//  def mostRecentTaxCodeChangeDate: LocalDate = {
+//    implicit val dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
+//    taxCodeRecords.map(_.startDate).max
+//  }
 }
 
 object TaxCodeHistory {
-  implicit val reads: Reads[TaxCodeHistory] = (
-    (JsPath \ "nino").read[String] and
-      (JsPath \ "taxCodeRecord").read[Seq[TaxCodeRecord]](minLength[Seq[TaxCodeRecord]](1))
+
+//  implicit val format = Json.format[TaxCodeHistory]
+
+    implicit val reads: Reads[TaxCodeHistory] = (
+      (JsPath \ "taxCodeHistory" \ "previous").read[TaxCodeRecord] and
+      (JsPath \ "taxCodeHistory" \ "current").read[TaxCodeRecord]
     )(TaxCodeHistory.apply _)
 }
 

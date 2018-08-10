@@ -84,7 +84,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val SUT = createSUT(true)
 
-        val taxCodeHistory = TaxCodeHistory(generateNino.nino, List(TaxCodeRecord(TaxYear(2017), 1, "1185L", new LocalDate(2017,6,23), new LocalDate(2017,7,23),"Employer 1")))
+        val taxCodeHistory = TaxCodeHistory(taxCodeRecord1, taxCodeRecord2)
 
         when(SUT.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(codingComponents))
         when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
@@ -145,6 +145,10 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
   val codingComponents = Seq(CodingComponent(GiftAidPayments, None, giftAmount, "GiftAidPayments description"),
     CodingComponent(GiftsSharesCharity, None, giftAmount, "GiftsSharesCharity description"))
+
+  val date = new LocalDate(2018, 5, 23)
+  val taxCodeRecord1 = TaxCodeRecord(TaxYear(2018), 1, "A1111", date, date.plusDays(1),"Employer 1")
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = date.plusMonths(1), endDate = date.plusMonths(1).plusDays(1))
 
   private class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController {
 
