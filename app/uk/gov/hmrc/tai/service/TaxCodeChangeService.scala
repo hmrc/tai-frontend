@@ -30,18 +30,16 @@ trait TaxCodeChangeService {
 
   def taxCodeChangeConnector: TaxCodeChangeConnector
 
-  def taxCodeHistory(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
-    taxCodeChangeConnector.taxCodeHistory(nino)
-  }
-
-  def latestTaxCodeChangeDate(nino: Nino)(implicit hc: HeaderCarrier): Future[LocalDate] = {
-    taxCodeHistory(nino) map {
-      case TaiSuccessResponseWithPayload(taxCodeHistory: TaxCodeHistory) => LocalDate.now()//(taxCodeHistory.mostRecentTaxCodeChangeDate)
+  def taxCodeHistory(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeHistory] = {
+    taxCodeChangeConnector.taxCodeHistory(nino) map {
+      case TaiSuccessResponseWithPayload(taxCodeHistory: TaxCodeHistory) => taxCodeHistory
       case _ => throw new RuntimeException("Could not fetch tax code history")
     }
   }
 
-
+  def latestTaxCodeChangeDate(nino: Nino)(implicit hc: HeaderCarrier): Future[LocalDate] = {
+    taxCodeHistory(nino).map(_.mostRecentTaxCodeChangeDate)
+  }
 }
 
 object TaxCodeChangeService extends TaxCodeChangeService {

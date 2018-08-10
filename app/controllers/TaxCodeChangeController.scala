@@ -61,9 +61,15 @@ trait TaxCodeChangeController extends TaiBaseController
             ServiceCheckLite.personDetailsCheck {
               val nino: Nino = Nino(user.getNino)
 
-              taxCodeChangeService.latestTaxCodeChangeDate(nino) map { date =>
-                Ok(views.html.taxCodeChange.taxCodeComparison(date.toString("dd MMMM yyyy")))
-              }
+//              taxCodeChangeService.taxCodeHistory(nino) map { taxCodeHistory =>
+
+                val testTaxCodeHistory = TaxCodeHistory(
+                TaxCodeRecord(TaxYear(2012),1,"hello", LocalDate.now.minusDays(2), LocalDate.now(), "penguin"),
+                TaxCodeRecord(TaxYear(2012),1,"hello", LocalDate.now.minusDays(2), LocalDate.now(), "polar bear")
+              )
+
+                Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison(testTaxCodeHistory)))
+//              }
             }
           }
           else {
@@ -92,15 +98,8 @@ trait TaxCodeChangeController extends TaiBaseController
                 companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
 
               } yield {
-                taxCodeHistory match {
-                  case TaiSuccessResponseWithPayload(taxCodeHistory: TaxCodeHistory) => {
-                    val p2Date = LocalDate.now()//taxCodeHistory.mostRecentTaxCodeChangeDate
-                    val viewModel = YourTaxFreeAmountViewModel(p2Date, codingComponents, employmentNames, companyCarBenefits)
-                    Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
-                  }
-                  case _ => throw new RuntimeException("Could not retrieve tax code history")
-                }
-
+                val viewModel = YourTaxFreeAmountViewModel(taxCodeHistory.mostRecentTaxCodeChangeDate, codingComponents, employmentNames, companyCarBenefits)
+                Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
               }
             }
           } else {

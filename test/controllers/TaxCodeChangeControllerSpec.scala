@@ -89,7 +89,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         when(SUT.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(codingComponents))
         when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
         when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
-        when(SUT.taxCodeChangeService.taxCodeHistory(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeHistory)))
+        when(SUT.taxCodeChangeService.taxCodeHistory(any())(any())).thenReturn(Future.successful(taxCodeHistory))
 
         val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -115,7 +115,8 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val SUT = createSUT(true)
 
-        when(SUT.taxCodeChangeService.latestTaxCodeChangeDate(any())(any())).thenReturn(Future.successful(new LocalDate))
+        val taxCodeHistory = TaxCodeHistory(taxCodeRecord1, taxCodeRecord2)
+        when(SUT.taxCodeChangeService.taxCodeHistory(any())(any())).thenReturn(Future.successful(taxCodeHistory))
 
         val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

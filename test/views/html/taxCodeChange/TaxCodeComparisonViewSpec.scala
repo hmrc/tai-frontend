@@ -16,14 +16,21 @@
 
 package views.html.taxCodeChange
 
+import org.joda.time.LocalDate
 import play.api.i18n.Messages
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.{TaxCodeHistory, TaxCodeRecord}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
-  val changeDate = "11 June 2018"
+  val date = new LocalDate(2018, 5, 23)
+  val taxCodeRecord1 = TaxCodeRecord(TaxYear(2018), 1, "A1111", date, date.plusDays(1),"Employer 1")
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = date.plusMonths(1), endDate = date.plusMonths(1).plusDays(1))
+  val taxCodeHistory: TaxCodeHistory = TaxCodeHistory(taxCodeRecord1, taxCodeRecord2)
 
-  override def view = views.html.taxCodeChange.taxCodeComparison(changeDate)
+  override def view = views.html.taxCodeChange.taxCodeComparison(taxCodeHistory)
 
   "tax code comparison" should {
     behave like pageWithBackLink
@@ -32,11 +39,23 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
     behave like pageWithCombinedHeader(
       preHeaderText = Messages("taxCode.change.journey.preHeading"),
-      mainHeaderText = Messages("taxCode.change.yourTaxCodeChanged.h1", changeDate))
+      mainHeaderText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeHistory.mostRecentTaxCodeChangeDate)))
 
     "display the correct paragraphs" in {
       doc(view) must haveParagraphWithText(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
     }
+
+    "display the previous tax code" in {
+      doc(view) must haveHeadingH2WithText(Messages("Employer 1"))
+      doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeHistory.previous.startDate), Dates.formatDate(taxCodeHistory.previous.endDate)))
+      doc(view) must haveText(taxCodeHistory.previous.taxCode)
+    }
+
+//    "display the previous tax code" in {
+//      doc(view) must haveHeadingH2WithText(Messages("taxCode.change.yourTaxCodeChanged.previous.employerName"))
+//      doc(view) must haveHeadingH3WithText(Messages("taxCode.change.yourTaxCodeChanged.previous.taxCodeDateRange", previous.startDate, previous.endDate))
+//      doc(view) must haveText(previous.taxCode))
+//    }
   }
 
 }

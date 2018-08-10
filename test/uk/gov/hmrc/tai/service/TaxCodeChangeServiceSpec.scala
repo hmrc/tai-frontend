@@ -44,7 +44,7 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
       when(sut.taxCodeChangeConnector.taxCodeHistory(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeHistory)))
 
       val result = sut.taxCodeHistory(nino)
-      Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(taxCodeHistory)
+      Await.result(result, 5 seconds) mustBe taxCodeHistory
     }
   }
 

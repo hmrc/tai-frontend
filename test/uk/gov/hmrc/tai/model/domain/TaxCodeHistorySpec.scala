@@ -44,7 +44,7 @@ class TaxCodeHistorySpec extends PlaySpec{
     "return the latest tax code change date from a sequence of tax code records" in {
       val expectedModel = TaxCodeHistory(taxCodeRecord1, taxCodeRecord2)
 
-//      expectedModel.mostRecentTaxCodeChangeDate mustEqual date.plusMonths(2)
+      expectedModel.mostRecentTaxCodeChangeDate mustEqual date.plusMonths(1)
 
     }
   }

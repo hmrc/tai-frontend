@@ -22,15 +22,12 @@ import play.api.libs.json.Reads._
 import play.api.libs.json.{JsPath, Json, Reads}
 
 case class TaxCodeHistory(previous: TaxCodeRecord, current: TaxCodeRecord){
-//  def mostRecentTaxCodeChangeDate: LocalDate = {
-//    implicit val dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
-//    taxCodeRecords.map(_.startDate).max
-//  }
+
+  val mostRecentTaxCodeChangeDate: LocalDate = current.startDate
+
 }
 
 object TaxCodeHistory {
-
-//  implicit val format = Json.format[TaxCodeHistory]
 
     implicit val reads: Reads[TaxCodeHistory] = (
       (JsPath \ "taxCodeHistory" \ "previous").read[TaxCodeRecord] and

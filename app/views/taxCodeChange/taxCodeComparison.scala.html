@@ -15,14 +15,16 @@
  *@
 
 @import includes.ptaHeader
+@import uk.gov.hmrc.tai.model.domain.TaxCodeHistory
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
-@(changeDate: String)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(taxCodeHistory: TaxCodeHistory)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
     ptaHeader(
         formForErrorSummary = None,
         displayBackLink = true,
-        mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", changeDate),
+        mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeHistory.mostRecentTaxCodeChangeDate)),
         preHeadingText = Messages("taxCode.change.journey.preHeading")
     )
 }
@@ -36,5 +38,17 @@
 ){
 <div>
     <p>@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
+</div>
+<div class="grid-row" style="margin-bottom:40px;">
+    <div class="column-half">
+        <h2 class="heading-medium" style="margin-bottom:0;">NEW LOOK</h2>
+        <h3 class="bold-small" style="margin-bottom:20px;">6 April 2018 to 10 June 2018</h3>
+        <div class="bold-large faded-text">1185L</div>
+    </div>
+    <div class="column-half">
+        <h2 class="heading-medium" style="margin-bottom:0;">NEW LOOK</h2>
+        <h3 class="bold-small" style="margin-bottom:20px;">11 June 2018 to 5 April 2019</h3>
+        <div class="bold-large faded-text">985L</div>
+    </div>
 </div>
 }
