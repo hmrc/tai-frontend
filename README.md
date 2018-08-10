@@ -14,7 +14,6 @@ This service covers the current tax year. Use the service to:
  * see an estimate of how much tax you’ll pay over the whole tax year
  * check and change the estimates of how much income you’ll get from your jobs, pensions or bank and building society savings interest
 
-
 Requirements
 ------------
 
