@@ -21,8 +21,6 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.tai.model.TaxYear
 
 case class TaxCodeRecord(
-                          taxYear: TaxYear,
-                          taxCodeId:Int,
                           taxCode: String,
                           startDate: LocalDate,
                           endDate: LocalDate,

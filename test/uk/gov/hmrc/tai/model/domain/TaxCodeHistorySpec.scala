@@ -51,7 +51,7 @@ class TaxCodeHistorySpec extends PlaySpec{
 
   val nino = generateNino
   val date = new LocalDate(2018, 7, 11)
-  val taxCodeRecord1 = TaxCodeRecord(TaxYear(2018), 1, "A1111", date, date.plusDays(1),"Employer 1")
+  val taxCodeRecord1 = TaxCodeRecord("A1111", date, date.plusDays(1),"Employer 1")
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = date.plusMonths(1), endDate = date.plusMonths(1).plusDays(1))
 
   val taxCodeHistoryJson = Json.obj(
