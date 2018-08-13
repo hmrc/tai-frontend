@@ -61,18 +61,11 @@ trait TaxCodeChangeController extends TaiBaseController
             ServiceCheckLite.personDetailsCheck {
               val nino: Nino = Nino(user.getNino)
 
-//              taxCodeChangeService.taxCodeHistory(nino) map { taxCodeHistory =>
-
-                val testTaxCodeHistory = TaxCodeHistory(
-                TaxCodeRecord(TaxYear(2012),1,"hello", LocalDate.now.minusDays(2), LocalDate.now(), "penguin"),
-                TaxCodeRecord(TaxYear(2012),1,"hello", LocalDate.now.minusDays(2), LocalDate.now(), "polar bear")
-              )
-
-                Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison(testTaxCodeHistory)))
-//              }
+              taxCodeChangeService.taxCodeHistory(nino) map { taxCodeHistory =>
+                Ok(views.html.taxCodeChange.taxCodeComparison(taxCodeHistory))
+              }
             }
-          }
-          else {
+          } else {
             ServiceCheckLite.personDetailsCheck {
               Future.successful(Ok(notFoundView))
             }

@@ -24,6 +24,7 @@
     ptaHeader(
         formForErrorSummary = None,
         displayBackLink = true,
+        headerWidthClasses = Some("column-full"),
         mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeHistory.mostRecentTaxCodeChangeDate)),
         preHeadingText = Messages("taxCode.change.journey.preHeading")
     )
@@ -31,24 +32,23 @@
 
 @main(
     title = Messages("taxCode.change.journey.preHeading"),
-    articleClasses = None,
     pageHeader = Some(header),
     user = Some(user),
     gaCustomTitle = None
 ){
 <div>
-    <p>@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
+    <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
 </div>
 <div class="grid-row" style="margin-bottom:40px;">
     <div class="column-half">
-        <h2 class="heading-medium" style="margin-bottom:0;">NEW LOOK</h2>
-        <h3 class="bold-small" style="margin-bottom:20px;">6 April 2018 to 10 June 2018</h3>
-        <div class="bold-large faded-text">1185L</div>
+        <h2 class="heading-medium flush--bottom">@taxCodeHistory.previous.employerName</h2>
+        <h3 class="bold-small margin-bottom-large flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeHistory.previous.startDate), Dates.formatDate(taxCodeHistory.previous.endDate))</h3>
+        <div class="bold-large">@taxCodeHistory.previous.taxCode</div>
     </div>
     <div class="column-half">
-        <h2 class="heading-medium" style="margin-bottom:0;">NEW LOOK</h2>
-        <h3 class="bold-small" style="margin-bottom:20px;">11 June 2018 to 5 April 2019</h3>
-        <div class="bold-large faded-text">985L</div>
+        <h2 class="heading-medium flush--bottom">@taxCodeHistory.current.employerName</h2>
+        <h3 class="bold-small margin-bottom-large flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeHistory.current.startDate), Dates.formatDate(taxCodeHistory.current.endDate))</h3>
+        <div class="bold-large">@taxCodeHistory.current.taxCode</div>
     </div>
 </div>
 }

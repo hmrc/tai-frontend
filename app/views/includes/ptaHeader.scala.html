@@ -23,6 +23,7 @@
   backLinkGaEventAction: Option[String] = None,
   mainHeadingText: String,
   preHeadingText: String,
+  headerWidthClasses: Option[String] = Some("column-two-thirds"),
   preHeadingAccessibleAnnouncement: String = "",
   customBackLinkContent: Option[Html] = None,
   additionalTopLinkContent: Option[Html] = None
@@ -48,7 +49,7 @@
     </div>
 }
 <div class="grid-row">
-  <div class="column-two-thirds">
+  <div class="@headerWidthClasses.getOrElse("")">
 
     @if(formForErrorSummary.isDefined) {
       @errorSummary(Messages("tai.income.error.form.summary"), formForErrorSummary.get, Seq("flush--bottom"))

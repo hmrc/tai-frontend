@@ -46,16 +46,16 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     }
 
     "display the previous tax code" in {
-      doc(view) must haveHeadingH2WithText(Messages("Employer 1"))
+      doc(view) must haveHeadingH2WithText(taxCodeHistory.previous.employerName)
       doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeHistory.previous.startDate), Dates.formatDate(taxCodeHistory.previous.endDate)))
-      doc(view) must haveText(taxCodeHistory.previous.taxCode)
+      doc(view).toString must include(taxCodeHistory.previous.taxCode)
     }
 
-//    "display the previous tax code" in {
-//      doc(view) must haveHeadingH2WithText(Messages("taxCode.change.yourTaxCodeChanged.previous.employerName"))
-//      doc(view) must haveHeadingH3WithText(Messages("taxCode.change.yourTaxCodeChanged.previous.taxCodeDateRange", previous.startDate, previous.endDate))
-//      doc(view) must haveText(previous.taxCode))
-//    }
+    "display the current tax code" in {
+      doc(view) must haveHeadingH2WithText(taxCodeHistory.current.employerName)
+      doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeHistory.current.startDate), Dates.formatDate(taxCodeHistory.current.endDate)))
+      doc(view).toString must include(taxCodeHistory.current.taxCode)
+    }
   }
 
 }
