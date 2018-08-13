@@ -1260,3 +1260,7 @@ taxCode.change.whatHappensNext.wrongInformation.text=If the information you have
 taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link=your Income Tax estimate
 taxCode.change.yourTaxFreeAmount.title=Your tax-free amount
 taxCode.change.yourTaxFreeAmount.whatHappensNext.link=See what happens next
+taxCode.change.yourTaxFreeAmount.desc=Your tax-free amount is the income you can have before paying tax. It is used to work out your tax codes.
+taxCode.change.yourTaxFreeAmount.dates=Your tax-free amount for {0}
+taxCode.change.yourTaxFreeAmount.summaryHeading=How your tax-free amount is calculated
+taxCode.change.yourTaxFreeAmount.updateYourCurrentIncome.link=Update your current income or benefits

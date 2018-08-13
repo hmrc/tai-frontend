@@ -31,7 +31,11 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.service.PersonService
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity, TaxCodeHistory, TaxCodeRecord}
+import uk.gov.hmrc.tai.service.benefits.CompanyCarService
+import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxCodeChangeService}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -75,7 +79,16 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     "show 'Your tax-free amount' page" when {
       "the request has an authorised session" in {
         val SUT = createSUT(true)
+
+        val taxCodeHistory = TaxCodeHistory(generateNino.nino, List(TaxCodeRecord("1185L","Employer 1","operated","2017-06-23")))
+
+        when(SUT.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(codingComponents))
+        when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
+        when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
+        when(SUT.taxCodeChangeService.taxCodeHistory(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeHistory)))
+
         val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
         status(result) mustBe OK
       }
     }
@@ -120,11 +133,21 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
   def generateNino: Nino = new Generator(new Random).nextNino
 
-  class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController {
+  val giftAmount = 1000
+
+  val codingComponents = Seq(CodingComponent(GiftAidPayments, None, giftAmount, "GiftAidPayments description"),
+    CodingComponent(GiftsSharesCharity, None, giftAmount, "GiftsSharesCharity description"))
+
+
+  private class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController {
 
     override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override val personService: PersonService = mock[PersonService]
+    override val codingComponentService: CodingComponentService = mock[CodingComponentService]
+    override val employmentService: EmploymentService = mock[EmploymentService]
+    override val companyCarService: CompanyCarService = mock[CompanyCarService]
+    override val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
