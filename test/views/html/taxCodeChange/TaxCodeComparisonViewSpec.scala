@@ -16,18 +16,17 @@
 
 package views.html.taxCodeChange
 
-import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{TaxCodeHistory, TaxCodeRecord}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.time.TaxYearResolver
 
 class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
-  val date = new LocalDate(2018, 5, 23)
-  val taxCodeRecord1 = TaxCodeRecord("A1111", date, date.plusDays(1),"Employer 1")
-  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = date.plusMonths(1), endDate = date.plusMonths(1).plusDays(1))
+  val startDate = TaxYearResolver.startOfCurrentTaxYear
+  val taxCodeRecord1 = TaxCodeRecord("tax code", startDate, startDate.plusDays(1),"Employer 1")
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYearResolver.endOfCurrentTaxYear)
   val taxCodeHistory: TaxCodeHistory = TaxCodeHistory(taxCodeRecord1, taxCodeRecord2)
 
   override def view = views.html.taxCodeChange.taxCodeComparison(taxCodeHistory)

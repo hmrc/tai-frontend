@@ -48,11 +48,6 @@ object YourTaxFreeAmountViewModel extends ViewModelHelper with TaxAccountCalcula
 
     YourTaxFreeAmountViewModel(taxCodeDateRange, annualTaxFreeAmount, taxFreeAmountSummary)
   }
-
-
-
-
-
 }
 
 

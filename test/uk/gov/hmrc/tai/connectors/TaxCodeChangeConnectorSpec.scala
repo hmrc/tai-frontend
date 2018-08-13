@@ -18,15 +18,14 @@ package uk.gov.hmrc.tai.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, serverError, urlEqualTo}
 import controllers.FakeTaiPlayApplication
-import org.joda.time.LocalDate
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsArray, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
-import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{TaxCodeHistory, TaxCodeRecord}
+import uk.gov.hmrc.time.TaxYearResolver
 import utils.WireMockHelper
 
 import scala.concurrent.Await
@@ -54,32 +53,26 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
 
         val taxCodeHistoryUrl = s"/tai/${nino.nino}/tax-account/tax-code-history"
 
+        val startDate = TaxYearResolver.startOfCurrentTaxYear
+        val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1),"Employer 1")
+        val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYearResolver.endOfCurrentTaxYear)
+
         val json = Json.obj(
           "data" -> Json.obj(
-            "taxCodeHistory" -> Json.obj(
-              "previous" -> Json.obj(
-                "taxYear" -> 2018,
-                "taxCodeId" -> 1,
-                "taxCode" -> "A1111",
-                "startDate" -> "2018-07-11",
-                "endDate" -> "2018-07-12",
-                "employerName" -> "Employer 1"
-              ),
-              "current" -> Json.obj(
-                "taxYear" -> 2018,
-                "taxCodeId" -> 1,
-                "taxCode" -> "A1111",
-                "startDate" -> "2018-08-11",
-                "endDate" -> "2018-08-12",
-                "employerName" -> "Employer 1"
-              )
+            "previous" -> Json.obj(
+              "taxCode" -> "code",
+              "startDate" -> startDate,
+              "endDate" -> startDate.plusDays(1),
+              "employerName" -> "Employer 1"
+            ),
+            "current" -> Json.obj(
+              "taxCode" -> "code",
+              "startDate" -> startDate.plusDays(2),
+              "endDate" -> TaxYearResolver.endOfCurrentTaxYear,
+              "employerName" -> "Employer 1"
             )
           ),
           "links" -> JsArray(Seq()))
-
-        val date = new LocalDate(2018, 7, 11)
-        val taxCodeRecord1 = TaxCodeRecord("A1111", date, date.plusDays(1),"Employer 1")
-        val taxCodeRecord2 = taxCodeRecord1.copy(startDate = date.plusMonths(1), endDate = date.plusMonths(1).plusDays(1))
 
         val expectedResult = TaxCodeHistory(taxCodeRecord1, taxCodeRecord2)
 

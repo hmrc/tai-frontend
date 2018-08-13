@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.tai.model.domain
 
-import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsArray, JsNull, JsResultException, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.util.Random
 
@@ -34,7 +33,6 @@ class TaxCodeHistorySpec extends PlaySpec{
       )
 
       taxCodeHistoryJson.as[TaxCodeHistory] mustEqual expectedModel
-
     }
 
     "throw a JsError given an empty Seq of TaxCodeRecords" in {
@@ -44,35 +42,29 @@ class TaxCodeHistorySpec extends PlaySpec{
     "return the latest tax code change date from a sequence of tax code records" in {
       val expectedModel = TaxCodeHistory(taxCodeRecord1, taxCodeRecord2)
 
-      expectedModel.mostRecentTaxCodeChangeDate mustEqual date.plusMonths(1)
+      expectedModel.mostRecentTaxCodeChangeDate mustEqual startDate.plusDays(2)
 
     }
   }
 
   val nino = generateNino
-  val date = new LocalDate(2018, 7, 11)
-  val taxCodeRecord1 = TaxCodeRecord("A1111", date, date.plusDays(1),"Employer 1")
-  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = date.plusMonths(1), endDate = date.plusMonths(1).plusDays(1))
+  val startDate = TaxYearResolver.startOfCurrentTaxYear
+  val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1),"Employer 1")
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
   val taxCodeHistoryJson = Json.obj(
-      "taxCodeHistory" -> Json.obj(
-        "previous" -> Json.obj(
-          "taxYear" -> 2018,
-          "taxCodeId" -> 1,
-          "taxCode" -> "A1111",
-          "startDate" -> "2018-07-11",
-          "endDate" -> "2018-07-12",
-          "employerName" -> "Employer 1"
-        ),
-        "current" -> Json.obj(
-          "taxYear" -> 2018,
-          "taxCodeId" -> 1,
-          "taxCode" -> "A1111",
-          "startDate" -> "2018-08-11",
-          "endDate" -> "2018-08-12",
-          "employerName" -> "Employer 1"
-        )
-      )
+    "previous" -> Json.obj(
+      "taxCode" -> "code",
+      "startDate" -> startDate.toString,
+      "endDate" -> startDate.plusDays(1).toString,
+      "employerName" -> "Employer 1"
+    ),
+    "current" -> Json.obj(
+      "taxCode" -> "code",
+      "startDate" -> startDate.plusDays(2).toString,
+      "endDate" -> TaxYearResolver.endOfCurrentTaxYear.toString,
+      "employerName" -> "Employer 1"
+    )
   )
 
   val emptyTaxCodeRecordsJson = Json.obj(

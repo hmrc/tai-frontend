@@ -30,8 +30,8 @@ case class TaxCodeHistory(previous: TaxCodeRecord, current: TaxCodeRecord){
 object TaxCodeHistory {
 
     implicit val reads: Reads[TaxCodeHistory] = (
-      (JsPath \ "taxCodeHistory" \ "previous").read[TaxCodeRecord] and
-      (JsPath \ "taxCodeHistory" \ "current").read[TaxCodeRecord]
+      (JsPath \ "previous").read[TaxCodeRecord] and
+      (JsPath \ "current").read[TaxCodeRecord]
     )(TaxCodeHistory.apply _)
 }
 

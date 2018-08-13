@@ -32,14 +32,14 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity, TaxCodeHistory, TaxCodeRecord}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxCodeChangeService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService}
 import uk.gov.hmrc.tai.service.{PersonService, TaxCodeChangeService}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.time.TaxYearResolver
+
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -147,9 +147,9 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val codingComponents = Seq(CodingComponent(GiftAidPayments, None, giftAmount, "GiftAidPayments description"),
     CodingComponent(GiftsSharesCharity, None, giftAmount, "GiftsSharesCharity description"))
 
-  val date = new LocalDate(2018, 5, 23)
-  val taxCodeRecord1 = TaxCodeRecord("A1111", date, date.plusDays(1),"Employer 1")
-  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = date.plusMonths(1), endDate = date.plusMonths(1).plusDays(1))
+  val startDate = TaxYearResolver.startOfCurrentTaxYear
+  val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1),"Employer 1")
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
   private class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController {
 
