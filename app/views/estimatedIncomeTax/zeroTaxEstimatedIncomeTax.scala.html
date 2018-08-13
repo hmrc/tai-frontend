@@ -87,7 +87,7 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                         Link.toInternalPage(id=Some("taxFreeAmountLink"),
                                             url=routes.TaxFreeAmountController.taxFreeAmount.url,
                                             value=Some(Messages("tai.estimatedIncome.taxFree.link"))).toHtml,
-                        pounds(viewModel.taxFreeEstimate)))
+                        withPoundPrefix(MoneyPounds(viewModel.taxFreeEstimate, 0))))
                     </p>
                     <div id="balanceEarningsDesc">
                         @Html(Messages("tai.estimatedIncomeEarning.desc",
