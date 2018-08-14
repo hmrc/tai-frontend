@@ -1220,7 +1220,6 @@ tai.workingHours.title=Eich oriau gwaith
 tai.yourIncome.heading=Eich incwm
 tai.yourIncome.preHeading=Deall eich treth
 tai.yourTaxableIncome=Byddai''ch incwm blynyddol yn cael ei ddiweddaru i £{0}
-taxyear.day.month=5 Ebrill {0}
 tax.adjustment=Addasiad treth
 tax.adjustments=Addasiadau treth
 tax.on.your.employment.income=Treth ar eich incwm o gyflogaeth
