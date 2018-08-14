@@ -53,7 +53,7 @@ class zeroTaxEstimatedIncomeTaxSpec extends TaiViewSpec {
       doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.howYouPay.heading"))
 
       doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.whyEstimate.desc",
-        messages("taxyear.day.month", TaxYearResolver.currentTaxYear.toString))).body)
+        Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))).body)
 
       doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.howYouPay.desc",
         messages("tai.estimatedIncome.taxCodes.link"))).body)

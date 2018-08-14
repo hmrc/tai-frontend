@@ -15,14 +15,12 @@
  *@
 
 @import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 @()(implicit messages: Messages)
-
-@defining(TaxYearResolver.currentTaxYear.toString()) { currentTaxYear =>
 
  <h2 class="heading-section">
     @Messages("tai.estimatedIncome.whyEstimate.link")
  </h2>
-    <p id="whyEstimateDesc">@Messages("tai.estimatedIncome.whyEstimate.desc", Messages("taxyear.day.month", currentTaxYear))</p>
+ <p id="whyEstimateDesc">@Messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))</p>
 
-}
