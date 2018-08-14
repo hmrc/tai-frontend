@@ -39,7 +39,7 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
       val testConnector = createTestConnector
       val nino = generateNino.nino
 
-      testConnector.taxCodeHistoryUrl(nino) mustBe s"${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-history"
+      testConnector.taxCodeHistoryUrl(nino) mustBe s"${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-change"
 
     }
   }
@@ -51,7 +51,7 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
         val testConnector = createTestConnector
         val nino = generateNino
 
-        val taxCodeHistoryUrl = s"/tai/${nino.nino}/tax-account/tax-code-history"
+        val taxCodeHistoryUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
 
         val startDate = TaxYearResolver.startOfCurrentTaxYear
         val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1),"Employer 1")
@@ -90,13 +90,13 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
         val testConnector = createTestConnector
         val nino = generateNino
 
-        val taxCodeHistoryUrl = s"/tai/${nino.nino}/tax-account/tax-code-history"
+        val taxCodeHistoryUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
 
         server.stubFor(
           get(urlEqualTo(taxCodeHistoryUrl)).willReturn(serverError())
         )
 
-        val expectedMessage = s"GET of '${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-history' returned 500. Response body: ''"
+        val expectedMessage = s"GET of '${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-change' returned 500. Response body: ''"
         val result = Await.result(testConnector.taxCodeHistory(nino), 5 seconds)
 
         result mustBe TaiTaxAccountFailureResponse(expectedMessage)
