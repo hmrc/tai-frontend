@@ -18,7 +18,7 @@ package views.html.taxCodeChange
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.tai.model.domain.{TaxCodeHistory, TaxCodeRecord}
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -27,9 +27,9 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
   val startDate = TaxYearResolver.startOfCurrentTaxYear
   val taxCodeRecord1 = TaxCodeRecord("tax code", startDate, startDate.plusDays(1),"Employer 1")
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYearResolver.endOfCurrentTaxYear)
-  val taxCodeHistory: TaxCodeHistory = TaxCodeHistory(taxCodeRecord1, taxCodeRecord2)
+  val taxCodeChange: TaxCodeChange = TaxCodeChange(taxCodeRecord1, taxCodeRecord2)
 
-  override def view = views.html.taxCodeChange.taxCodeComparison(taxCodeHistory)
+  override def view = views.html.taxCodeChange.taxCodeComparison(taxCodeChange)
 
   "tax code comparison" should {
     behave like pageWithBackLink
@@ -38,22 +38,22 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
     behave like pageWithCombinedHeader(
       preHeaderText = Messages("taxCode.change.journey.preHeading"),
-      mainHeaderText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeHistory.mostRecentTaxCodeChangeDate)))
+      mainHeaderText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeChange.mostRecentTaxCodeChangeDate)))
 
     "display the correct paragraphs" in {
       doc(view) must haveParagraphWithText(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
     }
 
     "display the previous tax code" in {
-      doc(view) must haveHeadingH2WithText(taxCodeHistory.previous.employerName)
-      doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeHistory.previous.startDate), Dates.formatDate(taxCodeHistory.previous.endDate)))
-      doc(view).toString must include(taxCodeHistory.previous.taxCode)
+      doc(view) must haveHeadingH2WithText(taxCodeChange.previous.employerName)
+      doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeChange.previous.startDate), Dates.formatDate(taxCodeChange.previous.endDate)))
+      doc(view).toString must include(taxCodeChange.previous.taxCode)
     }
 
     "display the current tax code" in {
-      doc(view) must haveHeadingH2WithText(taxCodeHistory.current.employerName)
-      doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeHistory.current.startDate), Dates.formatDate(taxCodeHistory.current.endDate)))
-      doc(view).toString must include(taxCodeHistory.current.taxCode)
+      doc(view) must haveHeadingH2WithText(taxCodeChange.current.employerName)
+      doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeChange.current.startDate), Dates.formatDate(taxCodeChange.current.endDate)))
+      doc(view).toString must include(taxCodeChange.current.taxCode)
     }
   }
 

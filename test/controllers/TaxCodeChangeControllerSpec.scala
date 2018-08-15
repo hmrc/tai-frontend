@@ -33,7 +33,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity, TaxCodeHistory, TaxCodeRecord}
+import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity, TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService}
 import uk.gov.hmrc.tai.service.{PersonService, TaxCodeChangeService}
@@ -84,12 +84,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val SUT = createSUT(true)
 
-        val taxCodeHistory = TaxCodeHistory(taxCodeRecord1, taxCodeRecord2)
+        val taxCodeChange = TaxCodeChange(taxCodeRecord1, taxCodeRecord2)
 
         when(SUT.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(codingComponents))
         when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
         when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
-        when(SUT.taxCodeChangeService.taxCodeHistory(any())(any())).thenReturn(Future.successful(taxCodeHistory))
+        when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
 
         val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -115,8 +115,8 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val SUT = createSUT(true)
 
-        val taxCodeHistory = TaxCodeHistory(taxCodeRecord1, taxCodeRecord2)
-        when(SUT.taxCodeChangeService.taxCodeHistory(any())(any())).thenReturn(Future.successful(taxCodeHistory))
+        val taxCodeChange = TaxCodeChange(taxCodeRecord1, taxCodeRecord2)
+        when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
 
         val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

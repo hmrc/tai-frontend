@@ -15,17 +15,17 @@
  *@
 
 @import includes.ptaHeader
-@import uk.gov.hmrc.tai.model.domain.TaxCodeHistory
+@import uk.gov.hmrc.tai.model.domain.TaxCodeChange
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
-@(taxCodeHistory: TaxCodeHistory)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(taxCodeChange: TaxCodeChange)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
     ptaHeader(
         formForErrorSummary = None,
         displayBackLink = true,
         headerWidthClasses = Some("column-full"),
-        mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeHistory.mostRecentTaxCodeChangeDate)),
+        mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeChange.mostRecentTaxCodeChangeDate)),
         preHeadingText = Messages("taxCode.change.journey.preHeading")
     )
 }
@@ -41,14 +41,14 @@
 </div>
 <div class="grid-row" style="margin-bottom:40px;">
     <div class="column-half">
-        <h2 class="heading-medium flush--bottom">@taxCodeHistory.previous.employerName</h2>
-        <h3 class="bold-small margin-bottom-large flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeHistory.previous.startDate), Dates.formatDate(taxCodeHistory.previous.endDate))</h3>
-        <div class="bold-large">@taxCodeHistory.previous.taxCode</div>
+        <h2 class="heading-medium flush--bottom">@taxCodeChange.previous.employerName</h2>
+        <h3 class="bold-small margin-bottom-large flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeChange.previous.startDate), Dates.formatDate(taxCodeChange.previous.endDate))</h3>
+        <div class="bold-large">@taxCodeChange.previous.taxCode</div>
     </div>
     <div class="column-half">
-        <h2 class="heading-medium flush--bottom">@taxCodeHistory.current.employerName</h2>
-        <h3 class="bold-small margin-bottom-large flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeHistory.current.startDate), Dates.formatDate(taxCodeHistory.current.endDate))</h3>
-        <div class="bold-large">@taxCodeHistory.current.taxCode</div>
+        <h2 class="heading-medium flush--bottom">@taxCodeChange.current.employerName</h2>
+        <h3 class="bold-small margin-bottom-large flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeChange.current.startDate), Dates.formatDate(taxCodeChange.current.endDate))</h3>
+        <div class="bold-large">@taxCodeChange.current.taxCode</div>
     </div>
 </div>
 }

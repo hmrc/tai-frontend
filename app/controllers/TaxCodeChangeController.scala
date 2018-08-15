@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{TaxCodeHistory, TaxCodeRecord}
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
@@ -61,8 +61,8 @@ trait TaxCodeChangeController extends TaiBaseController
             ServiceCheckLite.personDetailsCheck {
               val nino: Nino = Nino(user.getNino)
 
-              taxCodeChangeService.taxCodeHistory(nino) map { taxCodeHistory =>
-                Ok(views.html.taxCodeChange.taxCodeComparison(taxCodeHistory))
+              taxCodeChangeService.taxCodeChange(nino) map { taxCodeChange =>
+                Ok(views.html.taxCodeChange.taxCodeComparison(taxCodeChange))
               }
             }
           } else {
@@ -81,17 +81,17 @@ trait TaxCodeChangeController extends TaiBaseController
               val nino = Nino(user.getNino)
 
               val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
-              val taxCodeHistoryFuture = taxCodeChangeService.taxCodeHistory(nino)
+              val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
               val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
 
               for {
                 employmentNames <- employmentNameFuture
-                taxCodeHistory <- taxCodeHistoryFuture
+                taxCodeChange <- taxCodeChangeFuture
                 codingComponents <- codingComponentsFuture
                 companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
 
               } yield {
-                val viewModel = YourTaxFreeAmountViewModel(taxCodeHistory.mostRecentTaxCodeChangeDate, codingComponents, employmentNames, companyCarBenefits)
+                val viewModel = YourTaxFreeAmountViewModel(taxCodeChange.mostRecentTaxCodeChangeDate, codingComponents, employmentNames, companyCarBenefits)
                 Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
               }
             }

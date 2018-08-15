@@ -21,18 +21,13 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.{JsPath, Json, Reads}
 
-case class TaxCodeHistory(previous: TaxCodeRecord, current: TaxCodeRecord){
+case class TaxCodeChange(previous: TaxCodeRecord, current: TaxCodeRecord){
 
   val mostRecentTaxCodeChangeDate: LocalDate = current.startDate
 
 }
 
-object TaxCodeHistory {
+object TaxCodeChange {
 
-    implicit val reads: Reads[TaxCodeHistory] = (
-      (JsPath \ "previous").read[TaxCodeRecord] and
-      (JsPath \ "current").read[TaxCodeRecord]
-    )(TaxCodeHistory.apply _)
+  implicit val format = Json.format[TaxCodeChange]
 }
-
-

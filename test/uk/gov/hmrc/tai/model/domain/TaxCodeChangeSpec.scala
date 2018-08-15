@@ -23,24 +23,24 @@ import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.util.Random
 
-class TaxCodeHistorySpec extends PlaySpec{
+class TaxCodeChangeSpec extends PlaySpec{
 
-  "TaxCodeHistory" should {
-    "return a valid TaxCodeHistory object when given valid Json" in {
-      val expectedModel = TaxCodeHistory(
+  "TaxCodeChange" should {
+    "return a valid TaxCodeChange object when given valid Json" in {
+      val expectedModel = TaxCodeChange(
         taxCodeRecord1,
         taxCodeRecord2
       )
 
-      taxCodeHistoryJson.as[TaxCodeHistory] mustEqual expectedModel
+      taxCodeChangeJson.as[TaxCodeChange] mustEqual expectedModel
     }
 
     "throw a JsError given an empty Seq of TaxCodeRecords" in {
-      an [JsResultException] should be thrownBy emptyTaxCodeRecordsJson.as[TaxCodeHistory]
+      an [JsResultException] should be thrownBy emptyTaxCodeRecordsJson.as[TaxCodeChange]
     }
 
     "return the latest tax code change date from a sequence of tax code records" in {
-      val expectedModel = TaxCodeHistory(taxCodeRecord1, taxCodeRecord2)
+      val expectedModel = TaxCodeChange(taxCodeRecord1, taxCodeRecord2)
 
       expectedModel.mostRecentTaxCodeChangeDate mustEqual startDate.plusDays(2)
 
@@ -52,7 +52,7 @@ class TaxCodeHistorySpec extends PlaySpec{
   val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1),"Employer 1")
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
-  val taxCodeHistoryJson = Json.obj(
+  val taxCodeChangeJson = Json.obj(
     "previous" -> Json.obj(
       "taxCode" -> "code",
       "startDate" -> startDate.toString,

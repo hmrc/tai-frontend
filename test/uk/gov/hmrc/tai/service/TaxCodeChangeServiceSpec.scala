@@ -26,7 +26,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{TaxCodeHistory, TaxCodeRecord}
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.duration._
@@ -35,17 +35,17 @@ import scala.util.Random
 
 class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
 
-  "taxCodeHistory" must {
-    "return the tax code history given a valid nino" in {
+  "taxCodeChange" must {
+    "return the tax code change given a valid nino" in {
       val sut = createSut
       val nino = generateNino
 
-      val taxCodeHistory = TaxCodeHistory(taxCodeRecord1, taxCodeRecord2)
+      val taxCodeChange = TaxCodeChange(taxCodeRecord1, taxCodeRecord2)
 
-      when(sut.taxCodeChangeConnector.taxCodeHistory(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeHistory)))
+      when(sut.taxCodeChangeConnector.taxCodeChange(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeChange)))
 
-      val result = sut.taxCodeHistory(nino)
-      Await.result(result, 5 seconds) mustBe taxCodeHistory
+      val result = sut.taxCodeChange(nino)
+      Await.result(result, 5.seconds) mustBe taxCodeChange
     }
   }
 
