@@ -16,6 +16,7 @@
 
 package views.html.taxCodeChange
 
+import controllers.routes
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
@@ -54,6 +55,10 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
       doc(view) must haveHeadingH2WithText(taxCodeChange.current.employerName)
       doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeChange.current.startDate), Dates.formatDate(taxCodeChange.current.endDate)))
       doc(view).toString must include(taxCodeChange.current.taxCode)
+    }
+
+    "display a button linking to the 'check your tax-free amount page" in {
+      doc(view) must haveLinkElement("check-your-tax-button", routes.TaxCodeChangeController.yourTaxFreeAmount().url.toString, Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton"))
     }
   }
 
