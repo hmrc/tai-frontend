@@ -1266,3 +1266,4 @@ taxCode.change.yourTaxFreeAmount.summaryHeading=How your tax-free amount is calc
 taxCode.change.yourTaxFreeAmount.updateYourCurrentIncome.link=Update your current income or benefits
 taxCode.change.yourTaxCodeChanged.h1=Your tax code changed on {0}
 taxCode.change.yourTaxCodeChanged.paragraph=This could be because of a change to your income or benefits.
+taxCode.change.yourTaxCodeChanged.checkYourTaxButton=Check your tax-free amount

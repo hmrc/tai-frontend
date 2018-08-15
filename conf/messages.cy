@@ -1265,3 +1265,4 @@ taxCode.change.yourTaxFreeAmount.whatHappensNext.link=Gweler beth fydd yn digwyd
 taxCode.change.yourTaxFreeAmount.updateYourCurrentIncome.link=Diweddaru''ch incwm neu''ch buddiannau presennol
 taxCode.change.yourTaxCodeChanged.h1=Newidiodd eich cod treth ar {0}
 taxCode.change.yourTaxCodeChanged.paragraph=Gallai hyn fod o ganlyniad i newid i’ch incwm neu’ch buddiannau.
+taxCode.change.yourTaxCodeChanged.checkYourTaxButton=Gwiriwch eich swm rhydd o dreth

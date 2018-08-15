@@ -15,8 +15,10 @@
  *@
 
 @import includes.ptaHeader
-@import uk.gov.hmrc.tai.model.domain.TaxCodeChange
+@import controllers.routes
+@import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import org.joda.time.LocalDate
 
 @(taxCodeChange: TaxCodeChange)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -30,6 +32,12 @@
     )
 }
 
+@taxCodeRecordPod(taxCodeRecord: TaxCodeRecord) = {
+    <h2 class="heading-medium flush--bottom">@taxCodeRecord.employerName</h2>
+    <h3 class="bold-small margin-bottom-large flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeRecord.startDate), Dates.formatDate(taxCodeRecord.endDate))</h3>
+    <div class="bold-large">@taxCodeRecord.taxCode</div>
+}
+
 @main(
     title = Messages("taxCode.change.journey.preHeading"),
     pageHeader = Some(header),
@@ -39,16 +47,17 @@
 <div>
     <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
 </div>
-<div class="grid-row" style="margin-bottom:40px;">
+<div class="grid-row" style="margin-bottom:60px;">
     <div class="column-half">
-        <h2 class="heading-medium flush--bottom">@taxCodeChange.previous.employerName</h2>
-        <h3 class="bold-small margin-bottom-large flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeChange.previous.startDate), Dates.formatDate(taxCodeChange.previous.endDate))</h3>
-        <div class="bold-large">@taxCodeChange.previous.taxCode</div>
+        @taxCodeRecordPod(taxCodeChange.previous)
     </div>
     <div class="column-half">
-        <h2 class="heading-medium flush--bottom">@taxCodeChange.current.employerName</h2>
-        <h3 class="bold-small margin-bottom-large flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeChange.current.startDate), Dates.formatDate(taxCodeChange.current.endDate))</h3>
-        <div class="bold-large">@taxCodeChange.current.taxCode</div>
+        @taxCodeRecordPod(taxCodeChange.current)
     </div>
+</div>
+<div>
+    <a class="button" href="@routes.TaxCodeChangeController.yourTaxFreeAmount().url.toString" id="check-your-tax-button">
+        @Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")
+    </a>
 </div>
 }
