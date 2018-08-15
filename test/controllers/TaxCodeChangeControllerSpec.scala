@@ -18,8 +18,9 @@ package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
 import mocks.MockTemplateRenderer
+import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers.{any, eq => mockEq}
+import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -31,11 +32,14 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity, TaxCodeHistory, TaxCodeRecord}
+import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity, TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxCodeChangeService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService}
+import uk.gov.hmrc.tai.service.{PersonService, TaxCodeChangeService}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.time.TaxYearResolver
+
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -80,12 +84,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val SUT = createSUT(true)
 
-        val taxCodeHistory = TaxCodeHistory(generateNino.nino, List(TaxCodeRecord("1185L","Employer 1","operated","2017-06-23")))
+        val taxCodeChange = TaxCodeChange(taxCodeRecord1, taxCodeRecord2)
 
         when(SUT.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(codingComponents))
         when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
         when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
-        when(SUT.taxCodeChangeService.taxCodeHistory(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeHistory)))
+        when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
 
         val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -110,7 +114,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     "show 'Your tax code comparison' page" when {
       "the request has an authorised session" in {
         val SUT = createSUT(true)
+
+        val taxCodeChange = TaxCodeChange(taxCodeRecord1, taxCodeRecord2)
+        when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+
         val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
         status(result) mustBe OK
       }
     }
@@ -138,6 +147,9 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val codingComponents = Seq(CodingComponent(GiftAidPayments, None, giftAmount, "GiftAidPayments description"),
     CodingComponent(GiftsSharesCharity, None, giftAmount, "GiftsSharesCharity description"))
 
+  val startDate = TaxYearResolver.startOfCurrentTaxYear
+  val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1),"Employer 1")
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
   private class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController {
 
@@ -153,9 +165,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val taxCodeChangeEnabled: Boolean = taxCodeChangeJourneyEnabled
 
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
+    when(taxCodeChangeService.latestTaxCodeChangeDate(generateNino)).thenReturn(Future.successful(new LocalDate(2018,6,11)))
   }
 
 }

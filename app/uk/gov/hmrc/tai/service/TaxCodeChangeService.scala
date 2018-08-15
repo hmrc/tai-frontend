@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.tai.service
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
-import uk.gov.hmrc.tai.connectors.responses.TaiResponse
-import uk.gov.hmrc.tai.model.domain.TaxCodeHistory
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.model.domain.TaxCodeChange
 
 import scala.concurrent.Future
 
@@ -29,12 +30,16 @@ trait TaxCodeChangeService {
 
   def taxCodeChangeConnector: TaxCodeChangeConnector
 
-  def taxCodeHistory(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
-    taxCodeChangeConnector.taxCodeHistory(nino)
+  def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] = {
+    taxCodeChangeConnector.taxCodeChange(nino) map {
+      case TaiSuccessResponseWithPayload(taxCodeChange: TaxCodeChange) => taxCodeChange
+      case _ => throw new RuntimeException("Could not fetch tax code change")
+    }
   }
 
-
-
+  def latestTaxCodeChangeDate(nino: Nino)(implicit hc: HeaderCarrier): Future[LocalDate] = {
+    taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate)
+  }
 }
 
 object TaxCodeChangeService extends TaxCodeChangeService {

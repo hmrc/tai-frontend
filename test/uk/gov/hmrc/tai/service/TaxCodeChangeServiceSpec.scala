@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import org.joda.time.LocalDate
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
@@ -24,27 +25,34 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
-import uk.gov.hmrc.tai.model.domain.{TaxCodeHistory, TaxCodeRecord}
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
+import uk.gov.hmrc.time.TaxYearResolver
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
 class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
 
-  "taxCodeHistory" must {
-    "return the tax code history given a valid nino" in {
+  "taxCodeChange" must {
+    "return the tax code change given a valid nino" in {
       val sut = createSut
       val nino = generateNino
 
-      val taxCodeHistory = TaxCodeHistory(nino.nino, Seq(TaxCodeRecord("1185L","Employer 1","operated","2017-06-23")))
+      val taxCodeChange = TaxCodeChange(taxCodeRecord1, taxCodeRecord2)
 
-      when(sut.taxCodeChangeConnector.taxCodeHistory(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeHistory)))
+      when(sut.taxCodeChangeConnector.taxCodeChange(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeChange)))
 
-      val result = sut.taxCodeHistory(nino)
-      Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(taxCodeHistory)
+      val result = sut.taxCodeChange(nino)
+      Await.result(result, 5.seconds) mustBe taxCodeChange
     }
   }
 
+
+  val startDate = TaxYearResolver.startOfCurrentTaxYear
+  val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1),"Employer 1")
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   private def generateNino: Nino = new Generator(new Random).nextNino
