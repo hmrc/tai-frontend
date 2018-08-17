@@ -21,13 +21,20 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.{JsPath, Json, Reads}
 
-case class TaxCodeChange(previous: TaxCodeRecord, current: TaxCodeRecord){
+case class TaxCodeChange(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]){
+  implicit val dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isAfter _)
 
-  val mostRecentTaxCodeChangeDate: LocalDate = current.startDate
+  val mostRecentTaxCodeChangeDate: LocalDate = current.map(_.startDate).min
 
+  def generatePairs: Seq[(TaxCodeRecord, TaxCodeRecord)] = {
+    for {
+      p <- previous
+      c <- current
+      if p.employmentId == c.employmentId
+    } yield(p, c)
+  }
 }
 
 object TaxCodeChange {
-
   implicit val format = Json.format[TaxCodeChange]
 }

@@ -24,7 +24,10 @@ case class TaxCodeRecord(
                           taxCode: String,
                           startDate: LocalDate,
                           endDate: LocalDate,
-                          employerName: String)
+                          employerName: String,
+                          employmentId: Int,
+                          payrollNumber: String,
+                          primary: Boolean)
 
 object TaxCodeRecord {
   implicit val format = Json.format[TaxCodeRecord]

@@ -24,7 +24,15 @@ class TaxCodeRecordSpec extends PlaySpec {
 
   "TaxCodeRecord" should {
     "return a valid TaxCodeRecord object when given valid Json" in {
-      val expectedModel = TaxCodeRecord("code", new LocalDate(2018, 7,11), new LocalDate(2018, 7, 11), "Employer name")
+      val expectedModel = TaxCodeRecord(
+        "code",
+        new LocalDate(2018, 7,11),
+        new LocalDate(2018, 7, 11),
+        "Employer name",
+        1,
+        "1234",
+        true
+      )
       taxCodeRecordJson.as[TaxCodeRecord] mustEqual expectedModel
 
     }
@@ -35,6 +43,9 @@ class TaxCodeRecordSpec extends PlaySpec {
       "taxCode" -> "code",
       "startDate" -> "2018-07-11",
       "endDate" -> "2018-07-11",
-      "employerName" -> "Employer name"
+      "employerName" -> "Employer name",
+      "employmentId" -> 1,
+      "payrollNumber" -> "1234",
+      "primary" -> true
     )
 }

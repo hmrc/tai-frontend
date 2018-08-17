@@ -40,7 +40,7 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
       val sut = createSut
       val nino = generateNino
 
-      val taxCodeChange = TaxCodeChange(taxCodeRecord1, taxCodeRecord2)
+      val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
 
       when(sut.taxCodeChangeConnector.taxCodeChange(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeChange)))
 
@@ -51,7 +51,7 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
 
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1),"Employer 1")
+  val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1),"Employer 1", 1, "1234", true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()

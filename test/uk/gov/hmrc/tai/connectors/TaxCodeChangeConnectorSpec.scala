@@ -54,27 +54,37 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
         val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
 
         val startDate = TaxYearResolver.startOfCurrentTaxYear
-        val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1),"Employer 1")
+        val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1),"Employer 1", 1, "1234", true)
         val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
         val json = Json.obj(
           "data" -> Json.obj(
-            "previous" -> Json.obj(
-              "taxCode" -> "code",
-              "startDate" -> startDate,
-              "endDate" -> startDate.plusDays(1),
-              "employerName" -> "Employer 1"
+            "previous" -> Json.arr(
+                Json.obj(
+                  "taxCode" -> "code",
+                  "startDate" -> startDate,
+                  "endDate" -> startDate.plusDays(1),
+                  "employerName" -> "Employer 1",
+                  "employmentId" -> 1,
+                  "payrollNumber" -> "1234",
+                  "primary" -> true
+                )
             ),
-            "current" -> Json.obj(
-              "taxCode" -> "code",
-              "startDate" -> startDate.plusDays(2),
-              "endDate" -> TaxYearResolver.endOfCurrentTaxYear,
-              "employerName" -> "Employer 1"
+            "current" -> Json.arr(
+              Json.obj(
+                "taxCode" -> "code",
+                "startDate" -> startDate.plusDays(2),
+                "endDate" -> TaxYearResolver.endOfCurrentTaxYear,
+                "employerName" -> "Employer 1",
+                "employmentId" -> 1,
+                "payrollNumber" -> "1234",
+                "primary" -> true
+              )
             )
           ),
           "links" -> JsArray(Seq()))
 
-        val expectedResult = TaxCodeChange(taxCodeRecord1, taxCodeRecord2)
+        val expectedResult = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
 
         server.stubFor(
           get(urlEqualTo(taxCodeChangeUrl)).willReturn(ok(json.toString()))

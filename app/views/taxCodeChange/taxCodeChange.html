@@ -34,6 +34,7 @@
 
 @taxCodeRecordPod(taxCodeRecord: TaxCodeRecord) = {
     <h2 class="heading-medium flush--bottom">@taxCodeRecord.employerName</h2>
+    <p>@Messages("tai.incomeTaxSummary.payrollNumber.prefix", taxCodeRecord.payrollNumber)</p>
     <h3 class="bold-small margin-bottom-large flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeRecord.startDate), Dates.formatDate(taxCodeRecord.endDate))</h3>
     <div class="bold-large">@taxCodeRecord.taxCode</div>
 }
@@ -49,10 +50,14 @@
 </div>
 <div class="grid-row" style="margin-bottom:60px;">
     <div class="column-half">
-        @taxCodeRecordPod(taxCodeChange.previous)
+        @for(record <- taxCodeChange.previous) {
+            @taxCodeRecordPod(record)
+        }
     </div>
     <div class="column-half">
-        @taxCodeRecordPod(taxCodeChange.current)
+        @for(record <- taxCodeChange.current) {
+            @taxCodeRecordPod(record)
+        }
     </div>
 </div>
 <div>

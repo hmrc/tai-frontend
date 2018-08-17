@@ -34,6 +34,7 @@ import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
+import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
@@ -61,9 +62,16 @@ trait TaxCodeChangeController extends TaiBaseController
             ServiceCheckLite.personDetailsCheck {
               val nino: Nino = Nino(user.getNino)
 
-              taxCodeChangeService.taxCodeChange(nino) map { taxCodeChange =>
-                Ok(views.html.taxCodeChange.taxCodeComparison(taxCodeChange))
-              }
+              val startDate = TaxYearResolver.startOfCurrentTaxYear
+              val taxCodeRecord1 = TaxCodeRecord("A1111", startDate, startDate.plusMonths(1),"Employer 1", 1, "1234", true)
+              val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+              val taxCodeRecord3 = taxCodeRecord1.copy(taxCode = "B175", startDate = startDate.plusDays(3), endDate = TaxYearResolver.endOfCurrentTaxYear)
+
+              val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
+
+//              taxCodeChangeService.taxCodeChange(nino) map { taxCodeChange =>
+                Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison(taxCodeChange)))
+//              }
             }
           } else {
             ServiceCheckLite.personDetailsCheck {
