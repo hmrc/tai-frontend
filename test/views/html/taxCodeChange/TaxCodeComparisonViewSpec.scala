@@ -26,9 +26,9 @@ import uk.gov.hmrc.time.TaxYearResolver
 class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"Employer 1", 1, "1234", true)
+  val taxCodeRecord1 = TaxCodeRecord("A1111", startDate, startDate.plusMonths(1),"Employer 1", 1, "1234", true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-  val taxCodeRecord3 = taxCodeRecord1.copy(startDate = startDate.plusDays(3), endDate = TaxYearResolver.endOfCurrentTaxYear)
+  val taxCodeRecord3 = taxCodeRecord1.copy(taxCode = "B175", startDate = startDate.plusDays(3), endDate = TaxYearResolver.endOfCurrentTaxYear, employmentId = 2)
   val taxCodeChange: TaxCodeChange = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
 
   override def view = views.html.taxCodeChange.taxCodeComparison(taxCodeChange)
@@ -50,7 +50,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
       // TODO: Move foreach to helper method
       taxCodeChange.previous.foreach(record => {
         doc(view) must haveHeadingH2WithText(record.employerName)
-        doc(view) must haveParagraphWithText(record.payrollNumber)
+        doc(view) must haveParagraphWithText(Messages("tai.incomeTaxSummary.payrollNumber.prefix", record.payrollNumber))
         doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(record.startDate), Dates.formatDate(record.endDate)))
         doc(view).toString must include(record.taxCode)
       })
@@ -60,7 +60,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
       // TODO: Move foreach to helper method
       taxCodeChange.current.foreach(record => {
         doc(view) must haveHeadingH2WithText(record.employerName)
-        doc(view) must haveParagraphWithText(record.payrollNumber)
+        doc(view) must haveParagraphWithText(Messages("tai.incomeTaxSummary.payrollNumber.prefix", record.payrollNumber))
         doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(record.startDate), Dates.formatDate(record.endDate)))
         doc(view).toString must include(record.taxCode)
       })

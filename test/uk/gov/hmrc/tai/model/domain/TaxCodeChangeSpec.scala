@@ -40,24 +40,96 @@ class TaxCodeChangeSpec extends PlaySpec{
     }
 
     "return the latest tax code change date from a sequence of tax code records" in {
-      val expectedModel = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
+      val model = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
 
-      expectedModel.mostRecentTaxCodeChangeDate mustEqual startDate.plusMonths(1).plusDays(1)
+      model.mostRecentTaxCodeChangeDate mustEqual startDate.plusMonths(1).plusDays(1)
     }
 
-    "generates pairs of taxCodeChanges based on employmentId" in {
-      val expectedModel = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
-      val generatedPairs = Seq((taxCodeRecord1, taxCodeRecord2), (taxCodeRecord3, taxCodeRecord3))
+    "generate pairs of taxCodeChanges based on employmentId" in {
+      val model = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3, unmatchedCurrentTaxCode))
+      val generatedPairs = Seq(model.TaxCodePair(Some(taxCodeRecord1), Some(taxCodeRecord2)), model.TaxCodePair(Some(taxCodeRecord3), Some(taxCodeRecord3)))
 
-      expectedModel.generatePairs mustEqual generatedPairs
+      model.taxCodePairs mustEqual generatedPairs
+    }
+
+    "return the primary pairs" in {
+      val model = TaxCodeChange(
+        Seq(taxCodeRecord1, taxCodeRecord3, taxCodeRecord4, unmatchedPreviousTaxCode),
+        Seq(taxCodeRecord2, taxCodeRecord3, taxCodeRecord4, unmatchedCurrentTaxCode)
+      )
+      model.primaryPairs mustEqual Seq(model.TaxCodePair(Some(taxCodeRecord4), Some(taxCodeRecord4)))
+    }
+
+    "return the secondary pairs" in {
+      val model = TaxCodeChange(
+        Seq(taxCodeRecord1, taxCodeRecord3, taxCodeRecord4, unmatchedPreviousTaxCode),
+        Seq(taxCodeRecord2, taxCodeRecord3, taxCodeRecord4, unmatchedCurrentTaxCode)
+      )
+
+      model.secondaryPairs mustEqual Seq(
+        model.TaxCodePair(Some(taxCodeRecord1), Some(taxCodeRecord2)),
+        model.TaxCodePair(Some(taxCodeRecord3), Some(taxCodeRecord3))
+      )
+    }
+
+    "return the unmatched current taxCodes given one in current and one in previous" in {
+      val model = TaxCodeChange(
+        Seq(unmatchedPreviousTaxCode),
+        Seq(unmatchedCurrentTaxCode)
+      )
+      model.unpairedCurrentCodes mustEqual Seq(model.TaxCodePair(None, Some(unmatchedCurrentTaxCode)))
+    }
+
+    "return the unmatched current taxCodes given a matching pair" in {
+      val model = TaxCodeChange(
+        Seq(taxCodeRecord1),
+        Seq(taxCodeRecord2)
+      )
+      model.unpairedCurrentCodes mustEqual Seq.empty
+    }
+
+    "return the unmatched current taxCodes" in {
+      val model = TaxCodeChange(
+        Seq(taxCodeRecord1, taxCodeRecord3, taxCodeRecord4, unmatchedPreviousTaxCode),
+        Seq(taxCodeRecord2, taxCodeRecord3, taxCodeRecord4, unmatchedCurrentTaxCode)
+      )
+      model.unpairedCurrentCodes mustEqual Seq(model.TaxCodePair(None, Some(unmatchedCurrentTaxCode)))
+    }
+
+    "return the unmatched previous taxCodes given one in current and one in previous" in {
+      val model = TaxCodeChange(
+        Seq(unmatchedPreviousTaxCode),
+        Seq(unmatchedCurrentTaxCode)
+      )
+      model.unpairedPreviousCodes mustEqual Seq(model.TaxCodePair(Some(unmatchedPreviousTaxCode), None))
+    }
+
+    "return the unmatched previous taxCodes" in {
+      val model = TaxCodeChange(
+        Seq(taxCodeRecord1, taxCodeRecord3, taxCodeRecord4, unmatchedPreviousTaxCode),
+        Seq(taxCodeRecord2, taxCodeRecord3, taxCodeRecord4, unmatchedCurrentTaxCode)
+      )
+      model.unpairedPreviousCodes mustEqual Seq(model.TaxCodePair(Some(unmatchedPreviousTaxCode), None))
+    }
+
+    "return the unmatched previous taxCodes given a matching pair" in {
+      val model = TaxCodeChange(
+        Seq(taxCodeRecord1),
+        Seq(taxCodeRecord2)
+      )
+      model.unpairedPreviousCodes mustEqual Seq.empty
     }
   }
 
   val nino = generateNino
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"Employer 1", 1, "1234", true)
+  val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"A Employer 1", 1, "1234", false)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-  val taxCodeRecord3 = taxCodeRecord1.copy(startDate = startDate.plusDays(3), endDate = TaxYearResolver.endOfCurrentTaxYear, employmentId = 2)
+  val taxCodeRecord3 = taxCodeRecord1.copy(startDate = startDate.plusDays(3), endDate = TaxYearResolver.endOfCurrentTaxYear, employerName = "B", employmentId = 2, primary = false)
+  val taxCodeRecord4 = taxCodeRecord3.copy(employerName = "C", employmentId = 3, primary = true)
+  val unmatchedPreviousTaxCode = TaxCodeRecord("Unmatched Previous", startDate, startDate.plusMonths(1),"D", 4, "D Id", false)
+  val unmatchedCurrentTaxCode = TaxCodeRecord("Unmatched Current", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear,"E", 5, "E id", false)
+
 
   val taxCodeChangeJson = Json.obj(
     "previous" -> Json.arr(
@@ -65,10 +137,10 @@ class TaxCodeChangeSpec extends PlaySpec{
         "taxCode" -> "code",
         "startDate" -> startDate.toString,
         "endDate" -> startDate.plusMonths(1).toString,
-        "employerName" -> "Employer 1",
+        "employerName" -> "A Employer 1",
         "employmentId" -> 1,
         "payrollNumber" -> "1234",
-        "primary" -> true
+        "primary" -> false
       )
     ),
     "current" -> Json.arr(
@@ -76,10 +148,10 @@ class TaxCodeChangeSpec extends PlaySpec{
         "taxCode" -> "code",
         "startDate" -> startDate.plusMonths(1).plusDays(1).toString,
         "endDate" -> TaxYearResolver.endOfCurrentTaxYear.toString,
-        "employerName" -> "Employer 1",
+        "employerName" -> "A Employer 1",
         "employmentId" -> 1,
         "payrollNumber" -> "1234",
-        "primary" -> true
+        "primary" -> false
       )
     )
   )

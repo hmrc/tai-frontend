@@ -37,6 +37,7 @@
     <p>@Messages("tai.incomeTaxSummary.payrollNumber.prefix", taxCodeRecord.payrollNumber)</p>
     <h3 class="bold-small margin-bottom-large flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeRecord.startDate), Dates.formatDate(taxCodeRecord.endDate))</h3>
     <div class="bold-large">@taxCodeRecord.taxCode</div>
+    <hr>
 }
 
 @main(
@@ -49,16 +50,14 @@
     <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
 </div>
 <div class="grid-row" style="margin-bottom:60px;">
-    <div class="column-half">
-        @for(record <- taxCodeChange.previous) {
-            @taxCodeRecordPod(record)
-        }
-    </div>
-    <div class="column-half">
-        @for(record <- taxCodeChange.current) {
-            @taxCodeRecordPod(record)
-        }
-    </div>
+    @for(recordPair <- taxCodeChange.generatePairs) {
+        <div class="column-half">
+            @taxCodeRecordPod(record._1)
+        </div>
+        <div class="column-half">
+            @taxCodeRecordPod(record._2)
+        </div>
+    }
 </div>
 <div>
     <a class="button" href="@routes.TaxCodeChangeController.yourTaxFreeAmount().url.toString" id="check-your-tax-button">
