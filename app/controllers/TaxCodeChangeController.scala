@@ -63,13 +63,20 @@ trait TaxCodeChangeController extends TaiBaseController
               val nino: Nino = Nino(user.getNino)
 
               val startDate = TaxYearResolver.startOfCurrentTaxYear
-              val taxCodeRecord1 = TaxCodeRecord("A1111", startDate, startDate.plusMonths(1),"Employer 1", 1, "1234", true)
-              val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-              val taxCodeRecord3 = taxCodeRecord1.copy(taxCode = "B175", startDate = startDate.plusDays(3), endDate = TaxYearResolver.endOfCurrentTaxYear)
+              val previousTaxCodeRecord1 = TaxCodeRecord("B175", startDate, startDate.plusMonths(1),"Split Tax Code", 1, "1234", false)
+              val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+              val fullYearTaxCode = TaxCodeRecord("A1111", startDate, TaxYearResolver.endOfCurrentTaxYear, "Full Year", 2, "12345", false)
+              val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "Full Year Primary", employmentId = 3, primary = true)
+              val unmatchedPreviousTaxCode = TaxCodeRecord("C11", startDate, startDate.plusMonths(1),"Unmatched Previous", 4, "D Id", false)
+              val unmatchedCurrentTaxCode = TaxCodeRecord("E183", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear,"Unmatched Current", 5, "E id", false)
 
-              val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
+              val taxCodeChange = TaxCodeChange(
+                Seq(previousTaxCodeRecord1, fullYearTaxCode, primaryFullYearTaxCode, unmatchedPreviousTaxCode),
+                Seq(currentTaxCodeRecord1, fullYearTaxCode, primaryFullYearTaxCode, unmatchedCurrentTaxCode)
+              )
 
 //              taxCodeChangeService.taxCodeChange(nino) map { taxCodeChange =>
+
                 Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison(taxCodeChange)))
 //              }
             }

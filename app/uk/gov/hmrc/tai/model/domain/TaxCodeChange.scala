@@ -23,41 +23,45 @@ import play.api.libs.json.{JsPath, Json, Reads}
 
 case class TaxCodeChange(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]){
 
-  case class TaxCodePair(previous: Option[TaxCodeRecord], current: Option[TaxCodeRecord])
-
   implicit val dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isAfter _)
 
   val mostRecentTaxCodeChangeDate: LocalDate = current.map(_.startDate).min
 
-  val taxCodePairs: Seq[TaxCodePair] = {
+  val allTaxCodePairsOrdered: Seq[TaxCodePair] = {
+    primaryPairs ++ secondaryPairs ++ unpairedPreviousCodes ++ unpairedCurrentCodes
+  }
+
+  lazy val primaryPairs: Seq[TaxCodePair] = {
+    taxCodePairs.filter(taxCodeRecordPair => taxCodeRecordPair.current.exists(_.primary))
+  }
+
+  lazy val secondaryPairs: Seq[TaxCodePair] = {
+    taxCodePairs.filterNot(taxCodeRecordPair => taxCodeRecordPair.current.exists(_.primary))
+  }
+
+  lazy val unpairedCurrentCodes: Seq[TaxCodePair] = {
+    val unpairedRecords = current.filterNot(record => taxCodePairs.map(_.current).contains(Some(record)))
+
+    unpairedRecords.map(record => TaxCodePair(None, Some(record)))
+  }
+
+  lazy val unpairedPreviousCodes: Seq[TaxCodePair] = {
+    val unpairedRecords = previous.filterNot(record => taxCodePairs.map(_.previous).contains(Some(record)))
+
+    unpairedRecords.map(record => TaxCodePair(Some(record), None))
+  }
+
+  lazy private val taxCodePairs: Seq[TaxCodePair] = {
     for {
       p <- previous
       c <- current
       if p.employmentId == c.employmentId
     } yield TaxCodePair(Some(p), Some(c))
   }
-  
-  val primaryPairs: Seq[TaxCodePair] = {
-    taxCodePairs.filter(taxCodeRecordPair => taxCodeRecordPair.current.exists(_.primary))
-  }
-
-  val secondaryPairs: Seq[TaxCodePair] = {
-    taxCodePairs.filterNot(taxCodeRecordPair => taxCodeRecordPair.current.exists(_.primary))
-  }
-
-  val unpairedCurrentCodes: Seq[TaxCodePair] = {
-    val unpairedRecords = current.filterNot(record => taxCodePairs.map(_.current).contains(Some(record)))
-
-    unpairedRecords.map(record => TaxCodePair(None, Some(record)))
-  }
-
-  val unpairedPreviousCodes: Seq[TaxCodePair] = {
-    val unpairedRecords = previous.filterNot(record => taxCodePairs.map(_.previous).contains(Some(record)))
-
-    unpairedRecords.map(record => TaxCodePair(Some(record), None))
-  }
 }
 
 object TaxCodeChange {
   implicit val format = Json.format[TaxCodeChange]
 }
+
+case class TaxCodePair(previous: Option[TaxCodeRecord], current: Option[TaxCodeRecord])
