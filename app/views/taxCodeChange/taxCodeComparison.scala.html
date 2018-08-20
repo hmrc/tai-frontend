@@ -43,20 +43,18 @@
 @taxCodeRecordPod(taxCodeRecord: Option[TaxCodeRecord]) = {
     @{taxCodeRecord match {
         case Some(taxCodeRecord) => taxCodeRecordPodHtml(taxCodeRecord)
-        case _ => <div></div>
+        case _ => <div>&nbsp;</div>
     }}
 }
 
 @taxCodePairs(taxCodePairs: TaxCodePairs) = {
     @for(pair <- taxCodePairs.pairs.take(taxCodePairs.pairs.length - 1)) {
-        <div class="grid-row">
+        <div class="grid-row" style="margin-bottom:20px;">
             <div class="column-half">
                 @taxCodeRecordPod(pair.previous)
-                &nbsp;
             </div>
             <div class="column-half">
                 @taxCodeRecordPod(pair.current)
-                &nbsp;
             </div>
         </div>
         <hr>
@@ -80,7 +78,7 @@
     gaCustomTitle = None
 ){
 <div>
-    <p class="lede margin-bottom-large">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
+    <p class="lede" style="margin-bottom:60px;">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
 </div>
 <div class="" style="margin-bottom:60px;">
     @taxCodePairs(taxCodeChangeViewModel.pairs)
