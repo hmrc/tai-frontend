@@ -16,18 +16,19 @@
 
 @import includes.ptaHeader
 @import controllers.routes
-@import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord, TaxCodePair}
+@import uk.gov.hmrc.tai.model.domain.{TaxCodeRecord, TaxCodePair, TaxCodePairs}
+@import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import org.joda.time.LocalDate
 
-@(taxCodeChange: TaxCodeChange)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(taxCodeChangeViewModel: TaxCodeChangeViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
     ptaHeader(
         formForErrorSummary = None,
         displayBackLink = true,
         headerWidthClasses = Some("column-full"),
-        mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeChange.mostRecentTaxCodeChangeDate)),
+        mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeChangeViewModel.changeDate)),
         preHeadingText = Messages("taxCode.change.journey.preHeading")
     )
 }
@@ -46,8 +47,8 @@
     }}
 }
 
-@taxCodePairs(pairs: Seq[TaxCodePair]) = {
-    @for(pair <- pairs.take(pairs.length - 1)) {
+@taxCodePairs(taxCodePairs: TaxCodePairs) = {
+    @for(pair <- taxCodePairs.pairs.take(taxCodePairs.pairs.length - 1)) {
         <div class="grid-row">
             <div class="column-half">
                 @taxCodeRecordPod(pair.previous)
@@ -62,11 +63,11 @@
     }
     <div class="grid-row">
         <div class="column-half">
-            @taxCodeRecordPod(pairs.last.previous)
+            @taxCodeRecordPod(taxCodePairs.pairs.last.previous)
             &nbsp;
         </div>
         <div class="column-half">
-            @taxCodeRecordPod(pairs.last.current)
+            @taxCodeRecordPod(taxCodePairs.pairs.last.current)
             &nbsp;
         </div>
     </div>
@@ -81,8 +82,8 @@
 <div>
     <p class="lede margin-bottom-large">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
 </div>
-<div class="grid-row" style="margin-bottom:60px;">
-    @taxCodePairs(taxCodeChange.allTaxCodePairsOrdered)
+<div class="" style="margin-bottom:60px;">
+    @taxCodePairs(taxCodeChangeViewModel.pairs)
 </div>
 <div>
     <a class="button" href="@routes.TaxCodeChangeController.yourTaxFreeAmount().url.toString" id="check-your-tax-button">

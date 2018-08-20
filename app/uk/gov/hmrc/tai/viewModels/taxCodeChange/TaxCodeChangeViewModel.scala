@@ -16,24 +16,16 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
-import uk.gov.hmrc.tai.model.domain.{TaxCodePair, TaxCodeRecord}
+import org.joda.time.LocalDate
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodePairs}
 
-case class TaxCodeChangeViewModel(allTaxCodePairsOrdered: Seq[TaxCodePair]){
+case class TaxCodeChangeViewModel(pairs: TaxCodePairs, changeDate: LocalDate)
 
+object TaxCodeChangeViewModel {
+  def apply(taxCodeChange: TaxCodeChange): TaxCodeChangeViewModel = {
+    val taxCodePairs = TaxCodePairs.apply(taxCodeChange.previous, taxCodeChange.current)
+    val changeDate = taxCodeChange.mostRecentTaxCodeChangeDate
+
+    TaxCodeChangeViewModel(taxCodePairs, changeDate)
+  }
 }
-//
-//case class TaxCodeChange(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]){}
-//case class TaxCodeChange(primary: Seq[TaxCodePair],
-//                         secondary: Seq[TaxCodeRecord],
-//                         unmatchedPrevious: Seq[TaxCodePair],
-//                         unmatchedCurrent: Seq[TaxCodePair]
-//                        ) {
-//
-//
-//}
-//
-
-
-
-
-

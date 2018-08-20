@@ -33,7 +33,8 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxCodeChangeService}
-import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
+import uk.gov.hmrc.tai.viewModels
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 
@@ -76,8 +77,8 @@ trait TaxCodeChangeController extends TaiBaseController
               )
 
 //              taxCodeChangeService.taxCodeChange(nino) map { taxCodeChange =>
-
-                Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison(taxCodeChange)))
+                val viewModel = TaxCodeChangeViewModel(taxCodeChange)
+                Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison(viewModel)))
 //              }
             }
           } else {

@@ -26,42 +26,8 @@ case class TaxCodeChange(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecor
   implicit val dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isAfter _)
 
   val mostRecentTaxCodeChangeDate: LocalDate = current.map(_.startDate).min
-
-  val allTaxCodePairsOrdered: Seq[TaxCodePair] = {
-    primaryPairs ++ secondaryPairs ++ unpairedPreviousCodes ++ unpairedCurrentCodes
-  }
-
-  lazy val primaryPairs: Seq[TaxCodePair] = {
-    taxCodePairs.filter(taxCodeRecordPair => taxCodeRecordPair.current.exists(_.primary))
-  }
-
-  lazy val secondaryPairs: Seq[TaxCodePair] = {
-    taxCodePairs.filterNot(taxCodeRecordPair => taxCodeRecordPair.current.exists(_.primary))
-  }
-
-  lazy val unpairedCurrentCodes: Seq[TaxCodePair] = {
-    val unpairedRecords = current.filterNot(record => taxCodePairs.map(_.current).contains(Some(record)))
-
-    unpairedRecords.map(record => TaxCodePair(None, Some(record)))
-  }
-
-  lazy val unpairedPreviousCodes: Seq[TaxCodePair] = {
-    val unpairedRecords = previous.filterNot(record => taxCodePairs.map(_.previous).contains(Some(record)))
-
-    unpairedRecords.map(record => TaxCodePair(Some(record), None))
-  }
-
-  lazy private val taxCodePairs: Seq[TaxCodePair] = {
-    for {
-      p <- previous
-      c <- current
-      if p.employmentId == c.employmentId
-    } yield TaxCodePair(Some(p), Some(c))
-  }
 }
 
 object TaxCodeChange {
   implicit val format = Json.format[TaxCodeChange]
 }
-
-case class TaxCodePair(previous: Option[TaxCodeRecord], current: Option[TaxCodeRecord])
