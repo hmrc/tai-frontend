@@ -29,7 +29,7 @@ class TaxCodeRecordSpec extends PlaySpec {
         new LocalDate(2018, 7,11),
         new LocalDate(2018, 7, 11),
         "Employer name",
-        1,
+        false,
         "1234",
         true
       )
@@ -44,7 +44,7 @@ class TaxCodeRecordSpec extends PlaySpec {
       "startDate" -> "2018-07-11",
       "endDate" -> "2018-07-11",
       "employerName" -> "Employer name",
-      "employmentId" -> 1,
+      "pensionIndicator" -> false,
       "payrollNumber" -> "1234",
       "primary" -> true
     )

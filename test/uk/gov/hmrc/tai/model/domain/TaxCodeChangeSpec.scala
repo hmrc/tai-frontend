@@ -53,10 +53,10 @@ class TaxCodeChangeSpec extends PlaySpec{
 
   val nino = generateNino
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"A Employer 1", 1, "1234", false)
+  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"A Employer 1", false, "1234", false)
   val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-  val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYearResolver.endOfCurrentTaxYear, "B Employer 1", 2, "12345", false)
-  val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", employmentId = 3, primary = true)
+  val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYearResolver.endOfCurrentTaxYear, "B Employer 1", false, "12345", false)
+  val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", pensionIndicator = false, primary = true)
 
 
   val taxCodeChangeJson = Json.obj(
@@ -66,7 +66,7 @@ class TaxCodeChangeSpec extends PlaySpec{
         "startDate" -> startDate.toString,
         "endDate" -> startDate.plusMonths(1).toString,
         "employerName" -> "A Employer 1",
-        "employmentId" -> 1,
+        "pensionIndicator" -> false,
         "payrollNumber" -> "1234",
         "primary" -> false
       )
@@ -77,7 +77,7 @@ class TaxCodeChangeSpec extends PlaySpec{
         "startDate" -> startDate.plusMonths(1).plusDays(1).toString,
         "endDate" -> TaxYearResolver.endOfCurrentTaxYear.toString,
         "employerName" -> "A Employer 1",
-        "employmentId" -> 1,
+        "pensionIndicator" -> false,
         "payrollNumber" -> "1234",
         "primary" -> false
       )

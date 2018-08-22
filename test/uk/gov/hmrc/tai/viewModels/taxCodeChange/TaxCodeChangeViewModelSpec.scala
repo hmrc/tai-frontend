@@ -37,10 +37,10 @@ import scala.util.Random
 class TaxCodeChangeViewModelSpec extends PlaySpec {
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"A Employer 1", 1, "1234", false)
+  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"A Employer 1", false, "1234", false)
   val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-  val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYearResolver.endOfCurrentTaxYear, "B Employer 1", 2, "12345", false)
-  val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", employmentId = 3, primary = true)
+  val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYearResolver.endOfCurrentTaxYear, "B Employer 1", false, "12345", false)
+  val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", pensionIndicator = false, primary = true)
 
   val taxCodeChange = TaxCodeChange(
     Seq(previousTaxCodeRecord1, primaryFullYearTaxCode),

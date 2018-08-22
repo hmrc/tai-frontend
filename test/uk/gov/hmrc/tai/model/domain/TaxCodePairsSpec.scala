@@ -50,19 +50,6 @@ class TaxCodePairsSpec extends PlaySpec{
       model.pairs(0) mustEqual TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode))
     }
 
-    "return the primary pairs first when multiple primaries exist" in {
-      val previousPrimary = previousTaxCodeRecord1.copy(primary = true)
-      val currentPrimary = currentTaxCodeRecord1.copy(primary = true)
-      val model = TaxCodePairs(
-        Seq(previousPrimary, primaryFullYearTaxCode),
-        Seq(currentPrimary, primaryFullYearTaxCode)
-      )
-      model.pairs.take(2) mustEqual Seq(
-        TaxCodePair(Some(previousPrimary), Some(currentPrimary)),
-        TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode))
-      )
-    }
-
     "return the secondary pairs after the primary pairs" in {
       val model = TaxCodePairs(
         Seq(previousTaxCodeRecord1, fullYearTaxCode, primaryFullYearTaxCode, unmatchedPreviousTaxCode),
@@ -101,12 +88,12 @@ class TaxCodePairsSpec extends PlaySpec{
 
   val nino = generateNino
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"A Employer 1", 1, "1234", false)
+  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"A Employer 1", false, "A-1234", false)
   val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-  val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYearResolver.endOfCurrentTaxYear, "B Employer 1", 2, "12345", false)
-  val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", employmentId = 3, primary = true)
-  val unmatchedPreviousTaxCode = TaxCodeRecord("Unmatched Previous", startDate, startDate.plusMonths(1),"D", 4, "D Id", false)
-  val unmatchedCurrentTaxCode = TaxCodeRecord("Unmatched Current", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear,"E", 5, "E id", false)
+  val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYearResolver.endOfCurrentTaxYear, "B Employer 1", false, "B-1234", false)
+  val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", payrollNumber = "C-1234", primary = true)
+  val unmatchedPreviousTaxCode = TaxCodeRecord("Unmatched Previous", startDate, startDate.plusMonths(1),"D", false, "D Payroll Id", false)
+  val unmatchedCurrentTaxCode = TaxCodeRecord("Unmatched Current", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear,"E", false, "E Payroll id", false)
 
   private def generateNino: Nino = new Generator(new Random).nextNino
 }

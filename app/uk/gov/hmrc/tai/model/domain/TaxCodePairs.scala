@@ -53,7 +53,7 @@ object TaxCodePairs {
     for {
       p <- previous
       c <- current
-      if p.employmentId == c.employmentId
+      if (p.primary && c.primary) || p.payrollNumber == c.payrollNumber
     } yield TaxCodePair(Some(p), Some(c))
   }
 }

@@ -63,23 +63,23 @@ trait TaxCodeChangeController extends TaiBaseController
             ServiceCheckLite.personDetailsCheck {
               val nino: Nino = Nino(user.getNino)
 
-              val startDate = TaxYearResolver.startOfCurrentTaxYear
-              val previousTaxCodeRecord1 = TaxCodeRecord("B175", startDate, startDate.plusMonths(1),"Split Tax Code", 1, "1234", false)
-              val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-              val fullYearTaxCode = TaxCodeRecord("A1111", startDate, TaxYearResolver.endOfCurrentTaxYear, "Full Year", 2, "12345", false)
-              val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "Full Year Primary", employmentId = 3, primary = true)
-              val unmatchedPreviousTaxCode = TaxCodeRecord("C11", startDate, startDate.plusMonths(1),"Unmatched Previous", 4, "D Id", false)
-              val unmatchedCurrentTaxCode = TaxCodeRecord("E183", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear,"Unmatched Current", 5, "E id", false)
+//              val startDate = TaxYearResolver.startOfCurrentTaxYear
+//              val previousTaxCodeRecord1 = TaxCodeRecord("B175", startDate, startDate.plusMonths(1),"Split Tax Code", false, "A-1234", false)
+//              val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+//              val fullYearTaxCode = TaxCodeRecord("A1111", startDate, TaxYearResolver.endOfCurrentTaxYear, "Full Year", false, "B-1234", false)
+//              val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "Full Year Primary", payrollNumber = "C-1234", primary = true)
+//              val unmatchedPreviousTaxCode = TaxCodeRecord("C11", startDate, startDate.plusMonths(1),"Unmatched Previous", false, "D-1234", false)
+//              val unmatchedCurrentTaxCode = TaxCodeRecord("E183", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear,"Unmatched Current", false, "E-1234", false)
+//
+//              val taxCodeChange = TaxCodeChange(
+//                Seq(previousTaxCodeRecord1, fullYearTaxCode, primaryFullYearTaxCode, unmatchedPreviousTaxCode),
+//                Seq(currentTaxCodeRecord1, fullYearTaxCode, primaryFullYearTaxCode, unmatchedCurrentTaxCode)
+//              )
 
-              val taxCodeChange = TaxCodeChange(
-                Seq(previousTaxCodeRecord1, fullYearTaxCode, primaryFullYearTaxCode, unmatchedPreviousTaxCode),
-                Seq(currentTaxCodeRecord1, fullYearTaxCode, primaryFullYearTaxCode, unmatchedCurrentTaxCode)
-              )
-
-//              taxCodeChangeService.taxCodeChange(nino) map { taxCodeChange =>
+              taxCodeChangeService.taxCodeChange(nino) map { taxCodeChange =>
                 val viewModel = TaxCodeChangeViewModel(taxCodeChange)
-                Future.successful(Ok(views.html.taxCodeChange.taxCodeComparison(viewModel)))
-//              }
+                Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
+              }
             }
           } else {
             ServiceCheckLite.personDetailsCheck {

@@ -25,7 +25,7 @@ case class TaxCodeRecord(
                           startDate: LocalDate,
                           endDate: LocalDate,
                           employerName: String,
-                          employmentId: Int,
+                          pensionIndicator: Boolean,
                           payrollNumber: String,
                           primary: Boolean)
 
