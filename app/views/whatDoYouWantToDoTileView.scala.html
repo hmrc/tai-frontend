@@ -46,12 +46,16 @@
                 }
                 @form(action=controllers.routes.WhatDoYouWantToDoController.handleWhatDoYouWantToDoPage, args = Symbol("data-journey-dynamic-radios") -> "") {
 
-                @if(model.hasTaxCodeChanged) {
-                    <h1>THIS IS WORKING SORT OF @model.hasTaxCodeChanged</h1>
-                }
-
                 <div class="flex-container grid-row">
-
+                    @if(model.hasTaxCodeChanged){
+                        @card(
+                            url=Some("hasTaxChanged"),
+                            id="hasTaxCodeChanged",
+                            heading="Check your latest tax code change",
+                            bodyContent = Some("Find out what has changed and what happens next"),
+                            cardClass="card card-full-width"
+                        )
+                    }
 
                     @card(
                         url = Some("/check-income-tax/income-summary"),

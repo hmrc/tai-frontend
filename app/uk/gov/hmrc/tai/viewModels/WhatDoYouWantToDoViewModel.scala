@@ -16,5 +16,5 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean, isCyPlusOneEnabled: Boolean, hasTaxCodeChanged:Boolean =false)
+case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean, isCyPlusOneEnabled: Boolean, hasTaxCodeChanged: Boolean =false)
 
