@@ -49,9 +49,9 @@
                     @if(model.hasTaxCodeChanged){
                       @card(
                         id = "hasTaxCodeChanged",
-                        heading = "Check your latest tax code change",
-                        cardActionUrl = Some("/some-endpoint"),
-                        cardActionText = Some("Find out what has changed and what happens next")
+                        heading = Messages("check.tax.hasChanged.header"),
+                        cardActionUrl = Some("/check-income-tax/tax-code-change/tax-code-comparison"),
+                        cardActionText = Some(Messages("check.tax.hasChanged.action"))
                       )
                     }
                 </div>

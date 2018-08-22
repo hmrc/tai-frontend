@@ -472,7 +472,7 @@ class WhatDoYouWantToDoTileViewControllerSpec extends PlaySpec with FakeTaiPlayA
     override val cyPlusOneEnabled: Boolean = isCyPlusOneEnabled
     override val tileViewEnabled: Boolean = isTileViewEnabled
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
-
+    override val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
 
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)

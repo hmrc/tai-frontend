@@ -529,7 +529,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     override val trackingService: TrackingService = mock[TrackingService]
     override val cyPlusOneEnabled: Boolean = isCyPlusOneEnabled
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
-
+    override val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
 
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
