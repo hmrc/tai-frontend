@@ -49,6 +49,16 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
     }
   }
 
+  "has tax code changed" must {
+    "return true if there has been a tax code change" in {
+
+      val sut = createSut
+      val nino = generateNino
+      when(sut.taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
+      val result = sut.hasTaxCodeChanged(nino)
+      Await.result(result, 5.seconds) mustBe true
+    }
+  }
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
   val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1),"Employer 1")

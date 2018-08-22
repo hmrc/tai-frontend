@@ -41,6 +41,7 @@ import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 
+//noinspection ScalaStyle
 trait WhatDoYouWantToDoController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
@@ -52,6 +53,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
   def auditService: AuditService
   def trackingService: TrackingService
   def taxAccountService: TaxAccountService
+  def taxCodeChangeService: TaxCodeChangeService
 
   implicit val recoveryLocation:RecoveryLocation = classOf[WhatDoYouWantToDoController]
 
@@ -133,12 +135,27 @@ trait WhatDoYouWantToDoController extends TaiBaseController
 
     trackingService.isAnyIFormInProgress(user.getNino) flatMap { trackingResponse =>
       (cyPlusOneEnabled, tileViewEnabled) match {
-        case (true, true) => taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear().next) map {
-          case TaiSuccessResponseWithPayload(_) =>
-            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled)))
-          case _ =>
-            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, isCyPlusOneEnabled = false)))
+        case (true, true) => {
+
+
+          val hasTaxCodeChanged: Future[Boolean] = taxCodeChangeService.hasTaxCodeChanged(Nino(user.getNino))
+          val cy1TaxAccountSummary: Future[TaiResponse] = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear().next)
+
+          for {
+            taxChanged <- hasTaxCodeChanged
+            taxAccountSummary <- cy1TaxAccountSummary
+          } yield {
+            taxAccountSummary match {
+              case TaiSuccessResponseWithPayload(_) =>
+                Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, taxChanged)))
+              case _ =>
+                Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, isCyPlusOneEnabled = false)))
+            }
+          }
         }
+
+
+
         case (true, false) => taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear().next) map {
           case TaiSuccessResponseWithPayload(_) =>
             Ok(views.html.whatDoYouWantToDo(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled)))
@@ -170,6 +187,7 @@ object WhatDoYouWantToDoController extends WhatDoYouWantToDoController with Auth
   override val employmentService = EmploymentService
   override val auditService = AuditService
   override val taxAccountService = TaxAccountService
+  override val taxCodeChangeService = TaxCodeChangeService
 
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
