@@ -8,6 +8,7 @@ var card = (function () {
       window.location.href = url
     }
   })
+
  // set max height for any collection of elements
   function setMaxheight (ele, maxHeight) {
     $(ele).height(maxHeight)
@@ -51,20 +52,12 @@ var card = (function () {
   isNotMobile(checkSize)
   $(window).resize(isNotMobile(checkSize))
 
-  isNotMobile(fullHeight)
-  $(window).resize(isNotMobile(fullHeight))
+  // This should be enabled if a card with a card-action
+  // and a card without a card-action can be on the same row
+  //isNotMobile(fullHeight)
+  //$(window).resize(isNotMobile(fullHeight))
 
-  // get max height for any collection of elements
-  function getMaxHeight (ele) {
-    var height = []
-    $(ele).each(function () {
-      height.push($(this).height())
-    })
-    var maxHeight = height.sort(function (a, b) { return b - a })[0]
-    return maxHeight
-  }
-
-  // Only run fucntion if the screen size is not mobile.
+  // Only run function if the screen size is not mobile.
   function isNotMobile (func) {
     if (navigator.appVersion.indexOf('MSIE 10') === -1) {
       if ($('.card').css('flex-basis') !== '100%') {
@@ -72,10 +65,6 @@ var card = (function () {
       }
     }
   }
-
-  isNotMobile(checkSize)
-  isNotMobile(fullHeight)
-
 })()
 
 var doc = document.documentElement
