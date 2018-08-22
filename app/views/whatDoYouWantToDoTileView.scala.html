@@ -35,7 +35,7 @@
     </header>
 
     <div class="grid-row">
-        <div class="grid grid-2-3">
+        <div class="grid">
             <div class="inner-block">
 
                 @if(model.isAnyIFormInProgress){
@@ -48,15 +48,16 @@
 
                 <div class="flex-container grid-row">
                     @if(model.hasTaxCodeChanged){
-                        @card(
-                            url=Some("hasTaxChanged"),
-                            id="hasTaxCodeChanged",
-                            heading="Check your latest tax code change",
-                            bodyContent = Some("Find out what has changed and what happens next"),
-                            cardClass="card card-full-width"
-                        )
+                      @card(
+                        id = "hasTaxCodeChanged",
+                        heading = "Check your latest tax code change",
+                        cardActionUrl = Some("/some-endpoint"),
+                        cardActionText = Some("Find out what has changed and what happens next")
+                      )
                     }
+                </div>
 
+                <div class="flex-container grid-row">
                     @card(
                         url = Some("/check-income-tax/income-summary"),
                         id = "currentTaxYear",
