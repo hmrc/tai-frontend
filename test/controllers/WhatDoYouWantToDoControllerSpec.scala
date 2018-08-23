@@ -73,6 +73,41 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         doc.select("fieldset input").size mustBe 3
       }
 
+      "tile view is enabled and there has not been a tax code change" in {
+        val testController = createSUT(isCyPlusOneEnabled = true, isTileViewEnabled = true)
+
+        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(false))
+        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+          TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
+        )
+
+        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val doc = Jsoup.parse(contentAsString(result))
+
+        status(result) mustBe OK
+
+        doc.title() must include(Messages("your.paye.income.tax.overview"))
+        doc.body().toString mustNot include(Messages("check.tax.hasChanged.header"))
+      }
+
+      "tile view is enabled and there has been a tax code change" in {
+        val testController = createSUT(isCyPlusOneEnabled = true, isTileViewEnabled = true)
+
+        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(true))
+        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+          TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
+        )
+
+        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val doc = Jsoup.parse(contentAsString(result))
+
+        status(result) mustBe OK
+
+        doc.title() must include(Messages("your.paye.income.tax.overview"))
+        doc.body().toString must include(Messages("check.tax.hasChanged.header"))
+      }
     }
 
     "redirect to GG login" when {
@@ -514,10 +549,10 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
   private val taxAccountSummary = TaxAccountSummary(111,222, 333, 444, 111)
 
-  private def createSUT(isCyPlusOneEnabled: Boolean = true) =
-    new WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled)
+  private def createSUT(isCyPlusOneEnabled: Boolean = true, isTileViewEnabled: Boolean = false) =
+    new WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled, isTileViewEnabled)
 
-  class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true) extends WhatDoYouWantToDoController {
+  class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true, isTileViewEnabled: Boolean = false) extends WhatDoYouWantToDoController {
     override val personService: PersonService = mock[PersonService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override val employmentService: EmploymentService = mock[EmploymentService]
@@ -530,6 +565,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     override val cyPlusOneEnabled: Boolean = isCyPlusOneEnabled
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
+    override val tileViewEnabled: Boolean = isTileViewEnabled
 
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
