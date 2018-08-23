@@ -54,5 +54,25 @@ hr {
 }
 
 .margin-bottom-large {
-    margin-bottom: 30px;
+  margin-bottom: 30px;
+}
+
+.tax-code-change {
+  .tax-code-change__row {
+    margin-bottom: 20px;
+
+    .tax-code-change__date-range {
+      margin-bottom: 20px;
+    }
+
+    &:not(:first-child) {
+      .tax-code-change__employment-heading {
+        margin-top: 0;
+      }
+    }
+
+    &:last-child {
+      margin-bottom: 60px;
+    }
+  }
 }
