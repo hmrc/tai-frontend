@@ -45,7 +45,7 @@ trait TaxCodeChangeConnector {
         TaiTaxAccountFailureResponse(e.getMessage)
     }
   }
-  def hasTaxCodeChangedUrl(nino: String): String = s"$serviceUrl/tai/$nino/tax-account/tax-code-changed"
+  def hasTaxCodeChangedUrl(nino: String): String = s"$serviceUrl/tai/$nino/tax-account/tax-code-change/exists"
 
   def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     httpHandler.getFromApi(hasTaxCodeChangedUrl(nino.nino)) map (
