@@ -19,7 +19,7 @@ package views.html.taxCodeChange
 import controllers.routes
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodePairs, TaxCodeRecord}
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
 import uk.gov.hmrc.time.TaxYearResolver
@@ -27,7 +27,7 @@ import uk.gov.hmrc.time.TaxYearResolver
 class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val taxCodeRecord1 = TaxCodeRecord("A1111", startDate, startDate.plusMonths(1),"Employer 1", false, "1234", true)
+  val taxCodeRecord1 = TaxCodeRecord("A1111", startDate, startDate.plusMonths(1),"Employer 1", false, Some("1234"), true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
   val taxCodeRecord3 = taxCodeRecord1.copy(taxCode = "B175", startDate = startDate.plusDays(3), endDate = TaxYearResolver.endOfCurrentTaxYear, pensionIndicator = false)
   val taxCodeChange: TaxCodeChange = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))

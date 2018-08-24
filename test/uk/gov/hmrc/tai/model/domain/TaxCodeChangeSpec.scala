@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.model.domain
 
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsArray, JsNull, JsResultException, Json}
+import play.api.libs.json.{JsNull, JsResultException, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -53,9 +53,9 @@ class TaxCodeChangeSpec extends PlaySpec{
 
   val nino = generateNino
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"A Employer 1", false, "1234", false)
+  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"A Employer 1", false, Some("1234"), false)
   val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-  val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYearResolver.endOfCurrentTaxYear, "B Employer 1", false, "12345", false)
+  val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYearResolver.endOfCurrentTaxYear, "B Employer 1", false, Some("12345"), false)
   val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", pensionIndicator = false, primary = true)
 
 

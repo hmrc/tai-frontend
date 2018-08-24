@@ -23,7 +23,7 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs, changeDate: LocalDate)
 
 object TaxCodeChangeViewModel {
   def apply(taxCodeChange: TaxCodeChange): TaxCodeChangeViewModel = {
-    val taxCodePairs = TaxCodePairs.apply(taxCodeChange.previous, taxCodeChange.current)
+    val taxCodePairs = TaxCodePairs(taxCodeChange.previous, taxCodeChange.current)
     val changeDate = taxCodeChange.mostRecentTaxCodeChangeDate
 
     TaxCodeChangeViewModel(taxCodePairs, changeDate)

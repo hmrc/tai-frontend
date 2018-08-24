@@ -34,8 +34,7 @@
 }
 
 @taxCodeRecordPodHtml(taxCodeRecord: TaxCodeRecord) = {
-    <h2 class="heading-medium flush--bottom flush--top">@taxCodeRecord.employerName</h2>
-    <!--<p>Messages("tai.incomeTaxSummary.payrollNumber.prefix", taxCodeRecord.payrollNumber)</p>-->
+    <h2 class="heading-medium flush--bottom flush--top break-word">@taxCodeRecord.employerName</h2>
     <h3 class="bold-small margin-bottom-large flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeRecord.startDate), Dates.formatDate(taxCodeRecord.endDate))</h3>
     <div class="bold-large">@taxCodeRecord.taxCode</div>
 }

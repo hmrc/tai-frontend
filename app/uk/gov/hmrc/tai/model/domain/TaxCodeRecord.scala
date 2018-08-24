@@ -18,7 +18,6 @@ package uk.gov.hmrc.tai.model.domain
 
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
-import uk.gov.hmrc.tai.model.TaxYear
 
 case class TaxCodeRecord(
                           taxCode: String,
@@ -26,7 +25,7 @@ case class TaxCodeRecord(
                           endDate: LocalDate,
                           employerName: String,
                           pensionIndicator: Boolean,
-                          payrollNumber: String,
+                          payrollNumber: Option[String],
                           primary: Boolean)
 
 object TaxCodeRecord {

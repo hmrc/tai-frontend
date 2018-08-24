@@ -17,15 +17,13 @@
 package uk.gov.hmrc.tai.model.domain
 
 import org.joda.time.LocalDate
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads._
-import play.api.libs.json.{JsPath, Json, Reads}
+import play.api.libs.json.Json
+import uk.gov.hmrc.tai.util.DateHelper
 
 case class TaxCodeChange(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]){
 
-  implicit val dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isAfter _)
+  val mostRecentTaxCodeChangeDate: LocalDate = DateHelper.mostRecentDate(current.map(_.startDate))
 
-  val mostRecentTaxCodeChangeDate: LocalDate = current.map(_.startDate).min
 }
 
 object TaxCodeChange {

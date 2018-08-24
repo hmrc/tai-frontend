@@ -30,7 +30,7 @@ class TaxCodeRecordSpec extends PlaySpec {
         new LocalDate(2018, 7, 11),
         "Employer name",
         false,
-        "1234",
+        Some("1234"),
         true
       )
       taxCodeRecordJson.as[TaxCodeRecord] mustEqual expectedModel

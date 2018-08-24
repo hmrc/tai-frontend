@@ -16,20 +16,9 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
-import controllers.FakeTaiPlayApplication
-import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
-import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.util.TaiConstants.encodedMinusSign
-import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.time.TaxYearResolver
-
-import scala.util.Random
 
 /**
   * Created by digital032748 on 25/07/18.
@@ -37,9 +26,9 @@ import scala.util.Random
 class TaxCodeChangeViewModelSpec extends PlaySpec {
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"A Employer 1", false, "1234", false)
+  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"A Employer 1", false, Some("1234"), false)
   val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-  val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYearResolver.endOfCurrentTaxYear, "B Employer 1", false, "12345", false)
+  val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYearResolver.endOfCurrentTaxYear, "B Employer 1", false, Some("12345"), false)
   val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", pensionIndicator = false, primary = true)
 
   val taxCodeChange = TaxCodeChange(
@@ -48,7 +37,7 @@ class TaxCodeChangeViewModelSpec extends PlaySpec {
   )
 
 
-  "TaxCodeChangeViewModel" must {
+  "TaxCodeChangeViewModel apply method" must {
     "translate the taxCodeChange object into a TaxCodePairs" in {
       val model = TaxCodeChangeViewModel(taxCodeChange)
       val taxCodePairs = TaxCodePairs

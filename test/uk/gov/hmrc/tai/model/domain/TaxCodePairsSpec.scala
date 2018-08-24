@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.model.domain
 
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsNull, JsResultException, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -88,12 +87,12 @@ class TaxCodePairsSpec extends PlaySpec{
 
   val nino = generateNino
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"A Employer 1", false, "A-1234", false)
+  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"A Employer 1", false, Some("A-1234"), false)
   val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-  val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYearResolver.endOfCurrentTaxYear, "B Employer 1", false, "B-1234", false)
-  val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", payrollNumber = "C-1234", primary = true)
-  val unmatchedPreviousTaxCode = TaxCodeRecord("Unmatched Previous", startDate, startDate.plusMonths(1),"D", false, "D Payroll Id", false)
-  val unmatchedCurrentTaxCode = TaxCodeRecord("Unmatched Current", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear,"E", false, "E Payroll id", false)
+  val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYearResolver.endOfCurrentTaxYear, "B Employer 1", false, Some("B-1234"), false)
+  val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", payrollNumber = Some("C-1234"), primary = true)
+  val unmatchedPreviousTaxCode = TaxCodeRecord("Unmatched Previous", startDate, startDate.plusMonths(1),"D", false, Some("D Payroll Id"), false)
+  val unmatchedCurrentTaxCode = TaxCodeRecord("Unmatched Current", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear,"E", false,Some("E Payroll id"), false)
 
   private def generateNino: Nino = new Generator(new Random).nextNino
 }
