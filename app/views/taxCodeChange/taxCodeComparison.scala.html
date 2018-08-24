@@ -34,8 +34,8 @@
 }
 
 @taxCodeRecordPodHtml(taxCodeRecord: TaxCodeRecord) = {
-    <h2 class="heading-medium flush--bottom flush--top break-word">@taxCodeRecord.employerName</h2>
-    <h3 class="bold-small margin-bottom-large flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeRecord.startDate), Dates.formatDate(taxCodeRecord.endDate))</h3>
+    <h2 class="tax-code-change__employment-heading heading-medium flush--bottom break-word">@taxCodeRecord.employerName</h2>
+    <h3 class="tax-code-change__date-range bold-small' flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeRecord.startDate), Dates.formatDate(taxCodeRecord.endDate))</h3>
     <div class="bold-large">@taxCodeRecord.taxCode</div>
 }
 
@@ -48,24 +48,22 @@
 
 @taxCodePairs(taxCodePairs: TaxCodePairs) = {
     @for(pair <- taxCodePairs.pairs.take(taxCodePairs.pairs.length - 1)) {
-        <div class="grid-row" style="margin-bottom:20px;">
-            <div class="column-half">
+        <div class="grid-row tax-code-change__row">
+            <div class="column-half tax-code-change__previous">
                 @taxCodeRecordPod(pair.previous)
             </div>
-            <div class="column-half">
+            <div class="column-half tax-code-change__current">
                 @taxCodeRecordPod(pair.current)
             </div>
         </div>
         <hr>
     }
-    <div class="grid-row">
-        <div class="column-half">
+    <div class="grid-row tax-code-change__row">
+        <div class="column-half tax-code-change__previous">
             @taxCodeRecordPod(taxCodePairs.pairs.last.previous)
-            &nbsp;
         </div>
-        <div class="column-half">
+        <div class="column-half tax-code-change__current">
             @taxCodeRecordPod(taxCodePairs.pairs.last.current)
-            &nbsp;
         </div>
     </div>
 }
@@ -77,9 +75,9 @@
     gaCustomTitle = None
 ){
 <div>
-    <p class="lede" style="margin-bottom:60px;">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
+    <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
 </div>
-<div class="" style="margin-bottom:60px;">
+<div class="tax-code-change margin-bottom-xlarge">
     @taxCodePairs(taxCodeChangeViewModel.pairs)
 </div>
 <div>

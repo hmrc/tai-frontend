@@ -29,31 +29,35 @@ object TaxCodePairs {
     )
   }
 
-  def primaryPairs(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
+  private def primaryPairs(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
     matchedTaxCodes(previous, current).filter(taxCodeRecordPair => taxCodeRecordPair.current.exists(_.primary))
   }
 
-  def secondaryPairs(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
+  private def secondaryPairs(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
     matchedTaxCodes(previous, current).filterNot(taxCodeRecordPair => taxCodeRecordPair.current.exists(_.primary))
   }
 
-  def unMatchedCurrentCodes(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
+  private def unMatchedCurrentCodes(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
     val unpairedRecords = current.filterNot(record => matchedTaxCodes(previous, current).map(_.current).contains(Some(record)))
 
     unpairedRecords.map(record => TaxCodePair(None, Some(record)))
   }
 
-  def unMatchedPreviousCodes(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
+  private def unMatchedPreviousCodes(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
     val unpairedRecords = previous.filterNot(record => matchedTaxCodes(previous, current).map(_.previous).contains(Some(record)))
 
     unpairedRecords.map(record => TaxCodePair(Some(record), None))
   }
 
-  def matchedTaxCodes(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
+  private def matchedTaxCodes(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
     for {
       p <- previous
       c <- current
-      if (p.primary && c.primary) || p.payrollNumber == c.payrollNumber
+      if isMatchingPair(p, c)
     } yield TaxCodePair(Some(p), Some(c))
+  }
+
+  private def isMatchingPair(record1: TaxCodeRecord, record2: TaxCodeRecord): Boolean = {
+    (record1.primary && record2.primary) || record1.payrollNumber == record2.payrollNumber
   }
 }
