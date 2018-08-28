@@ -6,7 +6,7 @@
 
 @media screen and (min-width:600px) and (max-width:900px) {
   .card {
-    flex-basis: 45.99%;
+    flex-basis: 46%;
     // Every card in the first row needs horizontal margin
     &:nth-child(2n-1) {
       margin-right: 3%;
@@ -20,7 +20,7 @@
 
 @media screen and (min-width:900px) {
   .card {
-    flex-basis: 46%;
+    flex-basis: 30%;
 
     &:nth-child(3n-1) {
       margin-left: 3%;
@@ -92,11 +92,14 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
     a {
       display: inline;
       border-bottom: 1px solid #C7DCEB;
+      text-decoration-line: none;
       color: $link-colour;
       line-height: 1.5em;
 
       &:link,
       &:visited {
+
+
         color: $link-colour;
       }
 
