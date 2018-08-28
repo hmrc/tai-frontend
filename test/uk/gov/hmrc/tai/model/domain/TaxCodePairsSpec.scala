@@ -83,6 +83,105 @@ class TaxCodePairsSpec extends PlaySpec{
         TaxCodePair(None, Some(unmatchedCurrentTaxCode))
       )
     }
+
+    "return pairs based on employment name when duplicate payroll numbers exist" in {
+      val dateOfTaxCodeChange = startDate.plusMonths(1)
+      val secondaryEmployer1Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1),"Employer 1", false, Some("A-1234"), false)
+      val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1),"Employer 2", false, Some("A-1234"), false)
+      val secondaryEmployer1After = secondaryEmployer1Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+      val secondaryEmployer2After = secondaryEmployer2Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+
+      val model = TaxCodePairs(
+        Seq(primaryFullYearTaxCode, secondaryEmployer1Before, secondaryEmployer2Before),
+        Seq(primaryFullYearTaxCode, secondaryEmployer1After, secondaryEmployer2After)
+      )
+
+      model.pairs mustEqual Seq(
+        TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode)),
+        TaxCodePair(Some(secondaryEmployer1Before), Some(secondaryEmployer1After)),
+        TaxCodePair(Some(secondaryEmployer2Before), Some(secondaryEmployer2After))
+      )
+
+    }
+
+    "return pairs based on employment name when no payroll numbers exist for one employment name" in {
+      val dateOfTaxCodeChange = startDate.plusMonths(1)
+      val secondaryEmployer1Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1),"Employer 1", false, None, false)
+      val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1),"Employer 2", false, None, false)
+      val secondaryEmployer1After = secondaryEmployer1Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+      val secondaryEmployer2After = secondaryEmployer2Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+
+      val model = TaxCodePairs(
+        Seq(primaryFullYearTaxCode, secondaryEmployer1Before, secondaryEmployer2Before),
+        Seq(primaryFullYearTaxCode, secondaryEmployer1After, secondaryEmployer2After)
+      )
+
+      model.pairs mustEqual Seq(
+        TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode)),
+        TaxCodePair(Some(secondaryEmployer1Before), Some(secondaryEmployer1After)),
+        TaxCodePair(Some(secondaryEmployer2Before), Some(secondaryEmployer2After))
+      )
+
+    }
+
+    "return no duplicating pairs when payroll numbers don't exists but employment names are different" in {
+      val dateOfTaxCodeChange = startDate.plusMonths(1)
+      val secondaryEmployer1Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1),"Employer 1", false, None, false)
+      val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1),"Employer 2", false, None, false)
+      val secondaryEmployer3After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear,"Employer 3", false, None, false)
+      val secondaryEmployer4After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear,"Employer 4", false, None, false)
+
+      val model = TaxCodePairs(
+        Seq(primaryFullYearTaxCode, secondaryEmployer1Before, secondaryEmployer2Before),
+        Seq(primaryFullYearTaxCode, secondaryEmployer3After, secondaryEmployer4After)
+      )
+
+      model.pairs mustEqual Seq(
+        TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode)),
+        TaxCodePair(Some(secondaryEmployer1Before), None),
+        TaxCodePair(Some(secondaryEmployer2Before), None),
+        TaxCodePair(None, Some(secondaryEmployer3After)),
+        TaxCodePair(None, Some(secondaryEmployer4After))
+      )
+
+    }
+
+    "return non duplicating pairs when payroll numbers don't exist and employment name is the same by split by primary and secondary" in {
+      val dateOfTaxCodeChange = startDate.plusMonths(1)
+      val primaryEmployer1Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1),"Employer 1", false, None, true)
+      val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1),"Employer 1", false, None, false)
+
+      val primaryEmployer1After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear,"Employer 1", false, None, true)
+      val secondaryEmployer2After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear,"Employer 1", false, None, false)
+
+      val model = TaxCodePairs(
+        Seq(primaryEmployer1Before, secondaryEmployer2Before),
+        Seq(primaryEmployer1After, secondaryEmployer2After)
+      )
+
+      model.pairs mustEqual Seq(
+        TaxCodePair(Some(primaryEmployer1Before), Some(primaryEmployer1After)),
+        TaxCodePair(Some(secondaryEmployer2Before), Some(secondaryEmployer2After))
+      )
+    }
+
+
+    "return could not display tax code change page when multiple payroll numbers are missing for a employer" in {
+      val dateOfTaxCodeChange = startDate.plusMonths(1)
+      val secondaryEmployer1ABefore = TaxCodeRecord("code 1a", startDate, dateOfTaxCodeChange.minusDays(1),"Employer 1", false, None, false)
+      val secondaryEmployer1BBefore = TaxCodeRecord("code 1b", startDate, dateOfTaxCodeChange.minusDays(1),"Employer 1", false, None, false)
+
+      val secondaryEmployer1AAfter = TaxCodeRecord("code 1a - after", dateOfTaxCodeChange, TaxYearResolver.endOfCurrentTaxYear, "Employer 1", false, None, false)
+      val secondaryEmployer1BAfter = TaxCodeRecord("code 1b - after", dateOfTaxCodeChange, TaxYearResolver.endOfCurrentTaxYear,"Employer 1", false, None, false)
+
+      val model = TaxCodePairs(
+        Seq(secondaryEmployer1ABefore, secondaryEmployer1BBefore),
+        Seq(secondaryEmployer1AAfter, secondaryEmployer1BAfter)
+      )
+
+//      model.pairs mustEqual
+
+    }
   }
 
   val nino = generateNino

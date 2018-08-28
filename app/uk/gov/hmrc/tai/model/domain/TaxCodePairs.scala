@@ -58,6 +58,7 @@ object TaxCodePairs {
   }
 
   private def isMatchingPair(record1: TaxCodeRecord, record2: TaxCodeRecord): Boolean = {
-    (record1.primary && record2.primary) || record1.payrollNumber == record2.payrollNumber
+    (record1.primary && record2.primary) ||
+      (record1.primary, record1.payrollNumber, record1.employerName) == (record2.primary, record2.payrollNumber, record2.employerName)
   }
 }
