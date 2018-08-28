@@ -16,17 +16,32 @@
 
 package uk.gov.hmrc.tai.model.domain
 
+class NoMatchPossibleException extends Exception
+
 case class TaxCodePair(previous: Option[TaxCodeRecord], current: Option[TaxCodeRecord])
 case class TaxCodePairs(pairs: Seq[TaxCodePair])
 
 object TaxCodePairs {
   def apply(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): TaxCodePairs = {
-    new TaxCodePairs(
-      primaryPairs(previous, current) ++
-        secondaryPairs(previous, current) ++
-        unMatchedPreviousCodes(previous, current) ++
-        unMatchedCurrentCodes(previous, current)
-    )
+    if (indistinguishableRecords(previous) || indistinguishableRecords(current))  {
+      throw new NoMatchPossibleException
+    } else {
+      TaxCodePairs(
+        primaryPairs(previous, current) ++
+          secondaryPairs(previous, current) ++
+          unMatchedPreviousCodes(previous, current) ++
+          unMatchedCurrentCodes(previous, current)
+      )
+    }
+  }
+
+  private def indistinguishableRecords(taxRecords: Seq[TaxCodeRecord]): Boolean = {
+    taxRecords
+      .filter(!_.primary)
+      .groupBy(_.employerName)
+      .values
+      .map(_.groupBy(_.payrollNumber).values)
+      .exists(_.exists(_.length >= 2))
   }
 
   private def primaryPairs(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
@@ -58,7 +73,10 @@ object TaxCodePairs {
   }
 
   private def isMatchingPair(record1: TaxCodeRecord, record2: TaxCodeRecord): Boolean = {
-    (record1.primary && record2.primary) ||
-      (record1.primary, record1.payrollNumber, record1.employerName) == (record2.primary, record2.payrollNumber, record2.employerName)
+    def equivalentPair(r1: TaxCodeRecord, r2: TaxCodeRecord): Boolean = {
+      r1.primary == r2.primary && r1.payrollNumber == r2.payrollNumber && r1.employerName == r2.employerName
+    }
+
+    (record1.primary && record2.primary) || equivalentPair(record1, record2)
   }
 }

@@ -174,12 +174,10 @@ class TaxCodePairsSpec extends PlaySpec{
       val secondaryEmployer1AAfter = TaxCodeRecord("code 1a - after", dateOfTaxCodeChange, TaxYearResolver.endOfCurrentTaxYear, "Employer 1", false, None, false)
       val secondaryEmployer1BAfter = TaxCodeRecord("code 1b - after", dateOfTaxCodeChange, TaxYearResolver.endOfCurrentTaxYear,"Employer 1", false, None, false)
 
-      val model = TaxCodePairs(
-        Seq(secondaryEmployer1ABefore, secondaryEmployer1BBefore),
-        Seq(secondaryEmployer1AAfter, secondaryEmployer1BAfter)
-      )
+      val previous = Seq(secondaryEmployer1ABefore, secondaryEmployer1BBefore)
+      val current = Seq(secondaryEmployer1AAfter, secondaryEmployer1BAfter)
 
-//      model.pairs mustEqual
+      a[NoMatchPossibleException] should be thrownBy TaxCodePairs(previous, current)
 
     }
   }
