@@ -138,12 +138,12 @@ trait WhatDoYouWantToDoController extends TaiBaseController
           val cy1TaxAccountSummary: Future[TaiResponse] = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear().next)
 
           for {
-            taxChanged <- hasTaxCodeChanged
+            taxCodeChanged <- hasTaxCodeChanged
             taxAccountSummary <- cy1TaxAccountSummary
           } yield {
             taxAccountSummary match {
               case TaiSuccessResponseWithPayload(_) =>
-                Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, taxChanged)))
+                Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, taxCodeChanged)))
               case _ =>
                 Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, isCyPlusOneEnabled = false)))
             }
@@ -155,11 +155,11 @@ trait WhatDoYouWantToDoController extends TaiBaseController
           case _ =>
             Ok(views.html.whatDoYouWantToDo(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, isCyPlusOneEnabled = false)))
         }
-        case (_, true) =>
+        case (false, true) =>
           taxCodeChangeService.hasTaxCodeChanged(Nino(user.getNino)).map (hasTaxCodeChanged =>
             Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, hasTaxCodeChanged)))
           )
-        case (_, _) =>
+        case (false, false) =>
           Future.successful(Ok(views.html.whatDoYouWantToDo(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled))))
       }
     }

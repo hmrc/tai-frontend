@@ -91,7 +91,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         doc.body().toString mustNot include(Messages("check.tax.hasChanged.header"))
       }
 
-      "tile view is enabled and there has been a tax code change" in {
+      "tile view is enabled and there has been a tax code change and cyPlusOne is enabled" in {
         val testController = createSUT(isCyPlusOneEnabled = true, isTileViewEnabled = true)
 
         when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(true))
@@ -107,6 +107,26 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
         doc.title() must include(Messages("your.paye.income.tax.overview"))
         doc.body().toString must include(Messages("check.tax.hasChanged.header"))
+        doc.select(".card").size mustBe 4
+      }
+
+      "tile view is enabled and cyPlusOne is disabled" in {
+        val testController = createSUT(isCyPlusOneEnabled = false, isTileViewEnabled = true)
+
+        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(true))
+        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+          TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
+        )
+
+        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val doc = Jsoup.parse(contentAsString(result))
+
+        status(result) mustBe OK
+
+        doc.title() must include(Messages("your.paye.income.tax.overview"))
+        doc.body().toString must include(Messages("check.tax.hasChanged.header"))
+        doc.select(".card").size mustBe 3
       }
     }
 
