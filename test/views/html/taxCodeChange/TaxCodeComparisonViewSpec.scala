@@ -51,7 +51,6 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     "display the previous tax codes" in {
       taxCodeChange.previous.foreach(record => {
         doc(view) must haveHeadingH2WithText(record.employerName)
-        // doc(view) must haveParagraphWithText(Messages("tai.incomeTaxSummary.payrollNumber.prefix", record.payrollNumber))
         doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(record.startDate), Dates.formatDate(record.endDate)))
         doc(view).toString must include(record.taxCode)
       })
@@ -60,7 +59,6 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     "display the current tax codes" in {
       taxCodeChange.current.foreach(record => {
         doc(view) must haveHeadingH2WithText(record.employerName)
-        // doc(view) must haveParagraphWithText(Messages("tai.incomeTaxSummary.payrollNumber.prefix", record.payrollNumber))
         doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(record.startDate), Dates.formatDate(record.endDate)))
         doc(view).toString must include(record.taxCode)
       })
