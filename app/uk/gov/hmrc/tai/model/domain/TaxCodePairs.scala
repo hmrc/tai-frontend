@@ -23,53 +23,58 @@ case class TaxCodePairs(pairs: Seq[TaxCodePair])
 
 object TaxCodePairs {
   def apply(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): TaxCodePairs = {
-    if (indistinguishableRecords(previous) || indistinguishableRecords(current))  {
-      throw new NoMatchPossibleException
-    } else {
-      TaxCodePairs(
-        primaryPairs(previous, current) ++
-          secondaryPairs(previous, current) ++
-          unMatchedPreviousCodes(previous, current) ++
-          unMatchedCurrentCodes(previous, current)
-      )
+
+    val pairs = createAllPairs(previous, current)
+
+    TaxCodePairs(
+      primaryPairs(pairs) ++
+        secondaryPairs(pairs) ++
+        unMatchedPreviousCodes(pairs) ++
+        unMatchedCurrentCodes(pairs)
+    )
+  }
+
+  private val createAllPairs: (Seq[TaxCodeRecord], Seq[TaxCodeRecord]) => Seq[TaxCodePair] =
+    (previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]) => {
+
+    def innerCreateAllPairs(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord], acc: Seq[TaxCodePair] = Seq.empty): Seq[TaxCodePair] = {
+      (previous, current) match {
+        case (Nil, Nil) => acc
+        case (Nil, head :: tail) => innerCreateAllPairs(Seq.empty, tail, acc ++ Seq(TaxCodePair(None, Some(head))))
+        case (head :: tail, Nil) => innerCreateAllPairs(tail, Seq.empty, acc ++ Seq(TaxCodePair(Some(head), None)))
+        case (pHead :: pTail, curr) => {
+          curr
+            .find(isMatchingPair(_, pHead))
+            .fold(innerCreateAllPairs(pTail, curr, acc ++ Seq(TaxCodePair(Some(pHead), None)))) {
+              matching => {
+                val rest = curr.filter(record => record != matching)
+                innerCreateAllPairs(pTail, rest, acc ++ Seq(TaxCodePair(Some(pHead), Some(matching))))
+              }
+            }
+        }
+      }
     }
+    innerCreateAllPairs(previous, current, Seq.empty)
   }
 
-  private def indistinguishableRecords(taxRecords: Seq[TaxCodeRecord]): Boolean = {
-    taxRecords
-      .filter(!_.primary)
-      .groupBy(_.employerName)
-      .values
-      .map(_.groupBy(_.payrollNumber).values)
-      .exists(_.exists(_.length >= 2))
+  private def primaryPairs(pairs: Seq[TaxCodePair]): Seq[TaxCodePair] = {
+    pairs.filter(taxCodeRecordPair => {
+      taxCodeRecordPair.previous.isDefined && taxCodeRecordPair.current.isDefined && taxCodeRecordPair.current.exists(_.primary)
+    })
   }
 
-  private def primaryPairs(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
-    matchedTaxCodes(previous, current).filter(taxCodeRecordPair => taxCodeRecordPair.current.exists(_.primary))
+  private def secondaryPairs(pairs: Seq[TaxCodePair]): Seq[TaxCodePair] = {
+    pairs.filter(taxCodeRecordPair => {
+      taxCodeRecordPair.previous.isDefined && taxCodeRecordPair.current.isDefined && !taxCodeRecordPair.current.exists(_.primary)
+    })
   }
 
-  private def secondaryPairs(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
-    matchedTaxCodes(previous, current).filterNot(taxCodeRecordPair => taxCodeRecordPair.current.exists(_.primary))
+  private def unMatchedCurrentCodes(pairs: Seq[TaxCodePair]): Seq[TaxCodePair] = {
+    pairs.filter(taxCodeRecordPair => taxCodeRecordPair.previous.isEmpty)
   }
 
-  private def unMatchedCurrentCodes(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
-    val unpairedRecords = current.filterNot(record => matchedTaxCodes(previous, current).map(_.current).contains(Some(record)))
-
-    unpairedRecords.map(record => TaxCodePair(None, Some(record)))
-  }
-
-  private def unMatchedPreviousCodes(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
-    val unpairedRecords = previous.filterNot(record => matchedTaxCodes(previous, current).map(_.previous).contains(Some(record)))
-
-    unpairedRecords.map(record => TaxCodePair(Some(record), None))
-  }
-
-  private def matchedTaxCodes(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]): Seq[TaxCodePair] = {
-    for {
-      p <- previous
-      c <- current
-      if isMatchingPair(p, c)
-    } yield TaxCodePair(Some(p), Some(c))
+  private def unMatchedPreviousCodes(pairs: Seq[TaxCodePair]): Seq[TaxCodePair] = {
+    pairs.filter(taxCodeRecordPair => taxCodeRecordPair.current.isEmpty)
   }
 
   private def isMatchingPair(record1: TaxCodeRecord, record2: TaxCodeRecord): Boolean = {

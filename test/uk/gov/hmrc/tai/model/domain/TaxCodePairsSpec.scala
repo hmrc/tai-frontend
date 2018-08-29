@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.model.domain
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.time.TaxYearResolver
+import scala.util.Random.shuffle
 
 import scala.util.Random
 
@@ -174,11 +175,34 @@ class TaxCodePairsSpec extends PlaySpec{
       val secondaryEmployer1AAfter = TaxCodeRecord("code 1a - after", dateOfTaxCodeChange, TaxYearResolver.endOfCurrentTaxYear, "Employer 1", false, None, false)
       val secondaryEmployer1BAfter = TaxCodeRecord("code 1b - after", dateOfTaxCodeChange, TaxYearResolver.endOfCurrentTaxYear,"Employer 1", false, None, false)
 
-      val previous = Seq(secondaryEmployer1ABefore, secondaryEmployer1BBefore)
-      val current = Seq(secondaryEmployer1AAfter, secondaryEmployer1BAfter)
+      val previous = shuffle(Seq(secondaryEmployer1ABefore, secondaryEmployer1BBefore))
+      val current = shuffle(Seq(secondaryEmployer1AAfter, secondaryEmployer1BAfter))
 
-      a[NoMatchPossibleException] should be thrownBy TaxCodePairs(previous, current)
+      val possibleOrder1 = Seq(
+        TaxCodePair(Some(secondaryEmployer1ABefore), Some(secondaryEmployer1AAfter)),
+        TaxCodePair(Some(secondaryEmployer1BBefore), Some(secondaryEmployer1BAfter))
+      )
 
+      val possibleOrder2 = Seq(
+        TaxCodePair(Some(secondaryEmployer1ABefore), Some(secondaryEmployer1BAfter)),
+        TaxCodePair(Some(secondaryEmployer1BBefore), Some(secondaryEmployer1AAfter))
+      )
+
+      val possibleOrder3 = Seq(
+        TaxCodePair(Some(secondaryEmployer1BBefore), Some(secondaryEmployer1AAfter)),
+        TaxCodePair(Some(secondaryEmployer1ABefore), Some(secondaryEmployer1BAfter))
+      )
+
+      val possibleOrder4 = Seq(
+        TaxCodePair(Some(secondaryEmployer1BBefore), Some(secondaryEmployer1BAfter)),
+        TaxCodePair(Some(secondaryEmployer1ABefore), Some(secondaryEmployer1AAfter))
+      )
+
+      val pairs = TaxCodePairs(previous, current).pairs
+
+      val oneOfTheseThings = pairs == possibleOrder1 || pairs == possibleOrder2 || pairs == possibleOrder3 || pairs == possibleOrder4
+
+      assert(oneOfTheseThings)
     }
   }
 
