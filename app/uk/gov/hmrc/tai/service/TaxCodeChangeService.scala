@@ -20,6 +20,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.TaxCodeChange
@@ -36,7 +37,12 @@ trait TaxCodeChangeService {
       case _ => throw new RuntimeException("Could not fetch tax code change")
     }
   }
-
+  def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[Boolean] = {
+    taxCodeChangeConnector.hasTaxCodeChanged(nino) map {
+      case TaiSuccessResponseWithPayload(hasTaxCodeChanged: Boolean) => hasTaxCodeChanged
+      case _ => throw new RuntimeException("Could not fetch tax code change")
+    }
+  }
   def latestTaxCodeChangeDate(nino: Nino)(implicit hc: HeaderCarrier): Future[LocalDate] = {
     taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate)
   }

@@ -35,7 +35,7 @@
     </header>
 
     <div class="grid-row">
-        <div class="grid grid-2-3">
+        <div class="grid">
             <div class="inner-block">
 
                 @if(model.isAnyIFormInProgress){
@@ -44,11 +44,19 @@
                         <p>@Messages("tai.whatDoYouWantToDo.iformPanel.p2")</p>
                     </div>
                 }
-                @form(action=controllers.routes.WhatDoYouWantToDoController.handleWhatDoYouWantToDoPage, args = Symbol("data-journey-dynamic-radios") -> "") {
 
                 <div class="flex-container grid-row">
+                    @if(model.hasTaxCodeChanged){
+                      @card(
+                        id = "hasTaxCodeChanged",
+                        heading = Messages("check.tax.hasChanged.header"),
+                        cardActionUrl = Some("/check-income-tax/tax-code-change/tax-code-comparison"),
+                        cardActionText = Some(Messages("check.tax.hasChanged.action"))
+                      )
+                    }
+                </div>
 
-
+                <div class="flex-container grid-row">
                     @card(
                         url = Some("/check-income-tax/income-summary"),
                         id = "currentTaxYear",
@@ -73,9 +81,6 @@
                     )
 
                 </div>
-
-                }
-
             </div>
         </div>
     </div>

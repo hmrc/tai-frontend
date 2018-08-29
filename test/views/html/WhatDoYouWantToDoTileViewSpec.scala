@@ -70,6 +70,26 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         cards.toString must include(Messages("earlier"))
         cards.toString must include(Messages("check.tax.previous.years"))
       }
+
+      "Tax Code Change is enabled" in {
+
+        val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modeWithCyPlus1TaxCodeChange)
+        val cards = doc(nextYearView).getElementsByClass("card")
+
+        cards.size mustBe 4
+        cards.toString must include("Check your latest tax code change")
+        cards.toString must include("Find out what has changed and what happens next")
+      }
+
+      "Tax Code Change is disabled" in {
+
+        val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1)
+        val cards = doc(nextYearView).getElementsByClass("card")
+
+        cards.size mustBe 3
+        cards.toString mustNot include("Check your latest tax code change")
+        cards.toString mustNot include("Find out what has changed and what happens next")
+      }
     }
   }
 
@@ -78,5 +98,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
   private lazy val modelNoiFormNoCyPlus1 = WhatDoYouWantToDoViewModel(false, false)
   private lazy val modelNoiFormWithCyPlus1 = WhatDoYouWantToDoViewModel(false, true)
   private lazy val modelWithiFormNoCyPlus1 = WhatDoYouWantToDoViewModel(true, false)
+  private lazy val modeWithCyPlus1TaxCodeChange = WhatDoYouWantToDoViewModel(false, true, true)
   override def view: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1)
 }
