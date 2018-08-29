@@ -19,7 +19,9 @@ package uk.gov.hmrc.tai.viewModels.taxCodeChange
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
+import uk.gov.hmrc.tai.viewModels.taxCodeChange._
 import uk.gov.hmrc.time.TaxYearResolver
+import org.scalatest.prop.TableDrivenPropertyChecks._
 
 import scala.util.Random
 import scala.util.Random.shuffle
@@ -168,7 +170,7 @@ class TaxCodePairsSpec extends PlaySpec{
     }
 
 
-    "return could not display tax code change page when multiple payroll numbers are missing for a employer" in {
+    "return the best possible match when multiple payroll numbers are missing for a employer" in {
       val dateOfTaxCodeChange = startDate.plusMonths(1)
       val secondaryEmployer1ABefore = TaxCodeRecord("code 1a", startDate, dateOfTaxCodeChange.minusDays(1),"Employer 1", false, None, false)
       val secondaryEmployer1BBefore = TaxCodeRecord("code 1b", startDate, dateOfTaxCodeChange.minusDays(1),"Employer 1", false, None, false)
@@ -176,8 +178,14 @@ class TaxCodePairsSpec extends PlaySpec{
       val secondaryEmployer1AAfter = TaxCodeRecord("code 1a - after", dateOfTaxCodeChange, TaxYearResolver.endOfCurrentTaxYear, "Employer 1", false, None, false)
       val secondaryEmployer1BAfter = TaxCodeRecord("code 1b - after", dateOfTaxCodeChange, TaxYearResolver.endOfCurrentTaxYear,"Employer 1", false, None, false)
 
-      val previous = shuffle(Seq(secondaryEmployer1ABefore, secondaryEmployer1BBefore))
-      val current = shuffle(Seq(secondaryEmployer1AAfter, secondaryEmployer1BAfter))
+      val orderings = Table(
+        ("previous", "current"),
+        (Seq(secondaryEmployer1ABefore, secondaryEmployer1BBefore), Seq(secondaryEmployer1AAfter, secondaryEmployer1BAfter)),
+        (Seq(secondaryEmployer1BBefore, secondaryEmployer1ABefore), Seq(secondaryEmployer1AAfter, secondaryEmployer1BAfter)),
+
+        (Seq(secondaryEmployer1ABefore, secondaryEmployer1BBefore), Seq(secondaryEmployer1BAfter, secondaryEmployer1AAfter)),
+        (Seq(secondaryEmployer1BBefore, secondaryEmployer1ABefore), Seq(secondaryEmployer1BAfter, secondaryEmployer1AAfter))
+      )
 
       val possibleOrder1 = Seq(
         TaxCodePair(Some(secondaryEmployer1ABefore), Some(secondaryEmployer1AAfter)),
@@ -199,11 +207,11 @@ class TaxCodePairsSpec extends PlaySpec{
         TaxCodePair(Some(secondaryEmployer1ABefore), Some(secondaryEmployer1AAfter))
       )
 
-      val pairs = TaxCodePairs(previous, current).pairs
 
-      val oneOfTheseThings = pairs == possibleOrder1 || pairs == possibleOrder2 || pairs == possibleOrder3 || pairs == possibleOrder4
-
-      assert(oneOfTheseThings)
+      forAll(orderings) { (p: Seq[TaxCodeRecord], c: Seq[TaxCodeRecord]) =>
+        val pairs = TaxCodePairs(p, c).pairs
+        assert(Set(possibleOrder1, possibleOrder2, possibleOrder3, possibleOrder4).contains(pairs))
+      }
     }
   }
 

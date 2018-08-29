@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 import org.joda.time.LocalDate
-import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodePairs}
+import uk.gov.hmrc.tai.model.domain.TaxCodeChange
 
 case class TaxCodeChangeViewModel(pairs: TaxCodePairs, changeDate: LocalDate)
 
