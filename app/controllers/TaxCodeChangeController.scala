@@ -18,7 +18,6 @@ package controllers
 
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
-import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
@@ -28,12 +27,10 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxCodeChangeService}
-import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
@@ -62,7 +59,8 @@ trait TaxCodeChangeController extends TaiBaseController
               val nino: Nino = Nino(user.getNino)
 
               taxCodeChangeService.taxCodeChange(nino) map { taxCodeChange =>
-                Ok(views.html.taxCodeChange.taxCodeComparison(taxCodeChange))
+                val viewModel = TaxCodeChangeViewModel(taxCodeChange)
+                Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
               }
             }
           } else {

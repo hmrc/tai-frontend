@@ -28,4 +28,10 @@ object DateHelper {
       case _ => ""
     }
   }
+
+  implicit val dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isAfter _)
+
+  def mostRecentDate(dates: Seq[LocalDate]): LocalDate = {
+    dates.min
+  }
 }

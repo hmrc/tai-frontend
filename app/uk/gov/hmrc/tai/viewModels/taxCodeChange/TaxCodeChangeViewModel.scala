@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.domain
+package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 import org.joda.time.LocalDate
-import play.api.libs.json.Json
+import uk.gov.hmrc.tai.model.domain.TaxCodeChange
 
-case class TaxCodeRecord(
-                          taxCode: String,
-                          startDate: LocalDate,
-                          endDate: LocalDate,
-                          employerName: String,
-                          pensionIndicator: Boolean,
-                          payrollNumber: Option[String],
-                          primary: Boolean)
+case class TaxCodeChangeViewModel(pairs: TaxCodePairs, changeDate: LocalDate)
 
-object TaxCodeRecord {
-  implicit val format = Json.format[TaxCodeRecord]
+object TaxCodeChangeViewModel {
+  def apply(taxCodeChange: TaxCodeChange): TaxCodeChangeViewModel = {
+    val taxCodePairs = TaxCodePairs(taxCodeChange.previous, taxCodeChange.current)
+    val changeDate = taxCodeChange.mostRecentTaxCodeChangeDate
+
+    TaxCodeChangeViewModel(taxCodePairs, changeDate)
+  }
 }

@@ -16,26 +16,56 @@
 
 @import includes.ptaHeader
 @import controllers.routes
-@import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
+@import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
+@import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, TaxCodePairs}
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import org.joda.time.LocalDate
 
-@(taxCodeChange: TaxCodeChange)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(taxCodeChangeViewModel: TaxCodeChangeViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
     ptaHeader(
         formForErrorSummary = None,
         displayBackLink = true,
         headerWidthClasses = Some("column-full"),
-        mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeChange.mostRecentTaxCodeChangeDate)),
+        mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeChangeViewModel.changeDate)),
         preHeadingText = Messages("taxCode.change.journey.preHeading")
     )
 }
 
-@taxCodeRecordPod(taxCodeRecord: TaxCodeRecord) = {
-    <h2 class="heading-medium flush--bottom">@taxCodeRecord.employerName</h2>
-    <h3 class="bold-small margin-bottom-large flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeRecord.startDate), Dates.formatDate(taxCodeRecord.endDate))</h3>
+@taxCodeRecordPodHtml(taxCodeRecord: TaxCodeRecord) = {
+    <h2 class="tax-code-change__employment-heading heading-medium flush--bottom break-word">@taxCodeRecord.employerName</h2>
+    <h3 class="tax-code-change__date-range bold-small' flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeRecord.startDate), Dates.formatDate(taxCodeRecord.endDate))</h3>
     <div class="bold-large">@taxCodeRecord.taxCode</div>
+}
+
+@taxCodeRecordPod(taxCodeRecord: Option[TaxCodeRecord]) = {
+    @{taxCodeRecord match {
+        case Some(taxCodeRecord) => taxCodeRecordPodHtml(taxCodeRecord)
+        case _ => <div>&nbsp;</div>
+    }}
+}
+
+@taxCodePairs(taxCodePairs: TaxCodePairs) = {
+    @for(pair <- taxCodePairs.pairs.take(taxCodePairs.pairs.length - 1)) {
+        <div class="grid-row tax-code-change__row">
+            <div class="column-half tax-code-change__previous">
+                @taxCodeRecordPod(pair.previous)
+            </div>
+            <div class="column-half tax-code-change__current">
+                @taxCodeRecordPod(pair.current)
+            </div>
+        </div>
+        <hr>
+    }
+    <div class="grid-row tax-code-change__row">
+        <div class="column-half tax-code-change__previous">
+            @taxCodeRecordPod(taxCodePairs.pairs.last.previous)
+        </div>
+        <div class="column-half tax-code-change__current">
+            @taxCodeRecordPod(taxCodePairs.pairs.last.current)
+        </div>
+    </div>
 }
 
 @main(
@@ -47,13 +77,8 @@
 <div>
     <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
 </div>
-<div class="grid-row" style="margin-bottom:60px;">
-    <div class="column-half">
-        @taxCodeRecordPod(taxCodeChange.previous)
-    </div>
-    <div class="column-half">
-        @taxCodeRecordPod(taxCodeChange.current)
-    </div>
+<div class="tax-code-change margin-bottom-xlarge">
+    @taxCodePairs(taxCodeChangeViewModel.pairs)
 </div>
 <div>
     <a class="button" href="@routes.TaxCodeChangeController.yourTaxFreeAmount().url.toString" id="check-your-tax-button">

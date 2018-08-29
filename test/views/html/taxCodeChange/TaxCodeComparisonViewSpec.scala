@@ -21,16 +21,19 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
 class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val taxCodeRecord1 = TaxCodeRecord("tax code", startDate, startDate.plusDays(1),"Employer 1")
-  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYearResolver.endOfCurrentTaxYear)
-  val taxCodeChange: TaxCodeChange = TaxCodeChange(taxCodeRecord1, taxCodeRecord2)
+  val taxCodeRecord1 = TaxCodeRecord("A1111", startDate, startDate.plusMonths(1),"Employer 1", false, Some("1234"), true)
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+  val taxCodeRecord3 = taxCodeRecord1.copy(taxCode = "B175", startDate = startDate.plusDays(3), endDate = TaxYearResolver.endOfCurrentTaxYear, pensionIndicator = false)
+  val taxCodeChange: TaxCodeChange = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
+  val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange)
 
-  override def view = views.html.taxCodeChange.taxCodeComparison(taxCodeChange)
+  override def view = views.html.taxCodeChange.taxCodeComparison(viewModel)
 
   "tax code comparison" should {
     behave like pageWithBackLink
@@ -39,27 +42,30 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
     behave like pageWithCombinedHeader(
       preHeaderText = Messages("taxCode.change.journey.preHeading"),
-      mainHeaderText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeChange.mostRecentTaxCodeChangeDate)))
+      mainHeaderText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(viewModel.changeDate)))
 
     "display the correct paragraphs" in {
       doc(view) must haveParagraphWithText(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
     }
 
-    "display the previous tax code" in {
-      doc(view) must haveHeadingH2WithText(taxCodeChange.previous.employerName)
-      doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeChange.previous.startDate), Dates.formatDate(taxCodeChange.previous.endDate)))
-      doc(view).toString must include(taxCodeChange.previous.taxCode)
+    "display the previous tax codes" in {
+      taxCodeChange.previous.foreach(record => {
+        doc(view) must haveHeadingH2WithText(record.employerName)
+        doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(record.startDate), Dates.formatDate(record.endDate)))
+        doc(view).toString must include(record.taxCode)
+      })
     }
 
-    "display the current tax code" in {
-      doc(view) must haveHeadingH2WithText(taxCodeChange.current.employerName)
-      doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeChange.current.startDate), Dates.formatDate(taxCodeChange.current.endDate)))
-      doc(view).toString must include(taxCodeChange.current.taxCode)
+    "display the current tax codes" in {
+      taxCodeChange.current.foreach(record => {
+        doc(view) must haveHeadingH2WithText(record.employerName)
+        doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(record.startDate), Dates.formatDate(record.endDate)))
+        doc(view).toString must include(record.taxCode)
+      })
     }
 
     "display a button linking to the 'check your tax-free amount page" in {
       doc(view) must haveLinkElement("check-your-tax-button", routes.TaxCodeChangeController.yourTaxFreeAmount().url.toString, Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton"))
     }
   }
-
 }
