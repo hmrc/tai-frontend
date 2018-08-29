@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.domain
+package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
 import uk.gov.hmrc.time.TaxYearResolver
-import scala.util.Random.shuffle
 
 import scala.util.Random
+import scala.util.Random.shuffle
 
 class TaxCodePairsSpec extends PlaySpec{
 

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.domain
+package uk.gov.hmrc.tai.viewModels.taxCodeChange
+
+import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
 
 class NoMatchPossibleException extends Exception
 
