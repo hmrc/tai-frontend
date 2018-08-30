@@ -1268,3 +1268,4 @@ taxCode.change.yourTaxCodeChanged.h1=Newidiodd eich cod treth ar {0}
 taxCode.change.yourTaxCodeChanged.paragraph=Gallai hyn fod o ganlyniad i newid i’ch incwm neu’ch buddiannau.
 taxCode.change.yourTaxCodeChanged.checkYourTaxButton=Gwiriwch eich swm rhydd o dreth
 taxCode.change.yourTaxCodeChanged.from=TODO: O {0}
+taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans=Beth mae {0} yn ei olygu

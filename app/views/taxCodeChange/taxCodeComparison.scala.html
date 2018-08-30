@@ -15,6 +15,7 @@
  *@
 
 @import includes.ptaHeader
+@import includes.details_summary
 @import controllers.routes
 @import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, TaxCodePairs}
@@ -38,6 +39,27 @@
         <h3 class="tax-code-change__employment-heading heading-medium flush--top break-word">@taxCodeRecord.employerName</h3>
         <h4 class="tax-code-change__date bold-small flush--top">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</h4>
         <div class="tax-code-change__tax-code bold-large">@taxCodeRecord.taxCode</div>
+        <div class="tax-code-change__explanation">
+            @includes.details_summary(
+                Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", taxCodeRecord.taxCode),
+                panelClass = Some("tax-code-change__details")
+            ){
+                <div aria-hidden="false">
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td><h2 class="bold-medium">1185</h2></td>
+                            <td>Your tax-free amount for this employment or pension is £11,850.</td>
+                        </tr>
+                        <tr>
+                            <td><h2 class="bold-medium">L</h2></td>
+                            <td>You are entitled to the standard tax-free Personal Allowance.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
     </div>
 
 }

@@ -14,10 +14,14 @@
  * limitations under the License.
  *@
 
-@(title: String, summaryClass : Option[String]=None)(body: Html)
+@(
+    title: String,
+    summaryClass: Option[String]=None,
+    panelClass: Option[String]=Some("panel-indent")
+)(body: Html)
 <details>
     <summary @if(summaryClass.isDefined){class='@summaryClass'}>@title</summary>
-    <div class="panel-indent">
+    <div @if(panelClass.isDefined){class='@panelClass'}>
         @body
     </div>
 </details>
