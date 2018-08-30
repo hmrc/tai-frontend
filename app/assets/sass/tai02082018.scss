@@ -57,22 +57,19 @@ hr {
   margin-bottom: 30px;
 }
 
+.section-title {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}
+
 .tax-code-change {
-  .tax-code-change__row {
+  .tax-code-change__date {
     margin-bottom: 20px;
-
-    .tax-code-change__date-range {
-      margin-bottom: 20px;
-    }
-
-    &:not(:first-child) {
-      .tax-code-change__employment-heading {
-        margin-top: 0;
-      }
-    }
-
-    &:last-child {
-      margin-bottom: 60px;
-    }
   }
+
+  .tax-code-change__tax-code {
+    margin-bottom: 20px;
+  }
+
+  margin-bottom: 20px;
 }
