@@ -34,23 +34,29 @@
 }
 
 @taxCodeRecordPodHtml(taxCodeRecord: TaxCodeRecord) = {
-    <h3 class="tax-code-change__employment-heading heading-medium flush--top break-word">@taxCodeRecord.employerName</h3>
-    <h4 class="tax-code-change__date bold-small flush--top">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</h4>
-    <div class="tax-code-change__tax-code bold-large">@taxCodeRecord.taxCode</div>
-    <hr>
+    <div class="tax-code-change__pod">
+        <h3 class="tax-code-change__employment-heading heading-medium flush--top break-word">@taxCodeRecord.employerName</h3>
+        <h4 class="tax-code-change__date bold-small flush--top">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</h4>
+        <div class="tax-code-change__tax-code bold-large">@taxCodeRecord.taxCode</div>
+    </div>
+
+}
+
+@taxCodeRecordPodEmptyHtml() = {
+    <div class="tax-code-change__blank"></div>
 }
 
 @taxCodeRecordPod(taxCodeRecord: Option[TaxCodeRecord]) = {
     @{taxCodeRecord match {
         case Some(taxCodeRecord) => taxCodeRecordPodHtml(taxCodeRecord)
-        case _ => <div class="tax-code-change__blank"></div>
+        case _ => taxCodeRecordPodEmptyHtml()
     }}
 }
 
 @taxCodePairs(taxCodePairs: TaxCodePairs) = {
     <div class="column-half">
         <h2 class="heading-medium section-title">Previous Tax Codes</h2>
-        @for(pair <- taxCodePairs.pairs.take(taxCodePairs.pairs.length)) {
+        @for((pair) <- taxCodePairs.pairs) {
             <div class="tax-code-change__previous">
                 @taxCodeRecordPod(pair.previous)
             </div>
@@ -59,7 +65,7 @@
 
     <div class="column-half">
         <h2 class="heading-medium section-title">Current Tax Codes</h2>
-        @for(pair <- taxCodePairs.pairs.take(taxCodePairs.pairs.length)) {
+        @for((pair) <- taxCodePairs.pairs) {
             <div class="tax-code-change__current">
                 @taxCodeRecordPod(pair.current)
             </div>
@@ -74,7 +80,7 @@
     gaCustomTitle = None
 ){
 <div class="column-two-thirds">
-    <div>
+    <div class="grid-row">
         <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
     </div>
     <div class="grid-row tax-code-change margin-bottom-xlarge">
@@ -87,3 +93,82 @@
     </div>
 </div>
 }
+
+<script>
+
+var mirrorTitleHeight = function() {
+  var sectionTitles = document.getElementsByClassName("section-title");
+
+  setHeight(sectionTitles[0], "");
+  setHeight(sectionTitles[1], "");
+
+  if (getHeight(sectionTitles[0]) > getHeight(sectionTitles[1])) {
+    setHeight(sectionTitles[1], getHeight(sectionTitles[0]));
+  } else {
+    setHeight(sectionTitles[0], getHeight(sectionTitles[1]));
+  }
+}
+
+var mirrorTaxCodePairsColumnHeights = function() {
+
+    var currentTaxCodes = document.getElementsByClassName("tax-code-change__current");
+    var previousTaxCodes = document.getElementsByClassName("tax-code-change__previous");
+
+    for (var i = 0; i < currentTaxCodes.length; i++) {
+        mirrorTaxCodePairColumnHeights(currentTaxCodes[i], previousTaxCodes[i])
+    }
+}
+
+var mirrorTaxCodePairColumnHeights = function(current, previous) {
+    var currentEmploymentHeading = current.getElementsByClassName("tax-code-change__employment-heading")[0];
+    var previousEmploymentHeading = previous.getElementsByClassName("tax-code-change__employment-heading")[0];
+
+    if (isTaxCodePair(currentEmploymentHeading, previousEmploymentHeading)) {
+        mirrorElementHeight(currentEmploymentHeading, previousEmploymentHeading, 0);
+    } else {
+        extendNonTaxCodePairBlankHeight(current, previous)
+    }
+}
+
+var extendNonTaxCodePairBlankHeight = function(current, previous) {
+    var previousBlank = previous.getElementsByClassName("tax-code-change__blank")[0]
+    var currentBlank = current.getElementsByClassName("tax-code-change__blank")[0]
+
+    if(window.innerWidth < 641) {
+        if (previousBlank) { setHeight(previousBlank, 0) }
+        if (currentBlank) { setHeight(currentBlank, 0) }
+    } else {
+        if (previousBlank){
+          setHeight(previousBlank, getHeight(current));
+        } else {
+          setHeight(currentBlank, getHeight(previous));
+        }
+    }
+}
+
+var setHeight = function(element, height) {
+    $(element).height(height);
+}
+
+var getHeight = function(element) {
+  return $(element).height()
+}
+
+var isTaxCodePair = function(current, previous) {
+    return previous && current;
+}
+
+var mirrorElementHeight = function(current, previous, offset) {
+    if (getHeight(current) > getHeight(previous)) {
+        setHeight(previous, getHeight(current) + offset)
+    } else {
+        setHeight(current, getHeight(previous) + offset)
+    }
+}
+
+mirrorTaxCodePairsColumnHeights()
+mirrorTitleHeight();
+window.addEventListener('resize', mirrorTaxCodePairsColumnHeights);
+window.addEventListener('resize', mirrorTitleHeight);
+
+</script>

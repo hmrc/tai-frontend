@@ -63,6 +63,13 @@ hr {
 }
 
 .tax-code-change {
+  margin: 0 -30px 20px -30px;
+
+  .tax-code-change__blank {
+    margin-bottom: 30px;
+
+  }
+
   .tax-code-change__date {
     margin-bottom: 20px;
   }
@@ -71,5 +78,8 @@ hr {
     margin-bottom: 20px;
   }
 
-  margin-bottom: 20px;
+  .tax-code-change__pod {
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 30px;
+  }
 }
