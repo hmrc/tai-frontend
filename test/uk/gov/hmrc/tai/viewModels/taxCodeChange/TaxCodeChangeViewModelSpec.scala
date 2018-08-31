@@ -16,14 +16,18 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
+import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
+import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.time.TaxYearResolver
 
 /**
   * Created by digital032748 on 25/07/18.
   */
-class TaxCodeChangeViewModelSpec extends PlaySpec {
+class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
+
+  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
   val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"A Employer 1", false, Some("1234"), false)

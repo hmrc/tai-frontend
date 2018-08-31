@@ -1270,3 +1270,5 @@ taxCode.change.yourTaxCodeChanged.paragraph=This could be because of a change to
 taxCode.change.yourTaxCodeChanged.checkYourTaxButton=Check your tax-free amount
 taxCode.change.yourTaxCodeChanged.from=From {0}
 taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans=What {0} means
+taxCode.change.yourTaxCodeChanged.previousTaxCodes=Previous tax codes
+taxCode.change.yourTaxCodeChanged.currentTaxCodes=Current tax codes

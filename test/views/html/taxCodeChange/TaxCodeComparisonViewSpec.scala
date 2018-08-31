@@ -27,9 +27,9 @@ import uk.gov.hmrc.time.TaxYearResolver
 class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val taxCodeRecord1 = TaxCodeRecord("A1111", startDate, startDate.plusMonths(1),"Employer 1", false, Some("1234"), true)
+  val taxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1),"Employer 1", false, Some("1234"), true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-  val taxCodeRecord3 = taxCodeRecord1.copy(taxCode = "B175", startDate = startDate.plusDays(3), endDate = TaxYearResolver.endOfCurrentTaxYear, pensionIndicator = false)
+  val taxCodeRecord3 = taxCodeRecord1.copy(taxCode = "BR", startDate = startDate.plusDays(3), endDate = TaxYearResolver.endOfCurrentTaxYear, pensionIndicator = false)
   val taxCodeChange: TaxCodeChange = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
   val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange)
 
@@ -48,19 +48,42 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
       doc(view) must haveParagraphWithText(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
     }
 
+    "displays the previous tax code section title" in {
+      doc(view) must haveHeadingH2WithText (Messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes"))
+    }
+
+    "displays the current tax code section title" in {
+      doc(view) must haveHeadingH2WithText (Messages("taxCode.change.yourTaxCodeChanged.currentTaxCodes"))
+
+    }
+
     "display the previous tax codes" in {
       taxCodeChange.previous.foreach(record => {
-        doc(view) must haveHeadingH2WithText(record.employerName)
-        doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(record.startDate), Dates.formatDate(record.endDate)))
+        doc(view) must haveHeadingH3WithText(record.employerName)
+        doc(view) must haveHeadingH4WithText(Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(record.startDate)))
         doc(view).toString must include(record.taxCode)
+
+        doc(view) must haveSummaryWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
+
+        for (explanation <- viewModel.taxCodeExplanations(record.taxCode).descriptionItems) {
+          doc(view) must haveTdWithText(explanation._1)
+          doc(view) must haveTdWithText(explanation._2)
+        }
       })
     }
 
     "display the current tax codes" in {
       taxCodeChange.current.foreach(record => {
-        doc(view) must haveHeadingH2WithText(record.employerName)
-        doc(view) must haveHeadingH3WithText(Messages("tai.taxCode.title.pt2", Dates.formatDate(record.startDate), Dates.formatDate(record.endDate)))
+        doc(view) must haveHeadingH3WithText(record.employerName)
+        doc(view) must haveHeadingH4WithText(Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(record.startDate)))
         doc(view).toString must include(record.taxCode)
+
+        doc(view) must haveSummaryWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
+
+        for (explanation <- viewModel.taxCodeExplanations(record.taxCode).descriptionItems) {
+          doc(view) must haveTdWithText(explanation._1)
+          doc(view) must haveTdWithText(explanation._2)
+        }
       })
     }
 
