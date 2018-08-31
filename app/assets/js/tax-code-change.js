@@ -1,9 +1,9 @@
 var taxCodeChange = (function () {
 
     function mirrorTitleHeight() {
-      var sectionTitles = document.getElementsByClassName("section-title");
-      resetHeights(sectionTitles[0], sectionTitles[1])
-      mirrorElementHeight(sectionTitles[0], sectionTitles[1])
+        var sectionTitles = document.getElementsByClassName("section-title");
+        resetHeights(sectionTitles[0], sectionTitles[1])
+        mirrorElementHeight(sectionTitles[0], sectionTitles[1])
     }
 
     function mirrorHeights() {
@@ -57,7 +57,8 @@ var taxCodeChange = (function () {
         setHeight(previous, "");
     }
 
-    mirrorHeights();
-    window.addEventListener('resize', mirrorHeights);
-
+    if (document.getElementsByClassName("tax-code-change").length > 0) {
+        mirrorHeights();
+        window.addEventListener('resize', mirrorHeights);
+    }
 })()

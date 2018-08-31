@@ -20,8 +20,11 @@ import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income.OtherBasisOperation
+import uk.gov.hmrc.tai.model.domain.income.{OtherBasisOperation, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
 import uk.gov.hmrc.time.TaxYearResolver
+
+import scala.collection.immutable.ListMap
 
 /**
   * Created by digital032748 on 25/07/18.
@@ -31,16 +34,15 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, OtherBasisOperation,"A Employer 1", false, Some("1234"), false)
+  val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, OtherBasisOperation,"A Employer 1", false, Some("1234"), false)
   val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1))
-  val fullYearTaxCode = TaxCodeRecord("code", startDate, OtherBasisOperation, "B Employer 1", false, Some("12345"), false)
+  val fullYearTaxCode = TaxCodeRecord("1185L", startDate, Week1Month1BasisOperation, "B Employer 1", false, Some("12345"), false)
   val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", pensionIndicator = false, primary = true)
 
   val taxCodeChange = TaxCodeChange(
     Seq(previousTaxCodeRecord1, primaryFullYearTaxCode),
     Seq(currentTaxCodeRecord1, primaryFullYearTaxCode)
   )
-
 
   "TaxCodeChangeViewModel apply method" must {
     "translate the taxCodeChange object into a TaxCodePairs" in {
@@ -57,6 +59,39 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
       val model = TaxCodeChangeViewModel(taxCodeChange)
 
       model.changeDate mustEqual currentTaxCodeRecord1.startDate
+    }
+  }
+
+  "TaxCodeChangeViewModel getTaxCodeExplanations" must {
+    "get the appropriate explanation and heading for a tax" when {
+      "basisOfOperation is standard" in {
+        val expected = DescriptionListViewModel(
+          Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", previousTaxCodeRecord1.taxCode),
+          ListMap(
+            ("1185", Messages("tai.taxCode.amount", "11,850")),
+            ("L", Messages("tai.taxCode.L"))
+          )
+        )
+
+        val result = TaxCodeChangeViewModel.getTaxCodeExplanations(previousTaxCodeRecord1)
+
+        result mustEqual(expected)
+      }
+
+      "basisOfOperation is emergency" in {
+        val expected = DescriptionListViewModel(
+          Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", fullYearTaxCode.taxCode + "X"),
+          ListMap(
+            ("1185", Messages("tai.taxCode.amount", "11,850")),
+            ("L", Messages("tai.taxCode.L")),
+            ("X", Messages("tai.taxCode.X"))
+          )
+        )
+
+        val result = TaxCodeChangeViewModel.getTaxCodeExplanations(fullYearTaxCode)
+
+        result mustEqual(expected)
+      }
     }
   }
 }

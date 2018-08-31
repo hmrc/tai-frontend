@@ -36,32 +36,32 @@
 }
 
 @taxCodeRecordExplanation(taxCodeDescription: DescriptionListViewModel) = {
-<div class="tax-code-change__explanation">
-    @includes.details_summary(
-        taxCodeDescription.heading,
-        panelClass = Some("tax-code-change__details")
-    ){
-    <div aria-hidden="false">
-        <table>
-            <tbody>
-            @for(taxCodeExplanation <- taxCodeDescription.descriptionItems) {
-                <tr>
-                    <td class="bold-medium">@taxCodeExplanation._1</td>
-                    <td>@taxCodeExplanation._2</td>
-                </tr>
-            }
-            </tbody>
-        </table>
+    <div class="tax-code-change__explanation">
+        @includes.details_summary(
+            taxCodeDescription.heading,
+            panelClass = Some("tax-code-change__details")
+        ){
+        <div aria-hidden="false">
+            <table>
+                <tbody>
+                @for(taxCodeExplanation <- taxCodeDescription.descriptionItems) {
+                    <tr>
+                        <td class="bold-medium">@taxCodeExplanation._1</td>
+                        <td>@taxCodeExplanation._2</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        }
     </div>
-    }
-</div>
 }
 
 @taxCodeRecordPodHtml(taxCodeRecord: TaxCodeRecord) = {
     <div class="tax-code-change__pod">
         <h3 class="tax-code-change__employment-heading heading-medium flush--top break-word">@taxCodeRecord.employerName</h3>
         <h4 class="tax-code-change__date bold-small flush--top">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</h4>
-        <div class="tax-code-change__tax-code bold-large">@taxCodeRecord.taxCode</div>
+        <div class="tax-code-change__tax-code bold-large">@TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)</div>
         @taxCodeRecordExplanation(TaxCodeChangeViewModel.getTaxCodeExplanations(taxCodeRecord))
     </div>
 

@@ -66,7 +66,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
         doc(view) must haveSummaryWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
 
-        for (explanation <- viewModel.taxCodeExplanations(record.taxCode).descriptionItems) {
+        for (explanation <- TaxCodeChangeViewModel.getTaxCodeExplanations(record).descriptionItems) {
           doc(view) must haveTdWithText(explanation._1)
           doc(view) must haveTdWithText(explanation._2)
         }
@@ -81,7 +81,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
         doc(view) must haveSummaryWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
 
-        for (explanation <- viewModel.taxCodeExplanations(record.taxCode).descriptionItems) {
+        for (explanation <- TaxCodeChangeViewModel.getTaxCodeExplanations(record).descriptionItems) {
           doc(view) must haveTdWithText(explanation._1)
           doc(view) must haveTdWithText(explanation._2)
         }
