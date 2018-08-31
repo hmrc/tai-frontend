@@ -65,14 +65,6 @@ hr {
 .tax-code-change {
   margin: 0 -30px 20px -30px;
 
-  .tax-code-change__blank {
-    margin-bottom: 30px;
-
-    @media (min-width: 641px) {
-      border-bottom: 1px solid #ccc;
-    }
-  }
-
   .tax-code-change__explanation {
     margin-bottom: 15px;
   }

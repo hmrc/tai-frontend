@@ -64,33 +64,28 @@
 
 }
 
-@taxCodeRecordPodEmptyHtml() = {
-    <div class="tax-code-change__blank"></div>
-}
-
 @taxCodeRecordPod(taxCodeRecord: Option[TaxCodeRecord]) = {
     @{taxCodeRecord match {
         case Some(taxCodeRecord) => taxCodeRecordPodHtml(taxCodeRecord)
-        case _ => taxCodeRecordPodEmptyHtml()
+        case _ => None
     }}
 }
 
 @taxCodePairs(taxCodePairs: TaxCodePairs) = {
-    <div class="column-half">
+    <div class="column-half tax-code-change__previous">
         <h2 class="heading-medium section-title">Previous Tax Codes</h2>
         @for((pair) <- taxCodePairs.pairs) {
-            <div class="tax-code-change__previous">
+
                 @taxCodeRecordPod(pair.previous)
-            </div>
+
         }
     </div>
 
-    <div class="column-half">
+    <div class="column-half tax-code-change__current">
         <h2 class="heading-medium section-title">Current Tax Codes</h2>
         @for((pair) <- taxCodePairs.pairs) {
-            <div class="tax-code-change__current">
                 @taxCodeRecordPod(pair.current)
-            </div>
+
         }
     </div>
 }
@@ -120,24 +115,23 @@
 
 var mirrorTitleHeight = function() {
   var sectionTitles = document.getElementsByClassName("section-title");
-
-  setHeight(sectionTitles[0], "");
-  setHeight(sectionTitles[1], "");
-
-  if (getHeight(sectionTitles[0]) > getHeight(sectionTitles[1])) {
-    setHeight(sectionTitles[1], getHeight(sectionTitles[0]));
-  } else {
-    setHeight(sectionTitles[0], getHeight(sectionTitles[1]));
-  }
+  resetHeights(sectionTitles[0], sectionTitles[1])
+  mirrorElementHeight(sectionTitles[0], sectionTitles[1])
 }
 
-var mirrorTaxCodePairsColumnHeights = function() {
+var mirrorHeights = function() {
+    mirrorTitleHeight();
 
-    var currentTaxCodes = document.getElementsByClassName("tax-code-change__current");
-    var previousTaxCodes = document.getElementsByClassName("tax-code-change__previous");
+    var currentTaxCodesColumn = document.getElementsByClassName("tax-code-change__current")[0];
+    var previousTaxCodesColumn = document.getElementsByClassName("tax-code-change__previous")[0];
+
+    var currentTaxCodes = currentTaxCodesColumn.getElementsByClassName("tax-code-change__pod");
+    var previousTaxCodes = previousTaxCodesColumn.getElementsByClassName("tax-code-change__pod");
 
     for (var i = 0; i < currentTaxCodes.length; i++) {
-        mirrorTaxCodePairColumnHeights(currentTaxCodes[i], previousTaxCodes[i])
+        if (currentTaxCodes[i] && previousTaxCodes[i]) {
+            mirrorTaxCodePairColumnHeights(currentTaxCodes[i], previousTaxCodes[i])
+        }
     }
 }
 
@@ -146,25 +140,8 @@ var mirrorTaxCodePairColumnHeights = function(current, previous) {
     var previousEmploymentHeading = previous.getElementsByClassName("tax-code-change__employment-heading")[0];
 
     if (isTaxCodePair(currentEmploymentHeading, previousEmploymentHeading)) {
-        mirrorElementHeight(currentEmploymentHeading, previousEmploymentHeading, 0);
-    } else {
-        extendNonTaxCodePairBlankHeight(current, previous)
-    }
-}
-
-var extendNonTaxCodePairBlankHeight = function(current, previous) {
-    var previousBlank = previous.getElementsByClassName("tax-code-change__blank")[0]
-    var currentBlank = current.getElementsByClassName("tax-code-change__blank")[0]
-
-    if(window.innerWidth < 641) {
-        if (previousBlank) { setHeight(previousBlank, 0) }
-        if (currentBlank) { setHeight(currentBlank, 0) }
-    } else {
-        if (previousBlank){
-          setHeight(previousBlank, getHeight(current));
-        } else {
-          setHeight(currentBlank, getHeight(previous));
-        }
+        resetHeights(currentEmploymentHeading, previousEmploymentHeading)
+        mirrorElementHeight(currentEmploymentHeading, previousEmploymentHeading);
     }
 }
 
@@ -180,17 +157,20 @@ var isTaxCodePair = function(current, previous) {
     return previous && current;
 }
 
-var mirrorElementHeight = function(current, previous, offset) {
+var mirrorElementHeight = function(current, previous) {
     if (getHeight(current) > getHeight(previous)) {
-        setHeight(previous, getHeight(current) + offset)
+        setHeight(previous, getHeight(current))
     } else {
-        setHeight(current, getHeight(previous) + offset)
+        setHeight(current, getHeight(previous))
     }
 }
 
-mirrorTaxCodePairsColumnHeights()
-mirrorTitleHeight();
-window.addEventListener('resize', mirrorTaxCodePairsColumnHeights);
-window.addEventListener('resize', mirrorTitleHeight);
+var resetHeights = function(current, previous) {
+    setHeight(current, "");
+    setHeight(previous, "");
+}
+
+mirrorHeights();
+window.addEventListener('resize', mirrorHeights);
 
 </script>
