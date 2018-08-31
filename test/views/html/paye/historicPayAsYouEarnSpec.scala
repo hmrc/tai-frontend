@@ -24,32 +24,57 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
+import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
+import uk.gov.hmrc.time.TaxYearResolver
 
 
-class historicPayAsYouEarnSpec extends TaiViewSpec {
+class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
+
+  private val currentYear: Int = TaxYear().year
+  private val cyMinusOneTaxYear: TaxYear = TaxYear(currentYear - 1)
+  private val cyMinusTwoTaxYear: TaxYear = TaxYear(currentYear - 2)
+  private val cyMinusThreeTaxYear: TaxYear = TaxYear(currentYear - 3)
+  private val cyMinusFourTaxYear: TaxYear = TaxYear(currentYear - 4)
+
+  private val employment: EmploymentViewModel = EmploymentViewModel("test employment", 123.32, 1)
+
+  override def view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil), 3)
+
+  private def createSut(vm: HistoricPayAsYouEarnViewModel, noOfPreviousYears: Int = 3): Html =  views.html.paye.historicPayAsYouEarn(vm, noOfPreviousYears)
 
   "historicPayAsYouEarn view" should {
 
     behave like pageWithCombinedHeader(
       messages("tai.paye.lastTaxYear.preHeading"),
-      messages("tai.paye.heading"))
+      messages("tai.paye.heading", taxPeriodLabel(cyMinusOneTaxYear.year)))
 
-    "contain correct pre header and header" in {
+    behave like pageWithTitle(messages("tai.paye.heading", taxPeriodLabel(cyMinusOneTaxYear.year)))
+
+    "have a heading for your income from employment" in {
+      val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1)
+      val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(employment), true), 1)
+      doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
+    }
+
+    "contain correct header" in {
       val taxYear = cyMinusOneTaxYear
       val vm = HistoricPayAsYouEarnViewModel(taxYear, Nil, false)
       val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil), 3)
       val newDoc = doc(view)
 
       newDoc.body.text must include(messages("tai.paye.lastTaxYear.preHeading"))
-      newDoc.body.text must include(messages("tai.paye.heading"))
+      newDoc.body.text must include(messages("tai.paye.heading", taxPeriodLabel(taxYear.year)))
     }
+
 
     "display a link to return to choose tax year page" in {
       doc must haveLinkWithUrlWithID("returnToChooseTaxYearLink", controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
     }
+
+
 
     "not show employments" when {
 
@@ -262,7 +287,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
 
         val doc: Document = Jsoup.parse(sut.toString)
 
-        doc.select(".grid-layout__column--1-3").size() mustBe 1
+        doc.select(".column-one-third").size() mustBe 1
       }
     }
 
@@ -290,17 +315,5 @@ class historicPayAsYouEarnSpec extends TaiViewSpec {
       }
     }
   }
-
-  private val currentYear: Int = TaxYear().year
-  private val cyMinusOneTaxYear: TaxYear = TaxYear(currentYear - 1)
-  private val cyMinusTwoTaxYear: TaxYear = TaxYear(currentYear - 2)
-  private val cyMinusThreeTaxYear: TaxYear = TaxYear(currentYear - 3)
-  private val cyMinusFourTaxYear: TaxYear = TaxYear(currentYear - 4)
-
-  private val employment: EmploymentViewModel = EmploymentViewModel("test employment", 123.32, 1)
-
-  override def view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil), 3)
-
-  private def createSut(vm: HistoricPayAsYouEarnViewModel, noOfPreviousYears: Int = 3): Html =  views.html.paye.historicPayAsYouEarn(vm, noOfPreviousYears)
 
 }

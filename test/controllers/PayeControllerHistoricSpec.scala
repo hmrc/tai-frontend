@@ -33,15 +33,23 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxPeriodLabelService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
 import scala.concurrent.Future
 import scala.util.Random
 
-class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with JsoupMatchers{
+class PayeControllerHistoricSpec extends PlaySpec
+  with FakeTaiPlayApplication
+  with MockitoSugar
+  with I18nSupport
+  with TaxPeriodLabelService
+  with JsoupMatchers{
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
+  private val currentYear: Int = TaxYear().year
+  private val cyMinusOneTaxYear: TaxYear = TaxYear(currentYear - 1)
 
   "Calling the payePage method with an authorised session" must {
 
@@ -67,7 +75,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
       status(result) mustBe OK
 
-      doc.title() must include(Messages("tai.paye.heading"))
+      doc.title() must include(Messages("tai.paye.heading", taxPeriodLabel(cyMinusOneTaxYear.year)))
 
       doc.select("#thisTaxYear").size must be(0)
       doc.select("#lastTaxYear").size must be(1)
@@ -83,7 +91,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
 
       status(result) mustBe OK
 
-      doc.title() must include(Messages("tai.paye.heading"))
+      doc.title() must include(Messages("tai.paye.heading", taxPeriodLabel(cyMinusOneTaxYear.year)))
 
       doc.select("#thisTaxYear").size must be(0)
       doc.select("#lastTaxYear").size must be(1)
@@ -224,7 +232,7 @@ class PayeControllerHistoricSpec extends PlaySpec with FakeTaiPlayApplication wi
     val result = testController.payePage(TaxYear().prev)()(RequestBuilder.buildFakeRequestWithAuth("GET"))
     val doc = Jsoup.parse(contentAsString(result))
     status(result) mustBe OK
-    doc.title() must include(Messages("tai.paye.heading"))
+    doc.title() must include(Messages("tai.paye.heading", taxPeriodLabel(cyMinusOneTaxYear.year)))
     doc must haveLinkWithUrlWithID("updateEmployment", controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(TaxYear().prev).url)
   }
 

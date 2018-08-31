@@ -38,7 +38,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
 
 @header = @{
     ptaHeader(
-        mainHeadingText = Messages("tai.paye.heading"),
+        mainHeadingText = Messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
         preHeadingText = Messages("tai.paye.lastTaxYear.preHeading"),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
@@ -46,7 +46,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
 }
 
 @main(
-    title = Messages("tai.paye.heading"),
+    title = Messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
     articleClasses = Some("full-width"),
     user = Some(user),
     pageHeader = Some(header),
@@ -54,12 +54,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
 ){
 
     <div class="grid-layout grid-layout--stacked">
-        @if(noOfPreviousYearsToShow > 1) {
-            <div class="grid-layout__column grid-layout__column--1-3 section flush--bottom soft--bottom">
-                @includes.previousYearsSideNav(viewModel.taxYear, noOfPreviousYearsToShow)
-            </div>
-        }
-        <div class="grid-layout__column grid-layout__column--2-3 section">
+
+        <div class="column-two-thirds">
 
             <div id="lastTaxYear">
                 @if(!viewModel.hasEmployments) {
@@ -70,9 +66,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                 } else {
                     <section id="lastTaxYearIncome">
 
-                        <h2 id="lastYearHeading" class="heading-medium flush--top">
-                            @Messages("tai.paye.lastTaxYear.heading")
-                            <br/> @{TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)}</h2>
+                        <h2 id="lastYearHeading" class="heading-section">
+                            @Messages("tai.paye.incomeEmployment.heading")</h2>
 
                         <div id="last-tax-year-table" class="flush--bottom">
                             <ul class="govuk-check-your-answers cya-questions-short govuk-check-your-answers--tax-summary">
@@ -118,5 +113,10 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                 }
             </div>
         </div>
+        @if(noOfPreviousYearsToShow > 1) {
+        <div class="column-one-third">
+            @includes.previousYearsSideNav(viewModel.taxYear, noOfPreviousYearsToShow)
+        </div>
+        }
     </div>
 }
