@@ -24,6 +24,7 @@ import play.api.libs.json.{JsArray, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.model.domain.income.OtherBasisOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.time.TaxYearResolver
 import utils.WireMockHelper
@@ -55,8 +56,8 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
           val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
 
           val startDate = TaxYearResolver.startOfCurrentTaxYear
-          val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1),"Employer 1", false, Some("1234"), true)
-          val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYearResolver.endOfCurrentTaxYear)
+          val taxCodeRecord1 = TaxCodeRecord("code", startDate, OtherBasisOperation, "Employer 1", false, Some("1234"), true)
+          val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2))
 
           val json = Json.obj(
             "data" -> Json.obj(
@@ -64,7 +65,7 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
                   Json.obj(
                     "taxCode" -> "code",
                     "startDate" -> startDate,
-                    "endDate" -> startDate.plusDays(1),
+                    "basisOfOperation" -> "Cumulative",
                     "employerName" -> "Employer 1",
                     "pensionIndicator" -> false,
                     "payrollNumber" -> "1234",
@@ -75,7 +76,7 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
                 Json.obj(
                   "taxCode" -> "code",
                   "startDate" -> startDate.plusDays(2),
-                  "endDate" -> TaxYearResolver.endOfCurrentTaxYear,
+                  "basisOfOperation" -> "Cumulative",
                   "employerName" -> "Employer 1",
                   "pensionIndicator" -> false,
                   "payrollNumber" -> "1234",

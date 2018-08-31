@@ -38,8 +38,8 @@ import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService}
 import uk.gov.hmrc.tai.service.{PersonService, TaxCodeChangeService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.model.domain.income.OtherBasisOperation
 import uk.gov.hmrc.time.TaxYearResolver
-
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -148,8 +148,8 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     CodingComponent(GiftsSharesCharity, None, giftAmount, "GiftsSharesCharity description"))
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1),"Employer 1", false, Some("1234"), true)
-  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+  val taxCodeRecord1 = TaxCodeRecord("code", startDate, OtherBasisOperation,"Employer 1", false, Some("1234"), true)
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1))
 
   private class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController {
 

@@ -20,6 +20,7 @@
 @import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, TaxCodePairs}
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeDescription}
 @import org.joda.time.LocalDate
 
 @(taxCodeChangeViewModel: TaxCodeChangeViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
@@ -34,32 +35,34 @@
     )
 }
 
+@taxCodeRecordExplanation(taxCodeDescription: DescriptionListViewModel) = {
+<div class="tax-code-change__explanation">
+    @includes.details_summary(
+        taxCodeDescription.heading,
+        panelClass = Some("tax-code-change__details")
+    ){
+    <div aria-hidden="false">
+        <table>
+            <tbody>
+            @for(taxCodeExplanation <- taxCodeDescription.descriptionItems) {
+                <tr>
+                    <td class="bold-medium">@taxCodeExplanation._1</td>
+                    <td>@taxCodeExplanation._2</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    }
+</div>
+}
+
 @taxCodeRecordPodHtml(taxCodeRecord: TaxCodeRecord) = {
     <div class="tax-code-change__pod">
         <h3 class="tax-code-change__employment-heading heading-medium flush--top break-word">@taxCodeRecord.employerName</h3>
         <h4 class="tax-code-change__date bold-small flush--top">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</h4>
         <div class="tax-code-change__tax-code bold-large">@taxCodeRecord.taxCode</div>
-
-        <div class="tax-code-change__explanation">
-            @includes.details_summary(
-                Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", taxCodeRecord.taxCode),
-                panelClass = Some("tax-code-change__details")
-            ){
-                <div aria-hidden="false">
-                    <table>
-                        <tbody>
-                        @for(taxCodeExplanation <- taxCodeChangeViewModel.taxCodeExplanations(taxCodeRecord.taxCode).descriptionItems) {
-                            <tr>
-                                <td class="bold-medium">@taxCodeExplanation._1</td>
-                                <td>@taxCodeExplanation._2</td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                </div>
-            }
-        </div>
-
+        @taxCodeRecordExplanation(TaxCodeChangeViewModel.getTaxCodeExplanations(taxCodeRecord))
     </div>
 
 }

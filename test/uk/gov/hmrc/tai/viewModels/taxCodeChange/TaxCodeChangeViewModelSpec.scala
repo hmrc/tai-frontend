@@ -20,6 +20,7 @@ import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.income.OtherBasisOperation
 import uk.gov.hmrc.time.TaxYearResolver
 
 /**
@@ -30,9 +31,9 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1),"A Employer 1", false, Some("1234"), false)
-  val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-  val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYearResolver.endOfCurrentTaxYear, "B Employer 1", false, Some("12345"), false)
+  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, OtherBasisOperation,"A Employer 1", false, Some("1234"), false)
+  val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1))
+  val fullYearTaxCode = TaxCodeRecord("code", startDate, OtherBasisOperation, "B Employer 1", false, Some("12345"), false)
   val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", pensionIndicator = false, primary = true)
 
   val taxCodeChange = TaxCodeChange(
