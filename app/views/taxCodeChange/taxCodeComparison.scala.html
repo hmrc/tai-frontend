@@ -35,57 +35,62 @@
     )
 }
 
-@taxCodeRecordExplanation(taxCodeDescription: DescriptionListViewModel) = {
-    <div class="tax-code-change__explanation">
-        @includes.details_summary(
-            taxCodeDescription.heading,
-            panelClass = Some("tax-code-change__details")
-        ){
-        <div aria-hidden="false">
-            <table>
-                <tbody>
-                @for(taxCodeExplanation <- taxCodeDescription.descriptionItems) {
-                    <tr>
-                        <td class="bold-medium">@taxCodeExplanation._1</td>
-                        <td>@Html(taxCodeExplanation._2)</td>
-                    </tr>
-                }
-                </tbody>
-            </table>
+@taxCodeRecordExplanation(taxCodeRecord: TaxCodeRecord, identifier: String) = {
+    @defining(TaxCodeChangeViewModel.getTaxCodeExplanations(taxCodeRecord, taxCodeChangeViewModel.scottishTaxRateBands)) { taxCodeDescription =>
+        <div class="tax-code-change__explanation">
+            @includes.details_summary(
+                taxCodeDescription.heading,
+                visuallyHiddenTitle = Some(Messages(
+                    s"taxCode.change.yourTaxCodeChanged.${identifier}Understand",
+                    TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation),
+                    taxCodeRecord.employerName)
+                ),
+                panelClass = Some("tax-code-change__details")
+            ){
+                <table>
+                    <tbody>
+                    @for(taxCodeExplanation <- taxCodeDescription.descriptionItems) {
+                        <tr>
+                            <td class="bold-medium">@taxCodeExplanation._1</td>
+                            <td>@Html(taxCodeExplanation._2)</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            }
         </div>
-        }
-    </div>
+    }
 }
 
-@taxCodeRecordPodHtml(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal]) = {
+@taxCodeRecordPodHtml(taxCodeRecord: TaxCodeRecord, identifier: String) = {
     <div class="tax-code-change__pod">
         <h3 class="tax-code-change__employment-heading heading-medium flush--top break-word">@taxCodeRecord.employerName</h3>
         <h4 class="tax-code-change__date bold-small flush--top">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</h4>
         <div class="tax-code-change__tax-code bold-large">@TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)</div>
-        @taxCodeRecordExplanation(TaxCodeChangeViewModel.getTaxCodeExplanations(taxCodeRecord, scottishTaxRateBands))
+        @taxCodeRecordExplanation(taxCodeRecord, identifier)
     </div>
 
 }
 
-@taxCodeRecordPod(taxCodeRecord: Option[TaxCodeRecord], scottishTaxRateBands: Map[String, BigDecimal]) = {
+@taxCodeRecordPod(taxCodeRecord: Option[TaxCodeRecord], identifier: String) = {
     @{taxCodeRecord match {
-        case Some(taxCodeRecord) => taxCodeRecordPodHtml(taxCodeRecord, scottishTaxRateBands)
+        case Some(taxCodeRecord) => taxCodeRecordPodHtml(taxCodeRecord, identifier)
         case _ => None
     }}
 }
 
-@taxCodePairs(taxCodePairs: TaxCodePairs, scottishTaxRateBands: Map[String, BigDecimal]) = {
+@taxCodePairs(taxCodePairs: TaxCodePairs) = {
     <div class="column-half tax-code-change__previous">
         <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes")</h2>
         @for((pair) <- taxCodePairs.pairs) {
-            @taxCodeRecordPod(pair.previous, scottishTaxRateBands)
+            @taxCodeRecordPod(pair.previous, "previous")
         }
     </div>
 
     <div class="column-half tax-code-change__current">
         <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.currentTaxCodes")</h2>
         @for((pair) <- taxCodePairs.pairs) {
-            @taxCodeRecordPod(pair.current, scottishTaxRateBands)
+            @taxCodeRecordPod(pair.current, "current")
         }
     </div>
 }
@@ -101,7 +106,7 @@
         <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
     </div>
     <div class="grid-row tax-code-change margin-bottom-xlarge">
-        @taxCodePairs(taxCodeChangeViewModel.pairs, taxCodeChangeViewModel.scottishTaxRateBands)
+        @taxCodePairs(taxCodeChangeViewModel.pairs)
     </div>
     <div>
         <a class="button" href="@routes.TaxCodeChangeController.yourTaxFreeAmount().url.toString" id="check-your-tax-button">

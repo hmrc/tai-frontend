@@ -17,6 +17,7 @@
 package views.html.taxCodeChange
 
 import controllers.routes
+import org.fluentlenium.core.filter.matcher.ContainsWordMatcher
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOperation
@@ -64,9 +65,10 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
         doc(view) must haveHeadingH4WithText(Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(record.startDate)))
         doc(view).toString must include(record.taxCode)
 
-        doc(view) must haveSummaryWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
+        doc(view) must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
 
         for (explanation <- TaxCodeChangeViewModel.getTaxCodeExplanations(record, Map[String, BigDecimal]()).descriptionItems) {
+          doc(view) must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.previousUnderstand", record.taxCode, record.employerName))
           doc(view) must haveTdWithText(explanation._1)
           doc(view) must haveTdWithText(explanation._2)
         }
@@ -79,9 +81,10 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
         doc(view) must haveHeadingH4WithText(Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(record.startDate)))
         doc(view).toString must include(record.taxCode)
 
-        doc(view) must haveSummaryWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
+        doc(view) must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
 
         for (explanation <- TaxCodeChangeViewModel.getTaxCodeExplanations(record, Map[String, BigDecimal]()).descriptionItems) {
+          doc(view) must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.currentUnderstand", record.taxCode, record.employerName))
           doc(view) must haveTdWithText(explanation._1)
           doc(view) must haveTdWithText(explanation._2)
         }
