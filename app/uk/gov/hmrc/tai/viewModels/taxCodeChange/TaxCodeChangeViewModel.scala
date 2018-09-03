@@ -26,21 +26,20 @@ import uk.gov.hmrc.tai.viewModels.TaxCodeDescriptor.{emergencyTaxCodeExplanation
 
 import scala.collection.immutable.ListMap
 
-case class TaxCodeChangeViewModel(pairs: TaxCodePairs, changeDate: LocalDate)
+case class TaxCodeChangeViewModel(pairs: TaxCodePairs, changeDate: LocalDate, scottishTaxRateBands: Map[String, BigDecimal])
 
 object TaxCodeChangeViewModel {
-  def apply(taxCodeChange: TaxCodeChange)(implicit messages: Messages): TaxCodeChangeViewModel = {
+  def apply(taxCodeChange: TaxCodeChange, scottishTaxRateBands: Map[String, BigDecimal])(implicit messages: Messages): TaxCodeChangeViewModel = {
     val taxCodePairs = TaxCodePairs(taxCodeChange.previous, taxCodeChange.current)
     val changeDate = taxCodeChange.mostRecentTaxCodeChangeDate
 
-    TaxCodeChangeViewModel(taxCodePairs, changeDate)
+    TaxCodeChangeViewModel(taxCodePairs, changeDate, scottishTaxRateBands)
   }
 
-  def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord)(implicit messages: Messages): DescriptionListViewModel = {
+  def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal])(implicit messages: Messages): DescriptionListViewModel = {
     val taxCode = taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)
 
     // TODO: Maybe some of this should be moved into the taxCodeDescriptor
-    // TODO: Sort out scottish tax codes
     val explanationRules: Seq[TaxCodeDescription => ListMap[String, String]] = Seq(
       scottishTaxCodeExplanation,
       untaxedTaxCodeExplanation,
@@ -48,7 +47,7 @@ object TaxCodeChangeViewModel {
       emergencyTaxCodeExplanation
     )
 
-    val taxDescription = TaxCodeDescription(taxCode, taxCodeRecord.basisOfOperation, Map[String, BigDecimal]())
+    val taxDescription = TaxCodeDescription(taxCode, taxCodeRecord.basisOfOperation, scottishTaxRateBands)
     val explanation = explanationRules.foldLeft(ListMap[String, String]())((expl, rule) => expl ++ rule(taxDescription))
     DescriptionListViewModel(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", taxCode), explanation)
   }

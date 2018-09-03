@@ -50,20 +50,28 @@ class TaxCodeChangeSpec extends PlaySpec{
         model.mostRecentTaxCodeChangeDate mustEqual startDate.plusMonths(1).plusDays(1)
       }
     }
+
+    "calling uniqueTaxCodes" should {
+      "return a seq of unique tax codes found in the previous and current lists" in {
+        val model = TaxCodeChange(Seq(previousTaxCodeRecord1, fullYearTaxCode), Seq(currentTaxCodeRecord1, fullYearTaxCode))
+
+        model.uniqueTaxCodes mustEqual Seq("1185L", "OT")
+      }
+    }
   }
 
   val nino = generateNino
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, OtherBasisOperation,"A Employer 1", false, Some("1234"), false)
+  val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, OtherBasisOperation,"A Employer 1", false, Some("1234"), false)
   val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1))
-  val fullYearTaxCode = TaxCodeRecord("code", startDate, OtherBasisOperation, "B Employer 1", false, Some("12345"), false)
+  val fullYearTaxCode = TaxCodeRecord("OT", startDate, OtherBasisOperation, "B Employer 1", false, Some("12345"), false)
   val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", pensionIndicator = false, primary = true)
 
 
   val taxCodeChangeJson = Json.obj(
     "previous" -> Json.arr(
       Json.obj(
-        "taxCode" -> "code",
+        "taxCode" -> "1185L",
         "startDate" -> startDate.toString,
         "basisOfOperation" -> "Cumulative",
         "employerName" -> "A Employer 1",
@@ -74,7 +82,7 @@ class TaxCodeChangeSpec extends PlaySpec{
     ),
     "current" -> Json.arr(
       Json.obj(
-        "taxCode" -> "code",
+        "taxCode" -> "1185L",
         "startDate" -> startDate.plusMonths(1).plusDays(1).toString,
         "basisOfOperation" -> "Cumulative",
         "employerName" -> "A Employer 1",

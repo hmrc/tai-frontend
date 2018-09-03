@@ -32,7 +32,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1))
   val taxCodeRecord3 = taxCodeRecord1.copy(taxCode = "BR", startDate = startDate.plusDays(3), pensionIndicator = false)
   val taxCodeChange: TaxCodeChange = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
-  val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange)
+  val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
 
   override def view = views.html.taxCodeChange.taxCodeComparison(viewModel)
 
@@ -66,7 +66,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
         doc(view) must haveSummaryWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
 
-        for (explanation <- TaxCodeChangeViewModel.getTaxCodeExplanations(record).descriptionItems) {
+        for (explanation <- TaxCodeChangeViewModel.getTaxCodeExplanations(record, Map[String, BigDecimal]()).descriptionItems) {
           doc(view) must haveTdWithText(explanation._1)
           doc(view) must haveTdWithText(explanation._2)
         }
@@ -81,7 +81,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
         doc(view) must haveSummaryWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
 
-        for (explanation <- TaxCodeChangeViewModel.getTaxCodeExplanations(record).descriptionItems) {
+        for (explanation <- TaxCodeChangeViewModel.getTaxCodeExplanations(record, Map[String, BigDecimal]()).descriptionItems) {
           doc(view) must haveTdWithText(explanation._1)
           doc(view) must haveTdWithText(explanation._2)
         }

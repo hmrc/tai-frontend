@@ -46,8 +46,7 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
   "TaxCodeChangeViewModel apply method" must {
     "translate the taxCodeChange object into a TaxCodePairs" in {
-      val model = TaxCodeChangeViewModel(taxCodeChange)
-      val taxCodePairs = TaxCodePairs
+      val model = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
 
       model.pairs mustEqual TaxCodePairs(Seq(
         TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode)),
@@ -56,7 +55,7 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
     }
 
     "sets the changeDate to the mostRecentTaxCodeChangeDate" in {
-      val model = TaxCodeChangeViewModel(taxCodeChange)
+      val model = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
 
       model.changeDate mustEqual currentTaxCodeRecord1.startDate
     }
@@ -73,7 +72,7 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
           )
         )
 
-        val result = TaxCodeChangeViewModel.getTaxCodeExplanations(previousTaxCodeRecord1)
+        val result = TaxCodeChangeViewModel.getTaxCodeExplanations(previousTaxCodeRecord1, Map[String, BigDecimal]())
 
         result mustEqual(expected)
       }
@@ -88,7 +87,24 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
           )
         )
 
-        val result = TaxCodeChangeViewModel.getTaxCodeExplanations(fullYearTaxCode)
+        val result = TaxCodeChangeViewModel.getTaxCodeExplanations(fullYearTaxCode, Map[String, BigDecimal]())
+
+        result mustEqual(expected)
+      }
+
+      "Using a scottish tax rate band" in {
+        val taxCode = "D2"
+        val scottishTaxCode = TaxCodeRecord(taxCode, startDate, OtherBasisOperation, "B Employer 1", false, Some("12345"), false)
+        val scottishTaxRateBands = Map(taxCode -> BigDecimal(21.5))
+
+        val expected = DescriptionListViewModel(
+          Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", scottishTaxCode.taxCode),
+          ListMap(
+            (taxCode, Messages("tai.taxCode.DX", "21.5"))
+          )
+        )
+
+        val result = TaxCodeChangeViewModel.getTaxCodeExplanations(scottishTaxCode, scottishTaxRateBands)
 
         result mustEqual(expected)
       }
