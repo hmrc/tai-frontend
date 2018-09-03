@@ -47,16 +47,20 @@
                 ),
                 panelClass = Some("tax-code-change__details")
             ){
-                <table>
-                    <tbody>
+                <ul role="list" class="tai-description-list">
                     @for(taxCodeExplanation <- taxCodeDescription.descriptionItems) {
-                        <tr>
-                            <td class="bold-medium">@taxCodeExplanation._1</td>
-                            <td>@Html(taxCodeExplanation._2)</td>
-                        </tr>
+                    <li role="listitem">
+                        <div class="bold-medium">
+                            <span class="visuallyhidden">@messages("tai.taxCode.part.announce", taxCodeExplanation._1) </span>
+                            <span aria-hidden="true">@taxCodeExplanation._1</span>
+                        </div>
+                        <div class="fixed-small">
+                            <span class="visuallyhidden">@messages("tai.taxCode.definition.announce") </span>
+                            @Html(taxCodeExplanation._2)
+                        </div>
+                    </li>
                     }
-                    </tbody>
-                </table>
+                </ul>
             }
         </div>
     }
@@ -65,8 +69,12 @@
 @taxCodeRecordPodHtml(taxCodeRecord: TaxCodeRecord, identifier: String) = {
     <div class="tax-code-change__pod">
         <h3 class="tax-code-change__employment-heading heading-medium flush--top break-word">@taxCodeRecord.employerName</h3>
-        <h4 class="tax-code-change__date bold-small flush--top">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</h4>
-        <div class="tax-code-change__tax-code bold-large">@TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)</div>
+        <div aria-hidden="true" class="tax-code-change__date bold-small flush--top">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</div>
+        <div aria-hidden="true" class="tax-code-change__tax-code bold-large">@TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)</div>
+        <span class="visuallyhidden">
+            <!-- TODO: This is not translated into English OR Welsh -->
+            @Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate)) Your tax code for @taxCodeRecord.employerName was @TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)
+        </span>
         @taxCodeRecordExplanation(taxCodeRecord, identifier)
     </div>
 

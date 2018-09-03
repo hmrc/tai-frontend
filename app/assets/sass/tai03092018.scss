@@ -20,6 +20,7 @@
 @import 'modules/charcount';
 @import 'modules/card';
 @import 'modules/flexbox';
+@import 'modules/tax_code_change';
 
 .grid-wrapper{
   margin-left:-15px;
@@ -55,38 +56,4 @@ hr {
 
 .margin-bottom-large {
   margin-bottom: 30px;
-}
-
-.tax-code-change {
-  margin: 0 -30px 20px -30px;
-
-  .section-title {
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 10px;
-  }
-
-  .tax-code-change__explanation {
-    margin-bottom: 15px;
-  }
-
-  .tax-code-change__date {
-    margin-bottom: 20px;
-  }
-
-  .tax-code-change__tax-code {
-    margin-bottom: 20px;
-  }
-
-  .tax-code-change__pod {
-    border-bottom: 1px solid #ccc;
-    margin-bottom: 30px;
-  }
-
-  .tax-code-change__details {
-    tr:last-child {
-      td {
-        border-bottom: 0;
-      }
-    }
-  }
 }
