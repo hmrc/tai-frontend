@@ -19,16 +19,13 @@ package uk.gov.hmrc.tai.viewModels.taxCodeChange
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
-import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, OtherBasisOperation, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, Week1Month1BasisOperation}
 import uk.gov.hmrc.tai.util.TaiConstants
-import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeDescription}
-import uk.gov.hmrc.tai.viewModels.TaxCodeDescriptor.{emergencyTaxCodeExplanation, fetchTaxCodeExplanation, scottishTaxCodeExplanation, untaxedTaxCodeExplanation}
-
-import scala.collection.immutable.ListMap
+import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeDescriptor}
 
 case class TaxCodeChangeViewModel(pairs: TaxCodePairs, changeDate: LocalDate, scottishTaxRateBands: Map[String, BigDecimal])
 
-object TaxCodeChangeViewModel {
+object TaxCodeChangeViewModel extends TaxCodeDescriptor {
   def apply(taxCodeChange: TaxCodeChange, scottishTaxRateBands: Map[String, BigDecimal])(implicit messages: Messages): TaxCodeChangeViewModel = {
     val taxCodePairs = TaxCodePairs(taxCodeChange.previous, taxCodeChange.current)
     val changeDate = taxCodeChange.mostRecentTaxCodeChangeDate
@@ -36,19 +33,12 @@ object TaxCodeChangeViewModel {
     TaxCodeChangeViewModel(taxCodePairs, changeDate, scottishTaxRateBands)
   }
 
-  def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal])(implicit messages: Messages): DescriptionListViewModel = {
+  def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal])
+                            (implicit messages: Messages): DescriptionListViewModel = {
+
     val taxCode = taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)
 
-    // TODO: Maybe some of this should be moved into the taxCodeDescriptor
-    val explanationRules: Seq[TaxCodeDescription => ListMap[String, String]] = Seq(
-      scottishTaxCodeExplanation,
-      untaxedTaxCodeExplanation,
-      fetchTaxCodeExplanation,
-      emergencyTaxCodeExplanation
-    )
-
-    val taxDescription = TaxCodeDescription(taxCode, taxCodeRecord.basisOfOperation, scottishTaxRateBands)
-    val explanation = explanationRules.foldLeft(ListMap[String, String]())((expl, rule) => expl ++ rule(taxDescription))
+    val explanation = describeTaxCode(taxCode, taxCodeRecord.basisOfOperation, scottishTaxRateBands)
     DescriptionListViewModel(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", taxCode), explanation)
   }
 
