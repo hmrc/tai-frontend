@@ -57,13 +57,13 @@ hr {
   margin-bottom: 30px;
 }
 
-.section-title {
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 10px;
-}
-
 .tax-code-change {
   margin: 0 -30px 20px -30px;
+
+  .section-title {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+  }
 
   .tax-code-change__explanation {
     margin-bottom: 15px;

@@ -17,12 +17,12 @@ var taxCodeChange = (function () {
 
         for (var i = 0; i < currentTaxCodes.length; i++) {
             if (currentTaxCodes[i] && previousTaxCodes[i]) {
-                mirrorTaxCodePairColumnHeights(currentTaxCodes[i], previousTaxCodes[i])
+                mirrorEmploymentHeadingHeight(currentTaxCodes[i], previousTaxCodes[i])
             }
         }
     }
 
-    function mirrorTaxCodePairColumnHeights(current, previous) {
+    function mirrorEmploymentHeadingHeight(current, previous) {
         var currentEmploymentHeading = current.getElementsByClassName("tax-code-change__employment-heading")[0];
         var previousEmploymentHeading = previous.getElementsByClassName("tax-code-change__employment-heading")[0];
 
