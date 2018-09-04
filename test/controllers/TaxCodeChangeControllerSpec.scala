@@ -148,8 +148,8 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     CodingComponent(GiftsSharesCharity, None, giftAmount, "GiftsSharesCharity description"))
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val taxCodeRecord1 = TaxCodeRecord("D0", startDate, OtherBasisOperation,"Employer 1", false, Some("1234"), true)
-  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1))
+  val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOperation,"Employer 1", false, Some("1234"), true)
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
   private class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController {
 

@@ -229,7 +229,7 @@ trait JsoupMatchers {
   def haveElementAtPathWithClass(elementSelector: String, className: String) = new CssSelectorWithClassMatcher(className, elementSelector)
   def haveElementWithId(id: String) = new CssSelector(s"#${id}")
 
-  def haveTableRowWithText (expectedText: String) = new TagWithTextMatcher(expectedText, "dt")
+  def haveTableRowWithText (expectedText: String): TagWithTextMatcher = new TagWithTextMatcher(expectedText, "dt")
   def haveTableRowWithTextDescription (expectedText: String) = new TagWithTextMatcher(expectedText, "dd")
 
   def haveCheckYourAnswersSummary = new CssSelectorWithAttributeValueMatcher("id", "check-answers-summary", "ul")

@@ -34,9 +34,9 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, OtherBasisOperation,"A Employer 1", false, Some("1234"), false)
-  val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1))
-  val fullYearTaxCode = TaxCodeRecord("1185L", startDate, Week1Month1BasisOperation, "B Employer 1", false, Some("12345"), false)
+  val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOperation,"A Employer 1", false, Some("1234"), false)
+  val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+  val fullYearTaxCode = TaxCodeRecord("1185L", startDate, TaxYearResolver.endOfCurrentTaxYear, Week1Month1BasisOperation, "B Employer 1", false, Some("12345"), false)
   val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", pensionIndicator = false, primary = true)
 
   val taxCodeChange = TaxCodeChange(
@@ -94,7 +94,7 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
       "Using a scottish tax rate band" in {
         val taxCode = "D2"
-        val scottishTaxCode = TaxCodeRecord(taxCode, startDate, OtherBasisOperation, "B Employer 1", false, Some("12345"), false)
+        val scottishTaxCode = TaxCodeRecord(taxCode, startDate, startDate.plusMonths(1), OtherBasisOperation, "B Employer 1", false, Some("12345"), false)
         val scottishTaxRateBands = Map(taxCode -> BigDecimal(21.5))
 
         val expected = DescriptionListViewModel(

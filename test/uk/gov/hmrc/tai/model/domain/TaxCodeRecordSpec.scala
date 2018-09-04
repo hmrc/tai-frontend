@@ -28,6 +28,7 @@ class TaxCodeRecordSpec extends PlaySpec {
       val expectedModel = TaxCodeRecord(
         "code",
         new LocalDate(2018, 7,11),
+        new LocalDate(2018, 7, 11),
         Week1Month1BasisOperation,
         "Employer name",
         false,
@@ -41,6 +42,7 @@ class TaxCodeRecordSpec extends PlaySpec {
       val expectedModel = TaxCodeRecord(
         "code",
         new LocalDate(2018, 7,11),
+        new LocalDate(2018, 7, 11),
         OtherBasisOperation,
         "Employer name",
         false,
@@ -55,6 +57,7 @@ class TaxCodeRecordSpec extends PlaySpec {
     Json.obj(
       "taxCode" -> "code",
       "startDate" -> "2018-07-11",
+      "endDate" -> "2018-07-11",
       "basisOfOperation" -> "Week 1 Month 1",
       "employerName" -> "Employer name",
       "pensionIndicator" -> false,
@@ -66,6 +69,7 @@ class TaxCodeRecordSpec extends PlaySpec {
     Json.obj(
       "taxCode" -> "code",
       "startDate" -> "2018-07-11",
+      "endDate" -> "2018-07-11",
       "basisOfOperation" -> "Cumulative",
       "employerName" -> "Employer name",
       "pensionIndicator" -> false,

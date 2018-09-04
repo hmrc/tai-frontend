@@ -17,18 +17,32 @@ var taxCodeChange = (function () {
 
         for (var i = 0; i < currentTaxCodes.length; i++) {
             if (currentTaxCodes[i] && previousTaxCodes[i]) {
-                mirrorEmploymentHeadingHeight(currentTaxCodes[i], previousTaxCodes[i])
+                mirrorEmploymentHeadingHeight(currentTaxCodes[i], previousTaxCodes[i]);
+                mirrorPayrollHeight(currentTaxCodes[i], previousTaxCodes[i]);
+                mirrorDateHeight(currentTaxCodes[i], previousTaxCodes[i]);
             }
         }
     }
 
     function mirrorEmploymentHeadingHeight(current, previous) {
-        var currentEmploymentHeading = current.getElementsByClassName("tax-code-change__employment-heading")[0];
-        var previousEmploymentHeading = previous.getElementsByClassName("tax-code-change__employment-heading")[0];
+        mirrorPodElementHeight(current, previous, "tax-code-change__employment-heading");
+    }
 
-        if (isTaxCodePair(currentEmploymentHeading, previousEmploymentHeading)) {
-            resetHeights(currentEmploymentHeading, previousEmploymentHeading)
-            mirrorElementHeight(currentEmploymentHeading, previousEmploymentHeading);
+    function mirrorPayrollHeight(current, previous) {
+        mirrorPodElementHeight(current, previous, "tax-code-change__payroll");
+    }
+
+    function mirrorDateHeight(current, previous) {
+        mirrorPodElementHeight(current, previous, "tax-code-change__date");
+    }
+
+    function mirrorPodElementHeight(current, previous, className) {
+        var currentThing = current.getElementsByClassName(className)[0];
+        var previousThing = previous.getElementsByClassName(className)[0];
+
+        if (isTaxCodePair(currentThing, previousThing)) {
+            resetHeights(currentThing, previousThing)
+            mirrorElementHeight(currentThing, previousThing);
         }
     }
 
