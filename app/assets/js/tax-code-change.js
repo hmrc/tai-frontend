@@ -2,8 +2,8 @@ var taxCodeChange = (function () {
 
     function mirrorTitleHeight() {
         var sectionTitles = document.getElementsByClassName("section-title");
-        resetHeights(sectionTitles[0], sectionTitles[1])
-        mirrorElementHeight(sectionTitles[0], sectionTitles[1])
+        resetHeights(sectionTitles[0], sectionTitles[1]);
+        mirrorElementHeight(sectionTitles[0], sectionTitles[1]);
     }
 
     function mirrorHeights() {
@@ -41,7 +41,7 @@ var taxCodeChange = (function () {
         var previousThing = previous.getElementsByClassName(className)[0];
 
         if (isTaxCodePair(currentThing, previousThing)) {
-            resetHeights(currentThing, previousThing)
+            resetHeights(currentThing, previousThing);
             mirrorElementHeight(currentThing, previousThing);
         }
     }
@@ -51,7 +51,7 @@ var taxCodeChange = (function () {
     }
 
     function getHeight(element) {
-      return $(element).height()
+      return $(element).height();
     }
 
     function isTaxCodePair(current, previous) {
@@ -60,9 +60,9 @@ var taxCodeChange = (function () {
 
     function mirrorElementHeight(current, previous) {
         if (getHeight(current) > getHeight(previous)) {
-            setHeight(previous, getHeight(current))
+            setHeight(previous, getHeight(current));
         } else {
-            setHeight(current, getHeight(previous))
+            setHeight(current, getHeight(previous));
         }
     }
 

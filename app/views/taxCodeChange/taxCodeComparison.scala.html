@@ -35,103 +35,6 @@
     )
 }
 
-@taxCodeRecordExplanation(taxCodeRecord: TaxCodeRecord, identifier: String) = {
-    @defining(TaxCodeChangeViewModel.getTaxCodeExplanations(taxCodeRecord, taxCodeChangeViewModel.scottishTaxRateBands)) { taxCodeDescription =>
-        <div class="tax-code-change__explanation">
-            @includes.details_summary(
-                taxCodeDescription.heading,
-                visuallyHiddenTitle = Some(Messages(
-                    "taxCode.change.yourTaxCodeChanged.understand",
-                    TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)
-                )),
-                panelClass = Some("tax-code-change__details")
-            ){
-                <ul role="list" class="tai-description-list">
-                    @for(taxCodeExplanation <- taxCodeDescription.descriptionItems) {
-                    <li role="listitem">
-                        <div class="bold-medium">
-                            <span class="visuallyhidden">@Messages("tai.taxCode.part.announce", taxCodeExplanation._1) </span>
-                            <span aria-hidden="true">@taxCodeExplanation._1</span>
-                        </div>
-                        <div class="fixed-small">
-                            <span class="visuallyhidden">@Messages("tai.taxCode.definition.announce")</span>
-                            @Html(taxCodeExplanation._2)
-                        </div>
-                    </li>
-                    }
-                </ul>
-            }
-        </div>
-    }
-}
-
-@taxCodeRecordPayrollHtml(taxCodeRecord: TaxCodeRecord) = {
-    @taxCodeRecord.payrollNumber.map { number =>
-        @if(number.length > 0) {
-            @if(taxCodeRecord.pensionIndicator) {
-                @taxCodeRecordPayrollInfo(number, "tai.pensionNumber", "tai.pension.income.details.pensionNumber.screenReader")
-            } else {
-                @taxCodeRecordPayrollInfo(number, "tai.payRollNumber", "tai.employment.income.details.payrollNumber.screenReader")
-            }
-        }
-    }
-}
-
-@taxCodeRecordPayrollInfo(payrollNumber: String, messageKey: String, screenKey: String) = {
-    <div aria-hidden="true">
-        @Messages(messageKey): @payrollNumber
-    </div>
-    <span class="visuallyhidden">
-        @Messages(screenKey, payrollNumber)
-    </span>
-}
-
-@taxCodeRecordPodHtml(taxCodeRecord: TaxCodeRecord, identifier: String) = {
-    <div class="tax-code-change__pod">
-        <h3 class="tax-code-change__employment-heading heading-medium flush--top flush--bottom break-word">@taxCodeRecord.employerName</h3>
-
-        <div class="tax-code-change__payroll">@taxCodeRecordPayrollHtml(taxCodeRecord)</div>
-        <div aria-hidden="true" class="tax-code-change__date bold-small flush--top">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</div>
-        <div aria-hidden="true" class="tax-code-change__tax-code bold-large">@TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)</div>
-
-        <span class="visuallyhidden">
-            @Messages(
-                s"taxCode.change.yourTaxCodeChanged.${identifier}TaxCodeDetails.screenReader",
-                Dates.formatDate(taxCodeRecord.startDate),
-                Dates.formatDate(taxCodeRecord.endDate),
-                taxCodeRecord.employerName,
-                TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)
-            )
-        </span>
-
-        @taxCodeRecordExplanation(taxCodeRecord, identifier)
-    </div>
-
-}
-
-@taxCodeRecordPod(taxCodeRecord: Option[TaxCodeRecord], identifier: String) = {
-    @{taxCodeRecord match {
-        case Some(taxCodeRecord) => taxCodeRecordPodHtml(taxCodeRecord, identifier)
-        case _ => None
-    }}
-}
-
-@taxCodePairs(taxCodePairs: TaxCodePairs) = {
-    <div class="column-half tax-code-change__previous">
-        <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes")</h2>
-        @for((pair) <- taxCodePairs.pairs) {
-            @taxCodeRecordPod(pair.previous, "previous")
-        }
-    </div>
-
-    <div class="column-half tax-code-change__current">
-        <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.currentTaxCodes")</h2>
-        @for((pair) <- taxCodePairs.pairs) {
-            @taxCodeRecordPod(pair.current, "current")
-        }
-    </div>
-}
-
 @main(
     title = Messages("taxCode.change.journey.preHeading"),
     pageHeader = Some(header),
@@ -151,4 +54,28 @@
         </a>
     </div>
 </div>
+}
+
+
+@taxCodeRecordPod(taxCodeRecord: Option[TaxCodeRecord], identifier: String) = {
+    @{taxCodeRecord match {
+        case Some(taxCodeRecord) => formattedTaxCodeForComparison(taxCodeRecord, identifier, taxCodeChangeViewModel.scottishTaxRateBands)
+        case _ => None
+    }}
+}
+
+@taxCodePairs(taxCodePairs: TaxCodePairs) = {
+    <div class="column-half tax-code-change__previous">
+        <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes")</h2>
+        @for((pair) <- taxCodePairs.pairs) {
+            @taxCodeRecordPod(pair.previous, "previous")
+        }
+    </div>
+
+    <div class="column-half tax-code-change__current">
+        <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.currentTaxCodes")</h2>
+        @for((pair) <- taxCodePairs.pairs) {
+            @taxCodeRecordPod(pair.current, "current")
+        }
+    </div>
 }
