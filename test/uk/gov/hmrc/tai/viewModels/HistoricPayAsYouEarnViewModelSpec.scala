@@ -111,6 +111,27 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
       }
     }
 
+    "return pensions" when {
+      "the income sources receivingOccupationalPension is set to true" in {
+        val employment = Employment("test pension", Some("111111"), empStartDateWithinCYMinusOne,
+          None, Seq(annualAccountWithMultiplePayments), "", "", 2, None, false, true)
+
+        val sut = createSut(Seq(employment))
+
+        val employmentVMs = sut.employments
+        val pensionVMs = sut.pensions
+
+        employmentVMs mustBe Nil
+
+        pensionVMs.length mustBe 1
+
+        val pensionVM = pensionVMs.head
+
+        pensionVM.name mustBe "test pension"
+        pensionVM.id mustBe 2
+      }
+    }
+
     "return multiple employments sorted with an Id and with a YTD totalIncome from multiple payments" when {
       "multiple employments are supplied containing an AnnualAccount which has multiple payments" in {
 
