@@ -21,7 +21,11 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
 
-case class HistoricPayAsYouEarnViewModel(taxYear: TaxYear, employments: Seq[EmploymentViewModel], hasEmployments: Boolean) {
+case class HistoricPayAsYouEarnViewModel(taxYear: TaxYear,
+                                          employments: Seq[EmploymentViewModel],
+                                          //pensions: Seq[EmploymentViewModel],
+                                          hasEmploymentsOrPensions: Boolean) {
+
   val p800ServiceIsAvailable: Boolean = taxYear == TaxYear().prev
 }
 
@@ -29,10 +33,19 @@ object HistoricPayAsYouEarnViewModel {
 
   def apply(taxYear: TaxYear, employments: Seq[Employment])(implicit messages: Messages): HistoricPayAsYouEarnViewModel = {
     val employmentVMs: Seq[EmploymentViewModel] = filterEmployments(taxYear, employments) sortBy(_.id)
+    val pensionsVMs: Seq[EmploymentViewModel] = filterPensions(taxYear, employments) sortBy(_.id)
+//    HistoricPayAsYouEarnViewModel(taxYear, employmentVMs, pensionsVMs, employments.nonEmpty)
     HistoricPayAsYouEarnViewModel(taxYear, employmentVMs, employments.nonEmpty)
   }
 
   private def filterEmployments(taxYear: TaxYear, employments: Seq[Employment]): Seq[EmploymentViewModel] = {
+    for {
+      emp <- employments
+      account <- emp.annualAccounts.find(_.taxYear.year == taxYear.year)
+    } yield EmploymentViewModel(emp.name, account.totalIncomeYearToDate, emp.sequenceNumber)
+  }
+
+  private def filterPensions(taxYear: TaxYear, employments: Seq[Employment]): Seq[EmploymentViewModel] = {
     for {
       emp <- employments
       account <- emp.annualAccounts.find(_.taxYear.year == taxYear.year)

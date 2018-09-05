@@ -16,6 +16,8 @@
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.play.views.helpers.MoneyPounds
+@import uk.gov.hmrc.tai.util.ViewModelHelper._
 @import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 @import uk.gov.hmrc.urls.Link
 
@@ -36,7 +38,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
 </p>
 }
 
-@pairsList = @{viewModel.employments.sliding(2, 2).toList}
+@employmentPairsList = @{viewModel.employments.sliding(2, 2).toList}
 
 @header = @{
     ptaHeader(
@@ -57,10 +59,10 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
 
 <div class="grid-layout grid-layout--stacked">
 
-    <div class="column-two-thirds">
+    <div class="grid-row column-two-thirds">
 
         <div id="lastTaxYear">
-            @if(!viewModel.hasEmployments) {
+            @if(!viewModel.hasEmploymentsOrPensions) {
                 <div class="flush--bottom soft--bottom" id="rtiDown">
                     <p id="rtiDownMessage">@Messages("tai.rti_down_message")</p>
                     <p id="rtiDownContact">@Messages("tai.rti_down_message_contact")</p>
@@ -69,9 +71,10 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                 <section id="lastTaxYearIncome">
 
                     <h2 id="lastYearHeading" class="heading-section">
-                        @Messages("tai.paye.incomeEmployment.heading")</h2>
+                        @Messages("tai.paye.incomeEmployment.heading")
+                    </h2>
 
-                    @for((pair, pidx) <- pairsList zip (Stream from (1,2))) {
+                    @for((pair, pidx) <- employmentPairsList zip (Stream from (1,2))) {
 
                         <div class="grid-row">
 
@@ -80,14 +83,14 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                                 <div id="employment@idx" class="subsection flush--top @if(pair.length==1){column-full}else{column-one-half}">
                                     <h3 class="heading-large flush break-word-only">@employment.name</h3>
                                     <p class="flush--top">
-                                        <span class="heading-36 faded-text-dark">£@employment.taxablePayYTD</span>
+                                        <span class="heading-36 faded-text-dark">@withPoundPrefix(MoneyPounds(employment.taxablePayYTD))</span>
                                     </p>
                                     <p class="flush--top">
                                         @includes.link(
-                                        id = Some("checkDetailsLink"),
-                                        url = routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(viewModel.taxYear, employment.id).toString(),
-                                        copy=Messages("tai.paye.lastTaxYear.table.link"),
-                                        altCopy=Some(Messages("tai.paye.lastTaxYear.table.reader.link", employment.name))
+                                            id = Some("checkDetailsLink"),
+                                            url = routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(viewModel.taxYear, employment.id).toString(),
+                                            copy=Messages("tai.paye.lastTaxYear.table.link"),
+                                            altCopy=Some(Messages("tai.paye.lastTaxYear.table.reader.link", employment.name))
                                         )
                                     </p>
                                 </div>
@@ -123,7 +126,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
     </div>
     @if(noOfPreviousYearsToShow > 1) {
     <div class="column-one-third">
-        @includes.previousYearsSideNav(viewModel.taxYear, noOfPreviousYearsToShow)
+        @includes.previousYearsSideNav(viewModel.taxYear, noOfPreviousYearsToShow, "left", 2)
     </div>
     }
 </div>

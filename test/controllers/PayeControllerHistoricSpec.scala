@@ -97,7 +97,7 @@ class PayeControllerHistoricSpec extends PlaySpec
       doc.select("#lastTaxYear").size must be(1)
 
       val navItems = doc.getElementById("previousYearsSideNav").getElementsByTag("li")
-      navItems.size() must be(5)
+      navItems.size() must be(4)
     }
 
     "Redirect to the paye controller" when {

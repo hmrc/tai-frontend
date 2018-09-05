@@ -21,14 +21,20 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import controllers.routes
 
-@(selectedYear: TaxYear, noOfPreviousYearsToShow: Int)(implicit messages: Messages)
 
-<div class="side-navigation side-navigation--right">
+@(
+    selectedYear: TaxYear,
+    noOfPreviousYearsToShow: Int,
+    side: String = "right",
+    numberOfYearsIgnored: Int = 1
+)(implicit messages: Messages)
+
+<div class="side-navigation side-navigation--@side">
     <h2 id="heading" class="heading-section">@messages("tai.taxYearHeading")</h2>
 
     <nav id="previousYearsSideNav">
         <ul>
-            @for(year <- (TaxYearResolver.currentTaxYear - 1) to (TaxYearResolver.currentTaxYear -
+            @for(year <- (TaxYearResolver.currentTaxYear - numberOfYearsIgnored) to (TaxYearResolver.currentTaxYear -
             noOfPreviousYearsToShow) by -1) {
             <li>
                 @if(selectedYear.year == year){

@@ -94,7 +94,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
 
           doc must haveElementAtPathWithId("div", "employment1")
           doc must haveHeadingH3WithText("employment")
-          doc must haveParagraphWithText("£0.0")
+          doc must haveParagraphWithText("£0.00")
           doc must haveLinkElement(
             "checkDetailsLink",
             controllers.routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(vm.taxYear,employment.id).url,
