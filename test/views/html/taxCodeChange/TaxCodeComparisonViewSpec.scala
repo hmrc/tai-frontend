@@ -30,12 +30,29 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
   val taxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOperation, "Employer 1", true, Some("1234"), true)
-  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear, payrollNumber = None)
   val taxCodeRecord3 = taxCodeRecord1.copy(taxCode = "BR", startDate = startDate.plusDays(3), endDate = TaxYearResolver.endOfCurrentTaxYear, pensionIndicator = false, payrollNumber = Some("Payroll Number"))
   val taxCodeChange: TaxCodeChange = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
   val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
 
   override def view = views.html.taxCodeChange.taxCodeComparison(viewModel)
+
+  def testTaxCodeRecordFormat(record: TaxCodeRecord) = {
+    doc(view) must haveHeadingH3WithText(record.employerName)
+    doc(view) must haveClassWithText(Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(record.startDate)), "tax-code-change__date")
+    doc(view).toString must include(record.taxCode)
+
+    doc(view) must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
+
+    for (explanation <- TaxCodeChangeViewModel.getTaxCodeExplanations(record, Map[String, BigDecimal]()).descriptionItems) {
+      doc(view) must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.understand", record.taxCode))
+      doc(view) must haveClassWithText(explanation._1, "tax-code-change__part")
+
+      doc(view) must haveClassWithText(explanation._2, "tax-code-change__part-definition")
+      doc(view) must haveClassWithText(Messages("tai.taxCode.part.announce", explanation._1), "visuallyhidden")
+      doc(view) must haveClassWithText(Messages("tai.taxCode.definition.announce"), "visuallyhidden")
+    }
+  }
 
   "tax code comparison" should {
     behave like pageWithBackLink
@@ -59,35 +76,11 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     }
 
     "display the previous tax codes" in {
-      taxCodeChange.previous.foreach(record => {
-        doc(view) must haveHeadingH3WithText(record.employerName)
-        doc(view) must haveClassWithText(Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(record.startDate)), "tax-code-change__date")
-        doc(view).toString must include(record.taxCode)
-
-        doc(view) must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
-
-        for (explanation <- TaxCodeChangeViewModel.getTaxCodeExplanations(record, Map[String, BigDecimal]()).descriptionItems) {
-          doc(view) must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.understand", record.taxCode))
-          doc(view) must haveSpanWithText(explanation._1)
-          doc(view) must haveClassWithText(Messages("tai.taxCode.definition.announce") + " " + {explanation._2}, "fixed-small")
-        }
-      })
+      taxCodeChange.previous.foreach(testTaxCodeRecordFormat)
     }
 
     "display the current tax codes" in {
-      taxCodeChange.current.foreach(record => {
-        doc(view) must haveHeadingH3WithText(record.employerName)
-        doc(view) must haveClassWithText(Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(record.startDate)), "tax-code-change__date")
-        doc(view).toString must include(record.taxCode)
-
-        doc(view) must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
-
-        for (explanation <- TaxCodeChangeViewModel.getTaxCodeExplanations(record, Map[String, BigDecimal]()).descriptionItems) {
-          doc(view) must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.understand", record.taxCode))
-          doc(view) must haveSpanWithText(explanation._1)
-          doc(view) must haveClassWithText(Messages("tai.taxCode.definition.announce") + " " + {explanation._2}, "fixed-small")
-        }
-      })
+      taxCodeChange.current.foreach(testTaxCodeRecordFormat)
     }
 
     "display a button linking to the 'check your tax-free amount page" in {
@@ -109,7 +102,8 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     }
 
     "does not display payroll or pension number when the payrollNumber does not exist" in {
-
+      doc must haveClassCount("tax-code-change__payroll", 4)
+      doc must haveClassCount("tax-code-change__payroll-number", 3)
     }
   }
 }

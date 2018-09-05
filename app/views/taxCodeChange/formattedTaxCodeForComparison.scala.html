@@ -60,12 +60,12 @@
                     @for(taxCodeExplanation <- taxCodeDescription.descriptionItems) {
                     <li role="listitem">
                         <div class="bold-medium">
-                            <span class="visuallyhidden">@Messages("tai.taxCode.part.announce", taxCodeExplanation._1) </span>
-                            <span aria-hidden="true">@taxCodeExplanation._1</span>
+                            <span class="visuallyhidden">@Messages("tai.taxCode.part.announce", taxCodeExplanation._1)</span>
+                            <span class="tax-code-change__part" aria-hidden="true">@taxCodeExplanation._1</span>
                         </div>
                         <div class="fixed-small">
                             <span class="visuallyhidden">@Messages("tai.taxCode.definition.announce")</span>
-                            @Html(taxCodeExplanation._2)
+                            <span class="tax-code-change__part-definition">@Html(taxCodeExplanation._2)</span>
                         </div>
                     </li>
                     }
@@ -88,7 +88,7 @@
 }
 
 @taxCodeRecordPayrollInfo(payrollNumber: String, messageKey: String, screenReaderKey: String) = {
-    <div aria-hidden="true">
+    <div class="tax-code-change__payroll-number" aria-hidden="true">
         @Messages(messageKey): @payrollNumber
     </div>
     <span class="visuallyhidden">
