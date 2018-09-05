@@ -16,28 +16,22 @@
 
 package uk.gov.hmrc.tai.util
 
-import org.joda.time.LocalDate
-import play.api.i18n.Messages
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import org.scalatestplus.play.PlaySpec
 
-object DateHelper {
+class DateHelperSpec extends PlaySpec {
 
-  def toDisplayFormat(date: Option[LocalDate])(implicit messages: Messages): String = {
-    date match {
-      case Some(dt) => Dates.formatDate(dt)
-      case _ => ""
+  "Date helper month" must {
+    "return month" when {
+      "provided with a valid date in any alpha format" in {
+        DateHelper.monthOfYear("28 February 2018") must be("February")
+      }
     }
-  }
 
-  implicit val dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isAfter _)
-
-  def mostRecentDate(dates: Seq[LocalDate]): LocalDate = {
-    dates.min
-  }
-
-  def monthOfYear(date: String): String = {
-    var monthRegex = "[A-Za-z]+".r
-    monthRegex.findFirstIn(date).getOrElse("")
+    "return empty string" when {
+      "provided with numerical date" in {
+        DateHelper.monthOfYear("28/2/2018") must be("")
+      }
+    }
   }
 
 }

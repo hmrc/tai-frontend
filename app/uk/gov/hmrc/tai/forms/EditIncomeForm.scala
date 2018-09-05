@@ -25,7 +25,8 @@ import play.api.libs.json.Json
 import play.api.mvc.Request
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.EmploymentAmount
-import uk.gov.hmrc.tai.util.FormHelper
+import uk.gov.hmrc.tai.util.{DateHelper, FormHelper}
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 
 case class EditIncomeForm(name : String, description : String,
@@ -106,7 +107,9 @@ object EditIncomeForm {
            errMessage: Option[String] = None)(implicit request: Request[_], messages: Messages) = createForm(taxablePayYTD, payDate, errMessage).bindFromRequest
 
   private def createForm (taxablePayYTD: BigDecimal, payDate: Option[LocalDate] = None, errMessage: Option[String] = None)(implicit messages: Messages) :Form[EditIncomeForm] = {
-    val date = if(payDate.isDefined) payDate.get.monthOfYear.getAsText() else ""
+
+    val date = payDate.map (date => DateHelper.monthOfYear(Dates.formatDate(date))).getOrElse("")
+
     val errMsg = errMessage.getOrElse("error.tai.updateDataEmployment.enterLargerValue")
     Form[EditIncomeForm](
       mapping(
