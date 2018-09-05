@@ -525,7 +525,7 @@ class IncomeControllerSpec extends PlaySpec
   val nino = new Generator(new Random).nextNino
 
   def employmentWithAccounts(accounts:List[AnnualAccount]) = Employment("ABCD", Some("ABC123"), new LocalDate(2000, 5, 20),
-    None, accounts, "", "", 8, None, false)
+    None, accounts, "", "", 8, None, false, false)
 
   def paymentOnDate(date: LocalDate) = Payment(
     date = date,
@@ -546,7 +546,7 @@ class IncomeControllerSpec extends PlaySpec
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val employmentAmount = EmploymentAmount("employment","(Current employer)",1,1111,1111,
-    None,None,Some(new LocalDate(2000, 5, 20)),None,true,false)
+    None,None,Some(new LocalDate(2000, 5, 20)), None, true, false)
 
   private def createSUT = new SUT
   private class SUT extends IncomeController {

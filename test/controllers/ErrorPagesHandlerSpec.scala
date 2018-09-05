@@ -217,7 +217,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "nps tax account responds with a 'no primary employment' message (data is absent), but employment data is available for previous year" in {
         val handler = createSut
-        val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false))
+        val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false))
         val partialErrorFunction = handler.npsTaxAccountAbsentResult_withEmployCheck(employmentDetails)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsTaxAccountDataAbsentMsg))
         result mustBe None
@@ -232,7 +232,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "nps tax account responds with a 'no tax account information' message (data is absent), but employment data is available for previous year" in {
         val handler = createSut
-        val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false))
+        val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false))
         val partialErrorFunction = handler.npsTaxAccountCYAbsentResult_withEmployCheck(employmentDetails)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsTaxAccountCYDataAbsentMsg))
         result mustBe None
@@ -247,7 +247,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "nps tax account responds with a 'no employments recorded for current tax year' message, but employment data is available for previous year" in {
         val exceptionController = createSut
-        val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false))
+        val employmentDetails = Seq(Employment("company name", Some("123"), new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false))
         val partialErrorFunction = exceptionController.npsNoEmploymentForCYResult_withEmployCheck(employmentDetails)
         val result = partialErrorFunction(TaiTaxAccountFailureResponse(NpsNoEmploymentForCurrentTaxYear))
         result mustBe None

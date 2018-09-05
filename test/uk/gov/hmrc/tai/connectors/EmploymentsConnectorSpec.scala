@@ -259,11 +259,11 @@ class EmploymentsConnectorSpec extends PlaySpec
 
 
   private val anEmploymentObject = Employment("company name", Some("123"),
-    new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "123", "321", 2, None, false)
+    new LocalDate("2016-05-26"), Some(new LocalDate("2016-05-26")), Nil, "123", "321", 2, None, false, false)
 
   private val oneEmploymentDetails = List(anEmploymentObject)
   private val twoEmploymentsDetails = oneEmploymentDetails.head :: oneEmploymentDetails.head.copy(taxDistrictNumber = "1234",
-    payeNumber = "4321", sequenceNumber = 3) :: Nil
+    payeNumber = "4321", sequenceNumber = 3, receivingOccupationalPension = true) :: Nil
 
   private val zeroEmployments =
     """{
@@ -284,7 +284,8 @@ class EmploymentsConnectorSpec extends PlaySpec
             "payeNumber": "321",
             "sequenceNumber": 2,
             "isPrimary": true,
-            "hasPayrolledBenefit" : false
+            "hasPayrolledBenefit" : false,
+            "receivingOccupationalPension": false
           }
         }"""
 
@@ -302,7 +303,8 @@ class EmploymentsConnectorSpec extends PlaySpec
             "payeNumber": "321",
             "sequenceNumber": 2,
             "isPrimary": true,
-            "hasPayrolledBenefit" : false
+            "hasPayrolledBenefit" : false,
+            "receivingOccupationalPension": false
           }]}
         }"""
 
@@ -320,7 +322,8 @@ class EmploymentsConnectorSpec extends PlaySpec
  |            "payeNumber": "321",
  |            "sequenceNumber": 2,
  |            "isPrimary": true,
- |            "hasPayrolledBenefit" : false
+ |            "hasPayrolledBenefit" : false,
+ |            "receivingOccupationalPension" : false
  |          },
  |          {
  |            "name": "company name",
@@ -332,7 +335,8 @@ class EmploymentsConnectorSpec extends PlaySpec
  |            "payeNumber": "4321",
  |            "sequenceNumber": 3,
  |            "isPrimary": true,
- |            "hasPayrolledBenefit" : false
+ |            "hasPayrolledBenefit" : false,
+ |            "receivingOccupationalPension" : true
  |          }]}
         }""".stripMargin
 

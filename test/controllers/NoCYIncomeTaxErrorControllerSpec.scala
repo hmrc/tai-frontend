@@ -136,7 +136,7 @@ class NoCYIncomeTaxErrorControllerSpec
 
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(person))
 
-    val sampleEmployment = Seq(Employment("empName", None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false))
+    val sampleEmployment = Seq(Employment("empName", None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false, false))
 
     employmentDataFailure match {
       case None => when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))

@@ -299,7 +299,7 @@ class EndEmploymentControllerSpec
       val sut = createSUT
       when(sut.journeyCacheService.currentValueAsDate(any())(any())).thenReturn(Future.successful(Some(new LocalDate("2017-9-9"))))
       when(sut.employmentService.employment(any(), any())(any()))
-        .thenReturn(Future.successful(Some(Employment(employerName, None, new LocalDate(), None, Nil, "", "", 1, None, false))))
+        .thenReturn(Future.successful(Some(Employment(employerName, None, new LocalDate(), None, Nil, "", "", 1, None, false, false))))
       val result = sut.endEmploymentPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
     }
@@ -308,7 +308,7 @@ class EndEmploymentControllerSpec
       when(sut.journeyCacheService.currentValueAsDate(any())(any()))
         .thenReturn(Future.successful(None))
       when(sut.employmentService.employment(any(), any())(any()))
-        .thenReturn(Future.successful(Some(Employment(employerName, None, new LocalDate(), None, Nil, "", "", 1, None, false))))
+        .thenReturn(Future.successful(Some(Employment(employerName, None, new LocalDate(), None, Nil, "", "", 1, None, false, false))))
       val result = sut.endEmploymentPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
     }
@@ -598,7 +598,7 @@ class EndEmploymentControllerSpec
   }
 
   def employmentWithAccounts(accounts:List[AnnualAccount]) = Employment("employer", Some("emp123"), new LocalDate(2000, 5, 20),
-    None, accounts, "", "", 8, None, false)
+    None, accounts, "", "", 8, None, false, false)
 
   def paymentOnDate(date: LocalDate) = Payment(
     date = date,
@@ -634,7 +634,7 @@ class EndEmploymentControllerSpec
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
 
     when(employmentService.employment(any(), any())(any()))
-      .thenReturn(Future.successful(Some(Employment(employerName, None, new LocalDate(), None, Nil, "", "", 1, None, false))))
+      .thenReturn(Future.successful(Some(Employment(employerName, None, new LocalDate(), None, Nil, "", "", 1, None, false, false))))
 
     when(journeyCacheService.currentValueAsDate(any())(any())).thenReturn(Future.successful(Some(new LocalDate("2017-9-9"))))
     when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(Some(("Test Value"))))
