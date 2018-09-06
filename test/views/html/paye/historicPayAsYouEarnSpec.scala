@@ -121,10 +121,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
           doc must haveLinkElement(
             "p800Link",
             ApplicationConfig.taxYouPaidStatus,
-            messages("tai.paye.lastTaxYear.checkTax.link")
+            messages("tai.paye.lastTaxYear.checkIncomeTax.link")
           )
-          doc must haveHeadingH3WithText(messages("tai.paye.lastTaxYear.checkTax.somethingNotRight"))
-          doc must haveHeadingH3WithText(messages("tai.paye.lastTaxYear.checkTax.text"))
+          doc must haveHeadingH3WithText(messages("tai.paye.lastTaxYear.incorrectInformation.title"))
         }
       }
 
@@ -149,10 +148,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
           doc must haveLinkElement(
             "p800Link",
             ApplicationConfig.taxYouPaidStatus,
-            messages("tai.paye.lastTaxYear.checkTax.link")
+            messages("tai.paye.lastTaxYear.checkIncomeTax.link")
           )
-          doc must haveHeadingH3WithText(messages("tai.paye.lastTaxYear.checkTax.somethingNotRight"))
-          doc must haveHeadingH3WithText(messages("tai.paye.lastTaxYear.checkTax.text"))
+          doc must haveHeadingH3WithText(messages("tai.paye.lastTaxYear.incorrectInformation.title"))
         }
       }
 
@@ -167,7 +165,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
           val sut: Html = createSut(vm)
           val doc: Document = Jsoup.parse(sut.toString)
 
-          doc must haveLinkWithText(messages("tai.paye.lastTaxYear.checkTax.sendUpdate.link", TaxPeriodLabelService.taxPeriodLabel(vm.taxYear.year)))
+          doc must haveLinkWithText(messages("tai.paye.lastTaxYear.incorrectInformation.link"))
           doc must haveLinkWithUrlWithID("updateEmployment", controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(vm.taxYear).url)
         }
       }
@@ -191,7 +189,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
               doc must haveLinkElement(
                 "p800Link",
                 ApplicationConfig.taxYouPaidStatus,
-                messages("tai.paye.lastTaxYear.checkTax.link")
+                messages("tai.paye.lastTaxYear.checkIncomeTax.link")
               )
             }
           }
@@ -227,7 +225,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
               doc must haveLinkElement(
                 "p800Link",
                 ApplicationConfig.taxYouPaidStatus,
-                messages("tai.paye.lastTaxYear.checkTax.link")
+                messages("tai.paye.lastTaxYear.checkIncomeTax.link")
               )
             }
           }
@@ -247,7 +245,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
         doc must haveLinkElement(
           "p800Link",
           ApplicationConfig.taxYouPaidStatus,
-          messages("tai.paye.lastTaxYear.checkTax.link")
+          messages("tai.paye.lastTaxYear.checkIncomeTax.link")
         )
 
         doc.select("#rtiDown").size mustBe 0
@@ -328,7 +326,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
 
         val doc: Document = Jsoup.parse(sut.toString)
 
-        doc.select(".column-one-third").size() mustBe 1
+        doc.select(".grid-1-3").size() mustBe 1
       }
     }
 

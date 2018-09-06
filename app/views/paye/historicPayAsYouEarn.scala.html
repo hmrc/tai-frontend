@@ -60,11 +60,11 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
     gaCustomTitle = None
 ){
 
-<div class="grid-row grid-layout grid-layout--stacked">
+<div class="grid-row">
 
-    <div class="column-two-thirds">
+    <div class="grid grid-2-3">
 
-        <div id="lastTaxYear">
+        <div class="inner-block" id="lastTaxYear">
             @if(!viewModel.hasEmploymentsOrPensions) {
                 <div class="flush--bottom soft--bottom" id="rtiDown">
                     <p id="rtiDownMessage">@Messages("tai.rti_down_message")</p>
@@ -106,7 +106,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                     @Link.toInternalPage(
                         url=ApplicationConfig.taxYouPaidStatus.toString,
                         value=Some(Messages("tai.paye.lastTaxYear.checkIncomeTax.link")),
-                        id=Some("updateEmployment")
+                        id=Some("p800Link")
                     ).toHtml
                     @Messages("tai.paye.lastTaxYear.checkIncomeTax.for", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year))
                 </p>
@@ -114,8 +114,10 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
         </div>
     </div>
     @if(noOfPreviousYearsToShow > 1) {
-    <div class="column-one-third">
-        @includes.previousYearsSideNav(viewModel.taxYear, noOfPreviousYearsToShow, "left", 2)
+    <div class="grid grid-1-3">
+        <div class="inner-block">
+            @includes.previousYearsSideNav(viewModel.taxYear, noOfPreviousYearsToShow, "left", 2)
+        </div>
     </div>
     }
 </div>
