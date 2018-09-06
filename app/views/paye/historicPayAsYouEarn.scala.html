@@ -60,9 +60,9 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
     gaCustomTitle = None
 ){
 
-<div class="grid-layout grid-layout--stacked">
+<div class="grid-row grid-layout grid-layout--stacked">
 
-    <div class="grid-row column-two-thirds">
+    <div class="column-two-thirds">
 
         <div id="lastTaxYear">
             @if(!viewModel.hasEmploymentsOrPensions) {
@@ -91,26 +91,25 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                 </section>
             }
 
-            <h3 class="heading-medium">@Messages("tai.paye.lastTaxYear.checkTax.somethingNotRight")</h3>
-            <div class="subsection flush--top">
+            <h3 class="heading-section heading-medium">@Messages("tai.paye.lastTaxYear.incorrectInformation.title")</h3>
+            <p>
+                @Messages("tai.paye.lastTaxYear.incorrectInformation.text")
                 @Link.toInternalPage(
-                url=controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(viewModel.taxYear).url,
-                value=Some(Messages("tai.paye.lastTaxYear.checkTax.sendUpdate.link", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year))),
-                id=Some("updateEmployment")
+                    url=controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(viewModel.taxYear).url,
+                    value=Some(Messages("tai.paye.lastTaxYear.incorrectInformation.link")),
+                    id=Some("updateEmployment")
                 ).toHtml
-            </div>
-
+            </p>
             @if(viewModel.p800ServiceIsAvailable) {
-                <h3  class="heading-medium">@Messages("tai.paye.lastTaxYear.checkTax.text")</h3>
-
-                <div class="subsection flush--top">
-                    @includes.link(
-                        id=Some("p800Link"),
-                        copy=Messages("tai.paye.lastTaxYear.checkTax.link"),
-                        url = ApplicationConfig.taxYouPaidStatus.toString,
-                        isButton=true
-                    )
-                </div>
+                <p>
+                    @Messages("tai.paye.lastTaxYear.checkIncomeTax.text")
+                    @Link.toInternalPage(
+                        url=ApplicationConfig.taxYouPaidStatus.toString,
+                        value=Some(Messages("tai.paye.lastTaxYear.checkIncomeTax.link")),
+                        id=Some("updateEmployment")
+                    ).toHtml
+                    @Messages("tai.paye.lastTaxYear.checkIncomeTax.for", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year))
+                </p>
             }
         </div>
     </div>
