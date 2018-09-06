@@ -20,6 +20,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.urls.Link
 
 import scala.collection.immutable.ListMap
@@ -27,9 +28,6 @@ import scala.collection.immutable.ListMap
 trait TaxCodeDescriptor {
 
   case class TaxCodeDescription(taxCode: String, basisOperation: BasisOperation, scottishTaxRateBands: Map[String, BigDecimal])
-
-  val TaxAmountFactor = 10
-  val EmergencyTaxCode = "X"
 
   def describeTaxCode(taxCode: String, basisOperation: BasisOperation, scottishTaxRateBands: Map[String, BigDecimal])
               (implicit messages: Messages): ListMap[String, String] = {
@@ -61,7 +59,7 @@ trait TaxCodeDescriptor {
     untaxedRegex.findFirstIn(taxCode) match {
       case Some(code) =>
         val amount = taxAmount(taxCode)
-        val messageAmount = MoneyPounds(amount * TaxAmountFactor, 0).quantity
+        val messageAmount = MoneyPounds(amount * TaiConstants.TaxAmountFactor, 0).quantity
         ListMap(code -> Messages(s"tai.taxCode.$code"),
           amount.toString -> Messages(s"tai.taxCode.untaxedAmount", messageAmount))
       case _ => ListMap[String, String]()
@@ -86,7 +84,7 @@ trait TaxCodeDescriptor {
     suffixRegex.findFirstIn(taxCode) match {
       case Some(code) =>
         val amount = taxAmount(taxCode)
-        val messageAmount = MoneyPounds(amount * TaxAmountFactor, 0).quantity
+        val messageAmount = MoneyPounds(amount * TaiConstants.TaxAmountFactor, 0).quantity
         ListMap(amount.toString -> Messages(s"tai.taxCode.amount", messageAmount),
           code.last.toString -> Messages(s"tai.taxCode.${code.last.toString}"))
       case _ => ListMap[String, String]()
@@ -95,7 +93,7 @@ trait TaxCodeDescriptor {
 
   private def emergencyTaxCodeExplanation(implicit messages: Messages) = (taxCodeDescription: TaxCodeDescription) => {
     taxCodeDescription.basisOperation match {
-      case Week1Month1BasisOperation => ListMap(EmergencyTaxCode -> Messages("tai.taxCode.X"))
+      case Week1Month1BasisOperation => ListMap(TaiConstants.EmergencyTaxCode -> Messages("tai.taxCode.X"))
       case _ => ListMap[String, String]()
     }
   }
