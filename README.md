@@ -18,7 +18,6 @@ This service covers the current tax year. Use the service to:
 Requirements
 ------------
 
-
 This service is written in [Scala 2.11](http://www.scala-lang.org/) and [Play 2.5](http://playframework.com/), so needs at least a [JRE 1.8](http://www.oracle.com/technetwork/java/javase/downloads/index.html) to run. In addition to Scala and JRE dependencies, the service also depends on [node.js 4.8.4](https://nodejs.org/en/) and [npm 2.15.11](https://www.npmjs.com/).
 
 How to install node on Ubuntu

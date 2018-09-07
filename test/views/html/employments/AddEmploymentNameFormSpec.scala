@@ -28,7 +28,7 @@ class AddEmploymentNameFormSpec extends TaiViewSpec {
   "Add employment name form page" should {
     behave like pageWithTitle(messages("tai.addEmployment.addNameForm.title"))
     behave like pageWithCombinedHeader(
-      messages("tai.addEmployment.addEmploymentJourneyLink"),
+      messages("add.missing.employment"),
       messages("tai.addEmployment.addNameForm.title"))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-name")

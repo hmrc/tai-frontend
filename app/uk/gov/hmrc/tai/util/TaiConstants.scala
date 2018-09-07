@@ -201,11 +201,18 @@ trait BandTypesConstants {
   val TaxFreeAllowanceBand = "pa"
   val StarterSavingsRate = "SR"
   val PersonalSavingsRate = "PSR"
+  val SavingsBasicRate = "LSR"
+  val SavingsHigherRate = "HSR1"
+  val SavingsAdditionalRate = "HSR2"
   val DividendZeroRate = "SDR"
+  val DividendBasicRate = "LDR"
+  val DividendHigherRate = "HDR1"
+  val DividendAdditionalRate = "HDR2"
   val ZeroBand = "ZeroBand"
   val NonZeroBand = "NonZeroBand"
   val TaxGraph = "taxGraph"
   val TaxFree = "TaxFree"
+  val BasicRate = "B"
 }
 
 trait TaxRegionConstants {

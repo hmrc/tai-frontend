@@ -33,7 +33,7 @@ class AddEmploymentPayrollNumberSpec extends TaiViewSpec with FormValuesConstant
   "Add payroll number form page" must {
     behave like pageWithTitle(messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
     behave like pageWithCombinedHeader(
-      messages("tai.addEmployment.addEmploymentJourneyLink"),
+      messages("add.missing.employment"),
       messages("tai.addEmployment.employmentPayrollNumber.title", employerName))
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-payroll-number")

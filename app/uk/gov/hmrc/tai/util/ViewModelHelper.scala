@@ -17,12 +17,14 @@
 package uk.gov.hmrc.tai.util
 
 import java.net.URLEncoder
-import play.api.Play.current
+
+import org.joda.time.LocalDate
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.time.TaxYearResolver
-import TaiConstants.encodedMinusSign
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.util.TaiConstants.encodedMinusSign
+import uk.gov.hmrc.time.TaxYearResolver
+
 import scala.util.Try
 
 trait ViewModelHelper {
@@ -56,6 +58,16 @@ trait ViewModelHelper {
 
   def htmlNonBroken(string: String): String = {
     string.replace(" ", "\u00A0")
+  }
+
+  def dynamicDateRangeHtmlNonBreak(from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {
+    if(from isAfter to) {
+      throw new IllegalArgumentException(s"From date:$from cannot be after To date:$to")
+    } else {
+        messages("tai.taxYear",
+        htmlNonBroken(Dates.formatDate(from)),
+        htmlNonBroken(Dates.formatDate(to)))
+    }
   }
 
   def isTrue(str: String): Boolean = Try(str.toBoolean).getOrElse(false)

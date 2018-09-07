@@ -28,4 +28,16 @@ object DateHelper {
       case _ => ""
     }
   }
+
+  implicit val dateTimeOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isAfter _)
+
+  def mostRecentDate(dates: Seq[LocalDate]): LocalDate = {
+    dates.min
+  }
+
+  def monthOfYear(date: String): String = {
+    var monthRegex = "[A-Za-z]+".r
+    monthRegex.findFirstIn(date).getOrElse("")
+  }
+
 }

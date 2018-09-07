@@ -38,7 +38,7 @@ class BankBuildingSocietyCloseDateSpec extends TaiViewSpec {
     behave like pageWithHeader(messages("tai.closeBankAccount.closeDateForm.title", bankName))
 
     behave like pageWithCombinedHeader(
-      messages("tai.closeBankAccount.preHeadingText"),
+      messages("account.closed"),
       messages("tai.closeBankAccount.closeDateForm.title", bankName)
     )
 

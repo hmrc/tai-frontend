@@ -25,7 +25,7 @@ class AddPensionErrorPageSpec extends TaiViewSpec {
   "Display error page when pension provider cannot be added" must {
     behave like pageWithTitle(messages("tai.addPensionProvider.errorPage.title"))
     behave like pageWithCombinedHeader(
-      messages("tai.addPensionProvider.preHeadingText"),
+      messages("add.missing.pension"),
       messages("tai.addPensionProvider.errorPage.title"))
 
     "have link" in {

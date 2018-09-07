@@ -54,7 +54,7 @@ object CheckYourAnswersViewModel {
     val postConfirmationText = Messages("tai.checkYourAnswers.confirmText")
 
     CheckYourAnswersViewModel(
-      Messages("tai.addPensionProvider.preHeadingText"),
+      Messages("add.missing.pension"),
       controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url,
       Messages("tai.addPensionProvider.cya.title"),
       journeyConfirmationLines,

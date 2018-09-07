@@ -21,8 +21,10 @@
   gaLabel: Option[String] = None,
   heading: String,
   headingTag: String = "h2",
-  bodyContent: Option[String] = None
-  )
+  bodyContent: Option[String] = None,
+  cardActionUrl: Option[String] = None,
+  cardActionText: Option[String] = None
+)
 
 <div class="@cardClass" id="@id">
 
@@ -40,4 +42,9 @@
     <p>@bodyContent</p>
   </div>
 
+  @if(cardActionUrl && cardActionText) {
+    <div class='card-action'>
+        <a href="@cardActionUrl">@cardActionText</a>
+    </div>
+  }
 </div>
