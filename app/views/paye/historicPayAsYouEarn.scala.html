@@ -136,6 +136,12 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                     <p class="flush--top">
                         <span class="heading-36 faded-text-dark">@withPoundPrefix(MoneyPounds(employment.taxablePayYTD))</span>
                     </p>
+                    @employment.payrollNumber.map{ payrollNumber =>
+                        <p>
+                            @Messages("tai.incomeTaxSummary.payrollNumber.prefix", payrollNumber)
+                        </p>
+                    }
+
                     <p class="flush--top">
                         @includes.link(
                             id = Some("checkDetailsLink"),

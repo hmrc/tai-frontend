@@ -28,7 +28,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.Person
+import uk.gov.hmrc.tai.model.domain.{Employment, Person}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 
@@ -65,11 +65,11 @@ with Auditable {
       Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()))
     } else {
       for {
-        emp <- employmentService.employments(nino, taxYear)
+        employments: Seq[Employment] <- employmentService.employments(nino, taxYear)
       } yield {
         checkedAgainstPersonDetails(
           person,
-          Ok(views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(taxYear, emp), numberOfPreviousYearsToShow))
+          Ok(views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(taxYear, employments), numberOfPreviousYearsToShow))
         )
       }
     }

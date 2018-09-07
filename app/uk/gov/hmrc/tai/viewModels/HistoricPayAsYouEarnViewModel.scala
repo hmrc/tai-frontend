@@ -42,8 +42,8 @@ object HistoricPayAsYouEarnViewModel {
     for {
       emp <- employments
       account <- emp.annualAccounts.find(_.taxYear.year == taxYear.year)
-    } yield EmploymentViewModel(emp.name, account.totalIncomeYearToDate, emp.sequenceNumber, emp.receivingOccupationalPension)
+    } yield EmploymentViewModel(emp.name, account.totalIncomeYearToDate, emp.sequenceNumber, emp.receivingOccupationalPension,emp.payrollNumber)
   }
 
-  case class EmploymentViewModel(name: String, taxablePayYTD: BigDecimal, id: Int, isPension: Boolean)
+  case class EmploymentViewModel(name: String, taxablePayYTD: BigDecimal, id: Int, isPension: Boolean,payrollNumber:Option[String])
 }
