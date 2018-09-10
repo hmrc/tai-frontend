@@ -24,6 +24,7 @@ case class TaxCodeChange(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecor
 
   val mostRecentTaxCodeChangeDate: LocalDate = DateHelper.mostRecentDate(current.map(_.startDate))
 
+  lazy val uniqueTaxCodes: Seq[String] = (previous ++ current).map(_.taxCode).distinct
 }
 
 object TaxCodeChange {

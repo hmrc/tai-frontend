@@ -293,6 +293,8 @@ object TaiConstants {
 
   val NinoLength = 9
   val NinoWithoutSuffixLength = NinoLength-1
+  val TaxAmountFactor = 10
+  val EmergencyTaxCode = "X"
 
   val IncomeTypeDummy = 99
   val IncomeTypeEmployment = 0

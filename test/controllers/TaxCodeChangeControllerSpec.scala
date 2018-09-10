@@ -35,11 +35,10 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity, TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService}
-import uk.gov.hmrc.tai.service.{PersonService, TaxCodeChangeService}
+import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.model.domain.income.OtherBasisOperation
 import uk.gov.hmrc.time.TaxYearResolver
-
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -117,6 +116,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
         when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+        when(SUT.taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map[String, BigDecimal]()))
 
         val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -148,7 +148,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     CodingComponent(GiftsSharesCharity, None, giftAmount, "GiftsSharesCharity description"))
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1),"Employer 1", false, Some("1234"), true)
+  val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOperation,"Employer 1", false, Some("1234"), true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
   private class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController {
@@ -160,6 +160,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     override val employmentService: EmploymentService = mock[EmploymentService]
     override val companyCarService: CompanyCarService = mock[CompanyCarService]
     override val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
+    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]

@@ -18,11 +18,13 @@ package uk.gov.hmrc.tai.model.domain
 
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
+import uk.gov.hmrc.tai.model.domain.income.BasisOperation
 
 case class TaxCodeRecord(
                           taxCode: String,
                           startDate: LocalDate,
                           endDate: LocalDate,
+                          basisOfOperation: BasisOperation,
                           employerName: String,
                           pensionIndicator: Boolean,
                           payrollNumber: Option[String],

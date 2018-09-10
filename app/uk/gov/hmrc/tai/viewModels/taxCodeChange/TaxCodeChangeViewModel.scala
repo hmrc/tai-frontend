@@ -17,15 +17,35 @@
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 import org.joda.time.LocalDate
-import uk.gov.hmrc.tai.model.domain.TaxCodeChange
+import play.api.i18n.Messages
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
+import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.util.TaiConstants
+import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeDescriptor}
 
-case class TaxCodeChangeViewModel(pairs: TaxCodePairs, changeDate: LocalDate)
+case class TaxCodeChangeViewModel(pairs: TaxCodePairs, changeDate: LocalDate, scottishTaxRateBands: Map[String, BigDecimal])
 
-object TaxCodeChangeViewModel {
-  def apply(taxCodeChange: TaxCodeChange): TaxCodeChangeViewModel = {
+object TaxCodeChangeViewModel extends TaxCodeDescriptor {
+  def apply(taxCodeChange: TaxCodeChange, scottishTaxRateBands: Map[String, BigDecimal])(implicit messages: Messages): TaxCodeChangeViewModel = {
     val taxCodePairs = TaxCodePairs(taxCodeChange.previous, taxCodeChange.current)
     val changeDate = taxCodeChange.mostRecentTaxCodeChangeDate
 
-    TaxCodeChangeViewModel(taxCodePairs, changeDate)
+    TaxCodeChangeViewModel(taxCodePairs, changeDate, scottishTaxRateBands)
+  }
+
+  def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal])
+                            (implicit messages: Messages): DescriptionListViewModel = {
+
+    val taxCode = taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)
+
+    val explanation = describeTaxCode(taxCode, taxCodeRecord.basisOfOperation, scottishTaxRateBands)
+    DescriptionListViewModel(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", taxCode), explanation)
+  }
+
+  def taxCodeWithEmergencySuffix(taxCode: String, basisOfOperation: BasisOperation): String = {
+    basisOfOperation match {
+      case Week1Month1BasisOperation => taxCode + TaiConstants.EmergencyTaxCodeSuffix
+      case _ => taxCode
+    }
   }
 }
