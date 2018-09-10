@@ -105,7 +105,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
 
         when(sut.taxAccountConnector.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
 
-        val result = sut.scottishBandRates(generateNino, TaxYear(), scottishTaxCodeIncomes)
+        val result = sut.scottishBandRates(generateNino, TaxYear(), taxCodes)
         Await.result(result, 5 seconds) mustBe Map("D0" -> 20, "1150L" -> 10)
       }
     }
@@ -115,14 +115,14 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
         val sut = createSut
 
         when(sut.taxAccountConnector.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("Error Message")))
-        val result = sut.scottishBandRates(generateNino, TaxYear(), scottishTaxCodeIncomes)
+        val result = sut.scottishBandRates(generateNino, TaxYear(), taxCodes)
         Await.result(result, 5 seconds) mustBe Map()
       }
 
       "none of the tax code is scottish" in {
         val sut = createSut
 
-        val result = sut.scottishBandRates(generateNino, TaxYear(), taxCodeIncomes)
+        val result = sut.scottishBandRates(generateNino, TaxYear(), taxCodeIncomes.map(_.taxCode))
         Await.result(result, 5 seconds) mustBe Map()
       }
 
@@ -133,7 +133,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
           None, None, None)
 
         when(sut.taxAccountConnector.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
-        val result = sut.scottishBandRates(generateNino, TaxYear(), scottishTaxCodeIncomes)
+        val result = sut.scottishBandRates(generateNino, TaxYear(), taxCodes)
         Await.result(result, 5 seconds) mustBe Map()
       }
 
@@ -142,7 +142,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
         val totalTax = TotalTax(1000, Nil, None, None, None)
 
         when(sut.taxAccountConnector.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(totalTax)))
-        val result = sut.scottishBandRates(generateNino, TaxYear(), scottishTaxCodeIncomes)
+        val result = sut.scottishBandRates(generateNino, TaxYear(), taxCodes)
         Await.result(result, 5 seconds) mustBe Map()
       }
     }
@@ -154,10 +154,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOperation, Live),
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOperation, Live))
 
-  val scottishTaxCodeIncomes = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "SD0", "employer", OtherBasisOperation, Live),
-    TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employer", "1150L", "employer", OtherBasisOperation, Live)
-  )
+  val taxCodes = Seq("SD0", "1150L")
 
   private val nonTaxCodeIncome = NonTaxCodeIncome(Some(income.UntaxedInterest(
     UntaxedInterestIncome, None, 100, "Untaxed Interest", Seq.empty[BankAccount])),

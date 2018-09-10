@@ -59,6 +59,21 @@ trait JsoupMatchers {
     }
   }
 
+  class CssSelectorWithTextCount(selector: String, expectedCount: Int) extends Matcher[Document] {
+    def apply(left: Document): MatchResult = {
+      val elements: List[String] =
+        left.select(selector)
+          .toList
+          .map(_.text)
+
+      MatchResult(
+        elements.length == expectedCount,
+        s"[$expectedCount] not met in elements with '$selector' selector. Actual count:[${elements.length}]",
+        s"[$expectedCount] met in elements with '$selector' selector"
+      )
+    }
+  }
+
   class TagWithIdAndTextMatcher(expectedContent: String, tag: String, id: String) extends CssSelectorWithTextMatcher(expectedContent, s"$tag[id=${id}")
 
   class CssSelectorWithAttributeValueMatcher(attributeName: String, attributeValue: String, selector: String) extends Matcher[Document] {
@@ -187,7 +202,6 @@ trait JsoupMatchers {
         s"[${expectedClass}] is not a member of the element's classes:[\n${classNames}]",
         s"[${expectedClass}] is a member of the element's classes:[\n${classNames}]")
     }
-
   }
 
   //document matchers
@@ -229,7 +243,7 @@ trait JsoupMatchers {
   def haveElementAtPathWithClass(elementSelector: String, className: String) = new CssSelectorWithClassMatcher(className, elementSelector)
   def haveElementWithId(id: String) = new CssSelector(s"#${id}")
 
-  def haveTableRowWithText (expectedText: String) = new TagWithTextMatcher(expectedText, "dt")
+  def haveTableRowWithText (expectedText: String): TagWithTextMatcher = new TagWithTextMatcher(expectedText, "dt")
   def haveTableRowWithTextDescription (expectedText: String) = new TagWithTextMatcher(expectedText, "dd")
 
   def haveCheckYourAnswersSummary = new CssSelectorWithAttributeValueMatcher("id", "check-answers-summary", "ul")
@@ -241,6 +255,7 @@ trait JsoupMatchers {
   def haveLinkWithText (expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "a")
   def haveErrorLinkWithText (expectedText: String) = new CssSelectorWithTextMatcher(expectedText, "div.error-summary>ul>li>a")
   def haveClassWithText(expectedText: String, className: String) = new CssSelectorWithTextMatcher(expectedText, s".$className")
+  def haveClassCount(expectedClass: String, expectedCount: Int) = new CssSelectorWithTextCount(s".${expectedClass}", expectedCount)
 
   def haveBackLink = new CssSelector("a[id=backLink]")
   def haveBackButtonWithUrl(expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, "backLink")

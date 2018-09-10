@@ -14,10 +14,22 @@
  * limitations under the License.
  *@
 
-@(title: String, summaryClass : Option[String]=None)(body: Html)
+@(
+    title: String,
+    visuallyHiddenTitle: Option[String]=None,
+    summaryClass: Option[String]=None,
+    panelClass: Option[String]=Some("panel-indent")
+)(body: Html)
 <details>
-    <summary @if(summaryClass.isDefined){class='@summaryClass'}>@title</summary>
-    <div class="panel-indent">
+    <summary @if(summaryClass.isDefined){class='@summaryClass'}>
+        @if(visuallyHiddenTitle) {
+            <span aria-hidden="true">@title</span>
+            <span class="visuallyhidden">@visuallyHiddenTitle</span>
+        } else {
+            @title
+        }
+    </summary>
+    <div @if(panelClass.isDefined){class='@panelClass'}>
         @body
     </div>
 </details>

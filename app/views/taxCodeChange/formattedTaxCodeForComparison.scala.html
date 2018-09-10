@@ -1,0 +1,97 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import includes.ptaHeader
+@import includes.details_summary
+@import controllers.routes
+@import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
+@import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, TaxCodePairs}
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
+@import org.joda.time.LocalDate
+
+@(taxCodeRecord: TaxCodeRecord, identifier: String, scottishTaxRateBands: Map[String, BigDecimal])(implicit messages: Messages)
+
+<div class="tax-code-change__pod">
+    <h3 class="tax-code-change__employment-heading heading-medium flush--top flush--bottom break-word">@taxCodeRecord.employerName</h3>
+
+    <div class="tax-code-change__payroll">@taxCodeRecordPayrollHtml(taxCodeRecord)</div>
+    <div aria-hidden="true" class="tax-code-change__date bold-small flush--top">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</div>
+    <div aria-hidden="true" class="tax-code-change__tax-code bold-large">@TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)</div>
+
+    <span class="visuallyhidden">
+        @Messages(
+            s"taxCode.change.yourTaxCodeChanged.${identifier}TaxCodeDetails.screenReader",
+            Dates.formatDate(taxCodeRecord.startDate),
+            Dates.formatDate(taxCodeRecord.endDate),
+            taxCodeRecord.employerName,
+            TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)
+        )
+    </span>
+
+    @taxCodeRecordExplanation(taxCodeRecord)
+</div>
+
+@taxCodeRecordExplanation(taxCodeRecord: TaxCodeRecord) = {
+    @defining(TaxCodeChangeViewModel.getTaxCodeExplanations(taxCodeRecord, scottishTaxRateBands)) { taxCodeDescription =>
+        <div class="tax-code-change__explanation">
+            @includes.details_summary(
+                taxCodeDescription.heading,
+                visuallyHiddenTitle = Some(Messages(
+                    "taxCode.change.yourTaxCodeChanged.understand",
+                    TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)
+                )),
+                panelClass = Some("tax-code-change__details")
+            ){
+                <ul role="list" class="tai-description-list">
+                    @for(taxCodeExplanation <- taxCodeDescription.descriptionItems) {
+                    <li role="listitem">
+                        <div class="bold-medium">
+                            <span class="visuallyhidden">@Messages("tai.taxCode.part.announce", taxCodeExplanation._1)</span>
+                            <span class="tax-code-change__part" aria-hidden="true">@taxCodeExplanation._1</span>
+                        </div>
+                        <div class="fixed-small">
+                            <span class="visuallyhidden">@Messages("tai.taxCode.definition.announce")</span>
+                            <span class="tax-code-change__part-definition">@Html(taxCodeExplanation._2)</span>
+                        </div>
+                    </li>
+                    }
+                </ul>
+            }
+        </div>
+    }
+}
+
+@taxCodeRecordPayrollHtml(taxCodeRecord: TaxCodeRecord) = {
+    @taxCodeRecord.payrollNumber.map { number =>
+        @if(number.length > 0) {
+            @if(taxCodeRecord.pensionIndicator) {
+                @taxCodeRecordPayrollInfo(number, "tai.pensionNumber", "tai.pension.income.details.pensionNumber.screenReader")
+            } else {
+                @taxCodeRecordPayrollInfo(number, "tai.payRollNumber", "tai.employment.income.details.payrollNumber.screenReader")
+            }
+        }
+    }
+}
+
+@taxCodeRecordPayrollInfo(payrollNumber: String, messageKey: String, screenReaderKey: String) = {
+    <div class="tax-code-change__payroll-number" aria-hidden="true">
+        @Messages(messageKey): @payrollNumber
+    </div>
+    <span class="visuallyhidden">
+        @Messages(screenReaderKey, payrollNumber)
+    </span>
+}

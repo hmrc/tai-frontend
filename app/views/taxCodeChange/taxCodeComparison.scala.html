@@ -15,10 +15,12 @@
  *@
 
 @import includes.ptaHeader
+@import includes.details_summary
 @import controllers.routes
 @import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, TaxCodePairs}
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
 @import org.joda.time.LocalDate
 
 @(taxCodeChangeViewModel: TaxCodeChangeViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
@@ -33,56 +35,47 @@
     )
 }
 
-@taxCodeRecordPodHtml(taxCodeRecord: TaxCodeRecord) = {
-    <h2 class="tax-code-change__employment-heading heading-medium flush--bottom break-word">@taxCodeRecord.employerName</h2>
-    <h3 class="tax-code-change__date-range bold-small' flush--top">@Messages("tai.taxCode.title.pt2", Dates.formatDate(taxCodeRecord.startDate), Dates.formatDate(taxCodeRecord.endDate))</h3>
-    <div class="bold-large">@taxCodeRecord.taxCode</div>
-}
-
-@taxCodeRecordPod(taxCodeRecord: Option[TaxCodeRecord]) = {
-    @{taxCodeRecord match {
-        case Some(taxCodeRecord) => taxCodeRecordPodHtml(taxCodeRecord)
-        case _ => <div>&nbsp;</div>
-    }}
-}
-
-@taxCodePairs(taxCodePairs: TaxCodePairs) = {
-    @for(pair <- taxCodePairs.pairs.take(taxCodePairs.pairs.length - 1)) {
-        <div class="grid-row tax-code-change__row">
-            <div class="column-half tax-code-change__previous">
-                @taxCodeRecordPod(pair.previous)
-            </div>
-            <div class="column-half tax-code-change__current">
-                @taxCodeRecordPod(pair.current)
-            </div>
-        </div>
-        <hr>
-    }
-    <div class="grid-row tax-code-change__row">
-        <div class="column-half tax-code-change__previous">
-            @taxCodeRecordPod(taxCodePairs.pairs.last.previous)
-        </div>
-        <div class="column-half tax-code-change__current">
-            @taxCodeRecordPod(taxCodePairs.pairs.last.current)
-        </div>
-    </div>
-}
-
 @main(
     title = Messages("taxCode.change.journey.preHeading"),
     pageHeader = Some(header),
     user = Some(user),
     gaCustomTitle = None
 ){
-<div>
-    <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
+<div class="column-two-thirds">
+    <div class="grid-row">
+        <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
+    </div>
+    <div class="grid-row tax-code-change margin-bottom-xlarge">
+        @taxCodePairs(taxCodeChangeViewModel.pairs)
+    </div>
+    <div>
+        <a class="button" href="@routes.TaxCodeChangeController.yourTaxFreeAmount().url.toString" id="check-your-tax-button">
+            @Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")
+        </a>
+    </div>
 </div>
-<div class="tax-code-change margin-bottom-xlarge">
-    @taxCodePairs(taxCodeChangeViewModel.pairs)
-</div>
-<div>
-    <a class="button" href="@routes.TaxCodeChangeController.yourTaxFreeAmount().url.toString" id="check-your-tax-button">
-        @Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")
-    </a>
-</div>
+}
+
+
+@taxCodeRecordPod(taxCodeRecord: Option[TaxCodeRecord], identifier: String) = {
+    @{taxCodeRecord match {
+        case Some(taxCodeRecord) => formattedTaxCodeForComparison(taxCodeRecord, identifier, taxCodeChangeViewModel.scottishTaxRateBands)
+        case _ => None
+    }}
+}
+
+@taxCodePairs(taxCodePairs: TaxCodePairs) = {
+    <div class="column-half tax-code-change__previous">
+        <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes")</h2>
+        @for((pair) <- taxCodePairs.pairs) {
+            @taxCodeRecordPod(pair.previous, "previous")
+        }
+    </div>
+
+    <div class="column-half tax-code-change__current">
+        <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.currentTaxCodes")</h2>
+        @for((pair) <- taxCodePairs.pairs) {
+            @taxCodeRecordPod(pair.current, "current")
+        }
+    </div>
 }
