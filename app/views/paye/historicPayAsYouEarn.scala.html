@@ -116,7 +116,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
     @if(noOfPreviousYearsToShow > 1) {
     <div class="grid grid-1-3">
         <div class="inner-block">
-            @includes.previousYearsSideNav(viewModel.taxYear, noOfPreviousYearsToShow, "left", 2)
+            @includes.previousYearsSideNav(viewModel.taxYear, noOfPreviousYearsToShow)
         </div>
     </div>
     }
