@@ -138,7 +138,14 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                     </p>
                     @employment.payrollNumber.map{ payrollNumber =>
                         <p>
-                            @Messages("tai.incomeTaxSummary.payrollNumber.prefix", payrollNumber)
+                            @if(employment.isPension) {
+                                <span aria-hidden="true">@Messages("tai.pensionNumber"): @payrollNumber</span>
+                                <span class="visuallyhidden">@messages("tai.pension.income.details.pensionNumber.screenReader", payrollNumber)</span>
+
+                            } else {
+                                <span aria-hidden="true">@Messages("tai.incomeTaxSummary.payrollNumber.prefix", payrollNumber)</span>
+                                <span class="visuallyhidden">@messages("tai.employment.income.details.payrollNumber.screenReader", payrollNumber)</span>
+                            }
                         </p>
                     }
 

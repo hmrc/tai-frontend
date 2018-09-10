@@ -27,8 +27,7 @@ import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
 
 
-class
-historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
+class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
 
   private val currentYear: Int = TaxYear().year
   private val cyMinusOneTaxYear: TaxYear = TaxYear(currentYear - 1)
@@ -136,13 +135,20 @@ historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
           val sut: Html = createSut(vm)
           val doc: Document = Jsoup.parse(sut.toString)
 
-          doc must  haveParagraphWithText("Payroll number: PAYROLLNO")
+          doc must haveSpanWithText("Payroll number: PAYROLLNO")
+          doc must haveSpanWithText("Your payroll number is PAYROLLNO.")
         }
       }
       "show a pension number" when {
         "the income source of type pension has a payroll number" in {
+          val pension: EmploymentViewModel = EmploymentViewModel("employment", 0.00, 1, true, Some("PENSION NUMBER"))
+          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true)
 
+          val sut: Html = createSut(vm)
+          val doc: Document = Jsoup.parse(sut.toString)
 
+          doc must haveSpanWithText("Pension number: PENSION NUMBER")
+          doc must haveSpanWithText("Your pension number is PENSION NUMBER.")
         }
       }
 
@@ -154,12 +160,20 @@ historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
           val sut: Html = createSut(vm)
           val doc: Document = Jsoup.parse(sut.toString)
 
-          doc mustNot haveParagraphWithText("Payroll number: PAYROLLNO")
+          doc mustNot haveSpanWithText("Payroll number: PAYROLLNO")
+          doc mustNot haveSpanWithText("Your payroll number is PAYROLLNO.")
         }
       }
       "doesnt show a pension number" when {
         "the income source of type pension does not have a payroll number" in {
+          val pension: EmploymentViewModel = EmploymentViewModel("employment", 0.00, 1, true, None)
+          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true)
 
+          val sut: Html = createSut(vm)
+          val doc: Document = Jsoup.parse(sut.toString)
+
+          doc mustNot haveSpanWithText("Pension number: PENSION NUMBER")
+          doc mustNot haveSpanWithText("Your pension number is PENSION NUMBER.")
         }
       }
 
