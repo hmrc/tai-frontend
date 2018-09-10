@@ -108,7 +108,7 @@ object EditIncomeForm {
 
   private def createForm (taxablePayYTD: BigDecimal, payDate: Option[LocalDate] = None, errMessage: Option[String] = None)(implicit messages: Messages) :Form[EditIncomeForm] = {
 
-    val date = payDate.map (date => DateHelper.monthOfYear(Dates.formatDate(date))).getOrElse("")
+    val monthName = payDate.map (date => DateHelper.monthOfYear(Dates.formatDate(date))).getOrElse("")
 
     val errMsg = errMessage.getOrElse("error.tai.updateDataEmployment.enterLargerValue")
     Form[EditIncomeForm](
@@ -120,7 +120,7 @@ object EditIncomeForm {
                                                        Messages("error.tai.updateDataEmployment.enterRealNumber"),
                                                        Messages("error.tai.updateDataEmployment.maxLength"),
                                                         Messages(errMsg,
-                                                        MoneyPounds(taxablePayYTD, 0, true).quantity, date),
+                                                        MoneyPounds(taxablePayYTD, 0, true).quantity, monthName),
                                                         taxablePayYTD),
         "oldAmount" -> number,
         "worksNumber" -> optional(text),
