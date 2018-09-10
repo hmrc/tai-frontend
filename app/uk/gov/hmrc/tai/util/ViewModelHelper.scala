@@ -56,19 +56,17 @@ trait ViewModelHelper {
       htmlNonBroken( Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear) ))
   }
 
-  def htmlNonBroken(string: String): String = {
-    string.replace(" ", "\u00A0")
-  }
-
   def dynamicDateRangeHtmlNonBreak(from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {
     if(from isAfter to) {
       throw new IllegalArgumentException(s"From date:$from cannot be after To date:$to")
     } else {
         messages("tai.taxYear",
-        htmlNonBroken(Dates.formatDate(from)),
-        htmlNonBroken(Dates.formatDate(to)))
+          htmlNonBroken(Dates.formatDate(from)),
+          htmlNonBroken(Dates.formatDate(to)))
     }
   }
+
+  def htmlNonBroken(string: String) = HtmlFormatter.htmlNonBroken(string)
 
   def isTrue(str: String): Boolean = Try(str.toBoolean).getOrElse(false)
 

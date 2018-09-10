@@ -32,11 +32,7 @@
             @for(year <- (TaxYearResolver.currentTaxYear - 1) to (TaxYearResolver.currentTaxYear -
             noOfPreviousYearsToShow) by -1) {
             <li>
-                @if(selectedYear.year == year){
-                <p id="@{year}NavItem" class="link-forward">
-                    @{TaxPeriodLabelService.taxPeriodLabel(year)}
-                </p>
-                } else {
+                @if(selectedYear.year != year){
                 <p id="@{year}NavItem" class="inline-block">
                     @Link.toInternalPage(url=routes.PayeControllerHistoric.payePage(TaxYear(year)).toString,
                     value=Some(TaxPeriodLabelService.taxPeriodLabel(year))).toHtml
