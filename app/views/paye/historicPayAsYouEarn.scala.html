@@ -139,12 +139,15 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                     @employment.payrollNumber.map{ payrollNumber =>
                         <p>
                             @if(employment.isPension) {
-                                <span aria-hidden="true">@Messages("tai.pensionNumber"): @payrollNumber</span>
-                                <span class="visuallyhidden">@messages("tai.pension.income.details.pensionNumber.screenReader", payrollNumber)</span>
-
+                                @textForScreenReader(
+                                    s"${Messages("tai.pensionNumber")}: ${payrollNumber}",
+                                    Messages("tai.pension.income.details.pensionNumber.screenReader", payrollNumber)
+                                )
                             } else {
-                                <span aria-hidden="true">@Messages("tai.incomeTaxSummary.payrollNumber.prefix", payrollNumber)</span>
-                                <span class="visuallyhidden">@messages("tai.employment.income.details.payrollNumber.screenReader", payrollNumber)</span>
+                                @textForScreenReader(
+                                    Messages("tai.incomeTaxSummary.payrollNumber.prefix", payrollNumber),
+                                    Messages("tai.employment.income.details.payrollNumber.screenReader", payrollNumber)
+                                )
                             }
                         </p>
                     }
@@ -161,4 +164,9 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
             }
         </div>
     }
+}
+
+@textForScreenReader(visibleMessage: String, hiddenMessage: String)= {
+    <span aria-hidden="true">@visibleMessage</span>
+    <span class="visuallyhidden">@hiddenMessage</span>
 }
