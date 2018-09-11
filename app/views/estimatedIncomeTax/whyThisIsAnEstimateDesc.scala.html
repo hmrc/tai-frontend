@@ -19,8 +19,7 @@
 
 @()(implicit messages: Messages)
 
- <h2 class="heading-section">
-    @Messages("tai.estimatedIncome.whyEstimate.link")
- </h2>
- <p id="whyEstimateDesc">@Messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))</p>
-
+<h2 class="heading-section">
+ @Messages("tai.estimatedIncome.whyEstimate.link")
+</h2>
+<p id="whyEstimateDesc">@Messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))</p>

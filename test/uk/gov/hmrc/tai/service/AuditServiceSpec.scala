@@ -144,7 +144,7 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
         when(sut.auditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
         implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")))
 
-        val employment = Employment("The Man Plc", None, new LocalDate("2016-06-09"), None, Nil, "", "", 1, None, false)
+        val employment = Employment("The Man Plc", None, new LocalDate("2016-06-09"), None, Nil, "", "", 1, None, false, false)
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOperation, Live)
         Await.result(sut.sendUserEntryAuditEvent(nino, "NA", List(employment),List(taxCodeIncome)), 5.seconds)
 

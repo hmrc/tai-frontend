@@ -21,23 +21,29 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
 
-case class HistoricPayAsYouEarnViewModel(taxYear: TaxYear, employments: Seq[EmploymentViewModel], hasEmployments: Boolean) {
+case class HistoricPayAsYouEarnViewModel(taxYear: TaxYear,
+                                         pensions: Seq[EmploymentViewModel],
+                                         employments: Seq[EmploymentViewModel],
+                                         hasEmploymentsOrPensions: Boolean) {
+
   val p800ServiceIsAvailable: Boolean = taxYear == TaxYear().prev
 }
 
 object HistoricPayAsYouEarnViewModel {
 
   def apply(taxYear: TaxYear, employments: Seq[Employment])(implicit messages: Messages): HistoricPayAsYouEarnViewModel = {
-    val employmentVMs: Seq[EmploymentViewModel] = filterEmployments(taxYear, employments) sortBy(_.id)
-    HistoricPayAsYouEarnViewModel(taxYear, employmentVMs, employments.nonEmpty)
+    val incomeSources: Seq[EmploymentViewModel] = filterIncomeSources(taxYear, employments) sortBy(_.id)
+    val (pensionsVMs, employmentsVMs): (Seq[EmploymentViewModel], Seq[EmploymentViewModel]) = incomeSources.partition(_.isPension)
+
+    HistoricPayAsYouEarnViewModel(taxYear, pensionsVMs, employmentsVMs, pensionsVMs.nonEmpty || employmentsVMs.nonEmpty)
   }
 
-  private def filterEmployments(taxYear: TaxYear, employments: Seq[Employment]): Seq[EmploymentViewModel] = {
+  private def filterIncomeSources(taxYear: TaxYear, employments: Seq[Employment]): Seq[EmploymentViewModel] = {
     for {
-      emp <- employments
-      account <- emp.annualAccounts.find(_.taxYear.year == taxYear.year)
-    } yield EmploymentViewModel(emp.name, account.totalIncomeYearToDate, emp.sequenceNumber)
+      employment <- employments
+      account <- employment.annualAccounts.find(_.taxYear.year == taxYear.year)
+    } yield EmploymentViewModel(employment.name, account.totalIncomeYearToDate, employment.sequenceNumber, employment.receivingOccupationalPension, employment.payrollNumber)
   }
 
-  case class EmploymentViewModel(name: String, taxablePayYTD: BigDecimal, id: Int)
+  case class EmploymentViewModel(name: String, taxablePayYTD: BigDecimal, id: Int, isPension: Boolean, payrollNumber:Option[String])
 }
