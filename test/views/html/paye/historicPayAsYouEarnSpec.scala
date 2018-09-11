@@ -114,7 +114,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
           doc must haveHeadingH3WithText("employment")
           doc must haveParagraphWithText("£0.00")
           doc must haveLinkElement(
-            "checkDetailsLink",
+            "employment1-checkDetailsLink",
             controllers.routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(vm.taxYear,employment.id).url,
               messages("tai.paye.lastTaxYear.table.link")
           )
@@ -141,7 +141,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
           doc must haveHeadingH3WithText("pension")
           doc must haveParagraphWithText("£0.00")
           doc must haveLinkElement(
-            "checkDetailsLink",
+            "pension1-checkDetailsLink",
             controllers.routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(vm.taxYear,employment.id).url,
             messages("tai.paye.lastTaxYear.table.link")
           )
@@ -182,7 +182,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
               doc must haveHeadingH3WithText("test employment")
               doc must haveParagraphWithText("£123.32")
               doc must haveLinkElement(
-                "checkDetailsLink",
+                "employment1-checkDetailsLink",
                 controllers.routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(vm.taxYear,employment.id).url,
                 messages("tai.paye.lastTaxYear.table.link")
               )
@@ -208,7 +208,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
               doc must haveHeadingH3WithText("test employment 1")
               doc must haveParagraphWithText("£123.32")
               doc must haveLinkElement(
-                "checkDetailsLink",
+                "employment1-checkDetailsLink",
                 controllers.routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(vm.taxYear,employment.id).url,
                 messages("tai.paye.lastTaxYear.table.link")
               )
@@ -217,8 +217,8 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
               doc must haveHeadingH3WithText("test employment 2")
               doc must haveParagraphWithText("£345.54")
               doc must haveLinkElement(
-                "checkDetailsLink",
-                controllers.routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(vm.taxYear,employment.id).url,
+                "employment2-checkDetailsLink",
+                controllers.routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(vm.taxYear,employment2.id).url,
                 messages("tai.paye.lastTaxYear.table.link")
               )
 

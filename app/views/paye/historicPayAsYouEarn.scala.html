@@ -73,7 +73,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
             } else {
                 <section id="lastTaxYearIncome">
 
-                    @if(employmentPairsList.length > 0) {
+                    @if(employmentPairsList.nonEmpty) {
                         <h2 id="lastYearEmploymentHeading" class="heading-section">
                             @Messages("tai.paye.incomeEmployment.heading")
                         </h2>
@@ -81,7 +81,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                         @incomeList(employmentPairsList, "employment")
                     }
 
-                    @if(pensionPairsList.length > 0) {
+                    @if(pensionPairsList.nonEmpty) {
                         <h2 id="lastYearPensionHeading" class="heading-section">
                             @Messages("tai.incomeTaxSummary.pension.section.heading")
                         </h2>
@@ -138,7 +138,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                     </p>
                     <p class="flush--top">
                         @includes.link(
-                            id = Some("checkDetailsLink"),
+                            id = Some(s"${incomeType}${idx}-checkDetailsLink"),
                             url = routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(viewModel.taxYear, employment.id).toString(),
                             copy=Messages("tai.paye.lastTaxYear.table.link"),
                             altCopy=Some(Messages("tai.paye.lastTaxYear.table.reader.link", employment.name))
