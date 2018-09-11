@@ -18,6 +18,7 @@ package controllers
 
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
+import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
@@ -44,7 +45,7 @@ trait YourTaxCodeController extends TaiBaseController
 
   def taxAccountService: TaxAccountService
 
-  def taxCodes(): Action[AnyContent] = authorisedForTai(personService).async {
+  def taxCodes(year: TaxYear = TaxYear()): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -52,14 +53,17 @@ trait YourTaxCodeController extends TaiBaseController
             val nino = user.person.nino
 
             for {
-              TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-              scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeIncomes.map(_.taxCode))
+              TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService.taxCodeIncomes(nino, year)
+              scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
             } yield {
-              val taxCodeViewModel = TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands)
+              val taxCodeViewModel = TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands, year)
               Ok(views.html.taxCodeDetails(taxCodeViewModel))
             }
           }
   }
+
+  def prevTaxCodes(year: TaxYear): Action[AnyContent] = taxCodes(year)
+
 }
 // $COVERAGE-OFF$
 object YourTaxCodeController extends YourTaxCodeController with AuthenticationConnectors {

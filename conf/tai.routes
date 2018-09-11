@@ -135,7 +135,9 @@ GET         /tax-free-allowance                                                 
 GET         /taxable-income                                                            controllers.TaxFreeAmountController.taxFreeAmount
 GET         /your-tax-free-amount                                                      controllers.TaxFreeAmountController.taxFreeAmount
 
-GET         /tax-codes                                                                 controllers.YourTaxCodeController.taxCodes
+GET         /tax-codes                                                                 controllers.YourTaxCodeController.taxCodes()
+GET         /tax-codes/:year                                                           controllers.YourTaxCodeController.prevTaxCodes(year: uk.gov.hmrc.tai.model.TaxYear)
+
 GET         /paye-income-tax-estimate                                                  controllers.EstimatedIncomeTaxController.estimatedIncomeTax
 GET         /detailed-income-tax-estimate                                              controllers.DetailedIncomeTaxEstimateController.taxExplanationPage
 

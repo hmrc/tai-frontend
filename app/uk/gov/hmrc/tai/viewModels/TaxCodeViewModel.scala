@@ -17,6 +17,8 @@
 package uk.gov.hmrc.tai.viewModels
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.viewModels.TaxCodeDescriptor
@@ -25,25 +27,38 @@ import uk.gov.hmrc.tai.viewModels.TaxCodeDescriptor
 case class TaxCodeViewModel(title: String,
                             mainHeading: String,
                             ledeMessage: String,
-                            taxCodeDetails: Seq[DescriptionListViewModel])
+                            taxCodeDetails: Seq[DescriptionListViewModel],
+                            preHeader: String)
 
 object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
 
-  def apply(taxCodeIncomes: Seq[TaxCodeIncome], scottishTaxRateBands: Map[String, BigDecimal])(implicit messages: Messages): TaxCodeViewModel = {
+  def apply(taxCodeIncomes: Seq[TaxCodeIncome], scottishTaxRateBands: Map[String, BigDecimal], year: TaxYear = TaxYear())(implicit messages: Messages): TaxCodeViewModel = {
+
+    val previousOrCurrent = if (year <= TaxYear().prev) ".prev" else ""
+    val preHeader =  messages(s"tai.taxCode$previousOrCurrent.preHeader")
 
     val descriptionListViewModels = taxCodeIncomes.map { taxCodeIncome =>
       val taxCode = taxCodeIncome.taxCodeWithEmergencySuffix
-      val explanation = describeTaxCode(taxCode, taxCodeIncome.basisOperation, scottishTaxRateBands)
-      DescriptionListViewModel(Messages("tai.taxCode.subheading", taxCodeIncome.name, taxCode), explanation)
+      val explanation = describeTaxCode(taxCode, taxCodeIncome.basisOperation, scottishTaxRateBands, year)
+
+      DescriptionListViewModel(Messages(s"tai.taxCode$previousOrCurrent.subheading", taxCodeIncome.name, taxCode), explanation)
     }
 
-    val taxCodesPrefix = if (taxCodeIncomes.size > 1) Messages("tai.taxCode.multiple.code.title.pt1") else Messages("tai.taxCode.single.code.title.pt1")
+    val taxCodesPrefix = if (taxCodeIncomes.size > 1) Messages(s"tai.taxCode$previousOrCurrent.multiple.code.title.pt1") else Messages(s"tai.taxCode$previousOrCurrent.single.code.title.pt1")
 
-    val title = s"$taxCodesPrefix $currentTaxYearRange"
-    val mainHeading = s"$taxCodesPrefix $currentTaxYearRangeHtmlNonBreak"
-    val ledeMessage = if (taxCodeIncomes.size > 1) Messages("tai.taxCode.multiple.info") else Messages("tai.taxCode.single.info")
+    val TaxYearRange = messages("tai.taxYear",
+      htmlNonBroken( Dates.formatDate(year.start) ),
+      htmlNonBroken( Dates.formatDate(year.end) ))
 
-    TaxCodeViewModel(title, mainHeading, ledeMessage, descriptionListViewModels)
+    val TaxYearRangeHtmlNonBreak = messages("tai.taxYear",
+      htmlNonBroken( Dates.formatDate(year.start) ),
+      htmlNonBroken( Dates.formatDate(year.end) ))
+
+    val title = s"$taxCodesPrefix $TaxYearRange"
+    val mainHeading = s"$taxCodesPrefix $TaxYearRangeHtmlNonBreak"
+    val ledeMessage = if (taxCodeIncomes.size > 1) Messages(s"tai.taxCode$previousOrCurrent.multiple.info") else Messages(s"tai.taxCode$previousOrCurrent.single.info")
+
+    TaxCodeViewModel(title, mainHeading, ledeMessage, descriptionListViewModels, preHeader)
   }
 
 }
