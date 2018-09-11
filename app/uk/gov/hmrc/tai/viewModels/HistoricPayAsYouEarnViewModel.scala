@@ -40,10 +40,10 @@ object HistoricPayAsYouEarnViewModel {
 
   private def filterIncomeSources(taxYear: TaxYear, employments: Seq[Employment]): Seq[EmploymentViewModel] = {
     for {
-      emp <- employments
-      account <- emp.annualAccounts.find(_.taxYear.year == taxYear.year)
-    } yield EmploymentViewModel(emp.name, account.totalIncomeYearToDate, emp.sequenceNumber, emp.receivingOccupationalPension)
+      employment <- employments
+      account <- employment.annualAccounts.find(_.taxYear.year == taxYear.year)
+    } yield EmploymentViewModel(employment.name, account.totalIncomeYearToDate, employment.sequenceNumber, employment.receivingOccupationalPension, employment.payrollNumber)
   }
 
-  case class EmploymentViewModel(name: String, taxablePayYTD: BigDecimal, id: Int, isPension: Boolean)
+  case class EmploymentViewModel(name: String, taxablePayYTD: BigDecimal, id: Int, isPension: Boolean, payrollNumber:Option[String])
 }
