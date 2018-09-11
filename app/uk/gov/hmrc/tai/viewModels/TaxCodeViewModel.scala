@@ -47,8 +47,8 @@ object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
     val taxCodesPrefix = if (taxCodeIncomes.size > 1) Messages(s"tai.taxCode$previousOrCurrent.multiple.code.title.pt1") else Messages(s"tai.taxCode$previousOrCurrent.single.code.title.pt1")
 
     val TaxYearRange = messages("tai.taxYear",
-      htmlNonBroken( Dates.formatDate(year.start) ),
-      htmlNonBroken( Dates.formatDate(year.end) ))
+      Dates.formatDate(year.start),
+      Dates.formatDate(year.end))
 
     val TaxYearRangeHtmlNonBreak = messages("tai.taxYear",
       htmlNonBroken( Dates.formatDate(year.start) ),
