@@ -81,25 +81,6 @@ class PayeControllerHistoricSpec extends PlaySpec
       doc.select("#lastTaxYear").size must be(1)
     }
 
-    "display the correct number of previous years " in {
-
-      val testController = createTestController(previousYears = 5)
-
-      val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-      val doc = Jsoup.parse(contentAsString(result))
-
-      status(result) mustBe OK
-
-      doc.title() must include(Messages("tai.paye.heading", taxPeriodLabel(cyMinusOneTaxYear.year)))
-
-      doc.select("#thisTaxYear").size must be(0)
-      doc.select("#lastTaxYear").size must be(1)
-
-      val navItems = doc.getElementById("previousYearsSideNav").getElementsByTag("li")
-      navItems.size() must be(4)
-    }
-
     "Redirect to the paye controller" when {
 
       "the supplied year relates to current tax year" in {

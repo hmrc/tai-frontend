@@ -34,13 +34,11 @@ class previousYearsSideNavSpec extends TaiViewSpec {
       doc.select("#heading").text() mustBe messages("tai.taxYearHeading")
     }
 
-    "display cy-1 side menu as text" in {
+    "does not display the current selected year" in {
       val doc = Jsoup.parse(view.toString)
 
       val menu = s"#${currentYear - 1}NavItem"
-      doc.select(menu).size() mustBe 1
-      doc.select(menu).text() mustBe TaxPeriodLabelService.taxPeriodLabel(currentYear - 1)
-      doc.select(s"$menu a").hasAttr("href") mustBe false
+      doc.select(menu).size() mustBe 0
     }
 
     "display cy-2 side menu as link" in {

@@ -21,6 +21,7 @@ import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.viewModels.income.previousYears.UpdateHistoricIncomeDetailsViewModel
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.util.HtmlFormatter
 
 class UpdateHistoricIncomeDetailsViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
@@ -33,7 +34,7 @@ class UpdateHistoricIncomeDetailsViewModelSpec extends PlaySpec with FakeTaiPlay
     "return formatted tax year" in {
       val dynamicYear = UpdateHistoricIncomeDetailsViewModel(2016)
       val result = dynamicYear.formattedTaxYear
-      result mustBe "6 April 2016 to 5 April 2017"
+      result mustBe HtmlFormatter.htmlNonBroken("6 April 2016") + " to " + HtmlFormatter.htmlNonBroken("5 April 2017")
     }
   }
 
