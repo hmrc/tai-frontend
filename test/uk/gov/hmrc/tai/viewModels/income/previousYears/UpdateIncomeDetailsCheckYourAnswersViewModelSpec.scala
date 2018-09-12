@@ -21,6 +21,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 class UpdateIncomeDetailsCheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
@@ -45,7 +46,8 @@ class UpdateIncomeDetailsCheckYourAnswersViewModelSpec extends PlaySpec with Fak
     }
     "return a view model with correct table header based on tax year" in {
       val model = UpdateIncomeDetailsCheckYourAnswersViewModel(TaxYear(2016),"something", "Yes", Some("1234567890"))
-      model.tableHeader mustBe Messages("tai.income.previousYears.decision.header", "6 April 2016 to 5 April 2017")
+      val dateRange = HtmlFormatter.htmlNonBroken("6 April 2016") + " to " + HtmlFormatter.htmlNonBroken("5 April 2017")
+      model.tableHeader mustBe Messages("tai.income.previousYears.decision.header", dateRange)
     }
   }
 

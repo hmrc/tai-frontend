@@ -82,9 +82,9 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
       "connector returns multiple employment" in {
         val sut = createSUT
         val employment1 = Employment("company name 1", Some("123"), new LocalDate("2016-05-26"),
-          Some(new LocalDate("2016-05-26")), Nil, "", "", 1, None, false)
+          Some(new LocalDate("2016-05-26")), Nil, "", "", 1, None, false, false)
         val employment2 = Employment("company name 2", Some("123"), new LocalDate("2016-05-26"),
-          Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false)
+          Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false)
 
         when(sut.connector.employments(any(), any())(any())).thenReturn(Future.successful(List(employment1, employment2)))
 
@@ -191,7 +191,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
   private val nino: Nino = new Generator().nextNino
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   private val employment1 = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
-    Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false)
+    Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false)
   private val oneEmploymentDetails = List(employment1)
   private val twoEmploymentsDetails = oneEmploymentDetails.head :: oneEmploymentDetails.head :: Nil
 

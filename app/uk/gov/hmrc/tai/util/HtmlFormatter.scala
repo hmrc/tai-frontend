@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.service
+package uk.gov.hmrc.tai.util
 
-import play.api.i18n.Messages
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.tai.util.HtmlFormatter
-import uk.gov.hmrc.time.TaxYearResolver
+object HtmlFormatter {
 
-
-trait TaxPeriodLabelService{
-
-  def taxPeriodLabel(year: Int)(implicit messages: Messages) : String = {
-    HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfTaxYear(year))) + " " + messages("language.to") + " " +
-      HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfTaxYear( year + 1).minusDays(1)))
+  def htmlNonBroken(string: String): String = {
+    string.replace(" ", "\u00A0")
   }
-
-
 }
-
-object TaxPeriodLabelService extends TaxPeriodLabelService

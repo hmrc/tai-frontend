@@ -51,7 +51,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "howToUpdatePage" must {
     "render the right response to the user" in {
       val sut = createSut
-      val employment = Employment("company", Some("123"), new LocalDate("2016-05-26"), None, Nil, "", "", 1, None, false)
+      val employment = Employment("company", Some("123"), new LocalDate("2016-05-26"), None, Nil, "", "", 1, None, false, false)
       val employmentAmount = EmploymentAmount(name = "name", description = "description", employmentId = SampleId,
         newAmount = 200, oldAmount = 200, isLive = false, isOccupationalPension = true)
 

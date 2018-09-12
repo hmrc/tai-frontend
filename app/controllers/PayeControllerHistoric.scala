@@ -65,11 +65,11 @@ with Auditable {
       Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()))
     } else {
       for {
-        emp <- employmentService.employments(nino, taxYear)
+        employments <- employmentService.employments(nino, taxYear)
       } yield {
         checkedAgainstPersonDetails(
           person,
-          Ok(views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(taxYear, emp), numberOfPreviousYearsToShow))
+          Ok(views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(taxYear, employments), numberOfPreviousYearsToShow))
         )
       }
     }

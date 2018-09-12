@@ -21,21 +21,18 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import controllers.routes
 
+
 @(selectedYear: TaxYear, noOfPreviousYearsToShow: Int)(implicit messages: Messages)
 
-<div class="side-navigation side-navigation--left">
-    <h2 id="heading" class="heading-small flush--top">@messages("tai.taxYearHeading")</h2>
+<div class="side-navigation side-navigation--right">
+    <h2 id="heading" class="heading-section">@messages("tai.taxYearHeading")</h2>
 
     <nav id="previousYearsSideNav">
         <ul>
             @for(year <- (TaxYearResolver.currentTaxYear - 1) to (TaxYearResolver.currentTaxYear -
             noOfPreviousYearsToShow) by -1) {
             <li>
-                @if(selectedYear.year == year){
-                <p id="@{year}NavItem" class="link-forward">
-                    @{TaxPeriodLabelService.taxPeriodLabel(year)}
-                </p>
-                } else {
+                @if(selectedYear.year != year){
                 <p id="@{year}NavItem" class="inline-block">
                     @Link.toInternalPage(url=routes.PayeControllerHistoric.payePage(TaxYear(year)).toString,
                     value=Some(TaxPeriodLabelService.taxPeriodLabel(year))).toHtml
