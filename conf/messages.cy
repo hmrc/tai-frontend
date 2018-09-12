@@ -943,6 +943,7 @@ tai.taxCode.taxableIncome.link=Gweld eich incwm trethadwy
 tai.taxCode.title.pt2={0} i {1}
 tai.taxCode.untaxedAmount=Mae angen ychwanegu £{0} at eich cyflog neu''ch pensiwn fel y gellir casglu''r dreth ychwanegol.
 tai.taxCode=Cod treth
+tai.taxCode.description.link=Cod treth ar ddiwedd y flwyddyn
 tai.taxCode.prev.0T=Defnyddiwyd eich Lwfans Personol i gyd, neu gwnaethoch ddechrau cyflogaeth newydd ac nid oedd gan eich cyflogwr y manylion a oedd eu hangen arnynt i roi cod treth i chi.
 tai.taxCode.prev.BR=Trethir eich holl incwm o’r gyflogaeth hon neu’r pensiwn hwn ar y gyfradd sylfaenol o 20%. Gallai hyn fod oherwydd bod gennych fwy nag un gyflogaeth neu bensiwn.
 tai.taxCode.prev.DX=Cafodd eich holl incwm o’r gyflogaeth hon neu’r pensiwn hwn ei drethu ar {0}%. Gallai hyn fod oherwydd bod gennych fwy nag un gyflogaeth neu bensiwn.

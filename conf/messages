@@ -944,6 +944,7 @@ tai.taxCode.taxableIncome.link=View your taxable income
 tai.taxCode.title.pt2={0} to {1}
 tai.taxCode.untaxedAmount=£{0} needs to be added to your pay or pension so the extra tax can be collected.
 tai.taxCode=Tax code
+tai.taxCode.description.link=Tax code at end of year
 tai.taxCode.prev.0T=Your Personal Allowance was used up, or you started a new employment and your employer did not have the details they needed to give you a tax code.
 tai.taxCode.prev.BR=All your income from this employment or pension was taxed at the basic rate of 20%. This could be because you had more than one employment or pension.
 tai.taxCode.prev.DX=All your income from this employment or pension was taxed at {0}%. This could be because you had more than one employment or pension.

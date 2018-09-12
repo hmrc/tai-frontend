@@ -136,6 +136,13 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                     <p class="flush--top">
                         <span class="heading-36 faded-text-dark">@withPoundPrefix(MoneyPounds(employment.taxablePayYTD))</span>
                     </p>
+
+                    @Link.toInternalPage(
+                    url=routes.YourTaxCodeController.prevTaxCodes(viewModel.taxYear).toString(),
+                    value=Some(Messages("tai.taxCode.description.link")),
+                    id=Some("taxCodeDescription")
+                    ).toHtml
+
                     @employment.payrollNumber.map{ payrollNumber =>
                         <p>
                             @if(employment.isPension) {
