@@ -36,11 +36,12 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
 
   def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal], identifier: String)
                             (implicit messages: Messages): DescriptionListViewModel = {
-    val year = if (identifier == "previous") TaxYear().prev else TaxYear()
+
+    val currentTaxCode = identifier == "current"
 
     val taxCode = taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)
 
-    val explanation = describeTaxCode(taxCode, taxCodeRecord.basisOfOperation, scottishTaxRateBands, year)
+    val explanation = describeTaxCode(taxCode, taxCodeRecord.basisOfOperation, scottishTaxRateBands, currentTaxCode)
     DescriptionListViewModel(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", taxCode), explanation)
   }
 

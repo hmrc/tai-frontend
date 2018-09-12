@@ -30,10 +30,10 @@ trait TaxCodeDescriptor {
 
   case class TaxCodeDescription(taxCode: String, basisOperation: BasisOperation, scottishTaxRateBands: Map[String, BigDecimal])
 
-  def describeTaxCode(taxCode: String, basisOperation: BasisOperation, scottishTaxRateBands: Map[String, BigDecimal], year: TaxYear = TaxYear())
+  def describeTaxCode(taxCode: String, basisOperation: BasisOperation, scottishTaxRateBands: Map[String, BigDecimal], currentTaxCode: Boolean = true)
               (implicit messages: Messages): ListMap[String, String] = {
 
-    val previousOrCurrent = if (year <= TaxYear().prev) ".prev" else ""
+    val previousOrCurrent = if (currentTaxCode) "" else ".prev"
 
     val explanationRules: Seq[Function1[TaxCodeDescription, ListMap[String, String]]] = Seq(
       scottishTaxCodeExplanation(previousOrCurrent),

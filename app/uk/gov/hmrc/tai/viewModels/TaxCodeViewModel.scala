@@ -35,11 +35,12 @@ object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
   def apply(taxCodeIncomes: Seq[TaxCodeIncome], scottishTaxRateBands: Map[String, BigDecimal], year: TaxYear = TaxYear())(implicit messages: Messages): TaxCodeViewModel = {
 
     val previousOrCurrent = if (year <= TaxYear().prev) ".prev" else ""
+    val currentTaxCode = year == TaxYear()
     val preHeader =  messages(s"tai.taxCode$previousOrCurrent.preHeader")
 
     val descriptionListViewModels = taxCodeIncomes.map { taxCodeIncome =>
       val taxCode = taxCodeIncome.taxCodeWithEmergencySuffix
-      val explanation = describeTaxCode(taxCode, taxCodeIncome.basisOperation, scottishTaxRateBands, year)
+      val explanation = describeTaxCode(taxCode, taxCodeIncome.basisOperation, scottishTaxRateBands, currentTaxCode)
 
       DescriptionListViewModel(Messages(s"tai.taxCode$previousOrCurrent.subheading", taxCodeIncome.name, taxCode), explanation)
     }
