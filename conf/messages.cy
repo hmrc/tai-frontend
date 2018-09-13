@@ -1257,7 +1257,6 @@ taxCode.change.yourTaxFreeAmount.desc=Eich swm rhydd o dreth yw''r incwm y gallw
 taxCode.change.yourTaxFreeAmount.dates=Eich swm rhydd o dreth ar gyfer {0}
 taxCode.change.yourTaxFreeAmount.summaryHeading=Sut caiff eich swm rhydd o dreth ei gyfrifo
 taxCode.change.yourTaxFreeAmount.whatHappensNext.link=Gweler beth fydd yn digwydd nesaf
-taxCode.change.yourTaxFreeAmount.updateYourCurrentIncome.link=Diweddaru''ch incwm neu''ch buddiannau presennol
 taxCode.change.yourTaxCodeChanged.h1=Newidiodd eich cod treth ar {0}
 taxCode.change.yourTaxCodeChanged.paragraph=Gallai hyn fod o ganlyniad i newid i’ch incwm neu’ch buddiannau.
 taxCode.change.yourTaxCodeChanged.checkYourTaxButton=Gwiriwch eich swm rhydd o dreth
