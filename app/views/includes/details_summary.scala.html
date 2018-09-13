@@ -18,12 +18,14 @@
     title: String,
     visuallyHiddenTitle: Option[String]=None,
     summaryClass: Option[String]=None,
-    panelClass: Option[String]=Some("panel-indent")
+    panelClass: Option[String]=Some("panel-indent"),
+    gaAction: Option[String] = None,
+    gaLabel: Option[String] = None
 )(body: Html)
-<details>
+<details @if(gaAction.isDefined) {data-journey-click="accordion - click:@gaAction:@gaLabel"}>
     <summary @if(summaryClass.isDefined){class='@summaryClass'}>
         @if(visuallyHiddenTitle) {
-            <span aria-hidden="true">@title</span>
+            <span  aria-hidden="true">@title</span>
             <span class="visuallyhidden">@visuallyHiddenTitle</span>
         } else {
             @title
