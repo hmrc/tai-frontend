@@ -30,23 +30,24 @@ trait TaxCodeDescriptor {
 
   case class TaxCodeDescription(taxCode: String, basisOperation: BasisOperation, scottishTaxRateBands: Map[String, BigDecimal])
 
-  def describeTaxCode(taxCode: String, basisOperation: BasisOperation, scottishTaxRateBands: Map[String, BigDecimal], currentTaxCode: Boolean = true)
+  def describeTaxCode(taxCode: String, basisOperation: BasisOperation, scottishTaxRateBands: Map[String, BigDecimal], isCurrentTaxCode: Boolean = true)
               (implicit messages: Messages): ListMap[String, String] = {
 
-    val previousOrCurrent = if (currentTaxCode) "" else ".prev"
+
 
     val explanationRules: Seq[Function1[TaxCodeDescription, ListMap[String, String]]] = Seq(
-      scottishTaxCodeExplanation(previousOrCurrent),
-      untaxedTaxCodeExplanation(previousOrCurrent),
-      fetchTaxCodeExplanation(previousOrCurrent),
-      emergencyTaxCodeExplanation(previousOrCurrent)
+      scottishTaxCodeExplanation(isCurrentTaxCode),
+      untaxedTaxCodeExplanation(isCurrentTaxCode),
+      fetchTaxCodeExplanation(isCurrentTaxCode),
+      emergencyTaxCodeExplanation(isCurrentTaxCode)
     )
 
     val taxDescription = TaxCodeDescription(taxCode, basisOperation, scottishTaxRateBands)
     explanationRules.foldLeft(ListMap[String, String]())((expl, rule) => expl ++ rule(taxDescription))
   }
 
-  private def scottishTaxCodeExplanation(previousOrCurrent: String)(implicit messages: Messages): TaxCodeDescription => ListMap[String, String] = (taxCodeDescription: TaxCodeDescription) => {
+  private def scottishTaxCodeExplanation(isCurrentTaxCode: Boolean = true)(implicit messages: Messages): TaxCodeDescription => ListMap[String, String] = (taxCodeDescription: TaxCodeDescription) => {
+    val previousOrCurrent = if (isCurrentTaxCode) "" else ".prev"
     val scottishRegex = "^S".r
     val taxCode = taxCodeDescription.taxCode
     scottishRegex.findFirstIn(taxCode) match {
@@ -56,7 +57,8 @@ trait TaxCodeDescriptor {
     }
   }
 
-  private def untaxedTaxCodeExplanation(previousOrCurrent: String)(implicit messages: Messages): TaxCodeDescription => ListMap[String, String] = (taxCodeDescription: TaxCodeDescription) => {
+  private def untaxedTaxCodeExplanation(isCurrentTaxCode: Boolean = true)(implicit messages: Messages): TaxCodeDescription => ListMap[String, String] = (taxCodeDescription: TaxCodeDescription) => {
+    val previousOrCurrent = if (isCurrentTaxCode) "" else ".prev"
     val untaxedRegex = "K".r
     val taxCode = taxCodeDescription.taxCode
     untaxedRegex.findFirstIn(taxCode) match {
@@ -69,7 +71,8 @@ trait TaxCodeDescriptor {
     }
   }
 
-  private def standAloneTaxCodeExplanation(previousOrCurrent: String)(implicit messages: Messages): TaxCodeDescription => ListMap[String, String] = (taxCodeDescription: TaxCodeDescription) => {
+  private def standAloneTaxCodeExplanation(isCurrentTaxCode: Boolean = true)(implicit messages: Messages): TaxCodeDescription => ListMap[String, String] = (taxCodeDescription: TaxCodeDescription) => {
+    val previousOrCurrent = if (isCurrentTaxCode) "" else ".prev"
     val standAloneRegex = "0T|BR|NT".r
     val scottishStandAloneRegex = "D0|D1|D2|D3|D4|D5|D6|D7|D8".r
 
@@ -81,7 +84,8 @@ trait TaxCodeDescriptor {
     }
   }
 
-  private def suffixTaxCodeExplanation(previousOrCurrent: String)(implicit messages: Messages): TaxCodeDescription => ListMap[String, String] = (taxCodeDescription: TaxCodeDescription) => {
+  private def suffixTaxCodeExplanation(isCurrentTaxCode: Boolean = true)(implicit messages: Messages): TaxCodeDescription => ListMap[String, String] = (taxCodeDescription: TaxCodeDescription) => {
+    val previousOrCurrent = if (isCurrentTaxCode) "" else ".prev"
     val suffixRegex = """L|M|\d[0-9]*N|\d[1-9]T|\d+0T|[1-9]T""".r
     val taxCode = taxCodeDescription.taxCode
     suffixRegex.findFirstIn(taxCode) match {
@@ -94,18 +98,19 @@ trait TaxCodeDescriptor {
     }
   }
 
-  private def emergencyTaxCodeExplanation(previousOrCurrent: String)(implicit messages: Messages): TaxCodeDescription => ListMap[String, String] = (taxCodeDescription: TaxCodeDescription) => {
+  private def emergencyTaxCodeExplanation(isCurrentTaxCode: Boolean = true)(implicit messages: Messages): TaxCodeDescription => ListMap[String, String] = (taxCodeDescription: TaxCodeDescription) => {
+    val previousOrCurrent = if (isCurrentTaxCode) "" else ".prev"
     taxCodeDescription.basisOperation match {
       case Week1Month1BasisOperation => ListMap(TaiConstants.EmergencyTaxCode -> Messages(s"tai.taxCode$previousOrCurrent.X"))
       case _ => ListMap[String, String]()
     }
   }
 
-  private def fetchTaxCodeExplanation(previousOrCurrent: String)(implicit messages: Messages): TaxCodeDescription => ListMap[String, String] = (taxCodeDescription: TaxCodeDescription) => {
-    val codeExplanation = suffixTaxCodeExplanation(previousOrCurrent)(messages)(taxCodeDescription)
+  private def fetchTaxCodeExplanation(isCurrentTaxCode: Boolean = true)(implicit messages: Messages): TaxCodeDescription => ListMap[String, String] = (taxCodeDescription: TaxCodeDescription) => {
+    val codeExplanation = suffixTaxCodeExplanation(isCurrentTaxCode)(messages)(taxCodeDescription)
 
     if (codeExplanation.isEmpty)
-      standAloneTaxCodeExplanation(previousOrCurrent)(messages)(taxCodeDescription)
+      standAloneTaxCodeExplanation(isCurrentTaxCode)(messages)(taxCodeDescription)
     else
       codeExplanation
   }
