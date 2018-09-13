@@ -23,9 +23,9 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import includes.forms.card
 
-@gaEventActionString = @{"Your PAYE Income Tax overview"}
-
 @(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData], model: WhatDoYouWantToDoViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@gaEventActionString = @{"Your PAYE Income Tax overview"}
 
 @main(
     title = Messages("your.paye.income.tax.overview"),
@@ -53,9 +53,9 @@
                         id = "hasTaxCodeChanged",
                         heading = Messages("check.tax.hasChanged.header"),
                         cardActionUrl = Some("/check-income-tax/tax-code-change/tax-code-comparison"),
-                        cardActionText = Some(Messages("check.tax.hasChanged.action"))
-                        gaAction=Some(gaEventActionString)
-                        gaLabel=Some(Messages("check.tax.hasChanged.action"))
+                        cardActionText = Some(Messages("check.tax.hasChanged.action")),
+                        gaAction = Some(gaEventActionString),
+                        gaLabel = Some(Messages("check.tax.hasChanged.action"))
                       )
                     }
                 </div>
@@ -65,8 +65,8 @@
                         url = Some("/check-income-tax/income-summary"),
                         id = "currentTaxYear",
                         heading = Messages("current.tax.year"),
-                        bodyContent = Some(Messages("check.current.income", (TaxYearResolver.currentTaxYear-1).toString, TaxYearResolver.currentTaxYear.toString))
-                        gaAction=Some(gaEventActionString)
+                        bodyContent = Some(Messages("check.current.income", (TaxYearResolver.currentTaxYear-1).toString, TaxYearResolver.currentTaxYear.toString)),
+                        gaAction=Some(gaEventActionString),
                         gaLabel=Some(Messages("current.tax.year"))
                     )
 
@@ -75,8 +75,8 @@
                             url = Some("/check-income-tax/income-tax-comparison"),
                             id = "nextTaxYear",
                             heading = Messages("next.year"),
-                            bodyContent = Some(Messages("check.estimated.income"))
-                            gaAction=Some(gaEventActionString)
+                            bodyContent = Some(Messages("check.estimated.income")),
+                            gaAction=Some(gaEventActionString),
                             gaLabel=Some(Messages("next.year"))
                         )
                     }
@@ -85,8 +85,8 @@
                         url = Some(s"/check-income-tax/historic-paye/${(TaxYearResolver.currentTaxYear-1).toString}"),
                         id = "earlierTaxYear",
                         heading = Messages("earlier"),
-                        bodyContent = Some(Messages("check.tax.previous.years"))
-                        gaAction=Some(gaEventActionString)
+                        bodyContent = Some(Messages("check.tax.previous.years")),
+                        gaAction=Some(gaEventActionString),
                         gaLabel=Some(Messages("earlier"))
                     )
 
