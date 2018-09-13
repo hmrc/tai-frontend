@@ -143,21 +143,22 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                     id=Some("taxCodeDescription")
                     ).toHtml
 
-                    @employment.payrollNumber.map{ payrollNumber =>
-                        <p>
-                            @if(employment.isPension) {
-                                @textForScreenReader(
-                                    s"${Messages("tai.pensionNumber")}: ${payrollNumber}",
-                                    Messages("tai.pension.income.details.pensionNumber.screenReader", payrollNumber)
-                                )
-                            } else {
-                                @textForScreenReader(
-                                    Messages("tai.incomeTaxSummary.payrollNumber.prefix", payrollNumber),
-                                    Messages("tai.employment.income.details.payrollNumber.screenReader", payrollNumber)
-                                )
-                            }
-                        </p>
-                    }
+                    <p>
+                        @employment.payrollNumber.map{ payrollNumber =>
+                                @if(employment.isPension) {
+                                    @textForScreenReader(
+                                        s"${Messages("tai.pensionNumber")}: ${payrollNumber}",
+                                        Messages("tai.pension.income.details.pensionNumber.screenReader", payrollNumber)
+                                    )
+                                } else {
+                                    @textForScreenReader(
+                                        Messages("tai.incomeTaxSummary.payrollNumber.prefix", payrollNumber),
+                                        Messages("tai.employment.income.details.payrollNumber.screenReader", payrollNumber)
+                                    )
+                                }
+
+                        }
+                    </p>
 
                     <p class="flush--top">
                         @includes.link(
