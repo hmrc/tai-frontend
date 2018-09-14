@@ -22,6 +22,7 @@
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
 @import org.joda.time.LocalDate
+@import uk.gov.hmrc.urls.Link
 
 @(taxCodeChangeViewModel: TaxCodeChangeViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -53,9 +54,12 @@
         @taxCodePairs(taxCodeChangeViewModel.pairs)
     </div>
     <div>
-        <a class="button" href="@routes.TaxCodeChangeController.yourTaxFreeAmount().url.toString" id="check-your-tax-button" data-journey-click="button - click:@gaEventActionString:@gaEventLabelString">
-            @Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")
-        </a>
+        @Link.toInternalPage(
+        id=Some("check-your-tax-button"),
+        url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,
+        value=Some(Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")),
+        cssClasses=Some("button"),
+        dataAttributes=Some(Map("journey-click"->s"button - click:${gaEventActionString}:${Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}"))).toHtml
     </div>
 </div>
 }

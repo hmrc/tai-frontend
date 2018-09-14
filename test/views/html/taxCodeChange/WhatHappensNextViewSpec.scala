@@ -35,7 +35,9 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
         Link.toInternalPage(
           id = Some("income-tax-estimate-link"),
           url = routes.EstimatedIncomeTaxController.estimatedIncomeTax().url.toString,
-          value = Some(messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link"))).toHtml)).body
+          value = Some(messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")),
+          dataAttributes = Some(Map("journey-click"->s"link - click:What happens next:${messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")}"))).toHtml)).body
+
 
 
       doc must haveH2HeadingWithText(messages("taxCode.change.whatHappensNext.wrongInformation.text"))
@@ -44,7 +46,8 @@ class WhatHappensNextViewSpec extends TaiViewSpec {
         Link.toInternalPage(
           id = Some("update-current-income-or-benefits-link"),
           url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
-          value = Some(messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link"))).toHtml)).body
+          value = Some(messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")),
+          dataAttributes = Some(Map("journey-click"->s"link - click:What happens next:${messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")}"))).toHtml)).body
     }
 
   }
