@@ -25,10 +25,14 @@
 
 @(taxCodeChangeViewModel: TaxCodeChangeViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
+@gaEventActionString = @{"Your tax code change"}
+@gaEventLabelString = @{Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}
+
 @header = @{
     ptaHeader(
         formForErrorSummary = None,
         displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
         headerWidthClasses = Some("column-full"),
         mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeChangeViewModel.changeDate)),
         preHeadingText = Messages("taxCode.change.journey.preHeading")
@@ -49,7 +53,7 @@
         @taxCodePairs(taxCodeChangeViewModel.pairs)
     </div>
     <div>
-        <a class="button" href="@routes.TaxCodeChangeController.yourTaxFreeAmount().url.toString" id="check-your-tax-button">
+        <a class="button" href="@routes.TaxCodeChangeController.yourTaxFreeAmount().url.toString" id="check-your-tax-button" data-journey-click="button - click:@gaEventActionString:@gaEventLabelString">
             @Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")
         </a>
     </div>
