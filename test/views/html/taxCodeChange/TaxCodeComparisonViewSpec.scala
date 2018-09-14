@@ -44,7 +44,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
     doc(view) must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", record.taxCode))
 
-    for (explanation <- TaxCodeChangeViewModel.getTaxCodeExplanations(record, Map[String, BigDecimal]()).descriptionItems) {
+    for (explanation <- TaxCodeChangeViewModel.getTaxCodeExplanations(record, Map[String, BigDecimal](), "current").descriptionItems) {
       doc(view) must haveSpanWithText(Messages("taxCode.change.yourTaxCodeChanged.understand", record.taxCode))
       doc(view) must haveClassWithText(explanation._1, "tax-code-change__part")
 
