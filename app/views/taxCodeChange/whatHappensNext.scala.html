@@ -19,10 +19,13 @@
 
 @()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
+@gaEventActionString = @{"What happens next"}
+
 @header = @{
     ptaHeader(
     formForErrorSummary = None,
     displayBackLink = true,
+    backLinkGaEventAction = Some(gaEventActionString),
     mainHeadingText = Messages("taxCode.change.whatHappensNext.title"),
     preHeadingText = Messages("taxCode.change.journey.preHeading"))
 }
@@ -43,7 +46,7 @@
                     <span class="lede">@Messages("taxCode.change.whatHappensNext.paragragh1")</span>
                 </p>
 
-                <p id="check-income-tax-estimate">
+                <p id="check-income-tax-estimate" data-journey-click="link - click:@gaEventActionString:@{Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")}">
                     @Html(Messages("taxCode.change.whatHappensNext.paragragh2",
                     Link.toInternalPage(
                     id=Some("income-tax-estimate-link"),
@@ -53,7 +56,7 @@
 
             </section>
 
-            <section id="tax-code-incorrect" class="section flush--bottom">
+            <section id="tax-code-incorrect" class="section flush--bottom" data-journey-click="link - click:@gaEventActionString:@{Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")}">
                 <h2 class="heading-medium">@Messages("taxCode.change.whatHappensNext.wrongInformation.text")</h2>
 
                 <p id="update-current-income-or-benefits">
