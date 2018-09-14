@@ -46,7 +46,7 @@
 </div>
 
 @taxCodeRecordExplanation(taxCodeRecord: TaxCodeRecord, identifier: String) = {
-    @defining(TaxCodeChangeViewModel.getTaxCodeExplanations(taxCodeRecord, scottishTaxRateBands)) { taxCodeDescription =>
+    @defining(TaxCodeChangeViewModel.getTaxCodeExplanations(taxCodeRecord, scottishTaxRateBands, identifier)) { taxCodeDescription =>
         <div class="tax-code-change__explanation">
             @includes.details_summary(
                 taxCodeDescription.heading,

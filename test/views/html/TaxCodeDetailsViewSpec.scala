@@ -59,7 +59,7 @@ class TaxCodeDetailsViewSpec extends TaiViewSpec {
   val taxCodeDescription1 = DescriptionListViewModel("Your tax code for employer1: BR", ListMap("K" -> messages("tai.taxCode.BR")))
   val taxCodeDescription2 = DescriptionListViewModel("Your tax code for employer2: D0", ListMap( "D0" -> messages("tai.taxCode.DX", 40), "K" -> messages("tai.taxCode.BR") ))
 
-  val viewModel: TaxCodeViewModel = TaxCodeViewModel("main heading", "main heading", "lede message", Seq(taxCodeDescription1, taxCodeDescription2))
+  val viewModel: TaxCodeViewModel = TaxCodeViewModel("main heading", "main heading", "lede message", Seq(taxCodeDescription1, taxCodeDescription2), messages(s"tai.taxCode.preHeader"))
 
   override def view = views.html.taxCodeDetails(viewModel)
 }

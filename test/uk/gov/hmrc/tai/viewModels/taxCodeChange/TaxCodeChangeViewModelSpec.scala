@@ -72,7 +72,7 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
           )
         )
 
-        val result = TaxCodeChangeViewModel.getTaxCodeExplanations(previousTaxCodeRecord1, Map[String, BigDecimal]())
+        val result = TaxCodeChangeViewModel.getTaxCodeExplanations(previousTaxCodeRecord1, Map[String, BigDecimal](), "current")
 
         result mustEqual(expected)
       }
@@ -87,7 +87,7 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
           )
         )
 
-        val result = TaxCodeChangeViewModel.getTaxCodeExplanations(fullYearTaxCode, Map[String, BigDecimal]())
+        val result = TaxCodeChangeViewModel.getTaxCodeExplanations(fullYearTaxCode, Map[String, BigDecimal](), "current")
 
         result mustEqual(expected)
       }
@@ -104,7 +104,7 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
           )
         )
 
-        val result = TaxCodeChangeViewModel.getTaxCodeExplanations(scottishTaxCode, scottishTaxRateBands)
+        val result = TaxCodeChangeViewModel.getTaxCodeExplanations(scottishTaxCode, scottishTaxRateBands, "current")
 
         result mustEqual(expected)
       }

@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Person
-import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 
 import scala.concurrent.Future
