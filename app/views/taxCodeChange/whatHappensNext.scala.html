@@ -17,12 +17,16 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.urls.Link
 
+
 @()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@gaEventActionString = @{"What happens next"}
 
 @header = @{
     ptaHeader(
     formForErrorSummary = None,
     displayBackLink = true,
+    backLinkGaEventAction = Some(gaEventActionString),
     mainHeadingText = Messages("taxCode.change.whatHappensNext.title"),
     preHeadingText = Messages("taxCode.change.journey.preHeading"))
 }
@@ -43,14 +47,14 @@
                     <span class="lede">@Messages("taxCode.change.whatHappensNext.paragragh1")</span>
                 </p>
 
-                <p id="check-income-tax-estimate">
+                <p id="check-income-tax-estimate" >
                     @Html(Messages("taxCode.change.whatHappensNext.paragragh2",
                     Link.toInternalPage(
                     id=Some("income-tax-estimate-link"),
                     url=routes.EstimatedIncomeTaxController.estimatedIncomeTax.url,
-                    value=Some(Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link"))).toHtml))
+                    value=Some(Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")),
+                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("taxCode.change.whatHappensNext.yourIncomeTaxEstimate.link")}"))).toHtml))
                 </p>
-
             </section>
 
             <section id="tax-code-incorrect" class="section flush--bottom">
@@ -61,10 +65,10 @@
                     Link.toInternalPage(
                     id=Some("update-current-income-or-benefits-link"),
                     url=routes.TaxAccountSummaryController.onPageLoad.url.toString,
-                    value=Some(Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link"))).toHtml))
+                    value=Some(Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")),
+                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("taxCode.change.whatHappensNext.updateCurrentIncomeOrBenefits.link")}"))).toHtml))
                 </p>
             </section>
-
 
         </div>
     </div>
