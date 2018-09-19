@@ -5,16 +5,18 @@ import sbt.Tests.{Group, SubProcess}
 import sbt._
 import scoverage.ScoverageKeys
 import uk.gov.hmrc.versioning.SbtGitVersioning
+import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 
 trait MicroService {
 
   import uk.gov.hmrc._
   import DefaultBuildSettings._
-  import TestPhases._
   import uk.gov.hmrc.SbtAutoBuildPlugin
   import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
   import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
+  import uk.gov.hmrc.versioning.SbtGitVersioning
+  import uk.gov.hmrc.SbtArtifactory
 
   val appName: String
 
@@ -71,7 +73,7 @@ trait MicroService {
   )
 
   lazy val microservice = Project(appName, file("."))
-    .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
+    .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
     .settings(playSettings ++ scoverageSettings: _*)
     .settings(publishingSettings: _*)
     .settings(defaultSettings(): _*)
@@ -80,19 +82,20 @@ trait MicroService {
       libraryDependencies ++= appDependencies,
       retrieveManaged := true,
       routesGenerator := StaticRoutesGenerator)
-    .settings(inConfig(TemplateTest)(Defaults.testSettings): _*)
+    .settings(inConfig(ITTestPhases.TemplateTest)(Defaults.testSettings): _*)
     .configs(IntegrationTest)
-    .settings(inConfig(TemplateItTest)(Defaults.itSettings): _*)
+    .settings(inConfig(ITTestPhases.TemplateItTest)(Defaults.itSettings): _*)
     .settings(
       Keys.fork in IntegrationTest := false,
       unmanagedSourceDirectories in IntegrationTest <<= (baseDirectory in IntegrationTest)(base => Seq(base / "it")),
       addTestReportOption(IntegrationTest, "int-test-reports"),
-      testGrouping in IntegrationTest := oneForkedJvmPerTest((definedTests in IntegrationTest).value),
+      testGrouping in IntegrationTest := ITTestPhases.oneForkedJvmPerTest((definedTests in IntegrationTest).value),
       parallelExecution in IntegrationTest := false)
     .settings(resolvers ++= Seq(Resolver.jcenterRepo))
+    .settings(majorVersion := 0)
 }
 
-private object TestPhases {
+private object ITTestPhases {
 
   val allPhases = "tt->test;test->test;test->compile;compile->compile"
   val allItPhases = "tit->it;it->it;it->compile;compile->compile"
