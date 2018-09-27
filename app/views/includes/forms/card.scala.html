@@ -26,9 +26,9 @@
   cardActionText: Option[String] = None
 )
 
-<div class="@cardClass" id="@id">
+<div class="@cardClass" @if(url || cardActionUrl){data-journey-click="link - click:@gaAction:@gaLabel"} id="@id">
 
-  <div class="card-body @if(url){active}" @if(url){data-journey-click="link - click:@gaAction:@gaLabel"}>
+  <div class="card-body @if(url){active}">
 
     <@headingTag class="heading-small card-heading">
       @if(url){
@@ -43,7 +43,7 @@
   </div>
 
   @if(cardActionUrl && cardActionText) {
-    <div class='card-action'>
+    <div class="card-action">
         <a href="@cardActionUrl">@cardActionText</a>
     </div>
   }

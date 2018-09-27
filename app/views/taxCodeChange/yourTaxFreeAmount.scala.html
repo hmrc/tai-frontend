@@ -21,12 +21,13 @@
 
 @(viewModel:YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Your tax free amount"}
+@gaEventActionString = @{"Your tax-free amount"}
 
 @header = @{
     ptaHeader(
     formForErrorSummary = None,
     displayBackLink = true,
+    backLinkGaEventAction = Some(gaEventActionString),
     mainHeadingText = Messages("taxCode.change.yourTaxFreeAmount.title"),
     preHeadingText = Messages("taxCode.change.journey.preHeading"))
 }
@@ -80,6 +81,7 @@
                     id=Some("seeWhatHappensNext"),
                     value=Some(Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link")),
                     url = routes.TaxCodeChangeController.whatHappensNext.url,
+                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("taxCode.change.yourTaxFreeAmount.whatHappensNext.link")}")),
                     cssClasses=Some("button")
                 ).toHtml
             </div>
