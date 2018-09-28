@@ -59,15 +59,83 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
     }
   }
 
+
+  "payroll number missing" must {
+    "return true if 2 or more secondary previous employments are missing payroll number" in {
+      val sut = createSut
+      val nino = generateNino
+
+      val taxCodeRecord3 = taxCodeRecord1.copy(payrollNumber = None, primary = false)
+
+      val previousHistory = Seq(taxCodeRecord3, taxCodeRecord3)
+      val currentHistory = Seq(taxCodeRecord2)
+
+      val taxCodeChange = TaxCodeChange(previousHistory,currentHistory)
+
+      sut.isPayrollNumberMissing(taxCodeChange) mustBe true
+
+    }
+
+    "return false if all secondary previous employments have payroll numbers" in {
+      val sut = createSut
+      val nino = generateNino
+
+      val taxCdeRecord3 = taxCodeRecord1.copy(payrollNumber = Some("123"), primary = false)
+
+      val previousHistory = Seq(taxCodeRecord1, taxCdeRecord3, taxCdeRecord3)
+      val currentHistory = Seq(taxCodeRecord2)
+
+      val taxCodeChange = TaxCodeChange(previousHistory,currentHistory)
+
+      sut.isPayrollNumberMissing(taxCodeChange) mustBe false
+
+    }
+
+
+
+    "return true if 2 or more secondary current employments are missing payroll number" in {
+      val sut = createSut
+      val nino = generateNino
+
+      val taxCodeRecord3 = taxCodeRecord1.copy(payrollNumber = None, primary = false)
+
+      val previousHistory = Seq(taxCodeRecord2)
+      val currentHistory = Seq(taxCodeRecord3, taxCodeRecord3)
+
+      val taxCodeChange = TaxCodeChange(previousHistory,currentHistory)
+
+      sut.isPayrollNumberMissing(taxCodeChange) mustBe true
+
+    }
+
+    "return false if all secondary current employments have payroll numbers" in {
+      val sut = createSut
+      val nino = generateNino
+
+      val taxCdeRecord3 = taxCodeRecord1.copy(payrollNumber = Some("123"), primary = false)
+
+      val previousHistory = Seq(taxCodeRecord2)
+      val currentHistory =  Seq(taxCodeRecord1, taxCdeRecord3, taxCdeRecord3)
+
+      val taxCodeChange = TaxCodeChange(previousHistory,currentHistory)
+
+      sut.isPayrollNumberMissing(taxCodeChange) mustBe false
+
+    }
+
+
+  }
+
+
   val startDate = TaxYearResolver.startOfCurrentTaxYear
   val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1), OtherBasisOperation,"Employer 1", false, Some("1234"), true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   private def generateNino: Nino = new Generator(new Random).nextNino
-  private def createSut = new SUT
+  private def createSut = new TestService
 
-  private class SUT extends TaxCodeChangeService {
+  private class TestService extends TaxCodeChangeService {
     override val taxCodeChangeConnector: TaxCodeChangeConnector = mock[TaxCodeChangeConnector]
   }
 

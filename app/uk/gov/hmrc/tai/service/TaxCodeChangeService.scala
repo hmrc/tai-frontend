@@ -23,7 +23,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.model.domain.TaxCodeChange
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 
 import scala.concurrent.Future
 
@@ -46,8 +46,15 @@ trait TaxCodeChangeService {
   def latestTaxCodeChangeDate(nino: Nino)(implicit hc: HeaderCarrier): Future[LocalDate] = {
     taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate)
   }
-}
 
+  def isPayrollNumberMissing(taxCodeChange: TaxCodeChange): Boolean = {
+    def moreThanTwo(taxCodeRecords: Seq[TaxCodeRecord]): Boolean =
+      taxCodeRecords.count(p => p.payrollNumber.isEmpty && !p.primary) >= 2
+
+
+    moreThanTwo(taxCodeChange.current) || moreThanTwo(taxCodeChange.previous)
+  }
+}
 object TaxCodeChangeService extends TaxCodeChangeService {
   override val taxCodeChangeConnector: TaxCodeChangeConnector = TaxCodeChangeConnector
 }
