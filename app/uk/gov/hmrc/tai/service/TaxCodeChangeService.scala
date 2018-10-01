@@ -47,10 +47,10 @@ trait TaxCodeChangeService {
     taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate)
   }
 
-  def isPayrollNumberMissing(taxCodeChange: TaxCodeChange): Boolean = {
-    def moreThanTwo(taxCodeRecords: Seq[TaxCodeRecord]): Boolean =
-      taxCodeRecords.count(p => p.payrollNumber.isEmpty && !p.primary) >= 2
-
+  def areMultiplePayrollNumberMissingForSecondary(taxCodeChange: TaxCodeChange): Boolean = {
+    def moreThanTwo(records: Seq[TaxCodeRecord]): Boolean = {
+      records.count(record => !record.primary && record.payrollNumber.isEmpty) >= 2
+    }
 
     moreThanTwo(taxCodeChange.current) || moreThanTwo(taxCodeChange.previous)
   }

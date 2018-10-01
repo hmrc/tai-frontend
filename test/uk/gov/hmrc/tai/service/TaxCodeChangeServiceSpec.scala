@@ -60,70 +60,70 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
   }
 
 
-  "payroll number missing" must {
-    "return true if 2 or more secondary previous employments are missing payroll number" in {
-      val sut = createSut
-      val nino = generateNino
+  "isPayrollNumberMissing" must {
+    "return true" when {
+      "2 or more secondary previous employments are missing payroll number" in {
+        val sut = createSut
+        val nino = generateNino
 
-      val taxCodeRecord3 = taxCodeRecord1.copy(payrollNumber = None, primary = false)
+        val taxCodeRecord3 = taxCodeRecord1.copy(payrollNumber = None, primary = false)
 
-      val previousHistory = Seq(taxCodeRecord3, taxCodeRecord3)
-      val currentHistory = Seq(taxCodeRecord2)
+        val previousHistory = Seq(taxCodeRecord3, taxCodeRecord3)
+        val currentHistory = Seq(taxCodeRecord2)
 
-      val taxCodeChange = TaxCodeChange(previousHistory,currentHistory)
+        val taxCodeChange = TaxCodeChange(previousHistory,currentHistory)
 
-      sut.isPayrollNumberMissing(taxCodeChange) mustBe true
+        sut.areMultiplePayrollNumberMissingForSecondary(taxCodeChange) mustBe true
 
+      }
+
+      "2 or more secondary current employments are missing payroll number" in {
+        val sut = createSut
+        val nino = generateNino
+
+        val taxCodeRecord3 = taxCodeRecord1.copy(payrollNumber = None, primary = false)
+
+        val previousHistory = Seq(taxCodeRecord2)
+        val currentHistory = Seq(taxCodeRecord3, taxCodeRecord3)
+
+        val taxCodeChange = TaxCodeChange(previousHistory,currentHistory)
+
+        sut.areMultiplePayrollNumberMissingForSecondary(taxCodeChange) mustBe true
+
+      }
+
+      "return false" when {
+        "all secondary previous employments have payroll numbers" in {
+          val sut = createSut
+          val nino = generateNino
+
+          val taxCdeRecord3 = taxCodeRecord1.copy(payrollNumber = Some("123"), primary = false)
+
+          val previousHistory = Seq(taxCodeRecord1, taxCdeRecord3, taxCdeRecord3)
+          val currentHistory = Seq(taxCodeRecord2)
+
+          val taxCodeChange = TaxCodeChange(previousHistory,currentHistory)
+
+          sut.areMultiplePayrollNumberMissingForSecondary(taxCodeChange) mustBe false
+
+        }
+
+        "all secondary current employments have payroll numbers" in {
+          val sut = createSut
+          val nino = generateNino
+
+          val taxCdeRecord3 = taxCodeRecord1.copy(payrollNumber = Some("123"), primary = false)
+
+          val previousHistory = Seq(taxCodeRecord2)
+          val currentHistory =  Seq(taxCodeRecord1, taxCdeRecord3, taxCdeRecord3)
+
+          val taxCodeChange = TaxCodeChange(previousHistory,currentHistory)
+
+          sut.areMultiplePayrollNumberMissingForSecondary(taxCodeChange) mustBe false
+
+        }
+      }
     }
-
-    "return false if all secondary previous employments have payroll numbers" in {
-      val sut = createSut
-      val nino = generateNino
-
-      val taxCdeRecord3 = taxCodeRecord1.copy(payrollNumber = Some("123"), primary = false)
-
-      val previousHistory = Seq(taxCodeRecord1, taxCdeRecord3, taxCdeRecord3)
-      val currentHistory = Seq(taxCodeRecord2)
-
-      val taxCodeChange = TaxCodeChange(previousHistory,currentHistory)
-
-      sut.isPayrollNumberMissing(taxCodeChange) mustBe false
-
-    }
-
-
-
-    "return true if 2 or more secondary current employments are missing payroll number" in {
-      val sut = createSut
-      val nino = generateNino
-
-      val taxCodeRecord3 = taxCodeRecord1.copy(payrollNumber = None, primary = false)
-
-      val previousHistory = Seq(taxCodeRecord2)
-      val currentHistory = Seq(taxCodeRecord3, taxCodeRecord3)
-
-      val taxCodeChange = TaxCodeChange(previousHistory,currentHistory)
-
-      sut.isPayrollNumberMissing(taxCodeChange) mustBe true
-
-    }
-
-    "return false if all secondary current employments have payroll numbers" in {
-      val sut = createSut
-      val nino = generateNino
-
-      val taxCdeRecord3 = taxCodeRecord1.copy(payrollNumber = Some("123"), primary = false)
-
-      val previousHistory = Seq(taxCodeRecord2)
-      val currentHistory =  Seq(taxCodeRecord1, taxCdeRecord3, taxCdeRecord3)
-
-      val taxCodeChange = TaxCodeChange(previousHistory,currentHistory)
-
-      sut.isPayrollNumberMissing(taxCodeChange) mustBe false
-
-    }
-
-
   }
 
 
