@@ -48,7 +48,7 @@ case class UpdateEmploymentCheckYourAnswersViewModel(id: Int,
       controllers.employments.routes.UpdateEmploymentController.addTelephoneNumber().url
     )
 
-    if (contactByPhone.equals("Yes")) {
+    if (contactByPhone == Messages("tai.label.yes")) {
       Seq(currentlyWorkHereLine, whatYouToldUsLine, contactByPhoneLine, phoneNumberLine)
     } else {
       Seq(currentlyWorkHereLine, whatYouToldUsLine, contactByPhoneLine)
