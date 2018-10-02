@@ -143,7 +143,6 @@ trait IncomeController extends TaiBaseController
             id <- journeyCacheService.mandatoryValue(UpdateIncome_IdKey)
             response <- taxAccountService.updateEstimatedIncome(Nino(user.getNino), FormHelper.stripNumber(newAmount).toInt, TaxYear(), id.toInt)
           } yield {
-            println(employerName)
             response match {
               case TaiSuccessResponse =>
                 Ok(views.html.incomes.editSuccess(employerName))
