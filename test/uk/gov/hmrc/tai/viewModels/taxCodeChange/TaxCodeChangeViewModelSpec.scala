@@ -59,6 +59,32 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
       model.changeDate mustEqual currentTaxCodeRecord1.startDate
     }
+
+    "ga custom dimenstion for Multiple Secondary Employments without payroll number" should {
+      "not be set when the case does not occur" in {
+
+        val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+        model.gaDimensions mustEqual None
+      }
+
+      "should be set when it this occurs" in {
+        val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOperation,"A Employer 1", false, None, false)
+        val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+
+        val previousTaxCodeRecord2 = TaxCodeRecord("BR", startDate, startDate.plusMonths(1), OtherBasisOperation,"A Employer 2", false, None, false)
+        val currentTaxCodeRecord2 = previousTaxCodeRecord2.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+
+        val taxCodeChange = TaxCodeChange(
+          Seq(previousTaxCodeRecord1, previousTaxCodeRecord2),
+          Seq(primaryFullYearTaxCode)
+        )
+
+        val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+        model.gaDimensions mustEqual Some(Map("key" -> "value"))
+      }
+    }
   }
 
   "TaxCodeChangeViewModel getTaxCodeExplanations" must {

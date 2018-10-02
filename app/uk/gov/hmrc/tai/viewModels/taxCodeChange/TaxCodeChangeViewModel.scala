@@ -20,17 +20,27 @@ import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, Week1Month1BasisOperation}
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
+import uk.gov.hmrc.tai.service.TaxCodeChangeService
 import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeDescriptor}
 
-case class TaxCodeChangeViewModel(pairs: TaxCodePairs, changeDate: LocalDate, scottishTaxRateBands: Map[String, BigDecimal])
+case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
+                                  changeDate: LocalDate,
+                                  scottishTaxRateBands: Map[String, BigDecimal],
+                                  gaDimensions: Option[Map[String, String]])
 
 object TaxCodeChangeViewModel extends TaxCodeDescriptor {
-  def apply(taxCodeChange: TaxCodeChange, scottishTaxRateBands: Map[String, BigDecimal])(implicit messages: Messages): TaxCodeChangeViewModel = {
+  def apply(taxCodeChange: TaxCodeChange, scottishTaxRateBands: Map[String, BigDecimal]): TaxCodeChangeViewModel = {
     val taxCodePairs = TaxCodePairs(taxCodeChange.previous, taxCodeChange.current)
     val changeDate = taxCodeChange.mostRecentTaxCodeChangeDate
 
-    TaxCodeChangeViewModel(taxCodePairs, changeDate, scottishTaxRateBands)
+    val gaDimensionsMap = if (TaxCodeChangeService.areMultiplePayrollNumberMissingForSecondary(taxCodeChange)) {
+      Some(Map("key" -> "value"))
+    } else {
+      None
+    }
+
+    TaxCodeChangeViewModel(taxCodePairs, changeDate, scottishTaxRateBands, gaDimensionsMap)
   }
 
   def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal], identifier: String)
@@ -41,7 +51,7 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
     val taxCode = taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)
 
     val explanation = describeTaxCode(taxCode, taxCodeRecord.basisOfOperation, scottishTaxRateBands, isCurrentTaxCode)
-    DescriptionListViewModel(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", taxCode), explanation)
+    DescriptionListViewModel(messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", taxCode), explanation)
   }
 
   def taxCodeWithEmergencySuffix(taxCode: String, basisOfOperation: BasisOperation): String = {
