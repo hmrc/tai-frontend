@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(workingHoursForm: Form[uk.gov.hmrc.tai.forms.HoursWorkedForm], id: Int, employerName : Option[String] = None)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(workingHoursForm: Form[uk.gov.hmrc.tai.forms.HoursWorkedForm], id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -28,7 +28,10 @@
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.workingHours.title"),
-        preHeadingText = Messages("tai.workingHours.preHeading"))}
+        preHeadingText = Messages("tai.workingHours.preHeading", employerName),
+        headerWidthClasses = Some("column-full")
+    )
+}
 
 
 @main(
@@ -36,7 +39,7 @@
     articleClasses = Some("full-width"),
     user = Some(user),
     pageHeader = Some(header),
-    employerName = employerName,
+    employerName = Some(employerName),
     gaCustomTitle = None
 ){
     <div class="section flush--bottom soft--top">

@@ -57,3 +57,10 @@ hr {
 .margin-bottom-large {
   margin-bottom: 30px;
 }
+
+.govuk-box-highlight {
+  .heading-xlarge {
+    margin: 0;
+    word-break: break-word;
+  }
+}

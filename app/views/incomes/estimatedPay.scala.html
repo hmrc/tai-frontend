@@ -15,7 +15,7 @@
  *@
 
 @(payBeforeTax: Option[BigDecimal], payTaxOn: Option[BigDecimal], id: Int, bonusOvertime : Boolean = false, annual : Option[BigDecimal],
-startDate : Option[org.joda.time.LocalDate], same : Boolean = false, employerName : Option[String] = None)(implicit request: Request[_],
+startDate : Option[org.joda.time.LocalDate], employerName: String, same : Boolean = false)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.play.views.formatting.Money._
@@ -31,19 +31,22 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @gaEventActionString = @{"Your estimated pay for the year"}
 
 @header = @{
- ptaHeader(
-     displayBackLink = true,
-     backLinkGaEventAction = Some(gaEventActionString),
-     mainHeadingText = Messages("tai.estimatedPay.title"),
-     preHeadingText = Messages("tai.estimatedPay.preHeading"))}
+    ptaHeader(
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("tai.estimatedPay.title"),
+        preHeadingText = Messages("tai.estimatedPay.preHeading", employerName),
+        headerWidthClasses = Some("column-full")
+    )
+}
 
 @main(
-title = Messages("tai.estimatedPay.title"),
-articleClasses = Some("full-width text"),
-user = Some(user),
-     pageHeader = Some(header),
-employerName = employerName,
-gaCustomTitle = None
+    title = Messages("tai.estimatedPay.title"),
+    articleClasses = Some("full-width text"),
+    user = Some(user),
+    pageHeader = Some(header),
+    employerName = Some(employerName),
+    gaCustomTitle = None
 ){
     <div class="section--branded hmrc flush--bottom soft--top">
 

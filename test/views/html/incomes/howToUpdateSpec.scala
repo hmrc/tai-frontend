@@ -22,14 +22,15 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class howToUpdateSpec extends TaiViewSpec {
 
+  val empId = 1
+  val employerName = "Employer"
+
   "How to update view" should {
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
-      messages("tai.howToUpdate.preHeading"),
+      messages("tai.howToUpdate.preHeading", employerName),
       messages("tai.howToUpdate.title"))
   }
 
-  val empId = 1
-
-  override def view: Html = views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), empId, None)
+  override def view: Html = views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), empId, employerName)
 }

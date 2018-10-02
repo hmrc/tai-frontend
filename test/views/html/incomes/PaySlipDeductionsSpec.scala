@@ -26,14 +26,15 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class PaySlipDeductionsSpec extends TaiViewSpec with MockitoSugar {
 
+  val id = 1
+  val employerName = "Employer"
+
   "Pay slip deductions view" should {
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
-      messages("tai.payslipDeductions.preHeading"),
+      messages("tai.payslipDeductions.preHeading", employerName),
       messages("tai.payslipDeductions.title"))
   }
-
-  val id = 1
 
   val payslipDeductionsForm = mock[Form[PayslipDeductionsForm]]
 
@@ -46,5 +47,5 @@ class PaySlipDeductionsSpec extends TaiViewSpec with MockitoSugar {
   when(payslipDeductionsForm.errors(anyString())).thenReturn(Nil)
   when(payslipDeductionsForm.hasErrors).thenReturn(false)
 
-  override def view: Html = views.html.incomes.payslipDeductions(payslipDeductionsForm,id,None)
+  override def view: Html = views.html.incomes.payslipDeductions(payslipDeductionsForm,id,employerName)
 }

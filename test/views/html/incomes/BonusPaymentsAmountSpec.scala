@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
 
   val id = 1
-
+  val employerName = "Employer"
 
   val bonusPaymentsAmountForm = mock[Form[BonusOvertimeAmountForm]]
 
@@ -42,18 +42,18 @@ class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
   "Bonus payments amount view with monthly pay" should {
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
-      messages("tai.bonusPaymentsAmount.preHeading"),
+      messages("tai.bonusPaymentsAmount.preHeading", employerName),
       messages("tai.bonusPaymentsAmount.month.title"))
   }
 
   "Bonus payments amount view with yearly pay" should {
 
-    val testView: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm,"year",id,None)
+    val testView: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm,"year",id, employerName)
     doc(testView) must haveHeadingWithText(messages("tai.bonusPaymentsAmount.year.title"))
   }
 
 
 
 
-  override def view: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm,"monthly",id,None)
+  override def view: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm,"monthly",id, employerName)
 }

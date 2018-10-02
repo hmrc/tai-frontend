@@ -79,10 +79,10 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     (incomeToEdit.isLive, incomeToEdit.isOccupationalPension, taxCodeIncomeDetails) match {
       case (true, false, TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) => {
         if (incomeService.editableIncomes(taxCodeIncomes).size > 1) {
-          Ok(views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), id, Some(employmentName)))
+          Ok(views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), id, employmentName))
         } else {
           incomeService.singularIncomeId(taxCodeIncomes) match {
-            case Some(incomeId) => Ok(views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), incomeId))
+            case Some(incomeId) => Ok(views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), incomeId, employmentName))
             case None => throw new RuntimeException("Employment id not present")
           }
         }
@@ -102,7 +102,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
               employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
             } yield {
-              BadRequest(views.html.incomes.howToUpdate(formWithErrors, id, Some(employerName)))
+              BadRequest(views.html.incomes.howToUpdate(formWithErrors, id, employerName))
             }
           },
           formData => {
@@ -122,7 +122,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
         } yield {
-          Ok(views.html.incomes.workingHours(HoursWorkedForm.createForm(), id, Some(employerName)))
+          Ok(views.html.incomes.workingHours(HoursWorkedForm.createForm(), id, employerName))
         }
   }
 
@@ -136,7 +136,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
               employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
             } yield {
-              BadRequest(views.html.incomes.workingHours(formWithErrors, id, Some(employerName)))
+              BadRequest(views.html.incomes.workingHours(formWithErrors, id, employerName))
             }
           },
           formData => {
@@ -156,7 +156,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
         } yield {
-          Ok(views.html.incomes.payPeriod(PayPeriodForm.createForm(None), id, employerName = Some(employerName)))
+          Ok(views.html.incomes.payPeriod(PayPeriodForm.createForm(None), id, employerName))
         }
   }
 
@@ -173,7 +173,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
               employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
             } yield {
-              BadRequest(views.html.incomes.payPeriod(formWithErrors, id, isNotDaysError, Some(employerName)))
+              BadRequest(views.html.incomes.payPeriod(formWithErrors, id, employerName, isNotDaysError))
             }
           },
           formData => {
@@ -193,7 +193,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
           payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
         } yield {
-          Ok(views.html.incomes.payslipAmount(PayslipForm.createForm(), payPeriod.getOrElse(""), id, Some(employerName)))
+          Ok(views.html.incomes.payslipAmount(PayslipForm.createForm(), payPeriod.getOrElse(""), id, employerName))
         }
   }
 
@@ -208,7 +208,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
               payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
             } yield {
-              BadRequest(views.html.incomes.payslipAmount(formWithErrors, payPeriod.getOrElse(""), id, Some(employerName)))
+              BadRequest(views.html.incomes.payslipAmount(formWithErrors, payPeriod.getOrElse(""), id, employerName))
             }
           },
           formData => {
@@ -231,7 +231,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
           payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
         } yield {
-          Ok(views.html.incomes.taxablePayslipAmount(TaxablePayslipForm.createForm(), payPeriod.getOrElse(""), id, Some(employerName)))
+          Ok(views.html.incomes.taxablePayslipAmount(TaxablePayslipForm.createForm(), payPeriod.getOrElse(""), id, employerName))
         }
   }
 
@@ -249,7 +249,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
                 employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
                 payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
               } yield {
-                BadRequest(views.html.incomes.taxablePayslipAmount(formWithErrors, payPeriod.getOrElse(""), id, Some(employerName)))
+                BadRequest(views.html.incomes.taxablePayslipAmount(formWithErrors, payPeriod.getOrElse(""), id, employerName))
               }
             },
             formData => {
@@ -272,7 +272,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
         } yield {
-          Ok(views.html.incomes.payslipDeductions(PayslipDeductionsForm.createForm(), id, Some(employerName)))
+          Ok(views.html.incomes.payslipDeductions(PayslipDeductionsForm.createForm(), id, employerName))
         }
   }
 
@@ -287,7 +287,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
               employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
             } yield {
-              BadRequest(views.html.incomes.payslipDeductions(formWithErrors, id, Some(employerName)))
+              BadRequest(views.html.incomes.payslipDeductions(formWithErrors, id, employerName))
             }
           },
           formData => {
@@ -315,7 +315,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           paySlipDeductions <- journeyCacheService.currentValue(UpdateIncome_PayslipDeductionsKey)
         } yield {
           val isPaySlipDeductions = paySlipDeductions.contains("Yes")
-          Ok(views.html.incomes.bonusPayments(BonusPaymentsForm.createForm(), id, isPaySlipDeductions, false, Some(employerName)))
+          Ok(views.html.incomes.bonusPayments(BonusPaymentsForm.createForm(), id, employerName, isPaySlipDeductions, false))
         }
   }
 
@@ -334,7 +334,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               paySlipDeductions <- journeyCacheService.currentValue(UpdateIncome_PayslipDeductionsKey)
             } yield {
               val isPaySlipDeductions = paySlipDeductions.contains("Yes")
-              BadRequest(views.html.incomes.bonusPayments(formWithErrors, id, isPaySlipDeductions, bonusPaymentsSelected, Some(employerName)))
+              BadRequest(views.html.incomes.bonusPayments(formWithErrors, id, employerName, isPaySlipDeductions, bonusPaymentsSelected))
             }
           },
           formData => {
@@ -359,9 +359,9 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
         } yield {
           if (moreThisYear.contains("Yes")) {
-            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), "year", id, employerName = Some(employerName)))
+            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), "year", id, employerName))
           } else {
-            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), payPeriod.getOrElse(""), id, Some(employerName)))
+            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), payPeriod.getOrElse(""), id, employerName))
           }
         }
   }
@@ -377,7 +377,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             Some(BonusOvertimeAmountForm.notAmountMessage(payPeriod))).bindFromRequest().fold(
             formWithErrors => {
               val id = cache(UpdateIncome_IdKey).toInt
-              val employerName = cache.get(UpdateIncome_NameKey)
+              val employerName = cache.get(UpdateIncome_NameKey).toString
               if (moreThisYear.contains("Yes")) {
                 Future.successful(BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, "year", id, employerName)))
               } else {
@@ -420,8 +420,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
             journeyCacheService.cache(cache).map { _ =>
               Ok(views.html.incomes.estimatedPay(calculatedPay.grossAnnualPay, calculatedPay.netAnnualPay, id, isBonusPayment,
-                calculatedPay.annualAmount, calculatedPay.startDate, calculatedPay.grossAnnualPay == calculatedPay.netAnnualPay,
-                employerName = Some(employerName)))
+                calculatedPay.annualAmount, calculatedPay.startDate, employerName, calculatedPay.grossAnnualPay == calculatedPay.netAnnualPay))
             }
           } else {
             Future.successful(Ok(views.html.incomes.incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), id)))
@@ -452,7 +451,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
         } yield {
-          Ok(views.html.incomes.calcUnavailable(id, Some(employerName)))
+          Ok(views.html.incomes.calcUnavailable(id, employerName))
         }
   }
 }
