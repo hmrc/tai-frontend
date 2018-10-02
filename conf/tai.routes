@@ -177,6 +177,8 @@ POST        /update-income/bonus-payments                                       
 GET         /update-income/bonus-overtime-amount                                       controllers.IncomeUpdateCalculatorController.bonusOvertimeAmountPage
 POST        /update-income/bonus-overtime-amount                                       controllers.IncomeUpdateCalculatorController.handleBonusOvertimeAmount
 
+GET         /update-income/check-your-answers                                          controllers.IncomeUpdateCalculatorController.checkYourAnswersPage
+
 GET         /update-income/estimated-pay                                               controllers.IncomeUpdateCalculatorController.estimatedPayPage
 
 GET         /update-income/confirm-estimated-pay                                       controllers.IncomeUpdateCalculatorController.handleCalculationResult

@@ -485,6 +485,16 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
     }
   }
 
+  "checkYourAnswers page" must {
+    "display check your answers containing populated values from the journey cache" in {
+      val SUT = createSut
+      val result = SUT.checkYourAnswersPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.title() must include(Messages("tai.checkYourAnswers"))
+    }
+  }
+
   "estimatedPayPage" must {
     "display estimatedPay page" when {
       "payYearToDate is less than gross annual pay" in {

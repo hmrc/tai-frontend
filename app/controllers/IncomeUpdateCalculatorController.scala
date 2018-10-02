@@ -397,6 +397,12 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
+  def checkYourAnswersPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit person =>
+      implicit request =>
+        Future.successful(Ok(views.html.incomes.checkYourAnswers()))
+  }
+
   def estimatedPayPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
