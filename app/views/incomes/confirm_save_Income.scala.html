@@ -48,7 +48,7 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
-                <h2 class="heading-medium heading--underlined flush--top">@Messages("tai.taxYear",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</h2>
+                <h2 class="flush--top">@Messages("tai.taxYear",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</h2>
 
 
                 @if(income.toEmploymentAmount().newAmount == 0){

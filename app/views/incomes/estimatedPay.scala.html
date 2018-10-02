@@ -48,10 +48,9 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     employerName = Some(employerName),
     gaCustomTitle = None
 ){
-    <div class="section--branded hmrc flush--bottom soft--top">
-
-        <h2>@Messages("tai.estimatedPay.yourPay")</h2>
-        <p class="h1-heading" id="payBeforeTax">£@MoneyPounds(payBeforeTax.getOrElse(0),0).quantity</p>
+    <div>
+        <h2 class="flush--top">@Messages("tai.estimatedPay.yourPay")</h2>
+        <p class="bold-large margin-bottom-medium" id="payBeforeTax">£@MoneyPounds(payBeforeTax.getOrElse(0),0).quantity</p>
         <p>@Messages("tai.estimatedPay.basicPayExplanation")</p>
 
         @startDate.map{startDate =>
@@ -64,25 +63,27 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
     </div>
 
-    <div class="section--branded hmrc hmrc flush--bottom">
-
+    <div>
         <h2>@Messages("tai.estimatedPay.yourTaxablePay")</h2>
-        <p class="h1-heading" id="amountPayTaxOn">£@MoneyPounds(payTaxOn.getOrElse(0),0).quantity</p>
+        <p class="bold-large margin-bottom-medium" id="amountPayTaxOn">£@MoneyPounds(payTaxOn.getOrElse(0),0).quantity</p>
         <p>@Messages("tai.estimatedPay.yourTaxablePay.text")</p>
 
         @if(same){
             @includes.details_summary(Messages("tai.estimatedPay.whySame.title"),Some("flush--bottom")){
-                    @Messages("tai.estimatedPay.whySame.text")
+                @Messages("tai.estimatedPay.whySame.text")
             }
         }
 
     </div>
 
+    <div class="section">
 
-    @includes.link(
-        copy=Messages("tai.estimatedPay.checkTaxEstimate"),
-        url = routes.IncomeUpdateCalculatorController.handleCalculationResult.toString,
-        isButton=true
-    )
+        @includes.link(
+            copy=Messages("tai.estimatedPay.checkTaxEstimate"),
+            url = routes.IncomeUpdateCalculatorController.handleCalculationResult.toString,
+            isButton=true
+        )
+    </div>
+
 
 }

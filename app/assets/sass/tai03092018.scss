@@ -61,12 +61,17 @@ hr {
   max-width: calc(100% - 2em);
 }
 
+.margin-bottom-medium {
+  margin-bottom: 20px;
+}
+
 .margin-bottom-large {
   margin-bottom: 30px;
 }
 
 .govuk-box-highlight {
-  .heading-xlarge {
+  .heading-large {
+    font-size: 36px;
     margin: 0;
     word-break: break-word;
   }

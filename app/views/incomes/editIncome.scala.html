@@ -46,8 +46,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     gaCustomTitle = None
 ){
 
-    <div class="section--branded hmrc soft--top">
-        <h2 class="h2-heading">@Messages("tai.incomes.edit.howTo.subtitle")</h2>
+    <div>
+        <h2 class="flush--top">@Messages("tai.incomes.edit.howTo.subtitle")</h2>
         <p>@Messages("tai.incomes.edit.howTo.payslip")</p>
         <p>@Messages("tai.incomes.edit.howTo.grossAmount")</p>
         <ul class="bullets">
@@ -57,8 +57,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         </ul>
     </div>
 
-    <div class="section--branded hmrc">
-        <h2 class="h2-heading">@Messages("tai.incomes.edit.incomeTax.update.heading")</h2>
+    <div>
+        <h2>@Messages("tai.incomes.edit.incomeTax.update.heading")</h2>
         <p>@Messages("tai.incomes.edit.text",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</p>
         <p>@Messages("tai.enterWholeAndNumericalOnly")</p>
 
