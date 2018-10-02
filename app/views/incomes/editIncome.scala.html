@@ -31,7 +31,10 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.incomes.edit.heading"),
-        preHeadingText = Messages("tai.incomes.edit.preHeading"))}
+        preHeadingText = Messages("tai.incomes.edit.preHeading", income("name").value.getOrElse("")),
+        headerWidthClasses = Some("column-full")
+    )
+}
 
 @main(
     title = Messages("tai.incomes.edit.heading"),
@@ -97,4 +100,3 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         }
     </div>
 }
-

@@ -22,18 +22,19 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class EstimatedPaySpec extends TaiViewSpec with MockitoSugar {
 
+  val id = 1
+  val employerName = "Employer"
+
   "Estimated pay view without bonusOverTime" should {
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
-      messages("tai.estimatedPay.preHeading"),
+      messages("tai.estimatedPay.preHeading", employerName),
       messages("tai.estimatedPay.title"))
   }
   "Estimated pay view with bonusOverTime" should {
-    val testView: Html = views.html.incomes.estimatedPay(None,None,id,true,None,None,false,None)
+    val testView: Html = views.html.incomes.estimatedPay(None,None,id,true,None,None,employerName,false)
     doc(testView) must haveBackLink
   }
 
-  val id = 1
-
-  override def view: Html = views.html.incomes.estimatedPay(None,None,id,false,None,None,false,None)
+  override def view: Html = views.html.incomes.estimatedPay(None,None,id,false,None,None,employerName,false)
 }

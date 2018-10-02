@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm], bonusPeriod: String, id: Int, employerName : Option[String])(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
+@(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm], bonusPeriod: String, id: Int, employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
@@ -45,7 +45,10 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = pageTitle,
-        preHeadingText = Messages("tai.bonusPaymentsAmount.preHeading"))}
+        preHeadingText = Messages("tai.bonusPaymentsAmount.preHeading", employerName),
+        headerWidthClasses = Some("column-full")
+    )
+}
 
 @hint = @{
     if(bonusPeriod == "year"){
@@ -61,7 +64,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     articleClasses = Some("full-width"),
     user = Some(user),
     pageHeader = Some(header),
-    employerName = employerName,
+    employerName = Some(employerName),
     gaCustomTitle = None
     ){
     <div class="section flush--bottom soft--top">

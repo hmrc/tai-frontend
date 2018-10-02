@@ -26,16 +26,16 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar {
 
+  lazy val Id = 1
+  lazy val employerName = "Employer"
+  lazy val bonusPaymentsForm = mock[Form[BonusPaymentsForm]]
+
   "Bonus payments view" should {
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
-      messages("tai.bonusPayments.preHeading"),
+      messages("tai.bonusPayments.preHeading", employerName),
       messages("tai.bonusPayments.title"))
   }
-
-  lazy val Id = 1
-
-  lazy val bonusPaymentsForm = mock[Form[BonusPaymentsForm]]
 
   lazy val field = mock[Field]
   when(field.errors).thenReturn(Nil)
@@ -46,5 +46,5 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar {
   when(bonusPaymentsForm.errors(anyString())).thenReturn(Nil)
   when(bonusPaymentsForm.hasErrors).thenReturn(false)
 
-  override def view: Html = views.html.incomes.bonusPayments(bonusPaymentsForm,Id,false,false,None)
+  override def view: Html = views.html.incomes.bonusPayments(bonusPaymentsForm,Id, employerName, false, false)
 }

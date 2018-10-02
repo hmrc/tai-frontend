@@ -138,12 +138,15 @@ trait IncomeController extends TaiBaseController
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           for {
-            (mandatoryData, optionalData) <- journeyCacheService.collectedValues(Seq(UpdateIncome_NewAmountKey, UpdateIncome_IdKey), Seq(UpdateIncome_NameKey))
-            response <- taxAccountService.updateEstimatedIncome(Nino(user.getNino), FormHelper.stripNumber(mandatoryData.head).toInt, TaxYear(), mandatoryData(1).toInt)
+            employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+            newAmount <- journeyCacheService.mandatoryValue(UpdateIncome_NewAmountKey)
+            id <- journeyCacheService.mandatoryValue(UpdateIncome_IdKey)
+            response <- taxAccountService.updateEstimatedIncome(Nino(user.getNino), FormHelper.stripNumber(newAmount).toInt, TaxYear(), id.toInt)
           } yield {
+            println(employerName)
             response match {
               case TaiSuccessResponse =>
-                Ok(views.html.incomes.editSuccess(optionalData.head))
+                Ok(views.html.incomes.editSuccess(employerName))
               case _ => throw new RuntimeException("Failed to update estimated income")
             }
           }

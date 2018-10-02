@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(payslipDeductionsForm: Form[uk.gov.hmrc.tai.forms.PayslipDeductionsForm], id: Int, employerName : Option[String] = None)(implicit request: Request[_],
+@(payslipDeductionsForm: Form[uk.gov.hmrc.tai.forms.PayslipDeductionsForm], id: Int, employerName: String)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
@@ -30,14 +30,17 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.payslipDeductions.title"),
-        preHeadingText = Messages("tai.payslipDeductions.preHeading"))}
+        preHeadingText = Messages("tai.payslipDeductions.preHeading", employerName),
+        headerWidthClasses = Some("column-full")
+    )
+}
 
 @main(
     title = Messages("tai.payslipDeductions.title"),
     articleClasses = Some("full-width text"),
     user = Some(user),
     pageHeader = Some(header),
-    employerName = employerName,
+    employerName = Some(employerName),
     gaCustomTitle = None
     ){
 

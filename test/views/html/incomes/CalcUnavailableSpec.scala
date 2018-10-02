@@ -22,14 +22,15 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class CalcUnavailableSpec extends TaiViewSpec with MockitoSugar {
 
+  val id = 1
+  val employerName = "Employer"
+
   "Calculation unavailable page" should {
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
-      messages("tai.unableToCalculate.preHeading"),
+      messages("tai.unableToCalculate.preHeading", employerName),
       messages("tai.unableToCalculate.title"))
   }
 
-  val id = 1
-
-  override def view: Html = views.html.incomes.calcUnavailable(id,None)
+  override def view: Html = views.html.incomes.calcUnavailable(id, employerName)
 }

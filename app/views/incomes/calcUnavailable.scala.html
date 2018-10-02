@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(employmentId: Int, employerName : Option[String] = None)(implicit request: Request[_], messages: Messages,
+@(employmentId: Int, employerName: String)(implicit request: Request[_], messages: Messages,
 user: controllers.auth.TaiUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -29,13 +29,17 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.unableToCalculate.title"),
-        preHeadingText = Messages("tai.unableToCalculate.preHeading"))}
+        preHeadingText = Messages("tai.unableToCalculate.preHeading", employerName),
+        headerWidthClasses = Some("column-full")
+    )
+}
+
 @main(
     title = Messages("tai.unableToCalculate.title"),
     articleClasses = Some("full-width"),
     user = Some(user),
     pageHeader = Some(header),
-    employerName = employerName,
+    employerName = Some(employerName),
     gaCustomTitle = None
 ){
 <div class="section--branded hmrc flush--bottom">

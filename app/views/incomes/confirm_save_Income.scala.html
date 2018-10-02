@@ -17,7 +17,7 @@
 @(income: uk.gov.hmrc.tai.forms.EditIncomeForm)(implicit
 request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-
+@import includes.ptaHeader
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.play.views.html.helpers._
@@ -28,17 +28,23 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
 
+@header = @{
+    ptaHeader(
+        displayBackLink = true,
+        mainHeadingText = Messages("tai.incomes.confirm.save.title"),
+        preHeadingText = Messages("tai.incomes.edit.preHeading", income.name),
+        headerWidthClasses = Some("column-full")
+    )
+}
+
 @main(
     title = Messages("tai.incomes.confirm.save.title"),
     articleClasses = Some("full-width"),
+    pageHeader = Some(header),
     user = Some(user),
     employerName = Some(income.name),
     gaCustomTitle = None
 ){
-    <header class="page-header text">
-        <h1 class="heading-xlarge" id="currentYearTitle">@Messages("tai.incomes.confirm.save.title")</h1>
-    </header>
-
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
