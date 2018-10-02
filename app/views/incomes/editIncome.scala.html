@@ -80,7 +80,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
                                 <span class="error-notification">@Messages(error.message)</span>
                             }
                             <td class="text--right"><input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' />@income("oldAmount").value</td>
-                            <td class="text--right"><input aria-labelledby="amountLabel" class="text--right input--small" type="text" id="newAmount" name='@income("newAmount").name' value='' /></td>
+                            <td class="text--right"><input aria-labelledby="amountLabel" class="text--right input--small income-data-input" type="text" id="newAmount" name='@income("newAmount").name' value='' /></td>
                         </tr>
                     </tbody>
                 </table>
