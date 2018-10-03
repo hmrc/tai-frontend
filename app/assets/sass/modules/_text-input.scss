@@ -3,3 +3,18 @@
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
+.input-wrapper--currency {
+  position: relative;
+
+  .form-control-currency {
+    padding-left: 25px;
+  }
+}
+
+.input-currency-symbol {
+  position: absolute;
+  left: 10px;
+  bottom: 5px;
+  font-weight: bold;
+}
