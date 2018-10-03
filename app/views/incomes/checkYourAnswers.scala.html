@@ -14,12 +14,9 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.tai.viewModels.benefit.RemoveCompanyBenefitCheckYourAnswersViewModel
 @import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 @import includes._
-@import includes.forms._
 
 @(employerName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -38,7 +35,10 @@
   gaCustomTitle = None
 ){
 
-    <div></div>
+
+
+@cancelLink(Call("GET",controllers.routes.TaxAccountSummaryController.onPageLoad.url))
+
 }
 
 

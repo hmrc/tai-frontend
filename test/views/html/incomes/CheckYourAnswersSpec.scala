@@ -26,6 +26,7 @@ class CheckYourAnswersSpec extends TaiViewSpec {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers"))
     behave like pageWithCombinedHeader(messages("tai.estimatedPay.preHeading",employerName), messages("tai.checkYourAnswers"))
+    behave like pageWithCancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad)
 
   }
 
