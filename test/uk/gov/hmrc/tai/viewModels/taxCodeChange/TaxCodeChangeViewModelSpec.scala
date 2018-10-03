@@ -62,8 +62,8 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
 
     "ga custom dimenstion for 'Multiple Secondary Employments without payroll number'" should {
-      val gaCustomDimensionYes = Some(Map("dimension77" -> "Yes"))
-      val gaCustomDimensionNo = Some(Map("dimension77" -> "No"))
+      val gaCustomDimensionYes = Some(Map("taxCodeChangeEdgeCase" -> "Yes"))
+      val gaCustomDimensionNo = Some(Map("taxCodeChangeEdgeCase" -> "No"))
 
       "be No" when {
         "when it does not occur in current or previous" in {

@@ -39,9 +39,9 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
     val changeDate = taxCodeChange.mostRecentTaxCodeChangeDate
 
     val gaDimension = if (moreThanTwoSecondaryWithoutPayroll(taxCodeChange.current) || moreThanTwoSecondaryWithoutPayroll(taxCodeChange.previous)) {
-      Some(Map("dimension77" -> "Yes"))
+      Some(Map("taxCodeChangeEdgeCase" -> "Yes"))
     } else {
-      Some(Map("dimension77" -> "No"))
+      Some(Map("taxCodeChangeEdgeCase" -> "No"))
     }
 
 
