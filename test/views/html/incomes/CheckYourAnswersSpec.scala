@@ -20,11 +20,14 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class CheckYourAnswersSpec extends TaiViewSpec {
 
+  val employerName = "employer1"
+
   "checkYourAnswers" should {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers"))
+    behave like pageWithCombinedHeader(messages("tai.estimatedPay.preHeading",employerName), messages("tai.checkYourAnswers"))
 
   }
 
-  override def view = views.html.incomes.checkYourAnswers()
+  override def view = views.html.incomes.checkYourAnswers(employerName)
 }

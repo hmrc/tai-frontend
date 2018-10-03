@@ -21,13 +21,13 @@
 @import includes._
 @import includes.forms._
 
-@()(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(employerName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
   ptaHeader(
     displayBackLink = true,
-    mainHeadingText = Messages(""),
-    preHeadingText = Messages(""))
+    mainHeadingText = Messages("tai.checkYourAnswers"),
+    preHeadingText = Messages("tai.estimatedPay.preHeading",employerName))
 }
 
 @main(
