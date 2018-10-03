@@ -44,24 +44,25 @@
     title = Messages("taxCode.change.journey.preHeading"),
     pageHeader = Some(header),
     user = Some(user),
-    gaCustomTitle = None
-){
-<div class="column-two-thirds">
-    <div class="grid-row">
-        <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
+    gaCustomTitle = None,
+    gaDimensions = taxCodeChangeViewModel.gaDimensions) {
+
+    <div class="column-two-thirds">
+        <div class="grid-row">
+            <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
+        </div>
+        <div class="grid-row tax-code-change margin-bottom-xlarge">
+            @taxCodePairs(taxCodeChangeViewModel.pairs)
+        </div>
+        <div>
+            @Link.toInternalPage(
+            id=Some("check-your-tax-button"),
+            url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,
+            value=Some(Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")),
+            cssClasses=Some("button"),
+            dataAttributes=Some(Map("journey-click"->s"button - click:${gaEventActionString}:${Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}"))).toHtml
+        </div>
     </div>
-    <div class="grid-row tax-code-change margin-bottom-xlarge">
-        @taxCodePairs(taxCodeChangeViewModel.pairs)
-    </div>
-    <div>
-        @Link.toInternalPage(
-        id=Some("check-your-tax-button"),
-        url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,
-        value=Some(Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")),
-        cssClasses=Some("button"),
-        dataAttributes=Some(Map("journey-click"->s"button - click:${gaEventActionString}:${Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}"))).toHtml
-    </div>
-</div>
 }
 
 

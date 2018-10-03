@@ -20,7 +20,6 @@ import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, Week1Month1BasisOperation}
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
-import uk.gov.hmrc.tai.service.TaxCodeChangeService
 import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeDescriptor}
 
@@ -30,17 +29,23 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
                                   gaDimensions: Option[Map[String, String]])
 
 object TaxCodeChangeViewModel extends TaxCodeDescriptor {
+
   def apply(taxCodeChange: TaxCodeChange, scottishTaxRateBands: Map[String, BigDecimal]): TaxCodeChangeViewModel = {
+    def moreThanTwoSecondaryWithoutPayroll(records: Seq[TaxCodeRecord]): Boolean = records.count(record => !record.primary && record.payrollNumber.isEmpty) >= 2
+
+
+
     val taxCodePairs = TaxCodePairs(taxCodeChange.previous, taxCodeChange.current)
     val changeDate = taxCodeChange.mostRecentTaxCodeChangeDate
 
-    val gaDimensionsMap = if (TaxCodeChangeService.areMultiplePayrollNumberMissingForSecondary(taxCodeChange)) {
-      Some(Map("key" -> "value"))
+    val gaDimension = if (moreThanTwoSecondaryWithoutPayroll(taxCodeChange.current) || moreThanTwoSecondaryWithoutPayroll(taxCodeChange.previous)) {
+      Some(Map("dimension77" -> "Yes"))
     } else {
-      None
+      Some(Map("dimension77" -> "No"))
     }
 
-    TaxCodeChangeViewModel(taxCodePairs, changeDate, scottishTaxRateBands, gaDimensionsMap)
+
+    TaxCodeChangeViewModel(taxCodePairs, changeDate, scottishTaxRateBands, gaDimension)
   }
 
   def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal], identifier: String)

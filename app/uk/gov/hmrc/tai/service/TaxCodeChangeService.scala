@@ -47,13 +47,6 @@ trait TaxCodeChangeService {
     taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate)
   }
 
-  def areMultiplePayrollNumberMissingForSecondary(taxCodeChange: TaxCodeChange): Boolean = {
-    def moreThanTwo(records: Seq[TaxCodeRecord]): Boolean = {
-      records.count(record => !record.primary && record.payrollNumber.isEmpty) >= 2
-    }
-
-    moreThanTwo(taxCodeChange.current) || moreThanTwo(taxCodeChange.previous)
-  }
 }
 object TaxCodeChangeService extends TaxCodeChangeService {
   override val taxCodeChangeConnector: TaxCodeChangeConnector = TaxCodeChangeConnector
