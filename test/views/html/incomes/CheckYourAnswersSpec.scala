@@ -25,10 +25,16 @@ class CheckYourAnswersSpec extends TaiViewSpec {
   "checkYourAnswers" should {
 
     behave like pageWithTitle(messages("tai.checkYourAnswers"))
-    behave like pageWithCombinedHeader(messages("tai.estimatedPay.preHeading",employerName), messages("tai.checkYourAnswers"))
+    behave like pageWithCombinedHeader(messages("tai.incomes.edit.preHeading",employerName), messages("tai.checkYourAnswers"))
     behave like pageWithCancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad)
+    behave like pageWithBackLink
 
+    "display confirmation static text" in{
+      doc must haveParagraphWithText(messages("tai.checkYourAnswers.confirmText"))
+    }
   }
+
+
 
   override def view = views.html.incomes.checkYourAnswers(employerName)
 }

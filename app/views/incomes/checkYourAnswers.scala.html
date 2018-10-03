@@ -24,7 +24,7 @@
   ptaHeader(
     displayBackLink = true,
     mainHeadingText = Messages("tai.checkYourAnswers"),
-    preHeadingText = Messages("tai.estimatedPay.preHeading",employerName))
+    preHeadingText = Messages("tai.incomes.edit.preHeading",employerName))
 }
 
 @main(
@@ -36,7 +36,7 @@
 ){
 
 
-
+<p>@messages("tai.checkYourAnswers.confirmText")</p>
 @cancelLink(Call("GET",controllers.routes.TaxAccountSummaryController.onPageLoad.url))
 
 }
