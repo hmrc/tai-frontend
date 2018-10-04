@@ -36,8 +36,13 @@ object DateHelper {
   }
 
   def monthOfYear(date: String): String = {
-    var monthRegex = "[A-Za-z]+".r
+    val monthRegex = "[A-Za-z]+".r
     monthRegex.findFirstIn(date).getOrElse("")
+  }
+
+  def getYear(date: String): String = {
+    val yearRegex = "[0-9]{4}".r
+    yearRegex.findFirstIn(date).getOrElse("")
   }
 
 }
