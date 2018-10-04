@@ -22,6 +22,7 @@ import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, Week1Month1BasisOper
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeDescriptor}
+import uk.gov.hmrc.tai.util.GoogleAnalyticsConstants._
 
 case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
                                   changeDate: LocalDate,
@@ -66,9 +67,9 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
     val taxCodeChangeDateGaDimension = Map[String, String]("taxCodeChangeDate" -> taxCodeChangeDate.toString(TaiConstants.EYU_DATE_FORMAT))
 
     if (moreThanTwoSecondaryWithoutPayroll(taxCodeChange.current) || moreThanTwoSecondaryWithoutPayroll(taxCodeChange.previous)) {
-      taxCodeChangeDateGaDimension + ("taxCodeChangeEdgeCase" -> "Yes")
+      taxCodeChangeDateGaDimension + (taxCodeChangeEdgeCase -> yes)
     } else {
-      taxCodeChangeDateGaDimension + ("taxCodeChangeEdgeCase" -> "No")
+      taxCodeChangeDateGaDimension + (taxCodeChangeEdgeCase -> no)
     }
   }
 }

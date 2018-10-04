@@ -21,6 +21,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import play.api.Play.current
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.GoogleAnalyticsConstants._
 
 case class PotentialUnderpaymentViewModel(iyaCYAmount: BigDecimal,
                                           iyaTaxCodeChangeAmount: BigDecimal,
@@ -40,11 +41,11 @@ object PotentialUnderpaymentViewModel extends ViewModelHelper {
     val gaDimensions =
       (taxAccountSummary.totalInYearAdjustmentIntoCY, taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne) match {
         case (cy, ny) if cy > 0 && ny <= 0 =>
-          Some(Map("valueOfIycdcPayment" -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(), "iycdcReconciliationStatus" -> "Current Year"))
+          Some(Map(valueOfIycdcPayment -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(), iycdcReconciliationStatus -> currentYear))
         case (cy, ny) if cy == 0 && ny > 0 =>
-          Some(Map("valueOfIycdcPayment" -> taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne.toString(), "iycdcReconciliationStatus" -> "Next Year"))
+          Some(Map(valueOfIycdcPayment -> taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne.toString(), iycdcReconciliationStatus -> nextYear))
         case (cy, ny) if cy > 0 && ny > 0 =>
-          Some(Map("valueOfIycdcPayment" -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(), "iycdcReconciliationStatus" -> "Current and Next Year"))
+          Some(Map(valueOfIycdcPayment -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(), iycdcReconciliationStatus -> currentAndNextYear))
         case _ => None
       }
 
