@@ -26,26 +26,16 @@ import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeDescriptor}
 case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
                                   changeDate: LocalDate,
                                   scottishTaxRateBands: Map[String, BigDecimal],
-                                  gaDimensions: Option[Map[String, String]])
+                                  gaDimensions: Map[String, String])
 
 object TaxCodeChangeViewModel extends TaxCodeDescriptor {
 
   def apply(taxCodeChange: TaxCodeChange, scottishTaxRateBands: Map[String, BigDecimal]): TaxCodeChangeViewModel = {
-    def moreThanTwoSecondaryWithoutPayroll(records: Seq[TaxCodeRecord]): Boolean = records.count(record => !record.primary && record.payrollNumber.isEmpty) >= 2
-
-
 
     val taxCodePairs = TaxCodePairs(taxCodeChange.previous, taxCodeChange.current)
     val changeDate = taxCodeChange.mostRecentTaxCodeChangeDate
 
-    val gaDimension = if (moreThanTwoSecondaryWithoutPayroll(taxCodeChange.current) || moreThanTwoSecondaryWithoutPayroll(taxCodeChange.previous)) {
-      Some(Map("taxCodeChangeEdgeCase" -> "Yes"))
-    } else {
-      Some(Map("taxCodeChangeEdgeCase" -> "No"))
-    }
-
-
-    TaxCodeChangeViewModel(taxCodePairs, changeDate, scottishTaxRateBands, gaDimension)
+    TaxCodeChangeViewModel(taxCodePairs, changeDate, scottishTaxRateBands, gaDimensions(taxCodeChange, changeDate))
   }
 
   def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal], identifier: String)
@@ -63,6 +53,22 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
     basisOfOperation match {
       case Week1Month1BasisOperation => taxCode + TaiConstants.EmergencyTaxCodeSuffix
       case _ => taxCode
+    }
+  }
+
+  private def gaDimensions(taxCodeChange: TaxCodeChange, taxCodeChangeDate: LocalDate): Map[String, String] = {
+    def moreThanTwoSecondaryWithoutPayroll(records: Seq[TaxCodeRecord]): Boolean = {
+       records.groupBy(_.employerName).values.exists(taxCodeRecords =>
+         taxCodeRecords.count(record => !record.primary && record.payrollNumber.isEmpty) >= 2
+       )
+    }
+
+    val taxCodeChangeDateGaDimension = Map[String, String]("taxCodeChangeDate" -> taxCodeChangeDate.toString(TaiConstants.EYU_DATE_FORMAT))
+
+    if (moreThanTwoSecondaryWithoutPayroll(taxCodeChange.current) || moreThanTwoSecondaryWithoutPayroll(taxCodeChange.previous)) {
+      taxCodeChangeDateGaDimension + ("taxCodeChangeEdgeCase" -> "Yes")
+    } else {
+      taxCodeChangeDateGaDimension + ("taxCodeChangeEdgeCase" -> "No")
     }
   }
 }
