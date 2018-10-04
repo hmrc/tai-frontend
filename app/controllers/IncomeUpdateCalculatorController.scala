@@ -401,7 +401,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     implicit person =>
       implicit request =>
         journeyCacheService.mandatoryValue(UpdateIncome_NameKey) map { incomeName =>
-          Ok(views.html.incomes.checkYourAnswers(incomeName))
+          Ok(views.html.incomes.checkYourAnswers(null,incomeName))
         }
 
   }

@@ -17,6 +17,7 @@
 package views.html.incomes
 
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.income.UpdateIncomeEstimateCheckYourAnswersViewModel
 
 class CheckYourAnswersSpec extends TaiViewSpec {
 
@@ -32,9 +33,30 @@ class CheckYourAnswersSpec extends TaiViewSpec {
     "display confirmation static text" in{
       doc must haveParagraphWithText(messages("tai.checkYourAnswers.confirmText"))
     }
+
+    "display journey confirmation lines" in {
+      doc must haveCheckYourAnswersSummaryLine(1, messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"))
+      doc must haveCheckYourAnswersSummaryLineAnswer(1, paymentFrequency)
+      doc must haveCheckYourAnswersSummaryLineChangeLink(1, controllers.routes.IncomeUpdateCalculatorController.payPeriodPage().url)
+
+
+      doc must haveCheckYourAnswersSummaryLine(2, messages("tai.estimatedPay.update.checkYourAnswers.totalPay", "month"))
+      doc must haveCheckYourAnswersSummaryLineAnswer(2, "£10,000")
+      doc must haveCheckYourAnswersSummaryLineChangeLink(2, controllers.routes.IncomeUpdateCalculatorController.payslipAmountPage().url)
+    }
   }
 
+  override def view = views.html.incomes.checkYourAnswers(viewModel,employerName)
+  def viewModel = UpdateIncomeEstimateCheckYourAnswersViewModel(paymentFrequency,totalPay, hasDeductions, Some(taxablePay),
+    hasBonusOrOvertime, Some(hasExtraBonusOrOvertime), Some(totalBonusOrOvertime))
 
 
-  override def view = views.html.incomes.checkYourAnswers(employerName)
+  val paymentFrequency = "Monthly"
+  val totalPay = "10000"
+  val hasDeductions = "Yes"
+  val taxablePay = "1800"
+  val hasBonusOrOvertime = "Yes"
+  val hasExtraBonusOrOvertime = "Yes"
+  val totalBonusOrOvertime = "3000"
+
 }

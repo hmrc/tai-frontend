@@ -1290,9 +1290,9 @@ taxCode.change.yourTaxCodeChanged.previousTaxCodeDetails.screenReader=From {0} t
 
 
 tai.estimatedPay.update.checkYourAnswers.paymentFrequency = How often you get paid
-tai.estimatedPay.update.checkYourAnswers.totalPay = Total pay this month
+tai.estimatedPay.update.checkYourAnswers.totalPay = Total pay this {0}
 tai.estimatedPay.update.checkYourAnswers.hasDeduction = Does your payslip show deductions?
-tai.estimatedPay.update.checkYourAnswers.taxablePay = Taxable pay this month
+tai.estimatedPay.update.checkYourAnswers.taxablePay = Taxable pay this {0}
 tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime = Does this payslip include bonus or overtime?
 tai.estimatedPay.update.checkYourAnswers.hasExtraBonusOrOvertime = Do you think you will receive any more bonus or overtime payments through the year?
-tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime = Amount of bonus or overtime payments this month?
+tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime = Amount of bonus or overtime payments this {0}?

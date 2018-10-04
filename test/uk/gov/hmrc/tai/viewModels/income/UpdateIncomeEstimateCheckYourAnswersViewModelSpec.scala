@@ -19,21 +19,49 @@ package uk.gov.hmrc.tai.viewModels.income
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
-class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport{
+class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "Update income estimate check your answers view model" must {
-    "return all journey lines" when{
-      "taxable pay and bonus or overtime pay is provided" in{
+    "return all journey lines" when {
+      "taxable pay and bonus or overtime pay is provided" in {
+
+        val viewModel = createViewModel(Some(hasExtraBonusOrOvertime), Some(totalBonusOrOvertime), Some(taxablePay))
+
         viewModel.journeyConfirmationLines.size mustBe 7
         viewModel.journeyConfirmationLines mustEqual
-          Seq(paymentFrequencyAnswer,totalPayAnswer, hasDeductionAnswer, taxablePayAnswer, hasBonusOrOvertimeAnswer,
+          Seq(paymentFrequencyAnswer, totalPayAnswer, hasDeductionAnswer, taxablePayAnswer, hasBonusOrOvertimeAnswer,
             hasExtraBonusOrOvertimeAnswer, totalBonusOrOvertimeAnswer)
       }
     }
+
+    "return relevant journey lines" when {
+      "no bonus or overtime is provided" in {
+
+        val viewModel = createViewModel(taxablePay = Some(taxablePay))
+
+        viewModel.journeyConfirmationLines.size mustBe 5
+        viewModel.journeyConfirmationLines mustEqual
+          Seq(paymentFrequencyAnswer, totalPayAnswer, hasDeductionAnswer, taxablePayAnswer, hasBonusOrOvertimeAnswer)
+      }
+
+
+      "there are no payslip deductions" in {
+        val viewModel = createViewModel(Some(hasExtraBonusOrOvertime), Some(totalBonusOrOvertime))
+
+        viewModel.journeyConfirmationLines.size mustBe 6
+        viewModel.journeyConfirmationLines mustEqual
+          Seq(paymentFrequencyAnswer, totalPayAnswer, hasDeductionAnswer, hasBonusOrOvertimeAnswer,
+            hasExtraBonusOrOvertimeAnswer, totalBonusOrOvertimeAnswer)
+      }
+
+    }
+
+
   }
 
   lazy val paymentFrequencyAnswer = CheckYourAnswersConfirmationLine(
@@ -43,8 +71,8 @@ class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with Fa
   )
 
   lazy val totalPayAnswer = CheckYourAnswersConfirmationLine(
-    Messages("tai.estimatedPay.update.checkYourAnswers.totalPay"),
-    totalPay,
+    Messages("tai.estimatedPay.update.checkYourAnswers.totalPay", "month"),
+    Money.pounds(BigDecimal(totalPay)).toString().trim.replace("&pound;", "\u00A3"),
     controllers.routes.IncomeUpdateCalculatorController.payslipAmountPage().url
   )
 
@@ -55,8 +83,8 @@ class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with Fa
   )
 
   lazy val taxablePayAnswer = CheckYourAnswersConfirmationLine(
-    Messages("tai.estimatedPay.update.checkYourAnswers.taxablePay"),
-    taxablePay.get,
+    Messages("tai.estimatedPay.update.checkYourAnswers.taxablePay", "month"),
+    taxablePay,
     controllers.routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage().url
   )
 
@@ -68,32 +96,37 @@ class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with Fa
 
   lazy val hasExtraBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.hasExtraBonusOrOvertime"),
-    hasExtraBonusOrOvertime.get,
+    hasExtraBonusOrOvertime,
     controllers.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
   )
 
   lazy val totalBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
-    Messages("tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime"),
-    totalBonusOrOvertime.get,
+    Messages("tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime", "month"),
+    Money.pounds(BigDecimal(totalBonusOrOvertime)).toString().trim.replace("&pound;", "\u00A3"),
     controllers.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url
   )
 
+  def createViewModel(hasExtraBonusOrOvertime: Option[String] = None,
+                      totalBonusOrOvertime: Option[String] = None,
+                      taxablePay: Option[String] = None): UpdateIncomeEstimateCheckYourAnswersViewModel = {
+
+    UpdateIncomeEstimateCheckYourAnswersViewModel(
+      paymentFrequency,
+      totalPay,
+      hasDeductions,
+      taxablePay,
+      hasBonusOrOvertime,
+      hasExtraBonusOrOvertime,
+      totalBonusOrOvertime
+    )
+  }
+
   val paymentFrequency = "Monthly"
   val totalPay = "10000"
-  val hasDeductions ="Yes"
-  val taxablePay = Some("1800")
+  val hasDeductions = "Yes"
+  val taxablePay = "1800"
   val hasBonusOrOvertime = "Yes"
-  val hasExtraBonusOrOvertime = Some("Yes")
-  val totalBonusOrOvertime = Some("3000")
-
-  val viewModel = UpdateIncomeEstimateCheckYourAnswersViewModel(
-    paymentFrequency,
-    totalPay,
-    hasDeductions,
-    taxablePay,
-    hasBonusOrOvertime,
-    hasExtraBonusOrOvertime,
-    totalBonusOrOvertime
-  )
+  val hasExtraBonusOrOvertime = "Yes"
+  val totalBonusOrOvertime = "3000"
 
 }

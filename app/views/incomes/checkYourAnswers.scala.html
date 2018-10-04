@@ -17,14 +17,15 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.ptaHeader
 @import includes._
+@import uk.gov.hmrc.tai.viewModels.income.UpdateIncomeEstimateCheckYourAnswersViewModel
 
-@(employerName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: UpdateIncomeEstimateCheckYourAnswersViewModel, employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
   ptaHeader(
     displayBackLink = true,
     mainHeadingText = Messages("tai.checkYourAnswers"),
-    preHeadingText = Messages("tai.incomes.edit.preHeading",employerName))
+    preHeadingText = Messages("tai.incomes.edit.preHeading", employerName))
 }
 
 @main(
@@ -35,6 +36,13 @@
   gaCustomTitle = None
 ){
 
+
+<div class="section">
+    @includes.checkYourAnswers(
+    title = None,
+    confirmationLines = viewModel.journeyConfirmationLines
+    )
+</div>
 
 <p>@messages("tai.checkYourAnswers.confirmText")</p>
 @cancelLink(Call("GET",controllers.routes.TaxAccountSummaryController.onPageLoad.url))
