@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package views.html.incomes
+package uk.gov.hmrc.tai.util
 
-import play.twirl.api.Html
-import uk.gov.hmrc.tai.forms.HowToUpdateForm
-import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import org.scalatestplus.play.PlaySpec
 
-class howToUpdateSpec extends TaiViewSpec {
+class DateHelperSpec extends PlaySpec {
 
-  val empId = 1
-  val employerName = "Employer"
+  "Date helper month" must {
+    "return month" when {
+      "provided with a valid date in any alpha format" in {
+        DateHelper.monthOfYear("28 February 2018") must be("February")
+      }
+    }
 
-  "How to update view" should {
-    behave like pageWithBackLink
-    behave like pageWithCombinedHeader(
-      messages("tai.howToUpdate.preHeading", employerName),
-      messages("tai.howToUpdate.title"))
+    "return empty string" when {
+      "provided with numerical date" in {
+        DateHelper.monthOfYear("28/2/2018") must be("")
+      }
+    }
   }
 
-  override def view: Html = views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), empId, employerName)
 }

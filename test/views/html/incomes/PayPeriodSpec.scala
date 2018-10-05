@@ -26,14 +26,15 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class PayPeriodSpec extends TaiViewSpec with MockitoSugar {
 
+  val id = 1
+  val employerName = "Employer"
+
   "Pay period view" should {
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
-      messages("tai.payPeriod.preHeading"),
+      messages("tai.payPeriod.preHeading", employerName),
       messages("tai.payPeriod.title"))
   }
-
-  val id = 1
 
   val payPeriodForm = mock[Form[PayPeriodForm]]
 
@@ -46,5 +47,5 @@ class PayPeriodSpec extends TaiViewSpec with MockitoSugar {
   when(payPeriodForm.errors(anyString())).thenReturn(Nil)
   when(payPeriodForm.hasErrors).thenReturn(false)
 
-  override def view: Html = views.html.incomes.payPeriod(payPeriodForm, id, true,None)
+  override def view: Html = views.html.incomes.payPeriod(payPeriodForm, id, employerName, true)
 }

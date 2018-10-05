@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(payPeriodForm: Form[uk.gov.hmrc.tai.forms.PayPeriodForm], id: Int, isNotDaysError : Boolean = true, employerName : Option[String] = None)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages,
+@(payPeriodForm: Form[uk.gov.hmrc.tai.forms.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 
@@ -30,7 +30,10 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.payPeriod.title"),
-        preHeadingText = Messages("tai.payPeriod.preHeading"))}
+        preHeadingText = Messages("tai.payPeriod.preHeading", employerName),
+        headerWidthClasses = Some("column-full")
+    )
+}
 
 @howOftenPanel = @{
     def errorMessage = Messages("tai.payPeriod.error.form.incomes.other.mandatory")
@@ -57,7 +60,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     articleClasses = Some("full-width"),
     user = Some(user),
     pageHeader = Some(header),
-    employerName = employerName,
+    employerName = Some(employerName),
     gaCustomTitle = None
 ){
     <div class="section flush--bottom">

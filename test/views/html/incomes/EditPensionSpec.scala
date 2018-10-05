@@ -26,14 +26,16 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class EditPensionSpec extends TaiViewSpec with MockitoSugar{
 
+  private val empId = 1
+  private val employerName = "fakeFieldValue"
+
   "Edit Pension view" should {
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
-      messages("tai.howToUpdate.preHeading"),
-      messages("tai.incomes.pension.heading"))
+      messages("tai.howToUpdate.preHeading", employerName),
+      messages("tai.incomes.pension.heading")
+    )
   }
-
-  private val empId = 1
 
   val editIncomeForm = mock[Form[EditIncomeForm]]
 

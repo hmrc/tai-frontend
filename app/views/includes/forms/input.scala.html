@@ -55,24 +55,43 @@
             </span>
         }
     </label>
+
     @if(isCurrency){
-        <span aria-hidden="true">£</span>
+        @formInputWithCurrency
+    } else {
+        @formInput
     }
-        <input name="@field.name" class="form-control @if(fieldErrorsEnabled && field.hasErrors) { form-control-error} @if(attrType == "number") { input--no-spinner} @if(isCurrency){ form-control-currency}  @classes.mkString(" ")"
-        value="@field.value" id="@field.id"
-            @if(attrDescribedBy) { aria-describedby="@attrDescribedBy-hint" }
-            @if(attrType.nonEmpty) {
-                type="@attrType"
-                @if(attrType == "number"){
-                    step="1"
-                }
-            } else {
-                type="text"
-            }
-            @if(attrMin.nonEmpty) { min="@attrMin" }
-            @if(attrMax.nonEmpty) { max="@attrMax" }
-            @if(attrMinlength.nonEmpty) { minlength="@attrMinlength" }
-            @if(attrMaxlength.nonEmpty) { maxlength="@attrMaxlength" }
-            @if(attrPattern.nonEmpty) { pattern="@attrPattern" } />
 
 </div>
+
+@formInputWithCurrency = {
+    <div class="input-wrapper--currency">
+        <span class="input-currency-symbol" aria-hidden="true">£</span>
+        @formInput
+    </div>
+}
+
+@formInput = {
+    <input name="@field.name"
+       class=@getInputClasses(fieldErrorsEnabled && field.hasErrors, attrType == "number")
+       value="@field.value" id="@field.id"
+       @if(attrDescribedBy) { aria-describedby="@attrDescribedBy-hint" }
+       @if(attrType.nonEmpty) {
+            type="@attrType"
+            @if(attrType == "number"){
+                step="1"
+            }
+       } else {
+            type="text"
+       }
+       @if(attrMin.nonEmpty) { min="@attrMin" }
+       @if(attrMax.nonEmpty) { max="@attrMax" }
+       @if(attrMinlength.nonEmpty) { minlength="@attrMinlength" }
+       @if(attrMaxlength.nonEmpty) { maxlength="@attrMaxlength" }
+       @if(attrPattern.nonEmpty) { pattern="@attrPattern" }
+    />
+}
+
+@getInputClasses(showErrors: Boolean, numberAttrType: Boolean) = {
+    "form-control @if(showErrors){ form-control-error } @if(numberAttrType){ input--no-spinner } @if(isCurrency){ form-control-currency } @classes.mkString(" ")"
+}

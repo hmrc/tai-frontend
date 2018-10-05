@@ -23,6 +23,8 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.Answer
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -255,8 +257,9 @@ class IncomeControllerSpec extends PlaySpec
     "return OK" when {
       "income is successfully updated" in {
         val sut = createSUT
-        when(sut.journeyCacheService.collectedValues(any(), any())(any())).
-          thenReturn(Future.successful(Seq("200", "1"), Seq(Some("TEST"))))
+
+        when(sut.journeyCacheService.mandatoryValue(any())(any())).thenReturn(Future.successful("100"))
+
         when(sut.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponse))
 
@@ -265,15 +268,19 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.updated.check.title"))
+        doc.title() must include(Messages("tai.incomes.updated.check.title", 100))
       }
     }
 
     "return OK" when {
       "income is successfully updated with comma separated values input" in {
         val sut = createSUT
-        when(sut.journeyCacheService.collectedValues(any(), any())(any())).
-          thenReturn(Future.successful(Seq("200,000", "1"), Seq(Some("TEST"))))
+
+        when(sut.journeyCacheService.mandatoryValue(any())(any()))
+          .thenReturn(Future.successful("Employer"))
+            .thenReturn(Future.successful("100,000"))
+              .thenReturn(Future.successful("1"))
+
         when(sut.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponse))
 
@@ -282,7 +289,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.updated.check.title"))
+        doc.title() must include(Messages("tai.incomes.updated.check.title", "Employer"))
       }
     }
 

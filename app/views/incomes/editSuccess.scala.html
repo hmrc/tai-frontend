@@ -14,30 +14,34 @@
  * limitations under the License.
  *@
 
-@(employerName : Option[String] = None)(implicit request: Request[_],
+@(employerName: String)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 
 
 @main(
-    title = Messages("tai.incomes.updated.check.title"),
+    title = messages("tai.incomes.updated.check.title", employerName),
     articleClasses = Some("full-width"),
     user = Some(user),
-    employerName = employerName,
+    employerName = Some(employerName),
     gaCustomTitle = None
 ){
-    <header class="page-header">
-        <h1 class="heading-xlarge" id="currentYearTitle">@Messages("tai.incomes.updated.check.title")</h1>
-    </header>
+    <div class="column-two-thirds">
+        <header class="page-header">
+            <div class="govuk-box-highlight">
+                <h1 class="heading-large" id="currentYearTitle">@messages("tai.incomes.updated.check.title", employerName)</h1>
+            </div>
+        </header>
 
-    <div class="section soft--top">
-        <p>@Messages("tai.incomes.updated.check.text")</p>
-        <p>@Messages("tai.incomes.seeChanges.text")</p>
+        <div class="section soft--top">
+            <p>@messages("tai.incomes.updated.check.text")</p>
+            <p>@messages("tai.incomes.seeChanges.text")</p>
+        </div>
+
+        @includes.link(
+            copy=messages("return.to.your.income.tax.summary"),
+            url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
+            isButton=true
+        )
     </div>
-
-    @includes.link(
-        copy=Messages("return.to.your.income.tax.summary"),
-        url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
-        isButton=true
-    )
 }

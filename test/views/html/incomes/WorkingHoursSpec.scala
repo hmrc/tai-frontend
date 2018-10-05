@@ -22,14 +22,15 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class WorkingHoursSpec extends TaiViewSpec {
 
+  val empId = 1
+  val employerName = "Employer"
+
   "How to update view" should {
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
-      messages("tai.workingHours.preHeading"),
+      messages("tai.workingHours.preHeading", employerName),
       messages("tai.workingHours.title"))
   }
 
-  val empId = 1
-
-  override def view: Html = views.html.incomes.workingHours(HoursWorkedForm.createForm(), empId, None)
+  override def view: Html = views.html.incomes.workingHours(HoursWorkedForm.createForm(), empId, employerName)
 }

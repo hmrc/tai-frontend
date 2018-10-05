@@ -34,4 +34,10 @@ object DateHelper {
   def mostRecentDate(dates: Seq[LocalDate]): LocalDate = {
     dates.min
   }
+
+  def monthOfYear(date: String): String = {
+    var monthRegex = "[A-Za-z]+".r
+    monthRegex.findFirstIn(date).getOrElse("")
+  }
+
 }

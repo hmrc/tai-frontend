@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(payslipForm: Form[uk.gov.hmrc.tai.forms.PayslipForm], payPeriod: String, id: Int, employerName : Option[String] = None)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages,
+@(payslipForm: Form[uk.gov.hmrc.tai.forms.PayslipForm], payPeriod: String, id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
@@ -29,7 +29,10 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = Messages("tai.payslip.title"),
-        preHeadingText = Messages("tai.payslip.preHeading"))}
+        preHeadingText = Messages("tai.payslip.preHeading", employerName),
+        headerWidthClasses = Some("column-full")
+    )
+}
 
 
 @pageDesc = @{
@@ -43,10 +46,10 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 @main(
     title = Messages("tai.payslip.title"),
-    articleClasses = Some("full-width"),
+    articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
-    employerName = employerName,
+    employerName = Some(employerName),
     gaCustomTitle = None
 ){
 
@@ -55,6 +58,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
               field = payslipForm("totalSalary"),
               labelText = pageDesc,
               bold = true,
+              classes = Seq("form-control-1-4"),
               hintText = Messages("tai.payslip.payBeforeTakenOff"),
               isCurrency = true
             )
