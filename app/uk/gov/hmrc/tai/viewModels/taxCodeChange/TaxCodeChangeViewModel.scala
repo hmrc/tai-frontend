@@ -67,9 +67,9 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
     val taxCodeChangeDateGaDimension = Map[String, String]("taxCodeChangeDate" -> taxCodeChangeDate.toString(TaiConstants.EYU_DATE_FORMAT))
 
     if (moreThanTwoSecondaryWithoutPayroll(taxCodeChange.current) || moreThanTwoSecondaryWithoutPayroll(taxCodeChange.previous)) {
-      taxCodeChangeDateGaDimension + (taxCodeChangeEdgeCase -> yes)
+      taxCodeChangeDateGaDimension + (TAX_CODE_CHANGE_EDGE_CASE -> YES)
     } else {
-      taxCodeChangeDateGaDimension + (taxCodeChangeEdgeCase -> no)
+      taxCodeChangeDateGaDimension + (TAX_CODE_CHANGE_EDGE_CASE -> NO)
     }
   }
 }

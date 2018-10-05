@@ -17,12 +17,12 @@
 package uk.gov.hmrc.tai.util.constants
 
 object GoogleAnalyticsConstants {
-  val taxCodeChangeEdgeCase = "taxCodeChangeEdgeCase"
-  val yes = "Yes"
-  val no = "No"
-  val valueOfIycdcPayment = "valueOfIycdcPayment"
-  val iycdcReconciliationStatus = "iycdcReconciliationStatus"
-  val currentYear = "Current Year"
-  val nextYear = "Next Year"
-  val currentAndNextYear = "Current and Next Year"
+  val TAX_CODE_CHANGE_EDGE_CASE = "taxCodeChangeEdgeCase"
+  val YES = "Yes"
+  val NO = "No"
+  val VALUE_OF_IYCDC_PAYMENT = "valueOfIycdcPayment"
+  val IYCDC_RECONCILIATION_STATUS = "iycdcReconciliationStatus"
+  val CURRENT_YEAR = "Current Year"
+  val NEXT_YEAR = "Next Year"
+  val CURRENT_AND_NEXT_YEAR = "Current and Next Year"
 }

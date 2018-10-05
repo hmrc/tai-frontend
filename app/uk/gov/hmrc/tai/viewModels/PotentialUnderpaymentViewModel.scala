@@ -41,11 +41,11 @@ object PotentialUnderpaymentViewModel extends ViewModelHelper {
     val gaDimensions =
       (taxAccountSummary.totalInYearAdjustmentIntoCY, taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne) match {
         case (cy, ny) if cy > 0 && ny <= 0 =>
-          Some(Map(valueOfIycdcPayment -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(), iycdcReconciliationStatus -> currentYear))
+          Some(Map(VALUE_OF_IYCDC_PAYMENT -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(), IYCDC_RECONCILIATION_STATUS -> CURRENT_YEAR))
         case (cy, ny) if cy == 0 && ny > 0 =>
-          Some(Map(valueOfIycdcPayment -> taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne.toString(), iycdcReconciliationStatus -> nextYear))
+          Some(Map(VALUE_OF_IYCDC_PAYMENT -> taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne.toString(), IYCDC_RECONCILIATION_STATUS -> NEXT_YEAR))
         case (cy, ny) if cy > 0 && ny > 0 =>
-          Some(Map(valueOfIycdcPayment -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(), iycdcReconciliationStatus -> currentAndNextYear))
+          Some(Map(VALUE_OF_IYCDC_PAYMENT -> taxAccountSummary.totalInYearAdjustmentIntoCY.toString(), IYCDC_RECONCILIATION_STATUS -> CURRENT_AND_NEXT_YEAR))
         case _ => None
       }
 
