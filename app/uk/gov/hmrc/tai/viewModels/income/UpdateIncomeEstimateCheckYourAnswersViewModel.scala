@@ -97,6 +97,7 @@ case class UpdateIncomeEstimateCheckYourAnswersViewModel(paymentFrequency: Strin
       case "Monthly" => "month"
       case "Weekly" => "week"
       case "Fortnightly" => "fortnight"
+      case "Other" => "period"
     }
   }
 }
