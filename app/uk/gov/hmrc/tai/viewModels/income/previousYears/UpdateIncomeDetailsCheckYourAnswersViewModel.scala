@@ -17,10 +17,10 @@
 package uk.gov.hmrc.tai.viewModels.income.previousYears
 
 import play.api.i18n.Messages
-import play.api.Play.current
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
-import uk.gov.hmrc.tai.util.{FormValuesConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 

@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
-import uk.gov.hmrc.tai.util.{BandTypesConstants, TaxRegionConstants}
+import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
 
 import scala.language.postfixOps
 

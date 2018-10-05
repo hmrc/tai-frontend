@@ -23,9 +23,9 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.util.TaiConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants.{MedicalBenefitsIform, encodedMinusSign}
 import uk.gov.hmrc.time.TaxYearResolver
-import TaiConstants.encodedMinusSign
 
 class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -420,7 +420,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
                 ChangeLinkViewModel(
                   isDisplayed = true,
                   value = Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"),
-                  href = controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform).url)
+                  href = controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(MedicalBenefitsIform).url)
               ),
               TaxFreeAmountSummaryRowViewModel(
                 Messages("tai.taxFreeAmount.table.taxComponent.ChildBenefit"),

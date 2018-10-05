@@ -21,9 +21,8 @@ import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.time.TaxYearResolver
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
-
 
 
 class BbsiClosedCheckYourAnswersViewModelSpec extends PlaySpec

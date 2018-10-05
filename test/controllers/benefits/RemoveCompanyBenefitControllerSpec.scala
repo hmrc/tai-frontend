@@ -43,7 +43,7 @@ import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
-import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
+import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future

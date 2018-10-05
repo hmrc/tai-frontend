@@ -22,7 +22,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 class CompanyCarCheckAnswersViewModelSpec extends PlaySpec
   with JourneyCacheConstants with FakeTaiPlayApplication {

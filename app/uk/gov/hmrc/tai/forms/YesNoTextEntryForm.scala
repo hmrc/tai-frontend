@@ -19,8 +19,8 @@ package uk.gov.hmrc.tai.forms
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.voa.play.form.ConditionalMappings._
-import uk.gov.hmrc.tai.util.FormValuesConstants
 
 case class YesNoTextEntryForm(yesNoChoice: Option[String], yesNoTextEntry: Option[String])
 

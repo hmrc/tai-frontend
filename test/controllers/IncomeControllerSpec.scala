@@ -43,7 +43,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.Future
 import scala.util.Random

@@ -39,7 +39,8 @@ import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random

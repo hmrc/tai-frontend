@@ -17,24 +17,23 @@
 package controllers
 
 import controllers.audit.Auditable
-import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
+import controllers.auth.WithAuthorisedForTaiLite
 import org.joda.time.LocalDate
 import play.api.Play.current
-import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
-import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.{AuditConstants, FormHelper, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.FormHelper
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 
 import scala.Function.tupled
 import scala.concurrent.Future

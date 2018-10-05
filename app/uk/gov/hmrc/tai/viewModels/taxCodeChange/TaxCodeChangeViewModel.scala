@@ -20,9 +20,9 @@ import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, Week1Month1BasisOperation}
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
-import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeDescriptor}
-import uk.gov.hmrc.tai.util.GoogleAnalyticsConstants._
+import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants._
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
                                   changeDate: LocalDate,

@@ -27,7 +27,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 
 case class CompanyCarCheckAnswersViewModel(carModel: String,

@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.util
 
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import TaiConstants.encodedMinusSign
+import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
 import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import play.api.i18n.Messages

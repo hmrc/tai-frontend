@@ -20,7 +20,7 @@ import uk.gov.hmrc.tai.forms.income.bbsi.BankAccountClosingInterestForm
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.time.TaxYearResolver
-import uk.gov.hmrc.tai.util.{BankAccountClosingInterestConstants, FormValuesConstants}
+import uk.gov.hmrc.tai.util.constants.{BankAccountClosingInterestConstants, FormValuesConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class BankBuildingSocietyCloseInterestSpec extends TaiViewSpec with FormValuesConstants with BankAccountClosingInterestConstants {

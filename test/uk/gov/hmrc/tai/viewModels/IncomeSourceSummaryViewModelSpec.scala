@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.domain.benefits._
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
-import uk.gov.hmrc.tai.util.TaiConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
 

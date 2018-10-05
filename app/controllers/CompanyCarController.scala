@@ -37,7 +37,7 @@ import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig, TaiHtmlP
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.tai.util.ViewModelHelper._
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.Future
 

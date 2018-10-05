@@ -31,7 +31,7 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnector, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.util.{BankAccountDecisionConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.{BankAccountDecisionConstants, JourneyCacheConstants}
 
 import scala.concurrent.Future
 

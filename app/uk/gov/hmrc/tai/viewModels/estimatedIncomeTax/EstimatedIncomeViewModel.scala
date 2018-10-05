@@ -21,7 +21,7 @@ import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.model.domain.{PersonalAllowanceAgedPAA, PersonalAllowanceElderlyPAE, PersonalAllowancePA}
-import uk.gov.hmrc.tai.util.{BandTypesConstants, TaiConstants}
+import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.Label
 
 import scala.math.BigDecimal

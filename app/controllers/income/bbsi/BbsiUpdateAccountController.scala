@@ -17,23 +17,21 @@
 package controllers.income.bbsi
 
 
-import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
+import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{ServiceCheckLite, TaiBaseController}
-import uk.gov.hmrc.tai.forms.incomes.bbsi.UpdateInterestForm
-import uk.gov.hmrc.tai.viewModels.income.{BbsiUpdateAccountViewModel, BbsiUpdateInterestViewModel}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Result}
-import play.mvc.Http.Request
-import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnector, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.forms.incomes.bbsi.UpdateInterestForm
 import uk.gov.hmrc.tai.model.AmountRequest
-import uk.gov.hmrc.tai.model.domain.BankAccount
-import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
+import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
+import uk.gov.hmrc.tai.util.FormHelper
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.viewModels.income.{BbsiUpdateAccountViewModel, BbsiUpdateInterestViewModel}
 
 import scala.concurrent.Future
 

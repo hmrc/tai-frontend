@@ -22,7 +22,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.util.DateHelper
-import uk.gov.hmrc.tai.util.TaiConstants._
+import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{LatestPayment, PaymentDetailsViewModel, YourIncomeCalculationViewModel}
 import uk.gov.hmrc.time.TaxYearResolver

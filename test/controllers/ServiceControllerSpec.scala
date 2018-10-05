@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.config.{ApplicationConfig, WSHttp}
 import uk.gov.hmrc.tai.connectors._
 import uk.gov.hmrc.tai.model.UserDetails
 import uk.gov.hmrc.tai.service.PersonService
-import uk.gov.hmrc.tai.util.TaiConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.Future
 

@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiSu
 import uk.gov.hmrc.tai.forms.benefits.DateForm
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, SessionService}
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.Future
 import scala.language.postfixOps

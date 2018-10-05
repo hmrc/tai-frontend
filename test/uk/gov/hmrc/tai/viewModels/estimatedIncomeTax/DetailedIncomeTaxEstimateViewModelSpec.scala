@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome, _}
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.model.domain.{ChildBenefit => _, DoubleTaxationRelief => _, MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
-import uk.gov.hmrc.tai.util.BandTypesConstants
+import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.viewModels.{HelpLink, Label}
 import uk.gov.hmrc.urls.Link
 

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.model
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.tai.util.TaiConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 case class UserDetails(authProviderType: String) {
   def hasVerifyAuthProvider: Boolean = authProviderType == TaiConstants.AuthProviderVerify
