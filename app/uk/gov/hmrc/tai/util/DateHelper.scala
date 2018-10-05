@@ -40,9 +40,9 @@ object DateHelper {
     monthRegex.findFirstIn(date).getOrElse("")
   }
 
-  def getYear(date: String): String = {
-    val yearRegex = "[0-9]{4}".r
-    yearRegex.findFirstIn(date).getOrElse("")
+  def getMonthAndYear(date: String): String = {
+    val monthAndYearRegex = "[A-Za-z].*".r
+    monthAndYearRegex.findFirstIn(date).getOrElse("")
   }
 
 }

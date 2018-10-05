@@ -617,8 +617,8 @@ class IncomeControllerSpec extends PlaySpec
   val employmentAmount = EmploymentAmount("employment","(Current employer)",1,1111,1111,
     None,None,Some(new LocalDate(2000, 5, 20)), None, true, false)
 
-  private def createTestController = new TestController
-  private class TestController extends IncomeController {
+  private def createTestController = new TestIncomeController
+  private class TestIncomeController extends IncomeController {
     override implicit def templateRenderer: MockTemplateRenderer.type = MockTemplateRenderer
 
     override val personService: PersonService = mock[PersonService]

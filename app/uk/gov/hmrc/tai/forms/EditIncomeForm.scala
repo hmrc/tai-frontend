@@ -58,7 +58,7 @@ case class EditIncomeForm(name : String, description : String,
     )
   }
 }
-//noinspection ScalaStyle
+
 object EditIncomeForm {
   implicit val formats = Json.format[EditIncomeForm]
 
@@ -109,8 +109,7 @@ object EditIncomeForm {
 
   private def createForm (employerName: String, taxablePayYTD: BigDecimal, payDate: Option[LocalDate] = None, errMessage: Option[String] = None)(implicit messages: Messages) :Form[EditIncomeForm] = {
 
-    val monthName = payDate.map (date => DateHelper.monthOfYear(Dates.formatDate(date))).getOrElse("")
-    val yearName = payDate.map (date => DateHelper.getYear(Dates.formatDate(date))).getOrElse("")
+    val monthAndYearName = payDate.map (date => DateHelper.getMonthAndYear(Dates.formatDate(date))).getOrElse("")
 
     val errMsg = errMessage.getOrElse("error.tai.updateDataEmployment.enterLargerValue")
     Form[EditIncomeForm](
@@ -121,7 +120,7 @@ object EditIncomeForm {
         "newAmount" -> TaiValidator.validateTaxAmounts(Messages("error.tai.updateDataEmployment.blankValue"),
            Messages("error.tai.updateDataEmployment.enterRealNumber"),
            Messages("error.tai.updateDataEmployment.maxLength"),
-           Messages(errMsg, MoneyPounds(taxablePayYTD, 0, true).quantity, s"$monthName $yearName", employerName),
+           Messages(errMsg, MoneyPounds(taxablePayYTD, 0, true).quantity, monthAndYearName, employerName),
           taxablePayYTD),
         "oldAmount" -> number,
         "worksNumber" -> optional(text),
