@@ -404,11 +404,11 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
       implicit request =>
         journeyCacheService.collectedValues(
           Seq(UpdateIncome_NameKey, UpdateIncome_PayPeriodKey, UpdateIncome_TotalSalaryKey, UpdateIncome_PayslipDeductionsKey,
-            UpdateIncome_BonusPaymentsThisYearKey),
-          Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey)
+            UpdateIncome_BonusPaymentsKey),
+          Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusPaymentsThisYearKey,UpdateIncome_BonusOvertimeAmountKey)
         ) map tupled { (mandatorySeq, optionalSeq) => {
             val viewModel = UpdateIncomeEstimateCheckYourAnswersViewModel(mandatorySeq(1),mandatorySeq(2),mandatorySeq(3),
-                                                                          optionalSeq(0),mandatorySeq(4),None,optionalSeq(1))
+                                                                          optionalSeq(0),mandatorySeq(4),optionalSeq(1),optionalSeq(2))
             Ok(views.html.incomes.checkYourAnswers(viewModel,mandatorySeq(0)))
           }
         }

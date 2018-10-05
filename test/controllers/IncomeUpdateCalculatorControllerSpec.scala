@@ -491,7 +491,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       when(SUT.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
         Future.successful((
           Seq[String]("Employer1","monthly","10000","yes","yes"),
-          Seq[Option[String]](Some("8000"),Some("1000"))
+          Seq[Option[String]](Some("8000"),Some("yes"),Some("1000"))
         ))
       )
       val result = SUT.checkYourAnswersPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
