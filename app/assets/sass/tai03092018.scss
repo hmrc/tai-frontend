@@ -55,12 +55,6 @@ hr {
   border: 0;
 }
 
-// wrapping element to ensure currency remains in front of input on mobile
-.form-control-currency {
-  max-width: 90%;
-  max-width: calc(100% - 2em);
-}
-
 .margin-bottom-medium {
   margin-bottom: 20px;
 }

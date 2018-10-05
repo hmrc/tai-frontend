@@ -34,14 +34,14 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     ptaHeader(
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.estimatedPay.title"),
-        preHeadingText = Messages("tai.estimatedPay.preHeading", employerName),
+        mainHeadingText = messages("tai.estimatedPay.title"),
+        preHeadingText = messages("tai.estimatedPay.preHeading", employerName),
         headerWidthClasses = Some("column-full")
     )
 }
 
 @main(
-    title = Messages("tai.estimatedPay.title"),
+    title = messages("tai.estimatedPay.title"),
     articleClasses = Some("full-width text"),
     user = Some(user),
     pageHeader = Some(header),
@@ -49,14 +49,14 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     gaCustomTitle = None
 ){
     <div>
-        <h2 class="flush--top">@Messages("tai.estimatedPay.yourPay")</h2>
+        <h2 class="flush--top">@messages("tai.estimatedPay.yourPay")</h2>
         <p class="bold-large margin-bottom-medium" id="payBeforeTax">£@MoneyPounds(payBeforeTax.getOrElse(0),0).quantity</p>
-        <p>@Messages("tai.estimatedPay.basicPayExplanation")</p>
+        <p>@messages("tai.estimatedPay.basicPayExplanation")</p>
 
         @startDate.map{startDate =>
             @annual.map{annual =>
-                @includes.details_summary(Messages("tai.estimatedPay.whyLower.title"),Some("flush--bottom")){
-                    @Messages("tai.estimatedPay.whyLower.message",Dates.formatDate(startDate),Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear),Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear),MoneyPounds(annual,0).quantity)
+                @includes.details_summary(messages("tai.estimatedPay.whyLower.title"),Some("flush--bottom")){
+                    @messages("tai.estimatedPay.whyLower.message",Dates.formatDate(startDate),Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear),Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear),MoneyPounds(annual,0).quantity)
                 }
             }
         }
@@ -64,13 +64,13 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     </div>
 
     <div>
-        <h2>@Messages("tai.estimatedPay.yourTaxablePay")</h2>
+        <h2>@messages("tai.estimatedPay.yourTaxablePay")</h2>
         <p class="bold-large margin-bottom-medium" id="amountPayTaxOn">£@MoneyPounds(payTaxOn.getOrElse(0),0).quantity</p>
-        <p>@Messages("tai.estimatedPay.yourTaxablePay.text")</p>
+        <p>@messages("tai.estimatedPay.yourTaxablePay.text")</p>
 
         @if(same){
-            @includes.details_summary(Messages("tai.estimatedPay.whySame.title"),Some("flush--bottom")){
-                @Messages("tai.estimatedPay.whySame.text")
+            @includes.details_summary(messages("tai.estimatedPay.whySame.title"),Some("flush--bottom")){
+                @messages("tai.estimatedPay.whySame.text")
             }
         }
 
@@ -79,7 +79,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     <div class="section">
 
         @includes.link(
-            copy=Messages("tai.estimatedPay.checkTaxEstimate"),
+            copy=messages("tai.estimatedPay.checkTaxEstimate"),
             url = routes.IncomeUpdateCalculatorController.handleCalculationResult.toString,
             isButton=true
         )

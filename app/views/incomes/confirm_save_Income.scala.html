@@ -31,14 +31,14 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        mainHeadingText = Messages("tai.incomes.confirm.save.title"),
-        preHeadingText = Messages("tai.incomes.edit.preHeading", income.name),
+        mainHeadingText = messages("tai.incomes.confirm.save.title"),
+        preHeadingText = messages("tai.incomes.edit.preHeading", income.name),
         headerWidthClasses = Some("column-full")
     )
 }
 
 @main(
-    title = Messages("tai.incomes.confirm.save.title"),
+    title = messages("tai.incomes.confirm.save.title"),
     articleClasses = Some("full-width"),
     pageHeader = Some(header),
     user = Some(user),
@@ -51,18 +51,18 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
 
                 @if(income.toEmploymentAmount().newAmount == 0){
                 <section class="section flush--bottom soft--ends">
-                    <p  id="result">@Messages(s"tai.incomes.confirm.same.result", income.toEmploymentAmount().oldAmount)</p>
-                    <p  id="resultSame">@Messages(s"tai.incomes.confirm.same",income.name)</p>
+                    <p  id="result">@messages(s"tai.incomes.confirm.same.result", income.toEmploymentAmount().oldAmount)</p>
+                    <p  id="resultSame">@messages(s"tai.incomes.confirm.same",income.name)</p>
                 </section>
                 }else{
 
                     <section class="section flush--bottom soft--ends">
                         @if(FormHelper.convertCurrencyToInt(income.newAmount) == income.oldAmount){
-                            <p>@Messages(s"tai.incomes.confirm.save.messageEquals", income.toEmploymentAmount().newAmount)</p>
-                            <p>@Messages("tai.incomes.confirm.save.messageEquals.details", income.name)</p>
+                            <p>@messages(s"tai.incomes.confirm.save.messageEquals", income.toEmploymentAmount().newAmount)</p>
+                            <p>@messages("tai.incomes.confirm.save.messageEquals.details", income.name)</p>
                         }else{
-                            <p>@Messages(s"tai.incomes.confirm.save.message", income.toEmploymentAmount().newAmount)</p>
-                            <p>@Messages("tai.incomes.confirm.save.message.details")</p>
+                            <p>@messages(s"tai.incomes.confirm.save.message", income.toEmploymentAmount().newAmount)</p>
+                            <p>@messages("tai.incomes.confirm.save.message.details")</p>
                         }
                     </section>
                 @if(FormHelper.convertCurrencyToInt(income.newAmount) != income.oldAmount){
@@ -76,7 +76,7 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                             <input type="hidden" id="hasMultipleIncomes" name="hasMultipleIncomes" value="@income.hasMultipleIncomes"/>
 
                             <div class="form-field-group">
-                                <input type="submit" class="button section" value='@Messages("tai.incomes.confirm.save")'/>
+                                <input type="submit" class="button section" value='@messages("tai.incomes.confirm.save")'/>
                             </div>
                         }
                     </section>
@@ -85,5 +85,5 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
             </div>
         </div>
     </div>
-    <p><a href="@routes.TaxAccountSummaryController.onPageLoad">@Messages("tai.cancel.noSave")</a></p>
+    <p><a href="@routes.TaxAccountSummaryController.onPageLoad">@messages("tai.cancel.noSave")</a></p>
 }

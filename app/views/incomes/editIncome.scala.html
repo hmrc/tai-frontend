@@ -39,14 +39,14 @@
         formForErrorSummary = Some(income),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.incomes.edit.heading"),
-        preHeadingText = Messages("tai.incomes.edit.preHeading", income("name").value.getOrElse("")),
+        mainHeadingText = messages("tai.incomes.edit.heading"),
+        preHeadingText = messages("tai.incomes.edit.preHeading", income("name").value.getOrElse("")),
         headerWidthClasses = Some("column-full")
     )
 }
 
 @main(
-    title = Messages("tai.incomes.edit.heading"),
+    title = messages("tai.incomes.edit.heading"),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = Some(""),
@@ -56,17 +56,17 @@
 ){
 
     <div>
-        <p>@Messages("tai.incomes.edit.howTo.payslip")</p>
-        <p>@Messages("tai.incomes.edit.howTo.grossAmount")</p>
+        <p>@messages("tai.incomes.edit.howTo.payslip")</p>
+        <p>@messages("tai.incomes.edit.howTo.grossAmount")</p>
         <ul class="bullets">
-            <li>@Messages("tai.incomes.edit.howTo.contribution")</li>
-            <li>@Messages("tai.incomes.edit.howTo.charity")</li>
-            <li>@Messages("tai.incomes.edit.howTo.expenses")</li>
+            <li>@messages("tai.incomes.edit.howTo.contribution")</li>
+            <li>@messages("tai.incomes.edit.howTo.charity")</li>
+            <li>@messages("tai.incomes.edit.howTo.expenses")</li>
         </ul>
     </div>
 
     <div>
-        <h2>@Messages("tai.incomes.edit.incomeTax.update.heading")</h2>
+        <h2>@messages("tai.incomes.edit.incomeTax.update.heading")</h2>
 
         @form(action = controllers.routes.IncomeController.editRegularIncome){
             <input type="hidden" name="payToDate" value="@payToDate">
@@ -74,16 +74,16 @@
                 <table id="income-table" class="table-section">
                     <thead>
                         <tr>
-                            <th>@Messages("tai.incomeSources")</th>
-                            <th class="text--right">@Messages("tai.incomes.amount.current")</th>
-                            <th class="text--right" id="amountLabel">@Messages("tai.incomes.amount.new")</th>
+                            <th>@messages("tai.incomeSources")</th>
+                            <th class="text--right">@messages("tai.incomes.amount.current")</th>
+                            <th class="text--right" id="amountLabel">@messages("tai.incomes.amount.new")</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="income-data">
                             <td class="break-word">@income("description").value @income("name").value</td>
                             @income.errors(income("newAmount").name).map{ error =>
-                                <span class="error-notification">@Messages(error.message)</span>
+                                <span class="error-notification">@messages(error.message)</span>
                             }
                             <td class="text--right"><input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' />@income("oldAmount").value</td>
                             <td class="text--right"><input aria-labelledby="amountLabel" class="text--right input--small income-data-input" type="text" id="newAmount" name='@income("newAmount").name' value='' /></td>
@@ -102,7 +102,7 @@
             </div>
 
             <div class="form-field-group">
-                <p><input type="submit" class="button" value='@Messages("tai.continue")'/></p>
+                <p><input type="submit" class="button" value='@messages("tai.continue")'/></p>
 
                 @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url))
             </div>

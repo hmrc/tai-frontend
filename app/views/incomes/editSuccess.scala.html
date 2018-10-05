@@ -20,7 +20,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
 
 @main(
-    title = Messages("tai.incomes.updated.check.title", employerName),
+    title = messages("tai.incomes.updated.check.title", employerName),
     articleClasses = Some("full-width"),
     user = Some(user),
     employerName = Some(employerName),
@@ -29,17 +29,17 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     <div class="column-two-thirds">
         <header class="page-header">
             <div class="govuk-box-highlight">
-                <h1 class="heading-large" id="currentYearTitle">@Messages("tai.incomes.updated.check.title", employerName)</h1>
+                <h1 class="heading-large" id="currentYearTitle">@messages("tai.incomes.updated.check.title", employerName)</h1>
             </div>
         </header>
 
         <div class="section soft--top">
-            <p>@Messages("tai.incomes.updated.check.text")</p>
-            <p>@Messages("tai.incomes.seeChanges.text")</p>
+            <p>@messages("tai.incomes.updated.check.text")</p>
+            <p>@messages("tai.incomes.seeChanges.text")</p>
         </div>
 
         @includes.link(
-            copy=Messages("return.to.your.income.tax.summary"),
+            copy=messages("return.to.your.income.tax.summary"),
             url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
             isButton=true
         )

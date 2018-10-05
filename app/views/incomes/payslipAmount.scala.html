@@ -46,7 +46,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 @main(
     title = Messages("tai.payslip.title"),
-    articleClasses = Some("full-width"),
+    articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
     employerName = Some(employerName),
@@ -58,6 +58,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
               field = payslipForm("totalSalary"),
               labelText = pageDesc,
               bold = true,
+              classes = Seq("form-control-1-4"),
               hintText = Messages("tai.payslip.payBeforeTakenOff"),
               isCurrency = true
             )
