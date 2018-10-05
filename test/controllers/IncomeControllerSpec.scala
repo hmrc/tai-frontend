@@ -60,7 +60,7 @@ class IncomeControllerSpec extends PlaySpec
   "regularIncome" must {
     "return OK with regular income view" when {
       "valid inputs are passed" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
         when(testController.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
@@ -78,7 +78,7 @@ class IncomeControllerSpec extends PlaySpec
 
      "return Internal Server Error" when {
       "employment doesn't present" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
@@ -96,7 +96,7 @@ class IncomeControllerSpec extends PlaySpec
       }
 
        "tax code incomes return failure" in {
-         val testController = createTestController
+         val testController = createTestIncomeController
          val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
          val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
          val employment = employmentWithAccounts(List(annualAccount))
@@ -114,7 +114,7 @@ class IncomeControllerSpec extends PlaySpec
        }
 
        "employment return None" in {
-         val testController = createTestController
+         val testController = createTestIncomeController
          when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
            thenReturn(Future.successful(1))
          when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
@@ -133,7 +133,7 @@ class IncomeControllerSpec extends PlaySpec
   "editRegularIncome" must {
     "redirect to confirm regular income page" when {
       "valid input is passed" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         when(testController.journeyCacheService.collectedValues(any(), any())(any())).
           thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
         when(testController.journeyCacheService.cache(any(), any())(any())).
@@ -151,7 +151,7 @@ class IncomeControllerSpec extends PlaySpec
     "return Bad request" when {
       "new amount is blank" in {
         val invalidNewAmount = ""
-        val testController = createTestController
+        val testController = createTestIncomeController
         when(testController.journeyCacheService.collectedValues(any(), any())(any())).
           thenReturn(Future.successful(Seq("100", "1", "EmployerName"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
         when(testController.journeyCacheService.cache(any(), any())(any())).
@@ -169,7 +169,7 @@ class IncomeControllerSpec extends PlaySpec
 
       "new amount is not a number" in {
         val invalidNewAmount = "Not a number"
-        val testController = createTestController
+        val testController = createTestIncomeController
         when(testController.journeyCacheService.collectedValues(any(), any())(any())).
           thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
         when(testController.journeyCacheService.cache(any(), any())(any())).
@@ -187,7 +187,7 @@ class IncomeControllerSpec extends PlaySpec
 
       "new amount is too large" in {
         val invalidNewAmount = "1000000000"
-        val testController = createTestController
+        val testController = createTestIncomeController
         when(testController.journeyCacheService.collectedValues(any(), any())(any())).
           thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
         when(testController.journeyCacheService.cache(any(), any())(any())).
@@ -208,7 +208,7 @@ class IncomeControllerSpec extends PlaySpec
         val date = new LocalDate(2017, 2, 1)
         val dateForMessage = "February 2017"
         val EmployerName = "Employer Name"
-        val testController = createTestController
+        val testController = createTestIncomeController
         when(testController.journeyCacheService.collectedValues(any(), any())(any())).
           thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(date.toString))))
         when(testController.journeyCacheService.cache(any(), any())(any())).
@@ -229,7 +229,7 @@ class IncomeControllerSpec extends PlaySpec
   "confirmRegularIncome" must {
     "return OK" when {
       "valid values are present in cache" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
@@ -246,7 +246,7 @@ class IncomeControllerSpec extends PlaySpec
       }
 
       "pay to date cannot be determined, due to no annual account records on the income source" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(Nil)
@@ -265,7 +265,7 @@ class IncomeControllerSpec extends PlaySpec
 
     "return Internal Server Error" when {
       "employment doesn't present" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
@@ -282,7 +282,7 @@ class IncomeControllerSpec extends PlaySpec
       }
 
       "tax code incomes return failure" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
@@ -299,7 +299,7 @@ class IncomeControllerSpec extends PlaySpec
       }
 
       "employment return None" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
         when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
@@ -318,7 +318,7 @@ class IncomeControllerSpec extends PlaySpec
   "updateEstimatedIncome" must {
     "return OK" when {
       "income is successfully updated" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
 
         when(testController.journeyCacheService.mandatoryValue(any())(any())).thenReturn(Future.successful("100"))
 
@@ -336,7 +336,7 @@ class IncomeControllerSpec extends PlaySpec
 
     "return OK" when {
       "income is successfully updated with comma separated values input" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
 
         when(testController.journeyCacheService.mandatoryValue(any())(any()))
           .thenReturn(Future.successful("Employer"))
@@ -357,7 +357,7 @@ class IncomeControllerSpec extends PlaySpec
 
     "return Internal Server Error" when {
       "update is failed" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         when(testController.journeyCacheService.mandatoryValues(any())(any())).
           thenReturn(Future.successful(Seq("200", "1", "TEST")))
         when(testController.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
@@ -373,7 +373,7 @@ class IncomeControllerSpec extends PlaySpec
   "pension" must {
     "return OK with regular income view" when {
       "valid inputs are passed" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
         when(testController.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
@@ -392,7 +392,7 @@ class IncomeControllerSpec extends PlaySpec
 
     "return Internal Server Error" when {
       "employment doesn't present" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
@@ -410,7 +410,7 @@ class IncomeControllerSpec extends PlaySpec
       }
 
       "tax code incomes return failure" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
@@ -428,7 +428,7 @@ class IncomeControllerSpec extends PlaySpec
       }
 
       "employment return None" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
         when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
@@ -447,7 +447,7 @@ class IncomeControllerSpec extends PlaySpec
   "editPensionIncome" must {
     "redirect to confirm regular income page" when {
       "valid input is passed" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         when(testController.journeyCacheService.collectedValues(any(), any())(any())).
           thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
         when(testController.journeyCacheService.cache(any(), any())(any())).
@@ -464,7 +464,7 @@ class IncomeControllerSpec extends PlaySpec
 
     "return Bad request" when {
       "new amount is blank" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         when(testController.journeyCacheService.collectedValues(any(), any())(any())).
           thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
         when(testController.journeyCacheService.cache(any(), any())(any())).
@@ -482,7 +482,7 @@ class IncomeControllerSpec extends PlaySpec
   "confirmPensionIncome" must {
     "return OK" when {
       "valid values are present in cache" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
@@ -501,7 +501,7 @@ class IncomeControllerSpec extends PlaySpec
 
     "return Internal Server Error" when {
       "employment doesn't present" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
@@ -518,7 +518,7 @@ class IncomeControllerSpec extends PlaySpec
       }
 
       "tax code incomes return failure" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
@@ -535,7 +535,7 @@ class IncomeControllerSpec extends PlaySpec
       }
 
       "employment return None" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
         when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
@@ -554,7 +554,7 @@ class IncomeControllerSpec extends PlaySpec
   "viewIncomeForEdit" must {
     "redirect user" when {
       "employment is live and is not occupational pension" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
 
         val employmentAmount = EmploymentAmount("employment","(Current employer)",1,11,11,None,None,None,None,true,false)
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
@@ -566,7 +566,7 @@ class IncomeControllerSpec extends PlaySpec
       }
 
       "employment is not live and is not occupational pension" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
 
         val employmentAmount = EmploymentAmount("employment","(Current employer)",1,11,11,None,None,None,None,false,false)
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
@@ -578,7 +578,7 @@ class IncomeControllerSpec extends PlaySpec
       }
 
       "employment is not live and is occupational pension" in {
-        val testController = createTestController
+        val testController = createTestIncomeController
 
         val employmentAmount = EmploymentAmount("employment","(Current employer)",1,11,11,None,None,None,None,false, true)
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
@@ -617,7 +617,7 @@ class IncomeControllerSpec extends PlaySpec
   val employmentAmount = EmploymentAmount("employment","(Current employer)",1,1111,1111,
     None,None,Some(new LocalDate(2000, 5, 20)), None, true, false)
 
-  private def createTestController = new TestIncomeController
+  private def createTestIncomeController = new TestIncomeController
   private class TestIncomeController extends IncomeController {
     override implicit def templateRenderer: MockTemplateRenderer.type = MockTemplateRenderer
 
