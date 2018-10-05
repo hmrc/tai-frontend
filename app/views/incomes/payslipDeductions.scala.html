@@ -18,6 +18,7 @@
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
+@import includes.cancelLink
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.forms.inputRadioGroupStyling
 
@@ -63,6 +64,8 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
             )}
             <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
         }
+
+        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     </div>
 
 }
