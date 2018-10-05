@@ -49,6 +49,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     gaCustomTitle = None
 ){
     <div>
+        <p>@messages("tai.estimatedPay.weHaveCalculated")</p>
         <h2 class="flush--top">@messages("tai.estimatedPay.yourPay")</h2>
         <p class="bold-large margin-bottom-medium" id="payBeforeTax">£@MoneyPounds(payBeforeTax.getOrElse(0),0).quantity</p>
         <p>@messages("tai.estimatedPay.basicPayExplanation")</p>

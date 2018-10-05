@@ -49,7 +49,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         <div class="${if(errorSpan!="") "form-group-error"}">
             <label for="otherInDays" class="form-label">${labelMessage}</label>
             ${errorSpan}
-            <input type="text" class="form-control flush--bottom" id="otherInDays" name="otherInDays" />
+            <input type="text" class="form-control form-control-1-2 flush--bottom" id="otherInDays" name="otherInDays" />
         </div>
     </div>"""
 }
@@ -57,7 +57,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 @main(
     title = Messages("tai.payPeriod.title"),
-    articleClasses = Some("full-width"),
+    articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
     employerName = Some(employerName),

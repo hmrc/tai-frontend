@@ -51,7 +51,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no"))),
             legend=Messages("tai.bonusPayments.question"),
             legendHint=None,
-            ('_groupDivClass, "form-group" ),
+            ('_groupDivClass, "form-group flush--bottom" ),
             ('_radioOption1WrapAttribute, "data-target=bonusPaymentsMoreThisYear"),
             ('_groupClass, "inline" ),
             ('_legendSpanClass, "form-label-bold"),
@@ -64,8 +64,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             legend=Messages("tai.bonusPayments.moreThisYear"),
             legendHint=None,
             ('_groupDivClass, "form-group data-moreThisYear"),
-            ('_groupClass, "inline panel-indent" + (if(!bonusPaymentSelected) " js-hidden" else "") ),
-            ('_legendClass, "section flush"),
+            ('_groupClass, "inline panel panel-border-narrow" + (if(!bonusPaymentSelected) " js-hidden" else "") ),
+            ('_legendClass, "form-label-bold section flush"),
             ('_fieldsetAttributes, "id=bonusPaymentsMoreThisYear" )
         )}
 
