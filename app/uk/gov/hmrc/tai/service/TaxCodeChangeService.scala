@@ -23,7 +23,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.model.domain.TaxCodeChange
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 
 import scala.concurrent.Future
 
@@ -46,8 +46,8 @@ trait TaxCodeChangeService {
   def latestTaxCodeChangeDate(nino: Nino)(implicit hc: HeaderCarrier): Future[LocalDate] = {
     taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate)
   }
-}
 
+}
 object TaxCodeChangeService extends TaxCodeChangeService {
   override val taxCodeChangeConnector: TaxCodeChangeConnector = TaxCodeChangeConnector
 }
