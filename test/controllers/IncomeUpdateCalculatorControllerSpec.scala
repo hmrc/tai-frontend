@@ -401,13 +401,13 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       }
     }
 
-    "redirect the user to estimatedPayPage page" when {
+    "redirect the user to checkYourAnswers page" when {
       "user selected no" in {
         val sut = createSut
         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = sut.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("bonusPayments" -> "No"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.estimatedPayPage().url)
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.checkYourAnswersPage().url)
       }
     }
 
@@ -451,14 +451,14 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   }
 
   "handleBonusOvertimeAmount" must {
-    "redirect the user to estimatedPayPage page" when {
+    "redirect the user to checkYourAnswers page" when {
       "user selected yes" in {
         val sut = createSut
         when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(UpdateIncome_IdKey -> "1", UpdateIncome_BonusPaymentsThisYearKey -> "Yes")))
         when(sut.journeyCacheService.cache(Matchers.eq(UpdateIncome_BonusOvertimeAmountKey), Matchers.eq("£3,000"))(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = sut.handleBonusOvertimeAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("amount" -> "£3,000"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.estimatedPayPage().url)
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.checkYourAnswersPage().url)
       }
     }
 

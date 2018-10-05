@@ -344,7 +344,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               if (formData.bonusPayments.contains("Yes")) {
                 Redirect(routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage())
               } else {
-                Redirect(routes.IncomeUpdateCalculatorController.estimatedPayPage())
+                Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage())
               }
             }
           }
@@ -390,9 +390,9 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               formData.amount match {
                 case Some(amount) =>
                   journeyCacheService.cache(UpdateIncome_BonusOvertimeAmountKey, amount) map { _ =>
-                    Redirect(routes.IncomeUpdateCalculatorController.estimatedPayPage())
+                    Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage())
                   }
-                case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.estimatedPayPage()))
+                case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage()))
               }
             }
           )
