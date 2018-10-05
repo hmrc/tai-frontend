@@ -84,7 +84,7 @@ class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with Fa
 
   lazy val taxablePayAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.taxablePay", "month"),
-    taxablePay,
+    Money.pounds(BigDecimal(taxablePay)).toString().trim.replace("&pound;", "\u00A3"),
     controllers.routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage().url
   )
 
@@ -121,7 +121,7 @@ class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with Fa
     )
   }
 
-  val paymentFrequency = "monthly"
+  val paymentFrequency = "Monthly"
   val totalPay = "10000"
   val hasDeductions = "Yes"
   val taxablePay = "1800"

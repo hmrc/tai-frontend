@@ -34,7 +34,7 @@ case class UpdateIncomeEstimateCheckYourAnswersViewModel(paymentFrequency: Strin
 
     val paymentFrequencyAnswer = createCheckYourAnswerConfirmationLine(
       Messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"),
-      Some(paymentFrequency),
+      Some(paymentFrequency.capitalize),
       controllers.routes.IncomeUpdateCalculatorController.payPeriodPage().url)
 
     val totalPayAnswer = createCheckYourAnswerConfirmationLine(
@@ -53,7 +53,8 @@ case class UpdateIncomeEstimateCheckYourAnswersViewModel(paymentFrequency: Strin
     val taxablePayAnswer = createCheckYourAnswerConfirmationLine(
       Messages("tai.estimatedPay.update.checkYourAnswers.taxablePay", timePeriod(paymentFrequencyAnswer.get.answer)),
       taxablePay,
-      controllers.routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage().url
+      controllers.routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage().url,
+      isMonetaryValue
     )
 
     val hasBonusOrOvertimeAnswer = createCheckYourAnswerConfirmationLine(
@@ -93,9 +94,9 @@ case class UpdateIncomeEstimateCheckYourAnswersViewModel(paymentFrequency: Strin
 
   def timePeriod(paymentFrequency: String):String = {
     paymentFrequency match {
-      case "monthly" => "month"
-      case "weekly" => "week"
-      case "fortnightly" => "fortnight"
+      case "Monthly" => "month"
+      case "Weekly" => "week"
+      case "Fortnightly" => "fortnight"
     }
   }
 }

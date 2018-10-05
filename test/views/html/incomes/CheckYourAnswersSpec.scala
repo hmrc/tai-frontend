@@ -53,7 +53,7 @@ class CheckYourAnswersSpec extends TaiViewSpec {
     hasBonusOrOvertime, Some(hasExtraBonusOrOvertime), Some(totalBonusOrOvertime))
 
 
-  val paymentFrequency = "monthly"
+  val paymentFrequency = "Monthly"
   val totalPay = "10000"
   val hasDeductions = "Yes"
   val taxablePay = "1800"
