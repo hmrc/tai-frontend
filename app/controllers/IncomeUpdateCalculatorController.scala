@@ -57,6 +57,18 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
   val incomeService: IncomeService
 
+
+  def estimatedPayLandingPage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit person =>
+      implicit request =>
+
+        employmentService.employment(Nino(user.getNino), id) map {
+          case Some(employment) => Ok(views.html.incomes.estimatedPayLandingPage(employment.name))
+          case None => throw new RuntimeException("Not able to find employment")
+        }
+  }
+
+
   def howToUpdatePage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>

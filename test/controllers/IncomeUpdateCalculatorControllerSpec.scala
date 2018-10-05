@@ -48,6 +48,22 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
+  "estimatedPayLandingPage" must {
+    "display the estimtedPayLandingPage view" in {
+      val sut = createSut
+      val employment = Employment("company", Some("123"), new LocalDate("2016-05-26"), None, Nil, "", "", 1, None, false, false)
+      val employmentAmount = EmploymentAmount(name = "name", description = "description", employmentId = SampleId,
+        newAmount = 200, oldAmount = 200, isLive = false, isOccupationalPension = true)
+
+      when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+      when(sut.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+      when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome])))
+
+      val result = sut.estimatedPayLandingPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe OK
+    }
+  }
+
   "howToUpdatePage" must {
     "render the right response to the user" in {
       val sut = createSut
