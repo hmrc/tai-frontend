@@ -121,7 +121,7 @@ class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with Fa
     )
   }
 
-  val paymentFrequency = "Monthly"
+  val paymentFrequency = "monthly"
   val totalPay = "10000"
   val hasDeductions = "Yes"
   val taxablePay = "1800"

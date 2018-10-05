@@ -35,8 +35,10 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
+import uk.gov.hmrc.tai.viewModels.income.UpdateIncomeEstimateCheckYourAnswersViewModel
 import views.html.incomes.howToUpdate
 
+import scala.Function.tupled
 import scala.concurrent.Future
 
 trait IncomeUpdateCalculatorController extends TaiBaseController
@@ -400,10 +402,16 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   def checkYourAnswersPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        journeyCacheService.mandatoryValue(UpdateIncome_NameKey) map { incomeName =>
-          Ok(views.html.incomes.checkYourAnswers(null,incomeName))
+        journeyCacheService.collectedValues(
+          Seq(UpdateIncome_NameKey, UpdateIncome_PayPeriodKey, UpdateIncome_TotalSalaryKey, UpdateIncome_PayslipDeductionsKey,
+            UpdateIncome_BonusPaymentsThisYearKey),
+          Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey)
+        ) map tupled { (mandatorySeq, optionalSeq) => {
+            val viewModel = UpdateIncomeEstimateCheckYourAnswersViewModel(mandatorySeq(1),mandatorySeq(2),mandatorySeq(3),
+                                                                          optionalSeq(0),mandatorySeq(4),None,optionalSeq(1))
+            Ok(views.html.incomes.checkYourAnswers(viewModel,mandatorySeq(0)))
+          }
         }
-
   }
 
   def estimatedPayPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>

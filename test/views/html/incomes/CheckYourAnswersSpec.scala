@@ -44,6 +44,8 @@ class CheckYourAnswersSpec extends TaiViewSpec {
       doc must haveCheckYourAnswersSummaryLineAnswer(2, "£10,000")
       doc must haveCheckYourAnswersSummaryLineChangeLink(2, controllers.routes.IncomeUpdateCalculatorController.payslipAmountPage().url)
     }
+
+
   }
 
   override def view = views.html.incomes.checkYourAnswers(viewModel,employerName)
@@ -51,7 +53,7 @@ class CheckYourAnswersSpec extends TaiViewSpec {
     hasBonusOrOvertime, Some(hasExtraBonusOrOvertime), Some(totalBonusOrOvertime))
 
 
-  val paymentFrequency = "Monthly"
+  val paymentFrequency = "monthly"
   val totalPay = "10000"
   val hasDeductions = "Yes"
   val taxablePay = "1800"

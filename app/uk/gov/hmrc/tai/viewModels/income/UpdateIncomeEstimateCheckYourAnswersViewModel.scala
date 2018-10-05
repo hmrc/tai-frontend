@@ -93,9 +93,9 @@ case class UpdateIncomeEstimateCheckYourAnswersViewModel(paymentFrequency: Strin
 
   def timePeriod(paymentFrequency: String):String = {
     paymentFrequency match {
-      case "Monthly" => "month"
-      case "Weekly" => "week"
-      case "Fortnightly" => "fortnight"
+      case "monthly" => "month"
+      case "weekly" => "week"
+      case "fortnightly" => "fortnight"
     }
   }
 }
