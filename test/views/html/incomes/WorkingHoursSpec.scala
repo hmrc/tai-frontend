@@ -16,6 +16,7 @@
 
 package views.html.incomes
 
+import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.HoursWorkedForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -27,6 +28,7 @@ class WorkingHoursSpec extends TaiViewSpec {
 
   "How to update view" should {
     behave like pageWithBackLink
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
     behave like pageWithCombinedHeader(
       messages("tai.workingHours.preHeading", employerName),
       messages("tai.workingHours.title"))
