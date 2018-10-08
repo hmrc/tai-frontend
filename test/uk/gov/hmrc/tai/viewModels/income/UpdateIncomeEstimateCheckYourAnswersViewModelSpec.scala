@@ -35,7 +35,7 @@ class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with Fa
         viewModel.journeyConfirmationLines.size mustBe 7
         viewModel.journeyConfirmationLines mustEqual
           Seq(paymentFrequencyAnswer, totalPayAnswer, hasDeductionAnswer, taxablePayAnswer, hasBonusOrOvertimeAnswer,
-            hasExtraBonusOrOvertimeAnswer, totalBonusOrOvertimeAnswer)
+            hasExtraBonusOrOvertimeAnswer, totalYearlyBonusOrOvertimeAnswer)
       }
     }
 
@@ -56,9 +56,20 @@ class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with Fa
         viewModel.journeyConfirmationLines.size mustBe 6
         viewModel.journeyConfirmationLines mustEqual
           Seq(paymentFrequencyAnswer, totalPayAnswer, hasDeductionAnswer, hasBonusOrOvertimeAnswer,
-            hasExtraBonusOrOvertimeAnswer, totalBonusOrOvertimeAnswer)
+            hasExtraBonusOrOvertimeAnswer, totalYearlyBonusOrOvertimeAnswer)
       }
 
+    }
+
+    "return relevant bonus or overtime message" when {
+      "period is yearly" in{
+        val vieModel = createViewModel(Some(hasExtraBonusOrOvertime), Some(totalBonusOrOvertime))
+        vieModel.journeyConfirmationLines must contain(totalYearlyBonusOrOvertimeAnswer)
+      }
+      "period is monthly" in {
+        val vieModel = createViewModel(totalBonusOrOvertime = Some(totalBonusOrOvertime))
+        vieModel.journeyConfirmationLines must contain(totalBonusOrOvertimeAnswer)
+      }
     }
 
 
@@ -102,6 +113,12 @@ class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with Fa
 
   lazy val totalBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime", "month"),
+    Money.pounds(BigDecimal(totalBonusOrOvertime)).toString().trim.replace("&pound;", "\u00A3"),
+    controllers.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url
+  )
+
+  lazy val totalYearlyBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
+    Messages("tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime"),
     Money.pounds(BigDecimal(totalBonusOrOvertime)).toString().trim.replace("&pound;", "\u00A3"),
     controllers.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url
   )

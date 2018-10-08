@@ -29,7 +29,6 @@ case class UpdateIncomeEstimateCheckYourAnswersViewModel(paymentFrequency: Strin
                                                          totalBonusOrOvertime: Option[String]) {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
-
     val isMonetaryValue = true
 
     val paymentFrequencyAnswer = createCheckYourAnswerConfirmationLine(
@@ -69,8 +68,15 @@ case class UpdateIncomeEstimateCheckYourAnswersViewModel(paymentFrequency: Strin
       controllers.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
     )
 
+    val totalBonusOrOvertimeMessage =
+      if(hasExtraBonusOrOvertime.getOrElse("") == "Yes"){
+      Messages("tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime")
+     }else{
+        Messages("tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime", timePeriod(paymentFrequencyAnswer.get.answer))
+      }
+
     val totalBonusOrOvertimeAnswer = createCheckYourAnswerConfirmationLine(
-      Messages("tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime", timePeriod(paymentFrequencyAnswer.get.answer)),
+      totalBonusOrOvertimeMessage,
       totalBonusOrOvertime,
       controllers.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url,
       isMonetaryValue
