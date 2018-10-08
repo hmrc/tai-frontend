@@ -44,6 +44,7 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar {
   when(bonusPaymentsForm(any())).thenReturn(field)
   when(bonusPaymentsForm.errors).thenReturn(Nil)
   when(bonusPaymentsForm.errors(anyString())).thenReturn(Nil)
+  when(bonusPaymentsForm.error(any())).thenReturn(None)
   when(bonusPaymentsForm.hasErrors).thenReturn(false)
 
   override def view: Html = views.html.incomes.bonusPayments(bonusPaymentsForm,Id, employerName, false, false)
