@@ -153,6 +153,8 @@ GET         /print-your-income-calculation-previous-year/:year/:empId           
 
 
 ## Income calculator URIs
+GET         /update-income/update-income/:empId                                        controllers.IncomeUpdateCalculatorController.estimatedPayLandingPage(empId: Int)
+
 GET         /update-income/how-to-update-income/:empId                                 controllers.IncomeUpdateCalculatorController.howToUpdatePage(empId: Int)
 POST        /update-income/how-to-update-income                                        controllers.IncomeUpdateCalculatorController.handleChooseHowToUpdate
 
