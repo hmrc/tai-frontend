@@ -63,7 +63,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
       implicit request =>
 
         employmentService.employment(Nino(user.getNino), id) map {
-          case Some(employment) => Ok(views.html.incomes.estimatedPayLandingPage(employment.name))
+          case Some(employment) => Ok(views.html.incomes.estimatedPayLandingPage(employment.name, id))
           case None => throw new RuntimeException("Not able to find employment")
         }
   }

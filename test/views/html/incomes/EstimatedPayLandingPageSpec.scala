@@ -16,6 +16,7 @@
 
 package views.html.incomes
 
+import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
@@ -26,11 +27,21 @@ class EstimatedPayLandingPageSpec extends TaiViewSpec {
 
   "Estimated Pay Landing Page" should {
     behave like pageWithBackLink
+    behave like pageWithCancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
     behave like pageWithCombinedHeader(
       messages("tai.incomes.edit.preHeading", employerName),
       messages("tai.incomes.edit.preHeading", employerName))
+
+    "contain the correct content" in {
+      doc(view).getElementsByTag("p").text must include(messages("tai.incomes.landing.intro"))
+      doc(view).getElementsByTag("h2").text must include(messages("tai.incomes.landing.subheading", employerName))
+      doc(view) must haveLinkWithText(messages("tai.incomes.landing.employment.ended.link", employerName))
+      doc must haveLinkWithUrlWithID("updateEmployer",
+        controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(empId).url)
+      doc(view).getElementsByClass("button").text must include(messages("tai.incomes.edit.preHeading", employerName))
+    }
   }
 
 
-  override def view: Html = views.html.incomes.estimatedPayLandingPage(employerName)
+  override def view: Html = views.html.incomes.estimatedPayLandingPage(employerName, empId)
 }

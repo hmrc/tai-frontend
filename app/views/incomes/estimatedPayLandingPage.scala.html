@@ -14,12 +14,13 @@
  * limitations under the License.
  *@
 
-@(employerName: String)(implicit request: Request[_],
+@(employerName: String, empId: Int)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
+@import includes.cancelLink
 
 @header = @{
     ptaHeader(
@@ -37,7 +38,27 @@ pageHeader = Some(header),
 articleClasses = None,
 gaCustomTitle = None
 ){
+    <div>
+        <p>@messages("tai.incomes.landing.intro")</p>
+        <h2>@messages("tai.incomes.landing.subheading", employerName)</h2>
+    </div>
+    <p>
+        @Html(messages(
+                "tai.incomes.landing.you.can",
+                Link.toInternalPage(
+                    url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(empId).toString,
+                    value=Some(messages("tai.incomes.landing.employment.ended.link", employerName)),
+                    id=Some("updateEmployer")
+                ).toHtml
+        ))
+    </p>
+    <div>
+        @includes.link(
+        copy=messages("tai.howToUpdate.preHeading", employerName),
+        url = routes.IncomeUpdateCalculatorController.howToUpdatePage(empId: Int).toString,
+        isButton=true
+        )
 
-
-
+        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
+    </div>
 }
