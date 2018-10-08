@@ -38,7 +38,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 @main(
     title = Messages("tai.bonusPayments.title"),
-    articleClasses = Some("full-width"),
+    articleClasses = Some(""),
     user = Some(user),
     pageHeader = Some(header),
     employerName = Some(employerName),
@@ -65,7 +65,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             legend=Messages("tai.bonusPayments.moreThisYear"),
             legendHint=None,
             ('_groupDivClass, "form-group data-moreThisYear"),
-            ('_groupClass, "inline panel panel-border-narrow" + (if(!bonusPaymentSelected) " js-hidden" else "") ),
+            ('_groupClass, "inline" + (if(bonusPaymentsForm.error("bonusPaymentsMoreThisYear").isEmpty) " panel panel-border-narrow" else "") + (if(!bonusPaymentSelected) " js-hidden" else "") ),
             ('_legendClass, "form-label-bold section flush"),
             ('_fieldsetAttributes, "id=bonusPaymentsMoreThisYear" )
         )}
