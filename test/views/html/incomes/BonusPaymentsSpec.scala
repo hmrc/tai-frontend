@@ -20,6 +20,7 @@ import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import play.api.data.{Field, Form}
+import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.BonusPaymentsForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -32,6 +33,7 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar {
 
   "Bonus payments view" should {
     behave like pageWithBackLink
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(Id).url))
     behave like pageWithCombinedHeader(
       messages("tai.bonusPayments.preHeading", employerName),
       messages("tai.bonusPayments.title"))
@@ -44,6 +46,7 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar {
   when(bonusPaymentsForm(any())).thenReturn(field)
   when(bonusPaymentsForm.errors).thenReturn(Nil)
   when(bonusPaymentsForm.errors(anyString())).thenReturn(Nil)
+  when(bonusPaymentsForm.error(any())).thenReturn(None)
   when(bonusPaymentsForm.hasErrors).thenReturn(false)
 
   override def view: Html = views.html.incomes.bonusPayments(bonusPaymentsForm,Id, employerName, false, false)

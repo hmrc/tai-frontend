@@ -19,6 +19,7 @@ bonusPaymentSelected: Boolean = false)(implicit request: Request[_], messages: M
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
+@import includes.cancelLink
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.forms.inputRadioGroupStyling
 
@@ -37,7 +38,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 @main(
     title = Messages("tai.bonusPayments.title"),
-    articleClasses = Some("full-width"),
+    articleClasses = Some(""),
     user = Some(user),
     pageHeader = Some(header),
     employerName = Some(employerName),
@@ -51,7 +52,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no"))),
             legend=Messages("tai.bonusPayments.question"),
             legendHint=None,
-            ('_groupDivClass, "form-group" ),
+            ('_groupDivClass, "form-group flush--bottom" ),
             ('_radioOption1WrapAttribute, "data-target=bonusPaymentsMoreThisYear"),
             ('_groupClass, "inline" ),
             ('_legendSpanClass, "form-label-bold"),
@@ -64,13 +65,15 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             legend=Messages("tai.bonusPayments.moreThisYear"),
             legendHint=None,
             ('_groupDivClass, "form-group data-moreThisYear"),
-            ('_groupClass, "inline panel-indent" + (if(!bonusPaymentSelected) " js-hidden" else "") ),
-            ('_legendClass, "section flush"),
+            ('_groupClass, "inline" + (if(bonusPaymentsForm.error("bonusPaymentsMoreThisYear").isEmpty) " panel panel-border-narrow" else "") + (if(!bonusPaymentSelected) " js-hidden" else "") ),
+            ('_legendClass, "form-label-bold section flush"),
             ('_fieldsetAttributes, "id=bonusPaymentsMoreThisYear" )
         )}
 
         <div class="section">
             <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
+
+            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
         </div>
     }
 }

@@ -18,6 +18,7 @@
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
+@import includes.cancelLink
 @import includes.forms.input
 @import uk.gov.hmrc.play.views.html.helpers._
 
@@ -80,6 +81,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             )
 
             <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
+
+            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
         }
     </div>
 }
