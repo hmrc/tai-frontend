@@ -45,6 +45,11 @@ class CheckYourAnswersSpec extends TaiViewSpec {
       doc must haveCheckYourAnswersSummaryLineChangeLink(2, controllers.routes.IncomeUpdateCalculatorController.payslipAmountPage().url)
     }
 
+    "display a continue button" in {
+      doc must haveLinkElement("estimatedPayLink", controllers.routes.IncomeUpdateCalculatorController.estimatedPayPage().url,
+        messages("tai.WhatDoYouWantToDo.submit"))
+    }
+
 
   }
 
