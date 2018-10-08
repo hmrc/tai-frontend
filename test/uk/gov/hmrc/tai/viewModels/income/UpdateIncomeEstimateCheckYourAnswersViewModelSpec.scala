@@ -59,6 +59,15 @@ class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with Fa
             hasExtraBonusOrOvertimeAnswer, totalBonusOrOvertimeAnswer)
       }
 
+      "no bonus or overtime is changed from yes to no" in {
+
+        val viewModel = createViewModel(Some("no"), Some(totalBonusOrOvertime), Some(taxablePay))
+        viewModel.journeyConfirmationLines.size mustBe 5
+        viewModel.journeyConfirmationLines mustEqual
+            Seq(paymentFrequencyAnswer, totalPayAnswer, hasDeductionAnswer, taxablePayAnswer, hasBonusOrOvertimeAnswer)
+
+      }
+
     }
 
 

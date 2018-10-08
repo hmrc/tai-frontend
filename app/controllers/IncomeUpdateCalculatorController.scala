@@ -23,6 +23,7 @@ import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -295,12 +296,21 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           formData => {
             formData.payslipDeductions match {
               case Some(payslipDeductions) if payslipDeductions == "Yes" =>
-                journeyCacheService.cache(UpdateIncome_PayslipDeductionsKey, payslipDeductions).map { _ =>
+                journeyCache(UpdateIncome_PayslipDeductionsKey,Map(UpdateIncome_PayslipDeductionsKey -> payslipDeductions)) map { _ =>
                   Redirect(routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage())
                 }
-              case Some(payslipDeductions) => journeyCacheService.cache(UpdateIncome_PayslipDeductionsKey, payslipDeductions) map { _ =>
-                Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage())
-              }
+//                journeyCacheService.cache(UpdateIncome_PayslipDeductionsKey, payslipDeductions).map { _ =>
+//                  Redirect(routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage())
+//                }
+              case Some(payslipDeductions) =>
+
+                journeyCache(UpdateIncome_PayslipDeductionsKey,Map(UpdateIncome_PayslipDeductionsKey -> payslipDeductions)) map { _ =>
+                  Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage())
+                }
+
+                //journeyCacheService.cache(UpdateIncome_PayslipDeductionsKey, payslipDeductions) map { _ =>
+                //Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage())
+              //}
               case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage()))
             }
           }
@@ -340,13 +350,24 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             }
           },
           formData => {
-            journeyCacheService.cache(incomeService.cacheBonusPayments(formData)) map { _ =>
+
+            val cacheMap = incomeService.cacheBonusPayments(formData)
+
+            journeyCache(UpdateIncome_BonusPaymentsKey,cacheMap) map { _ =>
               if (formData.bonusPayments.contains("Yes")) {
                 Redirect(routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage())
               } else {
                 Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage())
               }
             }
+
+//            journeyCacheService.cache(incomeService.cacheBonusPayments(formData)) map { _ =>
+//              if (formData.bonusPayments.contains("Yes")) {
+//                Redirect(routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage())
+//              } else {
+//                Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage())
+//              }
+//            }
           }
         )
   }
@@ -389,7 +410,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             formData => {
               formData.amount match {
                 case Some(amount) =>
-                  journeyCacheService.cache(UpdateIncome_BonusOvertimeAmountKey, amount) map { _ =>
+                  journeyCache(UpdateIncome_BonusOvertimeAmountKey,Map(UpdateIncome_BonusOvertimeAmountKey -> amount)) map { _ =>
                     Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage())
                   }
                 case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage()))
@@ -471,6 +492,29 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           Ok(views.html.incomes.calcUnavailable(id, employerName))
         }
   }
+
+
+  def journeyCache(key:String, cacheMap:Map[String,String])(implicit hc: HeaderCarrier): Future[Map[String,String]] = {
+
+    key match {
+      case UpdateIncome_PayslipDeductionsKey => {
+        if(cacheMap(key) == "Yes"){
+          journeyCacheService.cache(key,cacheMap(key))
+        }else {
+          journeyCacheService.cache(Map(key -> cacheMap(key),(UpdateIncome_TaxablePayKey -> "")))
+        }
+      }
+      case UpdateIncome_BonusPaymentsKey => {
+        if(cacheMap(key) == "Yes"){
+          journeyCacheService.cache(cacheMap)
+        }else{
+          journeyCacheService.cache(Map(key -> cacheMap(key), UpdateIncome_BonusPaymentsThisYearKey -> "", UpdateIncome_BonusOvertimeAmountKey -> ""))
+        }
+      }
+      case _ => journeyCacheService.cache(key,cacheMap(key))
+    }
+  }
+
 }
 // $COVERAGE-OFF$
 object IncomeUpdateCalculatorController extends IncomeUpdateCalculatorController with AuthenticationConnectors {
