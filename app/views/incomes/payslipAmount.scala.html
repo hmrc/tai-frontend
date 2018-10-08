@@ -17,24 +17,29 @@
 @(payslipForm: Form[uk.gov.hmrc.tai.forms.PayslipForm], payPeriod: String, id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@import includes.ptaHeader
-@import includes.cancelLink
 @import includes.forms.input
 @import uk.gov.hmrc.play.views.html.helpers._
 
-@gaEventActionString = @{"Update your annual taxable pay"}
+@estimatedPayJourneyTemplate(
+    employerName = employerName,
+    employmentId = id,
+    form = Some(payslipForm),
+    gaEventAction = "Update your annual taxable pay",
+    title = messages("tai.payslip.title")
+){
+    @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayslipAmount){
+        @includes.forms.input(
+            field = payslipForm("totalSalary"),
+            labelText = pageDesc,
+            bold = true,
+            classes = Seq("form-control-1-4"),
+            hintText = Messages("tai.payslip.payBeforeTakenOff"),
+            isCurrency = true
+        )
 
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(payslipForm),
-        displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.payslip.title"),
-        preHeadingText = Messages("tai.payslip.preHeading", employerName),
-        headerWidthClasses = Some("column-full")
-    )
+        <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
+    }
 }
-
 
 @pageDesc = @{
     payPeriod match {
@@ -43,30 +48,4 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         case "weekly" => { Messages("tai.payslip.week") }
         case _ => { Messages("tai.payslip.period") }
     }
-}
-
-@main(
-    title = Messages("tai.payslip.title"),
-    articleClasses = None,
-    user = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(employerName),
-    gaCustomTitle = None
-){
-
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayslipAmount){
-            @includes.forms.input(
-              field = payslipForm("totalSalary"),
-              labelText = pageDesc,
-              bold = true,
-              classes = Seq("form-control-1-4"),
-              hintText = Messages("tai.payslip.payBeforeTakenOff"),
-              isCurrency = true
-            )
-
-            <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
-        }
-
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
-
 }

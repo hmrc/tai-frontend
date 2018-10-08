@@ -17,24 +17,33 @@
 @(payPeriodForm: Form[uk.gov.hmrc.tai.forms.PayPeriodForm], id: Int, employerName: String, isNotDaysError : Boolean = true)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-
-@import includes.ptaHeader
-@import includes.cancelLink
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.forms.inputRadioGroupStyling
 
-@gaEventActionString = @{"How often do you get paid?"}
-
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(payPeriodForm),
-        displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.payPeriod.title"),
-        preHeadingText = Messages("tai.payPeriod.preHeading", employerName),
-        headerWidthClasses = Some("column-full")
-    )
+@estimatedPayJourneyTemplate(
+    employerName = employerName,
+    employmentId = id,
+    form = Some(payPeriodForm),
+    gaEventAction = "How often do you get paid?",
+    title = messages("tai.payPeriod.title")
+){
+    @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
+        @{inputRadioGroupStyling(
+            field=payPeriodForm("payPeriod"),
+            radioOptions=Seq(("monthly" -> Messages("tai.payPeriod.monthly")), ("weekly" -> Messages("tai.payPeriod.weekly")),("fortnightly" -> Messages("tai.payPeriod.fortnightly")),("other" -> Messages("tai.payPeriod.other"))),
+            legend=Messages("tai.payPeriod.legend"),
+            legendHint=None,
+            ('_groupDivClass, "form-group" ),
+            ('_radioOption4WrapAttribute, "data-target=howOftenPanel"),
+            ('_legendSpanClass, "visually-hidden"),
+            ('_fieldsetAttributes, "id=payPeriod" ),
+            ('_radioOption4Attributes, Html(s""" ${if(!isNotDaysError) {"checked"} else {""}} """) ),
+            ('_radioOption4AdditionalMarkup, Html(howOftenPanel))
+        )}
+        <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
+    }
 }
+
 
 @howOftenPanel = @{
     def errorMessage = Messages("tai.payPeriod.error.form.incomes.other.mandatory")
@@ -53,34 +62,4 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             <input type="text" class="form-control form-control-1-2 flush--bottom" id="otherInDays" name="otherInDays" />
         </div>
     </div>"""
-}
-
-
-@main(
-    title = Messages("tai.payPeriod.title"),
-    articleClasses = None,
-    user = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(employerName),
-    gaCustomTitle = None
-){
-    <div class="section flush--bottom">
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
-            @{inputRadioGroupStyling(
-                field=payPeriodForm("payPeriod"),
-                radioOptions=Seq(("monthly" -> Messages("tai.payPeriod.monthly")), ("weekly" -> Messages("tai.payPeriod.weekly")),("fortnightly" -> Messages("tai.payPeriod.fortnightly")),("other" -> Messages("tai.payPeriod.other"))),
-                legend=Messages("tai.payPeriod.legend"),
-                legendHint=None,
-                ('_groupDivClass, "form-group" ),
-                ('_radioOption4WrapAttribute, "data-target=howOftenPanel"),
-                ('_legendSpanClass, "visually-hidden"),
-                ('_fieldsetAttributes, "id=payPeriod" ),
-                ('_radioOption4Attributes, Html(s""" ${if(!isNotDaysError) {"checked"} else {""}} """) ),
-                ('_radioOption4AdditionalMarkup, Html(howOftenPanel))
-            )}
-            <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
-        }
-
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
-    </div>
 }

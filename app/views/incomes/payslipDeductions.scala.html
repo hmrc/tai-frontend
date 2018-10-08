@@ -17,55 +17,32 @@
 @(payslipDeductionsForm: Form[uk.gov.hmrc.tai.forms.PayslipDeductionsForm], id: Int, employerName: String)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@import includes.ptaHeader
-@import includes.cancelLink
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.forms.inputRadioGroupStyling
 
+@estimatedPayJourneyTemplate(
+    employerName = employerName,
+    employmentId = id,
+    form = Some(payslipDeductionsForm),
+    gaEventAction = "Payslip deductions",
+    title = messages("tai.payslipDeductions.title")
+){
+    <p class="heading-24 flush--top">@Messages("tai.payslipDeductions.question")</p>
+    <p>@Messages("tai.payslipDeductions.tellUs")</p>
+    <p>@Messages("tai.payslipDeductions.dontPayTax")</p>
 
-@gaEventActionString = @{"Payslip deductions"}
+    @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayslipDeductions){
 
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(payslipDeductionsForm),
-        displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.payslipDeductions.title"),
-        preHeadingText = Messages("tai.payslipDeductions.preHeading", employerName),
-        headerWidthClasses = Some("column-full")
-    )
-}
-
-@main(
-    title = Messages("tai.payslipDeductions.title"),
-    articleClasses = Some("full-width text"),
-    user = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(employerName),
-    gaCustomTitle = None
-    ){
-
-    <div>
-        <p class="heading-24 flush--top">@Messages("tai.payslipDeductions.question")</p>
-        <p>@Messages("tai.payslipDeductions.tellUs")</p>
-        <p>@Messages("tai.payslipDeductions.dontPayTax")</p>
-
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayslipDeductions){
-
-            @{inputRadioGroupStyling(
-                field=payslipDeductionsForm("payslipDeductions"),
-                radioOptions=Seq(("Yes" -> Messages("tai.payslipDeductions.yes")), ("No" -> Messages("tai.payslipDeductions.no"))),
-                legend=Messages("tai.payslipDeductions.legend"),
-                legendHint=None,
-                ('_groupDivClass, "form-group" ),
-                ('_groupClass, "inline" ),
-                ('_legendSpanClass, "visually-hidden"),
-                ('_fieldsetAttributes, "id=payslipDeductions" )
-            )}
-            <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
-        }
-
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
-    </div>
-
+        @{inputRadioGroupStyling(
+            field=payslipDeductionsForm("payslipDeductions"),
+            radioOptions=Seq(("Yes" -> Messages("tai.payslipDeductions.yes")), ("No" -> Messages("tai.payslipDeductions.no"))),
+            legend=Messages("tai.payslipDeductions.legend"),
+            legendHint=None,
+            ('_groupDivClass, "form-group" ),
+            ('_groupClass, "inline" ),
+            ('_legendSpanClass, "visually-hidden"),
+            ('_fieldsetAttributes, "id=payslipDeductions" )
+        )}
+        <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
+    }
 }

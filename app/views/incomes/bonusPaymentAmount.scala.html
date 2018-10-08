@@ -17,8 +17,6 @@
 @(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm], bonusPeriod: String, id: Int, employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@import includes.ptaHeader
-@import includes.cancelLink
 @import includes.forms.input
 @import uk.gov.hmrc.play.views.html.helpers._
 
@@ -38,17 +36,28 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         case _ => {Messages("tai.bonusPaymentsAmount.period.description")}
     }
 }
-@gaEventActionString = @{"Bonus or overtime payments"}
 
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(bonusOvertimeAmountForm),
-        displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = pageTitle,
-        preHeadingText = Messages("tai.bonusPaymentsAmount.preHeading", employerName),
-        headerWidthClasses = Some("column-full")
-    )
+@estimatedPayJourneyTemplate(
+    employerName = employerName,
+    employmentId = id,
+    form = Some(bonusOvertimeAmountForm),
+    gaEventAction = "Bonus or overtime payments",
+    title = pageTitle
+){
+    @form(action=controllers.routes.IncomeUpdateCalculatorController.handleBonusOvertimeAmount){
+        @includes.forms.input(
+            field = bonusOvertimeAmountForm("amount"),
+            labelText = pageDesc,
+            bold = true,
+            classes = Seq("form-control-1-4"),
+            hintText = hint.toString,
+            hintClass = "body-text",
+            isCurrency = true
+        )
+    
+        <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
+
+    }
 }
 
 @hint = @{
@@ -58,31 +67,4 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     else{
         ""
     }
-}
-
-@main(
-    title = pageTitle,
-    articleClasses = None,
-    user = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(employerName),
-    gaCustomTitle = None
-    ){
-    <div class="section flush--bottom soft--top">
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleBonusOvertimeAmount){
-            @includes.forms.input(
-                field = bonusOvertimeAmountForm("amount"),
-                labelText = pageDesc,
-                bold = true,
-                classes = Seq("form-control-1-4"),
-                hintText = hint.toString,
-                hintClass = "body-text",
-                isCurrency = true
-            )
-
-            <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
-
-            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
-        }
-    </div>
 }

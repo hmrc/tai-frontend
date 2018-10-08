@@ -19,34 +19,17 @@ startDate : Option[org.joda.time.LocalDate], employerName: String, same : Boolea
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.play.views.formatting.Money._
-@import org.joda.time.{DateTime, LocalDate}
-@import uk.gov.hmrc.urls.Link
-@import includes.{cancelLink, ptaHeader}
-@import uk.gov.hmrc.play.views.html.layouts.loginStatus
-@import uk.gov.hmrc.play.views.html.helpers._
+@import org.joda.time.LocalDate
 @import uk.gov.hmrc.play.views.helpers._
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
 
-@gaEventActionString = @{"Your estimated pay for the year"}
-
-@header = @{
-    ptaHeader(
-        displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.estimatedPay.title"),
-        preHeadingText = messages("tai.estimatedPay.preHeading", employerName),
-        headerWidthClasses = Some("column-full")
-    )
-}
-
-@main(
-    title = messages("tai.estimatedPay.title"),
-    articleClasses = Some("full-width text"),
-    user = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(employerName),
-    gaCustomTitle = None
+@estimatedPayJourneyTemplate(
+    employerName = employerName,
+    employmentId = id,
+    form = None,
+    gaEventAction = "Your estimated pay for the year",
+    title = messages("tai.estimatedPay.title")
 ){
     <div>
         <p>@messages("tai.estimatedPay.weHaveCalculated", Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear), Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))</p>
@@ -77,15 +60,13 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
     </div>
 
-    <div class="section">
+    <div class="section soft--bottom">
 
         @includes.link(
             copy=messages("tai.estimatedPay.checkTaxEstimate"),
             url = routes.IncomeUpdateCalculatorController.handleCalculationResult.toString,
             isButton=true
         )
-
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     </div>
 
 

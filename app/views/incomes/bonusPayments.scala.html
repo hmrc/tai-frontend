@@ -18,32 +18,16 @@
 bonusPaymentSelected: Boolean = false)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@import includes.ptaHeader
-@import includes.cancelLink
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.forms.inputRadioGroupStyling
 
-@gaEventActionString = @{"Payslip deductions"}
-
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(bonusPaymentsForm),
-        displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.bonusPayments.title"),
-        preHeadingText = Messages("tai.bonusPayments.preHeading", employerName),
-        headerWidthClasses = Some("column-full")
-    )
-}
-
-@main(
-    title = Messages("tai.bonusPayments.title"),
-    articleClasses = Some(""),
-    user = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(employerName),
-    gaCustomTitle = None
-    ) {
+@estimatedPayJourneyTemplate(
+    employerName = employerName,
+    employmentId = id,
+    form = Some(bonusPaymentsForm),
+    gaEventAction = "Payslip deductions",
+    title = messages("tai.bonusPayments.title")
+){
     @form(action = controllers.routes.IncomeUpdateCalculatorController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
 
         @{inputRadioGroupStyling(
@@ -70,10 +54,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             ('_fieldsetAttributes, "id=bonusPaymentsMoreThisYear" )
         )}
 
-        <div class="section">
+        <div class="section soft--bottom">
             <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
-
-            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
         </div>
     }
 }

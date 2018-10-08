@@ -19,42 +19,16 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.forms.input
-@import uk.gov.hmrc.urls.Link
-@import includes.ptaHeader
-@import includes.cancelLink
-
-@gaEventActionString = @{"Taxable pay from your payslip"}
-
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(taxablePayslipForm),
-        displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.taxablePayslip.title"),
-        preHeadingText = Messages("tai.howToUpdate.preHeading", employerName),
-        headerWidthClasses = Some("column-full")
-    )
-}
-
-@pageDesc = @{
-    payPeriod match {
-        case "monthly" => { Messages("tai.payslip.month") }
-        case "fortnightly" => { Messages("tai.payslip.fortnight") }
-        case "weekly" => { Messages("tai.payslip.week") }
-        case _ => { Messages("tai.payslip.period") }
-    }
-}
 
 
-@main(
-    title = Messages("tai.taxablePayslip.title"),
-    articleClasses = None,
-    user = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(employerName),
-    gaCustomTitle = None
+
+@estimatedPayJourneyTemplate(
+    employerName = employerName,
+    employmentId = id,
+    form = Some(taxablePayslipForm),
+    gaEventAction = "Taxable pay from your payslip",
+    title = messages("tai.taxablePayslip.title")
 ){
-
     @form(action=controllers.routes.IncomeUpdateCalculatorController.handleTaxablePayslipAmount){
 
         @includes.forms.input(
@@ -69,10 +43,21 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         @includes.details_summary(Messages("tai.taxablePayslip.whatIsTaxablePay.title")){
             @Messages("tai.taxablePayslip.whatIsTaxablePay.description")
         }
-        <div class="section">
-            <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
 
-            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+        <div class="section soft--bottom">
+            <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
         </div>
     }
 }
+
+@pageDesc = @{
+    payPeriod match {
+        case "monthly" => { Messages("tai.payslip.month") }
+        case "fortnightly" => { Messages("tai.payslip.fortnight") }
+        case "weekly" => { Messages("tai.payslip.week") }
+        case _ => { Messages("tai.payslip.period") }
+    }
+}
+
+
+

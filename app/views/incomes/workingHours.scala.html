@@ -16,48 +16,28 @@
 
 @(workingHoursForm: Form[uk.gov.hmrc.tai.forms.HoursWorkedForm], id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@import includes.ptaHeader
-@import includes.cancelLink
-@import uk.gov.hmrc.play.views.html.helpers._
 @import includes.forms.inputRadioGroupStyling
+@import uk.gov.hmrc.play.views.html.helpers._
 
-@gaEventActionString = @{"Your working hours"}
-
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(workingHoursForm),
-        displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.workingHours.title"),
-        preHeadingText = Messages("tai.workingHours.preHeading", employerName),
-        headerWidthClasses = Some("column-full")
-    )
-}
-
-
-@main(
-    title = Messages("tai.workingHours.title"),
-    articleClasses = Some("full-width"),
-    user = Some(user),
-    pageHeader = Some(header),
-    employerName = Some(employerName),
-    gaCustomTitle = None
+@estimatedPayJourneyTemplate(
+    employerName = employerName,
+    employmentId = id,
+    form = Some(workingHoursForm),
+    gaEventAction = "Your working hours",
+    title = messages("tai.workingHours.title")
 ){
-    <div class="section flush--bottom soft--top">
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleWorkingHours){
-                @{inputRadioGroupStyling(
-                    field=workingHoursForm("workingHours"),
-                    radioOptions=Seq(("same" -> Messages("tai.workingHours.same")), ("veryDifferent" -> Messages("tai.workingHours.different"))),
-                    legend=Messages("tai.workingHours.legend"),
-                    legendHint=None,
-                    ('_groupDivClass, "form-group" ),
-                    ('_legend, Messages("tai.workingHours.legend") ),
-                    ('_legendSpanClass, "visually-hidden"),
-                    ('_fieldsetAttributes, "id=workingHours")
-                )}
-            <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
-        }
-
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
-    </div>
+    @form(action=controllers.routes.IncomeUpdateCalculatorController.handleWorkingHours){
+        @{inputRadioGroupStyling(
+            field=workingHoursForm("workingHours"),
+            radioOptions=Seq(("same" -> Messages("tai.workingHours.same")), ("veryDifferent" -> Messages("tai.workingHours.different"))),
+            legend=Messages("tai.workingHours.legend"),
+            legendHint=None,
+            ('_groupDivClass, "form-group" ),
+            ('_legend, Messages("tai.workingHours.legend") ),
+            ('_legendSpanClass, "visually-hidden"),
+            ('_fieldsetAttributes, "id=workingHours")
+        )}
+        <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
+    }
 }
+
