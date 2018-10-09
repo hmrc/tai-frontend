@@ -43,14 +43,11 @@ gaCustomTitle = None
         <h2>@messages("tai.incomes.landing.subheading", employerName)</h2>
     </div>
     <p>
-        @Html(messages(
-                "tai.incomes.landing.you.can",
-                Link.toInternalPage(
-                    url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(empId).toString,
-                    value=Some(messages("tai.incomes.landing.employment.ended.link", employerName)),
-                    id=Some("updateEmployer")
-                ).toHtml
-        ))
+        @includes.link(
+        url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(empId).toString,
+        copy=messages("tai.incomes.landing.employment.ended.link", employerName),
+        id=Some("updateEmployer")
+        )
     </p>
     <div>
         @includes.link(

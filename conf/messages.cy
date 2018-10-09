@@ -708,7 +708,6 @@ tai.incomeTaxSummary.taxCode.prefix=Cod treth: {0}
 tai.incomeTaxSummary.view.income.source.details=Gweld manylion {0}
 tai.incomes.landing.intro=Dylech ddiweddaru’ch incwm amcangyfrifedig os yw’ch incwm wedi newid yn ddiweddar a’ch bod o’r farn y bydd yn effeithio ar eich haen treth bresennol.
 tai.incomes.landing.subheading=
-tai.incomes.landing.you.can=
 tai.incomes.landing.employment.ended.link=
 tai.incomes.amount.current=Y swm presennol (£)
 tai.incomes.amount.new=Swm newydd (£)
