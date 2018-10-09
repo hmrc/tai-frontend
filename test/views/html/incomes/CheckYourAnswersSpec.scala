@@ -17,7 +17,7 @@
 package views.html.incomes
 
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.income.UpdateIncomeEstimateCheckYourAnswersViewModel
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
 
 class CheckYourAnswersSpec extends TaiViewSpec {
 
@@ -62,7 +62,7 @@ class CheckYourAnswersSpec extends TaiViewSpec {
   }
 
   override def view = views.html.incomes.checkYourAnswers(viewModel,employerName)
-  def viewModel = UpdateIncomeEstimateCheckYourAnswersViewModel(paymentFrequency,totalPay, hasDeductions, Some(taxablePay),
+  def viewModel = CheckYourAnswersViewModel(paymentFrequency,totalPay, hasDeductions, Some(taxablePay),
     hasBonusOrOvertime, Some(hasExtraBonusOrOvertime), Some(totalBonusOrOvertime))
 
 

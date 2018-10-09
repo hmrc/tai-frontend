@@ -36,7 +36,7 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
-import uk.gov.hmrc.tai.viewModels.income.UpdateIncomeEstimateCheckYourAnswersViewModel
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
 
 import scala.Function.tupled
 import scala.concurrent.Future
@@ -425,7 +425,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             UpdateIncome_BonusPaymentsKey),
           Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusPaymentsThisYearKey, UpdateIncome_BonusOvertimeAmountKey)
         ) map tupled { (mandatorySeq, optionalSeq) => {
-          val viewModel = UpdateIncomeEstimateCheckYourAnswersViewModel(mandatorySeq(1), mandatorySeq(2), mandatorySeq(3),
+          val viewModel = CheckYourAnswersViewModel(mandatorySeq(1), mandatorySeq(2), mandatorySeq(3),
             optionalSeq(0), mandatorySeq(4), optionalSeq(1), optionalSeq(2))
           Ok(views.html.incomes.checkYourAnswers(viewModel, mandatorySeq(0)))
         }

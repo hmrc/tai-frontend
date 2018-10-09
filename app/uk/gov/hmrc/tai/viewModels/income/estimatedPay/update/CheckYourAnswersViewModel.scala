@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.viewModels.income
+package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
-case class UpdateIncomeEstimateCheckYourAnswersViewModel(paymentFrequency: String,
-                                                         totalPay: String,
-                                                         hasDeductions: String,
-                                                         taxablePay: Option[String],
-                                                         hasBonusOrOvertime: String,
-                                                         hasExtraBonusOrOvertime: Option[String],
-                                                         totalBonusOrOvertime: Option[String]) {
+case class CheckYourAnswersViewModel(paymentFrequency: String,
+                                     totalPay: String,
+                                     hasDeductions: String,
+                                     taxablePay: Option[String],
+                                     hasBonusOrOvertime: String,
+                                     hasExtraBonusOrOvertime: Option[String],
+                                     totalBonusOrOvertime: Option[String]) {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
     val isMonetaryValue = true

@@ -21,8 +21,9 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
 
-class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
+class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -127,9 +128,9 @@ class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with Fa
 
   def createViewModel(hasExtraBonusOrOvertime: Option[String] = None,
                       totalBonusOrOvertime: Option[String] = None,
-                      taxablePay: Option[String] = None): UpdateIncomeEstimateCheckYourAnswersViewModel = {
+                      taxablePay: Option[String] = None): CheckYourAnswersViewModel = {
 
-    UpdateIncomeEstimateCheckYourAnswersViewModel(
+    CheckYourAnswersViewModel(
       paymentFrequency,
       totalPay,
       hasDeductions,
