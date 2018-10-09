@@ -80,49 +80,49 @@ class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with Fa
   lazy val paymentFrequencyAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"),
     monthlyPaymentFrequency,
-    controllers.routes.IncomeUpdateCalculatorController.payPeriodPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payPeriodPage().url
   )
 
   lazy val totalPayAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.totalPay", "month"),
     Money.pounds(BigDecimal(totalPay)).toString().trim.replace("&pound;", "\u00A3"),
-    controllers.routes.IncomeUpdateCalculatorController.payslipAmountPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipAmountPage().url
   )
 
   lazy val hasDeductionAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.hasDeduction"),
     hasDeductions,
-    controllers.routes.IncomeUpdateCalculatorController.payslipDeductionsPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipDeductionsPage().url
   )
 
   lazy val taxablePayAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.taxablePay", "month"),
     Money.pounds(BigDecimal(taxablePay)).toString().trim.replace("&pound;", "\u00A3"),
-    controllers.routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage().url
   )
 
   lazy val hasBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime"),
     hasBonusOrOvertime,
-    controllers.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
   )
 
   lazy val hasExtraBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.hasExtraBonusOrOvertime"),
     hasExtraBonusOrOvertime,
-    controllers.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
   )
 
   lazy val totalBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime", "month"),
     Money.pounds(BigDecimal(totalBonusOrOvertime)).toString().trim.replace("&pound;", "\u00A3"),
-    controllers.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url
   )
 
   lazy val totalYearlyBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime"),
     Money.pounds(BigDecimal(totalBonusOrOvertime)).toString().trim.replace("&pound;", "\u00A3"),
-    controllers.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url
+    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url
   )
 
   def createViewModel(hasExtraBonusOrOvertime: Option[String] = None,

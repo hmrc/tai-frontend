@@ -42,16 +42,19 @@ class CheckYourAnswersSpec extends TaiViewSpec {
 
       doc must haveCheckYourAnswersSummaryLine(1, messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"))
       doc must haveCheckYourAnswersSummaryLineAnswer(1, monthlyPaymentFrequency)
-      doc must haveCheckYourAnswersSummaryLineChangeLink(1, controllers.routes.IncomeUpdateCalculatorController.payPeriodPage().url)
+      doc must haveCheckYourAnswersSummaryLineChangeLink(1,
+        controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payPeriodPage().url)
 
 
       doc must haveCheckYourAnswersSummaryLine(2, messages("tai.estimatedPay.update.checkYourAnswers.totalPay", monthLabel))
       doc must haveCheckYourAnswersSummaryLineAnswer(2, totalPay)
-      doc must haveCheckYourAnswersSummaryLineChangeLink(2, controllers.routes.IncomeUpdateCalculatorController.payslipAmountPage().url)
+      doc must haveCheckYourAnswersSummaryLineChangeLink(2,
+        controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipAmountPage().url)
     }
 
     "display a continue button" in {
-      doc must haveLinkElement("estimatedPayLink", controllers.routes.IncomeUpdateCalculatorController.estimatedPayPage().url,
+      doc must haveLinkElement("estimatedPayLink",
+        controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.estimatedPayPage().url,
         messages("tai.WhatDoYouWantToDo.submit"))
     }
 
