@@ -141,7 +141,8 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           },
           formData => {
             formData.workingHours match {
-              case Some("same") => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.payPeriodPage()))
+              case Some("regularHours") => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.payPeriodPage()))
+              case Some("irregularHours") => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.calcUnavailablePage()))
               case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.calcUnavailablePage()))
             }
           }

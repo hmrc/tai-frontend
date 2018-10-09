@@ -58,6 +58,8 @@ case class EditIncomeForm(name : String, description : String,
     )
   }
 }
+
+
 object EditIncomeForm {
   implicit val formats = Json.format[EditIncomeForm]
 

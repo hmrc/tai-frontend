@@ -753,7 +753,14 @@ tai.incomes.type-1=(Pension)
 tai.incomes.updated.check.text=If changes are made later today, for example, by your employer or pension provider, your calculation may change.
 tai.incomes.updated.check.title=Your taxable income from {0} has been updated
 tai.incomes.workNumber=Employee no:
-tai.irregular.mainHeadingText=Ask {0} to contact us
+
+tai.irregular.mainHeadingText=Update your estimated taxable income for the current year with irregular working hours
+tai.irregular.introduction=Use your average hours to estimate an annual amount of taxable income.
+tai.irregular.secondaryHeading=Enter your updated estimate
+tai.irregular.instruction=Enter the amount in whole pounds – ignore the pence.
+tai.irregular.currentAmount=Current amount
+tai.irregular.newAmount=New amount
+
 tai.irregular.option1=contact {0} first
 tai.irregular.option2=update my details now
 tai.irregular.para1=It looks as though {0} does not pay you regularly, or they only pay you every 6 or 12 months.
@@ -761,6 +768,7 @@ tai.irregular.para2=To have your records corrected, contact {0} first. Ask them 
 tai.irregular.para3=You can update your records now if you are unable to contact them or they will not pay you again.
 tai.irregular.para4=I want to:
 tai.irregular.preHeadingText=End employment
+
 tai.item=Item
 tai.iya.check.your.tax.code.text=Check {0} to find out what’s changed.
 tai.iya.paidTooLittle.cy-and-cy-plus-one.text1=We think you’ve paid too little Income Tax this year and owe £{0}. We’ll start to collect this straight away.
@@ -1232,7 +1240,7 @@ tai.workingHours.error.form.incomes.radioButton.mandatory=Select if your working
 tai.workingHours.legend=Your working hours are
 tai.workingHours.preHeading=Update your estimated income from {0}
 tai.workingHours.question=Are your working hours on each payslip generally the same or very different?
-tai.workingHours.same=Regular (generally the same from week to week)
+tai.workingHours.regularHours=Regular (generally the same from week to week)
 tai.workingHours.title=Your working hours
 tai.yourIncome.heading=Your income
 tai.yourIncome.preHeading=Understanding your tax

@@ -50,7 +50,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
   "howToUpdatePage" must {
     "render the right response to the user" in {
-      val sut = createSut
+      val sut = createTestController
       val employment = Employment("company", Some("123"), new LocalDate("2016-05-26"), None, Nil, "", "", 1, None, false, false)
       val employmentAmount = EmploymentAmount(name = "name", description = "description", employmentId = SampleId,
         newAmount = 200, oldAmount = 200, isLive = false, isOccupationalPension = true)
@@ -65,7 +65,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       redirectLocation(result) mustBe Some(routes.IncomeController.pensionIncome().url)
     }
     "employments return empty income is none" in {
-      val sut = createSut
+      val sut = createTestController
       when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
       val result = sut.howToUpdatePage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -80,7 +80,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
     "redirect user for non live employment " when {
       "employment amount is occupation income" in {
-        val sut = createSut
+        val sut = createTestController
         val result: Result = sut.processHowToUpdatePage(1, "name", employmentAmount(false, true),
           TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome]))(RequestBuilder.buildFakeRequestWithAuth("GET"), UserBuilder.apply())
 
@@ -89,7 +89,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       }
 
       "employment amount is not occupation income" in {
-        val sut = createSut
+        val sut = createTestController
         val result: Result = sut.processHowToUpdatePage(1, "name", employmentAmount(false, false),
           TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome]))(RequestBuilder.buildFakeRequestWithAuth("GET"), UserBuilder.apply())
 
@@ -100,7 +100,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
     "redirect user for is live employment " when {
       "editable incomes are greater than one" in {
-        val sut = createSut
+        val sut = createTestController
         val taxCodeIncome1 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOperation, Live)
         val taxCodeIncome2 = TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employer", "S1150L", "employer", OtherBasisOperation, Live)
         when(sut.incomeService.editableIncomes(any())).thenReturn(Seq(taxCodeIncome1, taxCodeIncome2))
@@ -114,7 +114,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       }
 
       "editable income is singular" in {
-        val sut = createSut
+        val sut = createTestController
         val taxCodeIncome1 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOperation, Live)
         when(sut.incomeService.editableIncomes(any())).thenReturn(Seq(taxCodeIncome1))
         when(sut.incomeService.singularIncomeId(any())).thenReturn(Some(1))
@@ -128,7 +128,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       }
 
       "editable income is none" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.incomeService.editableIncomes(any())).thenReturn(Nil)
         when(sut.incomeService.singularIncomeId(any())).thenReturn(None)
       val ex = the[RuntimeException] thrownBy sut.processHowToUpdatePage(1, "name", employmentAmount(true, false),
@@ -143,7 +143,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "handleChooseHowToUpdate" must {
     "redirect the user to workingHours page" when {
       "user selected income calculator" in {
-        val sut = createSut
+        val sut = createTestController
         val result = sut.handleChooseHowToUpdate()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("howToUpdate" -> "incomeCalculator"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.workingHoursPage().url)
@@ -152,7 +152,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
     "redirect the user to viewIncomeForEdit page" when {
       "user selected anything apart from income calculator" in {
-        val sut = createSut
+        val sut = createTestController
         val result = sut.handleChooseHowToUpdate()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("howToUpdate" -> "income"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.IncomeController.viewIncomeForEdit().url)
@@ -161,7 +161,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
     "redirect user back to how to update page" when {
       "user input has error" in {
-        val sut = createSut
+        val sut = createTestController
         val result = sut.handleChooseHowToUpdate()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("howToUpdate" -> ""))
         status(result) mustBe BAD_REQUEST
 
@@ -174,7 +174,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "workingHoursPage" must {
     "display workingHours page" when {
       "journey cache returns employment name and id" in {
-        val sut = createSut
+        val sut = createTestController
         val result = sut.workingHoursPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
@@ -185,40 +185,54 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   }
 
   "handleWorkingHours" must {
-    "redirect the user to workingHours page" when {
-      "user selected income calculator" in {
-        val sut = createSut
-        val result = sut.handleWorkingHours()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> "same"))
+    "respond with SEE_OTHER" when {
+      "user selected regular hours, and redirect the user to payPeriodPage page" in {
+        val testController = createTestController
+        val result = testController.handleWorkingHours()(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> "regularHours")
+        )
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.payPeriodPage().url)
       }
-    }
 
-    "redirect the user to viewIncomeForEdit page" when {
-      "user selected anything apart from income calculator" in {
-        val sut = createSut
-        val result = sut.handleWorkingHours()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> "income"))
+      "user selected irregular hours, and redirect the user to calcUnavailablePage page" in {
+        val testController = createTestController
+        val result = testController.handleWorkingHours()(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> "irregularHours")
+        )
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.calcUnavailablePage().url)
       }
     }
 
-    "redirect user back to workingHours page" when {
-      "user input has error" in {
-        val sut = createSut
-        val result = sut.handleWorkingHours()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> ""))
+    "respond with BAD_REQUEST and show the handleWorkingHours page" when {
+      "given invalid data" in {
+        val sut = createTestController
+        val result = sut.handleWorkingHours()(
+          RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> "invalid")
+        )
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.workingHours.title"))
       }
+
+      "user does not select a response" in {
+        val sut = createTestController
+        val result = sut.handleWorkingHours()(RequestBuilder.buildFakeRequestWithAuth("POST"))
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.workingHours.title"))
+      }
+
     }
   }
 
   "payPeriodPage" must {
     "display payPeriod page" when {
       "journey cache returns employment name and id" in {
-        val sut = createSut
+        val sut = createTestController
         val result = sut.payPeriodPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
@@ -231,7 +245,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "handlePayPeriod" must {
     "redirect the user to payslipAmountPage page" when {
       "user selected monthly" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
         when(sut.incomeService.cachePayPeriod(any())(any())).thenReturn(Map("" -> ""))
         val result = sut.handlePayPeriod()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("payPeriod" -> "monthly"))
@@ -242,7 +256,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
     "redirect user back to how to payPeriod page" when {
       "user input has error" in {
-        val sut = createSut
+        val sut = createTestController
         val result = sut.handlePayPeriod()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("payPeriod" -> "otherInDays"))
         status(result) mustBe BAD_REQUEST
 
@@ -255,7 +269,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "payslipAmountPage" must {
     "display payslipAmount page" when {
       "journey cache returns employment name, id and payPeriod" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(None))
         val result = sut.payslipAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -269,7 +283,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "handlePayslipAmount" must {
     "redirect the user to payslipDeductionsPage page" when {
       "user entered valid pay" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.cache(Matchers.eq(UpdateIncome_TotalSalaryKey), Matchers.eq("£3,000"))(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = sut.handlePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("totalSalary" -> "£3,000"))
         status(result) mustBe SEE_OTHER
@@ -279,7 +293,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
     "redirect user back to how to payslip page" when {
       "user input has error" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(None))
         val result = sut.handlePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("" -> ""))
         status(result) mustBe BAD_REQUEST
@@ -293,7 +307,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "taxablePayslipAmountPage" must {
     "display taxablePayslipAmount page" when {
       "journey cache returns employment name, id and payPeriod" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(None))
         val result = sut.taxablePayslipAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -307,7 +321,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "handleTaxablePayslipAmount" must {
     "redirect the user to bonusPaymentsPage page" when {
       "user entered valid taxable pay" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TotalSalaryKey))(any())).thenReturn(Future.successful(None))
         when(sut.journeyCacheService.cache(Matchers.eq(UpdateIncome_TaxablePayKey), Matchers.eq("£3,000"))(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = sut.handleTaxablePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("taxablePay" -> "£3,000"))
@@ -318,7 +332,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
     "redirect user back to how to taxablePayslip page" when {
       "user input has error" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_TotalSalaryKey))(any())).thenReturn(Future.successful(None))
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(None))
         val result = sut.handleTaxablePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("" -> ""))
@@ -333,7 +347,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "payslipDeductionsPage" must {
     "display payslipDeductions" when {
       "journey cache returns employment name and id" in {
-        val sut = createSut
+        val sut = createTestController
         val result = sut.payslipDeductionsPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
@@ -346,7 +360,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "handlePayslipDeductions" must {
     "redirect the user to taxablePayslipAmountPage page" when {
       "user selected yes" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.cache(Matchers.eq(UpdateIncome_PayslipDeductionsKey), Matchers.eq("Yes"))(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = sut.handlePayslipDeductions()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("payslipDeductions" -> "Yes"))
         status(result) mustBe SEE_OTHER
@@ -356,7 +370,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
     "redirect the user to bonusPaymentsPage page" when {
       "user selected no" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.cache(Matchers.eq(UpdateIncome_PayslipDeductionsKey), Matchers.eq("No"))(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = sut.handlePayslipDeductions()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("payslipDeductions" -> "No"))
         status(result) mustBe SEE_OTHER
@@ -366,7 +380,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
     "redirect user back to how to payslipDeductions page" when {
       "user input has error" in {
-        val sut = createSut
+        val sut = createTestController
         val result = sut.handlePayslipDeductions()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("" -> ""))
         status(result) mustBe BAD_REQUEST
 
@@ -379,7 +393,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "bonusPaymentsPage" must {
     "display bonusPayments" when {
       "journey cache returns employment name and id" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayslipDeductionsKey))(any())).thenReturn(Future.successful(None))
         val result = sut.bonusPaymentsPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -393,7 +407,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "handleBonusPayments" must {
     "redirect the user to bonusOvertimeAmountPage page" when {
       "user selected yes" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = sut.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("bonusPayments" -> "Yes", "bonusPaymentsMoreThisYear" -> "No"))
         status(result) mustBe SEE_OTHER
@@ -403,7 +417,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
     "redirect the user to estimatedPayPage page" when {
       "user selected no" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = sut.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("bonusPayments" -> "No"))
         status(result) mustBe SEE_OTHER
@@ -413,7 +427,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
     "redirect user back to how to bonusPayments page" when {
       "user input has error" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayslipDeductionsKey))(any())).thenReturn(Future.successful(None))
         val result = sut.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("" -> ""))
         status(result) mustBe BAD_REQUEST
@@ -427,7 +441,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "bonusOvertimeAmountPage" must {
     "display bonusPaymentAmount" when {
       "more this year from journey cache returns yes" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_BonusPaymentsThisYearKey))(any())).thenReturn(Future.successful(Some("Yes")))
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(Some("Weekly")))
         val result = sut.bonusOvertimeAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -438,7 +452,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       }
 
       "more this year from journey cache does not return yes" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_BonusPaymentsThisYearKey))(any())).thenReturn(Future.successful(None))
         when(sut.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(Some("Weekly")))
         val result = sut.bonusOvertimeAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -453,7 +467,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "handleBonusOvertimeAmount" must {
     "redirect the user to estimatedPayPage page" when {
       "user selected yes" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(UpdateIncome_IdKey -> "1", UpdateIncome_BonusPaymentsThisYearKey -> "Yes")))
         when(sut.journeyCacheService.cache(Matchers.eq(UpdateIncome_BonusOvertimeAmountKey), Matchers.eq("£3,000"))(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = sut.handleBonusOvertimeAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("amount" -> "£3,000"))
@@ -464,7 +478,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
     "redirect the user to bonusPaymentAmount page" when {
       "bonus payment is yes" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(UpdateIncome_IdKey -> "1", UpdateIncome_BonusPaymentsThisYearKey -> "Yes")))
         val result = sut.handleBonusOvertimeAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody())
         status(result) mustBe BAD_REQUEST
@@ -474,7 +488,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       }
 
       "bonus payment is none" in {
-        val sut = createSut
+        val sut = createTestController
         when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(UpdateIncome_IdKey -> "1")))
         val result = sut.handleBonusOvertimeAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody())
         status(result) mustBe BAD_REQUEST
@@ -488,7 +502,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "estimatedPayPage" must {
     "display estimatedPay page" when {
       "payYearToDate is less than gross annual pay" in {
-        val sut = createSut
+        val sut = createTestController
         val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
 
         when(sut.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
@@ -507,7 +521,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
     "display incorrectTaxableIncome page" when {
       "payYearToDate is greater than gross annual pay" in {
-        val sut = createSut
+        val sut = createTestController
         val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
         val payment = Payment(new LocalDate(), 200, 50, 25, 100, 50, 25, Monthly)
 
@@ -530,7 +544,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "handleCalculationResult" must {
     "display confirm_save_Income page" when {
       "journey cache returns employment name, net amount and id" in {
-        val sut = createSut
+        val sut = createTestController
         val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
 
         when(sut.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
@@ -544,7 +558,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       }
 
       "journey cache returns employment name, net amount with large decimal value and id" in {
-        val sut = createSut
+        val sut = createTestController
         val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
 
         when(sut.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
@@ -558,7 +572,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       }
 
       "journey cache does not returns net amount" in {
-        val sut = createSut
+        val sut = createTestController
         val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
 
         when(sut.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
@@ -576,7 +590,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "calcUnavailablePage" must {
     "display calcUnavailable page" when {
       "journey cache returns employment name and id" in {
-        val sut = createSut
+        val sut = createTestController
         val result = sut.calcUnavailablePage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
@@ -591,9 +605,9 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
   private def fakeNino = new Generator(new Random).nextNino
 
-  private def createSut = new SUT()
+  private def createTestController = new TestController()
 
-  private class SUT extends IncomeUpdateCalculatorController {
+  private class TestController extends IncomeUpdateCalculatorController {
     override val personService: PersonService = mock[PersonService]
     override val activityLoggerService: ActivityLoggerService = mock[ActivityLoggerService]
     override val auditConnector: AuditConnector = mock[AuditConnector]
