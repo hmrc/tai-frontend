@@ -75,9 +75,11 @@ class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with Fa
 
   }
 
+  val monthlyPaymentFrequency = "Monthly"
+
   lazy val paymentFrequencyAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"),
-    paymentFrequency,
+    monthlyPaymentFrequency,
     controllers.routes.IncomeUpdateCalculatorController.payPeriodPage().url
   )
 
@@ -138,7 +140,7 @@ class UpdateIncomeEstimateCheckYourAnswersViewModelSpec extends PlaySpec with Fa
     )
   }
 
-  val paymentFrequency = "Monthly"
+  val paymentFrequency = "monthly"
   val totalPay = "10000"
   val hasDeductions = "Yes"
   val taxablePay = "1800"

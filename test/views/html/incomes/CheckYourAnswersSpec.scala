@@ -35,13 +35,18 @@ class CheckYourAnswersSpec extends TaiViewSpec {
     }
 
     "display journey confirmation lines" in {
+
+      val monthlyPaymentFrequency = "Monthly"
+      val monthLabel = "month"
+      val totalPay = "£10,000"
+
       doc must haveCheckYourAnswersSummaryLine(1, messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"))
-      doc must haveCheckYourAnswersSummaryLineAnswer(1, paymentFrequency)
+      doc must haveCheckYourAnswersSummaryLineAnswer(1, monthlyPaymentFrequency)
       doc must haveCheckYourAnswersSummaryLineChangeLink(1, controllers.routes.IncomeUpdateCalculatorController.payPeriodPage().url)
 
 
-      doc must haveCheckYourAnswersSummaryLine(2, messages("tai.estimatedPay.update.checkYourAnswers.totalPay", "month"))
-      doc must haveCheckYourAnswersSummaryLineAnswer(2, "£10,000")
+      doc must haveCheckYourAnswersSummaryLine(2, messages("tai.estimatedPay.update.checkYourAnswers.totalPay", monthLabel))
+      doc must haveCheckYourAnswersSummaryLineAnswer(2, totalPay)
       doc must haveCheckYourAnswersSummaryLineChangeLink(2, controllers.routes.IncomeUpdateCalculatorController.payslipAmountPage().url)
     }
 
@@ -58,7 +63,7 @@ class CheckYourAnswersSpec extends TaiViewSpec {
     hasBonusOrOvertime, Some(hasExtraBonusOrOvertime), Some(totalBonusOrOvertime))
 
 
-  val paymentFrequency = "Monthly"
+  val paymentFrequency = "monthly"
   val totalPay = "10000"
   val hasDeductions = "Yes"
   val taxablePay = "1800"

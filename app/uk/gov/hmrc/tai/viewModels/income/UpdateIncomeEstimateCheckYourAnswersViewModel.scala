@@ -31,40 +31,47 @@ case class UpdateIncomeEstimateCheckYourAnswersViewModel(paymentFrequency: Strin
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
     val isMonetaryValue = true
 
-    val paymentFrequencyAnswer = createCheckYourAnswerConfirmationLine(
+    val paymentFrequencyConfirmationLine = createCheckYourAnswerConfirmationLine(
       Messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"),
-      Some(paymentFrequency.capitalize),
+      Some(messages(s"tai.payPeriod.$paymentFrequency")),
       controllers.routes.IncomeUpdateCalculatorController.payPeriodPage().url)
 
-    val totalPayAnswer = createCheckYourAnswerConfirmationLine(
-      Messages("tai.estimatedPay.update.checkYourAnswers.totalPay", timePeriod(paymentFrequencyAnswer.get.answer)),
+    val totalPayConfirmationLine = createCheckYourAnswerConfirmationLine(
+      Messages("tai.estimatedPay.update.checkYourAnswers.totalPay", timePeriod(paymentFrequency)),
       Some(totalPay),
       controllers.routes.IncomeUpdateCalculatorController.payslipAmountPage().url,
       isMonetaryValue
     )
 
-    val hasDeductionAnswer = createCheckYourAnswerConfirmationLine(
+    val hasDeductionConfirmationLine = createCheckYourAnswerConfirmationLine(
       Messages("tai.estimatedPay.update.checkYourAnswers.hasDeduction"),
-      Some(hasDeductions),
+      Some(messages(s"tai.label.${hasDeductions.toLowerCase}")),
       controllers.routes.IncomeUpdateCalculatorController.payslipDeductionsPage().url
     )
 
-    val taxablePayAnswer = createCheckYourAnswerConfirmationLine(
-      Messages("tai.estimatedPay.update.checkYourAnswers.taxablePay", timePeriod(paymentFrequencyAnswer.get.answer)),
+    val taxablePayConfirmationLine = createCheckYourAnswerConfirmationLine(
+      Messages("tai.estimatedPay.update.checkYourAnswers.taxablePay", timePeriod(paymentFrequency)),
       taxablePay,
       controllers.routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage().url,
       isMonetaryValue
     )
 
-    val hasBonusOrOvertimeAnswer = createCheckYourAnswerConfirmationLine(
+    val hasBonusOrOvertimeConfirmationLine = createCheckYourAnswerConfirmationLine(
       Messages("tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime"),
-      Some(hasBonusOrOvertime),
+      Some(messages(s"tai.label.${hasBonusOrOvertime.toLowerCase}")),
       controllers.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
     )
 
-    val hasExtraBonusOrOvertimeAnswer = createCheckYourAnswerConfirmationLine(
+    val hasExtraBonusOrOvertimeAnswer =
+      if (hasExtraBonusOrOvertime.isDefined) {
+        Some(messages(s"tai.label.${hasExtraBonusOrOvertime.get.toLowerCase}"))
+      }else{
+        hasExtraBonusOrOvertime
+      }
+
+    val hasExtraBonusOrOvertimeConfirmationLine = createCheckYourAnswerConfirmationLine(
       Messages("tai.estimatedPay.update.checkYourAnswers.hasExtraBonusOrOvertime"),
-      hasExtraBonusOrOvertime,
+      hasExtraBonusOrOvertimeAnswer,
       controllers.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
     )
 
@@ -72,18 +79,18 @@ case class UpdateIncomeEstimateCheckYourAnswersViewModel(paymentFrequency: Strin
       if(hasExtraBonusOrOvertime.getOrElse("") == "Yes"){
       Messages("tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime")
      }else{
-        Messages("tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime", timePeriod(paymentFrequencyAnswer.get.answer))
+        Messages("tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime", timePeriod(paymentFrequency))
       }
 
-    val totalBonusOrOvertimeAnswer = createCheckYourAnswerConfirmationLine(
+    val totalBonusOrOvertimeConfirmationLine = createCheckYourAnswerConfirmationLine(
       totalBonusOrOvertimeMessage,
       totalBonusOrOvertime,
       controllers.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url,
       isMonetaryValue
     )
 
-    Seq(paymentFrequencyAnswer, totalPayAnswer, hasDeductionAnswer, taxablePayAnswer, hasBonusOrOvertimeAnswer,
-      hasExtraBonusOrOvertimeAnswer, totalBonusOrOvertimeAnswer).flatten
+    Seq(paymentFrequencyConfirmationLine, totalPayConfirmationLine, hasDeductionConfirmationLine, taxablePayConfirmationLine,
+      hasBonusOrOvertimeConfirmationLine, hasExtraBonusOrOvertimeConfirmationLine, totalBonusOrOvertimeConfirmationLine).flatten
   }
 
   private def createCheckYourAnswerConfirmationLine(message: String, answer: Option[String], changeUrl: String,
@@ -98,12 +105,15 @@ case class UpdateIncomeEstimateCheckYourAnswersViewModel(paymentFrequency: Strin
     }
   }
 
-  def timePeriod(paymentFrequency: String):String = {
-    paymentFrequency match {
-      case "Monthly" => "month"
-      case "Weekly" => "week"
-      case "Fortnightly" => "fortnight"
-      case "Other" => "period"
+  def timePeriod(paymentFrequency: String)(implicit messages: Messages):String = {
+
+    val timePeriodMessage = paymentFrequency match {
+      case "monthly" => messages("tai.label.month")
+      case "weekly" => messages("tai.label.week")
+      case "fortnightly" => messages("tai.label.fortnight")
+      case "other" => messages("tai.label.period")
     }
+
+    timePeriodMessage.toLowerCase()
   }
 }
