@@ -179,7 +179,12 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           },
           formData => {
 
-            journeyCache("payPeriod",incomeService.cachePayPeriod(formData)) map { _ =>
+            val cacheMap = formData.otherInDays match {
+              case Some(days) => Map(UpdateIncome_PayPeriodKey -> formData.payPeriod.getOrElse(""), UpdateIncome_OtherInDaysKey -> days.toString)
+              case _ => Map(UpdateIncome_PayPeriodKey -> formData.payPeriod.getOrElse(""))
+            }
+
+            journeyCache("payPeriod",cacheMap) map { _ =>
             Redirect(routes.IncomeUpdateCalculatorController.payslipAmountPage())
             }
           }
@@ -344,7 +349,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           },
           formData => {
 
-            val cacheMap = incomeService.cacheBonusPayments(formData)
+            val bonusPaymentsAnswer = formData.bonusPayments.fold(
+              Map.empty[String, String])(bonusPayments => Map(UpdateIncome_BonusPaymentsKey -> bonusPayments))
+
+            val yearlyBonusPaymentsAnswer = formData.bonusPaymentsMoreThisYear.fold(
+              Map.empty[String, String])(bonusPayments => Map(UpdateIncome_BonusPaymentsThisYearKey -> bonusPayments))
+
+            val cacheMap = bonusPaymentsAnswer ++ yearlyBonusPaymentsAnswer
 
             journeyCache(UpdateIncome_BonusPaymentsKey, cacheMap) map { _ =>
               if (formData.bonusPayments.contains("Yes")) {
@@ -480,7 +491,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   }
 
 
-  def journeyCache(key: String, cacheMap: Map[String, String])(implicit hc: HeaderCarrier): Future[Map[String, String]] = {
+  private def journeyCache(key: String, cacheMap: Map[String, String])(implicit hc: HeaderCarrier): Future[Map[String, String]] = {
 
     val emptyValue = ""
 
@@ -499,6 +510,12 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
       case _ => journeyCacheService.cache(cacheMap)
     }
   }
+
+  def cachePayPeriod(form: PayPeriodForm)(implicit hc: HeaderCarrier): Map[String, String] =
+    form.otherInDays match {
+      case Some(days) => Map(UpdateIncome_PayPeriodKey -> form.payPeriod.getOrElse(""), UpdateIncome_OtherInDaysKey -> days.toString)
+      case _ => Map(UpdateIncome_PayPeriodKey -> form.payPeriod.getOrElse(""))
+    }
 
 }
 // $COVERAGE-OFF$

@@ -250,50 +250,6 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
     }
   }
 
-  "cachePayPeriod" must {
-    "return cached map data" when {
-      "PayPeriodForm has otherInDays and payPeriod available" in {
-        val sut = createSUT
-        val expectedCached = Map(UpdateIncome_PayPeriodKey -> "monthly", UpdateIncome_OtherInDaysKey -> "100")
-        sut.cachePayPeriod(PayPeriodForm(Some("monthly"), Some(100))) mustBe expectedCached
-      }
-
-      "PayPeriodForm has only payPeriod available" in {
-        val sut = createSUT
-        val expectedCached = Map(UpdateIncome_PayPeriodKey -> "monthly")
-        sut.cachePayPeriod(PayPeriodForm(Some("monthly"))) mustBe expectedCached
-      }
-
-      "PayPeriodForm is empty" in {
-        val sut = createSUT
-        val expectedCached = Map(UpdateIncome_PayPeriodKey -> "")
-        sut.cachePayPeriod(PayPeriodForm(None)) mustBe expectedCached
-      }
-    }
-  }
-
-  "cacheBonusPayments" must {
-    "return cached map data" when {
-      "bonusPaymentsForm has both bonusPayment and bonusPaymentsMoreThisYear available" in {
-        val sut = createSUT
-        val expectedCached = Map(UpdateIncome_BonusPaymentsKey -> "Yes", UpdateIncome_BonusPaymentsThisYearKey -> "No")
-        sut.cacheBonusPayments(BonusPaymentsForm(Some("Yes"), Some("No"))) mustBe expectedCached
-      }
-
-      "bonusPaymentsForm has only payPeriod available" in {
-        val sut = createSUT
-        val expectedCached = Map(UpdateIncome_BonusPaymentsKey -> "Yes")
-        sut.cacheBonusPayments(BonusPaymentsForm(Some("Yes"), None)) mustBe expectedCached
-      }
-
-      "bonusPaymentsForm is empty" in {
-        val sut = createSUT
-        val expectedCached = Map[String, String]()
-        sut.cacheBonusPayments(BonusPaymentsForm(None, None)) mustBe expectedCached
-      }
-    }
-  }
-
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val nino: Nino = new Generator(new Random).nextNino

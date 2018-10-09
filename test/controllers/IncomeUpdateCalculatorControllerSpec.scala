@@ -233,7 +233,6 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       "user selected monthly" in {
         val sut = createSut
         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
-        when(sut.incomeService.cachePayPeriod(any())(any())).thenReturn(Map("" -> ""))
         val result = sut.handlePayPeriod()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("payPeriod" -> "monthly"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.payslipAmountPage().url)
@@ -396,7 +395,6 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       "user selected yes" in {
         val sut = createSut
         val cacheMap = Map(UpdateIncome_BonusPaymentsKey -> "Yes", UpdateIncome_BonusPaymentsThisYearKey -> "No")
-        when(sut.incomeService.cacheBonusPayments(any())(any())).thenReturn(cacheMap)
         when(sut.journeyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = sut.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("bonusPayments" -> "Yes", "bonusPaymentsMoreThisYear" -> "No"))
         status(result) mustBe SEE_OTHER
@@ -407,8 +405,6 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
     "redirect the user to checkYourAnswers page" when {
       "user selected no" in {
         val sut = createSut
-        val cacheMap = Map(UpdateIncome_BonusPaymentsKey -> "No")
-        when(sut.incomeService.cacheBonusPayments(any())(any())).thenReturn(cacheMap)
         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = sut.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("bonusPayments" -> "No"))
         status(result) mustBe SEE_OTHER
