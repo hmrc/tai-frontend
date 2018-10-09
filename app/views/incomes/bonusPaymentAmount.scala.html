@@ -18,6 +18,7 @@
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
+@import includes.cancelLink
 @import includes.forms.input
 @import uk.gov.hmrc.play.views.html.helpers._
 
@@ -61,7 +62,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 @main(
     title = pageTitle,
-    articleClasses = Some("full-width"),
+    articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
     employerName = Some(employerName),
@@ -73,12 +74,15 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
                 field = bonusOvertimeAmountForm("amount"),
                 labelText = pageDesc,
                 bold = true,
+                classes = Seq("form-control-1-4"),
                 hintText = hint.toString,
                 hintClass = "body-text",
                 isCurrency = true
             )
 
             <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
+
+            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
         }
     </div>
 }

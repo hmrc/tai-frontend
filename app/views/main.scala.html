@@ -35,12 +35,12 @@
         gaCallsAdditionalJs: Option[Html] = None,
         gaDimensions: Option[Map[String, String]] = None,
         gaCustomTitle: Option[String],
-        pageHeader: Option[Html] = None)(mainContent: Html)(
-            implicit request: Request[_],
-            messages: Messages,
-            templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-            partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
-)
+        pageHeader: Option[Html] = None)(
+            mainContent: Html)(
+                implicit request: Request[_],
+                messages: Messages,
+                templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+                partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @serviceSuffix = @{
     s"- ${Messages("tai.service.navTitle")} - GOV.UK"
@@ -173,7 +173,7 @@
     Map[String, Any](
         "pageTitle" -> s"${title} ${serviceSuffix}",
         "linkElems" -> Map(
-            "url" -> controllers.routes.AssetsController.versioned("stylesheets/tai03092018.min.css")
+            "url" -> controllers.routes.AssetsController.versioned("stylesheets/tai05102018.min.css")
         ),
         "navTitle" -> Messages("tai.service.navTitle"),
         "hasNavLinks" -> true,
@@ -214,6 +214,5 @@
 }
 
 @{
-    templateRenderer.renderDefaultTemplate(ApplicationConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), mustacheMap
-    )
+    templateRenderer.renderDefaultTemplate(ApplicationConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), mustacheMap)
 }

@@ -21,6 +21,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @import includes.forms.input
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
+@import includes.cancelLink
 
 @gaEventActionString = @{"Taxable pay from your payslip"}
 
@@ -47,7 +48,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
 @main(
     title = Messages("tai.taxablePayslip.title"),
-    articleClasses = Some("full-width"),
+    articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
     employerName = Some(employerName),
@@ -56,21 +57,22 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
     @form(action=controllers.routes.IncomeUpdateCalculatorController.handleTaxablePayslipAmount){
 
-
         @includes.forms.input(
             field = taxablePayslipForm("taxablePay"),
             labelText = pageDesc,
             bold = true,
+            classes = Seq("form-control-1-4"),
             hintText = Messages("tai.taxablePayslip.shownOnPayslip"),
             isCurrency = true
         )
-
 
         @includes.details_summary(Messages("tai.taxablePayslip.whatIsTaxablePay.title")){
             @Messages("tai.taxablePayslip.whatIsTaxablePay.description")
         }
         <div class="section">
             <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
+
+            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
         </div>
     }
 }

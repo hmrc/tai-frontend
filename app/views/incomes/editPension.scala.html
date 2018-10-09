@@ -28,22 +28,25 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         formForErrorSummary = Some(income),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.incomes.pension.heading"),
-        preHeadingText = Messages("tai.howToUpdate.preHeading"))}
+        mainHeadingText = messages("tai.incomes.pension.heading"),
+        preHeadingText = messages("tai.howToUpdate.preHeading", income("name").value.getOrElse("")),
+        headerWidthClasses = Some("column-full")
+    )
+}
 
 @main(
-    title = Messages("tai.incomes.pension.heading"),
-    articleClasses = Some("full-width"),
+    title = messages("tai.incomes.pension.heading"),
     user = Some(user),
     pageHeader = Some(header),
+    articleClasses = None,
     employerName = income("name").value,
     webChat = webChat,
     gaCustomTitle = None
 ){
-    <div class="section--branded hmrc text">
-        <h2>@Messages("tai.incomes.edit.incomeTax.update.pension.heading")</h2>
-        <p>@Messages("tai.incomes.edit.pension.text")</p>
-        <p>@Messages("tai.enterWholeAndNumericalOnly")</p>
+    <div>
+        <h2 class="flush--top">@messages("tai.incomes.edit.incomeTax.update.pension.heading")</h2>
+        <p>@messages("tai.incomes.edit.pension.text")</p>
+        <p>@messages("tai.enterWholeAndNumericalOnly")</p>
 
         @form(action = controllers.routes.IncomeController.editPensionIncome) {
         <input type="hidden" name="pensionToDate" value="@pensionToDate">
@@ -51,19 +54,19 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
                 <table id="income-table" class="table-section">
                     <thead>
                         <tr>
-                            <th>@Messages("tai.pensionSources")</th>
-                            <th class="text--right">@Messages("tai.incomes.amount.current")</th>
-                            <th class="text--right" id="amountLabel">@Messages("tai.incomes.amount.new")</th>
+                            <th>@messages("tai.pensionSources")</th>
+                            <th class="text--right">@messages("tai.incomes.amount.current")</th>
+                            <th class="text--right" id="amountLabel">@messages("tai.incomes.amount.new")</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="income-data">
                             <td class="break-word">@income("description").value @income("name").value</td>
                             @income.errors(income("newAmount").name).map{ error =>
-                                <span class="error-notification">@Messages(error.message)</span>
+                                <span class="error-notification">@messages(error.message)</span>
                             }
                             <td class="text--right"><input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' />@income("oldAmount").value</td>
-                            <td class="text--right"><input aria-labelledby="amountLabel" class="text--right input--small" type="text" id="newAmount" name='@income("newAmount").name' value='' /></td>
+                            <td class="text--right"><input aria-labelledby="amountLabel" class="text--right input--small income-data-input" type="text" id="newAmount" name='@income("newAmount").name' value='' /></td>
                         </tr>
                     </tbody>
                 </table>
@@ -78,7 +81,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
             </div>
 
             <div class="form-field-group">
-                <p><input type="submit" class="button" value='@Messages("tai.next")'/></p>
+                <p><input type="submit" class="button" value='@messages("tai.next")'/></p>
             </div>
         }
     </div>

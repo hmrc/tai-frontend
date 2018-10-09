@@ -17,6 +17,7 @@
 package views.html.incomes
 
 import org.scalatest.mock.MockitoSugar
+import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
@@ -27,6 +28,7 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar {
 
   "Estimated pay view without bonusOverTime" should {
     behave like pageWithBackLink
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     behave like pageWithCombinedHeader(
       messages("tai.estimatedPay.preHeading", employerName),
       messages("tai.estimatedPay.title"))
