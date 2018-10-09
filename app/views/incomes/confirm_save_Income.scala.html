@@ -87,6 +87,6 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
             </div>
         </div>
     </div>
-    <p><a href="@routes.IncomeUpdateCalculatorController.howToUpdatePage(income.employmentId).toString">@messages("tai.incomes.confirm.No.Save")</a></p>
+    <p><a href="@controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.howToUpdatePage(income.employmentId).toString">@messages("tai.incomes.confirm.No.Save")</a></p>
     <p><a href="@routes.TaxAccountSummaryController.onPageLoad">@messages("tai.cancel.noSave")</a></p>
 }

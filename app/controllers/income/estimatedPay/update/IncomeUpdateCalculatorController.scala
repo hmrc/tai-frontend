@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.income.estimatedPay.update
 
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
+import controllers.{AuthenticationConnectors, TaiBaseController}
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
@@ -88,8 +89,8 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           }
         }
       }
-      case (false, false, _) => Redirect(routes.TaxAccountSummaryController.onPageLoad())
-      case _ => Redirect(routes.IncomeController.pensionIncome())
+      case (false, false, _) => Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      case _ => Redirect(controllers.routes.IncomeController.pensionIncome())
     }
   }
 
@@ -109,7 +110,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           formData => {
             formData.howToUpdate match {
               case Some("incomeCalculator") => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.workingHoursPage()))
-              case _ => Future.successful(Redirect(routes.IncomeController.viewIncomeForEdit()))
+              case _ => Future.successful(Redirect(controllers.routes.IncomeController.viewIncomeForEdit()))
             }
           }
         )

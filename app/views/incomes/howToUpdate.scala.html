@@ -44,11 +44,11 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     webChat = true,
     gaCustomTitle = None
 ){
-
+confirm_save_Income.sca
     <p>@Messages("tai.howToUpdate.explanation")</p>
 
     <div class="section flush--bottom">
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleChooseHowToUpdate){
+        @form(action=income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleChooseHowToUpdate){
                 @{inputRadioGroupStyling(
                     field=howToUpdateForm("howToUpdate"),
                     radioOptions=Seq(("incomeCalculator" -> Messages("tai.howToUpdate.incomeCalculator")), ("enterAnnual" -> Messages("tai.howToUpdate.enterAnnual"))),

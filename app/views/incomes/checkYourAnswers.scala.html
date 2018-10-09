@@ -50,7 +50,7 @@
 
 @Link.toInternalPage(
     id=Some("estimatedPayLink"),
-    url=routes.IncomeUpdateCalculatorController.estimatedPayPage().url,
+    url=income.estimatedPay.update.routes.IncomeUpdateCalculatorController.estimatedPayPage().url,
     value=Some(Messages("tai.WhatDoYouWantToDo.submit")),
     cssClasses=Some("button")
 ).toHtml
