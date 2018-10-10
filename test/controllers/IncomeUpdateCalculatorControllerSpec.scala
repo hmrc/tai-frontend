@@ -112,7 +112,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
         result.header.status mustBe OK
         val doc = Jsoup.parse(contentAsString(Future.successful(result)))
-        doc.title() must include(Messages("tai.howToUpdate.title"))
+        doc.title() must include(Messages("tai.howToUpdate.title", "name"))
       }
 
       "editable income is singular" in {
@@ -126,7 +126,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
         result.header.status mustBe OK
         val doc = Jsoup.parse(contentAsString(Future.successful(result)))
-        doc.title() must include(Messages("tai.howToUpdate.title"))
+        doc.title() must include(Messages("tai.howToUpdate.title", "name"))
       }
 
       "editable income is none" in {
@@ -168,7 +168,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.howToUpdate.title"))
+        doc.title() must include(Messages("tai.howToUpdate.title", ""))
       }
     }
   }

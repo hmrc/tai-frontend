@@ -48,8 +48,6 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
-                <h2 class="flush--top">@messages("tai.taxYear",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</h2>
-
 
                 @if(income.toEmploymentAmount().newAmount == 0){
                 <section class="section flush--bottom soft--ends">
@@ -87,6 +85,5 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
             </div>
         </div>
     </div>
-    <p><a href="@controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.howToUpdatePage(income.employmentId).toString">@messages("tai.incomes.confirm.No.Save")</a></p>
     <p><a href="@routes.TaxAccountSummaryController.onPageLoad">@messages("tai.cancel.noSave")</a></p>
 }
