@@ -17,6 +17,7 @@
 @(workingHoursForm: Form[uk.gov.hmrc.tai.forms.HoursWorkedForm], id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
+@import includes.cancelLink
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.forms.inputRadioGroupStyling
 
@@ -56,5 +57,7 @@
                 )}
             <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
         }
+
+        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     </div>
 }

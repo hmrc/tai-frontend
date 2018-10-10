@@ -21,6 +21,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @import includes.forms.input
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
+@import includes.cancelLink
 
 @gaEventActionString = @{"Taxable pay from your payslip"}
 
@@ -70,6 +71,8 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         }
         <div class="section">
             <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
+
+            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
         </div>
     }
 }

@@ -49,6 +49,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     gaCustomTitle = None
 ){
     <div>
+        <p>@messages("tai.estimatedPay.weHaveCalculated", Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear), Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))</p>
         <h2 class="flush--top">@messages("tai.estimatedPay.yourPay")</h2>
         <p class="bold-large margin-bottom-medium" id="payBeforeTax">£@MoneyPounds(payBeforeTax.getOrElse(0),0).quantity</p>
         <p>@messages("tai.estimatedPay.basicPayExplanation")</p>
@@ -83,6 +84,8 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
             url = routes.IncomeUpdateCalculatorController.handleCalculationResult.toString,
             isButton=true
         )
+
+        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     </div>
 
 

@@ -65,9 +65,9 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   private def generateNino: Nino = new Generator(new Random).nextNino
-  private def createSut = new SUT
+  private def createSut = new TestService
 
-  private class SUT extends TaxCodeChangeService {
+  private class TestService extends TaxCodeChangeService {
     override val taxCodeChangeConnector: TaxCodeChangeConnector = mock[TaxCodeChangeConnector]
   }
 

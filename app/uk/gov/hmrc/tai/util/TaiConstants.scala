@@ -234,6 +234,17 @@ trait RemoveCompanyBenefitStopDateConstants{
 
 object TaxRegionConstants extends TaxRegionConstants
 
+object GoogleAnalyticsConstants {
+  val taxCodeChangeEdgeCase = "taxCodeChangeEdgeCase"
+  val yes = "Yes"
+  val no = "No"
+  val valueOfIycdcPayment = "valueOfIycdcPayment"
+  val iycdcReconciliationStatus = "iycdcReconciliationStatus"
+  val currentYear = "Current Year"
+  val nextYear = "Next Year"
+  val currentAndNextYear = "Current and Next Year"
+}
+
 object TaiConstants {
 
   val SERVICE_IDENTIFIER = "TES"
