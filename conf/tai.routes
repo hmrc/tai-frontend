@@ -159,6 +159,8 @@ POST        /update-income/how-to-update-income                                 
 GET         /update-income/working-hours                                               controllers.IncomeUpdateCalculatorController.workingHoursPage
 POST        /update-income/working-hours                                               controllers.IncomeUpdateCalculatorController.handleWorkingHours
 
+GET         /update-income/edit-income-irregular-hours                                 controllers.IncomeUpdateCalculatorController.editIncomeIrregularHours(employmentId: Int)
+
 GET         /update-income/pay-period                                                  controllers.IncomeUpdateCalculatorController.payPeriodPage
 POST        /update-income/pay-period                                                  controllers.IncomeUpdateCalculatorController.handlePayPeriod
 

@@ -36,10 +36,11 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model._
-import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, TaxCodeIncomeSourceStatus}
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
@@ -195,20 +196,25 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.payPeriodPage().url)
       }
 
-      "user selected irregular hours, and redirect the user to calcUnavailablePage page" in {
+      "user selected irregular hours, and redirect the user to editIncomeIrregularHours page" in {
         val testController = createTestController
         val result = testController.handleWorkingHours()(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> "irregularHours")
         )
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123,"description","taxCode","name",OtherBasisOperation,Live)
+
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(taxCodeIncome))))
+
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.calcUnavailablePage().url)
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.editIncomeIrregularHours(1).url)
       }
     }
 
     "respond with BAD_REQUEST and show the handleWorkingHours page" when {
       "given invalid data" in {
-        val sut = createTestController
-        val result = sut.handleWorkingHours()(
+        val controller = createTestController
+        val result = controller.handleWorkingHours()(
           RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> "invalid")
         )
         status(result) mustBe BAD_REQUEST
@@ -218,14 +224,34 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       }
 
       "user does not select a response" in {
-        val sut = createTestController
-        val result = sut.handleWorkingHours()(RequestBuilder.buildFakeRequestWithAuth("POST"))
+        val controller = createTestController
+        val result = controller.handleWorkingHours()(RequestBuilder.buildFakeRequestWithAuth("POST"))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.workingHours.title"))
       }
 
+    }
+  }
+
+  "editIncomeIrregularHours" must {
+    "respond with OK" when {
+      "" in {
+        val testController = createTestController
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123,"description","taxCode","name",OtherBasisOperation,Live)
+
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(taxCodeIncome))))
+        val result = testController.editIncomeIrregularHours(1)(
+          RequestBuilder.buildFakeRequestWithAuth("GET")
+        )
+
+        println("$$$$$$$ " + result)
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.workingHours.title"))
+      }
     }
   }
 

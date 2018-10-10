@@ -30,12 +30,10 @@ import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
-import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
-import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
-import views.html.incomes.howToUpdate
 
 import scala.concurrent.Future
 
@@ -140,13 +138,41 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             }
           },
           formData => {
-            formData.workingHours match {
-              case Some("regularHours") => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.payPeriodPage()))
-              case Some("irregularHours") => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.calcUnavailablePage()))
-              case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.calcUnavailablePage()))
+            for {
+              id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+              employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+            } yield {
+              formData.workingHours match {
+                case Some("regularHours") => Redirect(routes.IncomeUpdateCalculatorController.payPeriodPage())
+                case Some("irregularHours") => Redirect(routes.IncomeUpdateCalculatorController.editIncomeIrregularHours(id))
+                case _ => Redirect(routes.IncomeUpdateCalculatorController.calcUnavailablePage())
+              }
             }
           }
         )
+  }
+
+  def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit person =>
+      implicit request =>
+
+        val employerName = "employerName" //journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+        val currentAmount = 1 // get TaxCodeIncome taxCodeIncome.amount.toInt
+
+        for {
+          taxCodeIncomesResponse <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
+        } yield {
+
+          taxCodeIncomesResponse match {
+            case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) =>
+          println("***** " + taxCodeIncomes)
+              val currentIncomeAmount = taxCodeIncomes.find(_.employmentId.contains(employmentId)).map(_.amount.toInt)
+
+              Ok(views.html.incomes.editIncomeIrregularHours(employerName, currentIncomeAmount.get))
+            case _ => ???
+          }
+        }
+        Future.successful(Ok(views.html.incomes.editIncomeIrregularHours(employerName, currentAmount)))
   }
 
   def payPeriodPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -456,6 +482,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 }
+
 // $COVERAGE-OFF$
 object IncomeUpdateCalculatorController extends IncomeUpdateCalculatorController with AuthenticationConnectors {
   override val personService: PersonService = PersonService
@@ -470,4 +497,5 @@ object IncomeUpdateCalculatorController extends IncomeUpdateCalculatorController
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
 }
+
 // $COVERAGE-ON$
