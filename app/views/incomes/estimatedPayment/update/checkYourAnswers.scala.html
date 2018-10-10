@@ -18,23 +18,23 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.urls.Link
 @import includes._
-@import uk.gov.hmrc.tai.viewModels.income.UpdateIncomeEstimateCheckYourAnswersViewModel
+@import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
 
-@(viewModel: UpdateIncomeEstimateCheckYourAnswersViewModel, employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: CheckYourAnswersViewModel, employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
-  ptaHeader(
-    displayBackLink = true,
-    mainHeadingText = Messages("tai.checkYourAnswers"),
-    preHeadingText = Messages("tai.incomes.edit.preHeading", employerName))
+ptaHeader(
+displayBackLink = true,
+mainHeadingText = Messages("tai.checkYourAnswers"),
+preHeadingText = Messages("tai.incomes.edit.preHeading", employerName))
 }
 
 @main(
-  title = Messages("tai.checkYourAnswers"),
-  user = Some(user),
-  pageHeader = Some(header),
-  articleClasses = None,
-  gaCustomTitle = None
+title = Messages("tai.checkYourAnswers"),
+user = Some(user),
+pageHeader = Some(header),
+articleClasses = None,
+gaCustomTitle = None
 ){
 
 
@@ -49,15 +49,12 @@
 <p>@messages("tai.checkYourAnswers.confirmText")</p>
 
 @Link.toInternalPage(
-    id=Some("estimatedPayLink"),
-    url=income.estimatedPay.update.routes.IncomeUpdateCalculatorController.estimatedPayPage().url,
-    value=Some(Messages("tai.WhatDoYouWantToDo.submit")),
-    cssClasses=Some("button")
+id=Some("estimatedPayLink"),
+url=income.estimatedPay.update.routes.IncomeUpdateCalculatorController.estimatedPayPage().url,
+value=Some(Messages("tai.WhatDoYouWantToDo.submit")),
+cssClasses=Some("button")
 ).toHtml
 
 @cancelLink(Call("GET",controllers.routes.TaxAccountSummaryController.onPageLoad.url))
 
 }
-
-
-

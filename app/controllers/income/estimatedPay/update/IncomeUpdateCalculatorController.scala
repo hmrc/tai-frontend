@@ -427,7 +427,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         ) map tupled { (mandatorySeq, optionalSeq) => {
           val viewModel = CheckYourAnswersViewModel(mandatorySeq(1), mandatorySeq(2), mandatorySeq(3),
             optionalSeq(0), mandatorySeq(4), optionalSeq(1), optionalSeq(2))
-          Ok(views.html.incomes.checkYourAnswers(viewModel, mandatorySeq(0)))
+          Ok(views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel, mandatorySeq(0)))
         }
         }
   }
