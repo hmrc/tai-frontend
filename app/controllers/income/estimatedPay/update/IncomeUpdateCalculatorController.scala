@@ -494,20 +494,23 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
   private def journeyCache(key: String, cacheMap: Map[String, String])(implicit hc: HeaderCarrier): Future[Map[String, String]] = {
 
-    val emptyValue = ""
-
-    def updateCache(cacheToEmpty: Map[String, String]): Future[Map[String, String]] = {
+    def updateCache(cacheToUpdate: Map[String,String],keysToEmpty: List[String])(implicit hc: HeaderCarrier): Future[Map[String, String]] = {
       if (cacheMap(key) == "Yes") {
         journeyCacheService.cache(cacheMap)
       } else {
-        journeyCacheService.cache(cacheToEmpty)
+        for{
+          current <- journeyCacheService.currentCache
+          updatedCacheMap = current.filterKeys( key => !keysToEmpty.contains(key)) ++ cacheToUpdate
+          _ <- journeyCacheService.flush()
+          updatedCache <- journeyCacheService.cache(updatedCacheMap)
+        }yield updatedCache
       }
     }
 
     key match {
-      case UpdateIncome_PayslipDeductionsKey => updateCache(Map(key -> cacheMap(key), UpdateIncome_TaxablePayKey -> emptyValue))
-      case UpdateIncome_BonusPaymentsKey => updateCache(Map(key -> cacheMap(key),
-        UpdateIncome_BonusPaymentsThisYearKey -> emptyValue, UpdateIncome_BonusOvertimeAmountKey -> emptyValue))
+      case UpdateIncome_PayslipDeductionsKey => updateCache(Map(key -> cacheMap(key)), List(UpdateIncome_TaxablePayKey))
+      case UpdateIncome_BonusPaymentsKey => updateCache(Map(key -> cacheMap(key)),
+        List(UpdateIncome_BonusPaymentsThisYearKey, UpdateIncome_BonusOvertimeAmountKey))
       case _ => journeyCacheService.cache(cacheMap)
     }
   }
