@@ -34,14 +34,13 @@ class EstimatedPayLandingPageSpec extends TaiViewSpec {
 
     "contain the correct content" in {
       doc(view).getElementsByTag("p").text must include(messages("tai.incomes.landing.intro"))
-      doc(view).getElementsByTag("h2").text must include(messages("tai.incomes.landing.subheading", employerName))
       doc(view) must haveLinkWithText(messages("tai.incomes.landing.employment.ended.link", employerName))
       doc must haveLinkWithUrlWithID("updateEmployer",
         controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(empId).url)
-      doc(view).getElementsByClass("button").text must include(messages("tai.incomes.edit.preHeading", employerName))
+      doc(view).getElementsByClass("button").text must include(messages("tai.income.details.updateTaxableIncome.update"))
     }
   }
 
 
-  override def view: Html = views.html.incomes.estimatedPayLandingPage(employerName, empId)
+  override def view: Html = views.html.incomes.estimatedPayLandingPage(employerName, empId, isPension = false)
 }

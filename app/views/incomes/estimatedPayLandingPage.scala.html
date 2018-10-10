@@ -14,25 +14,26 @@
  * limitations under the License.
  *@
 
-@(employerName: String, empId: Int)(implicit request: Request[_],
+@(incomeName: String, id: Int, isPension: Boolean)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 @import includes.cancelLink
+@import uk.gov.hmrc.tai.config.ApplicationConfig
 
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        mainHeadingText = messages("tai.howToUpdate.preHeading", employerName),
-        preHeadingText = messages("tai.howToUpdate.preHeading", employerName),
+        mainHeadingText = messages("tai.howToUpdate.preHeading", incomeName),
+        preHeadingText = messages("tai.howToUpdate.preHeading", incomeName),
         headerWidthClasses = Some("column-full")
     )
 }
 
 @main(
-title = messages("tai.howToUpdate.preHeading", employerName),
+title = messages("tai.howToUpdate.preHeading", incomeName),
 user = Some(user),
 pageHeader = Some(header),
 articleClasses = None,
@@ -40,22 +41,31 @@ gaCustomTitle = None
 ){
     <div>
         <p>@messages("tai.incomes.landing.intro")</p>
-        <h2>@messages("tai.incomes.landing.subheading", employerName)</h2>
+        <p>
+            @if(isPension) {
+                @messages("tai.incomes.landing.pension.ended", incomeName)
+                @includes.link(
+                        url=ApplicationConfig.incomeFromEmploymentPensionLinkUrl,
+                        copy=messages("tai.incomes.landing.pension.ended.link"),
+                        id=Some("updatePension")
+                    )
+            } else {
+                @messages("tai.incomes.landing.employment.ended", incomeName)
+                @includes.link(
+                    url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(id).toString,
+                    copy=messages("tai.incomes.landing.employment.ended.link"),
+                    id=Some("updateEmployer")
+                )
+            }
+        </p>
     </div>
-    <p>
-        @includes.link(
-        url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(empId).toString,
-        copy=messages("tai.incomes.landing.employment.ended.link", employerName),
-        id=Some("updateEmployer")
-        )
-    </p>
     <div>
         @includes.link(
-        copy=messages("tai.howToUpdate.preHeading", employerName),
-        url = routes.IncomeUpdateCalculatorController.howToUpdatePage(empId: Int).toString,
-        isButton=true
+            copy=messages("tai.income.details.updateTaxableIncome.update"),
+            url = routes.IncomeUpdateCalculatorController.howToUpdatePage(id).toString,
+            isButton=true
         )
 
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
+        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     </div>
 }

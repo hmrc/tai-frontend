@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
-import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.{Employment, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
@@ -58,13 +58,26 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   val incomeService: IncomeService
 
 
-  def estimatedPayLandingPage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+  def   estimatedPayLandingPage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
 
-        employmentService.employment(Nino(user.getNino), id) map {
-          case Some(employment) => Ok(views.html.incomes.estimatedPayLandingPage(employment.name, id))
-          case None => throw new RuntimeException("Not able to find employment")
+        val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
+        val employmentFuture = employmentService.employment(Nino(user.getNino), id)
+
+
+        for {
+          taxCodeIncomeDetails <- taxCodeIncomesFuture
+          employmentDetails <- employmentFuture
+        } yield {
+          (taxCodeIncomeDetails, employmentDetails) match {
+            case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
+              val taxCodeIncomeSource = taxCodeIncomes.find(_.employmentId.contains(id)).
+                getOrElse(throw new RuntimeException(s"Income details not found for employment id $id"))
+              val isPension = taxCodeIncomeSource.componentType == PensionIncome
+              Ok(views.html.incomes.estimatedPayLandingPage(employment.name, id, isPension))
+            case _ => throw new RuntimeException("Not able to find employment")
+          }
         }
   }
 
