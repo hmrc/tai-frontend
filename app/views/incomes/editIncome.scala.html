@@ -14,14 +14,23 @@
  * limitations under the License.
  *@
 
-@(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm], hasMultipleIncomes: Boolean, employmentId: Int, payToDate: String = "0", payDate: Option[org.joda.time.LocalDate] = None,
-webChat: Boolean = false)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm],
+    hasMultipleIncomes: Boolean,
+    employmentId: Int,
+    payToDate: String = "0",
+    payDate: Option[org.joda.time.LocalDate] = None,
+    webChat: Boolean = false)(implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.TaiUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
+)
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
+@import includes.cancelLink
 
 @gaEventActionString = @{"Update your annual taxable pay"}
 
@@ -47,7 +56,6 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 ){
 
     <div>
-        <h2 class="flush--top">@messages("tai.incomes.edit.howTo.subtitle")</h2>
         <p>@messages("tai.incomes.edit.howTo.payslip")</p>
         <p>@messages("tai.incomes.edit.howTo.grossAmount")</p>
         <ul class="bullets">
@@ -59,8 +67,6 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
     <div>
         <h2>@messages("tai.incomes.edit.incomeTax.update.heading")</h2>
-        <p>@messages("tai.incomes.edit.text",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</p>
-        <p>@messages("tai.enterWholeAndNumericalOnly")</p>
 
         @form(action = controllers.routes.IncomeController.editRegularIncome){
             <input type="hidden" name="payToDate" value="@payToDate">
@@ -84,6 +90,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
                         </tr>
                     </tbody>
                 </table>
+                <p class="form-hint-list">@Messages("tai.enterWholeAndNumericalOnly")</p>
                 <input type="hidden" id="name" name='@income("name").name' value='@income("name").value' />
                 <input type="hidden" id="worksNumber" name='@income("worksNumber").name' value='@income("worksNumber").value' />
                 <input type="hidden" id="jobTitle" name='@income("jobTitle").name' value='@income("jobTitle").value' />
@@ -95,7 +102,9 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             </div>
 
             <div class="form-field-group">
-                <p><input type="submit" class="button" value='@messages("tai.next")'/></p>
+                <p><input type="submit" class="button" value='@messages("tai.continue")'/></p>
+
+                @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url))
             </div>
         }
     </div>

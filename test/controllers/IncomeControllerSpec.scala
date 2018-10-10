@@ -44,6 +44,7 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIn
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -59,15 +60,15 @@ class IncomeControllerSpec extends PlaySpec
   "regularIncome" must {
     "return OK with regular income view" when {
       "valid inputs are passed" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
-        when(sut.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
-        when(sut.incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(Some(payment)))
-        when(sut.incomeService.cachePaymentForRegularIncome(any())(any())).thenReturn(Map.empty[String, String])
-        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
+        when(testController.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+        when(testController.incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(Some(payment)))
+        when(testController.incomeService.cachePaymentForRegularIncome(any())(any())).thenReturn(Map.empty[String, String])
+        when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = sut.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -77,52 +78,52 @@ class IncomeControllerSpec extends PlaySpec
 
      "return Internal Server Error" when {
       "employment doesn't present" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+        when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(testController.employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
-        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = sut.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
        "tax code incomes return failure" in {
-         val sut = createSUT
+         val testController = createTestIncomeController
          val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
          val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
          val employment = employmentWithAccounts(List(annualAccount))
-         when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
            thenReturn(Future.successful(1))
-         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+         when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
            thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
-         when(sut.employmentService.employment(any(), any())(any())).
+         when(testController.employmentService.employment(any(), any())(any())).
            thenReturn(Future.successful(Some(employment)))
-         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+         when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-         val result = sut.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+         val result = testController.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
          status(result) mustBe INTERNAL_SERVER_ERROR
        }
 
        "employment return None" in {
-         val sut = createSUT
-         when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+         val testController = createTestIncomeController
+         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
            thenReturn(Future.successful(1))
-         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+         when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
            thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
-         when(sut.employmentService.employment(any(), any())(any())).
+         when(testController.employmentService.employment(any(), any())(any())).
            thenReturn(Future.successful(None))
-         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+         when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-         val result = sut.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+         val result = testController.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
          status(result) mustBe INTERNAL_SERVER_ERROR
        }
@@ -132,15 +133,15 @@ class IncomeControllerSpec extends PlaySpec
   "editRegularIncome" must {
     "redirect to confirm regular income page" when {
       "valid input is passed" in {
-        val sut = createSUT
-        when(sut.journeyCacheService.collectedValues(any(), any())(any())).
-          thenReturn(Future.successful(Seq("100", "1"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
-        when(sut.journeyCacheService.cache(any(), any())(any())).
+        val testController = createTestIncomeController
+        when(testController.journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
+        when(testController.journeyCacheService.cache(any(), any())(any())).
           thenReturn(Future.successful(Map.empty[String, String]))
-        val editIncomeForm = sut.editIncomeForm.copy(newAmount = Some("200"))
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("200"))
         val formData = Json.toJson(editIncomeForm)
 
-        val result = sut.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+        val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.IncomeController.confirmRegularIncome().url
@@ -149,17 +150,78 @@ class IncomeControllerSpec extends PlaySpec
 
     "return Bad request" when {
       "new amount is blank" in {
-        val sut = createSUT
-        when(sut.journeyCacheService.collectedValues(any(), any())(any())).
-          thenReturn(Future.successful(Seq("100", "1"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
-        when(sut.journeyCacheService.cache(any(), any())(any())).
+        val invalidNewAmount = ""
+        val testController = createTestIncomeController
+        when(testController.journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(Seq("100", "1", "EmployerName"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
+        when(testController.journeyCacheService.cache(any(), any())(any())).
           thenReturn(Future.successful(Map.empty[String, String]))
-        val editIncomeForm = sut.editIncomeForm.copy(newAmount = Some(""))
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(invalidNewAmount))
         val formData = Json.toJson(editIncomeForm)
 
-        val result = sut.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+        val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.body().toString must include(Messages("error.tai.updateDataEmployment.blankValue"))
+
+      }
+
+      "new amount is not a number" in {
+        val invalidNewAmount = "Not a number"
+        val testController = createTestIncomeController
+        when(testController.journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
+        when(testController.journeyCacheService.cache(any(), any())(any())).
+          thenReturn(Future.successful(Map.empty[String, String]))
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(invalidNewAmount))
+        val formData = Json.toJson(editIncomeForm)
+
+        val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.body().toString must include(Messages("error.tai.updateDataEmployment.enterRealNumber"))
+
+      }
+
+      "new amount is too large" in {
+        val invalidNewAmount = "1000000000"
+        val testController = createTestIncomeController
+        when(testController.journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
+        when(testController.journeyCacheService.cache(any(), any())(any())).
+          thenReturn(Future.successful(Map.empty[String, String]))
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(invalidNewAmount))
+        val formData = Json.toJson(editIncomeForm)
+
+        val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.body().toString must include(Messages("error.tai.updateDataEmployment.maxLength"))
+
+      }
+
+      "new amount is less than old amount" in {
+        val invalidNewAmount = "50"
+        val date = new LocalDate(2017, 2, 1)
+        val dateForMessage = "February 2017"
+        val EmployerName = "Employer Name"
+        val testController = createTestIncomeController
+        when(testController.journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(date.toString))))
+        when(testController.journeyCacheService.cache(any(), any())(any())).
+          thenReturn(Future.successful(Map.empty[String, String]))
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(invalidNewAmount))
+        val formData = Json.toJson(editIncomeForm)
+
+        val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.body().toString must include(Messages("error.tai.updateDataEmployment.enterLargerValue", "100", dateForMessage, EmployerName))
       }
     }
   }
@@ -167,35 +229,35 @@ class IncomeControllerSpec extends PlaySpec
   "confirmRegularIncome" must {
     "return OK" when {
       "valid values are present in cache" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(sut.journeyCacheService.mandatoryValues(any())(any())).
+        when(testController.journeyCacheService.mandatoryValues(any())(any())).
         thenReturn(Future.successful(Seq("1", "200")))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(testController.employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
       }
 
       "pay to date cannot be determined, due to no annual account records on the income source" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(Nil)
-        when(sut.journeyCacheService.mandatoryValues(any())(any())).
+        when(testController.journeyCacheService.mandatoryValues(any())(any())).
           thenReturn(Future.successful(Seq("1", "200")))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(testController.employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
       }
@@ -203,50 +265,50 @@ class IncomeControllerSpec extends PlaySpec
 
     "return Internal Server Error" when {
       "employment doesn't present" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+        when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(testController.employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "tax code incomes return failure" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+        when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(testController.employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.confirmRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "employment return None" in {
-        val sut = createSUT
-        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+        val testController = createTestIncomeController
+        when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(testController.employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(None))
-        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = sut.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -256,14 +318,14 @@ class IncomeControllerSpec extends PlaySpec
   "updateEstimatedIncome" must {
     "return OK" when {
       "income is successfully updated" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
 
-        when(sut.journeyCacheService.mandatoryValue(any())(any())).thenReturn(Future.successful("100"))
+        when(testController.journeyCacheService.mandatoryValue(any())(any())).thenReturn(Future.successful("100"))
 
-        when(sut.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
+        when(testController.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponse))
 
-        val result = sut.updateEstimatedIncome()(RequestBuilder.buildFakeRequestWithAuth("POST"))
+        val result = testController.updateEstimatedIncome()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe OK
 
@@ -274,17 +336,17 @@ class IncomeControllerSpec extends PlaySpec
 
     "return OK" when {
       "income is successfully updated with comma separated values input" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
 
-        when(sut.journeyCacheService.mandatoryValue(any())(any()))
+        when(testController.journeyCacheService.mandatoryValue(any())(any()))
           .thenReturn(Future.successful("Employer"))
             .thenReturn(Future.successful("100,000"))
               .thenReturn(Future.successful("1"))
 
-        when(sut.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
+        when(testController.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponse))
 
-        val result = sut.updateEstimatedIncome()(RequestBuilder.buildFakeRequestWithAuth("POST"))
+        val result = testController.updateEstimatedIncome()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe OK
 
@@ -295,13 +357,13 @@ class IncomeControllerSpec extends PlaySpec
 
     "return Internal Server Error" when {
       "update is failed" in {
-        val sut = createSUT
-        when(sut.journeyCacheService.mandatoryValues(any())(any())).
+        val testController = createTestIncomeController
+        when(testController.journeyCacheService.mandatoryValues(any())(any())).
           thenReturn(Future.successful(Seq("200", "1", "TEST")))
-        when(sut.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
+        when(testController.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
 
-        val result = sut.updateEstimatedIncome()(RequestBuilder.buildFakeRequestWithAuth("POST"))
+        val result = testController.updateEstimatedIncome()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -311,15 +373,15 @@ class IncomeControllerSpec extends PlaySpec
   "pension" must {
     "return OK with regular income view" when {
       "valid inputs are passed" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
-        when(sut.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
-        when(sut.incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(Some(payment)))
-        when(sut.incomeService.cachePaymentForRegularIncome(any())(any())).thenReturn(Map.empty[String, String])
-        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
+        when(testController.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+        when(testController.incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(Some(payment)))
+        when(testController.incomeService.cachePaymentForRegularIncome(any())(any())).thenReturn(Map.empty[String, String])
+        when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = sut.pensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.pensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -330,52 +392,52 @@ class IncomeControllerSpec extends PlaySpec
 
     "return Internal Server Error" when {
       "employment doesn't present" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+        when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(testController.employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
-        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = sut.pensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.pensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "tax code incomes return failure" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+        when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(testController.employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
-        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = sut.pensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.pensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "employment return None" in {
-        val sut = createSUT
-        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+        val testController = createTestIncomeController
+        when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(testController.employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(None))
-        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = sut.pensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.pensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -385,15 +447,15 @@ class IncomeControllerSpec extends PlaySpec
   "editPensionIncome" must {
     "redirect to confirm regular income page" when {
       "valid input is passed" in {
-        val sut = createSUT
-        when(sut.journeyCacheService.collectedValues(any(), any())(any())).
-          thenReturn(Future.successful(Seq("100", "1"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
-        when(sut.journeyCacheService.cache(any(), any())(any())).
+        val testController = createTestIncomeController
+        when(testController.journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
+        when(testController.journeyCacheService.cache(any(), any())(any())).
           thenReturn(Future.successful(Map.empty[String, String]))
-        val editIncomeForm = sut.editIncomeForm.copy(newAmount = Some("200"))
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("200"))
         val formData = Json.toJson(editIncomeForm)
 
-        val result = sut.editPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+        val result = testController.editPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.IncomeController.confirmPensionIncome().url
@@ -402,15 +464,15 @@ class IncomeControllerSpec extends PlaySpec
 
     "return Bad request" when {
       "new amount is blank" in {
-        val sut = createSUT
-        when(sut.journeyCacheService.collectedValues(any(), any())(any())).
-          thenReturn(Future.successful(Seq("100", "1"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
-        when(sut.journeyCacheService.cache(any(), any())(any())).
+        val testController = createTestIncomeController
+        when(testController.journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
+        when(testController.journeyCacheService.cache(any(), any())(any())).
           thenReturn(Future.successful(Map.empty[String, String]))
-        val editIncomeForm = sut.editIncomeForm.copy(newAmount = Some(""))
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(""))
         val formData = Json.toJson(editIncomeForm)
 
-        val result = sut.editPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+        val result = testController.editPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe BAD_REQUEST
       }
@@ -420,18 +482,18 @@ class IncomeControllerSpec extends PlaySpec
   "confirmPensionIncome" must {
     "return OK" when {
       "valid values are present in cache" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(sut.journeyCacheService.mandatoryValues(any())(any())).
+        when(testController.journeyCacheService.mandatoryValues(any())(any())).
           thenReturn(Future.successful(Seq("1", "200")))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(testController.employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.confirmPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.confirmPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
       }
@@ -439,50 +501,50 @@ class IncomeControllerSpec extends PlaySpec
 
     "return Internal Server Error" when {
       "employment doesn't present" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+        when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(testController.employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.confirmPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.confirmPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "tax code incomes return failure" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+        when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(testController.employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.confirmPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.confirmPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "employment return None" in {
-        val sut = createSUT
-        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
+        val testController = createTestIncomeController
+        when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(testController.employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(None))
-        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-        val result = sut.confirmPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.confirmPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -492,37 +554,37 @@ class IncomeControllerSpec extends PlaySpec
   "viewIncomeForEdit" must {
     "redirect user" when {
       "employment is live and is not occupational pension" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
 
         val employmentAmount = EmploymentAmount("employment","(Current employer)",1,11,11,None,None,None,None,true,false)
-        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
-        when(sut.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+        when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
+        when(testController.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
 
-        val result = sut.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.IncomeController.regularIncome().url
       }
 
       "employment is not live and is not occupational pension" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
 
         val employmentAmount = EmploymentAmount("employment","(Current employer)",1,11,11,None,None,None,None,false,false)
-        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
-        when(sut.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+        when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
+        when(testController.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
 
-        val result = sut.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.TaxAccountSummaryController.onPageLoad().url
       }
 
       "employment is not live and is occupational pension" in {
-        val sut = createSUT
+        val testController = createTestIncomeController
 
         val employmentAmount = EmploymentAmount("employment","(Current employer)",1,11,11,None,None,None,None,false, true)
-        when(sut.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
-        when(sut.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+        when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
+        when(testController.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
 
-        val result = sut.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe routes.IncomeController.pensionIncome().url
       }
@@ -555,8 +617,8 @@ class IncomeControllerSpec extends PlaySpec
   val employmentAmount = EmploymentAmount("employment","(Current employer)",1,1111,1111,
     None,None,Some(new LocalDate(2000, 5, 20)), None, true, false)
 
-  private def createSUT = new SUT
-  private class SUT extends IncomeController {
+  private def createTestIncomeController = new TestIncomeController
+  private class TestIncomeController extends IncomeController {
     override implicit def templateRenderer: MockTemplateRenderer.type = MockTemplateRenderer
 
     override val personService: PersonService = mock[PersonService]
