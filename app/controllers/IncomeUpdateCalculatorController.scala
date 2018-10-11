@@ -161,6 +161,8 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
+  def handleEditIncomeIrregularHours: Action[AnyContent] = ???
+
   def payPeriodPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
