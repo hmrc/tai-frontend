@@ -147,8 +147,8 @@ GET         /income-tax-comparison                                              
 GET         /your-income-calculation-details/:id                                       controllers.YourIncomeCalculationController.yourIncomeCalculationPage(id: Int)
 GET         /print-your-income-calculation-details/:id                                 controllers.YourIncomeCalculationController.printYourIncomeCalculationPage(id: Int)
 
-GET         /your-income-calculation-previous-year/:year/:empId                       controllers.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
-GET         /print-your-income-calculation-previous-year/:year/:empId                 controllers.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
+GET         /your-income-calculation-previous-year/:year/:empId                        controllers.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
+GET         /print-your-income-calculation-previous-year/:year/:empId                  controllers.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
 
 
 
@@ -252,18 +252,18 @@ GET         /language/:lang                                                     
 
 ## Incorrect Pension
 
-GET         /incorrect-pension/decision/:id                                             controllers.pensions.UpdatePensionProviderController.doYouGetThisPension(id: Int)
-POST        /incorrect-pension/decision                                                 controllers.pensions.UpdatePensionProviderController.handleDoYouGetThisPension
-GET         /incorrect-pension/what-do-you-want-to-tell-us                              controllers.pensions.UpdatePensionProviderController.whatDoYouWantToTellUs
-POST        /incorrect-pension/what-do-you-want-to-tell-us                              controllers.pensions.UpdatePensionProviderController.submitWhatDoYouWantToTellUs
-GET         /incorrect-pension/telephone-number                                         controllers.pensions.UpdatePensionProviderController.addTelephoneNumber
-POST        /incorrect-pension/telephone-number                                         controllers.pensions.UpdatePensionProviderController.submitTelephoneNumber
-GET         /incorrect-pension/check-your-answers                                       controllers.pensions.UpdatePensionProviderController.checkYourAnswers
-POST        /incorrect-pension/check-your-answers                                       controllers.pensions.UpdatePensionProviderController.submitYourAnswers
-GET         /incorrect-pension/success                                                  controllers.pensions.UpdatePensionProviderController.confirmation
+GET         /incorrect-pension/decision/:id                                            controllers.pensions.UpdatePensionProviderController.doYouGetThisPension(id: Int)
+POST        /incorrect-pension/decision                                                controllers.pensions.UpdatePensionProviderController.handleDoYouGetThisPension
+GET         /incorrect-pension/what-do-you-want-to-tell-us                             controllers.pensions.UpdatePensionProviderController.whatDoYouWantToTellUs
+POST        /incorrect-pension/what-do-you-want-to-tell-us                             controllers.pensions.UpdatePensionProviderController.submitWhatDoYouWantToTellUs
+GET         /incorrect-pension/telephone-number                                        controllers.pensions.UpdatePensionProviderController.addTelephoneNumber
+POST        /incorrect-pension/telephone-number                                        controllers.pensions.UpdatePensionProviderController.submitTelephoneNumber
+GET         /incorrect-pension/check-your-answers                                      controllers.pensions.UpdatePensionProviderController.checkYourAnswers
+POST        /incorrect-pension/check-your-answers                                      controllers.pensions.UpdatePensionProviderController.submitYourAnswers
+GET         /incorrect-pension/success                                                 controllers.pensions.UpdatePensionProviderController.confirmation
 
 ## Tax Code Change
 
-GET         /tax-code-change/tax-code-comparison                                        controllers.TaxCodeChangeController.taxCodeComparison
-GET         /tax-code-change/your-tax-free-amount                                       controllers.TaxCodeChangeController.yourTaxFreeAmount
-GET         /tax-code-change/what-happens-next                                          controllers.TaxCodeChangeController.whatHappensNext
+GET         /tax-code-change/tax-code-comparison                                       controllers.TaxCodeChangeController.taxCodeComparison
+GET         /tax-code-change/your-tax-free-amount                                      controllers.TaxCodeChangeController.yourTaxFreeAmount
+GET         /tax-code-change/what-happens-next                                         controllers.TaxCodeChangeController.whatHappensNext
