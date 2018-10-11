@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.income.estimatedPay.update
 
 import builders.{AuthBuilder, RequestBuilder, UserBuilder}
-import controllers.income.estimatedPay.update.IncomeUpdateCalculatorController
+import controllers.FakeTaiPlayApplication
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -42,8 +42,7 @@ import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 import scala.util.Random
 
 class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with JourneyCacheConstants {
@@ -64,7 +63,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
       val result = sut.howToUpdatePage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.IncomeController.pensionIncome().url)
+      redirectLocation(result) mustBe Some(controllers.routes.IncomeController.pensionIncome().url)
     }
     "employments return empty income is none" in {
       val sut = createSut
@@ -87,7 +86,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
           TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome]))(RequestBuilder.buildFakeRequestWithAuth("GET"), UserBuilder.apply())
 
         result.header.status mustBe SEE_OTHER
-        result.header.headers.get(LOCATION) mustBe Some(routes.IncomeController.pensionIncome().url)
+        result.header.headers.get(LOCATION) mustBe Some(controllers.routes.IncomeController.pensionIncome().url)
       }
 
       "employment amount is not occupation income" in {
@@ -96,7 +95,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
           TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome]))(RequestBuilder.buildFakeRequestWithAuth("GET"), UserBuilder.apply())
 
         result.header.status mustBe SEE_OTHER
-        result.header.headers.get(LOCATION) mustBe Some(routes.TaxAccountSummaryController.onPageLoad().url)
+        result.header.headers.get(LOCATION) mustBe Some(controllers.routes.TaxAccountSummaryController.onPageLoad().url)
       }
     }
 
@@ -157,7 +156,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val sut = createSut
         val result = sut.handleChooseHowToUpdate()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("howToUpdate" -> "income"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.IncomeController.viewIncomeForEdit().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.viewIncomeForEdit().url)
       }
     }
 

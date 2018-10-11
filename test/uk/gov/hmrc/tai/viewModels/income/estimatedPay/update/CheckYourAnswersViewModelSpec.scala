@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.viewModels.income
+package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
-import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
 
 class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
 

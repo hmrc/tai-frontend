@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views.html.incomes
+package views.html.incomes.estimatedPayment.update
 
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
@@ -50,6 +50,9 @@ class CheckYourAnswersSpec extends TaiViewSpec {
       doc must haveCheckYourAnswersSummaryLineAnswer(2, totalPay)
       doc must haveCheckYourAnswersSummaryLineChangeLink(2,
         controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipAmountPage().url)
+
+
+
     }
 
     "display a continue button" in {
