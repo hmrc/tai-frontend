@@ -21,7 +21,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.model.domain.EmploymentIncome
+import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -32,8 +33,22 @@ trait TaxAccountService {
   def taxAccountConnector: TaxAccountConnector
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
-    "***** 111"
     taxAccountConnector.taxCodeIncomes(nino, year)
+  }
+
+  def taxCodeIncomeForSpecificEmployment(nino: Nino,
+                                         year: TaxYear,
+                                         employmentId: Int)(implicit hc: HeaderCarrier): Future[Option[TaxCodeIncome]] = {
+
+    for {
+      taxCodeIncomesResponse <- taxAccountConnector.taxCodeIncomes(nino, year)
+    } yield {
+      taxCodeIncomesResponse match {
+        case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) =>
+          taxCodeIncomes.find(_.employmentId.contains(employmentId))
+        case _ => throw new RuntimeException(s"Not able to find tax code incomes")
+      }
+    }
   }
 
   def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {

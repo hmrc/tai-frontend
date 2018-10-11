@@ -34,7 +34,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, TaxCodeIncomeSourceStatus}
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
@@ -236,21 +236,48 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   }
 
   "editIncomeIrregularHours" must {
-    "respond with OK" when {
-      "" in {
+    "respond with OK and show the irregular hours edit page" in {
         val testController = createTestController
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123,"description","taxCode","name",OtherBasisOperation,Live)
 
-        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any()))
-          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(taxCodeIncome))))
+        when(testController.taxAccountService.taxCodeIncomeForSpecificEmployment(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Some(taxCodeIncome)))
+
         val result = testController.editIncomeIrregularHours(1)(
           RequestBuilder.buildFakeRequestWithAuth("GET")
         )
 
-        println("$$$$$$$ " + result)
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.workingHours.title"))
+        doc.title() must include(Messages("tai.irregular.mainHeadingText"))
+    }
+
+    "respond with INTERNAL_SERVER_ERROR" when {
+      "the employment income cannot be found" in {
+        val testController = createTestController
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123, "description", "taxCode", "name", OtherBasisOperation, Live)
+
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(taxCodeIncome))))
+
+        val result = testController.editIncomeIrregularHours(2)(
+          RequestBuilder.buildFakeRequestWithAuth("GET")
+        )
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+
+      "failure response is returned by taxAccountService.taxCodeIncomes" in {
+        val testController = createTestController
+
+        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any()))
+          .thenReturn(Future.successful(TaiTaxAccountFailureResponse("error")))
+
+        val result = testController.editIncomeIrregularHours(1)(
+          RequestBuilder.buildFakeRequestWithAuth("GET")
+        )
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
   }

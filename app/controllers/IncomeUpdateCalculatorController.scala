@@ -155,24 +155,10 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-
-        val employerName = "employerName" //journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-        val currentAmount = 1 // get TaxCodeIncome taxCodeIncome.amount.toInt
-
-        for {
-          taxCodeIncomesResponse <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
-        } yield {
-
-          taxCodeIncomesResponse match {
-            case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) =>
-          println("***** " + taxCodeIncomes)
-              val currentIncomeAmount = taxCodeIncomes.find(_.employmentId.contains(employmentId)).map(_.amount.toInt)
-
-              Ok(views.html.incomes.editIncomeIrregularHours(employerName, currentIncomeAmount.get))
-            case _ => ???
-          }
+        taxAccountService.taxCodeIncomeForSpecificEmployment(Nino(user.getNino), TaxYear(), employmentId).map {
+          case Some(taxCodeIncome) => Ok(views.html.incomes.editIncomeIrregularHours(taxCodeIncome.name, taxCodeIncome.amount.toInt))
+          case _ => throw new RuntimeException(s"Not able to find employment with id $employmentId")
         }
-        Future.successful(Ok(views.html.incomes.editIncomeIrregularHours(employerName, currentAmount)))
   }
 
   def payPeriodPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>

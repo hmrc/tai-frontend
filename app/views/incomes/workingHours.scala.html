@@ -47,7 +47,7 @@
         @form(action=controllers.routes.IncomeUpdateCalculatorController.handleWorkingHours){
                 @{inputRadioGroupStyling(
                     field=workingHoursForm("workingHours"),
-                    radioOptions=Seq(("regularHours" -> Messages("tai.workingHours.same")), ("irregularHours" -> Messages("tai.workingHours.different"))),
+                    radioOptions=Seq(("regularHours" -> Messages("tai.workingHours.regularHours")), ("irregularHours" -> Messages("tai.workingHours.irregularHours"))),
                     legend=Messages("tai.workingHours.legend"),
                     legendHint=None,
                     ('_groupDivClass, "form-group" ),
