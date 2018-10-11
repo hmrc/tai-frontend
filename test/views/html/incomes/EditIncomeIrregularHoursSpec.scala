@@ -17,7 +17,9 @@
 package views.html.incomes
 
 import org.scalatest.mock.MockitoSugar
+import play.api.data.Form
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 
@@ -46,9 +48,10 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
 
     "have an input box for user to enter new amount" in {
       doc(view) must haveParagraphWithText(messages("tai.irregular.newAmount"))
-      doc(view).getElementsByClass("govuk-currency-input__inner__input").size() mustBe 1
+      doc(view).getElementsByClass("edit-income__input").size() mustBe 1
     }
   }
 
-  override def view: Html = views.html.incomes.editIncomeIrregularHours(employerName, currentAmount)
+  val editIncomeForm = EditIncomeIrregularHoursForm()
+  override def view: Html = views.html.incomes.editIncomeIrregularHours(editIncomeForm, employerName, currentAmount)
 }

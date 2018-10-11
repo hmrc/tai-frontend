@@ -156,7 +156,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     implicit person =>
       implicit request =>
         taxAccountService.taxCodeIncomeForSpecificEmployment(Nino(user.getNino), TaxYear(), employmentId).map {
-          case Some(taxCodeIncome) => Ok(views.html.incomes.editIncomeIrregularHours(taxCodeIncome.name, taxCodeIncome.amount.toInt))
+          case Some(taxCodeIncome) => Ok(views.html.incomes.editIncomeIrregularHours(EditIncomeIrregularHoursForm(), taxCodeIncome.name, taxCodeIncome.amount.toInt))
           case _ => throw new RuntimeException(s"Not able to find employment with id $employmentId")
         }
   }

@@ -14,9 +14,15 @@
  * limitations under the License.
  *@
 
-@(employerName: String, currentAmount: Int)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(incomeUpdateForm: Form[uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm],
+  employerName: String, currentAmount: Int)(
+    implicit request: Request[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
+@import uk.gov.hmrc.play.views.html.helpers.form
 @import includes.forms.input
 
 @gaEventActionString = @{"???"}
@@ -50,7 +56,16 @@
 
     <p>@messages("tai.irregular.newAmount")</p>
 
-    @input
+    @form(action=controllers.routes.IncomeUpdateCalculatorController.handleEditIncomeIrregularHours) {
+        @input(
+            field = incomeUpdateForm("income"),
+            labelText = "bla",
+            bold = true,
+            classes = Seq("edit-income__input"),
+            hintText = "hint hint",
+            isCurrency = true
+        )
+    }
 
 
 
