@@ -35,7 +35,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
@@ -358,8 +358,9 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
     "redirect the user to bonusPaymentsPage page" when {
       "user selected no" in {
         val sut = createSut
-        when(sut.journeyCacheService.cache(Matchers.eq(Map(UpdateIncome_PayslipDeductionsKey -> "No", UpdateIncome_TaxablePayKey -> "")))
-        (any())).thenReturn(Future.successful(Map("" -> "")))
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(sut.journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
         val result = sut.handlePayslipDeductions()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("payslipDeductions" -> "No"))
         status(result) mustBe SEE_OTHER
@@ -408,7 +409,9 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
     "redirect the user to checkYourAnswers page" when {
       "user selected no" in {
         val sut = createSut
+        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map("" -> "")))
         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(sut.journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
         val result = sut.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("bonusPayments" -> "No"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage().url)
