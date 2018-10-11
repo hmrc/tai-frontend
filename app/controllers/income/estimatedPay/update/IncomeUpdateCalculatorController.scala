@@ -28,6 +28,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.cache.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
@@ -45,11 +46,12 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
-  with JourneyCacheConstants {
+  with JourneyCacheConstants
+  with UpdatedEstimatedPayJourneyCache{
 
   def personService: PersonService
 
-  def journeyCacheService: JourneyCacheService
+  implicit def journeyCacheService: JourneyCacheService
 
   def employmentService: EmploymentService
 
@@ -489,30 +491,6 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         } yield {
           Ok(views.html.incomes.calcUnavailable(id, employerName))
         }
-  }
-
-
-  private def journeyCache(key: String, cacheMap: Map[String, String])(implicit hc: HeaderCarrier): Future[Map[String, String]] = {
-
-    def updateCache(cacheToUpdate: Map[String,String],keysToEmpty: List[String])(implicit hc: HeaderCarrier): Future[Map[String, String]] = {
-      if (cacheMap(key) == "Yes") {
-        journeyCacheService.cache(cacheMap)
-      } else {
-        for{
-          current <- journeyCacheService.currentCache
-          updatedCacheMap = current.filterKeys( key => !keysToEmpty.contains(key)) ++ cacheToUpdate
-          _ <- journeyCacheService.flush()
-          updatedCache <- journeyCacheService.cache(updatedCacheMap)
-        }yield updatedCache
-      }
-    }
-
-    key match {
-      case UpdateIncome_PayslipDeductionsKey => updateCache(Map(key -> cacheMap(key)), List(UpdateIncome_TaxablePayKey))
-      case UpdateIncome_BonusPaymentsKey => updateCache(Map(key -> cacheMap(key)),
-        List(UpdateIncome_BonusPaymentsThisYearKey, UpdateIncome_BonusOvertimeAmountKey))
-      case _ => journeyCacheService.cache(cacheMap)
-    }
   }
 
   def cachePayPeriod(form: PayPeriodForm)(implicit hc: HeaderCarrier): Map[String, String] =
