@@ -413,7 +413,6 @@ tai.errorMessage.heading.nps=Service unavailable
 tai.errorMessage.heading=There is a problem
 tai.errorMessage.reportAProblem=report a problem
 tai.errorMessage.startAgain=start again
-tai.estimatedIncome.additionalTax.desc=We adjust your tax code so you pay the tax due on the following.
 tai.estimatedIncome.DIV.title=Dividend Allowance
 tai.estimatedIncome.PSA.linkText=Personal Savings Allowance
 tai.estimatedIncome.PSA.text1=You may also get up to £{0} of interest tax-free depending on which Income Tax band you’re in. This is your {1}.
