@@ -24,7 +24,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait UpdatedEstimatedPayJourneyCache extends JourneyCacheConstants{
 
-  def journeyCache(key: String, cacheMap: Map[String, String])
+  def journeyCache(key: String = "defaultCacheUpdate", cacheMap: Map[String, String])
                   (implicit hc: HeaderCarrier, ec: ExecutionContext, journeyCacheService: JourneyCacheService): Future[Map[String, String]] = {
 
     def updateCache(cacheToUpdate: Map[String,String],keysToEmpty: List[String])(implicit hc: HeaderCarrier): Future[Map[String, String]] = {

@@ -25,8 +25,8 @@
 @header = @{
 ptaHeader(
 displayBackLink = true,
-mainHeadingText = Messages("tai.checkYourAnswers"),
-preHeadingText = Messages("tai.incomes.edit.preHeading", employerName))
+mainHeadingText = messages("tai.checkYourAnswers"),
+preHeadingText = messages("tai.incomes.edit.preHeading", employerName))
 }
 
 @main(
@@ -37,22 +37,23 @@ articleClasses = None,
 gaCustomTitle = None
 ){
 
-
-<div class="section">
-    @includes.checkYourAnswers(
-    title = None,
-    longQuestions = true,
-    confirmationLines = viewModel.journeyConfirmationLines
-    )
-</div>
+<section>
+    <div>
+        @includes.checkYourAnswers(
+            title = None,
+            longQuestions = true,
+            confirmationLines = viewModel.journeyConfirmationLines
+        )
+    </div>
+</section>
 
 <p>@messages("tai.checkYourAnswers.confirmText")</p>
 
 @Link.toInternalPage(
-id=Some("estimatedPayLink"),
-url=income.estimatedPay.update.routes.IncomeUpdateCalculatorController.estimatedPayPage().url,
-value=Some(Messages("tai.WhatDoYouWantToDo.submit")),
-cssClasses=Some("button")
+    id=Some("estimatedPayLink"),
+    url=income.estimatedPay.update.routes.IncomeUpdateCalculatorController.estimatedPayPage().url,
+    value=Some(Messages("tai.WhatDoYouWantToDo.submit")),
+    cssClasses=Some("button")
 ).toHtml
 
 @cancelLink(Call("GET",controllers.routes.TaxAccountSummaryController.onPageLoad.url))

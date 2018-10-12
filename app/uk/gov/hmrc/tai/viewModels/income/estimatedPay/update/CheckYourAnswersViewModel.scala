@@ -100,7 +100,7 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
       case (Some(_),true) => Some(CheckYourAnswersConfirmationLine(message,
         Money.pounds(BigDecimal(answer.get)).toString().trim.replace("&pound;", "\u00A3"),
         changeUrl))
-      case (Some(_),false) => Some(CheckYourAnswersConfirmationLine(message, answer.get, changeUrl))
+      case (Some(answer),false) => Some(CheckYourAnswersConfirmationLine(message, answer, changeUrl))
       case _ => None
     }
   }

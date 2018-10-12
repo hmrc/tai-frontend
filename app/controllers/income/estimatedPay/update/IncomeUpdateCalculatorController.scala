@@ -47,7 +47,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   with WithAuthorisedForTaiLite
   with Auditable
   with JourneyCacheConstants
-  with UpdatedEstimatedPayJourneyCache{
+  with UpdatedEstimatedPayJourneyCache {
 
   def personService: PersonService
 
@@ -70,7 +70,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             for {
               incomeToEdit <- incomeService.employmentAmount(Nino(user.getNino), id)
               taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
-              _ <- journeyCache("IncomeUpdate",Map(UpdateIncome_NameKey -> employment.name, UpdateIncome_IdKey -> id.toString))
+              _ <- journeyCache(cacheMap = Map(UpdateIncome_NameKey -> employment.name, UpdateIncome_IdKey -> id.toString))
             } yield {
               processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails)
             }
@@ -187,7 +187,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               case _ => Map(UpdateIncome_PayPeriodKey -> formData.payPeriod.getOrElse(""))
             }
 
-            journeyCache("payPeriod",cacheMap) map { _ =>
+            journeyCache(cacheMap = cacheMap) map { _ =>
             Redirect(routes.IncomeUpdateCalculatorController.payslipAmountPage())
             }
           }
@@ -352,11 +352,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           },
           formData => {
 
-            val bonusPaymentsAnswer = formData.bonusPayments.fold(
-              Map.empty[String, String])(bonusPayments => Map(UpdateIncome_BonusPaymentsKey -> bonusPayments))
+            val bonusPaymentsAnswer = formData.bonusPayments.fold(ifEmpty = Map.empty[String, String]){ bonusPayments =>
+              Map(UpdateIncome_BonusPaymentsKey -> bonusPayments)
+            }
 
-            val yearlyBonusPaymentsAnswer = formData.bonusPaymentsMoreThisYear.fold(
-              Map.empty[String, String])(bonusPayments => Map(UpdateIncome_BonusPaymentsThisYearKey -> bonusPayments))
+            val yearlyBonusPaymentsAnswer = formData.bonusPaymentsMoreThisYear.fold(ifEmpty = Map.empty[String, String]) { bonusPayments =>
+              Map(UpdateIncome_BonusPaymentsThisYearKey -> bonusPayments)
+            }
 
             val cacheMap = bonusPaymentsAnswer ++ yearlyBonusPaymentsAnswer
 
@@ -455,7 +457,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               UpdateIncome_NewAmountKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
             val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
 
-            journeyCache("estimatedPay",cache) map { _ =>
+            journeyCache(cacheMap = cache) map { _ =>
               Ok(views.html.incomes.estimatedPay(calculatedPay.grossAnnualPay, calculatedPay.netAnnualPay, id, isBonusPayment,
                 calculatedPay.annualAmount, calculatedPay.startDate, employerName, calculatedPay.grossAnnualPay == calculatedPay.netAnnualPay))
             }
@@ -492,12 +494,6 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           Ok(views.html.incomes.calcUnavailable(id, employerName))
         }
   }
-
-  def cachePayPeriod(form: PayPeriodForm)(implicit hc: HeaderCarrier): Map[String, String] =
-    form.otherInDays match {
-      case Some(days) => Map(UpdateIncome_PayPeriodKey -> form.payPeriod.getOrElse(""), UpdateIncome_OtherInDaysKey -> days.toString)
-      case _ => Map(UpdateIncome_PayPeriodKey -> form.payPeriod.getOrElse(""))
-    }
 
 }
 // $COVERAGE-OFF$
