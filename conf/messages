@@ -755,9 +755,10 @@ tai.incomes.updated.check.title=Your taxable income from {0} has been updated
 tai.incomes.workNumber=Employee no:
 
 tai.irregular.mainHeadingText=Update your estimated taxable income for the current year with irregular working hours
-tai.irregular.introduction=Use your average hours to estimate an annual amount of taxable income.
+tai.irregular.introduction=We cannot calculate your annual income as you have irregular working hours.
 tai.irregular.secondaryHeading=Enter your updated estimate
-tai.irregular.instruction=Enter the amount in whole pounds – ignore the pence.
+tai.irregular.instruction1=Use your average hours to estimate an annual amount of taxable income.
+tai.irregular.instruction2=Enter the amount in whole pounds – ignore the pence.
 tai.irregular.currentAmount=Current amount
 tai.irregular.newAmount=New amount
 

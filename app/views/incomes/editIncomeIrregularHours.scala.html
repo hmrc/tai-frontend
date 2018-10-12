@@ -24,6 +24,7 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import includes.forms.input
+@import includes.forms.submit
 
 @gaEventActionString = @{"???"}
 
@@ -48,25 +49,31 @@
 
     <h2>@messages("tai.irregular.secondaryHeading")</h2>
 
-    <p>@messages("tai.irregular.instruction")</p>
+    <p>@messages("tai.irregular.instruction1")</p>
+    <p>@messages("tai.irregular.instruction2")</p>
 
-    <p>@messages("tai.irregular.currentAmount")</p>
+    <div class="grid-row">
+        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleEditIncomeIrregularHours) {
+            <div class="column-one-half">
+                <p class="bold-small">@messages("tai.irregular.currentAmount")</p>
+                <p>£@currentAmount</p>
+            </div>
 
-    <p>£@currentAmount</p>
+            <div class="column-one-half">
+                    @input(
+                        field = incomeUpdateForm("income"),
+                        labelText = messages("tai.irregular.newAmount"),
+                        bold = true,
+                        classes = Seq("edit-income__input"),
+                        hintText = "",
+                        isCurrency = true
+                    )
+            </div>
 
-    <p>@messages("tai.irregular.newAmount")</p>
-
-    @form(action=controllers.routes.IncomeUpdateCalculatorController.handleEditIncomeIrregularHours) {
-        @input(
-            field = incomeUpdateForm("income"),
-            labelText = "bla",
-            bold = true,
-            classes = Seq("edit-income__input"),
-            hintText = "hint hint",
-            isCurrency = true
-        )
-    }
-
-
-
+            <div class="form-group">
+                @submit(Some(messages("tai.submit")))
+            </div>
+        }
+    </div>
 }
+
