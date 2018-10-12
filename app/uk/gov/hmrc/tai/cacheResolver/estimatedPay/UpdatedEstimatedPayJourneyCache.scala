@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.cache.estimatedPay
+package uk.gov.hmrc.tai.cacheResolver.estimatedPay
 
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.JourneyCacheService
