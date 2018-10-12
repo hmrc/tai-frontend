@@ -19,10 +19,11 @@ package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import uk.gov.hmrc.play.views.formatting.Money
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
-class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
+class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with ViewModelHelper {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -76,6 +77,7 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
   }
 
   val monthlyPaymentFrequency = "Monthly"
+  val zeroDecimalPlaces = 0
 
   lazy val paymentFrequencyAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"),
@@ -85,7 +87,7 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
 
   lazy val totalPayAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.totalPay", "month"),
-    Money.pounds(BigDecimal(totalPay)).toString().trim.replace("&pound;", "\u00A3"),
+    withPoundPrefixAndSign(MoneyPounds(BigDecimal(totalPay),zeroDecimalPlaces)),
     controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipAmountPage().url
   )
 
@@ -97,7 +99,7 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
 
   lazy val taxablePayAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.taxablePay", "month"),
-    Money.pounds(BigDecimal(taxablePay)).toString().trim.replace("&pound;", "\u00A3"),
+    withPoundPrefixAndSign(MoneyPounds(BigDecimal(taxablePay),zeroDecimalPlaces)),
     controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage().url
   )
 
@@ -115,13 +117,13 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
 
   lazy val totalBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime", "month"),
-    Money.pounds(BigDecimal(totalBonusOrOvertime)).toString().trim.replace("&pound;", "\u00A3"),
+    withPoundPrefixAndSign(MoneyPounds(BigDecimal(totalBonusOrOvertime),zeroDecimalPlaces)),
     controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url
   )
 
   lazy val totalYearlyBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
     Messages("tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime"),
-    Money.pounds(BigDecimal(totalBonusOrOvertime)).toString().trim.replace("&pound;", "\u00A3"),
+    withPoundPrefixAndSign(MoneyPounds(BigDecimal(totalBonusOrOvertime),zeroDecimalPlaces)),
     controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url
   )
 

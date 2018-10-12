@@ -17,7 +17,8 @@
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.views.formatting.Money
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 case class CheckYourAnswersViewModel(paymentFrequency: String,
@@ -26,7 +27,7 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
                                      taxablePay: Option[String],
                                      hasBonusOrOvertime: String,
                                      hasExtraBonusOrOvertime: Option[String],
-                                     totalBonusOrOvertime: Option[String]) {
+                                     totalBonusOrOvertime: Option[String]) extends ViewModelHelper {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
     val isMonetaryValue = true
@@ -96,9 +97,11 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
   private def createCheckYourAnswerConfirmationLine(message: String, answer: Option[String], changeUrl: String,
                                                     isMonetaryValue: Boolean = false)(implicit messages: Messages): Option[CheckYourAnswersConfirmationLine] = {
 
+    val zeroDecimalPlaces = 0
+
     (answer,isMonetaryValue) match {
-      case (Some(_),true) => Some(CheckYourAnswersConfirmationLine(message,
-        Money.pounds(BigDecimal(answer.get)).toString().trim.replace("&pound;", "\u00A3"),
+      case (Some(answer),true) => Some(CheckYourAnswersConfirmationLine(message,
+        withPoundPrefixAndSign(MoneyPounds(BigDecimal(answer),zeroDecimalPlaces)),
         changeUrl))
       case (Some(answer),false) => Some(CheckYourAnswersConfirmationLine(message, answer, changeUrl))
       case _ => None

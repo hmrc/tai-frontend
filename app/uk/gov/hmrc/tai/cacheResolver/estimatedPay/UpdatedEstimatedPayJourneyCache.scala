@@ -27,23 +27,25 @@ trait UpdatedEstimatedPayJourneyCache extends JourneyCacheConstants{
   def journeyCache(key: String = "defaultCacheUpdate", cacheMap: Map[String, String])
                   (implicit hc: HeaderCarrier, ec: ExecutionContext, journeyCacheService: JourneyCacheService): Future[Map[String, String]] = {
 
-    def updateCache(cacheToUpdate: Map[String,String],keysToEmpty: List[String])(implicit hc: HeaderCarrier): Future[Map[String, String]] = {
-      if (cacheMap(key) == "Yes") {
-        journeyCacheService.cache(cacheMap)
-      } else {
-        for{
-          current <- journeyCacheService.currentCache
-          updatedCacheMap = current.filterKeys( key => !keysToEmpty.contains(key)) ++ cacheToUpdate
-          _ <- journeyCacheService.flush()
-          updatedCache <- journeyCacheService.cache(updatedCacheMap)
-        }yield updatedCache
-      }
+    def yesNoAnswerResponse(cacheToUpdate: Map[String,String],keysToEmpty: List[String]) = {
+      if (cacheMap(key) == "Yes") journeyCacheService.cache(cacheMap) else updateStaleCache(cacheToUpdate,keysToEmpty)
+    }
+
+    def updateStaleCache(cacheToUpdate: Map[String,String],keysToEmpty: List[String])(implicit hc: HeaderCarrier): Future[Map[String, String]] = {
+
+      for{
+        current <- journeyCacheService.currentCache
+        updatedCacheMap = current.filterKeys( key => !keysToEmpty.contains(key)) ++ cacheToUpdate
+        _ <- journeyCacheService.flush()
+        updatedCache <- journeyCacheService.cache(updatedCacheMap)
+      } yield updatedCache
+
     }
 
     key match {
-      case UpdateIncome_PayslipDeductionsKey => updateCache(Map(key -> cacheMap(key)), List(UpdateIncome_TaxablePayKey))
-      case UpdateIncome_BonusPaymentsKey => updateCache(Map(key -> cacheMap(key)),
-        List(UpdateIncome_BonusPaymentsThisYearKey, UpdateIncome_BonusOvertimeAmountKey))
+      case UpdateIncome_PayslipDeductionsKey => yesNoAnswerResponse(Map(key -> cacheMap(key)), List(UpdateIncome_TaxablePayKey))
+      case UpdateIncome_BonusPaymentsKey =>
+        yesNoAnswerResponse(Map(key -> cacheMap(key)), List(UpdateIncome_BonusPaymentsThisYearKey, UpdateIncome_BonusOvertimeAmountKey))
       case _ => journeyCacheService.cache(cacheMap)
     }
   }
