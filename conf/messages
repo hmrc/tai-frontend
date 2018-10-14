@@ -1298,4 +1298,3 @@ tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime = Does this payslip 
 tai.estimatedPay.update.checkYourAnswers.hasExtraBonusOrOvertime = Do you think you will receive any more bonus or overtime payments through the year?
 tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime = Amount of bonus or overtime payments this {0}?
 tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime = Total bonus or overtime payments for the tax year
-
