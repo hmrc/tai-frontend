@@ -111,10 +111,10 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
   def timePeriod(paymentFrequency: String)(implicit messages: Messages):String = {
 
     val timePeriodMessage = paymentFrequency match {
-      case "monthly" => messages("tai.label.month")
-      case "weekly" => messages("tai.label.week")
-      case "fortnightly" => messages("tai.label.fortnight")
-      case "other" => messages("tai.label.period")
+      case "monthly" => messages("tai.estimatedPay.update.checkYourAnswers.timePeriod.month")
+      case "weekly" => messages("tai.estimatedPay.update.checkYourAnswers.timePeriod.week")
+      case "fortnightly" => messages("tai.estimatedPay.update.checkYourAnswers.timePeriod.fortnight")
+      case "other" => messages("tai.estimatedPay.update.checkYourAnswers.timePeriod.period")
     }
 
     timePeriodMessage.toLowerCase()
