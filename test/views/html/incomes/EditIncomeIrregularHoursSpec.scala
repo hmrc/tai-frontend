@@ -19,14 +19,15 @@ package views.html.incomes
 import org.scalatest.mock.MockitoSugar
 import play.api.data.Form
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm
+import uk.gov.hmrc.tai.forms.PenguinForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 
 class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
 
-  val employerName = "employerName"
-  val currentAmount = 1000
+  private val employerName = "employerName"
+  private val currentAmount = 1000
+  private val employmentId = 1
 
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink
@@ -34,7 +35,7 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
     behave like pageWithCombinedHeader(
       messages("tai.estimatedPay.preHeading", employerName),
       messages("tai.irregular.mainHeadingText"))
-    behave like pageWithContinueButtonForm(controllers.routes.IncomeUpdateCalculatorController.handleEditIncomeIrregularHours.url)
+    behave like pageWithContinueButtonForm(controllers.routes.IncomeUpdateCalculatorController.handleEditIncomeIrregularHours(employmentId).url)
 
 
     "have the correct content" in {
@@ -53,10 +54,10 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
       doc(view) must haveSpanWithText(
         messages("tai.irregular.newAmount") + " " + messages("tai.inPounds")
       )
-      doc(view).getElementsByClass("edit-income__input").size() mustBe 1
+      doc(view).getElementsByClass("edit-income__input").size() mustBe employmentId
     }
   }
 
-  val editIncomeForm = EditIncomeIrregularHoursForm()
-  override def view: Html = views.html.incomes.editIncomeIrregularHours(editIncomeForm, employerName, currentAmount)
+  val editIncomeForm = PenguinForm()
+  override def view: Html = views.html.incomes.editIncomeIrregularHours(editIncomeForm, employmentId, employerName, currentAmount)
 }

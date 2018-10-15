@@ -22,19 +22,21 @@ import play.api.i18n.Messages
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
 
-case class EditIncomeIrregularHoursForm(income: Option[String])
+case class PenguinForm(income: Option[String])
 
-object EditIncomeIrregularHoursForm {
-  implicit val formats = Json.format[EditIncomeIrregularHoursForm]
+object PenguinForm {
+  implicit val formats = Json.format[PenguinForm]
 
-  def apply()(implicit messages: Messages): Form[EditIncomeIrregularHoursForm] = {
-    Form[EditIncomeIrregularHoursForm](
+  def apply()(implicit messages: Messages): Form[PenguinForm] = {
+
+    println("****** ...")
+    Form[PenguinForm](
 
         mapping("income" -> TaiValidator.validateNewAmounts(messages("tai.payslip.error.form.incomes.radioButton.mandatory"),
                                                             messages("tai.payslip.error.form.notAnAmount"),
                                                             messages("error.tai.updateDataEmployment.maxLength"))
 
-        )(EditIncomeIrregularHoursForm.apply)(EditIncomeIrregularHoursForm.unapply)
+        )(PenguinForm.apply)(PenguinForm.unapply)
     )
   }
 }

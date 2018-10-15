@@ -44,8 +44,9 @@ trait TaxAccountService {
       taxCodeIncomesResponse <- taxAccountConnector.taxCodeIncomes(nino, year)
     } yield {
       taxCodeIncomesResponse match {
-        case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) =>
+        case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) => {
           taxCodeIncomes.find(_.employmentId.contains(employmentId))
+        }
         case _ => throw new RuntimeException(s"Not able to find tax code incomes")
       }
     }

@@ -156,12 +156,32 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     implicit person =>
       implicit request =>
         taxAccountService.taxCodeIncomeForSpecificEmployment(Nino(user.getNino), TaxYear(), employmentId).map {
-          case Some(taxCodeIncome) => Ok(views.html.incomes.editIncomeIrregularHours(EditIncomeIrregularHoursForm(), taxCodeIncome.name, taxCodeIncome.amount.toInt))
-          case _ => throw new RuntimeException(s"Not able to find employment with id $employmentId")
+          case Some(taxCodeIncome) => {
+            println("****** okay all fine")
+            Ok(views.html.incomes.editIncomeIrregularHours(PenguinForm(), employmentId, taxCodeIncome.name, taxCodeIncome.amount.toInt))
+          }
+          case _ => {
+            println("******** exception in get request")
+            throw new RuntimeException(s"^^^^^^^ Not able to find employment with id $employmentId")
+          }
         }
   }
 
-  def handleEditIncomeIrregularHours: Action[AnyContent] = ???
+  def handleEditIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit person =>
+      implicit request =>
+        PenguinForm.apply().bindFromRequest().fold(
+          formWithErrors => {
+            println("****** &&&" + formWithErrors)
+            taxAccountService.taxCodeIncomeForSpecificEmployment(Nino(user.getNino), TaxYear(), employmentId).map {
+              case Some(taxCodeIncome) => BadRequest(views.html.incomes.editIncomeIrregularHours(formWithErrors, employmentId, taxCodeIncome.name, taxCodeIncome.amount.toInt))
+              case _ => throw new RuntimeException(s"Not able to find employment with id $employmentId")
+            }
+          },
+          formData => Future.successful(Ok("hello"))
+        )
+
+  }
 
   def payPeriodPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
