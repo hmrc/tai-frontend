@@ -20,7 +20,7 @@ import controllers.routes
 import org.fluentlenium.core.filter.matcher.ContainsWordMatcher
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.tai.model.domain.income.OtherBasisOperation
+import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
@@ -29,7 +29,7 @@ import uk.gov.hmrc.time.TaxYearResolver
 class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val taxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOperation, "Employer 1", true, Some("1234"), true)
+  val taxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation, "Employer 1", true, Some("1234"), true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear, payrollNumber = None)
   val taxCodeRecord3 = taxCodeRecord1.copy(taxCode = "BR", startDate = startDate.plusDays(3), endDate = TaxYearResolver.endOfCurrentTaxYear, pensionIndicator = false, payrollNumber = Some("Payroll Number"))
   val taxCodeChange: TaxCodeChange = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))

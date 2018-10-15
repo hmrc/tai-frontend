@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.domain.income.{BasisOfOperation, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.urls.Link
 
@@ -30,10 +30,10 @@ trait TaxCodeDescriptor {
 
   type TaxCodeDescriptionTranslator = TaxCodeDescription => ListMap[String, String]
 
-  case class TaxCodeDescription(taxCode: String, basisOperation: BasisOperation, scottishTaxRateBands: Map[String, BigDecimal])
+  case class TaxCodeDescription(taxCode: String, basisOperation: BasisOfOperation, scottishTaxRateBands: Map[String, BigDecimal])
 
   def describeTaxCode(taxCode: String,
-                      basisOperation: BasisOperation,
+                      basisOperation: BasisOfOperation,
                       scottishTaxRateBands: Map[String, BigDecimal],
                       isCurrentYear: Boolean = true)
                      (implicit messages: Messages): ListMap[String, String] = {
@@ -90,7 +90,7 @@ trait TaxCodeDescriptor {
     val previousOrCurrent = if (isCurrent) "" else ".prev"
 
     taxCodeDescription.basisOperation match {
-      case Week1Month1BasisOperation => ListMap(TaiConstants.EmergencyTaxCode -> messages(s"tai.taxCode$previousOrCurrent.X"))
+      case Week1Month1BasisOfOperation => ListMap(TaiConstants.EmergencyTaxCode -> messages(s"tai.taxCode$previousOrCurrent.X"))
       case _ => ListMap[String, String]()
     }
   }

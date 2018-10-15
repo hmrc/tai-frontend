@@ -35,7 +35,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
-import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, IncorrectPensionProvider, PensionIncome}
 import uk.gov.hmrc.tai.service.{JourneyCacheService, PensionProviderService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.util.{FormValuesConstants, IncorrectPensionDecisionConstants, JourneyCacheConstants}
@@ -57,9 +57,9 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       "a valid pension id has been passed" in {
         val sut = createSUT
         val pensionTaxCodeIncome = TaxCodeIncome(PensionIncome, Some(1), 100, "", "",
-          "TEST", Week1Month1BasisOperation, Live)
+          "TEST", Week1Month1BasisOfOperation, Live)
         val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "",
-          "", Week1Month1BasisOperation, Live)
+          "", Week1Month1BasisOfOperation, Live)
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
@@ -73,9 +73,9 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       "a valid pension id has been passed and we have some cached data" in {
         val sut = createSUT
         val pensionTaxCodeIncome = TaxCodeIncome(PensionIncome, Some(1), 100, "", "",
-          "TEST", Week1Month1BasisOperation, Live)
+          "TEST", Week1Month1BasisOfOperation, Live)
         val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "",
-          "", Week1Month1BasisOperation, Live)
+          "", Week1Month1BasisOfOperation, Live)
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
@@ -103,9 +103,9 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       "an invalid id has been passed" in {
         val sut = createSUT
         val pensionTaxCodeIncome = TaxCodeIncome(PensionIncome, Some(1), 100, "", "",
-          "", Week1Month1BasisOperation, Live)
+          "", Week1Month1BasisOfOperation, Live)
         val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "",
-          "", Week1Month1BasisOperation, Live)
+          "", Week1Month1BasisOfOperation, Live)
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
@@ -118,9 +118,9 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       "an invalid pension id has been passed" in {
         val sut = createSUT
         val pensionTaxCodeIncome = TaxCodeIncome(PensionIncome, Some(1), 100, "", "",
-          "", Week1Month1BasisOperation, Live)
+          "", Week1Month1BasisOfOperation, Live)
         val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "",
-          "", Week1Month1BasisOperation, Live)
+          "", Week1Month1BasisOfOperation, Live)
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
