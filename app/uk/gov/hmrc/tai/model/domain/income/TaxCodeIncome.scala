@@ -33,7 +33,7 @@ object BasisOperation{
       case "Week1/Month1" => JsSuccess(Week1Month1BasisOperation)
       case "OtherBasisOperation" => JsSuccess(OtherBasisOperation)
       case "Cumulative" => JsSuccess(OtherBasisOperation)
-      case _ => throw new IllegalArgumentException("Invalid adjustment type")
+      case _ => throw new IllegalArgumentException("Invalid basis of operation")
     }
 
     override def writes(adjustmentType: BasisOperation) = JsString(adjustmentType.toString)

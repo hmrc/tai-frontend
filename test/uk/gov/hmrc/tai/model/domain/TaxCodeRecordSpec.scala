@@ -65,6 +65,12 @@ class TaxCodeRecordSpec extends PlaySpec {
       )
       taxCodeRecordJson.as[TaxCodeRecord] mustEqual expectedModel
     }
+
+    "throw an exception when an invalid basis of operation is returned" in {
+      intercept[IllegalArgumentException]{
+        invalidBasisOfOperation.as[TaxCodeRecord]
+      }.getMessage mustEqual "Invalid basis of operation"
+    }
   }
 
   private val emergencyTaxCodeRecordJson1 =
@@ -97,6 +103,18 @@ class TaxCodeRecordSpec extends PlaySpec {
       "startDate" -> "2018-07-11",
       "endDate" -> "2018-07-11",
       "basisOfOperation" -> "Cumulative",
+      "employerName" -> "Employer name",
+      "pensionIndicator" -> false,
+      "payrollNumber" -> "1234",
+      "primary" -> true
+    )
+
+  private val invalidBasisOfOperation =
+    Json.obj(
+      "taxCode" -> "code",
+      "startDate" -> "2018-07-11",
+      "endDate" -> "2018-07-11",
+      "basisOfOperation" -> "some invalid string",
       "employerName" -> "Employer name",
       "pensionIndicator" -> false,
       "payrollNumber" -> "1234",
