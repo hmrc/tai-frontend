@@ -21,7 +21,7 @@ import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income.{OtherBasisOperation, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.domain.income.{OtherBasisOfOperation, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
 import uk.gov.hmrc.time.TaxYearResolver
@@ -37,9 +37,9 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
   val endOfTaxYear = TaxYearResolver.endOfCurrentTaxYear
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOperation,"A Employer 1", false, Some("1234"), false)
+  val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation,"A Employer 1", false, Some("1234"), false)
   val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = endOfTaxYear)
-  val fullYearTaxCode = TaxCodeRecord("1185L", startDate, endOfTaxYear, Week1Month1BasisOperation, "B Employer 1", false, Some("12345"), false)
+  val fullYearTaxCode = TaxCodeRecord("1185L", startDate, endOfTaxYear, Week1Month1BasisOfOperation, "B Employer 1", false, Some("12345"), false)
   val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", pensionIndicator = false, primary = true)
 
   val taxCodeChange = TaxCodeChange(
@@ -74,10 +74,10 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
           val endDate = startDate.plusMonths(1)
           val changeDate = startDate.plusMonths(1).plusDays(1)
           
-          val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, endDate, OtherBasisOperation,"A Employer 1", false, Some("1234"), false)
+          val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, endDate, OtherBasisOfOperation,"A Employer 1", false, Some("1234"), false)
           val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = changeDate, endDate = endOfTaxYear)
 
-          val previousTCR2Primary = TaxCodeRecord("1185L", startDate, endOfTaxYear, Week1Month1BasisOperation, "B Employer 1", false, Some("12345"), true)
+          val previousTCR2Primary = TaxCodeRecord("1185L", startDate, endOfTaxYear, Week1Month1BasisOfOperation, "B Employer 1", false, Some("12345"), true)
           val currentTCR2Primary = previousTCR2Primary.copy(startDate = changeDate, endDate = endOfTaxYear)
 
           val taxCodeChange = TaxCodeChange(
@@ -103,10 +103,10 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
 
 
-          val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, endDate, OtherBasisOperation, employerName, false, None, false)
+          val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, endDate, OtherBasisOfOperation, employerName, false, None, false)
           val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = changeDate, endDate = endOfTaxYear, payrollNumber = Some("1234"))
 
-          val previousTaxCodeRecord2 = TaxCodeRecord("BR", startDate, startDate.plusMonths(1), OtherBasisOperation, employerName, false, None, false)
+          val previousTaxCodeRecord2 = TaxCodeRecord("BR", startDate, startDate.plusMonths(1), OtherBasisOfOperation, employerName, false, None, false)
 
           val taxCodeChange = TaxCodeChange(
             Seq(previousTaxCodeRecord1, previousTaxCodeRecord2),
@@ -127,10 +127,10 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
           val employerName = "A Employer 1"
 
-          val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOperation, employerName, false, None, false)
+          val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation, employerName, false, None, false)
           val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = endOfTaxYear)
 
-          val previousTaxCodeRecord2 = TaxCodeRecord("BR", startDate, startDate.plusMonths(1), OtherBasisOperation, employerName, false, None, false)
+          val previousTaxCodeRecord2 = TaxCodeRecord("BR", startDate, startDate.plusMonths(1), OtherBasisOfOperation, employerName, false, None, false)
           val currentTaxCodeRecord2Primary = previousTaxCodeRecord2.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = endOfTaxYear, primary = true)
 
           val taxCodeChange = TaxCodeChange(
@@ -181,7 +181,7 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
       "Using a scottish tax rate band" in {
         val taxCode = "D2"
-        val scottishTaxCode = TaxCodeRecord(taxCode, startDate, startDate.plusMonths(1), OtherBasisOperation, "B Employer 1", false, Some("12345"), false)
+        val scottishTaxCode = TaxCodeRecord(taxCode, startDate, startDate.plusMonths(1), OtherBasisOfOperation, "B Employer 1", false, Some("12345"), false)
         val scottishTaxRateBands = Map(taxCode -> BigDecimal(21.5))
 
         val expected = DescriptionListViewModel(

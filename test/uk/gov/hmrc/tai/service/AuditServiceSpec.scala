@@ -31,7 +31,7 @@ import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
-import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 import uk.gov.hmrc.tai.service.AuditService._
 import uk.gov.hmrc.tai.util.TaiConstants._
@@ -145,7 +145,7 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
         implicit val hc = HeaderCarrier(userId = Some(UserId("ABC")))
 
         val employment = Employment("The Man Plc", None, new LocalDate("2016-06-09"), None, Nil, "", "", 1, None, false, false)
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOperation, Live)
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
         Await.result(sut.sendUserEntryAuditEvent(nino, "NA", List(employment),List(taxCodeIncome)), 5.seconds)
 
         val argumentCaptor = ArgumentCaptor.forClass(classOf[DataEvent])

@@ -21,22 +21,22 @@ import play.api.libs.json._
 import uk.gov.hmrc.tai.model.domain.TaxComponentType
 import uk.gov.hmrc.tai.util.TaiConstants
 
-sealed trait BasisOperation
-case object Week1Month1BasisOperation extends BasisOperation
-case object OtherBasisOperation extends BasisOperation
+sealed trait BasisOfOperation
+case object Week1Month1BasisOfOperation extends BasisOfOperation
+case object OtherBasisOfOperation extends BasisOfOperation
 
-object BasisOperation{
-  implicit val formatBasisOperation = new Format[BasisOperation] {
-    override def reads(json: JsValue): JsSuccess[BasisOperation] = json.as[String] match {
-      case "Week1Month1BasisOperation" => JsSuccess(Week1Month1BasisOperation)
-      case "Week 1 Month 1" => JsSuccess(Week1Month1BasisOperation)
-      case "Week1/Month1" => JsSuccess(Week1Month1BasisOperation)
-      case "OtherBasisOperation" => JsSuccess(OtherBasisOperation)
-      case "Cumulative" => JsSuccess(OtherBasisOperation)
+object BasisOfOperation{
+  implicit val formatBasisOperation = new Format[BasisOfOperation] {
+    override def reads(json: JsValue): JsSuccess[BasisOfOperation] = json.as[String] match {
+      case "Week1Month1BasisOperation" => JsSuccess(Week1Month1BasisOfOperation)
+      case "Week 1 Month 1" => JsSuccess(Week1Month1BasisOfOperation)
+      case "Week1/Month1" => JsSuccess(Week1Month1BasisOfOperation)
+      case "OtherBasisOperation" => JsSuccess(OtherBasisOfOperation)
+      case "Cumulative" => JsSuccess(OtherBasisOfOperation)
       case _ => throw new IllegalArgumentException("Invalid basis of operation")
     }
 
-    override def writes(adjustmentType: BasisOperation) = JsString(adjustmentType.toString)
+    override def writes(adjustmentType: BasisOfOperation) = JsString(adjustmentType.toString)
   }
 }
 
@@ -84,13 +84,13 @@ case class TaxCodeIncome(componentType:TaxComponentType,
                          description:String,
                          taxCode:String,
                          name: String,
-                         basisOperation: BasisOperation,
+                         basisOperation: BasisOfOperation,
                          status: TaxCodeIncomeSourceStatus,
                          iabdUpdateSource: Option[IabdUpdateSource] = None,
                          updateNotificationDate: Option[LocalDate] = None,
                          updateActionDate: Option[LocalDate] = None){
   lazy val taxCodeWithEmergencySuffix: String = basisOperation match {
-    case Week1Month1BasisOperation => taxCode + TaiConstants.EmergencyTaxCodeSuffix
+    case Week1Month1BasisOfOperation => taxCode + TaiConstants.EmergencyTaxCodeSuffix
     case _ => taxCode
   }
 }

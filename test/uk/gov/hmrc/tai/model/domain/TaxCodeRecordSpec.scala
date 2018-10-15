@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.model.domain
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
-import uk.gov.hmrc.tai.model.domain.income.{OtherBasisOperation, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.domain.income.{OtherBasisOfOperation, Week1Month1BasisOfOperation}
 
 class TaxCodeRecordSpec extends PlaySpec {
 
@@ -29,7 +29,7 @@ class TaxCodeRecordSpec extends PlaySpec {
         "code",
         new LocalDate(2018, 7,11),
         new LocalDate(2018, 7, 11),
-        Week1Month1BasisOperation,
+        Week1Month1BasisOfOperation,
         "Employer name",
         false,
         Some("1234"),
@@ -43,7 +43,7 @@ class TaxCodeRecordSpec extends PlaySpec {
         "code",
         new LocalDate(2018, 7,11),
         new LocalDate(2018, 7, 11),
-        Week1Month1BasisOperation,
+        Week1Month1BasisOfOperation,
         "Employer name",
         false,
         Some("1234"),
@@ -57,7 +57,7 @@ class TaxCodeRecordSpec extends PlaySpec {
         "code",
         new LocalDate(2018, 7,11),
         new LocalDate(2018, 7, 11),
-        OtherBasisOperation,
+        OtherBasisOfOperation,
         "Employer name",
         false,
         Some("1234"),
