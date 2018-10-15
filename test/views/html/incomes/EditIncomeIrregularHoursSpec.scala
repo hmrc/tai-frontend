@@ -34,11 +34,14 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
     behave like pageWithCombinedHeader(
       messages("tai.estimatedPay.preHeading", employerName),
       messages("tai.irregular.mainHeadingText"))
+    behave like pageWithContinueButtonForm(controllers.routes.IncomeUpdateCalculatorController.handleEditIncomeIrregularHours.url)
+
 
     "have the correct content" in {
       doc(view) must haveParagraphWithText(messages("tai.irregular.introduction"))
       doc(view) must haveHeadingH2WithText(messages("tai.irregular.secondaryHeading"))
-      doc(view) must haveParagraphWithText(messages("tai.irregular.instruction"))
+      doc(view) must haveParagraphWithText(messages("tai.irregular.instruction1"))
+      doc(view) must haveParagraphWithText(messages("tai.irregular.instruction2"))
     }
 
     "display the users current estimated income" in {
@@ -47,7 +50,9 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
     }
 
     "have an input box for user to enter new amount" in {
-      doc(view) must haveParagraphWithText(messages("tai.irregular.newAmount"))
+      doc(view) must haveSpanWithText(
+        messages("tai.irregular.newAmount") + " " + messages("tai.inPounds")
+      )
       doc(view).getElementsByClass("edit-income__input").size() mustBe 1
     }
   }

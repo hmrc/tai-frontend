@@ -30,11 +30,10 @@ object EditIncomeIrregularHoursForm {
   def apply()(implicit messages: Messages): Form[EditIncomeIrregularHoursForm] = {
     Form[EditIncomeIrregularHoursForm](
 
-
         mapping("income" -> TaiValidator.validateNewAmounts(messages("tai.payslip.error.form.incomes.radioButton.mandatory"),
                                                             messages("tai.payslip.error.form.notAnAmount"),
-                                                            messages("error.tai.updateDataEmployment.maxLength")
-                                                            )
+                                                            messages("error.tai.updateDataEmployment.maxLength"))
+
         )(EditIncomeIrregularHoursForm.apply)(EditIncomeIrregularHoursForm.unapply)
     )
   }
