@@ -20,8 +20,9 @@ import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
 import play.api.Play.current
+import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -152,30 +153,32 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         )
   }
 
+  private def routingForEditIncomeIrregularHours(form: Form[EditIncomeIrregularHoursForm],
+                                                 employmentId: Int,
+                                                 status: Status)
+                                                (taxCodeIncome: Option[TaxCodeIncome])
+                                                (implicit request: Request[_]): Result = {
+
+    taxCodeIncome.fold(throw new RuntimeException(s"Not able to find employment with id $employmentId")) { tci =>
+      status(views.html.incomes.editIncomeIrregularHours(form, employmentId, tci.name, tci.amount.toInt))
+    }
+  }
+
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        taxAccountService.taxCodeIncomeForSpecificEmployment(Nino(user.getNino), TaxYear(), employmentId).map {
-          case Some(taxCodeIncome) => {
-            println("****** okay all fine")
-            Ok(views.html.incomes.editIncomeIrregularHours(PenguinForm(), employmentId, taxCodeIncome.name, taxCodeIncome.amount.toInt))
-          }
-          case _ => {
-            println("******** exception in get request")
-            throw new RuntimeException(s"^^^^^^^ Not able to find employment with id $employmentId")
-          }
+        taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId).map {
+          routingForEditIncomeIrregularHours(EditIncomeIrregularHoursForm(), employmentId, Ok)
         }
   }
 
   def handleEditIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        PenguinForm.apply().bindFromRequest().fold(
+        EditIncomeIrregularHoursForm().bindFromRequest().fold(
           formWithErrors => {
-            println("****** &&&" + formWithErrors)
-            taxAccountService.taxCodeIncomeForSpecificEmployment(Nino(user.getNino), TaxYear(), employmentId).map {
-              case Some(taxCodeIncome) => BadRequest(views.html.incomes.editIncomeIrregularHours(formWithErrors, employmentId, taxCodeIncome.name, taxCodeIncome.amount.toInt))
-              case _ => throw new RuntimeException(s"Not able to find employment with id $employmentId")
+            taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId).map {
+              routingForEditIncomeIrregularHours(formWithErrors, employmentId, BadRequest)
             }
           },
           formData => Future.successful(Ok("hello"))

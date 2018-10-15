@@ -52,7 +52,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
       when(testService.taxAccountConnector.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
 
-      val result = testService.taxCodeIncomeForSpecificEmployment(generateNino, TaxYear(), 1)
+      val result = testService.taxCodeIncomeForEmployment(generateNino, TaxYear(), 1)
 
       val expected = Some(taxCodeIncome1)
 
@@ -65,7 +65,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
       when(testService.taxAccountConnector.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
 
-      val result = testService.taxCodeIncomeForSpecificEmployment(generateNino, TaxYear(), 99)
+      val result = testService.taxCodeIncomeForEmployment(generateNino, TaxYear(), 99)
 
       Await.result(result, 5 seconds) mustBe None
     }
@@ -76,7 +76,7 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
       when(testService.taxAccountConnector.taxCodeIncomes(any(), any())(any()))
         .thenReturn(Future.successful(TaiTaxAccountFailureResponse("error")))
 
-      val result = testService.taxCodeIncomeForSpecificEmployment(generateNino, TaxYear(), 99)
+      val result = testService.taxCodeIncomeForEmployment(generateNino, TaxYear(), 99)
 
       val expected = Some(taxCodeIncome1)
 
