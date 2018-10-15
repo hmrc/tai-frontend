@@ -30,6 +30,7 @@ object BasisOperation{
     override def reads(json: JsValue): JsSuccess[BasisOperation] = json.as[String] match {
       case "Week1Month1BasisOperation" => JsSuccess(Week1Month1BasisOperation)
       case "Week 1 Month 1" => JsSuccess(Week1Month1BasisOperation)
+      case "Week1/Month1" => JsSuccess(Week1Month1BasisOperation)
       case "OtherBasisOperation" => JsSuccess(OtherBasisOperation)
       case "Cumulative" => JsSuccess(OtherBasisOperation)
       case _ => throw new IllegalArgumentException("Invalid adjustment type")
