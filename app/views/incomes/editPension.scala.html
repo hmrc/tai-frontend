@@ -63,7 +63,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
                         <tr class="income-data">
                             <td class="break-word">@income("description").value @income("name").value</td>
                             @income.errors(income("newAmount").name).map{ error =>
-                                <span class="error-notification">@messages(error.message)</span>
+                                <span class="error-notification validation-error__inline-error">@messages(error.message)</span>
                             }
                             <td class="text--right"><input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' />@income("oldAmount").value</td>
                             <td class="text--right"><input aria-labelledby="amountLabel" class="text--right input--small income-data-input" type="text" id="newAmount" name='@income("newAmount").name' value='' /></td>
