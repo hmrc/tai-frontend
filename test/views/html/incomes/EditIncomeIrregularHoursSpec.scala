@@ -58,6 +58,6 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
     }
   }
 
-  val editIncomeForm = EditIncomeIrregularHoursForm()
+  val editIncomeForm = EditIncomeIrregularHoursForm.createForm()
   override def view: Html = views.html.incomes.editIncomeIrregularHours(editIncomeForm, employmentId, employerName, currentAmount)
 }

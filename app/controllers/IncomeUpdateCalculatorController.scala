@@ -159,8 +159,9 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
                                                 (taxCodeIncome: Option[TaxCodeIncome])
                                                 (implicit request: Request[_]): Result = {
 
-    taxCodeIncome.fold(throw new RuntimeException(s"Not able to find employment with id $employmentId")) { tci =>
-      status(views.html.incomes.editIncomeIrregularHours(form, employmentId, tci.name, tci.amount.toInt))
+    taxCodeIncome match {
+      case Some(tci) => status(views.html.incomes.editIncomeIrregularHours(form, employmentId, tci.name, tci.amount.toInt))
+      case None => throw new RuntimeException(s"Not able to find employment with id $employmentId")
     }
   }
 
@@ -168,28 +169,21 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     implicit person =>
       implicit request =>
         taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId).map {
-          routingForEditIncomeIrregularHours(EditIncomeIrregularHoursForm(), employmentId, Ok)
+          routingForEditIncomeIrregularHours(EditIncomeIrregularHoursForm.createForm(), employmentId, Ok)
         }
   }
 
   def handleEditIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
+        taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId).map { optTCI =>
+          val formWitValues = EditIncomeIrregularHoursForm.createForm(optTCI.map(_.amount.toInt)).bindFromRequest()
 
-        val tci = taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId)
-
-        tci.flatMap {
-          case Some(taxCodeIncome) => {
-            EditIncomeIrregularHoursForm(taxCodeIncome.amount).bindFromRequest().fold(
-              formWithErrors => {
-                tci.map {
-                  routingForEditIncomeIrregularHours(formWithErrors, employmentId, BadRequest)
-                }
-              },
-              formData => Future.successful(Ok("hello"))
-            )
+          if (formWitValues.hasErrors) {
+            routingForEditIncomeIrregularHours(formWitValues, employmentId, BadRequest)(optTCI)
+          } else {
+            Ok("hello")
           }
-          case _ => throw new RuntimeException(s"Not able to find employment with id $employmentId")
         }
   }
 
