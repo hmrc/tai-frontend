@@ -20,6 +20,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.urls.Link
 @import includes.{cancelLink, ptaHeader}
+@import includes.forms.input
 
 @gaEventActionString = @{"Update your annual taxable pay"}
 
@@ -56,15 +57,12 @@ gaCustomTitle = None
             <span class="error-notification">@messages(error.message)</span>
             }
             <div class="column-half">
-                <label class="form-label form-label-bold">@messages("tai.incomes.amount.current.pension")</label>
-                <input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' />£@income("oldAmount").value
+                <span class="bold">@messages("tai.incomes.amount.current.pension")</span>
+                <input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' /><p>£@income("oldAmount").value</p>
             </div>
             <div class="column-half">
-                <label class="form-label form-label-bold" id="amountLabel">@messages("tai.incomes.amount.new.pension")</label>
-                <div class="input-wrapper--currency">
-                    <span class="input-currency-symbol" aria-hidden="true">£</span>
-                    <input aria-labelledby="amountLabel" class="form-control-currency" type="text" id="newAmount" name='@income("newAmount").name' value='' />
-                </div>
+                <label class="form-label form-label-bold" id="amountLabel" for="newAmount">@messages("tai.incomes.amount.new.pension")</label>
+                @input(income("newAmount"), fieldErrorsEnabled = false, isCurrency = true)
             </div>
         </div>
 
