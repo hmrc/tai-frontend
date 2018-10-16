@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.model.domain
 
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 
 class TaxComponentSpec extends PlaySpec{
 
@@ -30,12 +30,12 @@ class TaxComponentSpec extends PlaySpec{
     }
     "return the taxCode WITHOUT X suffix" when{
       "the basis operation is NOT week1Month1" in{
-        val sut = taxCodeIncomeSource.copy(basisOperation = OtherBasisOperation)
+        val sut = taxCodeIncomeSource.copy(basisOperation = OtherBasisOfOperation)
         sut.taxCodeWithEmergencySuffix mustBe "K100"
       }
     }
   }
 
-  val taxCodeIncomeSource = TaxCodeIncome(EmploymentIncome, None, 0, "", "K100", "", Week1Month1BasisOperation, Live)
+  val taxCodeIncomeSource = TaxCodeIncome(EmploymentIncome, None, 0, "", "K100", "", Week1Month1BasisOfOperation, Live)
 
 }

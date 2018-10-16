@@ -159,7 +159,7 @@ trait CodingComponentFormatters {
       val description = (json \ "description").as[String]
       val taxCode = (json \ "taxCode").as[String]
       val name = (json \ "name").as[String]
-      val basisOperation = (json \ "basisOperation").as[BasisOperation]
+      val basisOperation = (json \ "basisOperation").as[BasisOfOperation]
       val status = (json \ "status").as[TaxCodeIncomeSourceStatus](taxCodeIncomeSourceStatusReads)
       val iabdUpdateSource = (json \ "iabdUpdateSource").asOpt[IabdUpdateSource]
       val updateNotificationDate = (json \ "updateNotificationDate").asOpt[LocalDate]

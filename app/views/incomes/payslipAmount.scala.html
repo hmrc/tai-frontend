@@ -54,7 +54,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     gaCustomTitle = None
 ){
 
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayslipAmount){
+        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handlePayslipAmount){
             @includes.forms.input(
               field = payslipForm("totalSalary"),
               labelText = pageDesc,

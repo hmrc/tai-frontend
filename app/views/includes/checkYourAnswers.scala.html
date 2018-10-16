@@ -36,7 +36,7 @@
                     url = line.changeUrl + "?edit=true",
                     copy=Messages("tai.checkYourAnswers.change.label"),
                     altCopy=Some(Messages("tai.checkYourAnswers.change.label") + " " + line.question.toLowerCase),
-                    attributes = if(gaEventAction.isDefined) {Seq("data-journey-click" -> s"link - click:@gaEventAction.get:Change @line.question.toLowerCase")} else {Seq.empty}
+                    attributes = if(gaEventAction.isDefined) {Seq("data-journey-click" -> s"link - click:${gaEventAction.get}:Change ${line.question.toLowerCase}")} else {Seq.empty}
                 )
             </div>
         </li>

@@ -54,7 +54,7 @@ gaCustomTitle = None
 
         <div class="grid-row">
             @income.errors(income("newAmount").name).map{ error =>
-            <span class="error-notification">@messages(error.message)</span>
+            <span class="error-notification validation-error__inline-error">@messages(error.message)</span>
             }
             <div class="column-half">
                 <span class="bold">@messages("tai.incomes.amount.current.pension")</span>

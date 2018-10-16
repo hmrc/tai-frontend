@@ -317,7 +317,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
   "manualUpdateIncomeCalculationMessage" must {
     "return messages for Manual telephone" when {
       "updateNotificationDate and updateActionDate is available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(ManualTelephone), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.phone", Dates.formatDate(taxCodeIncome.updateActionDate.get),
@@ -325,21 +325,21 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       }
 
       "updateNotificationDate is not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(ManualTelephone), None, Some(new LocalDate()))
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.phone.withoutDate"))
       }
 
       "updateActionDate is not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(ManualTelephone), Some(new LocalDate().minusWeeks(4)), None)
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.phone.withoutDate"))
       }
 
       "updateActionDate and updateNotificationDate are not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(ManualTelephone), None, None)
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.phone.withoutDate"))
@@ -348,7 +348,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
     "return messages for letter" when {
       "updateNotificationDate and updateActionDate is available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(Letter), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.letter",
@@ -356,21 +356,21 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       }
 
       "updateNotificationDate is not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(Letter), None, Some(new LocalDate()))
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.letter.withoutDate"))
       }
 
       "updateActionDate is not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(Letter), Some(new LocalDate().minusWeeks(4)), None)
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.letter.withoutDate"))
       }
 
       "updateActionDate and updateNotificationDate are not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(Letter), None, None)
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.letter.withoutDate"))
@@ -379,7 +379,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
     "return messages for Email" when {
       "updateNotificationDate and updateActionDate is available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(Email), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.email",
@@ -387,21 +387,21 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       }
 
       "updateNotificationDate is not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(Email), None, Some(new LocalDate()))
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.email.withoutDate"))
       }
 
       "updateActionDate is not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(Email), Some(new LocalDate().minusWeeks(4)), None)
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.email.withoutDate"))
       }
 
       "updateActionDate and updateNotificationDate are not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(Email), None, None)
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.email.withoutDate"))
@@ -410,7 +410,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
     "return messages for AgentContact" when {
       "1" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(AgentContact), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe Some(messagesApi("tai.income.calculation.agent"))
       }
@@ -418,7 +418,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
     "return messages for OtherForm" when {
       "updateNotificationDate and updateActionDate is available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(OtherForm), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.informationLetter",
@@ -426,21 +426,21 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       }
 
       "updateNotificationDate is not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(OtherForm), None, Some(new LocalDate()))
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
       }
 
       "updateActionDate is not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(OtherForm), Some(new LocalDate().minusWeeks(4)), None)
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
       }
 
       "updateActionDate and updateNotificationDate are not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(OtherForm), None, None)
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
@@ -449,7 +449,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
     "return messages for InformationLetter" when {
       "updateNotificationDate and updateActionDate is available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(InformationLetter), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.informationLetter",
@@ -457,21 +457,21 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       }
 
       "updateNotificationDate is not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(InformationLetter), None, Some(new LocalDate()))
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
       }
 
       "updateActionDate is not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(InformationLetter), Some(new LocalDate().minusWeeks(4)), None)
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
       }
 
       "updateActionDate and updateNotificationDate are not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(InformationLetter), None, None)
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.informationLetter.withoutDate"))
@@ -480,7 +480,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
     "return messages for Internet" when {
       "updateNotificationDate is available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(Internet), Some(new LocalDate()), None)
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.internet",
@@ -488,7 +488,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
       }
 
       "updateNotificationDate is not available" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(Internet), None, None)
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe
           Some(messagesApi("tai.income.calculation.manual.update.internet.withoutDate"))
@@ -497,7 +497,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
     "return none" when {
       "iabdUpdateSource is none" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           None, None, None)
         ManualUpdateIncomeMessages.manualUpdateIncomeCalculationMessage(taxCodeIncome) mustBe None
       }
@@ -506,14 +506,14 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
   "manualUpdateIncomeCalculationEstimateMessage" must {
     "return messages is not agent code" when {
-      val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+      val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
         Some(ManualTelephone), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
       ManualUpdateIncomeMessages.manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome) mustBe
         Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount))
     }
 
     "return messages is agent code" when {
-      val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+      val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
         Some(AgentContact), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
       ManualUpdateIncomeMessages.manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome) mustBe
         Some(messagesApi("tai.income.calculation.agent.estimate", taxCodeIncome.amount))
@@ -524,7 +524,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     "return messages" when {
       "getCeasedMsg returns both messages" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false, false)
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           None, None, None)
         YourIncomeCalculationViewModel.incomeExplanationMessage(Ceased, employment, "pension", taxCodeIncome, None, 1000, None) mustBe (
           (Some(messagesApi("tai.income.calculation.rti.ceased.pension.noFinalPay")),
@@ -533,7 +533,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
       "getCeasedMsg returns first message" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, Some(100), false, false)
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           None, None, None)
 
         YourIncomeCalculationViewModel.incomeExplanationMessage(Ceased, employment, "pension", taxCodeIncome, None, 1000, None) mustBe
@@ -543,7 +543,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
       "getManualUpdateMsg returns both messages" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false, false)
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           Some(ManualTelephone), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
 
         YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, "pension", taxCodeIncome, None, 1000, None) mustBe
@@ -554,7 +554,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
       "getSameMsg returns the first message" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), None, Nil, "", "", 2, None, false, false)
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           None, Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
 
         YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, "emp", taxCodeIncome, None, 1111, None) mustBe
@@ -564,7 +564,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
       "getPayFreqMsg returns both messages" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false, false)
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           None, Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
 
         YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, "emp", taxCodeIncome, Some(OneOff), 1000, None) mustBe
@@ -574,7 +574,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
 
       "getPayFreqMsg returns the first message" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false, false)
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           None, Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
 
         YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, "emp", taxCodeIncome, Some(Irregular), 1000, None) mustBe
@@ -585,7 +585,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     "returns default messages" when {
       "none of the conditions are matched" in {
         val employment = Employment("employment", None, TaxYear().start.minusMonths(1), Some(TaxYear().end), Nil, "", "", 2, None, false, false)
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, Live,
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
           None, Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
 
         YourIncomeCalculationViewModel.incomeExplanationMessage(Live, employment, "emp", taxCodeIncome, None, 1000, None) mustBe
@@ -608,7 +608,7 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
     val employment = Employment("test employment", Some("EMPLOYER1"), uk.gov.hmrc.tai.model.TaxYear().start.plusDays(1),
       if (employmentStatus == Ceased) Some(LocalDate.parse("2017-08-08")) else None, Seq(annualAccount), "", "", 2, cessationPay, false, false)
     val taxCodeIncome = if (hasTaxCodeIncome) {
-      Some(TaxCodeIncome(employmentType, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOperation, employmentStatus))
+      Some(TaxCodeIncome(employmentType, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, employmentStatus))
     } else {
       None
     }
