@@ -35,21 +35,7 @@ class TaxCodeRecordSpec extends PlaySpec {
         Some("1234"),
         true
       )
-      emergencyTaxCodeRecordJson1.as[TaxCodeRecord] mustEqual expectedModel
-    }
-
-    "return a valid Emergency TaxCodeRecord object when given valid Json with alternative spelling of week 1 month 1" in {
-      val expectedModel = TaxCodeRecord(
-        "code",
-        new LocalDate(2018, 7,11),
-        new LocalDate(2018, 7, 11),
-        Week1Month1BasisOfOperation,
-        "Employer name",
-        false,
-        Some("1234"),
-        true
-      )
-      emergencyTaxCodeRecordJson2.as[TaxCodeRecord] mustEqual expectedModel
+      emergencyTaxCodeRecordJson.as[TaxCodeRecord] mustEqual expectedModel
     }
 
     "return a valid TaxCodeRecord object when given valid Json" in {
@@ -73,19 +59,7 @@ class TaxCodeRecordSpec extends PlaySpec {
     }
   }
 
-  private val emergencyTaxCodeRecordJson1 =
-    Json.obj(
-      "taxCode" -> "code",
-      "startDate" -> "2018-07-11",
-      "endDate" -> "2018-07-11",
-      "basisOfOperation" -> "Week 1 Month 1",
-      "employerName" -> "Employer name",
-      "pensionIndicator" -> false,
-      "payrollNumber" -> "1234",
-      "primary" -> true
-    )
-
-  private val emergencyTaxCodeRecordJson2 =
+  private val emergencyTaxCodeRecordJson =
     Json.obj(
       "taxCode" -> "code",
       "startDate" -> "2018-07-11",

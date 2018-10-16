@@ -29,7 +29,6 @@ object BasisOfOperation{
   implicit val formatBasisOperation = new Format[BasisOfOperation] {
     override def reads(json: JsValue): JsSuccess[BasisOfOperation] = json.as[String] match {
       case "Week1Month1BasisOperation" => JsSuccess(Week1Month1BasisOfOperation)
-      case "Week 1 Month 1" => JsSuccess(Week1Month1BasisOfOperation)
       case "Week1/Month1" => JsSuccess(Week1Month1BasisOfOperation)
       case "OtherBasisOperation" => JsSuccess(OtherBasisOfOperation)
       case "Cumulative" => JsSuccess(OtherBasisOfOperation)
