@@ -1285,3 +1285,17 @@ taxCode.change.yourTaxCodeChanged.currentTaxCodes=Current tax codes
 taxCode.change.yourTaxCodeChanged.understand=Understand what {0} means
 taxCode.change.yourTaxCodeChanged.currentTaxCodeDetails.screenReader=From {0} your tax code for {2} is {3}
 taxCode.change.yourTaxCodeChanged.previousTaxCodeDetails.screenReader=From {0} to {1} your tax code for {2} was {3}
+
+
+tai.estimatedPay.update.checkYourAnswers.paymentFrequency = How often you get paid
+tai.estimatedPay.update.checkYourAnswers.totalPay = Total pay this {0}
+tai.estimatedPay.update.checkYourAnswers.hasDeduction = Does your payslip show deductions?
+tai.estimatedPay.update.checkYourAnswers.taxablePay = Taxable pay this {0}
+tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime = Does this payslip include bonus or overtime?
+tai.estimatedPay.update.checkYourAnswers.hasExtraBonusOrOvertime = Do you think you will receive any more bonus or overtime payments through the year?
+tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime = Amount of bonus or overtime payments this {0}?
+tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime = Total bonus or overtime payments for the tax year
+tai.estimatedPay.update.checkYourAnswers.timePeriod.month=month
+tai.estimatedPay.update.checkYourAnswers.timePeriod.week=week
+tai.estimatedPay.update.checkYourAnswers.timePeriod.fortnight=fortnight
+tai.estimatedPay.update.checkYourAnswers.timePeriod.period=period

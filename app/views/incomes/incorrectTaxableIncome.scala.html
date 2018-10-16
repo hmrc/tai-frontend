@@ -56,7 +56,7 @@ gaCustomTitle = None
     </ul>
     @includes.link(
         copy=Messages("tai.estimatedPay.error.incorrectTaxableIncome.button"),
-        url = routes.IncomeUpdateCalculatorController.howToUpdatePage(id).toString,
+        url = income.estimatedPay.update.routes.IncomeUpdateCalculatorController.howToUpdatePage(id).toString,
         isButton=true,
         isSecondary=true
     )

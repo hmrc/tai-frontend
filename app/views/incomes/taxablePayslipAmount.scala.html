@@ -55,7 +55,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     gaCustomTitle = None
 ){
 
-    @form(action=controllers.routes.IncomeUpdateCalculatorController.handleTaxablePayslipAmount){
+    @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleTaxablePayslipAmount){
 
         @includes.forms.input(
             field = taxablePayslipForm("taxablePay"),
