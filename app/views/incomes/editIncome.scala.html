@@ -74,11 +74,10 @@
 
         <p>@Messages("tai.enterWholeAndNumericalOnly")</p>
 
-
         <div class="form-field-group @if(income.hasErrors) {error}">
 
                 @income.errors(income("newAmount").name).map{ error =>
-                    <span class="error-notification">@messages(error.message)</span>
+                    <span class="error-notification validation-error__inline-error">@messages(error.message)</span>
                 }
 
                 <div class="grid-row">
