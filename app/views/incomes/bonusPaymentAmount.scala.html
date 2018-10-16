@@ -69,7 +69,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     gaCustomTitle = None
     ){
     <div class="section flush--bottom soft--top">
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleBonusOvertimeAmount){
+        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleBonusOvertimeAmount){
             @includes.forms.input(
                 field = bonusOvertimeAmountForm("amount"),
                 labelText = pageDesc,

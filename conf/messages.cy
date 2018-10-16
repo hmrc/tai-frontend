@@ -1284,3 +1284,16 @@ taxCode.change.yourTaxCodeChanged.currentTaxCodes=Codau treth presennol
 taxCode.change.yourTaxCodeChanged.understand=Deall beth mae {0} yn ei olygu
 taxCode.change.yourTaxCodeChanged.currentTaxCodeDetails.screenReader=O {0} ymlaen, eich cod treth ar gyfer {2} yw {3}
 taxCode.change.yourTaxCodeChanged.previousTaxCodeDetails.screenReader=O {0} i {1}, eich cod treth ar gyfer {2} oedd {3}
+
+tai.estimatedPay.update.checkYourAnswers.paymentFrequency = Pa mor aml rydych yn cael eich talu
+tai.estimatedPay.update.checkYourAnswers.totalPay = Cyfanswm y cyflog {0}
+tai.estimatedPay.update.checkYourAnswers.hasDeduction = Ydy’ch slip cyflog yn dangos didyniadau?
+tai.estimatedPay.update.checkYourAnswers.taxablePay = Cyflog trethadwy {0}
+tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime = Ydy’r slip cyflog hwn yn cynnwys taliadau bonws neu oramser?
+tai.estimatedPay.update.checkYourAnswers.hasExtraBonusOrOvertime = Ydych chi’n meddwl y cewch ragor o daliadau bonws neu oramser yn ystod y flwyddyn?
+tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime = Swm y taliadau bonws neu oramser {0}?
+tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime = Cyfanswm y taliadau bonws neu oramser ar gyfer y flwyddyn dreth
+tai.estimatedPay.update.checkYourAnswers.timePeriod.month=y mis hwn
+tai.estimatedPay.update.checkYourAnswers.timePeriod.week=yr wythnos hon
+tai.estimatedPay.update.checkYourAnswers.timePeriod.fortnight=y pythefnos hwn
+tai.estimatedPay.update.checkYourAnswers.timePeriod.period=yn y cyfnod hwn

@@ -116,16 +116,6 @@ trait IncomeService extends JourneyCacheConstants {
     }
   }
 
-  def cachePayPeriod(form: PayPeriodForm)(implicit hc: HeaderCarrier): Map[String, String] =
-    form.otherInDays match {
-      case Some(days) => Map(UpdateIncome_PayPeriodKey -> form.payPeriod.getOrElse(""), UpdateIncome_OtherInDaysKey -> days.toString)
-      case _ => Map(UpdateIncome_PayPeriodKey -> form.payPeriod.getOrElse(""))
-    }
-
-  def cacheBonusPayments(bonusPaymentsForm: BonusPaymentsForm)(implicit hc: HeaderCarrier): Map[String, String] = {
-    bonusPaymentsForm.bonusPayments.fold(Map.empty[String, String])(bonusPayments => Map(UpdateIncome_BonusPaymentsKey -> bonusPayments)) ++
-      bonusPaymentsForm.bonusPaymentsMoreThisYear.fold(Map.empty[String, String])(bonusPayments => Map(UpdateIncome_BonusPaymentsThisYearKey -> bonusPayments))
-  }
 }
 // $COVERAGE-OFF$
 object IncomeService extends IncomeService {
