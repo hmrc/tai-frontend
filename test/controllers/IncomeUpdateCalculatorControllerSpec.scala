@@ -240,15 +240,18 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
   "editIncomeIrregularHours" must {
     "respond with OK and show the irregular hours edit page" in {
-        val testController = createTestController
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123,"description","taxCode","name",OtherBasisOperation,Live)
+      val testController = createTestController
+      val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123,"description","taxCode","name",OtherBasisOperation,Live)
 
-        when(testController.taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
-          .thenReturn(Future.successful(Some(taxCodeIncome)))
+      when(
+        testController.taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any())
+      ).thenReturn(
+        Future.successful(Some(taxCodeIncome))
+      )
 
-        val result = testController.editIncomeIrregularHours(1)(
-          RequestBuilder.buildFakeRequestWithAuth("GET")
-        )
+      val result = testController.editIncomeIrregularHours(1)(
+        RequestBuilder.buildFakeRequestWithAuth("GET")
+      )
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
@@ -273,9 +276,10 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   }
 
   "handleEditIncomeIrregularHours" must {
-    "respond with OK" in { //TODO: actually this will be a redirect to the next page
+    "respond with OK" in {
       val testController = createTestController
-      val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123,"description","taxCode","name",OtherBasisOperation,Live)
+      val employmentId = 1
+      val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(employmentId), 123,"description","taxCode","name",OtherBasisOperation,Live)
 
       when(
         testController.taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any())
@@ -283,7 +287,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         Future.successful(Some(taxCodeIncome))
       )
 
-      val result = testController.handleEditIncomeIrregularHours(1)(FakeRequest(method = "POST", path = "")
+      val result = testController.handleIncomeIrregularHours(1)(FakeRequest(method = "POST", path = "")
         .withFormUrlEncodedBody("income" -> "999")
         .withSession(
         SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
@@ -291,7 +295,9 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         SessionKeys.userId -> s"/path/to/authority")
       )
 
-      status(result) mustBe OK
+      status(result) mustBe SEE_OTHER
+
+      redirectLocation(result) mustBe Some(s"/check-income-tax/update-income/edit-income-irregular-hours/$employmentId/confirm")
 
       val doc = Jsoup.parse(contentAsString(result))
 //      doc.title() must include(Messages("tai.irregular.mainHeadingText"))
@@ -309,7 +315,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
           Future.successful(Some(taxCodeIncome))
         )
 
-        val result = testController.handleEditIncomeIrregularHours(1)(
+        val result = testController.handleIncomeIrregularHours(1)(
           FakeRequest(method = "POST", path = "")
             .withFormUrlEncodedBody("income" -> "1")
             .withSession(
@@ -338,7 +344,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
           Future.successful(Some(taxCodeIncome))
         )
 
-        val result = testController.handleEditIncomeIrregularHours(1)(
+        val result = testController.handleIncomeIrregularHours(1)(
           FakeRequest(method = "POST", path = "")
             .withFormUrlEncodedBody("income" -> "ABC")
             .withSession(
@@ -367,7 +373,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
           Future.successful(Some(taxCodeIncome))
         )
 
-        val result = testController.handleEditIncomeIrregularHours(1) {
+        val result = testController.handleIncomeIrregularHours(1) {
           FakeRequest(method = "POST", path = "")
             .withSession(
               SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
@@ -394,7 +400,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
           Future.successful(Some(taxCodeIncome))
         )
 
-        val result = testController.handleEditIncomeIrregularHours(1) {
+        val result = testController.handleIncomeIrregularHours(1) {
           FakeRequest(method = "POST", path = "")
             .withFormUrlEncodedBody("income" -> "1234567890")
             .withSession(

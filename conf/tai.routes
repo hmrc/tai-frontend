@@ -160,7 +160,9 @@ GET         /update-income/working-hours                                        
 POST        /update-income/working-hours                                               controllers.IncomeUpdateCalculatorController.handleWorkingHours
 
 GET         /update-income/edit-income-irregular-hours/:employmentId                   controllers.IncomeUpdateCalculatorController.editIncomeIrregularHours(employmentId: Int)
-POST        /update-income/edit-income-irregular-hours/:employmentId                   controllers.IncomeUpdateCalculatorController.handleEditIncomeIrregularHours(employmentId: Int)
+POST        /update-income/edit-income-irregular-hours/:employmentId                   controllers.IncomeUpdateCalculatorController.handleIncomeIrregularHours(employmentId: Int)
+GET         /update-income/edit-income-irregular-hours/:employmentId/confirm           controllers.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId: Int)
+
 
 GET         /update-income/pay-period                                                  controllers.IncomeUpdateCalculatorController.payPeriodPage
 POST        /update-income/pay-period                                                  controllers.IncomeUpdateCalculatorController.handlePayPeriod

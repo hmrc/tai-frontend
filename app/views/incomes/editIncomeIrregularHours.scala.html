@@ -54,7 +54,7 @@
     <p>@messages("tai.irregular.instruction2")</p>
 
     <div class="grid-row">
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleEditIncomeIrregularHours(employmentId)) {
+        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleIncomeIrregularHours(employmentId)) {
             <div class="column-one-half">
                 <p class="bold-small">@messages("tai.irregular.currentAmount")</p>
                 <p>£@currentAmount</p>

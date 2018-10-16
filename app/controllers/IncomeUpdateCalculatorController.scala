@@ -173,7 +173,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
-  def handleEditIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+  def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
         taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId).map { optTCI =>
@@ -182,10 +182,12 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           if (formWitValues.hasErrors) {
             routingForEditIncomeIrregularHours(formWitValues, employmentId, BadRequest)(optTCI)
           } else {
-            Ok("hello")
+            Redirect(routes.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId))
           }
         }
   }
+
+  def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = ???
 
   def payPeriodPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
