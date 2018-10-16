@@ -273,7 +273,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   }
 
   "handleEditIncomeIrregularHours" must {
-    "respond with OK" in {
+    "respond with OK" in { //TODO: actually this will be a redirect to the next page
       val testController = createTestController
       val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123,"description","taxCode","name",OtherBasisOperation,Live)
 
@@ -290,11 +290,40 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      // TODO: Add test for title
-//      doc.title() must include(Messages(""))
+//      println(doc)
+//      doc.title() must include(Messages("tai.irregular.mainHeadingText"))
     }
 
     "respond with BAD_REQUEST" when {
+      "given an input which is less than the current amount" in {
+
+        val testController = createTestController
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 999,"description","taxCode","name",OtherBasisOperation,Live)
+
+        when(
+          testController.taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any())
+        ).thenReturn(
+          Future.successful(Some(taxCodeIncome))
+        )
+
+        val result = testController.handleEditIncomeIrregularHours(1)(
+          FakeRequest(method = "POST", path = "")
+            .withFormUrlEncodedBody("income" -> "1")
+            .withSession(
+              SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+              SessionKeys.authProvider -> "IDA",
+              SessionKeys.userId -> s"/path/to/authority")
+        )
+
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.irregular.mainHeadingText"))
+
+        doc.body().text must include(Messages("error.tai.updateDataEmployment.enterLargerValue"))
+
+      }
+
       "given invalid form data of invalid currency" in {
 
         val testController = createTestController
@@ -320,7 +349,8 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.irregular.mainHeadingText"))
 
-        // TODO: Add test for error message
+        doc.body().text must include(Messages("tai.payslip.error.form.notAnAmount"))
+
       }
 
       "given invalid form data of no input" in {
@@ -346,8 +376,8 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.irregular.mainHeadingText"))
+        doc.body().text must include(Messages("error.tai.updateDataEmployment.blankValue"))
 
-        // TODO: Add test for error message
       }
 
       "given invalid form data of more than 9 numbers" in {
@@ -363,7 +393,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
         val result = testController.handleEditIncomeIrregularHours(1) {
           FakeRequest(method = "POST", path = "")
-            .withFormUrlEncodedBody("income" -> "999999999") // TODO: Make this test valid and add additional bits for the error messages. This needs to be 10 digits long.
+            .withFormUrlEncodedBody("income" -> "1234567890")
             .withSession(
               SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
               SessionKeys.authProvider -> "IDA",
@@ -374,8 +404,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.irregular.mainHeadingText"))
-
-        // TODO: Add test for error message
+        doc.body().text must include(Messages("error.tai.updateDataEmployment.maxLength"))
 
       }
     }

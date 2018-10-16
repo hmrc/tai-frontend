@@ -27,13 +27,14 @@ case class EditIncomeIrregularHoursForm(income: Option[String])
 object EditIncomeIrregularHoursForm {
   implicit val formats = Json.format[EditIncomeIrregularHoursForm]
 
-  def apply()(implicit messages: Messages): Form[EditIncomeIrregularHoursForm] = {
+  def apply(taxablePayYTD: Option[BigDecimal] = None)(implicit messages: Messages): Form[EditIncomeIrregularHoursForm] = {
 
     Form[EditIncomeIrregularHoursForm](
 
-        mapping("income" -> TaiValidator.validateNewAmounts(messages("tai.payslip.error.form.incomes.radioButton.mandatory"),
+        mapping("income" -> TaiValidator.validateTaxAmounts(messages("error.tai.updateDataEmployment.blankValue"),
                                                             messages("tai.payslip.error.form.notAnAmount"),
-                                                            messages("error.tai.updateDataEmployment.maxLength"))
+                                                            messages("error.tai.updateDataEmployment.maxLength"),
+                                                            "amount less than already paid error", taxablePayYTD)
 
         )(EditIncomeIrregularHoursForm.apply)(EditIncomeIrregularHoursForm.unapply)
     )

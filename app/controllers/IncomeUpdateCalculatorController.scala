@@ -175,15 +175,22 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   def handleEditIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        EditIncomeIrregularHoursForm().bindFromRequest().fold(
-          formWithErrors => {
-            taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId).map {
-              routingForEditIncomeIrregularHours(formWithErrors, employmentId, BadRequest)
-            }
-          },
-          formData => Future.successful(Ok("hello"))
-        )
 
+        val tci = taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId)
+
+        tci.flatMap {
+          case Some(taxCodeIncome) => {
+            EditIncomeIrregularHoursForm(taxCodeIncome.amount).bindFromRequest().fold(
+              formWithErrors => {
+                tci.map {
+                  routingForEditIncomeIrregularHours(formWithErrors, employmentId, BadRequest)
+                }
+              },
+              formData => Future.successful(Ok("hello"))
+            )
+          }
+          case _ => throw new RuntimeException(s"Not able to find employment with id $employmentId")
+        }
   }
 
   def payPeriodPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -411,8 +418,10 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         journeyCacheService.currentCache.flatMap { cache =>
           val moreThisYear = cache.get(UpdateIncome_BonusPaymentsThisYearKey)
           val payPeriod = cache.get(UpdateIncome_PayPeriodKey)
-          BonusOvertimeAmountForm.createForm(Some(BonusOvertimeAmountForm.bonusPaymentsAmountErrorMessage(moreThisYear, payPeriod)),
-            Some(BonusOvertimeAmountForm.notAmountMessage(payPeriod))).bindFromRequest().fold(
+          BonusOvertimeAmountForm.createForm(
+            Some(BonusOvertimeAmountForm.bonusPaymentsAmountErrorMessage(moreThisYear, payPeriod)),
+            Some(BonusOvertimeAmountForm.notAmountMessage(payPeriod))
+          ).bindFromRequest().fold(
             formWithErrors => {
               val id = cache(UpdateIncome_IdKey).toInt
               val employerName = cache.get(UpdateIncome_NameKey).toString
