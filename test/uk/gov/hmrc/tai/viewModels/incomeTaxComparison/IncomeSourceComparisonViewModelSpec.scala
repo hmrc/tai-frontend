@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.viewModels.incomeTaxComparison
 
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceComparisonViewModel
 
@@ -29,10 +29,10 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
       "CY and CY+1 items are supplied to the view model" in {
 
         val taxCodeIncomesCY =
-          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOperation, Live)
+          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live)
 
         val taxCodeIncomesCYPlusOne =
-          TaxCodeIncome(EmploymentIncome, Some(1), 2222, "employment1", "1150L", "employment", OtherBasisOperation, Live)
+          TaxCodeIncome(EmploymentIncome, Some(1), 2222, "employment1", "1150L", "employment", OtherBasisOfOperation, Live)
 
         val employmentCY = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1, None,false, false)
         val employmentCYPlusOne = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1,None,false, false)
@@ -53,10 +53,10 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
       "CY and CY+1 do not have a matching employment ids" in {
 
         val taxCodeIncomesCY =
-          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOperation, Live)
+          TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live)
 
         val taxCodeIncomesCYPlusOne =
-          TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employment2", "1150L", "employment", OtherBasisOperation, Live)
+          TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employment2", "1150L", "employment", OtherBasisOfOperation, Live)
 
         val employmentCY = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
         val employmentCYPlusOne = Employment("employment2", None, new LocalDate(), None, Nil, "", "", 2, None, false, false)
@@ -82,10 +82,10 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
       "CY and CY+1 items are supplied to the view model" in {
 
         val taxCodeIncomesCY =
-          TaxCodeIncome(PensionIncome, Some(3), 3333, "employment", "1150L", "employer3", OtherBasisOperation, Live)
+          TaxCodeIncome(PensionIncome, Some(3), 3333, "employment", "1150L", "employer3", OtherBasisOfOperation, Live)
 
         val taxCodeIncomesCYPlusOne =
-          TaxCodeIncome(PensionIncome, Some(3), 4444, "employment", "1150L", "employer3", OtherBasisOperation, Live)
+          TaxCodeIncome(PensionIncome, Some(3), 4444, "employment", "1150L", "employer3", OtherBasisOfOperation, Live)
 
         val employmentCY = Employment("Pension1", Some("3ABC"), new LocalDate(2017, 3, 1), None, Nil, "DIST3", "PAYE3", 3, None, false, false)
         val employmentCYPlusOne = Employment("Pension1", Some("3ABC"), new LocalDate(2017, 3, 1), None, Nil, "DIST3", "PAYE3", 3, None, false, false)
@@ -106,10 +106,10 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
       "CY and CY+1 do not have a matching pension ids" in {
 
         val taxCodeIncomesCY =
-          TaxCodeIncome(PensionIncome, Some(3), 3333, "employment", "1150L", "employer3", OtherBasisOperation, Live)
+          TaxCodeIncome(PensionIncome, Some(3), 3333, "employment", "1150L", "employer3", OtherBasisOfOperation, Live)
 
         val taxCodeIncomesCYPlusOne =
-          TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "1150L", "employer3", OtherBasisOperation, Live)
+          TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "1150L", "employer3", OtherBasisOfOperation, Live)
 
         val employmentCY = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 3, None, false, false)
         val employmentCYPlusOne = Employment("employment2", None, new LocalDate(), None, Nil, "", "", 4, None, false, false)

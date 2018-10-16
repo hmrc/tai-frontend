@@ -22,7 +22,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.{BandTypesConstants, TaxRegionConstants}
 import uk.gov.hmrc.play.views.formatting.Money.pounds
@@ -83,7 +83,7 @@ class SimpleEstimatedIncomeTaxViewModelSpec extends PlaySpec with FakeTaiPlayApp
 
   val taxCodeIncome = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), BigDecimal(15000), "EmploymentIncome", "1150L", "TestName",
-      OtherBasisOperation, Live, None, Some(new LocalDate(2015, 11, 26)), Some(new LocalDate(2015, 11, 26)))
+      OtherBasisOfOperation, Live, None, Some(new LocalDate(2015, 11, 26)), Some(new LocalDate(2015, 11, 26)))
   )
 
 }

@@ -184,8 +184,8 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
   val taxAccountSummary = TaxAccountSummary(111,222, 333.33, 444.44, 111.11)
 
   val taxCodeIncomes = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOperation, Live))
+    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live))
 
   val nonTaxCodeIncome = NonTaxCodeIncome(Some(uk.gov.hmrc.tai.model.domain.income.UntaxedInterest(UntaxedInterestIncome,
     None, 100, "Untaxed Interest", Seq.empty[BankAccount])), Seq(

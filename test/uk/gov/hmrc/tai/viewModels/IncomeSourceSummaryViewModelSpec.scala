@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits._
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.util.TaiConstants
 
 class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
@@ -34,8 +34,8 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
     "return pension details" when {
       "component type is pension" in {
         val taxCodeIncomeSources = Seq(TaxCodeIncome(PensionIncome, Some(1), 100, "Test", "1100L", "Pension",
-          Week1Month1BasisOperation, Live), TaxCodeIncome(PensionIncome, Some(2), 100, "Test", "100L", "Pension2",
-          Week1Month1BasisOperation, Live))
+          Week1Month1BasisOfOperation, Live), TaxCodeIncome(PensionIncome, Some(2), 100, "Test", "100L", "Pension2",
+          Week1Month1BasisOfOperation, Live))
 
         val employment = Employment("test employment", Some("PENSION-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 2, None, false, false)
@@ -50,8 +50,8 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
     "return income details" when {
       "component type is employment" in {
         val taxCodeIncomeSources = Seq(TaxCodeIncome(EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer",
-          OtherBasisOperation, Live), TaxCodeIncome(EmploymentIncome, Some(2), 100, "Test", "100L", "Employer2",
-          OtherBasisOperation, Live))
+          OtherBasisOfOperation, Live), TaxCodeIncome(EmploymentIncome, Some(2), 100, "Test", "100L", "Employer2",
+          OtherBasisOfOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 2, None, false, false)
@@ -65,8 +65,8 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
     "throws exception" when {
       "employment income sources are not present" in {
         val taxCodeIncomeSources = Seq(TaxCodeIncome(EmploymentIncome, None, 100, "Test", "1100L", "Employer",
-          Week1Month1BasisOperation, Live), TaxCodeIncome(EmploymentIncome, Some(2), 100, "Test", "100L", "Employer2",
-          Week1Month1BasisOperation, Live))
+          Week1Month1BasisOfOperation, Live), TaxCodeIncome(EmploymentIncome, Some(2), 100, "Test", "100L", "Employer2",
+          Week1Month1BasisOfOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 2, None, false, false)
@@ -81,7 +81,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
       "no company benefits are present" in {
 
         val taxCodeIncomeSources = Seq(TaxCodeIncome(
-          EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOperation, Live))
+          EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 1, None, false, false)
@@ -93,7 +93,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
       "company benefits are present, but not for the supplied employment id" in {
 
         val taxCodeIncomeSources = Seq(TaxCodeIncome(
-          EmploymentIncome, Some(7), 100, "Test", "1100L", "Employer", Week1Month1BasisOperation, Live))
+          EmploymentIncome, Some(7), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 7, None, false, false)
@@ -116,7 +116,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         val employmentId = 1
 
         val taxCodeIncomeSources = Seq(TaxCodeIncome(
-          EmploymentIncome, Some(employmentId), 100, "Test", "1100L", "Employer", Week1Month1BasisOperation, Live))
+          EmploymentIncome, Some(employmentId), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", employmentId, None, false, false)
@@ -138,7 +138,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
       "company benefits are present with car fuel benefit, and associated with the supplied employment id" in {
 
         val taxCodeIncomeSources = Seq(TaxCodeIncome(
-          EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOperation, Live))
+          EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 1, None, false, false)
@@ -164,7 +164,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
     "generate a view model with the displayAddCompanyCar flag set to true" when {
       "no existing company car benefit is present" in {
         val taxCodeIncomeSources = Seq(TaxCodeIncome(
-          EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOperation, Live))
+          EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 1, None, false, false)
@@ -177,7 +177,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
     "generate a view model with the displayAddCompanyCar flag set to false" when {
       "an existing company car benefit is present" in {
         val taxCodeIncomeSources = Seq(TaxCodeIncome(
-          EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOperation, Live))
+          EmploymentIncome, Some(1), 100, "Test", "1100L", "Employer", Week1Month1BasisOfOperation, Live))
 
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 1, None, false, false)

@@ -53,7 +53,7 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
       "loading the simple view" in {
 
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome,Some(1),BigDecimal(39107),"EmploymentIncome","277L","TestName",
-          OtherBasisOperation,Live,None,Some(new LocalDate(2015,11,26)),Some(new LocalDate(2015,11,26)))
+          OtherBasisOfOperation,Live,None,Some(new LocalDate(2015,11,26)),Some(new LocalDate(2015,11,26)))
 
         val taxAccountSummary = TaxAccountSummary(7834,2772,0,0,0,47835,11500)
         val codingComponents = Seq(
@@ -128,7 +128,7 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
       "loading the complex view" in {
 
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome,Some(1),BigDecimal(15000),"EmploymentIncome","1150L","TestName",
-          OtherBasisOperation,Live,None,None,None)
+          OtherBasisOfOperation,Live,None,None,None)
 
         val taxAccountSummary = TaxAccountSummary(700,11500,0,0,0,16500,11500)
 
@@ -201,7 +201,7 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
       "loading the zero tax view" in {
 
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome,Some(2),BigDecimal(8000),"EmploymentIncome","1050L","TestName",
-          OtherBasisOperation,Live,None,None,None)
+          OtherBasisOfOperation,Live,None,None,None)
 
         val taxAccountSummary = TaxAccountSummary(0,10500,0,0,0,9000,11500)
 
