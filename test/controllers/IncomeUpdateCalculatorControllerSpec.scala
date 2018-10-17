@@ -276,7 +276,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   }
 
   "handleEditIncomeIrregularHours" must {
-    "respond with OK" in {
+    "respond with Redirect to Confirm page" in {
       val testController = createTestController
       val employmentId = 1
       val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(employmentId), 123,"description","taxCode","name",OtherBasisOperation,Live)
@@ -285,6 +285,12 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         testController.taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any())
       ).thenReturn(
         Future.successful(Some(taxCodeIncome))
+      )
+
+      when(
+        testController.journeyCacheService.cache(any(), any())(any())
+      ).thenReturn(
+        Future.successful(Map.empty[String, String])
       )
 
       val result = testController.handleIncomeIrregularHours(1)(FakeRequest(method = "POST", path = "")

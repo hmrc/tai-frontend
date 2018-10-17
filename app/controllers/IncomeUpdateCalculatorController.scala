@@ -175,16 +175,32 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
   def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
-      implicit request =>
-        taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId).map { optTCI =>
-          val formWitValues = EditIncomeIrregularHoursForm.createForm(optTCI.map(_.amount.toInt)).bindFromRequest()
-
-          if (formWitValues.hasErrors) {
-            routingForEditIncomeIrregularHours(formWitValues, employmentId, BadRequest)(optTCI)
-          } else {
-            Redirect(routes.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId))
+      implicit request => {
+        val bla: TaxCodeIncome => Future[Result] = (tci: TaxCodeIncome) => {
+          val successCase: EditIncomeIrregularHoursForm => Future[Result] = (validForm: EditIncomeIrregularHoursForm) => {
+            journeyCacheService.cache("bla", validForm.income.get) map { cache =>
+              Redirect(routes.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId))
+            }
           }
+
+          val failureCase: Form[EditIncomeIrregularHoursForm] => Future[Result] = (formWithErrors: Form[EditIncomeIrregularHoursForm]) => {
+            Future.successful(routingForEditIncomeIrregularHours(formWithErrors, employmentId, BadRequest)(Some(tci)))
+          }
+
+          EditIncomeIrregularHoursForm.createForm(Some(tci.amount.toInt)).bindFromRequest().fold[Future[Result]](
+            failureCase,
+            successCase
+          )
         }
+
+
+        taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId).flatMap { (optTCI: Option[TaxCodeIncome]) =>
+            optTCI match {
+              case None => throw new RuntimeException(s"Not able to find employment with id $employmentId")
+              case Some(blaTCI) => bla(blaTCI)
+            }
+        }
+      }
   }
 
   def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = ???
