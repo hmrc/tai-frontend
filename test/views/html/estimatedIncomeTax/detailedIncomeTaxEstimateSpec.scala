@@ -470,7 +470,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
   val defaultViewModel = DetailedIncomeTaxEstimateViewModel(
     ukTaxBands, Seq.empty[TaxBand], List(TaxBand("LDR", "", 32010, 6402, None, None, 20))
-    , "UK", 18573, 68476, 11500, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow], None, 20000, 5000, None, messages("tax.on.your.employment.income"),
+    , "UK", 18573, 68476, 11500, Seq.empty[AdditionalTaxDetailRow], Seq.empty[ReductionTaxRow], 20000, 5000, None, messages("tax.on.your.employment.income"),
     messages("your.total.income.from.employment.desc",
       "£68,476",
       messages("tai.estimatedIncome.taxFree.link"),
@@ -491,7 +491,6 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
       taxFreeAllowance = 11500,
       additionalTaxTable = additionalTaxTable,
       reductionTaxTable = reductionTaxTable,
-      incomeTaxReducedToZeroMessage = None,
       totalDividendIncome = 0,
       taxFreeDividendAllowance = 0,
       selfAssessmentAndPayeText = None,
