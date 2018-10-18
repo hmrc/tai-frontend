@@ -35,6 +35,7 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
+import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
 
 import scala.concurrent.Future
 
@@ -160,7 +161,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
                                                 (implicit request: Request[_]): Result = {
 
     taxCodeIncome match {
-      case Some(tci) => status(views.html.incomes.editIncomeIrregularHours(form, employmentId, tci.name, tci.amount.toInt))
+      case Some(tci) => {
+        val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount.toInt)
+
+        status(
+          views.html.incomes.editIncomeIrregularHours(form, viewModel)
+        )
+      }
       case None => throw new RuntimeException(s"Not able to find employment with id $employmentId")
     }
   }
@@ -195,7 +202,12 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
       }
   }
 
-  def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = ???
+  def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          Future.successful(Ok(views.html.incomes.confirmIncomeIrregularHours("hi")))
+  }
 
   def payPeriodPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>

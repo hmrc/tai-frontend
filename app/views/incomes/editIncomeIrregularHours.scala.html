@@ -14,18 +14,18 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
+@import includes.ptaHeader
+@import includes.forms.input
+@import includes.forms.submit
+
 @(incomeUpdateForm: Form[uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm],
-  employmentId: Int,
-  employerName: String, currentAmount: Int)(
+  viewModel: EditIncomeIrregularHoursViewModel)(
     implicit request: Request[_],
     messages: Messages,
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
     partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
-
-@import includes.ptaHeader
-@import uk.gov.hmrc.play.views.html.helpers.form
-@import includes.forms.input
-@import includes.forms.submit
 
 @gaEventActionString = @{"???"}
 
@@ -33,8 +33,8 @@
     ptaHeader(
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.irregular.mainHeadingText"),
-        preHeadingText = messages("tai.estimatedPay.preHeading", employerName),
+        mainHeadingText = viewModel.heading,
+        preHeadingText = viewModel.preHeading,
         headerWidthClasses = Some("column-full")
     )
 }
@@ -54,10 +54,10 @@
     <p>@messages("tai.irregular.instruction2")</p>
 
     <div class="grid-row">
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleIncomeIrregularHours(employmentId)) {
+        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleIncomeIrregularHours(viewModel.employmentId)) {
             <div class="column-one-half">
                 <p class="bold-small">@messages("tai.irregular.currentAmount")</p>
-                <p>£@currentAmount</p>
+                <p>£@viewModel.currentAmount</p>
             </div>
 
             <div class="column-one-half">

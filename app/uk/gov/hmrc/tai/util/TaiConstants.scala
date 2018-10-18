@@ -278,6 +278,7 @@ object TaiConstants {
   val TAXABLE_PAY_DELTA = "TaxablePayDelta"
   val EMPEE_CONTRIBNS_DELTA = "EmpeeContribnsDelta"
   val EYU_DATE_FORMAT = "dd/MM/yyyy"
+  val TAX_DATE_WORD_MONTH_FORMAT = "d MMMM yyyy"
 
   val CEASED_MINUS_ONE = "CY-1"
   val CEASED_MINUS_TWO = "CY-2"

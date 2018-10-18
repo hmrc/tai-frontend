@@ -22,6 +22,7 @@ import builders.{AuthBuilder, RequestBuilder, UserBuilder}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -275,7 +276,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
     }
   }
 
-  "handleEditIncomeIrregularHours" must {
+  "handleIncomeIrregularHours" must {
     "respond with Redirect to Confirm page" in {
       val testController = createTestController
       val employmentId = 1
@@ -422,6 +423,26 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         doc.body().text must include(Messages("error.tai.updateDataEmployment.maxLength"))
 
       }
+    }
+  }
+
+  "confirmIncomeIrregularHours" must {
+    "respond with Ok" in {
+      val testController = createTestController
+
+      val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(FakeRequest(method = "GET", path = "")
+        .withSession(
+          SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+          SessionKeys.authProvider -> "IDA",
+          SessionKeys.userId -> s"/path/to/authority")
+      )
+
+
+      status(result) mustBe OK
+
+      val doc = Jsoup.parse(contentAsString(result))
+
+      // TODO: test title
     }
   }
 
