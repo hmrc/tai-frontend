@@ -17,12 +17,11 @@
 package views.html.incomes
 
 import org.scalatest.mock.MockitoSugar
-import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.income.{EditIncomeIrregularHoursViewModel, EndIncomeCheckYourAnswersViewModel}
+import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
 
 
 class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {

@@ -45,7 +45,6 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIn
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
-
 import scala.concurrent.Future
 import scala.util.Random
 
@@ -115,7 +114,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
         result.header.status mustBe OK
         val doc = Jsoup.parse(contentAsString(Future.successful(result)))
-        doc.title() must include(Messages("tai.howToUpdate.title"))
+        doc.title() must include(messages("tai.howToUpdate.title"))
       }
 
       "editable income is singular" in {
@@ -129,7 +128,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
         result.header.status mustBe OK
         val doc = Jsoup.parse(contentAsString(Future.successful(result)))
-        doc.title() must include(Messages("tai.howToUpdate.title"))
+        doc.title() must include(messages("tai.howToUpdate.title"))
       }
 
       "editable income is none" in {
@@ -171,7 +170,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.howToUpdate.title"))
+        doc.title() must include(messages("tai.howToUpdate.title"))
       }
     }
   }
@@ -184,7 +183,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.workingHours.title"))
+        doc.title() must include(messages("tai.workingHours.title"))
       }
     }
   }
@@ -224,7 +223,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.workingHours.title"))
+        doc.title() must include(messages("tai.workingHours.title"))
       }
 
       "user does not select a response" in {
@@ -233,7 +232,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.workingHours.title"))
+        doc.title() must include(messages("tai.workingHours.title"))
       }
 
     }
@@ -256,7 +255,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.irregular.mainHeadingText"))
+        doc.title() must include(messages("tai.irregular.mainHeadingText"))
     }
 
     "respond with INTERNAL_SERVER_ERROR" when {
@@ -306,8 +305,6 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
       redirectLocation(result) mustBe Some(s"/check-income-tax/update-income/edit-income-irregular-hours/$employmentId/confirm")
 
-      val doc = Jsoup.parse(contentAsString(result))
-//      doc.title() must include(Messages("tai.irregular.mainHeadingText"))
     }
 
     "respond with BAD_REQUEST" when {
@@ -334,10 +331,9 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.irregular.mainHeadingText"))
+        doc.title() must include(messages("tai.irregular.mainHeadingText"))
 
-        //TODO: test for error message for amount
-
+        doc.body().text must include(messages("error.tai.updateDataEmployment.enterLargerValue", taxCodeIncome.amount, LocalDate.now().toString("MMMM")))
       }
 
       "given invalid form data of invalid currency" in {
@@ -363,9 +359,9 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.irregular.mainHeadingText"))
+        doc.title() must include(messages("tai.irregular.mainHeadingText"))
 
-        doc.body().text must include(Messages("tai.payslip.error.form.notAnAmount"))
+        doc.body().text must include(messages("tai.irregular.instruction.wholePounds"))
 
       }
 
@@ -391,8 +387,8 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.irregular.mainHeadingText"))
-        doc.body().text must include(Messages("error.tai.updateDataEmployment.blankValue"))
+        doc.title() must include(messages("tai.irregular.mainHeadingText"))
+        doc.body().text must include(messages("error.tai.updateDataEmployment.blankValue"))
 
       }
 
@@ -419,8 +415,8 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.irregular.mainHeadingText"))
-        doc.body().text must include(Messages("error.tai.updateDataEmployment.maxLength"))
+        doc.title() must include(messages("tai.irregular.mainHeadingText"))
+        doc.body().text must include(messages("error.tai.updateDataEmployment.maxLength"))
 
       }
     }
@@ -442,7 +438,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
       val doc = Jsoup.parse(contentAsString(result))
 
-      // TODO: test title
+      doc.title() must include(messages("tai.irregular.confirm.mainHeading"))
     }
   }
 
@@ -454,7 +450,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payPeriod.title"))
+        doc.title() must include(messages("tai.payPeriod.title"))
       }
     }
   }
@@ -478,7 +474,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payPeriod.title"))
+        doc.title() must include(messages("tai.payPeriod.title"))
       }
     }
   }
@@ -492,7 +488,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payslip.title"))
+        doc.title() must include(messages("tai.payslip.title"))
       }
     }
   }
@@ -516,7 +512,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payslip.title"))
+        doc.title() must include(messages("tai.payslip.title"))
       }
     }
   }
@@ -530,7 +526,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.taxablePayslip.title"))
+        doc.title() must include(messages("tai.taxablePayslip.title"))
       }
     }
   }
@@ -556,7 +552,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.taxablePayslip.title"))
+        doc.title() must include(messages("tai.taxablePayslip.title"))
       }
     }
   }
@@ -569,7 +565,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payslipDeductions.title"))
+        doc.title() must include(messages("tai.payslipDeductions.title"))
       }
     }
   }
@@ -602,7 +598,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payslipDeductions.title"))
+        doc.title() must include(messages("tai.payslipDeductions.title"))
       }
     }
   }
@@ -616,7 +612,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPayments.title"))
+        doc.title() must include(messages("tai.bonusPayments.title"))
       }
     }
   }
@@ -650,7 +646,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPayments.title"))
+        doc.title() must include(messages("tai.bonusPayments.title"))
       }
     }
   }
@@ -665,7 +661,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPaymentsAmount.year.title"))
+        doc.title() must include(messages("tai.bonusPaymentsAmount.year.title"))
       }
 
       "more this year from journey cache does not return yes" in {
@@ -676,7 +672,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPaymentsAmount.period.title"))
+        doc.title() must include(messages("tai.bonusPaymentsAmount.period.title"))
       }
     }
   }
@@ -701,7 +697,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPaymentsAmount.year.title"))
+        doc.title() must include(messages("tai.bonusPaymentsAmount.year.title"))
       }
 
       "bonus payment is none" in {
@@ -711,7 +707,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPaymentsAmount.period.title"))
+        doc.title() must include(messages("tai.bonusPaymentsAmount.period.title"))
       }
     }
   }
@@ -732,7 +728,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.estimatedPay.title"))
+        doc.title() must include(messages("tai.estimatedPay.title"))
       }
     }
 
@@ -752,7 +748,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.estimatedPay.error.incorrectTaxableIncome.title"))
+        doc.title() must include(messages("tai.estimatedPay.error.incorrectTaxableIncome.title"))
 
       }
     }
@@ -771,7 +767,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.confirm.save.title"))
+        doc.title() must include(messages("tai.incomes.confirm.save.title"))
       }
 
       "journey cache returns employment name, net amount with large decimal value and id" in {
@@ -785,7 +781,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.confirm.save.title"))
+        doc.title() must include(messages("tai.incomes.confirm.save.title"))
       }
 
       "journey cache does not returns net amount" in {
@@ -799,7 +795,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.confirm.save.title"))
+        doc.title() must include(messages("tai.incomes.confirm.save.title"))
       }
     }
   }
@@ -812,7 +808,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.unableToCalculate.title"))
+        doc.title() must include(messages("tai.unableToCalculate.title"))
       }
     }
   }
