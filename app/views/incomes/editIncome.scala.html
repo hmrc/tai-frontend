@@ -72,7 +72,7 @@
         @form(action = controllers.routes.IncomeController.editRegularIncome){
             <input type="hidden" name="payToDate" value="@payToDate">
 
-        <p>@Messages("tai.enterWholeAndNumericalOnly")</p>
+        <p>@messages("tai.enterWholeAndNumericalOnly")</p>
 
         <div class="form-field-group @if(income.hasErrors) {error}">
 
@@ -83,10 +83,8 @@
                 <div class="grid-row">
                     <div class="column-half">
                         <div class="form-label form-label-bold">@messages("tai.incomes.amount.current")</div>
-                        <div>
-                            <input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' />
-                            <p>£@income("oldAmount").value</p>
-                        </div>
+                        <input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' />
+                        <p>£@income("oldAmount").value</p>
                     </div>
                     <div class="column-half">
                         <label class="form-label form-label-bold" for="newAmount" id="amountLabel">@messages("tai.incomes.amount.new")</label>
