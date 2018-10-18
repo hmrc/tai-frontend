@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.forms
 
+import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.data.Forms.mapping
 import play.api.i18n.Messages
@@ -29,14 +30,15 @@ object EditIncomeIrregularHoursForm {
 
   def createForm(taxablePayYTD: Option[BigDecimal] = None)(implicit messages: Messages): Form[EditIncomeIrregularHoursForm] = {
 
+    val currentMonth = LocalDate.now().toString("MMMM")
+
     Form[EditIncomeIrregularHoursForm](
 
-        mapping("income" -> TaiValidator.validateTaxAmounts(messages("error.tai.updateDataEmployment.blankValue"),
-                                                            messages("tai.payslip.error.form.notAnAmount"),
-                                                            messages("error.tai.updateDataEmployment.maxLength"),
-                                                            taxablePayYTD.fold("")(_ =>"amount less than already paid error"),
-                                                            taxablePayYTD.getOrElse(BigDecimal(0))
-        )
+        mapping("income" -> TaiValidator.validateTaxAmounts(nonEmptyError = messages("error.tai.updateDataEmployment.blankValue"),
+                                                            validateCurrencyError = messages("tai.irregular.instruction.wholePounds"),
+                                                            validateCurrencyLengthError = messages("error.tai.updateDataEmployment.maxLength"),
+                                                            validateTaxablePayYTDError = taxablePayYTD.fold("")(payToDate => messages("tai.estimatedPay.error.incorrectTaxableIncome.description", payToDate, currentMonth)),
+                                                            taxablePayYTD = taxablePayYTD.getOrElse(0))
 
         )(EditIncomeIrregularHoursForm.apply)(EditIncomeIrregularHoursForm.unapply)
     )

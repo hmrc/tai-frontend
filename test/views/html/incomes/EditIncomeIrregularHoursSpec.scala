@@ -43,8 +43,8 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
     "have the correct content" in {
       doc(view) must haveParagraphWithText(messages("tai.irregular.introduction"))
       doc(view) must haveHeadingH2WithText(messages("tai.irregular.secondaryHeading"))
-      doc(view) must haveParagraphWithText(messages("tai.irregular.instruction1"))
-      doc(view) must haveParagraphWithText(messages("tai.irregular.instruction2"))
+      doc(view) must haveParagraphWithText(messages("tai.irregular.estimateAnnualAverage"))
+      doc(view) must haveParagraphWithText(messages("tai.irregular.instruction.wholePounds"))
     }
 
     "display the users current estimated income" in {
