@@ -44,7 +44,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     gaEventAction = "Bonus or overtime payments",
     title = pageTitle
 ){
-    @form(action=controllers.routes.IncomeUpdateCalculatorController.handleBonusOvertimeAmount){
+    @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleBonusOvertimeAmount){
         @includes.forms.input(
             field = bonusOvertimeAmountForm("amount"),
             labelText = pageDesc,

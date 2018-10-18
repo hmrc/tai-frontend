@@ -37,13 +37,14 @@
   articleClasses = None,
   gaCustomTitle = None
 ){
-
-    <div class="section">
-      @checkYourAnswers(
-        title = Some(viewModel.tableHeader),
-        confirmationLines = viewModel.journeyConfirmationLines
-      )
-    </div>
+    <section>
+        <div>
+            @checkYourAnswers(
+                title = Some(viewModel.tableHeader),
+                confirmationLines = viewModel.journeyConfirmationLines
+            )
+        </div>
+    </section>
 
     <p class="subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
 

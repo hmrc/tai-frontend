@@ -29,7 +29,7 @@ class howToUpdateSpec extends TaiViewSpec {
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
       messages("tai.howToUpdate.preHeading", employerName),
-      messages("tai.howToUpdate.title"))
+      messages("tai.howToUpdate.title", employerName))
   }
 
   override def view: Html = views.html.incomes.howToUpdate(HowToUpdateForm.createForm(), empId, employerName)

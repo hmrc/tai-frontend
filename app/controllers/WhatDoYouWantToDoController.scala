@@ -141,6 +141,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
             taxCodeChanged <- hasTaxCodeChanged
             taxAccountSummary <- cy1TaxAccountSummary
           } yield {
+            Logger.debug("[WhatDoYouWantToDoController] TaxCodeChanged: " + taxCodeChanged)
             taxAccountSummary match {
               case TaiSuccessResponseWithPayload(_) =>
                 Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, taxCodeChanged)))

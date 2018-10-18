@@ -28,7 +28,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     gaEventAction = "Payslip deductions",
     title = messages("tai.bonusPayments.title")
 ){
-    @form(action = controllers.routes.IncomeUpdateCalculatorController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
+    @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
 
         @{inputRadioGroupStyling(
             field=bonusPaymentsForm("bonusPayments"),

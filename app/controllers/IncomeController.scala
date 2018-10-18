@@ -81,10 +81,10 @@ trait IncomeController extends TaiBaseController
         ServiceCheckLite.personDetailsCheck {
           sendActingAttorneyAuditEvent("handleRegularIncomeUpdateForEdit")
 
-          journeyCacheService.collectedValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey), Seq(UpdateIncome_DateKey)) flatMap tupled {
+          journeyCacheService.collectedValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey), Seq(UpdateIncome_DateKey)) flatMap tupled {
             (mandatorySeq, optionalSeq) => {
               val date = optionalSeq.head.map(date => LocalDate.parse(date))
-              EditIncomeForm.bind(BigDecimal(mandatorySeq.head), date).fold(
+              EditIncomeForm.bind(mandatorySeq(2), BigDecimal(mandatorySeq.head), date).fold(
                 formWithErrors => {
                   val webChat = true
                   Future.successful(BadRequest(views.html.incomes.editIncome(formWithErrors,
@@ -176,10 +176,10 @@ trait IncomeController extends TaiBaseController
         ServiceCheckLite.personDetailsCheck {
           sendActingAttorneyAuditEvent("handlePensionIncomeUpdateForEdit")
 
-          journeyCacheService.collectedValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey), Seq(UpdateIncome_DateKey)) flatMap tupled {
+          journeyCacheService.collectedValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey), Seq(UpdateIncome_DateKey)) flatMap tupled {
             (mandatorySeq, optionalSeq) => {
               val date = optionalSeq.head.map(date => LocalDate.parse(date))
-              EditIncomeForm.bind(BigDecimal(mandatorySeq.head), date).fold(
+              EditIncomeForm.bind(mandatorySeq(2), BigDecimal(mandatorySeq.head), date).fold(
                 formWithErrors => {
                   val webChat = true
                   Future.successful(BadRequest(views.html.incomes.editPension(formWithErrors,

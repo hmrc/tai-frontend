@@ -24,7 +24,7 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
-import uk.gov.hmrc.tai.model.domain.income.OtherBasisOperation
+import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -60,14 +60,14 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
   }
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1), OtherBasisOperation,"Employer 1", false, Some("1234"), true)
+  val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1), OtherBasisOfOperation,"Employer 1", false, Some("1234"), true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   private def generateNino: Nino = new Generator(new Random).nextNino
-  private def createSut = new SUT
+  private def createSut = new TestService
 
-  private class SUT extends TaxCodeChangeService {
+  private class TestService extends TaxCodeChangeService {
     override val taxCodeChangeConnector: TaxCodeChangeConnector = mock[TaxCodeChangeConnector]
   }
 

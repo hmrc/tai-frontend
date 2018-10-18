@@ -26,7 +26,7 @@
     gaEventAction = "Your working hours",
     title = messages("tai.workingHours.title")
 ){
-    @form(action=controllers.routes.IncomeUpdateCalculatorController.handleWorkingHours){
+    @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleWorkingHours){
         @{inputRadioGroupStyling(
             field=workingHoursForm("workingHours"),
             radioOptions=Seq(("same" -> Messages("tai.workingHours.same")), ("veryDifferent" -> Messages("tai.workingHours.different"))),
@@ -40,4 +40,3 @@
         <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
     }
 }
-

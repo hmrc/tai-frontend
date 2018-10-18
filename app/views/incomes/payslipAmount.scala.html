@@ -27,7 +27,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     gaEventAction = "Update your annual taxable pay",
     title = messages("tai.payslip.title")
 ){
-    @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayslipAmount){
+    @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handlePayslipAmount){
         @includes.forms.input(
             field = payslipForm("totalSalary"),
             labelText = pageDesc,

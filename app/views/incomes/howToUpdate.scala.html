@@ -20,6 +20,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.forms.inputRadioGroupStyling
+@import includes._
 
 @gaEventActionString = @{"Choose how to update your income"}
 
@@ -28,7 +29,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         formForErrorSummary = Some(howToUpdateForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.howToUpdate.title"),
+        mainHeadingText = Messages("tai.howToUpdate.title", employerName),
         preHeadingText = Messages("tai.howToUpdate.preHeading", employerName),
         headerWidthClasses = Some("column-full")
     )
@@ -36,7 +37,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
 
 @main(
-    title = Messages("tai.howToUpdate.title"),
+    title = Messages("tai.howToUpdate.title", employerName),
     articleClasses = Some("full-width text"),
     user = Some(user),
     pageHeader = Some(header),
@@ -45,10 +46,8 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     gaCustomTitle = None
 ){
 
-    <p>@Messages("tai.howToUpdate.explanation")</p>
-
     <div class="section flush--bottom">
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleChooseHowToUpdate){
+        @form(action=income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleChooseHowToUpdate){
                 @{inputRadioGroupStyling(
                     field=howToUpdateForm("howToUpdate"),
                     radioOptions=Seq(("incomeCalculator" -> Messages("tai.howToUpdate.incomeCalculator")), ("enterAnnual" -> Messages("tai.howToUpdate.enterAnnual"))),
@@ -59,6 +58,8 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
                     ('_fieldsetAttributes, "id=howToUpdate" )
                 )}
             <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
+
+        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
         }
     </div>
 

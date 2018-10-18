@@ -29,8 +29,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     gaEventAction = "Taxable pay from your payslip",
     title = messages("tai.taxablePayslip.title")
 ){
-    @form(action=controllers.routes.IncomeUpdateCalculatorController.handleTaxablePayslipAmount){
-
+    @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleTaxablePayslipAmount){
         @includes.forms.input(
             field = taxablePayslipForm("taxablePay"),
             labelText = pageDesc,

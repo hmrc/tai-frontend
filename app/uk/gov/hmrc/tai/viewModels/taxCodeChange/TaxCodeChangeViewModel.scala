@@ -18,19 +18,25 @@ package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.domain.income.{BasisOfOperation, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeDescriptor}
+import uk.gov.hmrc.tai.util.GoogleAnalyticsConstants._
 
-case class TaxCodeChangeViewModel(pairs: TaxCodePairs, changeDate: LocalDate, scottishTaxRateBands: Map[String, BigDecimal])
+case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
+                                  changeDate: LocalDate,
+                                  scottishTaxRateBands: Map[String, BigDecimal],
+                                  gaDimensions: Map[String, String])
 
 object TaxCodeChangeViewModel extends TaxCodeDescriptor {
-  def apply(taxCodeChange: TaxCodeChange, scottishTaxRateBands: Map[String, BigDecimal])(implicit messages: Messages): TaxCodeChangeViewModel = {
+
+  def apply(taxCodeChange: TaxCodeChange, scottishTaxRateBands: Map[String, BigDecimal]): TaxCodeChangeViewModel = {
+
     val taxCodePairs = TaxCodePairs(taxCodeChange.previous, taxCodeChange.current)
     val changeDate = taxCodeChange.mostRecentTaxCodeChangeDate
 
-    TaxCodeChangeViewModel(taxCodePairs, changeDate, scottishTaxRateBands)
+    TaxCodeChangeViewModel(taxCodePairs, changeDate, scottishTaxRateBands, gaDimensions(taxCodeChange, changeDate))
   }
 
   def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal], identifier: String)
@@ -41,13 +47,29 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
     val taxCode = taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)
 
     val explanation = describeTaxCode(taxCode, taxCodeRecord.basisOfOperation, scottishTaxRateBands, isCurrentTaxCode)
-    DescriptionListViewModel(Messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", taxCode), explanation)
+    DescriptionListViewModel(messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", taxCode), explanation)
   }
 
-  def taxCodeWithEmergencySuffix(taxCode: String, basisOfOperation: BasisOperation): String = {
+  def taxCodeWithEmergencySuffix(taxCode: String, basisOfOperation: BasisOfOperation): String = {
     basisOfOperation match {
-      case Week1Month1BasisOperation => taxCode + TaiConstants.EmergencyTaxCodeSuffix
+      case Week1Month1BasisOfOperation => taxCode + TaiConstants.EmergencyTaxCodeSuffix
       case _ => taxCode
+    }
+  }
+
+  private def gaDimensions(taxCodeChange: TaxCodeChange, taxCodeChangeDate: LocalDate): Map[String, String] = {
+    def moreThanTwoSecondaryWithoutPayroll(records: Seq[TaxCodeRecord]): Boolean = {
+       records.groupBy(_.employerName).values.exists(taxCodeRecords =>
+         taxCodeRecords.count(record => !record.primary && record.payrollNumber.isEmpty) >= 2
+       )
+    }
+
+    val taxCodeChangeDateGaDimension = Map[String, String]("taxCodeChangeDate" -> taxCodeChangeDate.toString(TaiConstants.EYU_DATE_FORMAT))
+
+    if (moreThanTwoSecondaryWithoutPayroll(taxCodeChange.current) || moreThanTwoSecondaryWithoutPayroll(taxCodeChange.previous)) {
+      taxCodeChangeDateGaDimension + (taxCodeChangeEdgeCase -> yes)
+    } else {
+      taxCodeChangeDateGaDimension + (taxCodeChangeEdgeCase -> no)
     }
   }
 }

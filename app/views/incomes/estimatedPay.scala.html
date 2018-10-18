@@ -64,7 +64,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
         @includes.link(
             copy=messages("tai.estimatedPay.checkTaxEstimate"),
-            url = routes.IncomeUpdateCalculatorController.handleCalculationResult.toString,
+            url = income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleCalculationResult.toString,
             isButton=true
         )
     </div>

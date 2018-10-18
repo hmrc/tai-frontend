@@ -27,7 +27,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     gaEventAction = "How often do you get paid?",
     title = messages("tai.payPeriod.title")
 ){
-    @form(action=controllers.routes.IncomeUpdateCalculatorController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
+    @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
         @{inputRadioGroupStyling(
             field=payPeriodForm("payPeriod"),
             radioOptions=Seq(("monthly" -> Messages("tai.payPeriod.monthly")), ("weekly" -> Messages("tai.payPeriod.weekly")),("fortnightly" -> Messages("tai.payPeriod.fortnightly")),("other" -> Messages("tai.payPeriod.other"))),

@@ -564,12 +564,12 @@ with TaxRegionConstants{
 
   val ukTaxCodeIncome = Seq(
     TaxCodeIncome(EmploymentIncome,Some(1),BigDecimal(15000),"EmploymentIncome","1150L","TestName",
-      OtherBasisOperation,Live,None,Some(new LocalDate(2015,11,26)),Some(new LocalDate(2015,11,26)))
+      OtherBasisOfOperation,Live,None,Some(new LocalDate(2015,11,26)),Some(new LocalDate(2015,11,26)))
   )
 
   val ScottishTaxCodeIncome = Seq(
     TaxCodeIncome(EmploymentIncome,Some(1),BigDecimal(99999),"EmploymentIncome","SK723","TestName",
-      OtherBasisOperation,Live,None,Some(new LocalDate(2015,11,26)),Some(new LocalDate(2015,11,26)))
+      OtherBasisOfOperation,Live,None,Some(new LocalDate(2015,11,26)),Some(new LocalDate(2015,11,26)))
   )
 
 }

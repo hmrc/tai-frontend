@@ -28,7 +28,7 @@
 <div class="tax-code-change__pod">
     <h3 class="tax-code-change__employment-heading heading-medium flush--top flush--bottom break-word">@taxCodeRecord.employerName</h3>
 
-    <div class="tax-code-change__payroll">@taxCodeRecordPayrollHtml(taxCodeRecord)</div>
+    <div class="tax-code-change__payroll break-word">@taxCodeRecordPayrollHtml(taxCodeRecord)</div>
     <div aria-hidden="true" class="tax-code-change__date bold-small flush--top">@Messages("taxCode.change.yourTaxCodeChanged.from", Dates.formatDate(taxCodeRecord.startDate))</div>
     <div aria-hidden="true" class="tax-code-change__tax-code bold-large">@TaxCodeChangeViewModel.taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)</div>
 
