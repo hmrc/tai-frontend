@@ -1,0 +1,71 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(incomeName: String, id: Int, isPension: Boolean)(implicit request: Request[_],
+messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.urls.Link
+@import includes.ptaHeader
+@import includes.cancelLink
+@import uk.gov.hmrc.tai.config.ApplicationConfig
+
+@header = @{
+    ptaHeader(
+        displayBackLink = true,
+        mainHeadingText = messages("tai.howToUpdate.preHeading", incomeName),
+        preHeadingText = messages("tai.howToUpdate.preHeading", incomeName),
+        headerWidthClasses = Some("column-full")
+    )
+}
+
+@main(
+title = messages("tai.howToUpdate.preHeading", incomeName),
+user = Some(user),
+pageHeader = Some(header),
+articleClasses = None,
+gaCustomTitle = None
+){
+    <div>
+        <p>@messages("tai.incomes.landing.intro")</p>
+        <p>
+            @if(isPension) {
+                @messages("tai.incomes.landing.pension.ended", incomeName)
+                @includes.link(
+                        url=ApplicationConfig.incomeFromEmploymentPensionLinkUrl,
+                        copy=messages("tai.incomes.landing.pension.ended.link"),
+                        id=Some("updatePension")
+                    )
+            } else {
+                @messages("tai.incomes.landing.employment.ended", incomeName)
+                @includes.link(
+                    url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(id).toString,
+                    copy=messages("tai.incomes.landing.employment.ended.link"),
+                    id=Some("updateEmployer")
+                )
+            }
+        </p>
+    </div>
+    <div>
+        @includes.link(
+            copy=messages("tai.income.details.updateTaxableIncome.update"),
+            url = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.howToUpdatePage(id).toString,
+            isButton=true
+        )
+
+        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+    </div>
+}

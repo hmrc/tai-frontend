@@ -253,7 +253,7 @@ trait IncomeController extends TaiBaseController
     amountAndDate.getOrElse(0, None)
   }
 }
-// $COVERAGE-OFF$
+
 object IncomeController extends IncomeController with AuthenticationConnectors {
   override val personService = PersonService
   override val taxAccountService = TaxAccountService
@@ -263,4 +263,4 @@ object IncomeController extends IncomeController with AuthenticationConnectors {
   override val employmentService: EmploymentService = EmploymentService
   override val incomeService: IncomeService = IncomeService
 }
-// $COVERAGE-ON$
+
