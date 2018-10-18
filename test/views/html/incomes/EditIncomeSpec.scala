@@ -21,8 +21,10 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import play.api.data.{Field, Form}
 import play.twirl.api.Html
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.time.TaxYearResolver
 
 class EditIncomeSpec extends TaiViewSpec with MockitoSugar {
 
@@ -33,7 +35,7 @@ class EditIncomeSpec extends TaiViewSpec with MockitoSugar {
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
       messages("tai.incomes.edit.preHeading", employerName),
-      messages("tai.incomes.edit.heading"))
+      messages("tai.incomes.edit.heading", Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear), Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)))
   }
 
   val editIncomeForm = mock[Form[EditIncomeForm]]

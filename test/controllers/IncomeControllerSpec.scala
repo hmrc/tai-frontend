@@ -23,8 +23,6 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.mockito.invocation.InvocationOnMock
-import org.mockito.stubbing.Answer
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -35,6 +33,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
@@ -72,7 +71,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.edit.heading"))
+        doc.title() must include(Messages("tai.incomes.edit.heading", Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear), Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)))
       }
     }
 
@@ -386,7 +385,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.edit.heading"))
+        doc.title() must include(Messages("tai.incomes.edit.heading", Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear), Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)))
       }
     }
 
