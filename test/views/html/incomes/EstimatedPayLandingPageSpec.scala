@@ -18,6 +18,7 @@ package views.html.incomes
 
 import play.api.mvc.Call
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class EstimatedPayLandingPageSpec extends TaiViewSpec {
@@ -32,12 +33,20 @@ class EstimatedPayLandingPageSpec extends TaiViewSpec {
       messages("tai.incomes.edit.preHeading", employerName),
       messages("tai.incomes.edit.preHeading", employerName))
 
-    "contain the correct content" in {
+    "contain the correct content when income is from employment" in {
       doc(view).getElementsByTag("p").text must include(messages("tai.incomes.landing.intro"))
       doc(view) must haveLinkWithText(messages("tai.incomes.landing.employment.ended.link", employerName))
-      doc must haveLinkWithUrlWithID("updateEmployer",
+      doc(view) must haveLinkWithUrlWithID("updateEmployer",
         controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(empId).url)
       doc(view).getElementsByClass("button").text must include(messages("tai.income.details.updateTaxableIncome.update"))
+    }
+
+    "contain the correct content when income is from pension" in {
+      val testView: Html = views.html.incomes.estimatedPayLandingPage(employerName, empId, isPension = true)
+        doc(testView).getElementsByTag("p").text must include(messages("tai.incomes.landing.intro"))
+      doc(testView) must haveLinkWithText(messages("tai.incomes.landing.pension.ended.link"))
+      doc(testView) must haveLinkWithUrlWithID("updatePension", ApplicationConfig.incomeFromEmploymentPensionLinkUrl)
+      doc(testView).getElementsByClass("button").text must include(messages("tai.income.details.updateTaxableIncome.update"))
     }
   }
 
