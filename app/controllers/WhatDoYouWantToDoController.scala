@@ -18,7 +18,7 @@ package controllers
 
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
-import play.Logger
+import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc._
@@ -141,6 +141,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
             taxCodeChanged <- hasTaxCodeChanged
             taxAccountSummary <- cy1TaxAccountSummary
           } yield {
+            Logger.debug("[WhatDoYouWantToDoController] TaxCodeChanged: " + taxCodeChanged)
             taxAccountSummary match {
               case TaiSuccessResponseWithPayload(_) =>
                 Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, taxCodeChanged)))

@@ -147,43 +147,45 @@ GET         /income-tax-comparison                                              
 GET         /your-income-calculation-details/:id                                       controllers.YourIncomeCalculationController.yourIncomeCalculationPage(id: Int)
 GET         /print-your-income-calculation-details/:id                                 controllers.YourIncomeCalculationController.printYourIncomeCalculationPage(id: Int)
 
-GET         /your-income-calculation-previous-year/:year/:empId                       controllers.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
-GET         /print-your-income-calculation-previous-year/:year/:empId                 controllers.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
+GET         /your-income-calculation-previous-year/:year/:empId                        controllers.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
+GET         /print-your-income-calculation-previous-year/:year/:empId                  controllers.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
 
 
 
 ## Income calculator URIs
-GET         /update-income/start/:empId                                                      controllers.IncomeUpdateCalculatorController.estimatedPayLandingPage(empId: Int)
+GET         /update-income/start/:empId                                                controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.estimatedPayLandingPage(empId: Int)
 
-GET         /update-income/how-to-update-income/:empId                                 controllers.IncomeUpdateCalculatorController.howToUpdatePage(empId: Int)
-POST        /update-income/how-to-update-income                                        controllers.IncomeUpdateCalculatorController.handleChooseHowToUpdate
+GET         /update-income/how-to-update-income/:empId                                 controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.howToUpdatePage(empId: Int)
+POST        /update-income/how-to-update-income                                        controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleChooseHowToUpdate
 
-GET         /update-income/working-hours                                               controllers.IncomeUpdateCalculatorController.workingHoursPage
-POST        /update-income/working-hours                                               controllers.IncomeUpdateCalculatorController.handleWorkingHours
+GET         /update-income/working-hours                                               controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.workingHoursPage
+POST        /update-income/working-hours                                               controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleWorkingHours
 
-GET         /update-income/pay-period                                                  controllers.IncomeUpdateCalculatorController.payPeriodPage
-POST        /update-income/pay-period                                                  controllers.IncomeUpdateCalculatorController.handlePayPeriod
+GET         /update-income/pay-period                                                  controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payPeriodPage
+POST        /update-income/pay-period                                                  controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayPeriod
 
-GET         /update-income/payslip-amount                                              controllers.IncomeUpdateCalculatorController.payslipAmountPage
-POST        /update-income/payslip-amount                                              controllers.IncomeUpdateCalculatorController.handlePayslipAmount
+GET         /update-income/payslip-amount                                              controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payslipAmountPage
+POST        /update-income/payslip-amount                                              controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayslipAmount
 
-GET         /update-income/payslip-deductions                                          controllers.IncomeUpdateCalculatorController.payslipDeductionsPage
-POST        /update-income/payslip-deductions                                          controllers.IncomeUpdateCalculatorController.handlePayslipDeductions
+GET         /update-income/payslip-deductions                                          controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payslipDeductionsPage
+POST        /update-income/payslip-deductions                                          controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayslipDeductions
 
-GET         /update-income/taxable-payslip-amount                                      controllers.IncomeUpdateCalculatorController.taxablePayslipAmountPage
-POST        /update-income/taxable-payslip-amount                                      controllers.IncomeUpdateCalculatorController.handleTaxablePayslipAmount
+GET         /update-income/taxable-payslip-amount                                      controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.taxablePayslipAmountPage
+POST        /update-income/taxable-payslip-amount                                      controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleTaxablePayslipAmount
 
-GET         /update-income/bonus-payments                                              controllers.IncomeUpdateCalculatorController.bonusPaymentsPage
-POST        /update-income/bonus-payments                                              controllers.IncomeUpdateCalculatorController.handleBonusPayments
+GET         /update-income/bonus-payments                                              controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.bonusPaymentsPage
+POST        /update-income/bonus-payments                                              controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleBonusPayments
 
-GET         /update-income/bonus-overtime-amount                                       controllers.IncomeUpdateCalculatorController.bonusOvertimeAmountPage
-POST        /update-income/bonus-overtime-amount                                       controllers.IncomeUpdateCalculatorController.handleBonusOvertimeAmount
+GET         /update-income/bonus-overtime-amount                                       controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.bonusOvertimeAmountPage
+POST        /update-income/bonus-overtime-amount                                       controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleBonusOvertimeAmount
 
-GET         /update-income/estimated-pay                                               controllers.IncomeUpdateCalculatorController.estimatedPayPage
+GET         /update-income/check-your-answers                                          controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.checkYourAnswersPage
 
-GET         /update-income/confirm-estimated-pay                                       controllers.IncomeUpdateCalculatorController.handleCalculationResult
+GET         /update-income/estimated-pay                                               controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.estimatedPayPage
 
-GET         /update-income/calculation-unavailable                                     controllers.IncomeUpdateCalculatorController.calcUnavailablePage
+GET         /update-income/confirm-estimated-pay                                       controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleCalculationResult
+
+GET         /update-income/calculation-unavailable                                     controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.calcUnavailablePage
 
 
 ## Regular Income URIs
@@ -254,18 +256,18 @@ GET         /language/:lang                                                     
 
 ## Incorrect Pension
 
-GET         /incorrect-pension/decision/:id                                             controllers.pensions.UpdatePensionProviderController.doYouGetThisPension(id: Int)
-POST        /incorrect-pension/decision                                                 controllers.pensions.UpdatePensionProviderController.handleDoYouGetThisPension
-GET         /incorrect-pension/what-do-you-want-to-tell-us                              controllers.pensions.UpdatePensionProviderController.whatDoYouWantToTellUs
-POST        /incorrect-pension/what-do-you-want-to-tell-us                              controllers.pensions.UpdatePensionProviderController.submitWhatDoYouWantToTellUs
-GET         /incorrect-pension/telephone-number                                         controllers.pensions.UpdatePensionProviderController.addTelephoneNumber
-POST        /incorrect-pension/telephone-number                                         controllers.pensions.UpdatePensionProviderController.submitTelephoneNumber
-GET         /incorrect-pension/check-your-answers                                       controllers.pensions.UpdatePensionProviderController.checkYourAnswers
-POST        /incorrect-pension/check-your-answers                                       controllers.pensions.UpdatePensionProviderController.submitYourAnswers
-GET         /incorrect-pension/success                                                  controllers.pensions.UpdatePensionProviderController.confirmation
+GET         /incorrect-pension/decision/:id                                            controllers.pensions.UpdatePensionProviderController.doYouGetThisPension(id: Int)
+POST        /incorrect-pension/decision                                                controllers.pensions.UpdatePensionProviderController.handleDoYouGetThisPension
+GET         /incorrect-pension/what-do-you-want-to-tell-us                             controllers.pensions.UpdatePensionProviderController.whatDoYouWantToTellUs
+POST        /incorrect-pension/what-do-you-want-to-tell-us                             controllers.pensions.UpdatePensionProviderController.submitWhatDoYouWantToTellUs
+GET         /incorrect-pension/telephone-number                                        controllers.pensions.UpdatePensionProviderController.addTelephoneNumber
+POST        /incorrect-pension/telephone-number                                        controllers.pensions.UpdatePensionProviderController.submitTelephoneNumber
+GET         /incorrect-pension/check-your-answers                                      controllers.pensions.UpdatePensionProviderController.checkYourAnswers
+POST        /incorrect-pension/check-your-answers                                      controllers.pensions.UpdatePensionProviderController.submitYourAnswers
+GET         /incorrect-pension/success                                                 controllers.pensions.UpdatePensionProviderController.confirmation
 
 ## Tax Code Change
 
-GET         /tax-code-change/tax-code-comparison                                        controllers.TaxCodeChangeController.taxCodeComparison
-GET         /tax-code-change/your-tax-free-amount                                       controllers.TaxCodeChangeController.yourTaxFreeAmount
-GET         /tax-code-change/what-happens-next                                          controllers.TaxCodeChangeController.whatHappensNext
+GET         /tax-code-change/tax-code-comparison                                       controllers.TaxCodeChangeController.taxCodeComparison
+GET         /tax-code-change/your-tax-free-amount                                      controllers.TaxCodeChangeController.yourTaxFreeAmount
+GET         /tax-code-change/what-happens-next                                         controllers.TaxCodeChangeController.whatHappensNext

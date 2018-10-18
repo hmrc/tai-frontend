@@ -27,7 +27,6 @@ import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.util.{BandTypesConstants, IncomeTaxEstimateHelper, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.{HelpLink, Label}
 import uk.gov.hmrc.urls.Link
-import uk.gov.hmrc.play.views.formatting.Money._
 
 import scala.math.BigDecimal
 
@@ -41,7 +40,6 @@ case class DetailedIncomeTaxEstimateViewModel(
                                        taxFreeAllowance: BigDecimal,
                                        additionalTaxTable: Seq[AdditionalTaxDetailRow],
                                        reductionTaxTable: Seq[ReductionTaxRow],
-                                       incomeTaxReducedToZeroMessage: Option[String],
                                        totalDividendIncome: BigDecimal,
                                        taxFreeDividendAllowance: BigDecimal,
                                        selfAssessmentAndPayeText: Option[String],
@@ -82,7 +80,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
     val paBand = EstimatedIncomeTaxService.createPABand(taxAccountSummary.taxFreeAllowance)
     val additionalTaxTable = createAdditionalTaxTable(codingComponents, totalTax)
     val reductionTaxTable = createReductionsTable(codingComponents, totalTax)
-    val incomeTaxReducedToZero = incomeTaxReducedToZeroMessage(taxAccountSummary.totalEstimatedTax <= 0 && reductionTaxTable.nonEmpty)
     val dividendIncome = EstimatedIncomeTaxService.totalDividendIncome(totalTax.incomeCategories)
     val taxFreeDividend = taxFreeDividendAllowance(totalTax.incomeCategories)
     val mergedNonSavingsBand = (nonSavings :+ paBand).toList.sortBy(_.rate)
@@ -102,7 +99,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
       taxAccountSummary.taxFreeAllowance,
       additionalTaxTable,
       reductionTaxTable,
-      incomeTaxReducedToZero,
       dividendIncome,
       taxFreeDividend,
       additionIncomePayableText,
@@ -221,12 +217,6 @@ object DetailedIncomeTaxEstimateViewModel extends BandTypesConstants with Income
       Messages("tai.taxCollected.atSource.maintenancePayments.description", MoneyPounds(maintenancePaymentGross).quantity,
         routes.YourTaxCodeController.taxCodes().url),
       Messages("tai.taxCollected.atSource.maintenancePayments.title"))
-  }
-
-  def incomeTaxReducedToZeroMessage(hasTaxReducedToZero: Boolean)(implicit messages: Messages): Option[String] = {
-    Option(hasTaxReducedToZero).collect{
-      case true => Messages("tai.estimatedIncome.reductionsTax.incomeTaxReducedToZeroMessage")
-    }
   }
 
   def containsHRS1orHRS2(taxBands: Seq[TaxBand]) = {

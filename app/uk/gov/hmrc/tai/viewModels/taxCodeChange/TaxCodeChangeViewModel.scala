@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.model.domain.income.{BasisOperation, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.domain.income.{BasisOfOperation, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeDescriptor}
@@ -50,9 +50,9 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
     DescriptionListViewModel(messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", taxCode), explanation)
   }
 
-  def taxCodeWithEmergencySuffix(taxCode: String, basisOfOperation: BasisOperation): String = {
+  def taxCodeWithEmergencySuffix(taxCode: String, basisOfOperation: BasisOfOperation): String = {
     basisOfOperation match {
-      case Week1Month1BasisOperation => taxCode + TaiConstants.EmergencyTaxCodeSuffix
+      case Week1Month1BasisOfOperation => taxCode + TaiConstants.EmergencyTaxCodeSuffix
       case _ => taxCode
     }
   }

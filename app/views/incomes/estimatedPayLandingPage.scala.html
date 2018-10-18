@@ -62,7 +62,7 @@ gaCustomTitle = None
     <div>
         @includes.link(
             copy=messages("tai.income.details.updateTaxableIncome.update"),
-            url = routes.IncomeUpdateCalculatorController.howToUpdatePage(id).toString,
+            url = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.howToUpdatePage(id).toString,
             isButton=true
         )
 

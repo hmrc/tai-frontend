@@ -47,7 +47,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 ){
 
     <div class="section flush--bottom">
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleChooseHowToUpdate){
+        @form(action=income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleChooseHowToUpdate){
                 @{inputRadioGroupStyling(
                     field=howToUpdateForm("howToUpdate"),
                     radioOptions=Seq(("incomeCalculator" -> Messages("tai.howToUpdate.incomeCalculator")), ("enterAnnual" -> Messages("tai.howToUpdate.enterAnnual"))),

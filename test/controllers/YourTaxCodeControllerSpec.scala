@@ -34,7 +34,7 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.EmploymentIncome
-import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome}
+import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService}
 
 import scala.concurrent.Future
@@ -51,7 +51,7 @@ class YourTaxCodeControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
       val startOfTaxYear: String = TaxYear().start.toString("d MMMM yyyy")
       val endOfTaxYear: String = TaxYear().end.toString("d MMMM yyyy")
       val taxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L",
-        "employment", OtherBasisOperation, Live))
+        "employment", OtherBasisOfOperation, Live))
       when(SUT.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
       when(SUT.taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map.empty[String, BigDecimal]))
       val result = SUT.taxCodes()(RequestBuilder.buildFakeRequestWithAuth("GET"))

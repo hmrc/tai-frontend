@@ -187,7 +187,7 @@ class CodingComponentFormattersSpec extends PlaySpec with CodingComponentFormatt
           "Some Description",
           "1150L",
           "employment1",
-          OtherBasisOperation,
+          OtherBasisOfOperation,
           Live)
       }
       "all the fields are provided" in{
@@ -207,7 +207,7 @@ class CodingComponentFormattersSpec extends PlaySpec with CodingComponentFormatt
           "Some Description 1",
           "S1150L",
           "employment2",
-          Week1Month1BasisOperation,
+          Week1Month1BasisOfOperation,
           Ceased)
       }
     }
