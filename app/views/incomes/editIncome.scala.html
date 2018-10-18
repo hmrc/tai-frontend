@@ -27,6 +27,7 @@
 )
 
 @import includes.ptaHeader
+@import includes.forms.input
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
@@ -66,31 +67,33 @@
     </div>
 
     <div>
-        <h2>@messages("tai.incomes.edit.incomeTax.update.heading")</h2>
+        <h2>@messages("tai.incomes.edit.incomeTax.update.heading", income("name").value.getOrElse(""))</h2>
 
         @form(action = controllers.routes.IncomeController.editRegularIncome){
             <input type="hidden" name="payToDate" value="@payToDate">
-            <div class="form-field-group @if(income.hasErrors) {error}">
-                <table id="income-table" class="table-section">
-                    <thead>
-                        <tr>
-                            <th>@messages("tai.incomeSources")</th>
-                            <th class="text--right">@messages("tai.incomes.amount.current")</th>
-                            <th class="text--right" id="amountLabel">@messages("tai.incomes.amount.new")</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="income-data">
-                            <td class="break-word">@income("description").value @income("name").value</td>
-                            @income.errors(income("newAmount").name).map{ error =>
-                                <span class="error-notification validation-error__inline-error">@messages(error.message)</span>
-                            }
-                            <td class="text--right"><input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' />@income("oldAmount").value</td>
-                            <td class="text--right"><input aria-labelledby="amountLabel" class="text--right input--small income-data-input" type="text" id="newAmount" name='@income("newAmount").name' value='' /></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p class="form-hint-list">@Messages("tai.enterWholeAndNumericalOnly")</p>
+
+        <p>@Messages("tai.enterWholeAndNumericalOnly")</p>
+
+        <div class="form-field-group @if(income.hasErrors) {error}">
+
+                @income.errors(income("newAmount").name).map{ error =>
+                    <span class="error-notification validation-error__inline-error">@messages(error.message)</span>
+                }
+
+                <div class="grid-row">
+                    <div class="column-half">
+                        <div class="form-label form-label-bold">@messages("tai.incomes.amount.current")</div>
+                        <div>
+                            <input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' />
+                            <p>£@income("oldAmount").value</p>
+                        </div>
+                    </div>
+                    <div class="column-half">
+                        <label class="form-label form-label-bold" for="newAmount" id="amountLabel">@messages("tai.incomes.amount.new")</label>
+                        @input(income("newAmount"), isCurrency = true, fieldErrorsEnabled = false)
+                    </div>
+                </div>
+
                 <input type="hidden" id="name" name='@income("name").name' value='@income("name").value' />
                 <input type="hidden" id="worksNumber" name='@income("worksNumber").name' value='@income("worksNumber").value' />
                 <input type="hidden" id="jobTitle" name='@income("jobTitle").name' value='@income("jobTitle").value' />
