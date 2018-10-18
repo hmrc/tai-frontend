@@ -40,14 +40,14 @@
         formForErrorSummary = Some(income),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.incomes.edit.heading"),
+        mainHeadingText = messages("tai.incomes.edit.heading", Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear), Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)),
         preHeadingText = messages("tai.incomes.edit.preHeading", income("name").value.getOrElse("")),
         headerWidthClasses = Some("column-full")
     )
 }
 
 @main(
-    title = messages("tai.incomes.edit.heading"),
+    title = messages("tai.incomes.edit.heading", Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear), Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = Some(""),
@@ -68,12 +68,10 @@
 
     <div>
         <h2>@messages("tai.incomes.edit.incomeTax.update.heading", income("name").value.getOrElse(""))</h2>
+        <p>@messages("tai.enterWholeAndNumericalOnly")</p>
 
         @form(action = controllers.routes.IncomeController.editRegularIncome){
-            <input type="hidden" name="payToDate" value="@payToDate">
-
-        <p>@Messages("tai.enterWholeAndNumericalOnly")</p>
-
+        <input type="hidden" name="payToDate" value="@payToDate">
         <div class="form-field-group @if(income.hasErrors) {error}">
 
                 @income.errors(income("newAmount").name).map{ error =>
@@ -82,11 +80,9 @@
 
                 <div class="grid-row">
                     <div class="column-half">
-                        <div class="form-label form-label-bold">@messages("tai.incomes.amount.current")</div>
-                        <div>
-                            <input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' />
-                            <p>£@income("oldAmount").value</p>
-                        </div>
+                        <div class="bold">@messages("tai.incomes.amount.current")</div>
+                        <input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' />
+                        <p>£@income("oldAmount").value</p>
                     </div>
                     <div class="column-half">
                         <label class="form-label form-label-bold" for="newAmount" id="amountLabel">@messages("tai.incomes.amount.new")</label>
