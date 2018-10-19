@@ -463,6 +463,25 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
       doc.title() must include(messages("tai.irregular.mainHeadingText", employerName))
     }
+
+    "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
+      val testController = createTestController
+
+      when(
+        testController.journeyCacheService.mandatoryValues(any())(any())
+      ).thenReturn(
+        Future.failed(new Exception)
+      )
+
+      val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(FakeRequest(method = "GET", path = "")
+        .withSession(
+          SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+          SessionKeys.authProvider -> "IDA",
+          SessionKeys.userId -> s"/path/to/authority")
+      )
+
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
   }
 
   "payPeriodPage" must {
