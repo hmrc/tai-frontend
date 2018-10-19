@@ -437,6 +437,18 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
     "respond with Ok" in {
       val testController = createTestController
 
+      val employerName = "name"
+      val payToDate = 123
+      val newAmount = 123
+
+      when(
+        testController.journeyCacheService.mandatoryValues(any())(any())
+      ).thenReturn(
+        Future.successful(Seq(employerName, payToDate.toString, newAmount.toString))
+      )
+
+
+
       val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(FakeRequest(method = "GET", path = "")
         .withSession(
           SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
@@ -449,7 +461,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
       val doc = Jsoup.parse(contentAsString(result))
 
-      doc.title() must include(messages("tai.irregular.confirm.mainHeading"))
+      doc.title() must include(messages("tai.irregular.mainHeadingText", employerName))
     }
   }
 
