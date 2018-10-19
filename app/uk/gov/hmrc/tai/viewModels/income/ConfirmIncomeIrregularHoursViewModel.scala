@@ -21,12 +21,14 @@ import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 
 case class ConfirmIncomeIrregularHoursViewModel(employerName: String,
                                                 estimatedIncome: Int,
+                                                submitUrl: String,
                                                 currentTaxYearRange: String)
 
 object ConfirmIncomeIrregularHoursViewModel {
   def apply(employerName: String, estimatedIncome: Int)(implicit messages: Messages): ConfirmIncomeIrregularHoursViewModel = {
     val currentYear = currentTaxYearRangeHtmlNonBreak
+    val submitUrl = "foo"
 
-    new ConfirmIncomeIrregularHoursViewModel(employerName, estimatedIncome, currentYear)
+    new ConfirmIncomeIrregularHoursViewModel(employerName, estimatedIncome, submitUrl, currentYear)
   }
 }

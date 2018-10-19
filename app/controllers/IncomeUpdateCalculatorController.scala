@@ -164,15 +164,15 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     implicit person =>
       implicit request =>
         taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId) flatMap {
-      case Some(tci) => {
+          case Some(tci) => {
             (taxCodeIncomeInfoToCache andThen journeyCacheService.cache)(tci) map { _ =>
-        val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount.toInt)
-
+              val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount.toInt)
+              
               Ok(views.html.incomes.editIncomeIrregularHours(EditIncomeIrregularHoursForm.createForm(), viewModel))
-      }
+            }
           }
-      case None => throw new RuntimeException(s"Not able to find employment with id $employmentId")
-    }
+          case None => throw new RuntimeException(s"Not able to find employment with id $employmentId")
+        }
   }
 
   def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -180,7 +180,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
       implicit request => {
         journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_PayToDateKey) flatMap {
           values => {
-            val name :: ptd :: Nil = values
+            val name :: ptd :: Nil = values.toList
 
             EditIncomeIrregularHoursForm.createForm(Some(ptd.toInt)).bindFromRequest().fold(
 
@@ -197,8 +197,6 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
                   }
                 }
             )
-
-
           }
         }
       }
@@ -208,11 +206,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request => {
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_PayToDateKey, UpdateIncome_IrregularAnnualPayKey).map { cacheValues => {
+            val name :: _ :: newIrregularPay :: Nil = cacheValues.toList
 
-          val amount = 1234
-          val vm = ConfirmIncomeIrregularHoursViewModel("foo", amount)
+            val vm = ConfirmIncomeIrregularHoursViewModel(name, newIrregularPay.toInt)
 
-          Future.successful(Ok(views.html.incomes.confirmIncomeIrregularHours(vm)))
+            Ok(views.html.incomes.confirmIncomeIrregularHours(vm))
+          }}
         }
   }
 

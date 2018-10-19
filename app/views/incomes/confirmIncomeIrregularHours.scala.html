@@ -53,7 +53,8 @@
 
 
 
-    <p><a class="button section" role="button" href="@routes.IncomeSourceSummaryController.onPageLoad(2)">@messages("tai.confirmAndSend")</a></p>
+    <p><a class="button section" role="button" href="@viewModel.submitUrl">@messages("tai.confirmAndSend")</a></p>
+
     <p><a href="@routes.IncomeSourceSummaryController.onPageLoad(2)">@messages("tai.cancel.noSave")</a></p>
 
 }
