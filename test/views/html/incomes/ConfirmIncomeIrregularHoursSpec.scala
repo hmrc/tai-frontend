@@ -20,6 +20,7 @@ import org.scalatest.mock.MockitoSugar
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.income.ConfirmIncomeIrregularHoursViewModel
 
 class ConfirmIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
 
@@ -29,10 +30,10 @@ class ConfirmIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
 
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink
-    behave like pageWithTitle("Confirm")
+    behave like pageWithTitle(messages("tai.irregular.mainHeadingText", employerName))
     behave like pageWithCombinedHeader(
-      messages("tai.irregular.confirm.mainHeading", currentTaxYearRangeHtmlNonBreak),
-      messages("tai.payPeriod.preHeading", employerName))
+      messages("tai.payPeriod.preHeading", employerName),
+      messages("tai.irregular.confirm.mainHeading", currentTaxYearRangeHtmlNonBreak))
 
     "display the users current estimated income" in {
       doc(view) must haveParagraphWithText(messages("tai.irregular.confirm.estimatedIncome", estimatedAmount))
@@ -48,12 +49,10 @@ class ConfirmIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
 
     "display a cancel link" in {
       doc(view) must haveLinkWithText(messages("tai.cancel.noSave"))
-
-      val cancelUrl = controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url.toString
-      doc(view) must haveCancelLinkWithUrl(cancelUrl)
+      
     }
   }
 
-
-  override def view: Html = views.html.incomes.confirmIncomeIrregularHours("lol")
+  val vm = ConfirmIncomeIrregularHoursViewModel(employerName, estimatedAmount)
+  override lazy val view: Html = views.html.incomes.confirmIncomeIrregularHours(vm)
 }

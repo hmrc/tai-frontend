@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
-import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
+import uk.gov.hmrc.tai.viewModels.income.{ConfirmIncomeIrregularHoursViewModel, EditIncomeIrregularHoursViewModel}
 
 import scala.concurrent.Future
 
@@ -205,8 +205,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
-        implicit request =>
-          Future.successful(Ok(views.html.incomes.confirmIncomeIrregularHours("hi")))
+        implicit request => {
+
+          val amount = 1234
+          val vm = ConfirmIncomeIrregularHoursViewModel("foo", amount)
+
+          Future.successful(Ok(views.html.incomes.confirmIncomeIrregularHours(vm)))
+        }
   }
 
   def payPeriodPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
