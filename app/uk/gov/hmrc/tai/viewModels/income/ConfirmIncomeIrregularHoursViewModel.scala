@@ -25,9 +25,10 @@ case class ConfirmIncomeIrregularHoursViewModel(employerName: String,
                                                 currentTaxYearRange: String)
 
 object ConfirmIncomeIrregularHoursViewModel {
-  def apply(employerName: String, estimatedIncome: Int)(implicit messages: Messages): ConfirmIncomeIrregularHoursViewModel = {
+  def apply(employmentId: Int ,employerName: String, estimatedIncome: Int)(implicit messages: Messages): ConfirmIncomeIrregularHoursViewModel = {
     val currentYear = currentTaxYearRangeHtmlNonBreak
-    val submitUrl = "foo"
+
+    val submitUrl = controllers.routes.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId).url.toString
 
     new ConfirmIncomeIrregularHoursViewModel(employerName, estimatedIncome, submitUrl, currentYear)
   }

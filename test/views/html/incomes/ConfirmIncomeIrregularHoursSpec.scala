@@ -44,7 +44,11 @@ class ConfirmIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
     }
 
     "display a confirm and send button" in {
-      doc(view) must haveLinkWithText(messages("tai.confirmAndSend"))
+      doc(view) must haveLinkElement(
+        id = "confirmAndSend",
+        href = controllers.routes.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId).url.toString,
+        text = messages("tai.confirmAndSend")
+      )
     }
 
     "display a cancel link" in {
@@ -53,6 +57,6 @@ class ConfirmIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
     }
   }
 
-  val vm = ConfirmIncomeIrregularHoursViewModel(employerName, estimatedAmount)
+  val vm = ConfirmIncomeIrregularHoursViewModel(employmentId, employerName, estimatedAmount)
   override lazy val view: Html = views.html.incomes.confirmIncomeIrregularHours(vm)
 }

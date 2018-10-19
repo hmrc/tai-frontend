@@ -310,7 +310,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result) mustBe Some(s"/check-income-tax/update-income/edit-income-irregular-hours/$employmentId/confirm")
+      redirectLocation(result) mustBe Some(controllers.routes.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId).url.toString)
 
     }
 

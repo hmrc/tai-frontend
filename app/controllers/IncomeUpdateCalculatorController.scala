@@ -29,7 +29,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
@@ -206,14 +206,30 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request => {
-          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_PayToDateKey, UpdateIncome_IrregularAnnualPayKey).map { cacheValues => {
-            val name :: _ :: newIrregularPay :: Nil = cacheValues.toList
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey).map { cacheValues => {
+            val name :: newIrregularPay :: Nil = cacheValues.toList
 
-            val vm = ConfirmIncomeIrregularHoursViewModel(name, newIrregularPay.toInt)
+            val vm = ConfirmIncomeIrregularHoursViewModel(employmentId, name, newIrregularPay.toInt)
 
             Ok(views.html.incomes.confirmIncomeIrregularHours(vm))
           }}
         }
+  }
+
+  def submitIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey).flatMap(cache => {
+            val employerName :: newPay :: Nil = cache.toList
+
+            taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) map {
+              case TaiSuccessResponse => {
+                Ok(views.html.incomes.editSuccess(employerName))
+              }
+            case _ => throw new RuntimeException(s"Not able to find cache for id $employmentId")
+            }
+          })
   }
 
   def payPeriodPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
