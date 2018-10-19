@@ -154,49 +154,51 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         )
   }
 
-  private def routingForEditIncomeIrregularHours(form: Form[EditIncomeIrregularHoursForm],
-                                                 employmentId: Int,
-                                                 status: Status)
-                                                (taxCodeIncome: Option[TaxCodeIncome])
-                                                (implicit request: Request[_]): Result = {
 
-    taxCodeIncome match {
-      case Some(tci) => {
-        val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount.toInt)
-
-        status(
-          views.html.incomes.editIncomeIrregularHours(form, viewModel)
-        )
-      }
-      case None => throw new RuntimeException(s"Not able to find employment with id $employmentId")
-    }
-  }
+  private val taxCodeIncomeInfoToCache = (taxCodeIncome: TaxCodeIncome) =>  Map[String, String](
+    UpdateIncome_NameKey -> taxCodeIncome.name,
+    UpdateIncome_PayToDateKey -> taxCodeIncome.amount.toString
+  )
 
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId).map {
-          routingForEditIncomeIrregularHours(EditIncomeIrregularHoursForm.createForm(), employmentId, Ok)
-        }
+        taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId) flatMap {
+      case Some(tci) => {
+            (taxCodeIncomeInfoToCache andThen journeyCacheService.cache)(tci) map { _ =>
+        val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount.toInt)
+
+              Ok(views.html.incomes.editIncomeIrregularHours(EditIncomeIrregularHoursForm.createForm(), viewModel))
+      }
+          }
+      case None => throw new RuntimeException(s"Not able to find employment with id $employmentId")
+    }
   }
 
   def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request => {
-        taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId).flatMap {
-          case None => throw new RuntimeException(s"Not able to find employment with id $employmentId")
-          case Some(tci) => {
-            EditIncomeIrregularHoursForm.createForm(Some(tci.amount.toInt)).bindFromRequest().fold[Future[Result]](
-              formWithErrors => Future.successful(
-                routingForEditIncomeIrregularHours(formWithErrors, employmentId, BadRequest)(Some(tci))
-              ),
+        journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_PayToDateKey) flatMap {
+          values => {
+            val name :: ptd :: Nil = values
+
+            EditIncomeIrregularHoursForm.createForm(Some(ptd.toInt)).bindFromRequest().fold(
+
+              formWithErrors => {
+                val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, ptd.toInt)
+
+                Future.successful(BadRequest(views.html.incomes.editIncomeIrregularHours(formWithErrors, viewModel)))
+              },
+
               validForm =>
                 validForm.income.fold(throw new RuntimeException) { income =>
-                  journeyCacheService.cache(UpdateIncome_IrregularAnnualPayKey, income) map { cache =>
+                  journeyCacheService.cache(UpdateIncome_IrregularAnnualPayKey, income) map { _ =>
                     Redirect(routes.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId))
                   }
                 }
             )
+
+
           }
         }
       }

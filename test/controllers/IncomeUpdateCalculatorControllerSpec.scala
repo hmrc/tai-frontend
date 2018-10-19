@@ -249,6 +249,12 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         Future.successful(Some(taxCodeIncome))
       )
 
+      when(
+        testController.journeyCacheService.cache(any())(any())
+      ).thenReturn(
+        Future.successful(Map.empty[String, String])
+      )
+
       val result = testController.editIncomeIrregularHours(1)(
         RequestBuilder.buildFakeRequestWithAuth("GET")
       )
@@ -279,12 +285,13 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
     "respond with Redirect to Confirm page" in {
       val testController = createTestController
       val employmentId = 1
-      val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(employmentId), 123,"description","taxCode","name",OtherBasisOperation,Live)
+      val employerName = "name"
+      val payToDate = 123
 
       when(
-        testController.taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any())
+        testController.journeyCacheService.mandatoryValues(any())(any())
       ).thenReturn(
-        Future.successful(Some(taxCodeIncome))
+        Future.successful(Seq(employerName, payToDate.toString))
       )
 
       when(
@@ -311,17 +318,18 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       "given an input which is less than the current amount" in {
 
         val testController = createTestController
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 999,"description","taxCode","name",OtherBasisOperation,Live)
+        val employerName = "name"
+        val payToDate = 123
 
         when(
-          testController.taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any())
+          testController.journeyCacheService.mandatoryValues(any())(any())
         ).thenReturn(
-          Future.successful(Some(taxCodeIncome))
+          Future.successful(Seq(employerName, payToDate.toString))
         )
 
         val result = testController.handleIncomeIrregularHours(1)(
           FakeRequest(method = "POST", path = "")
-            .withFormUrlEncodedBody("income" -> "1")
+            .withFormUrlEncodedBody("income" -> (payToDate-1).toString)
             .withSession(
               SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
               SessionKeys.authProvider -> "IDA",
@@ -333,18 +341,19 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.irregular.mainHeadingText"))
 
-        doc.body().text must include(messages("error.tai.updateDataEmployment.enterLargerValue", taxCodeIncome.amount, LocalDate.now().toString("MMMM")))
+        doc.body().text must include(messages("error.tai.updateDataEmployment.enterLargerValue", payToDate, LocalDate.now().toString("MMMM")))
       }
 
       "given invalid form data of invalid currency" in {
 
         val testController = createTestController
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123,"description","taxCode","name",OtherBasisOperation,Live)
+        val employerName = "name"
+        val payToDate = 123
 
         when(
-          testController.taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any())
+          testController.journeyCacheService.mandatoryValues(any())(any())
         ).thenReturn(
-          Future.successful(Some(taxCodeIncome))
+          Future.successful(Seq(employerName, payToDate.toString))
         )
 
         val result = testController.handleIncomeIrregularHours(1)(
@@ -368,12 +377,13 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       "given invalid form data of no input" in {
 
         val testController = createTestController
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123,"description","taxCode","name",OtherBasisOperation,Live)
+        val employerName = "name"
+        val payToDate = 123
 
         when(
-          testController.taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any())
+          testController.journeyCacheService.mandatoryValues(any())(any())
         ).thenReturn(
-          Future.successful(Some(taxCodeIncome))
+          Future.successful(Seq(employerName, payToDate.toString))
         )
 
         val result = testController.handleIncomeIrregularHours(1) {
@@ -395,12 +405,13 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       "given invalid form data of more than 9 numbers" in {
 
         val testController = createTestController
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123,"description","taxCode","name",OtherBasisOperation,Live)
+        val employerName = "name"
+        val payToDate = 123
 
         when(
-          testController.taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any())
+          testController.journeyCacheService.mandatoryValues(any())(any())
         ).thenReturn(
-          Future.successful(Some(taxCodeIncome))
+          Future.successful(Seq(employerName, payToDate.toString))
         )
 
         val result = testController.handleIncomeIrregularHours(1) {
