@@ -16,6 +16,8 @@
 
 package controllers.income.estimatedPay.update
 
+import java.util.UUID
+
 import builders.{AuthBuilder, RequestBuilder, UserBuilder}
 import controllers.FakeTaiPlayApplication
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
@@ -28,8 +30,10 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import play.api.mvc.Result
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
@@ -41,11 +45,12 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCode
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
 
 import scala.concurrent.Future
 import scala.util.Random
 
-class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with JourneyCacheConstants {
+class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with JourneyCacheConstants with EditIncomeIrregularPayConstants {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
@@ -206,7 +211,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
     "redirect the user to workingHours page" when {
       "user selected income calculator" in {
         val testController = createTestIncomeUpdateCalculatorController
-        val result = testController.handleWorkingHours()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> "same"))
+        val result = testController.handleWorkingHours()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> REGULAR_HOURS))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payPeriodPage().url)
       }
@@ -622,6 +627,308 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.unableToCalculate.title"))
       }
+    }
+  }
+
+  "editIncomeIrregularHours" must {
+    "respond with OK and show the irregular hours edit page" in {
+      val testController = createTestIncomeUpdateCalculatorController
+      val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123,"description","taxCode","name",OtherBasisOfOperation,Live)
+
+      when(
+        testController.taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any())
+      ).thenReturn(
+        Future.successful(Some(taxCodeIncome))
+      )
+
+      when(
+        testController.journeyCacheService.cache(any())(any())
+      ).thenReturn(
+        Future.successful(Map.empty[String, String])
+      )
+
+      val result = testController.editIncomeIrregularHours(1)(
+        RequestBuilder.buildFakeRequestWithAuth("GET")
+      )
+
+      status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.title() must include(messages("tai.irregular.mainHeadingText"))
+    }
+
+    "respond with INTERNAL_SERVER_ERROR" when {
+      "the employment income cannot be found" in {
+        val testController = createTestIncomeUpdateCalculatorController
+        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123, "description", "taxCode", "name", OtherBasisOfOperation, Live)
+
+        when(testController.taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
+          .thenReturn(Future.successful(None))
+
+        val result: Future[Result] = testController.editIncomeIrregularHours(2)(
+          RequestBuilder.buildFakeRequestWithAuth("GET")
+        )
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  "handleIncomeIrregularHours" must {
+    "respond with Redirect to Confirm page" in {
+      val testController = createTestIncomeUpdateCalculatorController
+      val employmentId = 1
+      val employerName = "name"
+      val payToDate = 123
+
+      when(
+        testController.journeyCacheService.mandatoryValues(any())(any())
+      ).thenReturn(
+        Future.successful(Seq(employerName, payToDate.toString))
+      )
+
+      when(
+        testController.journeyCacheService.cache(any(), any())(any())
+      ).thenReturn(
+        Future.successful(Map.empty[String, String])
+      )
+
+      val result = testController.handleIncomeIrregularHours(1)(FakeRequest(method = "POST", path = "")
+        .withFormUrlEncodedBody("income" -> "999")
+        .withSession(
+          SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+          SessionKeys.authProvider -> "IDA",
+          SessionKeys.userId -> s"/path/to/authority")
+      )
+
+      status(result) mustBe SEE_OTHER
+
+      redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId).url.toString)
+
+    }
+
+    "respond with BAD_REQUEST" when {
+      "given an input which is less than the current amount" in {
+
+        val testController = createTestIncomeUpdateCalculatorController
+        val employerName = "name"
+        val payToDate = 123
+
+        when(
+          testController.journeyCacheService.mandatoryValues(any())(any())
+        ).thenReturn(
+          Future.successful(Seq(employerName, payToDate.toString))
+        )
+
+        val result = testController.handleIncomeIrregularHours(1)(
+          FakeRequest(method = "POST", path = "")
+            .withFormUrlEncodedBody("income" -> (payToDate-1).toString)
+            .withSession(
+              SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+              SessionKeys.authProvider -> "IDA",
+              SessionKeys.userId -> s"/path/to/authority")
+        )
+
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messages("tai.irregular.mainHeadingText"))
+
+        doc.body().text must include(messages("error.tai.updateDataEmployment.enterLargerValue", payToDate, LocalDate.now().toString("MMMM"), employerName))
+      }
+
+      "given invalid form data of invalid currency" in {
+
+        val testController = createTestIncomeUpdateCalculatorController
+        val employerName = "name"
+        val payToDate = 123
+
+        when(
+          testController.journeyCacheService.mandatoryValues(any())(any())
+        ).thenReturn(
+          Future.successful(Seq(employerName, payToDate.toString))
+        )
+
+        val result = testController.handleIncomeIrregularHours(1)(
+          FakeRequest(method = "POST", path = "")
+            .withFormUrlEncodedBody("income" -> "ABC")
+            .withSession(
+              SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+              SessionKeys.authProvider -> "IDA",
+              SessionKeys.userId -> s"/path/to/authority")
+        )
+
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messages("tai.irregular.mainHeadingText"))
+
+        doc.body().text must include(messages("tai.irregular.instruction.wholePounds"))
+
+      }
+
+      "given invalid form data of no input" in {
+
+        val testController = createTestIncomeUpdateCalculatorController
+        val employerName = "name"
+        val payToDate = 123
+
+        when(
+          testController.journeyCacheService.mandatoryValues(any())(any())
+        ).thenReturn(
+          Future.successful(Seq(employerName, payToDate.toString))
+        )
+
+        val result = testController.handleIncomeIrregularHours(1) {
+          FakeRequest(method = "POST", path = "")
+            .withSession(
+              SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+              SessionKeys.authProvider -> "IDA",
+              SessionKeys.userId -> s"/path/to/authority")
+        }
+
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messages("tai.irregular.mainHeadingText"))
+        doc.body().text must include(messages("error.tai.updateDataEmployment.blankValue"))
+
+      }
+
+      "given invalid form data of more than 9 numbers" in {
+
+        val testController = createTestIncomeUpdateCalculatorController
+        val employerName = "name"
+        val payToDate = 123
+
+        when(
+          testController.journeyCacheService.mandatoryValues(any())(any())
+        ).thenReturn(
+          Future.successful(Seq(employerName, payToDate.toString))
+        )
+
+        val result = testController.handleIncomeIrregularHours(1) {
+          FakeRequest(method = "POST", path = "")
+            .withFormUrlEncodedBody("income" -> "1234567890")
+            .withSession(
+              SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+              SessionKeys.authProvider -> "IDA",
+              SessionKeys.userId -> s"/path/to/authority")
+        }
+
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messages("tai.irregular.mainHeadingText"))
+        doc.body().text must include(messages("error.tai.updateDataEmployment.maxLength"))
+
+      }
+    }
+  }
+
+  "confirmIncomeIrregularHours" must {
+    "respond with Ok" in {
+      val testController = createTestIncomeUpdateCalculatorController
+
+      val employerName = "name"
+      val payToDate = 123
+      val newAmount = 123
+
+      when(
+        testController.journeyCacheService.mandatoryValues(any())(any())
+      ).thenReturn(
+        Future.successful(Seq(employerName, newAmount.toString))
+      )
+
+
+
+      val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(FakeRequest(method = "GET", path = "")
+        .withSession(
+          SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+          SessionKeys.authProvider -> "IDA",
+          SessionKeys.userId -> s"/path/to/authority")
+      )
+
+
+      status(result) mustBe OK
+
+      val doc = Jsoup.parse(contentAsString(result))
+
+      doc.title() must include(messages("tai.irregular.mainHeadingText", employerName))
+    }
+
+    "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
+      val testController = createTestIncomeUpdateCalculatorController
+
+      when(
+        testController.journeyCacheService.mandatoryValues(any())(any())
+      ).thenReturn(
+        Future.failed(new Exception)
+      )
+
+      val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(FakeRequest(method = "GET", path = "")
+        .withSession(
+          SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+          SessionKeys.authProvider -> "IDA",
+          SessionKeys.userId -> s"/path/to/authority")
+      )
+
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "submitIncomeIrregularHours" must {
+
+    "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
+      val testController = createTestIncomeUpdateCalculatorController
+
+      when(
+        testController.journeyCacheService.mandatoryValues(any())(any())
+      ).thenReturn(
+        Future.failed(new Exception)
+      )
+
+      val result: Future[Result] = testController.submitIncomeIrregularHours(1)(FakeRequest(method = "GET", path = "")
+        .withSession(
+          SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+          SessionKeys.authProvider -> "IDA",
+          SessionKeys.userId -> s"/path/to/authority")
+      )
+
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+
+
+    "sends Ok on successful submit" in {
+      val testController = createTestIncomeUpdateCalculatorController
+
+      val employerName = "name"
+      val payToDate = 123
+      val newAmount = 123
+
+      when(
+        testController.journeyCacheService.mandatoryValues(any())(any())
+      ).thenReturn(
+        Future.successful(Seq(employerName, newAmount.toString))
+      )
+
+      when(
+        testController.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())
+      ).thenReturn(
+        Future.successful(TaiSuccessResponse)
+      )
+
+      val result: Future[Result] = testController.submitIncomeIrregularHours(1)(FakeRequest(method = "GET", path = "")
+        .withSession(
+          SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+          SessionKeys.authProvider -> "IDA",
+          SessionKeys.userId -> s"/path/to/authority")
+      )
+
+      status(result) mustBe OK
+
+      val doc = Jsoup.parse(contentAsString(result))
+
+      doc.title() must include(messages("tai.incomes.updated.check.title", employerName))
     }
   }
 

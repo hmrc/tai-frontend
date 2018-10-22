@@ -163,14 +163,14 @@ POST        /update-income/working-hours                                        
 
 GET         /update-income/pay-period                                                  controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payPeriodPage
 POST        /update-income/pay-period                                                  controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayPeriod
-GET         /update-income/edit-income-irregular-hours/:employmentId                   controllers.IncomeUpdateCalculatorController.editIncomeIrregularHours(employmentId: Int)
-POST        /update-income/edit-income-irregular-hours/:employmentId                   controllers.IncomeUpdateCalculatorController.handleIncomeIrregularHours(employmentId: Int)
-GET         /update-income/edit-income-irregular-hours/:employmentId/confirm           controllers.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId: Int)
-GET         /update-income/edit-income-irregular-hours/:employmentId/submit            controllers.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId: Int)
+GET         /update-income/edit-income-irregular-hours/:employmentId                   controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.editIncomeIrregularHours(employmentId: Int)
+POST        /update-income/edit-income-irregular-hours/:employmentId                   controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleIncomeIrregularHours(employmentId: Int)
+GET         /update-income/edit-income-irregular-hours/:employmentId/confirm           controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId: Int)
+GET         /update-income/edit-income-irregular-hours/:employmentId/submit            controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId: Int)
 
 
-GET         /update-income/pay-period                                                  controllers.IncomeUpdateCalculatorController.payPeriodPage
-POST        /update-income/pay-period                                                  controllers.IncomeUpdateCalculatorController.handlePayPeriod
+GET         /update-income/pay-period                                                  controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payPeriodPage
+POST        /update-income/pay-period                                                  controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayPeriod
 
 GET         /update-income/payslip-amount                                              controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payslipAmountPage
 POST        /update-income/payslip-amount                                              controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayslipAmount

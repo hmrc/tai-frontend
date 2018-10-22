@@ -54,7 +54,9 @@
     <p>@messages("tai.irregular.instruction.wholePounds")</p>
 
     <div class="grid-row">
-        @form(action=controllers.routes.IncomeUpdateCalculatorController.handleIncomeIrregularHours(viewModel.employmentId)) {
+        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleIncomeIrregularHours(viewModel.employmentId)) {
+
+
             <div class="column-one-half">
                 <p class="bold-small">@messages("tai.irregular.currentAmount")</p>
                 <p>£@viewModel.currentAmount</p>

@@ -28,7 +28,8 @@ object ConfirmIncomeIrregularHoursViewModel {
   def apply(employmentId: Int ,employerName: String, estimatedIncome: Int)(implicit messages: Messages): ConfirmIncomeIrregularHoursViewModel = {
     val currentYear = currentTaxYearRangeHtmlNonBreak
 
-    val submitUrl = controllers.routes.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId).url.toString
+    val submitUrl = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId).url.toString
+
 
     new ConfirmIncomeIrregularHoursViewModel(employerName, estimatedIncome, submitUrl, currentYear)
   }

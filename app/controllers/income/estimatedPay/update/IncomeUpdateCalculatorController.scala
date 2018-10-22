@@ -47,13 +47,13 @@ import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersVie
 import scala.Function.tupled
 import scala.concurrent.Future
 
+//noinspection ScalaStyle
 trait IncomeUpdateCalculatorController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
   with JourneyCacheConstants
-  with EditIncomeIrregularPayConstants {
-  with JourneyCacheConstants
+  with EditIncomeIrregularPayConstants
   with UpdatedEstimatedPayJourneyCache {
 
   def personService: PersonService
