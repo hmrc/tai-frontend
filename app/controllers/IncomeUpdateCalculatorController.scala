@@ -29,11 +29,12 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiFailureResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiFailureResponse, TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
 import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmIncomeIrregularHoursViewModel, EditIncomeIrregularHoursViewModel}
 
@@ -43,7 +44,8 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
-  with JourneyCacheConstants {
+  with JourneyCacheConstants
+  with EditIncomeIrregularPayConstants {
 
   def personService: PersonService
 
@@ -148,8 +150,8 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               employerName <- employerNameRequest
             } yield {
               formData.workingHours match {
-                case Some("regularHours") => Redirect(routes.IncomeUpdateCalculatorController.payPeriodPage())
-                case Some("irregularHours") => Redirect(routes.IncomeUpdateCalculatorController.editIncomeIrregularHours(id))
+                case Some(REGULAR_HOURS) => Redirect(routes.IncomeUpdateCalculatorController.payPeriodPage())
+                case Some(IRREGULAR_HOURS) => Redirect(routes.IncomeUpdateCalculatorController.editIncomeIrregularHours(id))
                 case _ => Redirect(routes.IncomeUpdateCalculatorController.calcUnavailablePage())
               }
             }
