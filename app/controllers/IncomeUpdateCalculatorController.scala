@@ -140,9 +140,12 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             }
           },
           formData => {
+            val idRequest = journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+            val employerNameRequest = journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+
             for {
-              id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-              employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+              id <- idRequest
+              employerName <- employerNameRequest
             } yield {
               formData.workingHours match {
                 case Some("regularHours") => Redirect(routes.IncomeUpdateCalculatorController.payPeriodPage())
@@ -167,7 +170,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           case Some(tci) => {
             (taxCodeIncomeInfoToCache andThen journeyCacheService.cache)(tci) map { _ =>
               val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount.toInt)
-              
+
               Ok(views.html.incomes.editIncomeIrregularHours(EditIncomeIrregularHoursForm.createForm(), viewModel))
             }
           }

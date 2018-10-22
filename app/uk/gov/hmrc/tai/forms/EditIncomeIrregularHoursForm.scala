@@ -33,14 +33,13 @@ object EditIncomeIrregularHoursForm {
     val currentMonth = LocalDate.now().toString("MMMM")
 
     Form[EditIncomeIrregularHoursForm](
-
-        mapping("income" -> TaiValidator.validateTaxAmounts(nonEmptyError = messages("error.tai.updateDataEmployment.blankValue"),
-                                                            validateCurrencyError = messages("tai.irregular.instruction.wholePounds"),
-                                                            validateCurrencyLengthError = messages("error.tai.updateDataEmployment.maxLength"),
-                                                            validateTaxablePayYTDError = taxablePayYTD.fold("")(payToDate => messages("tai.estimatedPay.error.incorrectTaxableIncome.description", payToDate, currentMonth)),
-                                                            taxablePayYTD = taxablePayYTD.getOrElse(0))
-
-        )(EditIncomeIrregularHoursForm.apply)(EditIncomeIrregularHoursForm.unapply)
+      mapping("income" -> TaiValidator.validateTaxAmounts(
+        nonEmptyError = messages("error.tai.updateDataEmployment.blankValue"),
+        validateCurrencyError = messages("tai.irregular.instruction.wholePounds"),
+        validateCurrencyLengthError = messages("error.tai.updateDataEmployment.maxLength"),
+        validateTaxablePayYTDError = taxablePayYTD.fold("")(messages("tai.estimatedPay.error.incorrectTaxableIncome.description", _, currentMonth)),
+        taxablePayYTD = taxablePayYTD.getOrElse(0)
+      ))(EditIncomeIrregularHoursForm.apply)(EditIncomeIrregularHoursForm.unapply)
     )
   }
 }
