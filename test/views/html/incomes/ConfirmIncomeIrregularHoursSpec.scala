@@ -46,7 +46,7 @@ class ConfirmIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
     "display a confirm and send button" in {
       doc(view) must haveLinkElement(
         id = "confirmAndSend",
-        href = controllers.routes.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId).url.toString,
+        href = s"/update-income/edit-income-irregular-hours/$employmentId/submit",
         text = messages("tai.confirmAndSend")
       )
     }

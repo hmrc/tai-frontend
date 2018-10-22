@@ -444,7 +444,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       when(
         testController.journeyCacheService.mandatoryValues(any())(any())
       ).thenReturn(
-        Future.successful(Seq(employerName, payToDate.toString, newAmount.toString))
+        Future.successful(Seq(employerName, newAmount.toString))
       )
 
 
