@@ -32,6 +32,7 @@
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
 @import includes.cancelLink
+@import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
 @gaEventActionString = @{"Update your annual taxable pay"}
 
@@ -82,7 +83,7 @@
                     <div class="column-half">
                         <div class="form-label form-label-bold">@messages("tai.incomes.amount.current")</div>
                         <input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' />
-                        <p>£@income("oldAmount").value</p>
+                        <p>£@MoneyPounds(income("oldAmount").value.getOrElse("0").toInt,0).quantity</p>
                     </div>
                     <div class="column-half">
                         <label class="form-label form-label-bold" for="newAmount" id="amountLabel">@messages("tai.incomes.amount.new")</label>

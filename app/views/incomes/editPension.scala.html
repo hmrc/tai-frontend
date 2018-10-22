@@ -23,6 +23,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @import includes.forms.input
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
 @gaEventActionString = @{"Update your annual taxable pay"}
 
@@ -55,14 +56,14 @@ gaCustomTitle = None
     <div class="form-field-group @if(income.hasErrors) {error}">
 
         @income.errors(income("newAmount").name).map{ error =>
-        <span class="error-notification validation-error__inline-error">@messages(error.message)</span>
+            <span class="error-notification validation-error__inline-error">@messages(error.message)</span>
         }
 
         <div class="grid-row">
             <div class="column-half">
                 <span class="bold">@messages("tai.incomes.amount.current")</span>
                 <input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' />
-                <p>£@income("oldAmount").value</p>
+                <p>£@MoneyPounds(income("oldAmount").value.getOrElse("0").toInt,0).quantity</p>
             </div>
             <div class="column-half">
                 <label class="form-label form-label-bold" id="amountLabel" for="newAmount">@messages("tai.incomes.amount.new")</label>
