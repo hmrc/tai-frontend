@@ -208,8 +208,8 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   }
 
   "handleWorkingHours" must {
-    "redirect the user to workingHours page" when {
-      "user selected income calculator" in {
+    "redirect the user to pay period page" when {
+      "user selected REGULAR_HOURS" in {
         val testController = createTestIncomeUpdateCalculatorController
         val result = testController.handleWorkingHours()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> REGULAR_HOURS))
         status(result) mustBe SEE_OTHER
@@ -220,9 +220,9 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
     "redirect the user to viewIncomeForEdit page" when {
       "user selected anything apart from income calculator" in {
         val testController = createTestIncomeUpdateCalculatorController
-        val result = testController.handleWorkingHours()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> "income"))
+        val result = testController.handleWorkingHours()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> IRREGULAR_HOURS))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.calcUnavailablePage().url)
+        redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.editIncomeIrregularHours(1).url)
       }
     }
 
@@ -733,7 +733,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.irregular.mainHeadingText"))
 
-        doc.body().text must include(messages("error.tai.updateDataEmployment.enterLargerValue", payToDate, LocalDate.now().toString("MMMM"), employerName))
+        doc.body().text must include(messages("tai.estimatedPay.error.incorrectTaxableIncome.description", payToDate, LocalDate.now().toString("MMMM"), employerName))
       }
 
       "given invalid form data of invalid currency" in {
