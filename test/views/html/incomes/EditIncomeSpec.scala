@@ -41,9 +41,16 @@ class EditIncomeSpec extends TaiViewSpec with MockitoSugar {
   val editIncomeForm = mock[Form[EditIncomeForm]]
 
   val field = mock[Field]
+  val intField = mock[Field]
+
   when(field.value).thenReturn(Some("fakeFieldValue"))
   when(field.name).thenReturn("fakeFieldValue")
   when(editIncomeForm(any())).thenReturn(field)
+
+  when(intField.value).thenReturn(Some("123"))
+  when(intField.name).thenReturn("intFakeFieldValue")
+  when(editIncomeForm("oldAmount")).thenReturn(intField)
+
   when(editIncomeForm.errors(anyString())).thenReturn(Nil)
 
   override def view: Html = views.html.incomes.editIncome(editIncomeForm, hasMultipleIncomes = false, empId, "0",None,false)
