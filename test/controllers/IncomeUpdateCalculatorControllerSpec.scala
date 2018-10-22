@@ -39,12 +39,13 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
+
 import scala.concurrent.Future
 import scala.util.Random
 
@@ -481,6 +482,62 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       )
 
       status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "submitIncomeIrregularHours" must {
+
+    "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
+      val testController = createTestController
+
+      when(
+        testController.journeyCacheService.mandatoryValues(any())(any())
+      ).thenReturn(
+        Future.failed(new Exception)
+      )
+
+      val result: Future[Result] = testController.submitIncomeIrregularHours(1)(FakeRequest(method = "GET", path = "")
+        .withSession(
+          SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+          SessionKeys.authProvider -> "IDA",
+          SessionKeys.userId -> s"/path/to/authority")
+      )
+
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+
+
+    "sends Ok on successful submit" in {
+      val testController = createTestController
+
+      val employerName = "name"
+      val payToDate = 123
+      val newAmount = 123
+
+      when(
+        testController.journeyCacheService.mandatoryValues(any())(any())
+      ).thenReturn(
+        Future.successful(Seq(employerName, newAmount.toString))
+      )
+
+      when(
+        testController.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())
+      ).thenReturn(
+        Future.successful(TaiSuccessResponse)
+      )
+
+      val result: Future[Result] = testController.submitIncomeIrregularHours(1)(FakeRequest(method = "GET", path = "")
+        .withSession(
+          SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+          SessionKeys.authProvider -> "IDA",
+          SessionKeys.userId -> s"/path/to/authority")
+      )
+
+      status(result) mustBe OK
+
+      val doc = Jsoup.parse(contentAsString(result))
+
+      doc.title() must include(messages("tai.incomes.updated.check.title", employerName))
     }
   }
 

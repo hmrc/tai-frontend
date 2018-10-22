@@ -29,7 +29,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiFailureResponse}
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
@@ -224,10 +224,8 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             val employerName :: newPay :: Nil = cache.toList
 
             taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) map {
-              case TaiSuccessResponse => {
-                Ok(views.html.incomes.editSuccess(employerName))
-              }
-            case _ => throw new RuntimeException(s"Not able to find cache for id $employmentId")
+              case TaiSuccessResponse => Ok(views.html.incomes.editSuccess(employerName))
+              case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
             }
           })
   }
