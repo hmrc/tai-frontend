@@ -21,8 +21,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @import uk.gov.hmrc.urls.Link
 @import includes.{cancelLink, ptaHeader}
 @import includes.forms.input
-@import uk.gov.hmrc.play.language.LanguageUtils.Dates
-@import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
 @gaEventActionString = @{"Update your annual taxable pay"}
@@ -32,14 +31,14 @@ ptaHeader(
 formForErrorSummary = Some(income),
 displayBackLink = true,
 backLinkGaEventAction = Some(gaEventActionString),
-mainHeadingText = messages("tai.incomes.edit.heading", Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear), Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)),
+mainHeadingText = messages("tai.incomes.edit.heading", currentTaxYearRangeHtmlNonBreak),
 preHeadingText = messages("tai.howToUpdate.preHeading", income("name").value.getOrElse("")),
 headerWidthClasses = Some("column-full")
 )
 }
 
 @main(
-title = messages("tai.incomes.edit.heading", Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear), Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)),
+title = messages("tai.incomes.edit.heading", currentTaxYearRangeHtmlNonBreak),
 user = Some(user),
 pageHeader = Some(header),
 articleClasses = None,
