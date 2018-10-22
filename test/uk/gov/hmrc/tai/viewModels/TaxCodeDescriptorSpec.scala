@@ -23,7 +23,7 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOperation, TaxCodeIncome, Week1Month1BasisOperation}
+import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.urls.Link
 
 import scala.collection.immutable.ListMap
@@ -36,7 +36,7 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
     "return the correct explanation" when {
       Seq("0T", "BR", "NT").foreach(taxCode => {
         s"tax code is ${taxCode}" in {
-          TaxCodeDescriptorConcrete.describeTaxCode(taxCode, OtherBasisOperation, Map.empty[String, BigDecimal]) mustBe
+          TaxCodeDescriptorConcrete.describeTaxCode(taxCode, OtherBasisOfOperation, Map.empty[String, BigDecimal]) mustBe
             ListMap(taxCode -> Messages(s"tai.taxCode.${taxCode}"))
         }
       })
@@ -47,7 +47,7 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
     "return the correct explanation" when {
       Seq("D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8").foreach(taxCode => {
         s"tax code is ${taxCode}" in {
-          TaxCodeDescriptorConcrete.describeTaxCode(taxCode, OtherBasisOperation, Map.empty[String, BigDecimal]) mustBe
+          TaxCodeDescriptorConcrete.describeTaxCode(taxCode, OtherBasisOfOperation, Map.empty[String, BigDecimal]) mustBe
             ListMap(taxCode -> Messages(s"tai.taxCode.DX", 0))
         }
       })
@@ -68,7 +68,7 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
       )
       Seq("D1", "D2", "D3", "D4", "D5", "D6","D7", "D8").foreach(taxCode => {
         s"tax code is ${taxCode}" in {
-          TaxCodeDescriptorConcrete.describeTaxCode(taxCode, OtherBasisOperation, scottishTaxBands) mustBe
+          TaxCodeDescriptorConcrete.describeTaxCode(taxCode, OtherBasisOfOperation, scottishTaxBands) mustBe
             ListMap(taxCode -> Messages(s"tai.taxCode.DX", scottishTaxBands(taxCode)))
         }
       })
@@ -78,7 +78,7 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
   "scottishTaxCodeExplanation" must {
     "return the correct explanation" when {
       "tax code is prefixed with a S" in {
-        TaxCodeDescriptorConcrete.describeTaxCode("S1", OtherBasisOperation, Map.empty[String, BigDecimal]) mustBe
+        TaxCodeDescriptorConcrete.describeTaxCode("S1", OtherBasisOfOperation, Map.empty[String, BigDecimal]) mustBe
           ListMap("S" -> Messages(s"tai.taxCode.S",
             Link.toExternalPage(url = ApplicationConfig.scottishRateIncomeTaxUrl, value=Some(Messages("tai.taxCode.scottishIncomeText.link"))).toHtml))
       }
@@ -88,7 +88,7 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
   "untaxedTaxCodeExplanation" must {
     "return the correct explanation" when {
       "tax code is prefixed with a K" in {
-        TaxCodeDescriptorConcrete.describeTaxCode("K10", OtherBasisOperation, Map.empty[String, BigDecimal]) mustBe
+        TaxCodeDescriptorConcrete.describeTaxCode("K10", OtherBasisOfOperation, Map.empty[String, BigDecimal]) mustBe
           ListMap("K" -> Messages(s"tai.taxCode.K"),
             10.toString -> Messages(s"tai.taxCode.untaxedAmount", 100))
       }
@@ -99,26 +99,26 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
     "return the correct explanation" when {
       Seq("L", "M", "0N").foreach(taxCode => {
         s"tax code ${taxCode} has suffix ${taxCode.last}" in {
-          TaxCodeDescriptorConcrete.describeTaxCode(taxCode, OtherBasisOperation, Map.empty[String, BigDecimal]) mustBe
+          TaxCodeDescriptorConcrete.describeTaxCode(taxCode, OtherBasisOfOperation, Map.empty[String, BigDecimal]) mustBe
             ListMap("0" -> Messages(s"tai.taxCode.amount", 0),
               taxCode.last.toString -> Messages(s"tai.taxCode.${taxCode.last.toString}"))
         }
       })
 
       s"tax code 10N has suffix N" in {
-        TaxCodeDescriptorConcrete.describeTaxCode("10N", OtherBasisOperation, Map.empty[String, BigDecimal]) mustBe
+        TaxCodeDescriptorConcrete.describeTaxCode("10N", OtherBasisOfOperation, Map.empty[String, BigDecimal]) mustBe
           ListMap("10" -> Messages(s"tai.taxCode.amount", 100),
             "N" -> Messages(s"tai.taxCode.N"))
       }
 
       s"tax code 01T has suffix T" in {
-        TaxCodeDescriptorConcrete.describeTaxCode("01T", OtherBasisOperation, Map.empty[String, BigDecimal]) mustBe
+        TaxCodeDescriptorConcrete.describeTaxCode("01T", OtherBasisOfOperation, Map.empty[String, BigDecimal]) mustBe
           ListMap("1" -> Messages(s"tai.taxCode.amount", 10),
             "T" -> Messages(s"tai.taxCode.T"))
       }
 
       s"tax code 10T has suffix T" in {
-        TaxCodeDescriptorConcrete.describeTaxCode("10T", OtherBasisOperation, Map.empty[String, BigDecimal]) mustBe
+        TaxCodeDescriptorConcrete.describeTaxCode("10T", OtherBasisOfOperation, Map.empty[String, BigDecimal]) mustBe
           ListMap("10" -> Messages(s"tai.taxCode.amount", 100),
             "T" -> Messages(s"tai.taxCode.T"))
       }
@@ -128,7 +128,7 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
   "emergencyTaxCodeExplanation" must {
     "return the correct explanation" when {
       "on an emergency basisOperation" in {
-        TaxCodeDescriptorConcrete.describeTaxCode("10T", Week1Month1BasisOperation, Map.empty[String, BigDecimal]) mustBe
+        TaxCodeDescriptorConcrete.describeTaxCode("10T", Week1Month1BasisOfOperation, Map.empty[String, BigDecimal]) mustBe
           ListMap(
             "10" -> Messages(s"tai.taxCode.amount", 100),
             "T" -> Messages(s"tai.taxCode.T"),
@@ -137,7 +137,7 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
       }
 
       "not on an emergency basisOperation" in {
-        TaxCodeDescriptorConcrete.describeTaxCode("10T", OtherBasisOperation, Map.empty[String, BigDecimal]) mustBe
+        TaxCodeDescriptorConcrete.describeTaxCode("10T", OtherBasisOfOperation, Map.empty[String, BigDecimal]) mustBe
           ListMap(
             "10" -> Messages(s"tai.taxCode.amount", 100),
             "T" -> Messages(s"tai.taxCode.T")
@@ -146,8 +146,8 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
     }
   }
 
-  private val taxCodeIncomes1 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOperation, Live)
-  private val taxCodeIncomes2 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "BR", "employer2", Week1Month1BasisOperation, Live)
+  private val taxCodeIncomes1 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)
+  private val taxCodeIncomes2 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "BR", "employer2", Week1Month1BasisOfOperation, Live)
   private val nino = new Generator().nextNino
   private val scottishTaxRateBands = Map.empty[String, BigDecimal]
 

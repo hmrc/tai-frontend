@@ -33,7 +33,7 @@ class EditPensionSpec extends TaiViewSpec with MockitoSugar{
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
       messages("tai.howToUpdate.preHeading", employerName),
-      messages("tai.incomes.pension.heading")
+      messages("tai.incomes.edit.heading")
     )
   }
 

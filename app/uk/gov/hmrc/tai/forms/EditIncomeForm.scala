@@ -59,7 +59,6 @@ case class EditIncomeForm(name : String, description : String,
   }
 }
 
-
 object EditIncomeForm {
   implicit val formats = Json.format[EditIncomeForm]
 
@@ -84,7 +83,7 @@ object EditIncomeForm {
       isOccupationalPension = preFillData.isOccupationalPension,
       hasMultipleIncomes = hasMultipleIncomes
     )
-    EditIncomeForm.createForm(taxablePayYTD).fill(editIncomeForm)
+    EditIncomeForm.createForm(preFillData.name, taxablePayYTD).fill(editIncomeForm)
   }
 
   def apply(employmentAmount: EmploymentAmount, newAmount: String,
@@ -105,12 +104,12 @@ object EditIncomeForm {
       payToDate)
   }
 
-  def bind(taxablePayYTD: BigDecimal = BigDecimal(0), payDate: Option[LocalDate] = None,
-           errMessage: Option[String] = None)(implicit request: Request[_], messages: Messages) = createForm(taxablePayYTD, payDate, errMessage).bindFromRequest
+  def bind(employerName: String, taxablePayYTD: BigDecimal = BigDecimal(0), payDate: Option[LocalDate] = None,
+           errMessage: Option[String] = None)(implicit request: Request[_], messages: Messages) = createForm(employerName, taxablePayYTD, payDate, errMessage).bindFromRequest
 
-  private def createForm (taxablePayYTD: BigDecimal, payDate: Option[LocalDate] = None, errMessage: Option[String] = None)(implicit messages: Messages) :Form[EditIncomeForm] = {
+  private def createForm (employerName: String, taxablePayYTD: BigDecimal, payDate: Option[LocalDate] = None, errMessage: Option[String] = None)(implicit messages: Messages) :Form[EditIncomeForm] = {
 
-    val monthName = payDate.map (date => DateHelper.monthOfYear(Dates.formatDate(date))).getOrElse("")
+    val monthAndYearName = payDate.map (date => DateHelper.getMonthAndYear(Dates.formatDate(date))).getOrElse("")
 
     val errMsg = errMessage.getOrElse("error.tai.updateDataEmployment.enterLargerValue")
     Form[EditIncomeForm](
@@ -119,11 +118,10 @@ object EditIncomeForm {
         "description" -> text,
         "employmentId" -> number,
         "newAmount" -> TaiValidator.validateTaxAmounts(Messages("error.tai.updateDataEmployment.blankValue"),
-                                                       Messages("error.tai.updateDataEmployment.enterRealNumber"),
-                                                       Messages("error.tai.updateDataEmployment.maxLength"),
-                                                        Messages(errMsg,
-                                                        MoneyPounds(taxablePayYTD, 0, true).quantity, monthName),
-                                                        taxablePayYTD),
+           Messages("error.tai.updateDataEmployment.enterRealNumber"),
+           Messages("error.tai.updateDataEmployment.maxLength"),
+           Messages(errMsg, MoneyPounds(taxablePayYTD, 0, true).quantity, monthAndYearName, employerName),
+          taxablePayYTD),
         "oldAmount" -> number,
         "worksNumber" -> optional(text),
         "jobTitle" -> optional(text),
