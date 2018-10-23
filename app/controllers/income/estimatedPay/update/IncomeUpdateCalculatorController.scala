@@ -21,33 +21,29 @@ import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import controllers.{AuthenticationConnectors, TaiBaseController}
 import org.joda.time.LocalDate
 import play.api.Play.current
-import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiFailureResponse, TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
-import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
-import uk.gov.hmrc.tai.model.domain.{Employment, PensionIncome}
+import uk.gov.hmrc.tai.model.domain.PensionIncome
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
 import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
-import uk.gov.hmrc.tai.viewModels.income.{ConfirmIncomeIrregularHoursViewModel, EditIncomeIrregularHoursViewModel}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
+import uk.gov.hmrc.tai.viewModels.income.{ConfirmIncomeIrregularHoursViewModel, EditIncomeIrregularHoursViewModel}
 
 import scala.Function.tupled
 import scala.concurrent.Future
 
-//noinspection ScalaStyle
 trait IncomeUpdateCalculatorController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
@@ -176,12 +172,8 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             }
           },
           (formData: HoursWorkedForm) => {
-            val idRequest = journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-            val employerNameRequest = journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-
             for {
-              id <- idRequest
-              employerName <- employerNameRequest
+              id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
             } yield formData.workingHours match {
               case Some(REGULAR_HOURS) => Redirect(routes.IncomeUpdateCalculatorController.payPeriodPage())
               case Some(IRREGULAR_HOURS) => Redirect(routes.IncomeUpdateCalculatorController.editIncomeIrregularHours(id))
