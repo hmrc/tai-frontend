@@ -14,34 +14,34 @@
  * limitations under the License.
  *@
 
-@(employerName: String)(implicit request: Request[_],
+@import uk.gov.hmrc.tai.viewModels.EstimatedIncomeSuccessViewModel
+
+@(viewModel: EstimatedIncomeSuccessViewModel)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-
-
 @main(
-    title = messages("tai.incomes.updated.check.title", employerName),
+    title = messages("tai.incomes.updated.check.title", viewModel.employerName),
     articleClasses = Some("full-width"),
     user = Some(user),
-    employerName = Some(employerName),
+    employerName = Some(viewModel.employerName),
     gaCustomTitle = None
 ){
     <div class="column-two-thirds">
-        <header class="page-header">
+        <header class="grid-row">
             <div class="govuk-box-highlight">
-                <h1 class="heading-large" id="currentYearTitle">@messages("tai.incomes.updated.check.title", employerName)</h1>
+                <h1 class="heading-large" id="currentYearTitle">@viewModel.heading</h1>
             </div>
         </header>
 
-        <div class="section soft--top">
-            <p>@messages("tai.incomes.updated.check.text")</p>
-            <p>@messages("tai.incomes.seeChanges.text")</p>
+        <div class="grid-row soft--top">
+            <p>
+                @viewModel.paragraph1
+                @includes.link(
+                    copy = viewModel.link,
+                    url = routes.TaxAccountSummaryController.onPageLoad().url.toString
+                )
+            </p>
+            <p>@viewModel.paragraph2</p>
         </div>
-
-        @includes.link(
-            copy=messages("return.to.your.income.tax.summary"),
-            url = routes.TaxAccountSummaryController.onPageLoad().url.toString,
-            isButton=true
-        )
     </div>
 }

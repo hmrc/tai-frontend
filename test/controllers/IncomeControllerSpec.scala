@@ -318,7 +318,8 @@ class IncomeControllerSpec extends PlaySpec
       "income is successfully updated" in {
         val testController = createTestIncomeController
 
-        when(testController.journeyCacheService.mandatoryValue(any())(any())).thenReturn(Future.successful("100"))
+        when(testController.journeyCacheService.mandatoryValues(any())(any()))
+          .thenReturn(Future.successful(Seq("Employer", "100,000", "1")))
 
         when(testController.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponse))
@@ -328,7 +329,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.updated.check.title", 100))
+        doc.title() must include(Messages("tai.incomes.updated.check.title", "Employer"))
       }
     }
 
@@ -336,10 +337,8 @@ class IncomeControllerSpec extends PlaySpec
       "income is successfully updated with comma separated values input" in {
         val testController = createTestIncomeController
 
-        when(testController.journeyCacheService.mandatoryValue(any())(any()))
-          .thenReturn(Future.successful("Employer"))
-            .thenReturn(Future.successful("100,000"))
-              .thenReturn(Future.successful("1"))
+        when(testController.journeyCacheService.mandatoryValues(any())(any()))
+          .thenReturn(Future.successful(Seq("Employer", "100,000", "1")))
 
         when(testController.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponse))

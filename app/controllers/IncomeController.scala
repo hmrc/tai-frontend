@@ -26,6 +26,7 @@ import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
@@ -35,6 +36,7 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.{AuditConstants, FormHelper, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.viewModels.{EstimatedEmploymentIncomeSuccessViewModel, EstimatedPensionIncomeSuccessViewModel}
 
 import scala.Function.tupled
 import scala.concurrent.Future
@@ -133,23 +135,36 @@ trait IncomeController extends TaiBaseController
         }
   }
 
-  def updateEstimatedIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit person =>
-      implicit request =>
-        ServiceCheckLite.personDetailsCheck {
-          for {
-            employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-            newAmount <- journeyCacheService.mandatoryValue(UpdateIncome_NewAmountKey)
-            id <- journeyCacheService.mandatoryValue(UpdateIncome_IdKey)
-            response <- taxAccountService.updateEstimatedIncome(Nino(user.getNino), FormHelper.stripNumber(newAmount).toInt, TaxYear(), id.toInt)
-          } yield {
-            response match {
-              case TaiSuccessResponse =>
-                Ok(views.html.incomes.editSuccess(employerName))
-              case _ => throw new RuntimeException("Failed to update estimated income")
-            }
-          }
+  def updatePensionIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit person => {
+      implicit request => {
+
+        def onSuccess(employerName: String): Result = {
+          val viewModel = EstimatedPensionIncomeSuccessViewModel(employerName)
+          Ok(views.html.incomes.editSuccess(viewModel))
         }
+
+        ServiceCheckLite.personDetailsCheck {
+          updateEstimatedIncomeSource(onSuccess)
+        }
+      }
+    }
+  }
+
+  def updateEstimatedIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit person => {
+      implicit request => {
+
+        def onSuccess(employerName: String)(implicit user: TaiUser, request: Request[AnyContent]): Result = {
+          val viewModel = EstimatedEmploymentIncomeSuccessViewModel(employerName)
+          Ok(views.html.incomes.editSuccess(viewModel))
+        }
+
+        ServiceCheckLite.personDetailsCheck {
+          updateEstimatedIncomeSource(onSuccess)
+        }
+      }
+    }
   }
 
   def pensionIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -243,6 +258,18 @@ trait IncomeController extends TaiBaseController
             }
           }
         }
+  }
+
+  private def updateEstimatedIncomeSource(onSuccess: String => Result)
+                                         (implicit user: TaiUser, hc: HeaderCarrier, request: Request[AnyContent]) = {
+    journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey).flatMap(cache => {
+      val employerName :: newAmount :: id :: Nil = cache.toList
+
+      taxAccountService.updateEstimatedIncome(Nino(user.getNino), FormHelper.stripNumber(newAmount).toInt, TaxYear(), id.toInt) map {
+        case TaiSuccessResponse => onSuccess(employerName)
+        case _ => throw new RuntimeException("Failed to update estimated income")
+      }
+    })
   }
 
   private def retrieveAmountAndDate(employment: Employment): (BigDecimal, Option[LocalDate]) = {
