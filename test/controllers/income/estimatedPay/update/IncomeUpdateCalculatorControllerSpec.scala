@@ -46,6 +46,7 @@ import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
+import controllers.income.estimatedPay.update.routes
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -169,7 +170,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val testController = createTestIncomeUpdateCalculatorController
         val result = testController.handleChooseHowToUpdate()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("howToUpdate" -> "incomeCalculator"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.workingHoursPage().url)
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.workingHoursPage().url)
       }
     }
 
@@ -213,23 +214,34 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val testController = createTestIncomeUpdateCalculatorController
         val result = testController.handleWorkingHours()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> REGULAR_HOURS))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payPeriodPage().url)
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.payPeriodPage().url)
       }
     }
 
     "redirect the user to viewIncomeForEdit page" when {
-      "user selected anything apart from income calculator" in {
+      "user selects irregular hours" in {
         val testController = createTestIncomeUpdateCalculatorController
         val result = testController.handleWorkingHours()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> IRREGULAR_HOURS))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.editIncomeIrregularHours(1).url)
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.editIncomeIrregularHours(1).url)
       }
     }
 
     "redirect user back to workingHours page" when {
-      "user input has error" in {
+      "user does not select anything" in {
         val testController = createTestIncomeUpdateCalculatorController
         val result = testController.handleWorkingHours()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> ""))
+        status(result) mustBe BAD_REQUEST
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(Messages("tai.workingHours.title"))
+      }
+    }
+
+    "redirect user back to workingHours page" when {
+      "bad data submitted in form" in {
+        val testController = createTestIncomeUpdateCalculatorController
+        val result = testController.handleWorkingHours()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("workingHours" -> "anything"))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -258,7 +270,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = testController.handlePayPeriod()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("payPeriod" -> "monthly"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipAmountPage().url)
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.payslipAmountPage().url)
       }
     }
 
@@ -295,7 +307,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         when(testController.journeyCacheService.cache(Matchers.eq(Map(UpdateIncome_TotalSalaryKey -> "£3,000")))(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = testController.handlePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("totalSalary" -> "£3,000"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipDeductionsPage().url)
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.payslipDeductionsPage().url)
       }
     }
 
@@ -334,7 +346,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         when(testController.journeyCacheService.cache(Matchers.eq(Map(UpdateIncome_TaxablePayKey -> "£3,000")))(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = testController.handleTaxablePayslipAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("taxablePay" -> "£3,000"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url)
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url)
       }
     }
 
@@ -372,7 +384,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         when(testController.journeyCacheService.cache(Matchers.eq(Map(UpdateIncome_PayslipDeductionsKey -> "Yes")))(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = testController.handlePayslipDeductions()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("payslipDeductions" -> "Yes"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage().url)
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage().url)
       }
     }
 
@@ -385,7 +397,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
         val result = testController.handlePayslipDeductions()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("payslipDeductions" -> "No"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url)
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url)
       }
     }
 
@@ -423,7 +435,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         when(testController.journeyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = testController.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("bonusPayments" -> "Yes", "bonusPaymentsMoreThisYear" -> "No"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url)
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url)
       }
     }
 
@@ -435,7 +447,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         when(testController.journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
         val result = testController.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("bonusPayments" -> "No"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage().url)
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.checkYourAnswersPage().url)
       }
     }
 
@@ -486,7 +498,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         when(testController.journeyCacheService.cache(Matchers.eq(Map(UpdateIncome_BonusOvertimeAmountKey-> "£3,000")))(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = testController.handleBonusOvertimeAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("amount" -> "£3,000"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage().url)
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.checkYourAnswersPage().url)
       }
     }
 
@@ -617,19 +629,6 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
     }
   }
 
-  "calcUnavailablePage" must {
-    "display calcUnavailable page" when {
-      "journey cache returns employment name and id" in {
-        val testController = createTestIncomeUpdateCalculatorController
-        val result = testController.calcUnavailablePage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.unableToCalculate.title"))
-      }
-    }
-  }
-
   "editIncomeIrregularHours" must {
     "respond with OK and show the irregular hours edit page" in {
       val testController = createTestIncomeUpdateCalculatorController
@@ -702,7 +701,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
       status(result) mustBe SEE_OTHER
 
-      redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId).url.toString)
+      redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId).url.toString)
 
     }
 

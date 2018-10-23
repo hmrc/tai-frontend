@@ -175,19 +175,16 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               BadRequest(views.html.incomes.workingHours(formWithErrors, id, employerName))
             }
           },
-          formData => {
+          (formData: HoursWorkedForm) => {
             val idRequest = journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
             val employerNameRequest = journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
 
             for {
               id <- idRequest
               employerName <- employerNameRequest
-            } yield {
-              formData.workingHours match {
-                case Some(REGULAR_HOURS) => Redirect(routes.IncomeUpdateCalculatorController.payPeriodPage())
-                case Some(IRREGULAR_HOURS) => Redirect(routes.IncomeUpdateCalculatorController.editIncomeIrregularHours(id))
-                case _ => Redirect(routes.IncomeUpdateCalculatorController.calcUnavailablePage())
-              }
+            } yield formData.workingHours match {
+              case Some(REGULAR_HOURS) => Redirect(routes.IncomeUpdateCalculatorController.payPeriodPage())
+              case Some(IRREGULAR_HOURS) => Redirect(routes.IncomeUpdateCalculatorController.editIncomeIrregularHours(id))
             }
           }
         )
@@ -602,18 +599,6 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = newAmount).get))
         }
   }
-
-  def calcUnavailablePage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit person =>
-      implicit request =>
-        for {
-          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-        } yield {
-          Ok(views.html.incomes.calcUnavailable(id, employerName))
-        }
-  }
-
 }
 
 // $COVERAGE-OFF$

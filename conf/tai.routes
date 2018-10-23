@@ -193,9 +193,6 @@ GET         /update-income/estimated-pay                                        
 
 GET         /update-income/confirm-estimated-pay                                       controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleCalculationResult
 
-GET         /update-income/calculation-unavailable                                     controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.calcUnavailablePage
-
-
 ## Regular Income URIs
 GET         /update-income/select-taxable-pay                                          controllers.IncomeController.viewIncomeForEdit
 
