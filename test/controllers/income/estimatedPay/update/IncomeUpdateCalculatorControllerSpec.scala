@@ -29,7 +29,7 @@ import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
-import play.api.mvc.Result
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
@@ -691,12 +691,10 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         Future.successful(Map.empty[String, String])
       )
 
-      val result = testController.handleIncomeIrregularHours(1)(FakeRequest(method = "POST", path = "")
-        .withFormUrlEncodedBody("income" -> "999")
-        .withSession(
-          SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
-          SessionKeys.authProvider -> "IDA",
-          SessionKeys.userId -> s"/path/to/authority")
+      val result = testController.handleIncomeIrregularHours(1)(
+        RequestBuilder
+          .buildFaleReqestWithOnlySession("POST")
+          .withFormUrlEncodedBody("income" -> "999")
       )
 
       status(result) mustBe SEE_OTHER
@@ -719,12 +717,9 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         )
 
         val result = testController.handleIncomeIrregularHours(1)(
-          FakeRequest(method = "POST", path = "")
+          RequestBuilder
+            .buildFaleReqestWithOnlySession("POST")
             .withFormUrlEncodedBody("income" -> (payToDate-1).toString)
-            .withSession(
-              SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
-              SessionKeys.authProvider -> "IDA",
-              SessionKeys.userId -> s"/path/to/authority")
         )
 
         status(result) mustBe BAD_REQUEST
@@ -748,12 +743,9 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         )
 
         val result = testController.handleIncomeIrregularHours(1)(
-          FakeRequest(method = "POST", path = "")
+          RequestBuilder
+            .buildFaleReqestWithOnlySession("POST")
             .withFormUrlEncodedBody("income" -> "ABC")
-            .withSession(
-              SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
-              SessionKeys.authProvider -> "IDA",
-              SessionKeys.userId -> s"/path/to/authority")
         )
 
         status(result) mustBe BAD_REQUEST
@@ -778,11 +770,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         )
 
         val result = testController.handleIncomeIrregularHours(1) {
-          FakeRequest(method = "POST", path = "")
-            .withSession(
-              SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
-              SessionKeys.authProvider -> "IDA",
-              SessionKeys.userId -> s"/path/to/authority")
+          RequestBuilder.buildFaleReqestWithOnlySession("POST")
         }
 
         status(result) mustBe BAD_REQUEST
@@ -806,12 +794,9 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         )
 
         val result = testController.handleIncomeIrregularHours(1) {
-          FakeRequest(method = "POST", path = "")
+          RequestBuilder
+            .buildFaleReqestWithOnlySession("POST")
             .withFormUrlEncodedBody("income" -> "1234567890")
-            .withSession(
-              SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
-              SessionKeys.authProvider -> "IDA",
-              SessionKeys.userId -> s"/path/to/authority")
         }
 
         status(result) mustBe BAD_REQUEST
@@ -840,11 +825,8 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
 
 
-      val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(FakeRequest(method = "GET", path = "")
-        .withSession(
-          SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
-          SessionKeys.authProvider -> "IDA",
-          SessionKeys.userId -> s"/path/to/authority")
+      val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
+        RequestBuilder.buildFaleReqestWithOnlySession("GET")
       )
 
 
@@ -864,11 +846,8 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         Future.failed(new Exception)
       )
 
-      val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(FakeRequest(method = "GET", path = "")
-        .withSession(
-          SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
-          SessionKeys.authProvider -> "IDA",
-          SessionKeys.userId -> s"/path/to/authority")
+      val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
+        RequestBuilder.buildFaleReqestWithOnlySession("GET")
       )
 
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -886,11 +865,8 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         Future.failed(new Exception)
       )
 
-      val result: Future[Result] = testController.submitIncomeIrregularHours(1)(FakeRequest(method = "GET", path = "")
-        .withSession(
-          SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
-          SessionKeys.authProvider -> "IDA",
-          SessionKeys.userId -> s"/path/to/authority")
+      val result: Future[Result] = testController.submitIncomeIrregularHours(1)(
+        RequestBuilder.buildFaleReqestWithOnlySession("GET")
       )
 
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -916,11 +892,8 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         Future.successful(TaiSuccessResponse)
       )
 
-      val result: Future[Result] = testController.submitIncomeIrregularHours(1)(FakeRequest(method = "GET", path = "")
-        .withSession(
-          SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
-          SessionKeys.authProvider -> "IDA",
-          SessionKeys.userId -> s"/path/to/authority")
+      val result: Future[Result] = testController.submitIncomeIrregularHours(1)(
+        RequestBuilder.buildFaleReqestWithOnlySession("GET")
       )
 
       status(result) mustBe OK
