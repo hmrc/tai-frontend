@@ -11,6 +11,7 @@ object FrontendBuild extends Build with MicroService {
   override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
   lazy val plugins : Seq[Plugins] = Seq(play.sbt.PlayScala, SbtWeb)
   override lazy val playSettings : Seq[Setting[_]] = Seq(
+    dependencyOverrides += "uk.gov.hmrc" %% "play-config" % "4.3.0",
     routesImport ++= Seq(
       "uk.gov.hmrc.domain._",
       "_root_.uk.gov.hmrc.tai.binders.TaxYearObjectBinder._",
@@ -30,7 +31,7 @@ private object AppDependencies {
     "uk.gov.hmrc"  %%  "frontend-bootstrap"           %  "8.24.0",
     "uk.gov.hmrc"  %%  "url-builder"                  %  "2.1.0",
     "uk.gov.hmrc"  %%  "play-partials"                %  "6.1.0",
-    "uk.gov.hmrc"  %%  "csp-client"                   %  "2.1.0",
+    "uk.gov.hmrc"  %%  "csp-client"                   %  "3.1.0",
     "uk.gov.hmrc"  %%  "play-language"                %  "3.4.0",
     "uk.gov.hmrc"  %%  "local-template-renderer"      %  "2.0.0"
   )
