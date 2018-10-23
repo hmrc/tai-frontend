@@ -22,6 +22,7 @@ import org.scalatest.mock.MockitoSugar
 import play.api.data.{Field, Form}
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.EditIncomeForm
+import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class EditPensionSpec extends TaiViewSpec with MockitoSugar{
@@ -33,16 +34,23 @@ class EditPensionSpec extends TaiViewSpec with MockitoSugar{
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
       messages("tai.howToUpdate.preHeading", employerName),
-      messages("tai.incomes.edit.heading")
+      messages("tai.incomes.edit.heading", currentTaxYearRangeHtmlNonBreak)
     )
   }
 
   val editIncomeForm = mock[Form[EditIncomeForm]]
 
   val field = mock[Field]
+  val intField = mock[Field]
+
   when(field.value).thenReturn(Some("fakeFieldValue"))
   when(field.name).thenReturn("fakeFieldValue")
   when(editIncomeForm(any())).thenReturn(field)
+
+  when(intField.value).thenReturn(Some("123"))
+  when(intField.name).thenReturn("intFakeFieldValue")
+  when(editIncomeForm("oldAmount")).thenReturn(intField)
+
   when(editIncomeForm.errors(anyString())).thenReturn(Nil)
 
   override def view: Html = views.html.incomes.editPension(editIncomeForm, hasMultipleIncomes = false, empId, "0",false)
