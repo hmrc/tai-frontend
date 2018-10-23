@@ -27,12 +27,10 @@
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
     partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"???"}
-
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
+        backLinkGaEventAction = None
         mainHeadingText = viewModel.heading,
         preHeadingText = viewModel.preHeading,
         headerWidthClasses = Some("column-full"),
