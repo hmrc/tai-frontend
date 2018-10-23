@@ -772,6 +772,7 @@ tai.irregular.para2=To have your records corrected, contact {0} first. Ask them 
 tai.irregular.para3=You can update your records now if you are unable to contact them or they will not pay you again.
 tai.irregular.para4=I want to:
 tai.irregular.preHeadingText=End employment
+tai.irregular.error.error.incorrectTaxableIncome=Your employer told us you were paid £{0} up to {1}. You cannot enter an annual income amount lower than this. If the amount is wrong call HM Revenue and Customs on 0300 200 3300.
 
 tai.item=Item
 tai.iya.check.your.tax.code.text=Check {0} to find out what’s changed.

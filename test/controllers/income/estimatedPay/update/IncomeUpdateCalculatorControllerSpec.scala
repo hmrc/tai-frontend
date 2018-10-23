@@ -732,7 +732,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.irregular.mainHeadingText"))
 
-        doc.body().text must include(messages("tai.estimatedPay.error.incorrectTaxableIncome.description", payToDate, LocalDate.now().toString("MMMM"), employerName))
+        doc.body().text must include(messages("tai.irregular.error.error.incorrectTaxableIncome", payToDate, LocalDate.now().toString("MMMM"), employerName))
       }
 
       "given invalid form data of invalid currency" in {

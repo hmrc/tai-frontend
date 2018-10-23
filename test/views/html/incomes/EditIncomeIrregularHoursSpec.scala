@@ -22,6 +22,7 @@ import uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
+import controllers.income.estimatedPay.update.routes
 
 
 class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
@@ -36,12 +37,12 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
     behave like pageWithCombinedHeader(
       messages("tai.estimatedPay.preHeading", employerName),
       messages("tai.irregular.mainHeadingText", currentTaxYearRangeHtmlNonBreak))
-    behave like pageWithContinueButtonForm(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleIncomeIrregularHours(employmentId).url)
+    behave like pageWithContinueButtonForm(s"/check-income-tax/update-income/edit-income-irregular-hours/$employmentId")
 
 
     "have the correct content" in {
       doc(view) must haveParagraphWithText(messages("tai.irregular.introduction"))
-      doc(view) must haveHeadingH2WithText(messages("tai.irregular.secondaryHeading"))
+      doc(view) must haveHeadingH2WithText(messages("tai.irregular.secondaryHeading", employerName))
       doc(view) must haveParagraphWithText(messages("tai.irregular.estimateAnnualAverage"))
       doc(view) must haveParagraphWithText(messages("tai.irregular.instruction.wholePounds"))
     }

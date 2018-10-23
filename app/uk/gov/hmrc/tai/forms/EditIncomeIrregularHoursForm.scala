@@ -37,7 +37,7 @@ object EditIncomeIrregularHoursForm {
         nonEmptyError = messages("error.tai.updateDataEmployment.blankValue"),
         validateCurrencyError = messages("tai.irregular.instruction.wholePounds"),
         validateCurrencyLengthError = messages("error.tai.updateDataEmployment.maxLength"),
-        validateTaxablePayYTDError = taxablePayYTD.fold("")(messages("tai.estimatedPay.error.incorrectTaxableIncome.description", _, currentMonth)),
+        validateTaxablePayYTDError = taxablePayYTD.fold("")(messages("tai.irregular.error.error.incorrectTaxableIncome", _, currentMonth)),
         taxablePayYTD = taxablePayYTD.getOrElse(0)
       ))(EditIncomeIrregularHoursForm.apply)(EditIncomeIrregularHoursForm.unapply)
     )
