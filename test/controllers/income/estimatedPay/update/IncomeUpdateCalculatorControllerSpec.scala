@@ -693,7 +693,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
       val result = testController.handleIncomeIrregularHours(1)(
         RequestBuilder
-          .buildFaleReqestWithOnlySession("POST")
+          .buildFakeRequestWithOnlySession("POST")
           .withFormUrlEncodedBody("income" -> "999")
       )
 
@@ -718,7 +718,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
         val result = testController.handleIncomeIrregularHours(1)(
           RequestBuilder
-            .buildFaleReqestWithOnlySession("POST")
+            .buildFakeRequestWithOnlySession("POST")
             .withFormUrlEncodedBody("income" -> (payToDate-1).toString)
         )
 
@@ -744,7 +744,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
         val result = testController.handleIncomeIrregularHours(1)(
           RequestBuilder
-            .buildFaleReqestWithOnlySession("POST")
+            .buildFakeRequestWithOnlySession("POST")
             .withFormUrlEncodedBody("income" -> "ABC")
         )
 
@@ -770,7 +770,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         )
 
         val result = testController.handleIncomeIrregularHours(1) {
-          RequestBuilder.buildFaleReqestWithOnlySession("POST")
+          RequestBuilder.buildFakeRequestWithOnlySession("POST")
         }
 
         status(result) mustBe BAD_REQUEST
@@ -795,7 +795,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
         val result = testController.handleIncomeIrregularHours(1) {
           RequestBuilder
-            .buildFaleReqestWithOnlySession("POST")
+            .buildFakeRequestWithOnlySession("POST")
             .withFormUrlEncodedBody("income" -> "1234567890")
         }
 
@@ -826,7 +826,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
 
 
       val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
-        RequestBuilder.buildFaleReqestWithOnlySession("GET")
+        RequestBuilder.buildFakeRequestWithOnlySession("GET")
       )
 
 
@@ -847,7 +847,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       )
 
       val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
-        RequestBuilder.buildFaleReqestWithOnlySession("GET")
+        RequestBuilder.buildFakeRequestWithOnlySession("GET")
       )
 
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -866,7 +866,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       )
 
       val result: Future[Result] = testController.submitIncomeIrregularHours(1)(
-        RequestBuilder.buildFaleReqestWithOnlySession("GET")
+        RequestBuilder.buildFakeRequestWithOnlySession("GET")
       )
 
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -893,7 +893,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       )
 
       val result: Future[Result] = testController.submitIncomeIrregularHours(1)(
-        RequestBuilder.buildFaleReqestWithOnlySession("GET")
+        RequestBuilder.buildFakeRequestWithOnlySession("GET")
       )
 
       status(result) mustBe OK
