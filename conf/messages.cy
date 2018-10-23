@@ -754,7 +754,8 @@ tai.incomes.type-1=(Pensiwn)
 tai.incomes.updated.check.text=Os gwneir newidiadau nes ymlaen, er enghraifft, gan eich cyflogwr neu ddarparwr eich pensiwn, efallai y bydd eich cyfrifiad yn newid.
 tai.incomes.updated.check.title=Mae’ch incwm trethadwy oddi wrth {0} wedi’i ddiweddaru
 tai.incomes.workNumber=Rhif y cyflogai:
-tai.irregular.mainHeadingText=
+
+tai.irregular.secondaryHeading=Nodwch eich amcangyfrif eich hun ar gyfer  {0}
 tai.irregular.option1=cysylltwch â {0} yn y lle cyntaf
 tai.irregular.option2=diweddaru fy manylion nawr
 tai.irregular.para1=Mae''n ymddangos nad yw {0} yn eich talu''n rheolaidd, neu ei fod yn eich talu bob 6 neu 12 mis.
@@ -762,6 +763,15 @@ tai.irregular.para2=Er mwyn cywiro''ch cofnodion, cysylltwch â {0} yn y lle cyn
 tai.irregular.para3=Gallwch ddiweddaru''ch cofnodion nawr os na allwch gysylltu â nhw neu ni fyddant yn eich talu eto.
 tai.irregular.para4=Rwyf eisiau:
 tai.irregular.preHeadingText=Dod â chyflogaeth i ben
+tai.irregular.confirm.effectOfChange=Gall newid eich swm newid eich cod treth a’r haen dreth yr ydych ynddi. Gallai hynny effeithio ar swm y dreth yr ydych yn ei thalu.
+tai.irregular.currentAmount=Y swm presennol
+tai.irregular.instruction.wholePounds=Nodwch y swm mewn punnoedd cyfan – anwybyddwch y ceiniogau.
+tai.irregular.newAmount=Swm newydd
+tai.irregular.confirm.estimatedIncome=Eich incwm amcangyfrifedig newydd yw £{0}
+tai.irregular.confirm.mainHeading=Cadarnhewch eich incwm trethadwy amcangyfrifedig ar gyfer {0}
+tai.irregular.introduction=Ni allwn amcangyfrif eich incwm blynyddol oherwydd bod gennych oriau gwaith afreolaidd
+tai.irregular.mainHeadingText=Diweddarwch eich incwm trethadwy amcangyfrifedig ar gyfer {0} gydag oriau gwaith afreolaidd
+
 tai.item=Eitem
 tai.iya.check.your.tax.code.text=Gwiriwch {0} i gael gwybod beth sydd wedi newid.
 tai.iya.paidTooLittle.cy-and-cy-plus-one.text1=Credwn nad ydych wedi talu digon o Dreth Incwm y flwyddyn hon ac mae arnoch £{0}. Byddwn yn dechrau casglu hyn ar unwaith.

@@ -757,7 +757,7 @@ tai.incomes.workNumber=Employee no:
 
 tai.irregular.mainHeadingText=Update your estimated taxable income for {0} with irregular working hours
 tai.irregular.introduction=We cannot calculate your annual income as you have irregular working hours.
-tai.irregular.secondaryHeading=Enter your updated estimate
+tai.irregular.secondaryHeading=Enter your own estimate for {0}
 tai.irregular.estimateAnnualAverage=Use your average hours to estimate an annual amount of taxable income.
 tai.irregular.instruction.wholePounds=Enter the amount in whole pounds – ignore the pence.
 tai.irregular.currentAmount=Current amount
@@ -765,7 +765,6 @@ tai.irregular.newAmount=New amount
 tai.irregular.confirm.mainHeading=Confirm your estimated taxable income for {0}
 tai.irregular.confirm.estimatedIncome=Your new estimated income is £{0}
 tai.irregular.confirm.effectOfChange=Changing your income may change your tax code and the tax band you are in. This could affect the amount of tax you pay.
-
 tai.irregular.option1=contact {0} first
 tai.irregular.option2=update my details now
 tai.irregular.para1=It looks as though {0} does not pay you regularly, or they only pay you every 6 or 12 months.
