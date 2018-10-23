@@ -19,7 +19,8 @@ package uk.gov.hmrc.tai.viewModels.income
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 
-case class ConfirmIncomeIrregularHoursViewModel(employerName: String,
+case class ConfirmIncomeIrregularHoursViewModel(employmentId: Int,
+                                                employerName: String,
                                                 estimatedIncome: Int,
                                                 submitUrl: String,
                                                 currentTaxYearRange: String)
@@ -31,6 +32,6 @@ object ConfirmIncomeIrregularHoursViewModel {
     val submitUrl = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId).url.toString
 
 
-    new ConfirmIncomeIrregularHoursViewModel(employerName, estimatedIncome, submitUrl, currentYear)
+    new ConfirmIncomeIrregularHoursViewModel(employmentId, employerName, estimatedIncome, submitUrl, currentYear)
   }
 }
