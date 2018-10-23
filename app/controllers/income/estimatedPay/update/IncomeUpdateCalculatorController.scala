@@ -22,7 +22,7 @@ import controllers.{AuthenticationConnectors, TaiBaseController}
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -32,12 +32,13 @@ import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
-import uk.gov.hmrc.tai.model.domain.PensionIncome
+import uk.gov.hmrc.tai.model.domain.{Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
 import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmIncomeIrregularHoursViewModel, EditIncomeIrregularHoursViewModel}
 
@@ -183,34 +184,46 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   }
 
 
-  private val taxCodeIncomeInfoToCache = (taxCodeIncome: TaxCodeIncome) =>  Map[String, String](
-    UpdateIncome_NameKey -> taxCodeIncome.name,
-    UpdateIncome_PayToDateKey -> taxCodeIncome.amount.toString
-  )
+  private val taxCodeIncomeInfoToCache = (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
+    val defaultCaching = Map[String, String](
+      UpdateIncome_NameKey -> taxCodeIncome.name,
+      UpdateIncome_PayToDateKey -> taxCodeIncome.amount.toString
+    )
+
+    payment.fold(defaultCaching)(payment => defaultCaching + (UpdateIncome_DateKey -> payment.date.toString(MONTH_AND_YEAR)))
+  }
 
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
-      implicit request =>
-        taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId) flatMap {
-          case Some(tci) => {
-            (taxCodeIncomeInfoToCache andThen journeyCacheService.cache)(tci) map { _ =>
-              val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount.toInt)
+      implicit request => {
+        val paymentRequest: Future[Option[Payment]] =  incomeService.latestPayment(Nino(user.getNino), employmentId)
+        val taxCodeIncomeRequest = taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId)
 
-              Ok(views.html.incomes.editIncomeIrregularHours(EditIncomeIrregularHoursForm.createForm(), viewModel))
+        paymentRequest flatMap { payment =>
+          taxCodeIncomeRequest flatMap {
+            case Some(tci) => {
+              (taxCodeIncomeInfoToCache.tupled andThen journeyCacheService.cache)(tci, payment) map { _ =>
+                val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount.toInt)
+
+                Ok(views.html.incomes.editIncomeIrregularHours(EditIncomeIrregularHoursForm.createForm(), viewModel))
+              }
             }
+            case None => throw new RuntimeException(s"Not able to find employment with id $employmentId")
           }
-          case None => throw new RuntimeException(s"Not able to find employment with id $employmentId")
         }
+      }
   }
 
-  def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit person =>
-      implicit request => {
-        journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_PayToDateKey) flatMap {
-          values => {
-            val name :: ptd :: Nil = values.toList
+  def handleIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request => {
+          journeyCacheService.currentCache flatMap { cache =>
+            val name = cache(UpdateIncome_NameKey)
+            val ptd = cache(UpdateIncome_PayToDateKey)
+            val latestPayDate = cache.get(UpdateIncome_DateKey)
 
-            EditIncomeIrregularHoursForm.createForm(Some(ptd.toInt)).bindFromRequest().fold(
+            EditIncomeIrregularHoursForm.createForm(latestPayDate, Some(ptd.toInt)).bindFromRequest().fold(
 
               formWithErrors => {
                 val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, ptd.toInt)
@@ -227,15 +240,14 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             )
           }
         }
-      }
   }
 
   def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request => {
-          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey).map { cacheValues => {
-            val name :: newIrregularPay :: Nil = cacheValues.toList
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey).map { cache => {
+            val name :: newIrregularPay :: Nil = cache.toList
 
             val vm = ConfirmIncomeIrregularHoursViewModel(employmentId, name, newIrregularPay.toInt)
 

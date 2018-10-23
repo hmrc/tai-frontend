@@ -44,7 +44,7 @@ import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.{JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
 import controllers.income.estimatedPay.update.routes
 
@@ -632,12 +632,19 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
   "editIncomeIrregularHours" must {
     "respond with OK and show the irregular hours edit page" in {
       val testController = createTestIncomeUpdateCalculatorController
-      val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123,"description","taxCode","name",OtherBasisOfOperation,Live)
 
+      val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123,"description","taxCode","name",OtherBasisOfOperation,Live)
       when(
         testController.taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any())
       ).thenReturn(
         Future.successful(Some(taxCodeIncome))
+      )
+
+      val payment = Payment(LocalDate.now().minusDays(1), 0,0,0,0,0,0, Monthly)
+      when(
+        testController.incomeService.latestPayment(any(), any())(any())
+      ).thenReturn(
+        Future.successful(Some(payment))
       )
 
       when(
@@ -679,10 +686,16 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
       val employerName = "name"
       val payToDate = 123
 
+      val cacheMap = Map(
+        UpdateIncome_NameKey -> "name",
+        UpdateIncome_PayToDateKey -> "123",
+        UpdateIncome_DateKey -> LocalDate.now().toString()
+      )
+
       when(
-        testController.journeyCacheService.mandatoryValues(any())(any())
+        testController.journeyCacheService.currentCache(any())
       ).thenReturn(
-        Future.successful(Seq(employerName, payToDate.toString))
+        Future.successful(cacheMap)
       )
 
       when(
@@ -709,11 +722,24 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val testController = createTestIncomeUpdateCalculatorController
         val employerName = "name"
         val payToDate = 123
+        val payDate = LocalDate.now().toString(TaiConstants.MONTH_AND_YEAR)
 
         when(
           testController.journeyCacheService.mandatoryValues(any())(any())
         ).thenReturn(
           Future.successful(Seq(employerName, payToDate.toString))
+        )
+
+        val cacheMap = Map(
+          UpdateIncome_NameKey -> employerName,
+          UpdateIncome_PayToDateKey -> payToDate.toString,
+          UpdateIncome_DateKey -> payDate
+        )
+
+        when(
+          testController.journeyCacheService.currentCache(any())
+        ).thenReturn(
+          Future.successful(cacheMap)
         )
 
         val result = testController.handleIncomeIrregularHours(1)(
@@ -727,7 +753,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.irregular.mainHeadingText"))
 
-        doc.body().text must include(messages("tai.irregular.error.error.incorrectTaxableIncome", payToDate, LocalDate.now().toString("MMMM"), employerName))
+        doc.body().text must include(messages("tai.irregular.error.error.incorrectTaxableIncome", payToDate, payDate, employerName))
       }
 
       "given invalid form data of invalid currency" in {
@@ -735,6 +761,18 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val testController = createTestIncomeUpdateCalculatorController
         val employerName = "name"
         val payToDate = 123
+        val payDate = LocalDate.now().toString(TaiConstants.MONTH_AND_YEAR)
+        val cacheMap = Map(
+          UpdateIncome_NameKey -> employerName,
+          UpdateIncome_PayToDateKey -> payToDate.toString,
+          UpdateIncome_DateKey -> payDate
+        )
+
+        when(
+          testController.journeyCacheService.currentCache(any())
+        ).thenReturn(
+          Future.successful(cacheMap)
+        )
 
         when(
           testController.journeyCacheService.mandatoryValues(any())(any())
@@ -762,6 +800,18 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val testController = createTestIncomeUpdateCalculatorController
         val employerName = "name"
         val payToDate = 123
+        val payDate = LocalDate.now().toString(TaiConstants.MONTH_AND_YEAR)
+        val cacheMap = Map(
+          UpdateIncome_NameKey -> employerName,
+          UpdateIncome_PayToDateKey -> payToDate.toString,
+          UpdateIncome_DateKey -> payDate
+        )
+
+        when(
+          testController.journeyCacheService.currentCache(any())
+        ).thenReturn(
+          Future.successful(cacheMap)
+        )
 
         when(
           testController.journeyCacheService.mandatoryValues(any())(any())
@@ -786,6 +836,18 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         val testController = createTestIncomeUpdateCalculatorController
         val employerName = "name"
         val payToDate = 123
+        val payDate = LocalDate.now().toString(TaiConstants.MONTH_AND_YEAR)
+        val cacheMap = Map(
+          UpdateIncome_NameKey -> employerName,
+          UpdateIncome_PayToDateKey -> payToDate.toString,
+          UpdateIncome_DateKey -> payDate
+        )
+
+        when(
+          testController.journeyCacheService.currentCache(any())
+        ).thenReturn(
+          Future.successful(cacheMap)
+        )
 
         when(
           testController.journeyCacheService.mandatoryValues(any())(any())
