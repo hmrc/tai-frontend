@@ -769,6 +769,7 @@ tai.irregular.confirm.mainHeading=Cadarnhewch eich incwm trethadwy amcangyfrifed
 tai.irregular.introduction=Ni allwn amcangyfrif eich incwm blynyddol oherwydd bod gennych oriau gwaith afreolaidd
 tai.irregular.mainHeadingText=Diweddarwch eich incwm trethadwy amcangyfrifedig ar gyfer {0} gydag oriau gwaith afreolaidd
 tai.irregular.error.error.incorrectTaxableIncome=Rhoddodd eich cyflogwr wybod i ni y talwyd £{0} i chi hyd at {1}. Ni allwch nodi swm incwm blynyddol sy’n is na hwn. Os yw’r swm yn anghywir, rhowch alwad i Wasanaeth Cwsmeriaid Cymraeg CThEM ar 0300 200 1900.
+tai.irregular.estimateAnnualAverage=Defnyddiwch eich oriau cyfartalog i amcangyfrif swm blynyddol o incwm trethadwy.
 
 tai.item=Eitem
 tai.iya.check.your.tax.code.text=Gwiriwch {0} i gael gwybod beth sydd wedi newid.
