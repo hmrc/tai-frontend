@@ -26,7 +26,7 @@ object RequestBuilder {
 
   private val HTTP_VERBS = List("GET", "POST", "PUT", "DELETE")
 
-  def buildFakeReqestWithOnlySession(method: String) = {
+  def buildFakeRequestWithOnlySession(method: String) = {
     require(HTTP_VERBS contains method)
 
     FakeRequest(method = method, path = "").withSession(
