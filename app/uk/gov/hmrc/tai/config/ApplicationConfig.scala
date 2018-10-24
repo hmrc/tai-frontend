@@ -36,7 +36,7 @@ object ApplicationConfig extends ServicesConfig {
   lazy val otherIncomeLinkUrl = s"${fetchUrl("dfs-frontend")}/forms/form/tell-us-about-other-income/guide"
   lazy val investmentIncomeLinkUrl = s"${fetchUrl("dfs-frontend")}/forms/form/tell-us-about-investment-income/guide"
   lazy val taxFreeAllowanceLinkUrl = s"${fetchUrl("dfs-frontend")}/forms/form/check-income-tax-tell-us-your-tax-free-allowance/guide"
-  lazy val reportAProblemPartialUrl = s"${fetchUrl("contact-frontend")}/contact/problem_reports?secure=true"
+  lazy val reportAProblemPartialUrl = s"${fetchUrl("contact-frontend")}/contact/problem_reports?secure=true&service=TAI"
   lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
   lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
 
