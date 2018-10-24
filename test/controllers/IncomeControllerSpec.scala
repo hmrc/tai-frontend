@@ -16,7 +16,7 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.{AuthBuilder, RequestBuilder, UserBuilder}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -27,6 +27,8 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
@@ -41,8 +43,9 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
+import uk.gov.hmrc.tai.util.{JourneyCacheConstants, TaiConstants}
+import uk.gov.hmrc.tai.viewModels.{EstimatedEmploymentIncomeSuccessViewModel, EstimatedIncomeSuccessViewModel, EstimatedPensionIncomeSuccessViewModel}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -315,40 +318,67 @@ class IncomeControllerSpec extends PlaySpec
 
   "updateEstimatedIncome" must {
     "return OK" when {
-      "income is successfully updated" in {
-        val testController = createTestIncomeController
 
-        when(testController.journeyCacheService.mandatoryValues(any())(any()))
-          .thenReturn(Future.successful(Seq("Employer", "100,000", "1")))
-
-        when(testController.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponse))
-
-        val result = testController.updateEstimatedIncome()(RequestBuilder.buildFakeRequestWithAuth("POST"))
-
-        status(result) mustBe OK
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.updated.check.title", "Employer"))
+      def expectedSuccessPage(viewModel: EstimatedIncomeSuccessViewModel,
+                              fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded],
+                              testController: IncomeController): String = {
+        views.html.incomes.editSuccess(viewModel)(
+          fakeRequest,
+          messagesApi.preferred(fakeRequest),
+          UserBuilder.apply(),
+          testController.templateRenderer,
+          testController.partialRetriever
+        ).toString
       }
-    }
 
-    "return OK" when {
-      "income is successfully updated with comma separated values input" in {
+      "income from employment is successfully updated" in {
         val testController = createTestIncomeController
 
+        val employerName = "Employer"
+        val employerId = 1
+        val employerType = TaiConstants.IncomeTypeEmployment
+
+        implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
+
+        val viewModel = EstimatedEmploymentIncomeSuccessViewModel(employerName, employerId)
+        val expected = expectedSuccessPage(viewModel, fakeRequest, testController)
+
         when(testController.journeyCacheService.mandatoryValues(any())(any()))
-          .thenReturn(Future.successful(Seq("Employer", "100,000", "1")))
+          .thenReturn(Future.successful(Seq(employerName, "100,000", employerId.toString, employerType)))
 
         when(testController.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponse))
 
-        val result = testController.updateEstimatedIncome()(RequestBuilder.buildFakeRequestWithAuth("POST"))
+        val result = testController.updateEstimatedIncome()(fakeRequest)
 
         status(result) mustBe OK
 
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.updated.check.title", "Employer"))
+        contentAsString(result) must equal(expected.toString)
+      }
+
+      "income from pension is successfully updated" in {
+        val testController = createTestIncomeController
+
+        val employerName = "Pension"
+        val employerId = 1
+        val employerType = TaiConstants.IncomeTypePension
+
+        implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
+
+        val viewModel = EstimatedPensionIncomeSuccessViewModel(employerName, employerId)
+        val expected = expectedSuccessPage(viewModel, fakeRequest, testController)
+
+        when(testController.journeyCacheService.mandatoryValues(any())(any()))
+          .thenReturn(Future.successful(Seq(employerName, "100,000", employerId.toString, employerType)))
+
+        when(testController.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponse))
+
+        val result = testController.updateEstimatedIncome()(fakeRequest)
+
+        status(result) mustBe OK
+
+        contentAsString(result) must equal(expected.toString)
       }
     }
 
