@@ -34,11 +34,11 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
-import uk.gov.hmrc.tai.model.domain.{Employment, PensionIncome}
+import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
 
 import scala.Function.tupled
@@ -64,7 +64,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   val incomeService: IncomeService
 
 
-  def   estimatedPayLandingPage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+  def estimatedPayLandingPage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
 
@@ -87,17 +87,23 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
-
   def howToUpdatePage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
 
         employmentService.employment(Nino(user.getNino), id) flatMap {
-          case Some(employment) =>
+          case Some(employment: Employment) =>
+
+            val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
+
             for {
-              incomeToEdit <- incomeService.employmentAmount(Nino(user.getNino), id)
+              incomeToEdit: EmploymentAmount <- incomeService.employmentAmount(Nino(user.getNino), id)
               taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
-              _ <- journeyCache(cacheMap = Map(UpdateIncome_NameKey -> employment.name, UpdateIncome_IdKey -> id.toString))
+              _ <- journeyCache(cacheMap = Map(
+                UpdateIncome_NameKey -> employment.name,
+                UpdateIncome_IdKey -> id.toString,
+                UpdateIncome_IncomeTypeKey -> incomeType)
+              )
             } yield {
               processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails)
             }
@@ -522,6 +528,9 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
+  private def incomeTypeIdentifier(isPension: Boolean): String = {
+    if (isPension) { TaiConstants.IncomeTypePension } else { TaiConstants.IncomeTypeEmployment }
+  }
 }
 // $COVERAGE-OFF$
 object IncomeUpdateCalculatorController extends IncomeUpdateCalculatorController with AuthenticationConnectors {

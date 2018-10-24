@@ -27,18 +27,18 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     gaCustomTitle = None
 ){
     <div class="column-two-thirds">
-        <header class="grid-row">
+        <header class="grid-row margin-bottom-large">
             <div class="govuk-box-highlight">
                 <h1 class="heading-large" id="currentYearTitle">@viewModel.heading</h1>
             </div>
         </header>
 
-        <div class="grid-row soft--top">
+        <div class="grid-row">
             <p>
                 @viewModel.paragraph1
                 @includes.link(
                     copy = viewModel.link,
-                    url = routes.TaxAccountSummaryController.onPageLoad().url.toString
+                    url = routes.IncomeSourceSummaryController.onPageLoad(viewModel.employerId).url.toString
                 )
             </p>
             <p>@viewModel.paragraph2</p>

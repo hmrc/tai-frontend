@@ -20,28 +20,29 @@ import play.api.i18n.Messages
 
 trait EstimatedIncomeSuccessViewModel {
   def employerName: String
+  def employerId: Int
   def heading(implicit messages: Messages): String = { messages("tai.incomes.updated.check.title", employerName) }
   def paragraph1(implicit messages: Messages): String
   def paragraph2(implicit messages: Messages): String
   def link(implicit messages: Messages): String
 }
 
-case class EstimatedPensionIncomeSuccessViewModel(employerName: String) extends EstimatedIncomeSuccessViewModel {
+case class EstimatedPensionIncomeSuccessViewModel(employerName: String, employerId: Int) extends EstimatedIncomeSuccessViewModel {
 
   def paragraph1(implicit messages: Messages): String = {
-    messages("tai.incomes.updated.check.text")
+    messages("tai.incomes.updated.pension.check.text")
   }
 
   def paragraph2(implicit messages: Messages): String = {
-    messages("tai.incomes.seeChanges.text", employerName)
+    messages("tai.incomes.updated.pension.seeChanges.text", employerName)
   }
 
   def link(implicit messages: Messages): String = {
-    messages("tai.incomes.updated.check.link")
+    messages("tai.incomes.updated.pension.check.link")
   }
 }
 
-case class EstimatedEmploymentIncomeSuccessViewModel(employerName: String)  extends EstimatedIncomeSuccessViewModel {
+case class EstimatedEmploymentIncomeSuccessViewModel(employerName: String, employerId: Int) extends EstimatedIncomeSuccessViewModel {
 
   def paragraph1(implicit messages: Messages): String = {
     messages("tai.incomes.updated.check.text")

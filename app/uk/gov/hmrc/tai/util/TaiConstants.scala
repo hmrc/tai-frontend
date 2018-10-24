@@ -115,6 +115,8 @@ trait JourneyCacheConstants {
   val UpdateIncome_BonusPaymentsThisYearKey = "updateIncomeBonusPaymentsThisYearKey"
   val UpdateIncome_BonusOvertimeAmountKey = "updateIncomeBonusOvertimeAmountKey"
   val UpdateIncome_GrossAnnualPayKey = "updateIncomeGrossAnnualPayKey"
+  val UpdateIncome_IncomeTypeKey = "updateIncomeIncomeTypeKey"
+  val UpdateIncome_IrregularAnnualPayKey = "updateIncomeIrregularAnnualPayKey"
 
   val EndCompanyBenefit_JourneyKey = "end-company-benefit"
   val EndCompanyBenefit_EmploymentIdKey = "employmentId"
@@ -307,8 +309,9 @@ object TaiConstants {
   val TaxAmountFactor = 10
   val EmergencyTaxCode = "X"
 
-  val IncomeTypeDummy = 99
-  val IncomeTypeEmployment = 0
+  val IncomeTypeDummy = "99"
+  val IncomeTypeEmployment = "0"
+  val IncomeTypePension = "1"
 
   val EmployeePensionIForm = "employment-pension"
   val CompanyBenefitsIform = "company-benefits"
