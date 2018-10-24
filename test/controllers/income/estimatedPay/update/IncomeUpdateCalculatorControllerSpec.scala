@@ -41,6 +41,7 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCode
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -579,7 +580,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.confirm.save.title"))
+        doc.title() must include(Messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
       }
 
       "journey cache returns employment name, net amount with large decimal value and id" in {
@@ -593,7 +594,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.confirm.save.title"))
+        doc.title() must include(Messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
       }
 
       "journey cache does not returns net amount" in {
@@ -607,7 +608,7 @@ class IncomeUpdateCalculatorControllerSpec extends PlaySpec with FakeTaiPlayAppl
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.confirm.save.title"))
+        doc.title() must include(Messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
       }
     }
   }
