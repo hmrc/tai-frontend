@@ -54,7 +54,7 @@
         <div class="grid-row tax-code-change margin-bottom-xlarge">
             @taxCodePairs(taxCodeChangeViewModel.pairs)
         </div>
-        <div>
+        <div class="grid-row">
             @Link.toInternalPage(
             id=Some("check-your-tax-button"),
             url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,

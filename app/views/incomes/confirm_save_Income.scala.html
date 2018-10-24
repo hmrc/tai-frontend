@@ -25,20 +25,19 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
 @import org.joda.time.DateTime
 @import uk.gov.hmrc.play.views.html.layouts.loginStatus
 @import uk.gov.hmrc.tai.util.FormHelper
-@import uk.gov.hmrc.play.language.LanguageUtils.Dates
-@import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        mainHeadingText = messages("tai.incomes.confirm.save.title"),
+        mainHeadingText = messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak),
         preHeadingText = messages("tai.incomes.edit.preHeading", income.name),
         headerWidthClasses = Some("column-full")
     )
 }
 
 @main(
-    title = messages("tai.incomes.confirm.save.title"),
+    title = messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak),
     articleClasses = Some("full-width"),
     pageHeader = Some(header),
     user = Some(user),
@@ -59,10 +58,15 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                     <section class="section flush--bottom soft--ends">
                         @if(FormHelper.convertCurrencyToInt(income.newAmount) == income.oldAmount){
                             <p>@messages(s"tai.incomes.confirm.save.messageEquals", income.toEmploymentAmount().newAmount)</p>
-                            <p>@messages("tai.incomes.confirm.save.messageEquals.details", income.name)</p>
+                            <div class="panel panel-border-narrow">
+                                <p>@messages("tai.incomes.confirm.save.messageEquals.details", income.name)</p>
+                            </div>
+
                         }else{
                             <p>@messages(s"tai.incomes.confirm.save.message", income.toEmploymentAmount().newAmount)</p>
-                            <p>@messages("tai.incomes.confirm.save.message.details")</p>
+                            <div class="panel panel-border-narrow">
+                                <p>@messages("tai.incomes.confirm.save.message.details")</p>
+                            </div>
                         }
                     </section>
                 @if(FormHelper.convertCurrencyToInt(income.newAmount) != income.oldAmount){
