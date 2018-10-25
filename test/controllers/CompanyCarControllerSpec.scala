@@ -63,7 +63,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
       }
     }
 
-    "redirect top companyCarService" when{
+    "redirect to companyCarService" when{
       "the service returns TaiCompanyCarWithdrawnDateFoundResponse" in{
         val sut = createSUT()
         when(sut.companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(1))
