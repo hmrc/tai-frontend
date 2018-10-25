@@ -92,7 +92,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
         }
     }
 
-    "Redirect to the company car service landing page" when {
+    "Redirect to the company car details page" when {
       "POST'ing to the handleUserJourneyChoice endpoint with a 'removeCar' user choice and the companyCarForceRedirect feature toggle is on" in {
           val sut = createSUT(isCompanyCarForceRedirectEnabled = true)
           val request = FakeRequest("POST", "").withFormUrlEncodedBody("userChoice" -> "removeCar").withSession(
@@ -102,12 +102,12 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
           val result = sut.handleUserJourneyChoice()(request)
           status(result) mustBe SEE_OTHER
-          redirectLocation(result).get mustBe ApplicationConfig.companyCarServiceUrl
+          redirectLocation(result).get mustBe ApplicationConfig.companyCarDetailsUrl
           Mockito.verify(sut.sessionService, Mockito.times(1)).invalidateCache()(any())
         }
     }
 
-    "Redirect to the company car service landing page" when {
+    "Redirect to the company car details page" when {
       "POST'ing to the handleUserJourneyChoice endpoint with a 'changeCarDetails' user choice" in {
         val sut = createSUT()
         val request = FakeRequest("POST", "").withFormUrlEncodedBody("userChoice" -> "changeCarDetails").withSession(
@@ -117,7 +117,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
         val result = sut.handleUserJourneyChoice()(request)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe ApplicationConfig.companyCarServiceUrl
+        redirectLocation(result).get mustBe ApplicationConfig.companyCarDetailsUrl
         Mockito.verify(sut.sessionService, Mockito.times(1)).invalidateCache()(any())
       }
     }
