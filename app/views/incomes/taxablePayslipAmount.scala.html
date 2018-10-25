@@ -36,16 +36,6 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     )
 }
 
-@pageDesc = @{
-    payPeriod match {
-        case "monthly" => { Messages("tai.payslip.month") }
-        case "fortnightly" => { Messages("tai.payslip.fortnight") }
-        case "weekly" => { Messages("tai.payslip.week") }
-        case _ => { Messages("tai.payslip.period") }
-    }
-}
-
-
 @main(
     title = Messages("tai.taxablePayslip.title"),
     articleClasses = None,
@@ -59,7 +49,6 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
         @includes.forms.input(
             field = taxablePayslipForm("taxablePay"),
-            labelText = pageDesc,
             bold = true,
             classes = Seq("form-control-1-4"),
             hintText = Messages("tai.taxablePayslip.shownOnPayslip"),
