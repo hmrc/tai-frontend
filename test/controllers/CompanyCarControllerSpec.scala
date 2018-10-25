@@ -121,19 +121,6 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
         Mockito.verify(sut.sessionService, Mockito.times(1)).invalidateCache()(any())
       }
     }
-
-//    "trap an invalid submission and respond with a bad request" when {
-//      "POST'ing to the handleUserJourneyChoice with an authorised session, and no radio selection" in {
-//        val sut = createSUT()
-//        val request = FakeRequest("POST", "").withFormUrlEncodedBody("userChoice" -> "").withSession(
-//          SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
-//        )
-//        when(sut.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("model", "provider")))
-//
-//        val result =  sut.handleUserJourneyChoice()(request)
-//        status(result) mustBe BAD_REQUEST
-//      }
-//    }
   }
 
   "redirectCompanyCarSelection" must {
@@ -190,5 +177,4 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
   }
 
   override def messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
 }
