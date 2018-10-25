@@ -53,6 +53,7 @@ object ApplicationConfig extends ServicesConfig {
   lazy val companyCarServiceUrl = s"${fetchUrl("paye-frontend")}/paye/company-car/service-landing-page"
   lazy val companyCarFuelBenefitUrl = s"${fetchUrl("paye-frontend")}/paye/company-car/service-landing-page"
   lazy val updateCompanyCarDetailsUrl = s"$personServiceUrl/redirect-company-car"
+  lazy val companyCarDetailsUrl = s"${fetchUrl("paye-frontend")}/paye/company-car/details"
   lazy val personServiceUrl = s"${fetchUrl("tai-frontend")}/check-income-tax"
   lazy val marriageServiceUrl = s"${fetchUrl("tamc-frontend")}/marriage-allowance-application/history"
   lazy val marriageServiceHistoryUrl = s"${fetchUrl("tamc-frontend")}/marriage-allowance-application/history"
