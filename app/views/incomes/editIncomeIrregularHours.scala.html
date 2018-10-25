@@ -44,7 +44,6 @@
     articleClasses = Some(""),
     gaCustomTitle = None
 ){
-
     <p>@messages("tai.irregular.introduction")</p>
 
 
@@ -53,39 +52,36 @@
     <p>@messages("tai.irregular.estimateAnnualAverage")</p>
     <p>@messages("tai.irregular.instruction.wholePounds")</p>
 
-    <div class="grid-row">
-        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleIncomeIrregularHours(viewModel.employmentId)) {
+    @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleIncomeIrregularHours(viewModel.employmentId)) {
+        <div class="form-field-group @if(incomeUpdateForm.hasErrors) {form-group-error}">
+            @incomeUpdateForm.errors(incomeUpdateForm("income").name).map{ error =>
+            <span class="error-notification error-message">@messages(error.message)</span>
+            }
 
-            <div class="form-field-group @if(incomeUpdateForm.hasErrors) {error}">
-                @incomeUpdateForm.errors(incomeUpdateForm("income").name).map{ error =>
-                    <span class="error-notification error-message">@messages(error.message)</span>
-                }
-
-                <div class="column-one-half">
-                    <p class="bold-small">@messages("tai.irregular.currentAmount")</p>
-                    <p>£@viewModel.currentAmount</p>
-                </div>
-
-                <div class="column-one-half">
-                        @input(
-                            field = incomeUpdateForm("income"),
-                            labelText = messages("tai.irregular.newAmount"),
-                            bold = true,
-                            classes = Seq("edit-income__input"),
-                            hintText = "",
-                            isCurrency = true,
-                            fieldErrorsEnabled=false
-                        )
-                </div>
+            <div class="column-one-half soft--left">
+                <p class="bold-small">@messages("tai.irregular.currentAmount")</p>
+                <p>£@viewModel.currentAmount</p>
             </div>
 
-            <div class="form-group">
-                @submit(Some(messages("tai.submit")))
+            <div class="column-one-half">
+                @input(
+                    field = incomeUpdateForm("income"),
+                    labelText = messages("tai.irregular.newAmount"),
+                    bold = true,
+                    classes = Seq("edit-income__input"),
+                    hintText = "",
+                    isCurrency = true,
+                    fieldErrorsEnabled=false
+                )
             </div>
+        </div>
 
-        }
+        <div class=" form-group">
+            @submit(Some(messages("tai.submit")))
+        </div>
 
-        <p><a href="@routes.IncomeSourceSummaryController.onPageLoad(viewModel.employmentId)">@messages("tai.cancel")</a></p>
-    </div>
+    }
+
+    <p><a href="@routes.IncomeSourceSummaryController.onPageLoad(viewModel.employmentId)">@messages("tai.cancel")</a></p>
 }
 

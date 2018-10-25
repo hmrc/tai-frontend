@@ -39,7 +39,7 @@ object EditIncomeIrregularHoursForm {
 
     Form[EditIncomeIrregularHoursForm](
       mapping("income" -> TaiValidator.validateTaxAmounts(
-        messages("error.tai.updateDataEmployment.blankValue"),
+        messages("tai.irregular.error.blankValue"),
         messages("tai.irregular.instruction.wholePounds"),
         messages("error.tai.updateDataEmployment.maxLength"),
         taxablePayYTD.fold("")(messages("tai.irregular.error.error.incorrectTaxableIncome", _, theDate)),
