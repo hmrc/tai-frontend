@@ -243,6 +243,12 @@ object GoogleAnalyticsConstants {
   val currentYear = "Current Year"
   val nextYear = "Next Year"
   val currentAndNextYear = "Current and Next Year"
+
+  val taiLandingPageInformation = "taiLandingPageInformation"
+  val taiLandingPageCYKey = "CY"
+  val taiLandingPagePYKey = "PY"
+  val taiLandingPageTCCKey = "TCC"
+  val taiLandingPageCY1Key = "CY+1"
 }
 
 object TaiConstants {

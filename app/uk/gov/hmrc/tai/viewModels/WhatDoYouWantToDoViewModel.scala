@@ -16,5 +16,24 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean, isCyPlusOneEnabled: Boolean, hasTaxCodeChanged: Boolean =false)
+import uk.gov.hmrc.tai.util.GoogleAnalyticsConstants
+
+case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean, isCyPlusOneEnabled: Boolean, hasTaxCodeChanged: Boolean = false) {
+
+  def gaDimensions(): Map[String, String] = {
+
+    val enabledMap = Map(
+      GoogleAnalyticsConstants.taiLandingPageTCCKey -> hasTaxCodeChanged,
+      GoogleAnalyticsConstants.taiLandingPageCYKey -> true,
+      GoogleAnalyticsConstants.taiLandingPagePYKey -> true,
+      GoogleAnalyticsConstants.taiLandingPageCY1Key -> isCyPlusOneEnabled
+    )
+
+    Map(GoogleAnalyticsConstants.taiLandingPageInformation -> formatMapForGA(enabledMap))
+  }
+
+  private def formatMapForGA(map: Map[String, Boolean]) = {
+    map.mkString(";").replace(" -> ", "=")
+  }
+}
 
