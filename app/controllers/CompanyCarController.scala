@@ -93,7 +93,7 @@ trait CompanyCarController extends TaiBaseController
             formData => {
                 formData.whatDoYouWantToDo match {
                   case Some("removeCar") if !companyCarForceRedirectEnabled =>
-                    Future.successful(Redirect(controllers.routes.CompanyCarController.getCompanyCarEndDate()))
+                    sessionService.invalidateCache() map (_ => Redirect(ApplicationConfig.companyCarEndDateUrl))
                   case _ =>
                     sessionService.invalidateCache() map (_ => Redirect(ApplicationConfig.companyCarServiceUrl))
                 }

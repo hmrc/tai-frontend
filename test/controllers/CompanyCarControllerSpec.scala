@@ -82,10 +82,13 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
           val request = FakeRequest("POST", "").withFormUrlEncodedBody("userChoice" -> "removeCar").withSession(
             SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
           )
+          when(sut.sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
+
           val result = sut.handleUserJourneyChoice()(request)
+
           status(result) mustBe SEE_OTHER
-          redirectLocation(result).get mustBe routes.CompanyCarController.getCompanyCarEndDate().url
-          Mockito.verify(sut.sessionService, Mockito.never()).invalidateCache()(any())
+          redirectLocation(result).get mustBe ApplicationConfig.companyCarEndDateUrl
+          Mockito.verify(sut.sessionService, Mockito.times(1)).invalidateCache()(any())
         }
     }
 
@@ -192,7 +195,6 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
         doc.getElementById("dateForm_year").attr("value") mustBe "2016"
       }
     }
-
 
     "Redirect to the check your answers view" when {
       "POST'ing to the handleFuelBenefitEndDate endpoint with a value after the fuel ben start date" in {
