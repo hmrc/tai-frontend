@@ -20,23 +20,19 @@ import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
 import play.api.Play.current
-import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
+import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
-import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome, PensionIncome}
-import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util._
-import uk.gov.hmrc.tai.viewModels.{EstimatedEmploymentIncomeSuccessViewModel, EstimatedPensionIncomeSuccessViewModel}
 
 import scala.Function.tupled
 import scala.concurrent.Future
@@ -252,7 +248,7 @@ trait IncomeController extends TaiBaseController
           }
         }
   }
-  
+
   private def retrieveAmountAndDate(employment: Employment): (BigDecimal, Option[LocalDate]) = {
     val amountAndDate = for {
       latestAnnualAccount <- employment.latestAnnualAccount

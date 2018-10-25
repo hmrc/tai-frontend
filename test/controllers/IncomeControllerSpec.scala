@@ -27,7 +27,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Request}
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.Generator
@@ -45,7 +45,6 @@ import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.{JourneyCacheConstants, TaiConstants}
-import uk.gov.hmrc.tai.viewModels.{EstimatedEmploymentIncomeSuccessViewModel, EstimatedIncomeSuccessViewModel, EstimatedPensionIncomeSuccessViewModel}
 
 import scala.concurrent.Future
 import scala.util.Random
