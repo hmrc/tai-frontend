@@ -35,16 +35,6 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     )
 }
 
-
-@pageDesc = @{
-    payPeriod match {
-        case "monthly" => { Messages("tai.payslip.month") }
-        case "fortnightly" => { Messages("tai.payslip.fortnight") }
-        case "weekly" => { Messages("tai.payslip.week") }
-        case _ => { Messages("tai.payslip.period") }
-    }
-}
-
 @main(
     title = Messages("tai.payslip.title"),
     articleClasses = None,
@@ -57,7 +47,6 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handlePayslipAmount){
             @includes.forms.input(
               field = payslipForm("totalSalary"),
-              labelText = pageDesc,
               bold = true,
               classes = Seq("form-control-1-4"),
               hintText = Messages("tai.payslip.payBeforeTakenOff"),
