@@ -754,6 +754,7 @@ tai.incomes.updated.check.link=fwrw golwg ar eich manylion cyflogaeth.
 tai.incomes.updated.check.title=Mae’ch incwm trethadwy oddi wrth {0} wedi’i ddiweddaru
 tai.incomes.updated.pension.check.text=TODO: You can see your update by
 tai.incomes.updated.pension.check.link=TODO: viewing your pension details.
+tai.incomes.updated.pension.seeChanges.text=TODO: This calculation may change when we get your next pension statement from {0}
 tai.incomes.workNumber=Rhif y cyflogai:
 tai.irregular.mainHeadingText=Gofynnwch i {0} gysylltu â ni
 tai.irregular.option1=cysylltwch â {0} yn y lle cyntaf

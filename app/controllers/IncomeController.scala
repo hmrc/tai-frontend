@@ -140,11 +140,10 @@ trait IncomeController extends TaiBaseController
       implicit request => {
 
         def respondWithSuccess(employerName: String, employerId: Int, incomeType: String)(implicit user: TaiUser, request: Request[AnyContent]): Result = {
-          val viewModel = incomeType match {
-            case TaiConstants.IncomeTypePension => EstimatedPensionIncomeSuccessViewModel(employerName, employerId)
-            case _ => EstimatedEmploymentIncomeSuccessViewModel(employerName, employerId)
+          incomeType match {
+            case TaiConstants.IncomeTypePension => Ok(views.html.incomes.editPensionSuccess(employerName, employerId))
+            case _ => Ok(views.html.incomes.editSuccess(employerName, employerId))
           }
-          Ok(views.html.incomes.editSuccess(viewModel))
         }
 
         ServiceCheckLite.personDetailsCheck {
@@ -253,19 +252,7 @@ trait IncomeController extends TaiBaseController
           }
         }
   }
-
-  private def updateEstimatedIncomeSource(onSuccess: String => Result)
-                                         (implicit user: TaiUser, hc: HeaderCarrier, request: Request[AnyContent]) = {
-    journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey).flatMap(cache => {
-      val employerName :: newAmount :: id :: Nil = cache.toList
-
-      taxAccountService.updateEstimatedIncome(Nino(user.getNino), FormHelper.stripNumber(newAmount).toInt, TaxYear(), id.toInt) map {
-        case TaiSuccessResponse => onSuccess(employerName)
-        case _ => throw new RuntimeException("Failed to update estimated income")
-      }
-    })
-  }
-
+  
   private def retrieveAmountAndDate(employment: Employment): (BigDecimal, Option[LocalDate]) = {
     val amountAndDate = for {
       latestAnnualAccount <- employment.latestAnnualAccount

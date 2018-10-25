@@ -20,26 +20,26 @@ import org.scalatest.mock.MockitoSugar
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class EditSuccessSpec extends TaiViewSpec with MockitoSugar{
+class EditPensionSuccessSpec extends TaiViewSpec with MockitoSugar{
 
   private val employerId = 1
   private val employerName = "fakeFieldValue"
 
-  "Edit Success Employment view" should {
+  "Edit Success Pension view" should {
     "contain the success heading" in {
       doc(view).getElementsByTag("h1").text must include(messages("tai.incomes.updated.check.title", employerName))
     }
 
     "contain the success paragraph and link" in {
       doc(view).getElementsByTag("p").text must include(
-        s"${messages("tai.incomes.updated.check.text")} ${messages("tai.incomes.updated.check.link")}"
+        s"${messages("tai.incomes.updated.pension.check.text")} ${messages("tai.incomes.updated.pension.check.link")}"
       )
     }
 
     "contain the may change paragraph" in {
-      doc(view).getElementsByTag("p").text must include(messages("tai.incomes.seeChanges.text", employerName))
+      doc(view).getElementsByTag("p").text must include(messages("tai.incomes.updated.pension.seeChanges.text", employerName))
     }
   }
 
-  override def view: Html = views.html.incomes.editSuccess(employerName, employerId)
+  override def view: Html = views.html.incomes.editPensionSuccess(employerName, employerId)
 }

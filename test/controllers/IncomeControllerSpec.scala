@@ -27,7 +27,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Request}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.Generator
@@ -319,15 +319,12 @@ class IncomeControllerSpec extends PlaySpec
   "updateEstimatedIncome" must {
     "return OK" when {
 
-      def expectedSuccessPage(viewModel: EstimatedIncomeSuccessViewModel,
+      def expectedSuccessPage(employerName: String, employerId: Int,
                               fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded],
                               testController: IncomeController): String = {
-        views.html.incomes.editSuccess(viewModel)(
-          fakeRequest,
-          messagesApi.preferred(fakeRequest),
-          UserBuilder.apply(),
-          testController.templateRenderer,
-          testController.partialRetriever
+        views.html.incomes.editSuccess(employerName, employerId)(
+          fakeRequest, messagesApi.preferred(fakeRequest), UserBuilder.apply(),
+          testController.templateRenderer, testController.partialRetriever
         ).toString
       }
 
@@ -338,10 +335,9 @@ class IncomeControllerSpec extends PlaySpec
         val employerId = 1
         val employerType = TaiConstants.IncomeTypeEmployment
 
-        implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
+        val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
 
-        val viewModel = EstimatedEmploymentIncomeSuccessViewModel(employerName, employerId)
-        val expected = expectedSuccessPage(viewModel, fakeRequest, testController)
+        val expected = testController.renderSuccess(employerName, employerId)(fakeRequest)
 
         when(testController.journeyCacheService.mandatoryValues(any())(any()))
           .thenReturn(Future.successful(Seq(employerName, "100,000", employerId.toString, employerType)))
@@ -363,10 +359,9 @@ class IncomeControllerSpec extends PlaySpec
         val employerId = 1
         val employerType = TaiConstants.IncomeTypePension
 
-        implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
+        val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("POST")
 
-        val viewModel = EstimatedPensionIncomeSuccessViewModel(employerName, employerId)
-        val expected = expectedSuccessPage(viewModel, fakeRequest, testController)
+        val expected = testController.renderPensionSuccess(employerName, employerId)(fakeRequest)
 
         when(testController.journeyCacheService.mandatoryValues(any())(any()))
           .thenReturn(Future.successful(Seq(employerName, "100,000", employerId.toString, employerType)))
@@ -648,6 +643,8 @@ class IncomeControllerSpec extends PlaySpec
   private class TestIncomeController extends IncomeController {
     override implicit def templateRenderer: MockTemplateRenderer.type = MockTemplateRenderer
 
+    implicit val user = UserBuilder.apply()
+
     override val personService: PersonService = mock[PersonService]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
@@ -657,6 +654,18 @@ class IncomeControllerSpec extends PlaySpec
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
     override val incomeService: IncomeService = mock[IncomeService]
+
+    def renderSuccess(employerName: String, employerId: Int) = {
+      implicit request: FakeRequest[_] => {
+        views.html.incomes.editSuccess(employerName, employerId)
+      }
+    }
+
+    def renderPensionSuccess(employerName: String, employerId: Int) = {
+      implicit request: FakeRequest[_] => {
+        views.html.incomes.editPensionSuccess(employerName, employerId)
+      }
+    }
 
     val editIncomeForm = EditIncomeForm("Test", "Test", 1, None, 10, None, None, None, None)
 
