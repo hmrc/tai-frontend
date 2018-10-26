@@ -35,6 +35,22 @@ trait TaxAccountService {
     taxAccountConnector.taxCodeIncomes(nino, year)
   }
 
+  def taxCodeIncomeForEmployment(nino: Nino,
+                                 year: TaxYear,
+                                 employmentId: Int)(implicit hc: HeaderCarrier): Future[Option[TaxCodeIncome]] = {
+
+    for {
+      taxCodeIncomesResponse <- taxAccountConnector.taxCodeIncomes(nino, year)
+    } yield {
+      taxCodeIncomesResponse match {
+        case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) => {
+          taxCodeIncomes.find(_.employmentId.contains(employmentId))
+        }
+        case _ => throw new RuntimeException(s"Not able to find tax code incomes")
+      }
+    }
+  }
+
   def taxAccountSummary(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     taxAccountConnector.taxAccountSummary(nino, year)
   }

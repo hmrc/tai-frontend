@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.tai.forms
 
-import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
-import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.libs.json.Json
-import play.api.mvc.Request
+import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
+import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
 
 case class HowToUpdateForm(howToUpdate: Option[String])
 
@@ -47,13 +46,14 @@ object HowToUpdateForm{
 
 case class HoursWorkedForm(workingHours: Option[String])
 
-object HoursWorkedForm{
+object HoursWorkedForm extends EditIncomeIrregularPayConstants {
   implicit val formats = Json.format[HoursWorkedForm]
 
   def createForm()(implicit messages: Messages): Form[HoursWorkedForm] = {
 
     val hoursWorkedValidation = Constraint[Option[String]]("Your working hours"){
-      case Some(txt) => Valid
+      case Some(REGULAR_HOURS) => Valid
+      case Some(IRREGULAR_HOURS) => Valid
       case _ => Invalid(messages("tai.workingHours.error.form.incomes.radioButton.mandatory"))
     }
 
