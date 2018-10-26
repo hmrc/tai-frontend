@@ -24,6 +24,7 @@ import play.api.libs.json.{JsArray, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.time.TaxYearResolver
@@ -35,25 +36,27 @@ import scala.util.Random
 
 class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with WireMockHelper {
 
-  "tax code change" must {
-    "tax code change url" must {
+
+  "tax code change url" must {
       "fetch the url to connect to TAI to retrieve tax code change" in {
         val testConnector = createTestConnector
         val nino = generateNino.nino
+        val year = TaxYear().year
 
-        testConnector.taxCodeChangeUrl(nino) mustBe s"${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-change"
+        testConnector.taxCodeChangeUrl(nino) mustBe s"${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-change/$year"
       }
     }
 
 
-    "tax Code change" should {
+  "tax Code change" should {
       "fetch the tax code change" when {
         "provided with valid nino" in {
 
           val testConnector = createTestConnector
           val nino = generateNino
+          val year = TaxYear().year
 
-          val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
+          val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change/$year"
 
           val startDate = TaxYearResolver.startOfCurrentTaxYear
           val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
@@ -103,21 +106,22 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
         "tax code change returns 500" in {
           val testConnector = createTestConnector
           val nino = generateNino
+          val year = TaxYear().year
 
-          val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
+          val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change/$year"
 
           server.stubFor(
             get(urlEqualTo(taxCodeChangeUrl)).willReturn(serverError())
           )
 
-          val expectedMessage = s"GET of '${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-change' returned 500. Response body: ''"
+          val expectedMessage = s"GET of '${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-change/$year' returned 500. Response body: ''"
           val result = Await.result(testConnector.taxCodeChange(nino), 5.seconds)
 
           result mustBe TaiTaxAccountFailureResponse(expectedMessage)
         }
       }
     }
-  }
+
 
   "has tax code changed" must {
     "tax code change url" must {

@@ -21,6 +21,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector.baseUrl
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxCodeChange
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -33,7 +34,7 @@ trait TaxCodeChangeConnector {
 
   def httpHandler: HttpHandler
 
-  def taxCodeChangeUrl(nino: String): String = s"$serviceUrl/tai/$nino/tax-account/tax-code-change"
+  def taxCodeChangeUrl(nino: String, year: TaxYear = TaxYear()): String = s"$serviceUrl/tai/$nino/tax-account/tax-code-change/${year.year}"
 
   def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     httpHandler.getFromApi(taxCodeChangeUrl(nino.nino)) map (
@@ -45,6 +46,7 @@ trait TaxCodeChangeConnector {
         TaiTaxAccountFailureResponse(e.getMessage)
     }
   }
+
   def hasTaxCodeChangedUrl(nino: String): String = s"$serviceUrl/tai/$nino/tax-account/tax-code-change/exists"
 
   def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
@@ -56,7 +58,6 @@ trait TaxCodeChangeConnector {
         TaiTaxAccountFailureResponse(e.getMessage)
     }
  }
-
 
 }
 
