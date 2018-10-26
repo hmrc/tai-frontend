@@ -1281,7 +1281,6 @@ taxCode.change.yourTaxCodeChanged.currentTaxCodes=Codau treth presennol
 taxCode.change.yourTaxCodeChanged.understand=Deall beth mae {0} yn ei olygu
 taxCode.change.yourTaxCodeChanged.currentTaxCodeDetails.screenReader=O {0} ymlaen, eich cod treth ar gyfer {2} yw {3}
 taxCode.change.yourTaxCodeChanged.previousTaxCodeDetails.screenReader=O {0} i {1}, eich cod treth ar gyfer {2} oedd {3}
-
 tai.estimatedPay.update.checkYourAnswers.paymentFrequency = Pa mor aml rydych yn cael eich talu
 tai.estimatedPay.update.checkYourAnswers.totalPay = Cyfanswm y cyflog {0}
 tai.estimatedPay.update.checkYourAnswers.hasDeduction = Ydy’ch slip cyflog yn dangos didyniadau?

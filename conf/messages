@@ -854,7 +854,6 @@ tai.payslip.payBeforeTakenOff=This is your gross pay before anything is taken of
 tai.payslip.preHeading=Update your estimated income from {0}
 tai.payslip.title=Enter the total pay on your payslip
 tai.payslipDeductions.dontPayTax= You don’t pay tax on these so we need to remove them from your total pay.
-tai.payslip.week=Your total salary this week
 tai.payslipDeductions.dontPayTax= You don’t pay tax on these so we need to remove them from your total pay amount.
 tai.payslipDeductions.error.form.incomes.radioButton.mandatory=Select yes if your payslip shows any deductions before tax and National Insurance
 tai.payslipDeductions.legend=Does your payslip show any deductions?
