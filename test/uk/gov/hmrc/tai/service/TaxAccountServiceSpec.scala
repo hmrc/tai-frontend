@@ -37,11 +37,50 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
 
   "taxCodeIncomes" must {
     "return seq of tax codes" in {
-      val sut = createSut
-      when(sut.taxAccountConnector.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
+      val testService = createSut
+      when(testService.taxAccountConnector.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
 
-      val result = sut.taxCodeIncomes(generateNino, TaxYear())
+      val result = testService.taxCodeIncomes(generateNino, TaxYear())
       Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(taxCodeIncomes)
+    }
+  }
+
+  "taxCodeIncomeForSpecificEmployment" must {
+    "return an income corresponding to a specific employment id" in {
+      val testService = createSut
+
+      when(testService.taxAccountConnector.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
+
+      val result = testService.taxCodeIncomeForEmployment(generateNino, TaxYear(), 1)
+
+      val expected = Some(taxCodeIncome1)
+
+      Await.result(result, 5 seconds) mustBe expected
+    }
+
+    "return None when an income id is not present" in {
+      val testService = createSut
+
+      when(testService.taxAccountConnector.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
+
+      val result = testService.taxCodeIncomeForEmployment(generateNino, TaxYear(), 99)
+
+      Await.result(result, 5 seconds) mustBe None
+    }
+
+    "throw an exception when the TaxCodeIncome cannot be found" in {
+      val testService = createSut
+
+      when(testService.taxAccountConnector.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(TaiTaxAccountFailureResponse("error")))
+
+      val result = testService.taxCodeIncomeForEmployment(generateNino, TaxYear(), 99)
+
+      val expected = Some(taxCodeIncome1)
+
+      a[RuntimeException] mustBe thrownBy(Await.result(result, 5 seconds))
     }
   }
 
@@ -150,8 +189,9 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
 
   val taxAccountSummary = TaxAccountSummary(111,222, 333.23, 444.44, 111.11)
 
+  private val taxCodeIncome1 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live)
   val taxCodeIncomes = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    taxCodeIncome1,
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live))
 
   val taxCodes = Seq("SD0", "1150L")
