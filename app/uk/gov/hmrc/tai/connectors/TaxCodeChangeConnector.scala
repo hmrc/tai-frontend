@@ -21,7 +21,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector.baseUrl
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
-import uk.gov.hmrc.tai.model.domain.TaxCodeChange
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeMismatch}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -33,7 +33,9 @@ trait TaxCodeChangeConnector {
 
   def httpHandler: HttpHandler
 
-  def taxCodeChangeUrl(nino: String): String = s"$serviceUrl/tai/$nino/tax-account/tax-code-change"
+  def baseTaxAccountUrl(nino: String) = s"$serviceUrl/tai/$nino/tax-account/"
+
+  def taxCodeChangeUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-change"
 
   def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     httpHandler.getFromApi(taxCodeChangeUrl(nino.nino)) map (
@@ -45,7 +47,7 @@ trait TaxCodeChangeConnector {
         TaiTaxAccountFailureResponse(e.getMessage)
     }
   }
-  def hasTaxCodeChangedUrl(nino: String): String = s"$serviceUrl/tai/$nino/tax-account/tax-code-change/exists"
+  def hasTaxCodeChangedUrl(nino: String): String =  baseTaxAccountUrl(nino) + "tax-code-change/exists"
 
   def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     httpHandler.getFromApi(hasTaxCodeChangedUrl(nino.nino)) map (
@@ -57,7 +59,17 @@ trait TaxCodeChangeConnector {
     }
  }
 
+  def taxCodeMismatchUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-mismatch"
 
+  def taxCodeMismatch(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+    httpHandler.getFromApi(taxCodeMismatchUrl(nino.nino)) map (
+      json => TaiSuccessResponseWithPayload(json.as[TaxCodeMismatch])
+      ) recover {
+      case e: Exception =>
+        Logger.warn(s"Couldn't retrieve tax code mismatch for $nino with exception:${e.getMessage}")
+        TaiTaxAccountFailureResponse(e.getMessage)
+    }
+  }
 }
 
 object TaxCodeChangeConnector extends TaxCodeChangeConnector{

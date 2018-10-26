@@ -16,24 +16,43 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
 import uk.gov.hmrc.tai.util.GoogleAnalyticsConstants
 
-case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean, isCyPlusOneEnabled: Boolean, hasTaxCodeChanged: Boolean = false) {
+case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean,
+                                      isCyPlusOneEnabled: Boolean,
+                                      hasTaxCodeChanged: Boolean = false,
+                                      taxCodeMismatch: Option[TaxCodeMismatch] = None) {
 
   def gaDimensions(): Map[String, String] = {
 
     val enabledMap = Map(
-      GoogleAnalyticsConstants.taiLandingPageTCCKey -> hasTaxCodeChanged,
-      GoogleAnalyticsConstants.taiLandingPageCYKey -> true,
-      GoogleAnalyticsConstants.taiLandingPagePYKey -> true,
-      GoogleAnalyticsConstants.taiLandingPageCY1Key -> isCyPlusOneEnabled
+      GoogleAnalyticsConstants.taiLandingPageTCCKey -> taxCodeChangeDimensionValue,
+      GoogleAnalyticsConstants.taiLandingPageCYKey -> "true",
+      GoogleAnalyticsConstants.taiLandingPagePYKey -> "true",
+      GoogleAnalyticsConstants.taiLandingPageCY1Key -> isCyPlusOneEnabled.toString
     )
 
     Map(GoogleAnalyticsConstants.taiLandingPageInformation -> formatMapForGA(enabledMap))
   }
 
-  private def formatMapForGA(map: Map[String, Boolean]) = {
+  private def taxCodeChangeDimensionValue: String = {
+    if (!hasTaxCodeChanged || taxCodeMismatch.isEmpty) {
+      "false"
+    } else if(taxCodeMismatch.get.mismatch) {
+      val mismatch = taxCodeMismatch.get
+      s"mismatch;CONFIRMED=${formatSeqToString(mismatch.confirmedTaxCodes)};UNCONFIRMED=${formatSeqToString(mismatch.unconfirmedTaxCodes)}"
+    } else {
+      "true"
+    }
+  }
+
+  private def formatMapForGA(map: Map[String, String]): String = {
     map.mkString(";").replace(" -> ", "=")
+  }
+
+  private def formatSeqToString(seq: Seq[String]): String = {
+    seq.mkString("[",",","]")
   }
 }
 
