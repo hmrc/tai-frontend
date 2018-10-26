@@ -17,18 +17,31 @@
 package uk.gov.hmrc.tai.viewModels.income
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.time.TaxYearResolver
-import uk.gov.hmrc.tai.util.TaiConstants.TAX_DATE_WORD_MONTH_FORMAT
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.util.ViewModelHelper
 
 
-case class EditIncomeIrregularHoursViewModel(heading: String, preHeading: String, employmentId: Int, employerName: String, currentAmount: Int)
+case class EditIncomeIrregularHoursViewModel(heading: String, preHeading: String, employmentId: Int, employerName: String, currentAmount: String)
 
-object EditIncomeIrregularHoursViewModel {
-  import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
+object EditIncomeIrregularHoursViewModel  extends ViewModelHelper {
 
   def apply(employmentId: Int,
             employerName: String,
-            currentAmount: Int)(implicit messages: Messages): EditIncomeIrregularHoursViewModel = {
+            currentAmount: String)(implicit messages: Messages): EditIncomeIrregularHoursViewModel = {
+
+    val taxYearMessage = currentTaxYearRangeHtmlNonBreak
+
+    val heading = messages("tai.irregular.mainHeadingText", taxYearMessage)
+    val preHeading = messages("tai.estimatedPay.preHeading", employerName)
+
+    val currentAmountBigDecimal: String = withPoundPrefix(MoneyPounds(BigDecimal(currentAmount),0))
+
+    new EditIncomeIrregularHoursViewModel(heading, preHeading, employmentId, employerName, currentAmountBigDecimal)
+  }
+
+  def apply(employmentId: Int,
+            employerName: String,
+            currentAmount: BigDecimal)(implicit messages: Messages): EditIncomeIrregularHoursViewModel = {
 
     val taxYearMessage = currentTaxYearRangeHtmlNonBreak
 
@@ -37,6 +50,6 @@ object EditIncomeIrregularHoursViewModel {
 
 
 
-    new EditIncomeIrregularHoursViewModel(heading, preHeading, employmentId, employerName, currentAmount)
+    new EditIncomeIrregularHoursViewModel(heading, preHeading, employmentId, employerName, withPoundPrefix(MoneyPounds(currentAmount, 0)))
   }
 }

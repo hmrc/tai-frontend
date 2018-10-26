@@ -203,7 +203,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           taxCodeIncomeRequest flatMap {
             case Some(tci) => {
               (taxCodeIncomeInfoToCache.tupled andThen journeyCacheService.cache)(tci, payment) map { _ =>
-                val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount.toInt)
+                val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
 
                 Ok(views.html.incomes.editIncomeIrregularHours(EditIncomeIrregularHoursForm.createForm(), viewModel))
               }
@@ -220,13 +220,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         implicit request => {
           journeyCacheService.currentCache flatMap { cache =>
             val name = cache(UpdateIncome_NameKey)
-            val ptd = cache(UpdateIncome_PayToDateKey)
+            val ptd: String = cache(UpdateIncome_PayToDateKey)
             val latestPayDate = cache.get(UpdateIncome_DateKey)
 
             EditIncomeIrregularHoursForm.createForm(latestPayDate, Some(ptd.toInt)).bindFromRequest().fold(
 
               formWithErrors => {
-                val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, ptd.toInt)
+                val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, ptd)
 
                 Future.successful(BadRequest(views.html.incomes.editIncomeIrregularHours(formWithErrors, viewModel)))
               },
