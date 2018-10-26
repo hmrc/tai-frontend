@@ -23,7 +23,8 @@ import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
 import controllers.income.estimatedPay.update.routes
-
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefix
 
 class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
 
@@ -49,7 +50,7 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
 
     "display the users current estimated income" in {
       doc(view) must haveParagraphWithText(messages("tai.irregular.currentAmount"))
-      doc(view) must haveParagraphWithText("£" + currentAmount)
+      doc(view) must haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentAmount),0)))
     }
 
     "have an input box for user to enter new amount" in {
