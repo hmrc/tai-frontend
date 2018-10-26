@@ -110,7 +110,7 @@ object PayslipForm{
   def createForm()(implicit messages: Messages): Form[PayslipForm] = {
     Form[PayslipForm](
       mapping("totalSalary" -> TaiValidator.validateNewAmounts(messages("tai.payslip.error.form.incomes.radioButton.mandatory"),
-                                                               messages("tai.payslip.error.form.notAnAmount"),
+                                                               messages("error.tai.updateDataEmployment.enterRealNumber"),
                                                                messages("error.tai.updateDataEmployment.maxLength")))(PayslipForm.apply)(PayslipForm.unapply)
     )
   }

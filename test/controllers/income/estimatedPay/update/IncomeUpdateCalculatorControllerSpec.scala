@@ -69,7 +69,7 @@ class IncomeUpdateCalculatorControllerSpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(Messages("tai.incomes.edit.preHeading", employerName))
+      doc.title() must include(Messages("tai.incomes.landing.Heading", employerName))
     }
   }
 
