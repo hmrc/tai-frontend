@@ -118,7 +118,7 @@ object EditIncomeForm {
         "description" -> text,
         "employmentId" -> number,
         "newAmount" -> TaiValidator.validateTaxAmounts(Messages("error.tai.updateDataEmployment.blankValue"),
-           Messages("error.tai.updateDataEmployment.enterRealNumber"),
+           Messages("error.invalid.monetaryAmount.format.invalid"),
            Messages("error.tai.updateDataEmployment.maxLength"),
            Messages(errMsg, MoneyPounds(taxablePayYTD, 0, true).quantity, monthAndYearName, employerName),
           taxablePayYTD),
