@@ -36,17 +36,21 @@ object TaxCodeMismatchFactory {
 
   def matchedTaxCodeJson: JsObject = {
     Json.obj(
-      "mismatch" -> false,
-      "unconfirmedTaxCodes" -> Json.arr("1185L"),
-      "confirmedTaxCodes" -> Json.arr("1185L")
+      "data" -> Json.obj(
+        "mismatch" -> false,
+        "unconfirmedTaxCodes" -> Json.arr("1185L"),
+        "confirmedTaxCodes" -> Json.arr("1185L")
+      )
     )
   }
 
   def mismatchedTaxCodeJson: JsObject = {
     Json.obj(
-      "mismatch" -> true,
-      "unconfirmedTaxCodes" -> Json.arr("1185L"),
-      "confirmedTaxCodes" -> Json.arr("0T")
+      "data" -> Json.obj(
+          "mismatch" -> true,
+        "unconfirmedTaxCodes" -> Json.arr("1185L"),
+        "confirmedTaxCodes" -> Json.arr("0T")
+      )
     )
   }
 }
