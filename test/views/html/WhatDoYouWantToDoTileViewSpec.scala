@@ -23,6 +23,7 @@ import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import uk.gov.hmrc.time.TaxYearResolver
+import utils.factories.TaxCodeMismatchFactory
 
 
 class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
@@ -98,6 +99,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
   private lazy val modelNoiFormNoCyPlus1 = WhatDoYouWantToDoViewModel(false, false)
   private lazy val modelNoiFormWithCyPlus1 = WhatDoYouWantToDoViewModel(false, true)
   private lazy val modelWithiFormNoCyPlus1 = WhatDoYouWantToDoViewModel(true, false)
-  private lazy val modeWithCyPlus1TaxCodeChange = WhatDoYouWantToDoViewModel(false, true, true)
+  private lazy val taxCodeMatched = TaxCodeMismatchFactory.matchedTaxCode
+  private lazy val modeWithCyPlus1TaxCodeChange = WhatDoYouWantToDoViewModel(false, true, true, Some(taxCodeMatched))
   override def view: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1)
 }

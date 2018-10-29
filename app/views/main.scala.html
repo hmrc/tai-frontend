@@ -35,6 +35,7 @@
         gaCallsAdditionalJs: Option[Html] = None,
         gaDimensions: Option[Map[String, String]] = None,
         gaCustomTitle: Option[String],
+        optimizelyAudience: Option[String] = None,
         pageHeader: Option[Html] = None)(
             mainContent: Html)(
                 implicit request: Request[_],
@@ -207,7 +208,7 @@
         "cyUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("cymraeg"),
         "isWelsh" -> isWelshActive,
         "optimizely" -> Map(
-            "audience" -> "Other user",
+            "audience" -> optimizelyAudience.getOrElse("Other user"),
             "projectId" -> "8461600066"
         )
     )
