@@ -16,6 +16,7 @@
 
 package views.html.incomes
 
+import org.joda.time.LocalDate
 import org.scalatest.mock.MockitoSugar
 import play.api.mvc.Call
 import play.twirl.api.Html
@@ -33,12 +34,31 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar with ViewModelHelpe
     behave like pageWithCombinedHeader(
       messages("tai.estimatedPay.preHeading", employerName),
       messages("tai.estimatedPay.title", currentTaxYearRangeHtmlNonBreak))
+    behave like pageWithTitle(messages("tai.estimatedPay.title", currentTaxYearRangeHtmlNonBreak))
 
     "display summary sub-title paragraph" in {
       doc must haveParagraphWithText(messages("tai.estimatedPay.weHaveCalculated"))
     }
-  }
 
+    "display heading subtitle" in {
+      doc must haveH2HeadingWithText(messages("tai.estimatedPay.yourPay"))
+    }
+
+    "contain summary with text and a hidden text" when {
+      "a calculated startdate and annual amount is provided" in {
+        val annualAmount = 10000
+        val startDate = new LocalDate()
+
+        val detailedSummaryView = views.html.incomes.estimatedPay(None,None,id,false,Some(annualAmount),
+          Some(startDate),employerName,false)
+
+        doc(detailedSummaryView) must haveSummaryWithText(messages("tai.estimatedPay.whyLower.title"))
+
+      }
+
+
+    }
+  }
 
 
 

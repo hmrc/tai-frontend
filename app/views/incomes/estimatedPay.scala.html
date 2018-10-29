@@ -42,7 +42,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 }
 
 @main(
-    title = messages("tai.estimatedPay.title"),
+    title = messages("tai.estimatedPay.title", ViewModelHelper.currentTaxYearRangeHtmlNonBreak),
     articleClasses = Some("full-width text"),
     user = Some(user),
     pageHeader = Some(header),
@@ -55,14 +55,19 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         <p class="bold-large margin-bottom-medium" id="payBeforeTax">£@MoneyPounds(payBeforeTax.getOrElse(0),0).quantity</p>
         <p>@messages("tai.estimatedPay.basicPayExplanation")</p>
 
-        @startDate.map{startDate =>
-            @annual.map{annual =>
-                @includes.details_summary(messages("tai.estimatedPay.whyLower.title"),Some("flush--bottom")){
-                    @messages("tai.estimatedPay.whyLower.message",Dates.formatDate(startDate),Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear),Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear),MoneyPounds(annual,0).quantity)
+        @{
+            (startDate,annual) match {
+                case (Some(startDate),Some(annual)) => {
+                    includes.details_summary(messages("tai.estimatedPay.whyLower.title")) {
+                        Html(messages("tai.estimatedPay.whyLower.message",Dates.formatDate(startDate),
+                            Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear),
+                            Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear),
+                            MoneyPounds(annual,0).quantity))
+                    }
                 }
+                case _ =>
             }
         }
-
     </div>
 
     <div>
