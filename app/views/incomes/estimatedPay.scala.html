@@ -14,8 +14,8 @@
  * limitations under the License.
  *@
 
-@(payBeforeTax: Option[BigDecimal], payTaxOn: Option[BigDecimal], id: Int, bonusOvertime : Boolean = false, annual : Option[BigDecimal],
-startDate : Option[org.joda.time.LocalDate], employerName: String, same : Boolean = false)(implicit request: Request[_],
+@(payBeforeTax: Option[BigDecimal], payTaxOn: Option[BigDecimal], id: Int, bonusOvertime : Boolean = false, annualAmount : Option[BigDecimal],
+incomeStartDate : Option[org.joda.time.LocalDate], employerName: String, same : Boolean = false)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.play.views.formatting.Money._
@@ -56,13 +56,13 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         <p>@messages("tai.estimatedPay.basicPayExplanation")</p>
 
         @{
-            (startDate,annual) match {
-                case (Some(startDate),Some(annual)) => {
+            (incomeStartDate,annualAmount) match {
+                case (Some(incomeStartDate),Some(annualAmount)) => {
                     includes.details_summary(messages("tai.estimatedPay.whyLower.title")) {
-                        Html(messages("tai.estimatedPay.whyLower.message",Dates.formatDate(startDate),
+                        Html(messages("tai.estimatedPay.whyLower.message",Dates.formatDate(incomeStartDate),
                             Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear),
                             Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear),
-                            MoneyPounds(annual,0).quantity))
+                            MoneyPounds(annualAmount,0).quantity))
                     }
                 }
                 case _ =>
