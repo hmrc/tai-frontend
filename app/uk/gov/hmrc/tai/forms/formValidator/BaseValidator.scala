@@ -22,12 +22,12 @@ import play.api.data.Mapping
 import play.api.data.validation._
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.FormHelper
+import uk.gov.hmrc.tai.util.{FormHelper, ViewModelHelper}
 
 import scala.util.{Success, Try}
 
 
-trait BaseValidator extends DateValidator {
+trait BaseValidator extends DateValidator with ViewModelHelper {
   protected val MIN_LENGTH: Int = 0
   protected val MAX_LENGTH: Int = 100
 
@@ -88,12 +88,12 @@ trait BaseValidator extends DateValidator {
   def validateNetGrossSalary( netSalary: Option[String] = None)(implicit messages: Messages):  Constraint[Option[String]] = {
       val netSalaryValue = BigDecimal(netSalary.getOrElse("0"))
 
-      val displayNetSalary = MoneyPounds(netSalaryValue, 0, roundUp = true).quantity
+      val displayNetSalary = MoneyPounds(netSalaryValue, 0, roundUp = true)
 
       Constraint[Option[String]]("taxablePay") {
         case taxablePay if BigDecimal(FormHelper.stripNumber(taxablePay).getOrElse("0")) <= netSalaryValue => Valid
         case _ if netSalary.isDefined =>
-          Invalid(messages("tai.taxablePayslip.error.form.payTooHigh", displayNetSalary))
+          Invalid(messages("tai.taxablePayslip.error.form.payTooHigh", withPoundPrefixAndSign(displayNetSalary),0))
         case _ => Valid
       }
   }

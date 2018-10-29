@@ -17,9 +17,11 @@
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
+import uk.gov.hmrc.time.TaxYearResolver
 
 case class CheckYourAnswersViewModel(paymentFrequency: String,
                                      totalPay: String,
@@ -71,14 +73,16 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
       }
 
     val hasExtraBonusOrOvertimeConfirmationLine = createCheckYourAnswerConfirmationLine(
-      messages("tai.estimatedPay.update.checkYourAnswers.hasExtraBonusOrOvertime"),
+      messages("tai.estimatedPay.update.checkYourAnswers.hasExtraBonusOrOvertime",
+        htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)),
+        htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))),
       hasExtraBonusOrOvertimeAnswer,
       controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
     )
 
     val totalBonusOrOvertimeMessage =
       if(hasExtraBonusOrOvertime.getOrElse("") == "Yes"){
-      messages("tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime")
+      messages("tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime", currentTaxYearRangeHtmlNonBreak)
      }else{
         Messages("tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime", timePeriod(paymentFrequency))
       }
