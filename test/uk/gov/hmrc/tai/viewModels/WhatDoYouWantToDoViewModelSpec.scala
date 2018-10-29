@@ -40,10 +40,10 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
     }
 
     "return true" when {
-      "there has been a tax code change and no mismatch is None" in {
+      "there has been a tax code change and mismatch is None" in {
         val viewModel = WhatDoYouWantToDoViewModel(false, true, true)
 
-        viewModel.showTaxCodeChangeTile() mustEqual true
+        viewModel.showTaxCodeChangeTile() mustEqual false
       }
     }
 
@@ -124,7 +124,7 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
       "Tax Code Change has not changed and there is a mismatch" in {
         val viewModel = WhatDoYouWantToDoViewModel(false, true, false, Some(mismatchedTaxCode))
 
-        val expected = "TCC=false;CY=true;PY=true;CY+1=true"
+        val expected = "TCC=mismatch;CONFIRMED=[1180L,0T];UNCONFIRMED=[1185L,0T];CY=true;PY=true;CY+1=true"
 
         viewModel.gaDimensions() mustEqual gaMap(expected)
       }
