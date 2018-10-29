@@ -26,6 +26,13 @@ case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean,
                                       hasTaxCodeChanged: Boolean = false,
                                       taxCodeMismatch: Option[TaxCodeMismatch] = None) {
 
+  def showTaxCodeChangeTile(): Boolean = {
+    (hasTaxCodeChanged, taxCodeMismatch) match {
+      case (true, Some(TaxCodeMismatch(true, _, _))) => false
+      case _ => hasTaxCodeChanged
+    }
+  }
+
   def gaDimensions(): Map[String, String] = {
 
     val enabledMap = taxCodeChangeDimensions ++ ListMap(
@@ -38,15 +45,15 @@ case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean,
   }
 
   private def taxCodeChangeDimensions: ListMap[String, String] = {
-    if (hasTaxCodeChanged && taxCodeMismatch.isDefined && taxCodeMismatch.get.mismatch) {
-      val mismatch = taxCodeMismatch.get
-      ListMap(
-        GoogleAnalyticsConstants.taiLandingPageTCCKey -> GoogleAnalyticsConstants.taiLandingPageMismatchValue,
-        GoogleAnalyticsConstants.taiLandingPageConfirmedKey -> formatSeqToString(mismatch.confirmedTaxCodes),
-        GoogleAnalyticsConstants.taiLandingPageUnconfirmedKey -> formatSeqToString(mismatch.unconfirmedTaxCodes)
-      )
-    } else {
-      ListMap(GoogleAnalyticsConstants.taiLandingPageTCCKey -> hasTaxCodeChanged.toString)
+    (hasTaxCodeChanged, taxCodeMismatch) match {
+      case (true, Some(mismatch)) if mismatch.mismatch => {
+        ListMap(
+          GoogleAnalyticsConstants.taiLandingPageTCCKey -> GoogleAnalyticsConstants.taiLandingPageMismatchValue,
+          GoogleAnalyticsConstants.taiLandingPageConfirmedKey -> formatSeqToString(mismatch.confirmedTaxCodes),
+          GoogleAnalyticsConstants.taiLandingPageUnconfirmedKey -> formatSeqToString(mismatch.unconfirmedTaxCodes)
+        )
+      }
+      case _ => ListMap(GoogleAnalyticsConstants.taiLandingPageTCCKey -> hasTaxCodeChanged.toString)
     }
   }
 
@@ -55,7 +62,7 @@ case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean,
   }
 
   private def formatSeqToString(seq: Seq[String]): String = {
-    seq.mkString("[",",","]")
+    seq.mkString("[", ",", "]")
   }
 }
 

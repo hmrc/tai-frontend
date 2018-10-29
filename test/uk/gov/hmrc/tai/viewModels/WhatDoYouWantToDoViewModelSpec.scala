@@ -30,6 +30,40 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
   val mismatchedTaxCode = TaxCodeMismatchFactory.mismatchedTaxCodeComplex
   val matchedTaxCode = TaxCodeMismatchFactory.matchedTaxCode
 
+  "showTaxCodeChangeTile" must {
+    "return true" when {
+      "there has been a tax code change and no mismatch" in {
+        val viewModel = WhatDoYouWantToDoViewModel(false, true, true, Some(matchedTaxCode))
+
+        viewModel.showTaxCodeChangeTile() mustEqual true
+      }
+    }
+
+    "return true" when {
+      "there has been a tax code change and no mismatch is None" in {
+        val viewModel = WhatDoYouWantToDoViewModel(false, true, true)
+
+        viewModel.showTaxCodeChangeTile() mustEqual true
+      }
+    }
+
+    "return false" when {
+      "there has been a tax code change and there is a mismatch" in {
+        val viewModel = WhatDoYouWantToDoViewModel(false, true, true, Some(mismatchedTaxCode))
+
+        viewModel.showTaxCodeChangeTile() mustEqual false
+      }
+    }
+
+    "return false" when {
+      "there has not been a tax code change" in {
+        val viewModel = WhatDoYouWantToDoViewModel(false, true, false)
+
+        viewModel.showTaxCodeChangeTile() mustEqual false
+      }
+    }
+  }
+
   "gaDimensions" must {
     "Create a string collection of what the tile view shows" when {
 
