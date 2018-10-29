@@ -33,9 +33,10 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.EmploymentIncome
+import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
-import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, TaxCodeChangeService}
+import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -52,8 +53,21 @@ class YourTaxCodeControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
       val endOfTaxYear: String = TaxYear().end.toString("d MMMM yyyy")
       val taxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L",
         "employment", OtherBasisOfOperation, Live))
-      when(SUT.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
-      when(SUT.taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map.empty[String, BigDecimal]))
+
+      when(SUT.taxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
+      when(SUT.taxAccountService.scottishBandRates(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
+
+      val startDate = TaxYearResolver.startOfCurrentTaxYear
+      val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation,"A Employer 1", false, Some("1234"), false)
+      val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+
+      val taxCodeChange = TaxCodeChange(Seq(previousTaxCodeRecord1), Seq(currentTaxCodeRecord1))
+
+      when(SUT.taxCodeChangeService.taxCodeChange(any(), any())(any()))
+        .thenReturn(Future.successful(taxCodeChange))
+
       val result = SUT.taxCodes()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe OK
@@ -91,6 +105,7 @@ class YourTaxCodeControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
+    override val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino))))
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))

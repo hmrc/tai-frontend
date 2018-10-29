@@ -23,6 +23,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 
 import scala.concurrent.Future
@@ -31,12 +32,13 @@ trait TaxCodeChangeService {
 
   def taxCodeChangeConnector: TaxCodeChangeConnector
 
-  def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] = {
-    taxCodeChangeConnector.taxCodeChange(nino) map {
+  def taxCodeChange(nino: Nino, year: TaxYear = TaxYear())(implicit hc: HeaderCarrier): Future[TaxCodeChange] = {
+    taxCodeChangeConnector.taxCodeChange(nino, year) map {
       case TaiSuccessResponseWithPayload(taxCodeChange: TaxCodeChange) => taxCodeChange
-      case _ => throw new RuntimeException("Could not fetch tax code change")
+      case _ => throw new RuntimeException(s"Could not fetch tax code change for year $year")
     }
   }
+
   def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[Boolean] = {
     taxCodeChangeConnector.hasTaxCodeChanged(nino) map {
       case TaiSuccessResponseWithPayload(hasTaxCodeChanged: Boolean) => hasTaxCodeChanged

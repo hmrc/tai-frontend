@@ -25,10 +25,8 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.TaxCodeViewModel
 
 trait YourTaxCodeController extends TaiBaseController
@@ -41,6 +39,8 @@ trait YourTaxCodeController extends TaiBaseController
 
   def taxAccountService: TaxAccountService
 
+  def taxCodeChangeService: TaxCodeChangeService
+
   def taxCodes(year: TaxYear = TaxYear()): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
@@ -49,10 +49,10 @@ trait YourTaxCodeController extends TaiBaseController
             val nino = user.person.nino
 
             for {
-              TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService.taxCodeIncomes(nino, year)
-              scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
+              taxCodeChange <- taxCodeChangeService.taxCodeChange(nino, year)
+              scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeChange.current.map(_.taxCode))
             } yield {
-              val taxCodeViewModel = TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands, year)
+              val taxCodeViewModel = TaxCodeViewModel(taxCodeChange.current, scottishTaxRateBands, year)
               Ok(views.html.taxCodeDetails(taxCodeViewModel))
             }
           }
@@ -61,14 +61,17 @@ trait YourTaxCodeController extends TaiBaseController
   def prevTaxCodes(year: TaxYear): Action[AnyContent] = taxCodes(year)
 
 }
+
 // $COVERAGE-OFF$
 object YourTaxCodeController extends YourTaxCodeController with AuthenticationConnectors {
   override val personService = PersonService
   override val taxAccountService: TaxAccountService = TaxAccountService
+  override val taxCodeChangeService: TaxCodeChangeService = TaxCodeChangeService
 
   override implicit def templateRenderer = LocalTemplateRenderer
 
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
+
 // $COVERAGE-ON$
 
