@@ -26,7 +26,6 @@ import uk.gov.hmrc.tai.model.domain.TaxCodeChange
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.parsing.json.JSON
 
 trait TaxCodeChangeConnector {
 
@@ -37,9 +36,10 @@ trait TaxCodeChangeConnector {
   def taxCodeChangeUrl(nino: String, year: TaxYear = TaxYear()): String = s"$serviceUrl/tai/$nino/tax-account/tax-code-change/${year.year}"
 
   def taxCodeChange(nino: Nino, year: TaxYear = TaxYear())(implicit hc: HeaderCarrier): Future[TaiResponse] = {
-    httpHandler.getFromApi(taxCodeChangeUrl(nino.nino)) map (
-      json =>
+    httpHandler.getFromApi(taxCodeChangeUrl(nino.nino, year)) map (
+      json => {
         TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeChange])
+      }
       ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve tax code change for $nino with exception:${e.getMessage}")
@@ -51,17 +51,18 @@ trait TaxCodeChangeConnector {
 
   def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     httpHandler.getFromApi(hasTaxCodeChangedUrl(nino.nino)) map (
-        json => TaiSuccessResponseWithPayload(json.as[Boolean])
+      json => TaiSuccessResponseWithPayload(json.as[Boolean])
       ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve tax code changed for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }
- }
+  }
 
 }
 
-object TaxCodeChangeConnector extends TaxCodeChangeConnector{
+object TaxCodeChangeConnector extends TaxCodeChangeConnector {
   override val serviceUrl = baseUrl("tai")
+
   override def httpHandler: HttpHandler = HttpHandler
 }
