@@ -28,7 +28,7 @@
 @gaEventActionString = @{"Your PAYE Income Tax overview"}
 
 @optimizelyAudience = @{
-  if (model.hasTaxCodeChanged) {
+  if (model.showTaxCodeChangeTile()) {
     Some("TaxCodeChangeUser")
   } else {
     None
