@@ -36,9 +36,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
   private val cyMinusFourTaxYear: TaxYear = TaxYear(currentYear - 4)
 
   private val employment: EmploymentViewModel = EmploymentViewModel("test employment", 123.32, 1, false,Some("payrollNumber"))
-  override def view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil), 3)
+  override def view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil), 3, taxCodeChangeEnabled = true)
 
-  private def createSut(vm: HistoricPayAsYouEarnViewModel, noOfPreviousYears: Int = 3): Html =  views.html.paye.historicPayAsYouEarn(vm, noOfPreviousYears)
+  private def createSut(vm: HistoricPayAsYouEarnViewModel, noOfPreviousYears: Int = 3): Html =  views.html.paye.historicPayAsYouEarn(vm, noOfPreviousYears, taxCodeChangeEnabled = true)
 
   "historicPayAsYouEarn view" should {
 
@@ -51,13 +51,31 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
     "contain correct header" in {
       val taxYear = cyMinusOneTaxYear
       val vm = HistoricPayAsYouEarnViewModel(taxYear, Nil, Nil, false)
-      val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil), 3)
+      val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil), 3, taxCodeChangeEnabled = true)
       val newDoc = doc(view)
 
       newDoc.body.text must include(messages("tai.paye.lastTaxYear.preHeading"))
       newDoc.body.text must include(messages("tai.paye.heading", taxPeriodLabel(taxYear.year)))
     }
 
+    "display a link to view the tax code at the end of the year" when {
+      "taxCodeChangeEnabled is true" in {
+        val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false,Some("payrollNumber"))
+        val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true), 1, taxCodeChangeEnabled = true)
+
+        println(view)
+        doc(view) must haveLinkWithUrlWithID("taxCodeDescription", controllers.routes.YourTaxCodeController.prevTaxCodes(cyMinusOneTaxYear).url)
+      }
+    }
+
+    "NOT display a link to view the tax code at the end of the year" when {
+      "taxCodeChangeEnabled is false" in {
+        val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false,Some("payrollNumber"))
+        val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true), 1, taxCodeChangeEnabled = false)
+
+        doc(view).toString mustNot include(messages("tai.taxCode.description.link"))
+      }
+    }
 
     "display a link to return to choose tax year page" in {
       doc must haveLinkWithUrlWithID("returnToChooseTaxYearLink", controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
@@ -68,14 +86,14 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
       "have a heading for your income" when {
         "when you have a employment" in {
           val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false,Some("payrollNumber"))
-          val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true), 1)
+          val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true), 1, taxCodeChangeEnabled = true)
           doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
           doc(view) mustNot haveH2HeadingWithText(messages("tai.incomeTaxSummary.pension.section.heading"))
         }
 
         "when you have a pension" in {
           val pension: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, true,Some("payrollNumber"))
-          val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true), 1)
+          val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true), 1, taxCodeChangeEnabled = true)
           doc(view) mustNot haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
           doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxSummary.pension.section.heading"))
         }
@@ -83,7 +101,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
         "when you have a pension and employment" in {
           val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false,Some("payrollNumber"))
           val pension: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, true,Some("payrollNumber"))
-          val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Seq(employment), true), 1)
+          val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Seq(employment), true), 1, taxCodeChangeEnabled = true)
           doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
           doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxSummary.pension.section.heading"))
         }

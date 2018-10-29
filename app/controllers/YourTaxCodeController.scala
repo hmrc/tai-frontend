@@ -29,6 +29,8 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.TaxCodeViewModel
 
+import scala.concurrent.Future
+
 trait YourTaxCodeController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
@@ -58,8 +60,29 @@ trait YourTaxCodeController extends TaiBaseController
           }
   }
 
-  def prevTaxCodes(year: TaxYear): Action[AnyContent] = taxCodes(year)
+  def prevTaxCodes(year: TaxYear): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
 
+          if (taxCodeChangeEnabled) {
+            ServiceCheckLite.personDetailsCheck {
+              val nino = user.person.nino
+
+              for {
+                taxCodeChange <- taxCodeChangeService.taxCodeChange(nino, year)
+                scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeChange.current.map(_.taxCode))
+              } yield {
+                val taxCodeViewModel = TaxCodeViewModel(taxCodeChange.current, scottishTaxRateBands, year)
+                Ok(views.html.taxCodeDetails(taxCodeViewModel))
+              }
+            }
+          } else {
+            ServiceCheckLite.personDetailsCheck {
+              Future.successful(NotFound)
+            }
+          }
+  }
 }
 
 // $COVERAGE-OFF$

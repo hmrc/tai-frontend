@@ -25,7 +25,7 @@ import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Person
@@ -37,7 +37,8 @@ import scala.concurrent.Future
 trait PayeControllerHistoric extends TaiBaseController
 with DelegationAwareActions
 with WithAuthorisedForTaiLite
-with Auditable {
+with Auditable
+  with FeatureTogglesConfig {
 
   def personService: PersonService
   def employmentService: EmploymentService
@@ -69,7 +70,7 @@ with Auditable {
       } yield {
         checkedAgainstPersonDetails(
           person,
-          Ok(views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(taxYear, employments), numberOfPreviousYearsToShow))
+          Ok(views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(taxYear, employments), numberOfPreviousYearsToShow, taxCodeChangeEnabled))
         )
       }
     }
