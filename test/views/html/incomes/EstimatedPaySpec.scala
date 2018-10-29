@@ -48,6 +48,10 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar with ViewModelHelpe
       doc must haveParagraphWithText(messages("tai.estimatedPay.basicPayExplanation"))
     }
 
+    "display your taxable pay paragraph" in {
+      doc must haveParagraphWithText(messages("tai.estimatedPay.yourTaxablePay.text"))
+    }
+
     "contain summary with text and a hidden text" when {
       "a calculated startdate and annual amount is provided" in {
         val annualAmount = 10000
