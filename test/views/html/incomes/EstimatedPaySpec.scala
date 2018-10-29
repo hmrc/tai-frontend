@@ -63,19 +63,18 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar with ViewModelHelpe
         doc(detailedSummaryView) must haveSummaryWithText(messages("tai.estimatedPay.whyLower.title"))
 
       }
+    }
 
-      "display a tax code change explanation statement" in {
-        doc must haveParagraphWithText(messages("tai.estimatedPay.taxCodeChange.explanation"))
-      }
+    "display a tax code change explanation statement" in {
+      doc must haveParagraphWithText(messages("tai.estimatedPay.taxCodeChange.explanation"))
+    }
 
-
+    "confirm and send" in {
+      doc must haveLinkElement("confirmAndSend",
+        controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleCalculationResult().url,
+        messages("tai.estimatedPay.checkTaxEstimate"))
     }
   }
-
-
-
-
-
 
   override def view: Html = views.html.incomes.estimatedPay(None,None,id,false,None,None,employerName,false)
 }

@@ -92,7 +92,8 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         @includes.link(
             copy=messages("tai.estimatedPay.checkTaxEstimate"),
             url = income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleCalculationResult.toString,
-            isButton=true
+            isButton=true,
+            id=Some("confirmAndSend")
         )
 
         @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
