@@ -27,6 +27,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @import uk.gov.hmrc.play.views.helpers._
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.tai.util.ViewModelHelper
 
 @gaEventActionString = @{"Your estimated pay for the year"}
 
@@ -34,7 +35,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     ptaHeader(
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.estimatedPay.title"),
+        mainHeadingText = messages("tai.estimatedPay.title", ViewModelHelper.currentTaxYearRangeHtmlNonBreak),
         preHeadingText = messages("tai.estimatedPay.preHeading", employerName),
         headerWidthClasses = Some("column-full")
     )
@@ -49,7 +50,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     gaCustomTitle = None
 ){
     <div>
-        <p>@messages("tai.estimatedPay.weHaveCalculated", Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear), Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))</p>
+        <p>@messages("tai.estimatedPay.weHaveCalculated")</p>
         <h2 class="flush--top">@messages("tai.estimatedPay.yourPay")</h2>
         <p class="bold-large margin-bottom-medium" id="payBeforeTax">£@MoneyPounds(payBeforeTax.getOrElse(0),0).quantity</p>
         <p>@messages("tai.estimatedPay.basicPayExplanation")</p>

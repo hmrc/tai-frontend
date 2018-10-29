@@ -19,24 +19,31 @@ package views.html.incomes
 import org.scalatest.mock.MockitoSugar
 import play.api.mvc.Call
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class EstimatedPaySpec extends TaiViewSpec with MockitoSugar {
+class EstimatedPaySpec extends TaiViewSpec with MockitoSugar with ViewModelHelper {
 
   val id = 1
   val employerName = "Employer"
 
-  "Estimated pay view without bonusOverTime" should {
+  "Estimated Pay" must {
     behave like pageWithBackLink
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     behave like pageWithCombinedHeader(
       messages("tai.estimatedPay.preHeading", employerName),
-      messages("tai.estimatedPay.title"))
+      messages("tai.estimatedPay.title", currentTaxYearRangeHtmlNonBreak))
+
+    "display summary sub-title paragraph" in {
+      doc must haveParagraphWithText(messages("tai.estimatedPay.weHaveCalculated"))
+    }
   }
-  "Estimated pay view with bonusOverTime" should {
-    val testView: Html = views.html.incomes.estimatedPay(None,None,id,true,None,None,employerName,false)
-    doc(testView) must haveBackLink
-  }
+
+
+
+
+
+
 
   override def view: Html = views.html.incomes.estimatedPay(None,None,id,false,None,None,employerName,false)
 }
