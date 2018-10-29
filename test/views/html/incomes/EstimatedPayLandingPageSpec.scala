@@ -30,8 +30,8 @@ class EstimatedPayLandingPageSpec extends TaiViewSpec {
     behave like pageWithBackLink
     behave like pageWithCancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
     behave like pageWithCombinedHeader(
-      messages("tai.incomes.edit.preHeading", employerName),
-      messages("tai.incomes.edit.preHeading", employerName))
+      messages("tai.howToUpdate.preHeading", employerName),
+      messages("tai.incomes.landing.Heading", employerName))
 
     "contain the correct content when income is from employment" in {
       doc(view).getElementsByTag("p").text must include(messages("tai.incomes.landing.intro"))

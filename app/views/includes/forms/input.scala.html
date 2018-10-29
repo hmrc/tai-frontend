@@ -35,7 +35,7 @@
         attrDescribedBy: String = "",
         data: String = "",
         isCurrency: Boolean = false
-)(implicit lang: Lang, m: Messages)
+)(implicit lang: Lang, messages: Messages)
 
 <div class="form-group @if(fieldErrorsEnabled && field.hasErrors) {form-group-error}  @if(parentDateAttr) { form-group-@parentDateAttr} @if(panel) { panel-indent} @if(jsHidden) { js-hidden}" @if(data) {data-reveal="@data"}>
     <label for="@field.id">
@@ -43,7 +43,7 @@
             <span class="@if(labelHidden){visually-hidden}else{form-label @if(bold){form-label-bold}}">
             @labelText
             @if(isCurrency){
-                <span class="visually-hidden">@Messages("tai.inPounds")</span>
+                <span class="visually-hidden">@messages("tai.inPounds")</span>
             }
             </span>
         }
