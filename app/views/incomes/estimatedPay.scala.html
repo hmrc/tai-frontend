@@ -70,7 +70,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         }
     </div>
 
-    <div>
+    <div class="margin-bottom-large">
         <h2>@messages("tai.estimatedPay.yourTaxablePay")</h2>
         <p class="bold-large margin-bottom-medium" id="amountPayTaxOn">£@MoneyPounds(payTaxOn.getOrElse(0),0).quantity</p>
         <p>@messages("tai.estimatedPay.yourTaxablePay.text")</p>
@@ -81,6 +81,10 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
             }
         }
 
+    </div>
+
+    <div class ="panel panel-border-narrow">
+        <p>@messages("tai.estimatedPay.taxCodeChange.explanation")</p>
     </div>
 
     <div class="section">

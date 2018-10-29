@@ -471,6 +471,7 @@ tai.estimatedPay.whySame.title=Why are these amounts the same?
 tai.estimatedPay.yourPay=Your total pay
 tai.estimatedPay.yourTaxablePay.text=This is the amount of income that you will pay tax on.
 tai.estimatedPay.yourTaxablePay=Your taxable pay
+tai.estimatedPay.taxCodeChange.explanation=Changing your income may change your tax code and the tax band you are in. This could affect the amount of tax you pay.
 tai.extendedTaxReliefs.payments=Payment
 tai.extendedTaxReliefs.relief=Tax&nbsp;saving (£)
 tai.extendedTaxReliefs.source=Amount&nbsp;paid (£)

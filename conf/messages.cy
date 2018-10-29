@@ -471,6 +471,7 @@ tai.estimatedPay.whySame.title=Pam fod y ffigurau hyn yr un peth?
 tai.estimatedPay.yourPay=Cyfanswm eich cyflog
 tai.estimatedPay.yourTaxablePay.text=Dyma swm yr incwm y byddwch yn talu treth arno.
 tai.estimatedPay.yourTaxablePay=Eich cyflog trethadwy
+tai.estimatedPay.taxCodeChange.explanation=Gall newid eich swm newid eich cod treth a’r haen dreth yr ydych ynddi. Gallai hynny effeithio ar swm y dreth yr ydych yn ei thalu.
 tai.extendedTaxReliefs.payments=Taliadau
 tai.extendedTaxReliefs.relief=Arbedion treth (£)
 tai.extendedTaxReliefs.source=Swm a dalwyd (£)
