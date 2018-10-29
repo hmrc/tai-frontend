@@ -63,7 +63,7 @@ trait TaxCodeChangeConnector {
 
   def taxCodeMismatch(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     httpHandler.getFromApi(taxCodeMismatchUrl(nino.nino)) map (
-      json => TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeMismatch])
+        json => TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeMismatch])
       ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve tax code mismatch for $nino with exception:${e.getMessage}")
