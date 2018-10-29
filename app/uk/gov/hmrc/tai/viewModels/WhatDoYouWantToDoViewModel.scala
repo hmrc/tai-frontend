@@ -19,6 +19,8 @@ package uk.gov.hmrc.tai.viewModels
 import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
 import uk.gov.hmrc.tai.util.GoogleAnalyticsConstants
 
+import scala.collection.immutable.ListMap
+
 case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean,
                                       isCyPlusOneEnabled: Boolean,
                                       hasTaxCodeChanged: Boolean = false,
@@ -26,8 +28,7 @@ case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean,
 
   def gaDimensions(): Map[String, String] = {
 
-    val enabledMap = Map(
-      GoogleAnalyticsConstants.taiLandingPageTCCKey -> taxCodeChangeDimensionValue,
+    val enabledMap = taxCodeChangeDimensions ++ ListMap(
       GoogleAnalyticsConstants.taiLandingPageCYKey -> "true",
       GoogleAnalyticsConstants.taiLandingPagePYKey -> "true",
       GoogleAnalyticsConstants.taiLandingPageCY1Key -> isCyPlusOneEnabled.toString
@@ -36,14 +37,16 @@ case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean,
     Map(GoogleAnalyticsConstants.taiLandingPageInformation -> formatMapForGA(enabledMap))
   }
 
-  private def taxCodeChangeDimensionValue: String = {
-    if (!hasTaxCodeChanged || taxCodeMismatch.isEmpty) {
-      "false"
-    } else if(taxCodeMismatch.get.mismatch) {
+  private def taxCodeChangeDimensions: ListMap[String, String] = {
+    if (hasTaxCodeChanged && taxCodeMismatch.isDefined && taxCodeMismatch.get.mismatch) {
       val mismatch = taxCodeMismatch.get
-      s"mismatch;CONFIRMED=${formatSeqToString(mismatch.confirmedTaxCodes)};UNCONFIRMED=${formatSeqToString(mismatch.unconfirmedTaxCodes)}"
+      ListMap(
+        GoogleAnalyticsConstants.taiLandingPageTCCKey -> GoogleAnalyticsConstants.taiLandingPageMismatchValue,
+        GoogleAnalyticsConstants.taiLandingPageConfirmedKey -> formatSeqToString(mismatch.confirmedTaxCodes),
+        GoogleAnalyticsConstants.taiLandingPageUnconfirmedKey -> formatSeqToString(mismatch.unconfirmedTaxCodes)
+      )
     } else {
-      "true"
+      ListMap(GoogleAnalyticsConstants.taiLandingPageTCCKey -> hasTaxCodeChanged.toString)
     }
   }
 
