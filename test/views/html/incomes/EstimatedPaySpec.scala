@@ -53,7 +53,7 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar with ViewModelHelpe
     }
 
     "contain summary with text and a hidden text" when {
-      "a calculated startdate and annual amount is provided" in {
+      "a calculated start date and annual amount is provided" in {
         val annualAmount = 10000
         val startDate = new LocalDate()
 
@@ -61,6 +61,19 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar with ViewModelHelpe
           Some(startDate),employerName,false)
 
         doc(detailedSummaryView) must haveSummaryWithText(messages("tai.estimatedPay.whyLower.title"))
+
+      }
+
+      "the grossAnnualPay equals the netAnnualPay" in {
+
+        val grossAnnualPay = 20000
+        val netAnnualPay = 20000
+        val grossEqualsNet = true
+
+        val grossEqualsNetView = views.html.incomes.estimatedPay(Some(grossAnnualPay),Some(netAnnualPay),
+          id,false,None, None,employerName,grossEqualsNet)
+
+        doc(grossEqualsNetView) must haveSummaryWithText(messages("tai.estimatedPay.whySame.title"))
 
       }
     }

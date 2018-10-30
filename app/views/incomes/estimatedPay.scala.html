@@ -76,7 +76,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         <p>@messages("tai.estimatedPay.yourTaxablePay.text")</p>
 
         @if(same){
-            @includes.details_summary(messages("tai.estimatedPay.whySame.title"),Some("flush--bottom")){
+            @includes.details_summary(messages("tai.estimatedPay.whySame.title")){
                 @messages("tai.estimatedPay.whySame.text")
             }
         }
