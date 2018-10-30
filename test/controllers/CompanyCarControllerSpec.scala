@@ -87,7 +87,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
           val result = sut.handleUserJourneyChoice()(request)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result).get mustBe ApplicationConfig.companyCarEndDateUrl
+          redirectLocation(result).get mustBe ApplicationConfig.companyCarDetailsUrl
           Mockito.verify(sut.sessionService, Mockito.times(1)).invalidateCache()(any())
         }
     }
