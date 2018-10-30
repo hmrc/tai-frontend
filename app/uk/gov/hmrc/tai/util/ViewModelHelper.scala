@@ -30,11 +30,10 @@ import scala.util.Try
 trait ViewModelHelper {
 
   def withPoundPrefixAndSign(moneyPounds: MoneyPounds): String = {
-    val sign = if (moneyPounds.isNegative) encodedMinusSign else ""
-      s"${sign}£${moneyPounds.quantity}"
+   MonetaryUtil.withPoundPrefixAndSign(moneyPounds)
   }
 
-  def withPoundPrefix(moneyPounds: MoneyPounds): String = s"£${moneyPounds.quantity}"
+  def withPoundPrefix(moneyPounds: MoneyPounds): String = MonetaryUtil.withPoundPrefix(moneyPounds)
 
   def currentTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
     htmlNonBroken( Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear) )
