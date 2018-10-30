@@ -14,10 +14,6 @@
  * limitations under the License.
  *@
 
-@(payBeforeTax: Option[BigDecimal], payTaxOn: Option[BigDecimal], id: Int, bonusOvertime : Boolean = false, annualAmount : Option[BigDecimal],
-incomeStartDate : Option[org.joda.time.LocalDate], employerName: String, same : Boolean = false)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
-
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import org.joda.time.{DateTime, LocalDate}
 @import uk.gov.hmrc.urls.Link
@@ -28,6 +24,10 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.tai.util.ViewModelHelper
+@import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
+
+@(viewModel: EstimatedPayViewModel)(implicit request: Request[_],messages: Messages, user: controllers.auth.TaiUser,
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your estimated pay for the year"}
 
@@ -36,7 +36,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.estimatedPay.title", ViewModelHelper.currentTaxYearRangeHtmlNonBreak),
-        preHeadingText = messages("tai.estimatedPay.preHeading", employerName),
+        preHeadingText = messages("tai.estimatedPay.preHeading", viewModel.employerName),
         headerWidthClasses = Some("column-full")
     )
 }
@@ -46,36 +46,33 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     articleClasses = Some("full-width text"),
     user = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName),
+    employerName = Some(viewModel.employerName),
     gaCustomTitle = None
 ){
     <div>
         <p>@messages("tai.estimatedPay.weHaveCalculated")</p>
         <h2 class="flush--top">@messages("tai.estimatedPay.yourPay")</h2>
-        <p class="bold-large margin-bottom-medium" id="payBeforeTax">£@MoneyPounds(payBeforeTax.getOrElse(0),0).quantity</p>
+        <p class="bold-large margin-bottom-medium" id="payBeforeTax">£@MoneyPounds(viewModel.grossAnnualPay.getOrElse(0),0).quantity</p>
         <p>@messages("tai.estimatedPay.basicPayExplanation")</p>
 
-        @{
-            (incomeStartDate,annualAmount) match {
-                case (Some(incomeStartDate),Some(annualAmount)) => {
-                    includes.details_summary(messages("tai.estimatedPay.whyLower.title")) {
-                        Html(messages("tai.estimatedPay.whyLower.message",Dates.formatDate(incomeStartDate),
-                            Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear),
-                            Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear),
-                            MoneyPounds(annualAmount,0).quantity))
-                    }
-                }
-                case _ =>
+
+        @if(viewModel.isGrossPayApportioned){
+            @includes.details_summary(messages("tai.estimatedPay.whyLower.title")) {
+                Html(messages("tai.estimatedPay.whyLower.message",Dates.formatDate(incomeStartDate),
+                    Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear),
+                    Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear),
+                    MoneyPounds(annualAmount,0).quantity))
             }
         }
+
     </div>
 
     <div class="margin-bottom-large">
         <h2>@messages("tai.estimatedPay.yourTaxablePay")</h2>
-        <p class="bold-large margin-bottom-medium" id="amountPayTaxOn">£@MoneyPounds(payTaxOn.getOrElse(0),0).quantity</p>
+        <p class="bold-large margin-bottom-medium" id="amountPayTaxOn">£@MoneyPounds(viewModel.netAnnualPay.getOrElse(0),0).quantity</p>
         <p>@messages("tai.estimatedPay.yourTaxablePay.text")</p>
 
-        @if(same){
+        @if(viewModel.isGrossPayEqualsNetPay){
             @includes.details_summary(messages("tai.estimatedPay.whySame.title")){
                 @messages("tai.estimatedPay.whySame.text")
             }
@@ -96,8 +93,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
             id=Some("confirmAndSend")
         )
 
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.updateIncomeId).url))
     </div>
-
 
 }

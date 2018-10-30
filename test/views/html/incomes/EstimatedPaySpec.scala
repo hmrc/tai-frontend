@@ -22,6 +22,8 @@ import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
+import uk.gov.hmrc.time.TaxYearResolver
 
 class EstimatedPaySpec extends TaiViewSpec with MockitoSugar with ViewModelHelper {
 
@@ -53,12 +55,10 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar with ViewModelHelpe
     }
 
     "contain summary with text and a hidden text" when {
-      "a calculated start date and annual amount is provided" in {
-        val annualAmount = 10000
-        val startDate = new LocalDate()
+      "the gross pay is apportioned" in {
+        val employmentStartDate = TaxYearResolver.startOfCurrentTaxYear.plusMonths(2)
 
-        val detailedSummaryView = views.html.incomes.estimatedPay(None,None,id,false,Some(annualAmount),
-          Some(startDate),employerName,false)
+        val detailedSummaryView = views.html.incomes.estimatedPay(createViewModel(Some(employmentStartDate)))
 
         doc(detailedSummaryView) must haveSummaryWithText(messages("tai.estimatedPay.whyLower.title"))
 
@@ -70,8 +70,7 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar with ViewModelHelpe
         val netAnnualPay = 20000
         val grossEqualsNet = true
 
-        val grossEqualsNetView = views.html.incomes.estimatedPay(Some(grossAnnualPay),Some(netAnnualPay),
-          id,false,None, None,employerName,grossEqualsNet)
+        val grossEqualsNetView = views.html.incomes.estimatedPay(createViewModel())
 
         doc(grossEqualsNetView) must haveSummaryWithText(messages("tai.estimatedPay.whySame.title"))
 
@@ -89,5 +88,12 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar with ViewModelHelpe
     }
   }
 
-  override def view: Html = views.html.incomes.estimatedPay(None,None,id,false,None,None,employerName,false)
+  override def view: Html = views.html.incomes.estimatedPay(createViewModel())
+
+  def createViewModel(employmentStartDate:Option[LocalDate] = None) = {
+
+    val grossAnnualPay = Some(BigDecimal(20000))
+    val netAnnualPay = Some(BigDecimal(20000))
+    EstimatedPayViewModel(grossAnnualPay, netAnnualPay, id, false, Some(20000), employmentStartDate, employerName)
+  }
 }
