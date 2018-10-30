@@ -752,7 +752,7 @@ tai.incomes.updated.check.text=Gallwch weld eich diweddariad drwy
 tai.incomes.updated.check.link=fwrw golwg ar eich manylion cyflogaeth.
 tai.incomes.updated.check.title=Mae’ch incwm trethadwy oddi wrth {0} wedi’i ddiweddaru
 tai.incomes.updated.pension.check.text=Gallwch weld eich diweddariad drwy
-tai.incomes.updated.pension.check.link=TODO: viewing your pension details.
+tai.incomes.updated.pension.check.link=fwrw golwg ar eich manylion cyflogaeth
 tai.incomes.updated.pension.seeChanges.text=Mae’n bosibl y bydd y cyfrifiad hwn yn newid pan fyddwn yn cael eich datganiad pensiwn nesaf oddi wrth {0}
 tai.incomes.workNumber=Rhif y cyflogai:
 

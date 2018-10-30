@@ -266,11 +266,11 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey).flatMap(cache => {
-            val employerName :: newPay :: Nil = cache.toList
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey).flatMap(cache => {
+            val employerName :: newPay :: employerId :: Nil = cache.toList
 
             taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) map {
-              case TaiSuccessResponse => Ok(views.html.incomes.editSuccess(employerName))
+              case TaiSuccessResponse => Ok(views.html.incomes.editSuccess(employerName, employerId.toInt))
               case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
             }
           })

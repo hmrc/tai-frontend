@@ -933,11 +933,12 @@ class IncomeUpdateCalculatorControllerSpec
       val employerName = "name"
       val payToDate = 123
       val newAmount = 123
+      val employerId = "1"
 
       when(
         testController.journeyCacheService.mandatoryValues(any())(any())
       ).thenReturn(
-        Future.successful(Seq(employerName, newAmount.toString))
+        Future.successful(Seq(employerName, newAmount.toString, employerId))
       )
 
       when(
