@@ -45,25 +45,15 @@ trait ViewModelHelper {
   }
 
   def currentTaxYearRange(implicit messages: Messages): String = {
-    messages("tai.taxYear",
-      Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear),
-      Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))
+    TaxYearRangeUtil.currentTaxYearRange
   }
 
   def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String = {
-    messages("tai.taxYear",
-      htmlNonBroken( Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear) ),
-      htmlNonBroken( Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear) ))
+    TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak
   }
 
   def dynamicDateRangeHtmlNonBreak(from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {
-    if(from isAfter to) {
-      throw new IllegalArgumentException(s"From date:$from cannot be after To date:$to")
-    } else {
-        messages("tai.taxYear",
-          htmlNonBroken(Dates.formatDate(from)),
-          htmlNonBroken(Dates.formatDate(to)))
-    }
+    TaxYearRangeUtil.dynamicDateRangeHtmlNonBreak(from, to)
   }
 
   def htmlNonBroken(string: String) = HtmlFormatter.htmlNonBroken(string)

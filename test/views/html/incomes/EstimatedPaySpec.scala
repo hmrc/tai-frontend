@@ -20,12 +20,12 @@ import org.joda.time.LocalDate
 import org.scalatest.mock.MockitoSugar
 import play.api.mvc.Call
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
-class EstimatedPaySpec extends TaiViewSpec with MockitoSugar with ViewModelHelper {
+class EstimatedPaySpec extends TaiViewSpec with MockitoSugar{
 
   val id = 1
   val employerName = "Employer"
@@ -35,8 +35,8 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar with ViewModelHelpe
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     behave like pageWithCombinedHeader(
       messages("tai.estimatedPay.preHeading", employerName),
-      messages("tai.estimatedPay.title", currentTaxYearRangeHtmlNonBreak))
-    behave like pageWithTitle(messages("tai.estimatedPay.title", currentTaxYearRangeHtmlNonBreak))
+      messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
+    behave like pageWithTitle(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
 
     "display summary sub-title paragraph" in {
       doc must haveParagraphWithText(messages("tai.estimatedPay.weHaveCalculated"))
