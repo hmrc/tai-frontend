@@ -16,5 +16,53 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean, isCyPlusOneEnabled: Boolean, hasTaxCodeChanged: Boolean =false)
+import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
+import uk.gov.hmrc.tai.util.GoogleAnalyticsConstants
+
+import scala.collection.immutable.ListMap
+
+case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean,
+                                      isCyPlusOneEnabled: Boolean,
+                                      hasTaxCodeChanged: Boolean = false,
+                                      taxCodeMismatch: Option[TaxCodeMismatch] = None) {
+
+  def showTaxCodeChangeTile(): Boolean = {
+    (hasTaxCodeChanged, taxCodeMismatch) match {
+      case (true, Some(TaxCodeMismatch(false, _, _))) => true
+      case _ => false
+    }
+  }
+
+  def gaDimensions(): Map[String, String] = {
+
+    val enabledMap = taxCodeChangeDimensions ++ ListMap(
+      GoogleAnalyticsConstants.taiLandingPageCYKey -> "true",
+      GoogleAnalyticsConstants.taiLandingPagePYKey -> "true",
+      GoogleAnalyticsConstants.taiLandingPageCY1Key -> isCyPlusOneEnabled.toString
+    )
+
+    Map(GoogleAnalyticsConstants.taiLandingPageInformation -> formatMapForGA(enabledMap))
+  }
+
+  private def taxCodeChangeDimensions: ListMap[String, String] = {
+    (hasTaxCodeChanged, taxCodeMismatch) match {
+      case (_, Some(mismatch)) if mismatch.mismatch => {
+        ListMap(
+          GoogleAnalyticsConstants.taiLandingPageTCCKey -> GoogleAnalyticsConstants.taiLandingPageMismatchValue,
+          GoogleAnalyticsConstants.taiLandingPageConfirmedKey -> formatSeqToString(mismatch.confirmedTaxCodes),
+          GoogleAnalyticsConstants.taiLandingPageUnconfirmedKey -> formatSeqToString(mismatch.unconfirmedTaxCodes)
+        )
+      }
+      case _ => ListMap(GoogleAnalyticsConstants.taiLandingPageTCCKey -> hasTaxCodeChanged.toString)
+    }
+  }
+
+  private def formatMapForGA(map: Map[String, String]): String = {
+    map.mkString(";").replace(" -> ", "=")
+  }
+
+  private def formatSeqToString(seq: Seq[String]): String = {
+    seq.mkString("[", ",", "]")
+  }
+}
 

@@ -22,7 +22,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector.baseUrl
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.TaxCodeChange
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeMismatch}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -33,10 +33,12 @@ trait TaxCodeChangeConnector {
 
   def httpHandler: HttpHandler
 
-  def taxCodeChangeUrl(nino: String, year: TaxYear = TaxYear()): String = s"$serviceUrl/tai/$nino/tax-account/tax-code-change/${year.year}"
+  def baseTaxAccountUrl(nino: String) = s"$serviceUrl/tai/$nino/tax-account/"
+
+  def taxCodeChangeUrl(nino: String, year: Int): String = baseTaxAccountUrl(nino) + s"tax-code-change/${year}"
 
   def taxCodeChange(nino: Nino, year: TaxYear = TaxYear())(implicit hc: HeaderCarrier): Future[TaiResponse] = {
-    httpHandler.getFromApi(taxCodeChangeUrl(nino.nino, year)) map (
+    httpHandler.getFromApi(taxCodeChangeUrl(nino.nino, year.year)) map (
       json => {
         TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeChange])
       }
@@ -47,7 +49,7 @@ trait TaxCodeChangeConnector {
     }
   }
 
-  def hasTaxCodeChangedUrl(nino: String): String = s"$serviceUrl/tai/$nino/tax-account/tax-code-change/exists"
+  def hasTaxCodeChangedUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-change/exists"
 
   def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     httpHandler.getFromApi(hasTaxCodeChangedUrl(nino.nino)) map (
@@ -59,6 +61,17 @@ trait TaxCodeChangeConnector {
     }
   }
 
+  def taxCodeMismatchUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-mismatch"
+
+  def taxCodeMismatch(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+    httpHandler.getFromApi(taxCodeMismatchUrl(nino.nino)) map (
+      json => TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeMismatch])
+      ) recover {
+      case e: Exception =>
+        Logger.warn(s"Couldn't retrieve tax code mismatch for $nino with exception:${e.getMessage}")
+        TaiTaxAccountFailureResponse(e.getMessage)
+    }
+  }
 }
 
 object TaxCodeChangeConnector extends TaxCodeChangeConnector {
