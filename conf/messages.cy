@@ -741,7 +741,7 @@ tai.incomes.jobTitle=Teitl y swydd:
 tai.incomes.noneEditable.link.text=cysylltwch â''ch swyddfa DWP
 tai.incomes.noneEditable.link.url=https://www.gov.uk/government/organisations/department-for-work-pensions.cy
 tai.incomes.noneEditable.text=Ni ellir diweddaru''r buddiannau a geir gan yr Adran Gwaith a Phensiynau (DWP). Os ydynt yn anghywir, dylech
-tai.incomes.seeChanges.text=Mae’n bosibl y bydd y cyfrifiad hwn yn newid pan fyddwn yn cael eich diweddariad nesaf oddi wrth {0}
+tai.incomes.seeChanges.text=Mae’n bosibl y bydd y cyfrifiad hwn yn newid pan fyddwn yn cael eich diweddariad nesaf oddi wrth {0}.
 tai.incomes.select.title=Dewiswch incwm i''w ddiweddaru
 tai.incomes.startDate=Dyddiad cychwyn:
 tai.incomes.status-1=(Cyflogwr
@@ -753,7 +753,7 @@ tai.incomes.updated.check.link=fwrw golwg ar eich manylion cyflogaeth.
 tai.incomes.updated.check.title=Mae’ch incwm trethadwy oddi wrth {0} wedi’i ddiweddaru
 tai.incomes.updated.pension.check.text=Gallwch weld eich diweddariad drwy
 tai.incomes.updated.pension.check.link=fwrw golwg ar eich manylion cyflogaeth
-tai.incomes.updated.pension.seeChanges.text=Mae’n bosibl y bydd y cyfrifiad hwn yn newid pan fyddwn yn cael eich datganiad pensiwn nesaf oddi wrth {0}
+tai.incomes.updated.pension.seeChanges.text=Mae’n bosibl y bydd y cyfrifiad hwn yn newid pan fyddwn yn cael eich datganiad pensiwn nesaf oddi wrth {0}.
 tai.incomes.workNumber=Rhif y cyflogai:
 
 tai.irregular.secondaryHeading=Nodwch eich amcangyfrif eich hun ar gyfer  {0}
