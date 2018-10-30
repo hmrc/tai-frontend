@@ -27,10 +27,21 @@
 
 @gaEventActionString = @{"Your PAYE Income Tax overview"}
 
+@optimizelyAudience = @{
+  if (model.showTaxCodeChangeTile()) {
+    Some("TaxCodeChangeUser")
+  } else {
+    None
+  }
+}
+
 @main(
     title = Messages("your.paye.income.tax.overview"),
     user = Some(user),
-    gaCustomTitle = None) {
+    gaCustomTitle = None,
+    gaDimensions = Some(model.gaDimensions),
+    optimizelyAudience = optimizelyAudience
+) {
 
     <header class="page-header">
         <h1 class="heading-xlarge" id="whatDoYouWantToDoTitle">@Messages("your.paye.income.tax.overview")</h1>
@@ -48,7 +59,7 @@
                 }
 
                 <div class="flex-container grid-row">
-                    @if(model.hasTaxCodeChanged){
+                    @if(model.showTaxCodeChangeTile()){
                       @card(
                         id = "hasTaxCodeChanged",
                         heading = Messages("check.tax.hasChanged.header"),

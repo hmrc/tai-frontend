@@ -181,7 +181,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.body().toString must include(Messages("error.tai.updateDataEmployment.enterRealNumber"))
+        doc.body().toString must include(Messages("error.invalid.monetaryAmount.format.invalid"))
 
       }
 

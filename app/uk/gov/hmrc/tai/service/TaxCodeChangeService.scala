@@ -16,15 +16,14 @@
 
 package uk.gov.hmrc.tai.service
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.model.domain.{HasTaxCodeChanged, TaxCodeChange, TaxCodeMismatch}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait TaxCodeChangeService {
@@ -37,17 +36,41 @@ trait TaxCodeChangeService {
       case _ => throw new RuntimeException("Could not fetch tax code change")
     }
   }
-  def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[Boolean] = {
+
+  def hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[HasTaxCodeChanged] = {
+    val hasTaxCodeChangedFuture: Future[Boolean] = _hasTaxCodeChanged(nino)
+    val taxCodeMismatchFuture: Future[TaxCodeMismatch] = taxCodeMismatch(nino)
+
+    for {
+      hasTaxCodeChanged <- hasTaxCodeChangedFuture
+      taxCodeMismatch <- taxCodeMismatchFuture
+    } yield {
+      (hasTaxCodeChanged, taxCodeMismatch) match {
+        case(_: Boolean, _: TaxCodeMismatch) => HasTaxCodeChanged(hasTaxCodeChanged, Some(taxCodeMismatch))
+        case _ => throw new RuntimeException("Could not fetch has tax code changed")
+      }
+    }
+  }
+
+  def latestTaxCodeChangeDate(nino: Nino)(implicit hc: HeaderCarrier): Future[LocalDate] = {
+    taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate)
+  }
+
+  private def taxCodeMismatch(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeMismatch] = {
+    taxCodeChangeConnector.taxCodeMismatch(nino) map {
+      case TaiSuccessResponseWithPayload(taxCodeMismatch: TaxCodeMismatch) => taxCodeMismatch
+      case _ => throw new RuntimeException("Could not fetch tax code mismatch")
+    }
+  }
+
+  private def _hasTaxCodeChanged(nino: Nino)(implicit hc: HeaderCarrier): Future[Boolean] = {
     taxCodeChangeConnector.hasTaxCodeChanged(nino) map {
       case TaiSuccessResponseWithPayload(hasTaxCodeChanged: Boolean) => hasTaxCodeChanged
       case _ => throw new RuntimeException("Could not fetch tax code change")
     }
   }
-  def latestTaxCodeChangeDate(nino: Nino)(implicit hc: HeaderCarrier): Future[LocalDate] = {
-    taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate)
-  }
-
 }
+
 object TaxCodeChangeService extends TaxCodeChangeService {
   override val taxCodeChangeConnector: TaxCodeChangeConnector = TaxCodeChangeConnector
 }

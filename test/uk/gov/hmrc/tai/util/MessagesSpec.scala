@@ -58,7 +58,7 @@ class MessagesSpec extends UnitSpec with WithFakeApplication {
   "All message files" should {
     "have the same set of keys" in {
       withClue(mismatchingKeys(defaultMessages.keySet, welshMessages.keySet)) {
-        welshMessages.keySet shouldBe defaultMessages.keySet
+        assert(welshMessages.keySet equals defaultMessages.keySet)
       }
     }
     "not have the same messages" in {

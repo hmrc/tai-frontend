@@ -1,0 +1,87 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
+@import includes.ptaHeader
+@import includes.forms.input
+@import includes.forms.submit
+
+@(incomeUpdateForm: Form[uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm],
+  viewModel: EditIncomeIrregularHoursViewModel)(
+    implicit request: Request[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@header = @{
+    ptaHeader(
+        displayBackLink = true,
+        backLinkGaEventAction = None,
+        mainHeadingText = viewModel.heading,
+        preHeadingText = viewModel.preHeading,
+        headerWidthClasses = Some("column-full"),
+        formForErrorSummary=Some(incomeUpdateForm)
+    )
+}
+
+@main(
+    title = messages("tai.irregular.mainHeadingText"),
+    pageHeader = Some(header),
+    articleClasses = Some(""),
+    gaCustomTitle = None
+){
+    <p>@messages("tai.irregular.introduction")</p>
+
+
+    <h2>@messages("tai.irregular.secondaryHeading", viewModel.employerName)</h2>
+
+    <p>@messages("tai.irregular.estimateAnnualAverage")</p>
+    <p>@messages("tai.irregular.instruction.wholePounds")</p>
+
+    @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleIncomeIrregularHours(viewModel.employmentId)) {
+        <div class="form-field-group @if(incomeUpdateForm.hasErrors) {form-group-error}">
+            @incomeUpdateForm.errors(incomeUpdateForm("income").name).map{ error =>
+            <span class="error-notification error-message">@messages(error.message)</span>
+            }
+
+            <div class="column-one-half soft--left">
+                <p class="bold-small">@messages("tai.irregular.currentAmount")</p>
+                <p>@viewModel.currentAmount</p>
+            </div>
+
+            <div class="column-one-half">
+                @input(
+                    field = incomeUpdateForm("income"),
+                    labelText = messages("tai.irregular.newAmount"),
+                    bold = true,
+                    classes = Seq("edit-income__input"),
+                    hintText = "",
+                    isCurrency = true,
+                    fieldErrorsEnabled=false
+                )
+            </div>
+        </div>
+
+        <div class=" form-group">
+            @submit(Some(messages("tai.submit")))
+        </div>
+
+    }
+
+    <p><a href="@routes.IncomeSourceSummaryController.onPageLoad(viewModel.employmentId)">@messages("tai.cancel")</a></p>
+}
+

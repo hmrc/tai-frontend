@@ -18,10 +18,23 @@ package builders
 
 import java.util.UUID
 
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.SessionKeys
 
 object RequestBuilder {
+
+  private val HTTP_VERBS = List("GET", "POST", "PUT", "DELETE")
+
+  def buildFakeRequestWithOnlySession(method: String) = {
+    require(HTTP_VERBS contains method)
+
+    FakeRequest(method = method, path = "").withSession(
+      SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+      SessionKeys.authProvider -> "IDA",
+      SessionKeys.userId -> s"/path/to/authority"
+    )
+  }
 
   def buildFakeRequestWithAuth(method: String, headers: Map[String, String]) =
     FakeRequest(method = method, path = "").withFormUrlEncodedBody(
