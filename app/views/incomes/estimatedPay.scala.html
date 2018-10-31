@@ -95,7 +95,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             id=Some("confirmAndSend")
         )
 
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.updateIncomeId).url))
+        @cancelLink(url = Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.updateIncomeId).url),
+                    linkText = Some(messages("tai.cancel.noSave")))
     </div>
 
 }
