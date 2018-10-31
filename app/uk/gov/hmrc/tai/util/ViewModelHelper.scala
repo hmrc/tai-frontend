@@ -30,11 +30,10 @@ import scala.util.Try
 trait ViewModelHelper {
 
   def withPoundPrefixAndSign(moneyPounds: MoneyPounds): String = {
-    val sign = if (moneyPounds.isNegative) encodedMinusSign else ""
-      s"${sign}£${moneyPounds.quantity}"
+   MonetaryUtil.withPoundPrefixAndSign(moneyPounds)
   }
 
-  def withPoundPrefix(moneyPounds: MoneyPounds): String = s"£${moneyPounds.quantity}"
+  def withPoundPrefix(moneyPounds: MoneyPounds): String = MonetaryUtil.withPoundPrefix(moneyPounds)
 
   def currentTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
     htmlNonBroken( Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear) )
@@ -45,25 +44,15 @@ trait ViewModelHelper {
   }
 
   def currentTaxYearRange(implicit messages: Messages): String = {
-    messages("tai.taxYear",
-      Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear),
-      Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))
+    TaxYearRangeUtil.currentTaxYearRange
   }
 
   def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String = {
-    messages("tai.taxYear",
-      htmlNonBroken( Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear) ),
-      htmlNonBroken( Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear) ))
+    TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak
   }
 
   def dynamicDateRangeHtmlNonBreak(from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {
-    if(from isAfter to) {
-      throw new IllegalArgumentException(s"From date:$from cannot be after To date:$to")
-    } else {
-        messages("tai.taxYear",
-          htmlNonBroken(Dates.formatDate(from)),
-          htmlNonBroken(Dates.formatDate(to)))
-    }
+    TaxYearRangeUtil.dynamicDateRangeHtmlNonBreak(from, to)
   }
 
   def htmlNonBroken(string: String) = HtmlFormatter.htmlNonBroken(string)
