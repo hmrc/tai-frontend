@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.util
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.time.TaxYearResolver
 
 object TaxYearRangeUtil {
@@ -47,5 +48,12 @@ object TaxYearRangeUtil {
         HtmlFormatter.htmlNonBroken(Dates.formatDate(from)),
         HtmlFormatter.htmlNonBroken(Dates.formatDate(to)))
     }
+  }
+
+  def taxYearYearRange(year: TaxYear = TaxYear())(implicit messages: Messages): String = {
+    val start = year.start.toString("yyyy")
+    val end = year.end.toString("yyyy")
+
+    messages("tai.taxYear", start, end)
   }
 }
