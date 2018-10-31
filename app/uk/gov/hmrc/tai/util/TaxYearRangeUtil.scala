@@ -29,6 +29,12 @@ object TaxYearRangeUtil {
       Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))
   }
 
+  def currentTaxYearRangeSingleLine(implicit messages: Messages): String = {
+    HtmlFormatter.htmlNonBroken(messages("tai.taxYear",
+      Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear),
+      Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)))
+  }
+
   def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String = {
     messages("tai.taxYear",
       HtmlFormatter.htmlNonBroken( Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear) ),

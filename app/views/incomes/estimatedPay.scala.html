@@ -38,14 +38,14 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     ptaHeader(
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak),
+        mainHeadingText = messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
         preHeadingText = messages("tai.estimatedPay.preHeading", viewModel.employerName),
         headerWidthClasses = Some("column-full")
     )
 }
 
 @main(
-    title = messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak),
+    title = messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
     articleClasses = Some("full-width text"),
     user = Some(user),
     pageHeader = Some(header),
