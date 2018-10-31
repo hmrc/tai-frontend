@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.Employment
+import uk.gov.hmrc.tai.model.domain.{Employment, HasTaxCodeChanged, TaxCodeMismatch}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
@@ -88,6 +88,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
+
           WhatDoYouWantToDoForm.createForm.bindFromRequest.fold(
             formWithErrors => {
               trackingService.isAnyIFormInProgress(user.getNino) flatMap { trackingResponse =>
@@ -132,9 +133,10 @@ trait WhatDoYouWantToDoController extends TaiBaseController
     }
 
     trackingService.isAnyIFormInProgress(user.getNino) flatMap { trackingResponse =>
+
       (cyPlusOneEnabled, tileViewEnabled) match {
         case (true, true) => {
-          val hasTaxCodeChanged: Future[Boolean] = taxCodeChangeService.hasTaxCodeChanged(Nino(user.getNino))
+          val hasTaxCodeChanged: Future[HasTaxCodeChanged] = taxCodeChangeService.hasTaxCodeChanged(Nino(user.getNino))
           val cy1TaxAccountSummary: Future[TaiResponse] = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear().next)
 
           for {
@@ -144,7 +146,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
             Logger.debug("[WhatDoYouWantToDoController] TaxCodeChanged: " + taxCodeChanged)
             taxAccountSummary match {
               case TaiSuccessResponseWithPayload(_) =>
-                Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, taxCodeChanged)))
+                Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, taxCodeChanged.changed, taxCodeChanged.mismatch)))
               case _ =>
                 Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, isCyPlusOneEnabled = false)))
             }
@@ -158,7 +160,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
         }
         case (false, true) =>
           taxCodeChangeService.hasTaxCodeChanged(Nino(user.getNino)).map (hasTaxCodeChanged =>
-            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, hasTaxCodeChanged)))
+            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch)))
           )
         case (false, false) =>
           Future.successful(Ok(views.html.whatDoYouWantToDo(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled))))

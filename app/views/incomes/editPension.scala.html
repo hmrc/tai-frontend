@@ -48,7 +48,7 @@ gaCustomTitle = None
 ){
 <div>
     <h2 class="heading-medium">@messages("tai.incomes.edit.incomeTax.update.heading", income("name").value.getOrElse(""))</h2>
-    <p>@messages("tai.enterWholeAndNumericalOnly")</p>
+    <p>@messages("error.invalid.monetaryAmount.format.invalid")</p>
 
     @form(action = controllers.routes.IncomeController.editPensionIncome) {
     <input type="hidden" name="pensionToDate" value="@pensionToDate">

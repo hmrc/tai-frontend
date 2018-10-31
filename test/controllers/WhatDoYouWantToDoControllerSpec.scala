@@ -44,6 +44,7 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.time.TaxYearResolver
+import utils.factories.TaxCodeMismatchFactory
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -76,7 +77,9 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "tile view is enabled and there has not been a tax code change" in {
         val testController = createSUT(isCyPlusOneEnabled = true, isTileViewEnabled = true)
 
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(false))
+        val hasTaxCodeChanged = HasTaxCodeChanged(false, Some(TaxCodeMismatchFactory.matchedTaxCode))
+
+        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(hasTaxCodeChanged))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
@@ -94,7 +97,9 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "tile view is enabled and there has been a tax code change and cyPlusOne is enabled" in {
         val testController = createSUT(isCyPlusOneEnabled = true, isTileViewEnabled = true)
 
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(true))
+        val hasTaxCodeChanged = HasTaxCodeChanged(true, Some(TaxCodeMismatchFactory.matchedTaxCode))
+
+        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(hasTaxCodeChanged))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
@@ -113,7 +118,9 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "tile view is enabled and cyPlusOne is disabled" in {
         val testController = createSUT(isCyPlusOneEnabled = false, isTileViewEnabled = true)
 
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(true))
+        val hasTaxCodeChanged = HasTaxCodeChanged(true, Some(TaxCodeMismatchFactory.matchedTaxCode))
+
+        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(hasTaxCodeChanged))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
