@@ -22,6 +22,7 @@ import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.TaiConstants.encodedMinusSign
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -48,6 +49,14 @@ trait ViewModelHelper {
     messages("tai.taxYear",
       Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear),
       Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))
+  }
+
+
+  def taxYearYearRange(year: TaxYear = TaxYear())(implicit messages: Messages): String = {
+    val start = year.start.toString("yyyy")
+    val end = year.end.toString("yyyy")
+
+    messages("tai.taxYear", start, end)
   }
 
   def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String = {

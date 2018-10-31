@@ -61,13 +61,13 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlay
     }
   }
 
-  "currentTaxYearHeaderForHtml" must {
+  "currentTaxYearHeaderHtmlNonBreak" must {
     "return the date in passed format" in {
       currentTaxYearHeaderHtmlNonBreak mustBe TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM y").replace(" ", "\u00A0")
     }
   }
 
-  "nextTaxYearHeaderForHtml" must {
+  "nextTaxYearHeaderHtmlNonBreak" must {
     "return the date in passed format" in {
       nextTaxYearHeaderHtmlNonBreak mustBe TaxYearResolver.startOfNextTaxYear.toString("d MMMM y").replace(" ", "\u00A0")
     }

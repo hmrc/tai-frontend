@@ -21,9 +21,17 @@
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.tai.model.TaxYear
+@import uk.gov.hmrc.tai.util.ViewModelHelper
 @import includes.forms.card
+@import uk.gov.hmrc.time.TaxYearResolver
 
-@(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData], model: WhatDoYouWantToDoViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData],
+  model: WhatDoYouWantToDoViewModel
+)(implicit request: Request[_],
+  messages: Messages,
+  user: controllers.auth.TaiUser,
+  templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your PAYE Income Tax overview"}
 
@@ -36,7 +44,7 @@
 }
 
 @main(
-    title = Messages("your.paye.income.tax.overview"),
+    title = messages("your.paye.income.tax.overview"),
     user = Some(user),
     gaCustomTitle = None,
     gaDimensions = Some(model.gaDimensions),
@@ -44,7 +52,7 @@
 ) {
 
     <header class="page-header">
-        <h1 class="heading-xlarge" id="whatDoYouWantToDoTitle">@Messages("your.paye.income.tax.overview")</h1>
+        <h1 class="heading-xlarge" id="whatDoYouWantToDoTitle">@messages("your.paye.income.tax.overview")</h1>
     </header>
 
     <div class="grid-row">
@@ -53,8 +61,8 @@
 
                 @if(model.isAnyIFormInProgress){
                     <div id="isAnyFormInProgressBanner" class="panel-indent panel-indent--info flush--top">
-                        <p>@Messages("tai.whatDoYouWantToDo.iformPanel.p1")</p>
-                        <p>@Messages("tai.whatDoYouWantToDo.iformPanel.p2")</p>
+                        <p>@messages("tai.whatDoYouWantToDo.iformPanel.p1")</p>
+                        <p>@messages("tai.whatDoYouWantToDo.iformPanel.p2")</p>
                     </div>
                 }
 
@@ -62,11 +70,11 @@
                     @if(model.showTaxCodeChangeTile()){
                       @card(
                         id = "hasTaxCodeChanged",
-                        heading = Messages("check.tax.hasChanged.header"),
+                        heading = messages("check.tax.hasChanged.header"),
                         cardActionUrl = Some("/check-income-tax/tax-code-change/tax-code-comparison"),
-                        cardActionText = Some(Messages("check.tax.hasChanged.action")),
+                        cardActionText = Some(messages("check.tax.hasChanged.action")),
                         gaAction = Some(gaEventActionString),
-                        gaLabel = Some(Messages("check.tax.hasChanged.action"))
+                        gaLabel = Some(messages("check.tax.hasChanged.action"))
                       )
                     }
                 </div>
@@ -75,30 +83,30 @@
                     @card(
                         url = Some("/check-income-tax/income-summary"),
                         id = "currentTaxYear",
-                        heading = Messages("current.tax.year"),
-                        bodyContent = Some(Messages("check.current.income", (TaxYearResolver.currentTaxYear-1).toString, TaxYearResolver.currentTaxYear.toString)),
+                        heading = messages("current.tax.year"),
+                        bodyContent = Some(messages("check.current.income", ViewModelHelper.taxYearYearRange())),
                         gaAction=Some(gaEventActionString),
-                        gaLabel=Some(Messages("current.tax.year"))
+                        gaLabel=Some(messages("current.tax.year"))
                     )
 
                     @if(model.isCyPlusOneEnabled) {
                         @card(
                             url = Some("/check-income-tax/income-tax-comparison"),
                             id = "nextTaxYear",
-                            heading = Messages("next.year"),
-                            bodyContent = Some(Messages("check.estimated.income")),
+                            heading = messages("next.year"),
+                            bodyContent = Some(messages("check.estimated.income")),
                             gaAction=Some(gaEventActionString),
-                            gaLabel=Some(Messages("next.year"))
+                            gaLabel=Some(messages("next.year"))
                         )
                     }
 
                     @card(
                         url = Some(s"/check-income-tax/historic-paye/${(TaxYearResolver.currentTaxYear-1).toString}"),
                         id = "earlierTaxYear",
-                        heading = Messages("earlier"),
-                        bodyContent = Some(Messages("check.tax.previous.years")),
+                        heading = messages("earlier"),
+                        bodyContent = Some(messages("check.tax.previous.years")),
                         gaAction=Some(gaEventActionString),
-                        gaLabel=Some(Messages("earlier"))
+                        gaLabel=Some(messages("earlier"))
                     )
 
                 </div>
