@@ -39,7 +39,7 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
 import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants, TaiConstants}
-import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{CheckYourAnswersViewModel, EstimatedPayViewModel}
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmIncomeIrregularHoursViewModel, EditIncomeIrregularHoursViewModel}
 
 import scala.Function.tupled
@@ -586,8 +586,11 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
 
             journeyCache(cacheMap = cache) map { _ =>
-              Ok(views.html.incomes.estimatedPay(calculatedPay.grossAnnualPay, calculatedPay.netAnnualPay, id, isBonusPayment,
-                calculatedPay.annualAmount, calculatedPay.startDate, employerName, calculatedPay.grossAnnualPay == calculatedPay.netAnnualPay))
+
+              val viewModel = EstimatedPayViewModel(calculatedPay.grossAnnualPay, calculatedPay.netAnnualPay, id, isBonusPayment,
+                                                    calculatedPay.annualAmount, calculatedPay.startDate, employerName)
+
+              Ok(views.html.incomes.estimatedPay(viewModel))
             }
 
           } else {
