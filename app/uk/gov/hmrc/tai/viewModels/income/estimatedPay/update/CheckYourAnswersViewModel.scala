@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.{MonetaryUtil, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -104,9 +104,12 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
     val zeroDecimalPlaces = 0
 
     (answer,isMonetaryValue) match {
-      case (Some(answer),true) => Some(CheckYourAnswersConfirmationLine(message,
-        withPoundPrefixAndSign(MoneyPounds(BigDecimal(answer),zeroDecimalPlaces)),
-        changeUrl))
+      case (Some(answer),true) => {
+        val wholePounds = MonetaryUtil.wholePounds(answer)
+        Some(CheckYourAnswersConfirmationLine(message,
+          withPoundPrefixAndSign(MoneyPounds(BigDecimal(wholePounds),zeroDecimalPlaces)),
+          changeUrl))
+      }
       case (Some(answer),false) => Some(CheckYourAnswersConfirmationLine(message, answer, changeUrl))
       case _ => None
     }
