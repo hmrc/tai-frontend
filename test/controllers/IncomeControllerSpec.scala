@@ -317,16 +317,6 @@ class IncomeControllerSpec extends PlaySpec
 
   "updateEstimatedIncome" must {
     "return OK" when {
-
-      def expectedSuccessPage(employerName: String, employerId: Int,
-                              fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded],
-                              testController: IncomeController): String = {
-        views.html.incomes.editSuccess(employerName, employerId)(
-          fakeRequest, messagesApi.preferred(fakeRequest), UserBuilder.apply(),
-          testController.templateRenderer, testController.partialRetriever
-        ).toString
-      }
-
       "income from employment is successfully updated" in {
         val testController = createTestIncomeController
 

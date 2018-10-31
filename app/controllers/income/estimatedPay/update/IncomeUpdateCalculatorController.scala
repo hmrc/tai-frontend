@@ -97,10 +97,12 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           case Some(employment: Employment) =>
 
             val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
+            val incomeToEditFuture = incomeService.employmentAmount(Nino(user.getNino), id)
+            val taxCodeIncomeDetailsFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
 
             for {
-              incomeToEdit: EmploymentAmount <- incomeService.employmentAmount(Nino(user.getNino), id)
-              taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
+              incomeToEdit: EmploymentAmount <- incomeToEditFuture
+              taxCodeIncomeDetails <- taxCodeIncomeDetailsFuture
               _ <- journeyCache(cacheMap = Map(
                 UpdateIncome_NameKey -> employment.name,
                 UpdateIncome_IdKey -> id.toString,
