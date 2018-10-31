@@ -30,7 +30,7 @@ object TaxYearRangeUtil {
   }
 
   def currentTaxYearRangeSingleLine(implicit messages: Messages): String = {
-    HtmlFormatter.htmlNonBroken(currentTaxYearRangeHtmlNonBreak)
+    HtmlFormatter.htmlNonBroken(currentTaxYearRange)
   }
 
   def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String = {

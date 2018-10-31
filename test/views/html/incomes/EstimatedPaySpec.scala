@@ -35,8 +35,8 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar{
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     behave like pageWithCombinedHeader(
       messages("tai.estimatedPay.preHeading", employerName),
-      messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
-    behave like pageWithTitle(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
+      messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+    behave like pageWithTitle(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
 
     "display summary sub-title paragraph" in {
       doc must haveParagraphWithText(messages("tai.estimatedPay.weHaveCalculated"))
