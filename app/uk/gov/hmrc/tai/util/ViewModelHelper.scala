@@ -22,7 +22,6 @@ import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.TaiConstants.encodedMinusSign
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.util.Try

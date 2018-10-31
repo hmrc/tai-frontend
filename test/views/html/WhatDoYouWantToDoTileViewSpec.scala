@@ -20,9 +20,9 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
-import uk.gov.hmrc.time.TaxYearResolver
 import utils.factories.TaxCodeMismatchFactory
 
 
@@ -50,7 +50,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
         cards.size mustBe 2
         cards.toString must include(Messages("current.tax.year"))
-        cards.toString must include(Messages("check.current.income", (TaxYearResolver.currentTaxYear-1).toString, TaxYearResolver.currentTaxYear.toString))
+        cards.toString must include(Messages("check.current.income", s"""${TaxYear().start.toString("yyyy")} to ${TaxYear().end.toString("yyyy")}"""))
         cards.toString mustNot include(Messages("next.year"))
         cards.toString mustNot include(Messages("check.estimated.income"))
         cards.toString must include(Messages("earlier"))
@@ -65,7 +65,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
         cards.size mustBe 3
         cards.toString must include(Messages("current.tax.year"))
-        cards.toString must include(Messages("check.current.income", (TaxYearResolver.currentTaxYear-1).toString, TaxYearResolver.currentTaxYear.toString))
+        cards.toString must include(Messages("check.current.income", s"""${TaxYear().start.toString("yyyy")} to ${TaxYear().end.toString("yyyy")}"""))
         cards.toString must include(Messages("next.year"))
         cards.toString must include(Messages("check.estimated.income"))
         cards.toString must include(Messages("earlier"))
