@@ -651,7 +651,7 @@ class IncomeUpdateCalculatorControllerSpec
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(messages("tai.irregular.mainHeadingText"))
+      doc.title() must include(messages("tai.irregular.heading"))
     }
 
     "respond with INTERNAL_SERVER_ERROR" when {
@@ -743,7 +743,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.irregular.mainHeadingText"))
+        doc.title() must include(messages("tai.irregular.heading"))
 
         doc.body().text must include(messages("tai.irregular.error.error.incorrectTaxableIncome", payToDate, payDate, employerName))
       }
@@ -781,7 +781,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.irregular.mainHeadingText"))
+        doc.title() must include(messages("tai.irregular.heading"))
 
         doc.body().text must include(messages("tai.irregular.instruction.wholePounds"))
 
@@ -818,7 +818,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.irregular.mainHeadingText"))
+        doc.title() must include(messages("tai.irregular.heading"))
         doc.body().text must include(messages("error.tai.updateDataEmployment.blankValue"))
 
       }
@@ -856,7 +856,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.irregular.mainHeadingText"))
+        doc.title() must include(messages("tai.irregular.heading"))
         doc.body().text must include(messages("error.tai.updateDataEmployment.maxLength"))
 
       }
@@ -888,7 +888,7 @@ class IncomeUpdateCalculatorControllerSpec
 
       val doc = Jsoup.parse(contentAsString(result))
 
-      doc.title() must include(messages("tai.irregular.mainHeadingText", employerName))
+      doc.title() must include(messages("tai.irregular.heading", employerName))
     }
 
     "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {

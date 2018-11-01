@@ -757,7 +757,9 @@ tai.incomes.updated.check.text=If changes are made later, for example, by your e
 tai.incomes.updated.check.title=Your taxable income from {0} has been updated
 tai.incomes.workNumber=Employee no:
 
-tai.irregular.mainHeadingText=Update your estimated taxable income for {0} with irregular working hours
+tai.irregular.heading=Update your estimated taxable income for {0} with irregular working hours
+tai.irregular.title=Update your estimated taxable income with irregular working hours
+tai.irregular.title.ga=Update your estimated taxable income with irregular working hours
 tai.irregular.introduction=We cannot calculate your annual income as you have irregular working hours.
 tai.irregular.secondaryHeading=Enter your own estimate for {0}
 tai.irregular.estimateAnnualAverage=Use your average hours to estimate an annual amount of taxable income.

@@ -30,7 +30,7 @@ class ConfirmIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
 
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink
-    behave like pageWithTitle(messages("tai.irregular.mainHeadingText", employerName))
+    behave like pageWithTitle(messages("tai.irregular.heading", employerName))
     behave like pageWithCombinedHeader(
       messages("tai.payPeriod.preHeading", employerName),
       messages("tai.irregular.confirm.mainHeading", currentTaxYearRangeHtmlNonBreak))
