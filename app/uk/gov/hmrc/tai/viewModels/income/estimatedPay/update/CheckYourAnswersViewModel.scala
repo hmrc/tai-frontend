@@ -101,12 +101,14 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
   private def createCheckYourAnswerConfirmationLine(message: String, answer: Option[String], changeUrl: String,
                                                     isMonetaryValue: Boolean = false)(implicit messages: Messages): Option[CheckYourAnswersConfirmationLine] = {
 
+    def wholePoundsOnlyFormatting(amount:String) = amount.replaceAll("£|,|\\.\\d+","")
+
     val zeroDecimalPlaces = 0
 
     (answer,isMonetaryValue) match {
       case (Some(answer),true) => {
         Some(CheckYourAnswersConfirmationLine(message,
-          withPoundPrefixAndSign(MoneyPounds(BigDecimal(answer.replaceAll(",","")),zeroDecimalPlaces)),
+          withPoundPrefixAndSign(MoneyPounds(BigDecimal(wholePoundsOnlyFormatting(answer)),zeroDecimalPlaces)),
           changeUrl))
       }
       case (Some(answer),false) => Some(CheckYourAnswersConfirmationLine(message, answer, changeUrl))
@@ -125,4 +127,5 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
 
     timePeriodMessage.toLowerCase()
   }
+
 }
