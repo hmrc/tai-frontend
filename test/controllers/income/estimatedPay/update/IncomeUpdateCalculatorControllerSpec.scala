@@ -250,7 +250,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payPeriod.title"))
+        doc.title() must include(Messages("tai.payPeriod.heading"))
       }
     }
   }
@@ -273,7 +273,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payPeriod.title"))
+        doc.title() must include(Messages("tai.payPeriod.heading"))
       }
     }
   }

@@ -835,6 +835,7 @@ tai.payPeriod.legend=Rydych yn cael eich talu
 tai.payPeriod.monthly=Misol
 tai.payPeriod.other=Diwrnodau
 tai.payPeriod.preHeading=Diweddarwch eich incwm amcangyfrifedig oddi wrth {0}
+tai.payPeriod.heading=Pa mor aml ydych yn cael eich talu?
 tai.payPeriod.title=Pa mor aml ydych yn cael eich talu?
 tai.payPeriod.weekly=Wythnosol
 tai.payRollNumber=Rhif cyflogres
