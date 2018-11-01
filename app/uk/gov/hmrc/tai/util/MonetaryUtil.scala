@@ -28,7 +28,7 @@ object MonetaryUtil {
 
   def withPoundPrefix(moneyPounds: MoneyPounds): String = s"£${moneyPounds.quantity}"
 
-  def wholePounds(amount: String) = amount.replaceAll("[^\\d.]", "")
+  def wholePoundsNumericOnly(amount: String) = amount.replaceAll("[^\\d.]", "")
 
 
 }

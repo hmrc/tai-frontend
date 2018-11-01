@@ -105,7 +105,7 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
 
     (answer,isMonetaryValue) match {
       case (Some(answer),true) => {
-        val wholePounds = MonetaryUtil.wholePounds(answer)
+        val wholePounds = MonetaryUtil.wholePoundsNumericOnly(answer)
         Some(CheckYourAnswersConfirmationLine(message,
           withPoundPrefixAndSign(MoneyPounds(BigDecimal(wholePounds),zeroDecimalPlaces)),
           changeUrl))

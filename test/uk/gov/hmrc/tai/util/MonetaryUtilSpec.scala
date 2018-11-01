@@ -57,7 +57,7 @@ class MonetaryUtilSpec extends PlaySpec {
 
   "whole pounds" must {
     "return an amount that contains only numeric characters" in {
-      MonetaryUtil.wholePounds("10,000") mustBe "10000"
+      MonetaryUtil.wholePoundsNumericOnly("10,000") mustBe "10000"
     }
   }
 }
