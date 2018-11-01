@@ -22,6 +22,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @import includes.cancelLink
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.forms.inputRadioGroupStyling
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 @gaEventActionString = @{"Payslip deductions"}
 
@@ -30,14 +31,14 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         formForErrorSummary = Some(bonusPaymentsForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.bonusPayments.title"),
-        preHeadingText = Messages("tai.bonusPayments.preHeading", employerName),
+        mainHeadingText = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak),
+        preHeadingText = messages("tai.bonusPayments.preHeading", employerName),
         headerWidthClasses = Some("column-full")
     )
 }
 
 @main(
-    title = Messages("tai.bonusPayments.title"),
+    title = messages("tai.bonusPayments.title"),
     articleClasses = Some(""),
     user = Some(user),
     pageHeader = Some(header),
@@ -49,8 +50,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         @{inputRadioGroupStyling(
             field=bonusPaymentsForm("bonusPayments"),
 
-            radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no"))),
-            legend=Messages("tai.bonusPayments.question"),
+            radioOptions=Seq(("Yes" -> messages("tai.label.yes")), ("No" -> messages("tai.label.no"))),
+            legend=messages("tai.bonusPayments.question"),
             legendHint=None,
             ('_groupDivClass, "form-group flush--bottom" ),
             ('_radioOption1WrapAttribute, "data-target=bonusPaymentsMoreThisYear"),
@@ -61,8 +62,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
         @{inputRadioGroupStyling(
             field=bonusPaymentsForm("bonusPaymentsMoreThisYear"),
-            radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no"))),
-            legend=Messages("tai.bonusPayments.moreThisYear"),
+            radioOptions=Seq(("Yes" -> messages("tai.label.yes")), ("No" -> messages("tai.label.no"))),
+            legend=messages("tai.bonusPayments.moreThisYear"),
             legendHint=None,
             ('_groupDivClass, "form-group data-moreThisYear"),
             ('_groupClass, "inline" + (if(bonusPaymentsForm.error("bonusPaymentsMoreThisYear").isEmpty) " panel panel-border-narrow" else "") + (if(!bonusPaymentSelected) " js-hidden" else "") ),
@@ -71,7 +72,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         )}
 
         <div class="section">
-            <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
+            <input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/>
 
             @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
         </div>
