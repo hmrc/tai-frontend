@@ -28,34 +28,33 @@
         formForErrorSummary = Some(workingHoursForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.workingHours.title"),
-        preHeadingText = Messages("tai.workingHours.preHeading", employerName),
+        mainHeadingText = messages("tai.workingHours.heading"),
+        preHeadingText = messages("tai.workingHours.preHeading", employerName),
         headerWidthClasses = Some("column-full")
     )
 }
 
 
 @main(
-    title = Messages("tai.workingHours.title"),
+    title = messages("tai.workingHours.title"),
     articleClasses = Some("full-width"),
     user = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName),
-    gaCustomTitle = None
+    employerName = Some(employerName)
 ){
     <div class="section flush--bottom soft--top">
         @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleWorkingHours){
                 @{inputRadioGroupStyling(
                     field=workingHoursForm("workingHours"),
-                    radioOptions=Seq(("regularHours" -> Messages("tai.workingHours.regularHours")), ("irregularHours" -> Messages("tai.workingHours.irregularHours"))),
-                    legend=Messages("tai.workingHours.legend"),
+                    radioOptions=Seq(("regularHours" -> messages("tai.workingHours.regularHours")), ("irregularHours" -> messages("tai.workingHours.irregularHours"))),
+                    legend=messages("tai.workingHours.legend"),
                     legendHint=None,
                     ('_groupDivClass, "form-group" ),
-                    ('_legend, Messages("tai.workingHours.legend") ),
+                    ('_legend, messages("tai.workingHours.legend") ),
                     ('_legendSpanClass, "visually-hidden"),
                     ('_fieldsetAttributes, "id=workingHours")
                 )}
-            <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
+            <p><input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/></p>
         }
 
         @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))

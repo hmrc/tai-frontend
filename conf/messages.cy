@@ -1240,6 +1240,7 @@ tai.workingHours.legend=Eich oriau gwaith yw
 tai.workingHours.preHeading=Diweddarwch eich incwm amcangyfrifedig oddi wrth {0}
 tai.workingHours.question=Yn gyffredinol, a yw''ch oriau gwaith ar bob slip cyflog yr un fath neu''n wahanol iawn?
 tai.workingHours.regularHours=Yn rheolaidd (yn gyffredinol, yr un peth bob wythnos)
+tai.workingHours.heading=Eich oriau gwaith
 tai.workingHours.title=Eich oriau gwaith
 tai.yourIncome.heading=Eich incwm
 tai.yourIncome.preHeading=Deall eich treth
