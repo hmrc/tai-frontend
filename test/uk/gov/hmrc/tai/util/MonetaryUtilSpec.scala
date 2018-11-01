@@ -54,5 +54,4 @@ class MonetaryUtilSpec extends PlaySpec {
       }
     }
   }
-
 }
