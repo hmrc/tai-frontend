@@ -708,6 +708,7 @@ tai.incomeTaxSummary.pension.section.heading=Eich incwm o bensiynau preifat
 tai.incomeTaxSummary.taxCode.prefix=Cod treth: {0}
 tai.incomeTaxSummary.view.income.source.details=Gweld manylion {0}
 tai.incomes.landing.Heading=Diweddarwch eich incwm trethadwy amcangyfrifedig oddi wrth {0}
+tai.incomes.landing.title=Diweddarwch eich incwm trethadwy amcangyfrifedig
 tai.incomes.landing.intro=Dylech ddiweddaru’ch incwm amcangyfrifedig os yw’ch incwm wedi newid yn ddiweddar a’ch bod o’r farn y bydd yn effeithio ar eich haen treth bresennol.
 tai.incomes.landing.employment.ended=Os nad ydych bellach yn gweithio i {0}
 tai.incomes.landing.employment.ended.link=Gallwch roi gwybod i ni pryd ddaeth eich cyflogaeth i ben.

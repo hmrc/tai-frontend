@@ -33,11 +33,10 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 }
 
 @main(
-title = messages("tai.incomes.landing.Heading", incomeName),
-user = Some(user),
-pageHeader = Some(header),
-articleClasses = None,
-gaCustomTitle = None
+    title = messages("tai.incomes.landing.title", incomeName),
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None
 ){
     <div>
         <p>@messages("tai.incomes.landing.intro")</p>
