@@ -23,19 +23,19 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @import uk.gov.hmrc.play.views.html.helpers._
 
 @pageTitle = @{bonusPeriod match {
-    case "year" => {Messages("tai.bonusPaymentsAmount.year.title")}
-    case "monthly" => {Messages("tai.bonusPaymentsAmount.month.title")}
-    case "fortnightly" => {Messages("tai.bonusPaymentsAmount.fortnightly.title")}
-    case "weekly" => {Messages("tai.bonusPaymentsAmount.week.title")}
-    case _ => {Messages("tai.bonusPaymentsAmount.period.title")}
+    case "year" => {messages("tai.bonusPaymentsAmount.year.title")}
+    case "monthly" => {messages("tai.bonusPaymentsAmount.month.title")}
+    case "fortnightly" => {messages("tai.bonusPaymentsAmount.fortnightly.title")}
+    case "weekly" => {messages("tai.bonusPaymentsAmount.week.title")}
+    case _ => {messages("tai.bonusPaymentsAmount.period.title")}
         }
     }
 @pageDesc = @{bonusPeriod match {
-        case "year" => {Messages("tai.bonusPaymentsAmount.year.description")}
-        case "monthly" => {Messages("tai.bonusPaymentsAmount.month.description")}
-        case "fortnightly" => {Messages("tai.bonusPaymentsAmount.fortnightly.description")}
-        case "weekly" => {Messages("tai.bonusPaymentsAmount.week.description")}
-        case _ => {Messages("tai.bonusPaymentsAmount.period.description")}
+        case "year" => {messages("tai.bonusPaymentsAmount.year.description")}
+        case "monthly" => {messages("tai.bonusPaymentsAmount.month.description")}
+        case "fortnightly" => {messages("tai.bonusPaymentsAmount.fortnightly.description")}
+        case "weekly" => {messages("tai.bonusPaymentsAmount.week.description")}
+        case _ => {messages("tai.bonusPaymentsAmount.period.description")}
     }
 }
 @gaEventActionString = @{"Bonus or overtime payments"}
@@ -46,14 +46,14 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = pageTitle,
-        preHeadingText = Messages("tai.bonusPaymentsAmount.preHeading", employerName),
+        preHeadingText = messages("tai.bonusPaymentsAmount.preHeading", employerName),
         headerWidthClasses = Some("column-full")
     )
 }
 
 @hint = @{
     if(bonusPeriod == "year"){
-        Messages("tai.bonusPaymentsAmount.year.message")
+        messages("tai.bonusPaymentsAmount.year.message")
     }
     else{
         ""
@@ -80,7 +80,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
                 isCurrency = true
             )
 
-            <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
+            <input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/>
 
             @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
         }
