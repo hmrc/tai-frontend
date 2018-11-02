@@ -24,22 +24,22 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     employerName = Some(employerName),
     gaCustomTitle = None
 ){
-    <div class="column-two-thirds">
-        <header class="grid-row margin-bottom-large">
-            <div class="govuk-box-highlight">
-                <h1 class="heading-large" id="currentYearTitle">@messages("tai.incomes.updated.check.title", employerName)</h1>
-            </div>
-        </header>
-
-        <div class="grid-row">
-            <p>
-                @messages("tai.incomes.updated.check.text")
-                @includes.link(
-                    copy = messages("tai.incomes.updated.check.link"),
-                    url = routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString
-                )
-            </p>
-            <p>@messages("tai.incomes.seeChanges.text", employerName)</p>
+<div class="column-two-thirds">
+    <header class="grid-row margin-bottom-large">
+        <div class="govuk-box-highlight">
+            <h1 class="heading-large" id="currentYearTitle">@messages("tai.incomes.updated.check.title", employerName)</h1>
         </div>
+    </header>
+
+    <div class="grid-row">
+        <p>
+            @messages("tai.incomes.updated.pension.check.text")
+            @includes.link(
+                copy = messages("tai.incomes.updated.pension.check.link"),
+                url = routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString
+            )
+        </p>
+        <p>@messages("tai.incomes.updated.pension.seeChanges.text", employerName)</p>
     </div>
+</div>
 }
