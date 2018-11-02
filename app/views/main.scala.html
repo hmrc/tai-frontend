@@ -24,24 +24,24 @@
 @import uk.gov.hmrc.play.language.LanguageUtils
 
 @(title: String,
-        sidebarLinks: Option[Html] = None,
-        sidebarClass: Option[String] = None,
-        articleClasses: Option[String] = Some("full-width"),
-        user: Option[controllers.auth.TaiUser] = None,
-        employerName: Option[String] = None,
-        includeGridWrapper: Boolean = false,
-        webChat: Boolean = false,
-        clickWebChat: Boolean = false,
-        gaCallsAdditionalJs: Option[Html] = None,
-        gaDimensions: Option[Map[String, String]] = None,
-        gaCustomTitle: Option[String],
-        optimizelyAudience: Option[String] = None,
-        pageHeader: Option[Html] = None)(
-            mainContent: Html)(
-                implicit request: Request[_],
-                messages: Messages,
-                templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-                partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+  sidebarLinks: Option[Html] = None,
+  sidebarClass: Option[String] = None,
+  articleClasses: Option[String] = Some("full-width"),
+  user: Option[controllers.auth.TaiUser] = None,
+  employerName: Option[String] = None,
+  includeGridWrapper: Boolean = false,
+  webChat: Boolean = false,
+  clickWebChat: Boolean = false,
+  gaCallsAdditionalJs: Option[Html] = None,
+  gaDimensions: Option[Map[String, String]] = None,
+  gaCustomTitle: Option[String] = None,
+  optimizelyAudience: Option[String] = None,
+  pageHeader: Option[Html] = None
+)(mainContent: Html
+)(implicit request: Request[_],
+  messages: Messages,
+  templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @serviceSuffix = @{
     s"- ${Messages("tai.service.navTitle")} - GOV.UK"
