@@ -954,7 +954,7 @@ class IncomeUpdateCalculatorControllerSpec
 
       val doc = Jsoup.parse(contentAsString(result))
 
-      doc.title() must include(messages("tai.incomes.updated.check.title", employerName))
+      doc.title() must include(messages("tai.incomes.updated.check.heading", employerName))
     }
   }
 

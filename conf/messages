@@ -754,7 +754,9 @@ tai.incomes.status-2=(Previous
 tai.incomes.type-0=employer)
 tai.incomes.type-1=(Pension)
 tai.incomes.updated.check.text=If changes are made later, for example, by your employer or pension provider, your calculation may change.
-tai.incomes.updated.check.title=Your taxable income from {0} has been updated
+tai.incomes.updated.check.title=Your taxable income has been updated
+tai.incomes.updated.check.title.ga=Your taxable income has been updated
+tai.incomes.updated.check.heading=Your taxable income from {0} has been updated
 tai.incomes.workNumber=Employee no:
 
 tai.irregular.heading=Update your estimated taxable income for {0} with irregular working hours

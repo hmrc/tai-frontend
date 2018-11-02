@@ -752,7 +752,8 @@ tai.incomes.status-2=(Blaenorol
 tai.incomes.type-0=presennol)
 tai.incomes.type-1=(Pensiwn)
 tai.incomes.updated.check.text=Os gwneir newidiadau nes ymlaen, er enghraifft, gan eich cyflogwr neu ddarparwr eich pensiwn, efallai y bydd eich cyfrifiad yn newid.
-tai.incomes.updated.check.title=Mae’ch incwm trethadwy oddi wrth {0} wedi’i ddiweddaru
+tai.incomes.updated.check.heading=Mae’ch incwm trethadwy oddi wrth {0} wedi’i ddiweddaru
+tai.incomes.updated.check.title=Mae’ch incwm trethadwy wedi’i ddiweddaru
 tai.incomes.workNumber=Rhif y cyflogai:
 
 tai.irregular.secondaryHeading=Nodwch eich amcangyfrif eich hun ar gyfer  {0}
