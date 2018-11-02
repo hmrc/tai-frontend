@@ -69,7 +69,7 @@ class IncomeUpdateCalculatorControllerSpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(Messages("tai.incomes.landing.Heading", employerName))
+      doc.title() must include(messages("tai.incomes.landing.title"))
     }
   }
 
@@ -135,7 +135,7 @@ class IncomeUpdateCalculatorControllerSpec
 
         result.header.status mustBe OK
         val doc = Jsoup.parse(contentAsString(Future.successful(result)))
-        doc.title() must include(Messages("tai.howToUpdate.title", "name"))
+        doc.title() must include(messages("tai.howToUpdate.title", "name"))
       }
 
       "editable income is singular" in {
@@ -149,7 +149,7 @@ class IncomeUpdateCalculatorControllerSpec
 
         result.header.status mustBe OK
         val doc = Jsoup.parse(contentAsString(Future.successful(result)))
-        doc.title() must include(Messages("tai.howToUpdate.title", "name"))
+        doc.title() must include(messages("tai.howToUpdate.title", "name"))
       }
 
       "editable income is none" in {
@@ -191,7 +191,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.howToUpdate.title", ""))
+        doc.title() must include(messages("tai.howToUpdate.title", ""))
       }
     }
   }
@@ -204,7 +204,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.workingHours.heading"))
+        doc.title() must include(messages("tai.workingHours.heading"))
       }
     }
   }
@@ -226,7 +226,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.workingHours.heading"))
+        doc.title() must include(messages("tai.workingHours.heading"))
       }
     }
 
@@ -237,7 +237,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.workingHours.heading"))
+        doc.title() must include(messages("tai.workingHours.heading"))
       }
     }
   }
@@ -250,7 +250,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payPeriod.heading"))
+        doc.title() must include(messages("tai.payPeriod.heading"))
       }
     }
   }
@@ -273,7 +273,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payPeriod.heading"))
+        doc.title() must include(messages("tai.payPeriod.heading"))
       }
     }
   }
@@ -287,7 +287,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payslip.title"))
+        doc.title() must include(messages("tai.payslip.title"))
       }
     }
   }
@@ -311,7 +311,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payslip.title"))
+        doc.title() must include(messages("tai.payslip.title"))
       }
     }
   }
@@ -325,7 +325,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.taxablePayslip.title"))
+        doc.title() must include(messages("tai.taxablePayslip.title"))
       }
     }
   }
@@ -351,7 +351,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.taxablePayslip.title"))
+        doc.title() must include(messages("tai.taxablePayslip.title"))
       }
     }
   }
@@ -364,7 +364,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payslipDeductions.title"))
+        doc.title() must include(messages("tai.payslipDeductions.title"))
       }
     }
   }
@@ -400,7 +400,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.payslipDeductions.title"))
+        doc.title() must include(messages("tai.payslipDeductions.title"))
       }
     }
   }
@@ -414,7 +414,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPayments.title"))
+        doc.title() must include(messages("tai.bonusPayments.title"))
       }
     }
   }
@@ -451,7 +451,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPayments.title"))
+        doc.title() must include(messages("tai.bonusPayments.title"))
       }
     }
   }
@@ -466,7 +466,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPaymentsAmount.year.title"))
+        doc.title() must include(messages("tai.bonusPaymentsAmount.year.title"))
       }
 
       "more this year from journey cache does not return yes" in {
@@ -477,7 +477,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPaymentsAmount.period.title"))
+        doc.title() must include(messages("tai.bonusPaymentsAmount.period.title"))
       }
     }
   }
@@ -502,7 +502,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPaymentsAmount.year.title"))
+        doc.title() must include(messages("tai.bonusPaymentsAmount.year.title"))
       }
 
       "bonus payment is none" in {
@@ -512,7 +512,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPaymentsAmount.period.title"))
+        doc.title() must include(messages("tai.bonusPaymentsAmount.period.title"))
       }
     }
   }
@@ -529,7 +529,7 @@ class IncomeUpdateCalculatorControllerSpec
       val result = testController.checkYourAnswersPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(Messages("tai.checkYourAnswers"))
+      doc.title() must include(messages("tai.checkYourAnswers"))
     }
   }
 
@@ -549,7 +549,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+        doc.title() must include(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
     }
 
@@ -569,7 +569,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.estimatedPay.error.incorrectTaxableIncome.title"))
+        doc.title() must include(messages("tai.estimatedPay.error.incorrectTaxableIncome.title"))
 
       }
     }
@@ -588,7 +588,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
       }
 
       "journey cache returns employment name, net amount with large decimal value and id" in {
@@ -602,7 +602,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
       }
 
       "journey cache does not returns net amount" in {
@@ -616,7 +616,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
       }
     }
   }
@@ -651,7 +651,7 @@ class IncomeUpdateCalculatorControllerSpec
 
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(messages("tai.irregular.heading"))
+      doc.title() must include(messages("tai.irregular.title"))
     }
 
     "respond with INTERNAL_SERVER_ERROR" when {
@@ -743,7 +743,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.irregular.heading"))
+        doc.title() must include(messages("tai.irregular.title"))
 
         doc.body().text must include(messages("tai.irregular.error.error.incorrectTaxableIncome", payToDate, payDate, employerName))
       }
@@ -781,7 +781,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.irregular.heading"))
+        doc.title() must include(messages("tai.irregular.title"))
 
         doc.body().text must include(messages("tai.irregular.instruction.wholePounds"))
 
@@ -818,7 +818,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.irregular.heading"))
+        doc.title() must include(messages("tai.irregular.title"))
         doc.body().text must include(messages("error.tai.updateDataEmployment.blankValue"))
 
       }
@@ -856,7 +856,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.irregular.heading"))
+        doc.title() must include(messages("tai.irregular.title"))
         doc.body().text must include(messages("error.tai.updateDataEmployment.maxLength"))
 
       }
@@ -888,7 +888,7 @@ class IncomeUpdateCalculatorControllerSpec
 
       val doc = Jsoup.parse(contentAsString(result))
 
-      doc.title() must include(messages("tai.irregular.heading", employerName))
+      doc.title() must include(messages("tai.irregular.title"))
     }
 
     "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
@@ -954,7 +954,7 @@ class IncomeUpdateCalculatorControllerSpec
 
       val doc = Jsoup.parse(contentAsString(result))
 
-      doc.title() must include(messages("tai.incomes.updated.check.heading", employerName))
+      doc.title() must include(messages("tai.incomes.updated.check.title"))
     }
   }
 

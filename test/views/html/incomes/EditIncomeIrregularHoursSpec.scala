@@ -34,7 +34,7 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
 
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink
-    behave like pageWithTitle(messages("tai.irregular.heading"))
+    behave like pageWithTitle(messages("tai.irregular.title"))
     behave like pageWithCombinedHeader(
       messages("tai.estimatedPay.preHeading", employerName),
       messages("tai.irregular.heading", currentTaxYearRangeHtmlNonBreak))

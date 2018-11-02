@@ -328,7 +328,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.updated.check.heading", 100))
+        doc.title() must include(Messages("tai.incomes.updated.check.title"))
       }
     }
 
@@ -349,7 +349,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.updated.check.heading", "Employer"))
+        doc.title() must include(Messages("tai.incomes.updated.check.title"))
       }
     }
 
