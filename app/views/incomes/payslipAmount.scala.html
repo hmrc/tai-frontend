@@ -29,19 +29,18 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         formForErrorSummary = Some(payslipForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.payslip.title"),
-        preHeadingText = Messages("tai.payslip.preHeading", employerName),
+        mainHeadingText = messages("tai.payslip.heading"),
+        preHeadingText = messages("tai.payslip.preHeading", employerName),
         headerWidthClasses = Some("column-full")
     )
 }
 
 @main(
-    title = Messages("tai.payslip.title"),
+    title = messages("tai.payslip.title"),
     articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName),
-    gaCustomTitle = None
+    employerName = Some(employerName)
 ){
 
         @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handlePayslipAmount){
@@ -49,11 +48,11 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
               field = payslipForm("totalSalary"),
               bold = true,
               classes = Seq("form-control-1-4"),
-              hintText = Messages("tai.payslip.payBeforeTakenOff"),
+              hintText = messages("tai.payslip.payBeforeTakenOff"),
               isCurrency = true
             )
 
-            <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
+            <input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/>
         }
 
         @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))

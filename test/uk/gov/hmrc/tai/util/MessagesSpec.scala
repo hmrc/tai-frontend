@@ -168,7 +168,8 @@ class MessagesSpec extends UnitSpec with WithFakeApplication {
     "tai.incomes.updated.check.title.ga",
     "tai.irregular.title.ga",
     "tai.payPeriod.title.ga",
-    "tai.workingHours.title.ga"
+    "tai.workingHours.title.ga",
+    "tai.payslip.title.ga"
   )
 
   private val providedKeys = commonProvidedKeys ++ frameworkProvidedKeys

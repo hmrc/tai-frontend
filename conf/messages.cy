@@ -871,6 +871,7 @@ tai.payslip.error.form.incomes.radioButton.mandatory=Rhowch gyfanswm y cyflog sy
 tai.payslip.payBeforeTakenOff=Hyn yw''ch cyflog gros cyn unrhyw ddidyniadau, ond heb gynnwys bonws neu oramser.
 tai.payslip.preHeading=Diweddarwch eich incwm amcangyfrifedig oddi wrth {0}
 tai.payslip.title=Rhowch gyfanswm y cyflog sydd ar eich slip cyflog
+tai.payslip.heading=Rhowch gyfanswm y cyflog sydd ar eich slip cyflog
 tai.payslipDeductions.dontPayTax=Nid ydych yn talu treth ar y rhain felly mae angen i ni eu dileu o gyfanswm eich cyflog.
 tai.payslipDeductions.error.form.incomes.radioButton.mandatory=Dewiswch ''Iawn'' os yw''ch slip cyflog yn dangos unrhyw ddidyniadau cyn treth ac Yswiriant Gwladol
 tai.payslipDeductions.legend=A yw''ch slip cyflog yn dangos unrhyw ddidyniadau?
