@@ -251,7 +251,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(Messages("tai.checkYourAnswers"))
+      doc.title() must include(Messages("tai.checkYourAnswers.title"))
     }
   }
 

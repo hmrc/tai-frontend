@@ -529,7 +529,7 @@ class IncomeUpdateCalculatorControllerSpec
       val result = testController.checkYourAnswersPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(messages("tai.checkYourAnswers"))
+      doc.title() must include(messages("tai.checkYourAnswers.title"))
     }
   }
 
