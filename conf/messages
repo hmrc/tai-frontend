@@ -1158,6 +1158,7 @@ tai.taxablePayslip.month=Your taxable pay this month
 tai.taxablePayslip.period=Your taxable pay this period
 tai.taxablePayslip.shownOnPayslip=This may also be shown on your payslip as "taxable income" or "gross for tax".
 tai.taxablePayslip.title=Enter the taxable pay on your payslip
+tai.taxablePayslip.heading=Enter the taxable pay on your payslip
 tai.taxablePayslip.week=Your taxable pay this week
 tai.taxablePayslip.whatIsTaxablePay.description=Taxable pay is your basic pay after deductions for things like pension payments and Gift Aid, but before tax is taken off.
 tai.taxablePayslip.whatIsTaxablePay.title=What is taxable pay?

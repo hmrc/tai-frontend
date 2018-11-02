@@ -1152,6 +1152,7 @@ tai.taxablePayslip.month=Eich cyflog trethadwy y mis hwn
 tai.taxablePayslip.period=Eich cyflog trethadwy yn y cyfnod hwn
 tai.taxablePayslip.shownOnPayslip=Gall hwn hefyd gael ei ddangos ar eich slip cyflog fel "incwm trethadwy" neu "gros ar gyfer treth".
 tai.taxablePayslip.title=Rhowch y cyflog trethadwy sydd ar eich slip cyflog
+tai.taxablePayslip.heading=Rhowch y cyflog trethadwy sydd ar eich slip cyflog
 tai.taxablePayslip.week=Eich cyflog trethadwy yr wythnos hon
 tai.taxablePayslip.whatIsTaxablePay.description=Cyflog trethadwy yw''ch cyflog sylfaenol ar ôl didyniadau ar gyfer pethau fel taliadau pensiwn a Rhodd Cymorth, ond cyn i dreth gael ei didynnu.
 tai.taxablePayslip.whatIsTaxablePay.title=Beth yw cyflog trethadwy?
