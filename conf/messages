@@ -885,6 +885,7 @@ tai.payslipDeductions.no=No
 tai.payslipDeductions.preHeading=Update your estimated income from {0}
 tai.payslipDeductions.tellUs=Tell us if you have any deductions such as payments for company pension, Gift Aid or childcare vouchers.
 tai.payslipDeductions.title=Does your payslip show deductions before tax and National Insurance?
+tai.payslipDeductions.heading=Does your payslip show deductions before tax and National Insurance?
 tai.payslipDeductions.yes=Yes
 tai.pension.income.details.mainHeading.gaTitle=Your pension for {0} to {1}
 tai.pension.income.details.mainHeading=Your pension from {0} {1} to {2}

@@ -878,6 +878,7 @@ tai.payslipDeductions.legend=A yw''ch slip cyflog yn dangos unrhyw ddidyniadau?
 tai.payslipDeductions.no=Na
 tai.payslipDeductions.preHeading=Diweddarwch eich incwm amcangyfrifedig oddi wrth {0}
 tai.payslipDeductions.title=A yw’ch slip cyflog yn dangos didyniadau cyn treth ac Yswiriant Gwladol?
+tai.payslipDeductions.heading=A yw’ch slip cyflog yn dangos didyniadau cyn treth ac Yswiriant Gwladol?
 tai.payslipDeductions.tellUs=Rhowch wybod i ni os oes gennych unrhyw ddidyniadau, megis taliadau ar gyfer pensiwn cwmni, Rhodd Cymorth neu dalebau gofal plant.
 tai.payslipDeductions.yes=Iawn
 tai.pension.income.details.mainHeading.gaTitle=Eich pensiwn ar gyfer {0} i {1}
