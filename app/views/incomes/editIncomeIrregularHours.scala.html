@@ -16,7 +16,7 @@
 
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
-@import includes.updateValue
+@import includes.compareValueInput
 @import includes.ptaHeader
 @import includes.forms.input
 @import includes.forms.submit
@@ -59,7 +59,7 @@
                 <span class="error-notification error-message">@messages(error.message)</span>
             }
 
-            @updateValue(
+            @compareValueInput(
                 previousLabel = messages("tai.incomes.amount.current"),
                 newLabel = messages("tai.incomes.amount.new"),
                 previousFieldName = "oldAmount",

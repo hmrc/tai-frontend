@@ -19,7 +19,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.urls.Link
-@import includes.{cancelLink, ptaHeader, updateValue}
+@import includes.{cancelLink, ptaHeader, compareValueInput}
 @import includes.forms.input
 @import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
@@ -58,7 +58,7 @@ gaCustomTitle = None
             <span class="error-notification validation-error__inline-error">@messages(error.message)</span>
         }
 
-        @updateValue(
+        @compareValueInput(
             previousLabel = messages("tai.incomes.amount.current"),
             newLabel = messages("tai.incomes.amount.new"),
             previousFieldName = income("oldAmount").name,
