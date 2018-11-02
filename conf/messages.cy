@@ -254,6 +254,7 @@ tai.bonusPayments.moreThisYear=A ydych yn meddwl y cewch ragor o daliadau bonws 
 tai.bonusPayments.preHeading=Diweddarwch eich incwm amcangyfrifedig oddi wrth {0}
 tai.bonusPayments.question=A yw''r slip cyflog hwn yn cynnwys taliadau bonws neu oramser?
 tai.bonusPayments.title=Taliadau bonws a thaliadau goramser y mis hwn
+tai.bonusPayments.heading=Taliadau bonws a thaliadau goramser y mis hwn
 tai.bonusPaymentsAmount.error.form.notAnAmount=Mae''n rhaid i faint o daliadau bonws neu oramser y credwch y byddwch yn eu cael ond gynnwys rhifau, arwydd punt (£) neu bwynt degol, fel £123.50, 123.50 neu 123
 tai.bonusPaymentsAmount.error.form.notAnAmountAnnual=Mae''n rhaid i faint o daliadau bonws neu oramser y credwch y byddwch yn eu cael ond gynnwys rhifau, arwydd punt (£) neu bwynt degol, fel £123.50, 123.50 neu 123
 tai.bonusPaymentsAmount.fortnightly.description=Faint o daliadau bonws neu oramser gawsoch chi y pythefnos hwn?
