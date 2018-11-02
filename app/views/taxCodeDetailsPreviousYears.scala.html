@@ -1,0 +1,83 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.tai.viewModels.TaxCodeViewModelPreviousYears
+@import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
+@import scala.collection.immutable.ListMap
+@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.urls.Link
+@import includes.ptaHeader
+
+@(taxCodeViewModel: TaxCodeViewModelPreviousYears)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@gaEventActionString = @{"Your tax codes"}
+
+@header = @{
+    ptaHeader(
+    displayBackLink = true,
+    backLinkGaEventAction = Some(gaEventActionString),
+    mainHeadingText = taxCodeViewModel.mainHeading,
+    preHeadingText = taxCodeViewModel.preHeader)
+}
+
+@main(
+    title = taxCodeViewModel.title,
+    gaCustomTitle = Some(taxCodeViewModel.title),
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = Some("full-width")){
+
+    <div class="grid-row">
+        <div class="grid grid-2-3">
+            <div class="inner-block">
+
+                <div class="section flush--bottom">
+                    <p id="ledeMessage">
+                        <span class="lede">@taxCodeViewModel.ledeMessage</span>
+                    </p>
+                </div>
+
+                @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
+
+                <section class="section" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
+
+                    <h2 id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
+
+                    <ul role="list" id="taxCodeList@{listIdx.toString}" class="tai-description-list flush" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
+
+                        @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (Stream from 1)) {
+                        <li role="listitem">
+                            <div class="bold-large" id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
+                                <span class="visuallyhidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
+                                <span aria-hidden="true">@taxCodeTerm</span>
+                            </div>
+                            <div class="fixed-small" id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
+                                <span class="visuallyhidden">@messages("tai.taxCode.definition.announce") </span>
+                                @Html(taxCodeList.descriptionItems(taxCodeTerm))
+                            </div>
+                        </li>
+                        }
+                    </ul>
+
+                </section>
+                }
+
+            </div>
+        </div>
+
+    </div>
+
+}

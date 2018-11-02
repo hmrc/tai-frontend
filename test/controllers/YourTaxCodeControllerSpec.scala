@@ -93,6 +93,53 @@ class YourTaxCodeControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
     }
   }
 
+  "prevTaxCodes" must {
+    "display tax code page" in {
+      val SUT = createSUT
+      val startOfTaxYear: String = TaxYear().prev.start.toString("d MMMM yyyy")
+      val endOfTaxYear: String = TaxYear().prev.end.toString("d MMMM yyyy")
+      val taxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L",
+        "employment", OtherBasisOfOperation, Live))
+
+      when(SUT.taxAccountService.taxCodeIncomes(any(), any())(any()))
+        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
+      when(SUT.taxAccountService.scottishBandRates(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
+
+      val startDate = TaxYearResolver.startOfCurrentTaxYear
+      val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation,"A Employer 1", false, Some("1234"), false)
+      val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+
+      val taxCodeChange = TaxCodeChange(Seq(previousTaxCodeRecord1), Seq(currentTaxCodeRecord1))
+
+      when(SUT.taxCodeChangeService.taxCodeChange(any(), any())(any()))
+        .thenReturn(Future.successful(taxCodeChange))
+
+      val result = SUT.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      val taxYearSuffix = Messages("tai.taxCode.title.pt2", startOfTaxYear, endOfTaxYear)
+      doc.title must include(s"${Messages("tai.taxCode.prev.single.code.title.pt1")} ${taxYearSuffix}")
+    }
+
+    "display error when there is TaiFailure in service" in {
+      val SUT = createSUT
+      when(SUT.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("error occurred")))
+      val result = SUT.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+
+    "display any error" in {
+      val SUT = createSUT
+      when(SUT.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.failed(new InternalError("error occurred")))
+      val result = SUT.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+  }
+
   val nino = new Generator(new Random).nextNino
 
   private def createSUT = new SUT
@@ -106,6 +153,8 @@ class YourTaxCodeControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
     override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
     override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
+
+    override val taxCodeChangeEnabled = true
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino))))
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))

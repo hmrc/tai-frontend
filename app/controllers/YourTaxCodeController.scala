@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, TaxCodeChangeService}
-import uk.gov.hmrc.tai.viewModels.TaxCodeViewModel
+import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYears}
 
 import scala.concurrent.Future
 
@@ -73,8 +73,8 @@ trait YourTaxCodeController extends TaiBaseController
                 taxCodeChange <- taxCodeChangeService.taxCodeChange(nino, year)
                 scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeChange.current.map(_.taxCode))
               } yield {
-                val taxCodeViewModel = TaxCodeViewModel(taxCodeChange.current, scottishTaxRateBands, year)
-                Ok(views.html.taxCodeDetails(taxCodeViewModel))
+                val taxCodeViewModel = TaxCodeViewModelPreviousYears(taxCodeChange.current, scottishTaxRateBands, year)
+                Ok(views.html.taxCodeDetailsPreviousYears(taxCodeViewModel))
               }
             }
           } else {
