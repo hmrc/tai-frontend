@@ -406,16 +406,14 @@ class IncomeUpdateCalculatorControllerSpec
   }
 
   "bonusPaymentsPage" must {
-    "display bonusPayments" when {
-      "journey cache returns employment name and id" in {
+    "display bonusPayments" in {
         val testController = createTestIncomeUpdateCalculatorController
-        when(testController.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayslipDeductionsKey))(any())).thenReturn(Future.successful(None))
+        when(testController.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("1","employer1")))
         val result = testController.bonusPaymentsPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPayments.title"))
-      }
+        doc.title() must include(Messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
     }
   }
 
@@ -423,9 +421,9 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect the user to bonusOvertimeAmountPage page" when {
       "user selected yes" in {
         val testController = createTestIncomeUpdateCalculatorController
-        val cacheMap = Map(UpdateIncome_BonusPaymentsKey -> "Yes", UpdateIncome_BonusPaymentsThisYearKey -> "No")
+        val cacheMap = Map(UpdateIncome_BonusPaymentsKey -> "Yes")
         when(testController.journeyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(Map("" -> "")))
-        val result = testController.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("bonusPayments" -> "Yes", "bonusPaymentsMoreThisYear" -> "No"))
+        val result = testController.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("bonusPayments" -> "Yes"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url)
       }
@@ -446,12 +444,12 @@ class IncomeUpdateCalculatorControllerSpec
     "redirect user back to how to bonusPayments page" when {
       "user input has error" in {
         val testController = createTestIncomeUpdateCalculatorController
-        when(testController.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayslipDeductionsKey))(any())).thenReturn(Future.successful(None))
+        when(testController.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("1","employer1")))
         val result = testController.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("" -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPayments.title"))
+        doc.title() must include(Messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
       }
     }
   }

@@ -156,37 +156,20 @@ object TaxablePayslipForm{
 }
 
 
-case class BonusPaymentsForm(bonusPayments: Option[String], bonusPaymentsMoreThisYear: Option[String])
+case class BonusPaymentsForm(bonusPayments: Option[String])
 
 object BonusPaymentsForm{
   implicit val formats = Json.format[BonusPaymentsForm]
 
   def createForm(bonusPayments : Option[String]= None)(implicit messages: Messages): Form[BonusPaymentsForm] = {
 
-    val bonusPaymentsValidation = Constraint[Option[String]]("Does this payslip include bonus or overtime"){
-
-      case Some(txt) => txt match {case "Yes" | "No" => Valid
-      case _ => Invalid(messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory"))
-      }
-      case _ => Invalid(messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory"))
-    }
-
-    def moreThisYearValidation(bonusPayments : Option[String]) : Constraint[Option[String]] = {
-      Constraint[Option[String]]("moreThisYear") {
-        moreThisYear => {
-          if(bonusPayments.getOrElse("") == "Yes" && !moreThisYear.isDefined) {
-            Invalid(messages("tai.bonusPayments.error.form.likely"))
-          } else {
-            Valid
-          }
-        }
-      }
+    val bonusPaymentsValidation = Constraint[Option[String]]("Does this payslip include bonus or overtime") {
+        case (Some(_)) => Valid
+        case _ => Invalid(messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory"))
     }
 
     Form[BonusPaymentsForm](
-      mapping("bonusPayments" -> optional(text).verifying(bonusPaymentsValidation),
-        "bonusPaymentsMoreThisYear" -> optional(text).verifying(moreThisYearValidation(bonusPayments))
-      )
+      mapping("bonusPayments" -> optional(text).verifying(bonusPaymentsValidation))
         (BonusPaymentsForm.apply)(BonusPaymentsForm.unapply)
     )
   }

@@ -448,13 +448,9 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     implicit person =>
       implicit request =>
         sendActingAttorneyAuditEvent("getBonusPaymentsPage")
-        for {
-          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-          paySlipDeductions <- journeyCacheService.currentValue(UpdateIncome_PayslipDeductionsKey)
-        } yield {
-          val isPaySlipDeductions = paySlipDeductions.contains("Yes")
-          Ok(views.html.incomes.bonusPayments(BonusPaymentsForm.createForm(), id, employerName, isPaySlipDeductions, false))
+        journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
+          mandatoryValues =>
+            Ok(views.html.incomes.bonusPayments(BonusPaymentsForm.createForm(), mandatoryValues(0).toInt, mandatoryValues(1)))
         }
   }
 
@@ -464,31 +460,20 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         sendActingAttorneyAuditEvent("processBonusPayments")
 
         val bonusPayments: Option[String] = request.body.asFormUrlEncoded.flatMap(m => m.get("bonusPayments").flatMap(_.headOption))
-        val bonusPaymentsSelected = bonusPayments.contains("Yes")
+
         BonusPaymentsForm.createForm(bonusPayments = bonusPayments).bindFromRequest().fold(
           formWithErrors => {
-            for {
-              id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-              employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-              paySlipDeductions <- journeyCacheService.currentValue(UpdateIncome_PayslipDeductionsKey)
-            } yield {
-              val isPaySlipDeductions = paySlipDeductions.contains("Yes")
-              BadRequest(views.html.incomes.bonusPayments(formWithErrors, id, employerName, isPaySlipDeductions, bonusPaymentsSelected))
+            journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
+              mandatoryValues =>
+                BadRequest(views.html.incomes.bonusPayments(formWithErrors, mandatoryValues(0).toInt, mandatoryValues(1)))
             }
           },
           formData => {
-
             val bonusPaymentsAnswer = formData.bonusPayments.fold(ifEmpty = Map.empty[String, String]){ bonusPayments =>
               Map(UpdateIncome_BonusPaymentsKey -> bonusPayments)
             }
 
-            val yearlyBonusPaymentsAnswer = formData.bonusPaymentsMoreThisYear.fold(ifEmpty = Map.empty[String, String]) { bonusPayments =>
-              Map(UpdateIncome_BonusPaymentsThisYearKey -> bonusPayments)
-            }
-
-            val cacheMap = bonusPaymentsAnswer ++ yearlyBonusPaymentsAnswer
-
-            journeyCache(UpdateIncome_BonusPaymentsKey, cacheMap) map { _ =>
+            journeyCache(UpdateIncome_BonusPaymentsKey, bonusPaymentsAnswer) map { _ =>
               if (formData.bonusPayments.contains("Yes")) {
                 Redirect(routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage())
               } else {

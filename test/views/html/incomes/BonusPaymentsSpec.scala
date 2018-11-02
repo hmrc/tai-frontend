@@ -38,6 +38,7 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar {
     behave like pageWithCombinedHeader(
       messages("tai.bonusPayments.preHeading", employerName),
       messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
+    behave like pageWithTitle(messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
   }
 
   lazy val field = mock[Field]

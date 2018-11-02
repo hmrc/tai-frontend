@@ -38,7 +38,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 }
 
 @main(
-    title = messages("tai.bonusPayments.title"),
+    title = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak),
     articleClasses = Some(""),
     user = Some(user),
     pageHeader = Some(header),
@@ -49,26 +49,14 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
         @{inputRadioGroupStyling(
             field=bonusPaymentsForm("bonusPayments"),
-
             radioOptions=Seq(("Yes" -> messages("tai.label.yes")), ("No" -> messages("tai.label.no"))),
             legend=messages("tai.bonusPayments.question"),
             legendHint=None,
             ('_groupDivClass, "form-group flush--bottom" ),
             ('_radioOption1WrapAttribute, "data-target=bonusPaymentsMoreThisYear"),
             ('_groupClass, "inline" ),
-            ('_legendSpanClass, "form-label-bold"),
+            ('_legendSpanClass, "visually-hidden"),
             ('_fieldsetAttributes, "id=bonusPayments" )
-        )}
-
-        @{inputRadioGroupStyling(
-            field=bonusPaymentsForm("bonusPaymentsMoreThisYear"),
-            radioOptions=Seq(("Yes" -> messages("tai.label.yes")), ("No" -> messages("tai.label.no"))),
-            legend=messages("tai.bonusPayments.moreThisYear"),
-            legendHint=None,
-            ('_groupDivClass, "form-group data-moreThisYear"),
-            ('_groupClass, "inline" + (if(bonusPaymentsForm.error("bonusPaymentsMoreThisYear").isEmpty) " panel panel-border-narrow" else "") + (if(!bonusPaymentSelected) " js-hidden" else "") ),
-            ('_legendClass, "form-label-bold section flush"),
-            ('_fieldsetAttributes, "id=bonusPaymentsMoreThisYear" )
         )}
 
         <div class="section">
