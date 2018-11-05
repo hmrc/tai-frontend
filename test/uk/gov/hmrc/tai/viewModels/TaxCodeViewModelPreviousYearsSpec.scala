@@ -54,11 +54,11 @@ class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplica
     "be able to create a tax code description table heading" when {
       "BasisOperations is OtherBasisOperation for a previous tax year" in {
         val result = previousYearTestViewModel(Seq(taxCodeRecord1))
-        result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.prev.subheading", "employer", Dates.formatDate(LocalDate.now), Dates.formatDate(LocalDate.now), "1150L")
+        result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.prev.subheading", "employer", nowDateNonBreak, nowDateNonBreak, "1150L")
       }
       "BasisOperations is Week1Month1BasisOperation for a previous tax year" in {
         val result = previousYearTestViewModel(Seq(taxCodeRecord2))
-        result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.prev.subheading", "employer2", Dates.formatDate(LocalDate.now), Dates.formatDate(LocalDate.now), "BRX")
+        result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.prev.subheading", "employer2", nowDateNonBreak, nowDateNonBreak, "BRX")
       }
     }
 
@@ -156,6 +156,8 @@ class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplica
       }
     }
   }
+
+  val nowDateNonBreak = LocalDate.now.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
 
   val prevTaxYear = uk.gov.hmrc.tai.model.TaxYear().prev
 

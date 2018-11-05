@@ -48,8 +48,8 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
         messages(
           s"tai.taxCode.prev.subheading",
           taxCodeRecord.employerName,
-          Dates.formatDate(taxCodeRecord.startDate),
-          Dates.formatDate(taxCodeRecord.endDate),
+          htmlNonBroken(Dates.formatDate(taxCodeRecord.startDate)),
+          htmlNonBroken(Dates.formatDate(taxCodeRecord.endDate)),
           taxCode
         ),
         explanation
