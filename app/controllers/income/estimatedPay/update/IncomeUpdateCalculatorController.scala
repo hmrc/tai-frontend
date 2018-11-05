@@ -31,6 +31,7 @@ import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCach
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.forms.YesNoTextEntryForm.YesValue
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{Employment, Payment, PensionIncome}
@@ -38,7 +39,7 @@ import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
-import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants, TaiConstants}
+import uk.gov.hmrc.tai.util.{FormHelper, FormValuesConstants, JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{CheckYourAnswersViewModel, EstimatedPayViewModel}
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmIncomeIrregularHoursViewModel, EditIncomeIrregularHoursViewModel}
 
@@ -51,7 +52,8 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   with Auditable
   with JourneyCacheConstants
   with EditIncomeIrregularPayConstants
-  with UpdatedEstimatedPayJourneyCache {
+  with UpdatedEstimatedPayJourneyCache
+  with FormValuesConstants{
 
   def personService: PersonService
 
@@ -450,7 +452,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         sendActingAttorneyAuditEvent("getBonusPaymentsPage")
         journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
           mandatoryValues =>
-            Ok(views.html.incomes.bonusPayments(BonusPaymentsForm.createForm(), mandatoryValues(0).toInt, mandatoryValues(1)))
+            Ok(views.html.incomes.bonusPayments(YesNoForm.form(), mandatoryValues(0).toInt, mandatoryValues(1)))
         }
   }
 
@@ -458,10 +460,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     implicit person =>
       implicit request =>
         sendActingAttorneyAuditEvent("processBonusPayments")
-
-        val bonusPayments: Option[String] = request.body.asFormUrlEncoded.flatMap(m => m.get("bonusPayments").flatMap(_.headOption))
-
-        BonusPaymentsForm.createForm(bonusPayments = bonusPayments).bindFromRequest().fold(
+        YesNoForm.form().bindFromRequest().fold(
           formWithErrors => {
             journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
               mandatoryValues =>
@@ -469,12 +468,12 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             }
           },
           formData => {
-            val bonusPaymentsAnswer = formData.bonusPayments.fold(ifEmpty = Map.empty[String, String]){ bonusPayments =>
+            val bonusPaymentsAnswer = formData.yesNoChoice.fold(ifEmpty = Map.empty[String, String]){ bonusPayments =>
               Map(UpdateIncome_BonusPaymentsKey -> bonusPayments)
             }
 
             journeyCache(UpdateIncome_BonusPaymentsKey, bonusPaymentsAnswer) map { _ =>
-              if (formData.bonusPayments.contains("Yes")) {
+              if (formData.yesNoChoice.contains(YesValue)) {
                 Redirect(routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage())
               } else {
                 Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage())

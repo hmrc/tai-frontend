@@ -16,13 +16,11 @@
 
 package views.html.incomes
 
-import org.mockito.Matchers._
-import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
-import play.api.data.{Field, Form}
+import play.api.data.Form
 import play.api.mvc.Call
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.forms.BonusPaymentsForm
+import uk.gov.hmrc.tai.forms.YesNoForm
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
@@ -30,7 +28,7 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar {
 
   lazy val Id = 1
   lazy val employerName = "Employer"
-  lazy val bonusPaymentsForm = mock[Form[BonusPaymentsForm]]
+  lazy val bonusPaymentsForm = mock[Form[YesNoForm]]
 
   "Bonus payments view" should {
     behave like pageWithBackLink
@@ -40,16 +38,6 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar {
       messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
     behave like pageWithTitle(messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
   }
-
-  lazy val field = mock[Field]
-  when(field.errors).thenReturn(Nil)
-  when(field.value).thenReturn(Some("fakeFieldValue"))
-  when(field.name).thenReturn("fakeFieldValue")
-  when(bonusPaymentsForm(any())).thenReturn(field)
-  when(bonusPaymentsForm.errors).thenReturn(Nil)
-  when(bonusPaymentsForm.errors(anyString())).thenReturn(Nil)
-  when(bonusPaymentsForm.error(any())).thenReturn(None)
-  when(bonusPaymentsForm.hasErrors).thenReturn(false)
 
   override def view: Html = views.html.incomes.bonusPayments(bonusPaymentsForm,Id, employerName, false, false)
 }
