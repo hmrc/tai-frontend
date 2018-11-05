@@ -816,6 +816,7 @@ tai.continue=Yn eich blaen
 tai.no.increasesTax=Nid oes gennych unrhyw incwm presennol.
 tai.noCYIncomeError.body.missing.employment=Mae ein cofnodion yn dangos nad oes gennych incwm trethadwy yn ystod y flwyddyn dreth hon
 tai.noCYIncomeError.body.with.employment=Mae ein cofnodion yn dangos nad oes gennych incwm trethadwy yn y flwyddyn dreth hon, oherwydd daeth eich cyflogaeth/pensiwn i ben ar {0}
+tai.noCYIncomeError.title=Eich Treth Incwm Talu Wrth Ennill
 tai.noCYIncomeError.heading=Eich Treth Incwm Talu Wrth Ennill
 tai.noCYIncomeError.missingInfo={0} os oes gennych incwm trethadwy yn ystod y flwyddyn dreth hon.
 tai.noCYIncomeError.sub-heading=Blwyddyn dreth bresennol

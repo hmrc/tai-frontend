@@ -820,6 +820,7 @@ tai.continue=Continue
 tai.no.increasesTax=You don’t have any current income.
 tai.noCYIncomeError.body.missing.employment = Our records show you have no taxable income in this tax year.
 tai.noCYIncomeError.body.with.employment = Our records show you have no taxable income in this tax year, because your employment/pension ended on {0}.
+tai.noCYIncomeError.title = Your PAYE Income Tax
 tai.noCYIncomeError.heading = Your PAYE Income Tax
 tai.noCYIncomeError.missingInfo = {0} if you do have taxable income in this tax year.
 tai.noCYIncomeError.sub-heading = Current tax year
