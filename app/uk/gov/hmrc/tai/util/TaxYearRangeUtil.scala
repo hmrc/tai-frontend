@@ -24,36 +24,67 @@ import uk.gov.hmrc.time.TaxYearResolver
 
 object TaxYearRangeUtil {
 
+  private val messageRangeKeyBetween = "tai.taxYear.between"
+  private val messageRangeKeyFromAndTo = "tai.taxYear"
+
+  def currentTaxYearRangeBetween(implicit messages: Messages): String = {
+    taxYearRange(messageRangeKeyBetween)
+  }
+
   def currentTaxYearRange(implicit messages: Messages): String = {
-    messages("tai.taxYear",
-      Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear),
-      Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))
+    taxYearRange(messageRangeKeyFromAndTo)
   }
 
   def currentTaxYearRangeSingleLine(implicit messages: Messages): String = {
     HtmlFormatter.htmlNonBroken(currentTaxYearRange)
   }
 
+  def currentTaxYearRangeSingleLineBetween(implicit messages: Messages): String = {
+    HtmlFormatter.htmlNonBroken(currentTaxYearRangeBetween)
+  }
+
   def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String = {
-    messages("tai.taxYear",
-      HtmlFormatter.htmlNonBroken( Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear) ),
-      HtmlFormatter.htmlNonBroken( Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear) ))
+    taxYearRangeHtmlNonBreak(messageRangeKeyFromAndTo)
+  }
+
+  def currentTaxYearRangeHtmlNonBreakBetween(implicit messages: Messages): String = {
+    taxYearRangeHtmlNonBreak(messageRangeKeyBetween)
   }
 
   def dynamicDateRangeHtmlNonBreak(from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {
-    if(from isAfter to) {
-      throw new IllegalArgumentException(s"From date:$from cannot be after To date:$to")
-    } else {
-      messages("tai.taxYear",
-        HtmlFormatter.htmlNonBroken(Dates.formatDate(from)),
-        HtmlFormatter.htmlNonBroken(Dates.formatDate(to)))
-    }
+    dynamicDateRange(messageRangeKeyFromAndTo, from, to)
+  }
+
+  def dynamicDateRangeHtmlNonBreakBetween(from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {
+    dynamicDateRange(messageRangeKeyBetween, from, to)
   }
 
   def taxYearYearRange(year: TaxYear = TaxYear())(implicit messages: Messages): String = {
     val start = year.start.toString("yyyy")
     val end = year.end.toString("yyyy")
 
-    messages("tai.taxYear", start, end)
+    messages(messageRangeKeyFromAndTo, start, end)
+  }
+
+  private def taxYearRange(messageKey:String)(implicit messages: Messages): String = {
+    messages(messageKey,
+      Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear),
+      Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))
+  }
+
+  private def taxYearRangeHtmlNonBreak(messageKey: String)(implicit messages: Messages): String = {
+    messages(messageKey,
+      HtmlFormatter.htmlNonBroken( Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear) ),
+      HtmlFormatter.htmlNonBroken( Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear) ))
+  }
+
+  private def dynamicDateRange(messageKey: String, from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {
+    if(from isAfter to) {
+      throw new IllegalArgumentException(s"From date:$from cannot be after To date:$to")
+    } else {
+      messages(messageKey,
+        HtmlFormatter.htmlNonBroken(Dates.formatDate(from)),
+        HtmlFormatter.htmlNonBroken(Dates.formatDate(to)))
+    }
   }
 }

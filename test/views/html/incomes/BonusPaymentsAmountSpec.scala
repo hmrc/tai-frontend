@@ -16,46 +16,27 @@
 
 package views.html.incomes
 
-import org.mockito.Matchers._
-import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
-import play.api.data.{Field, Form}
+import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
 
   val id = 1
   val employerName = "Employer"
+  val bonusPaymentsAmountForm = BonusOvertimeAmountForm.createForm()
 
-  val bonusPaymentsAmountForm = mock[Form[BonusOvertimeAmountForm]]
-
-  val field = mock[Field]
-  when(field.value).thenReturn(Some("fakeFieldValue"))
-  when(field.name).thenReturn("fakeFieldValue")
-  when(bonusPaymentsAmountForm(any())).thenReturn(field)
-  when(bonusPaymentsAmountForm.errors).thenReturn(List())
-  when(bonusPaymentsAmountForm.errors(anyString())).thenReturn(List())
-  when(bonusPaymentsAmountForm.hasErrors).thenReturn(false)
-
-
-
-  "Bonus payments amount view with monthly pay" should {
+  "Bonus payments amount view" should {
     behave like pageWithBackLink
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     behave like pageWithCombinedHeader(
       messages("tai.bonusPaymentsAmount.preHeading", employerName),
-      messages("tai.bonusPaymentsAmount.month.title"))
+      messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween))
+    behave like pageWithTitle(messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween))
   }
-
-  "Bonus payments amount view with yearly pay" should {
-
-    val testView: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm,"year",id, employerName)
-    doc(testView) must haveHeadingWithText(messages("tai.bonusPaymentsAmount.year.title"))
-  }
-
-
-
 
   override def view: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm,"monthly",id, employerName)
 }

@@ -414,7 +414,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(Messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween))
     }
   }
 
@@ -450,7 +450,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(Messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween))
       }
     }
   }

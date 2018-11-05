@@ -40,8 +40,8 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar with FormValuesCon
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(Id).url))
     behave like pageWithCombinedHeader(
       messages("tai.bonusPayments.preHeading", employerName),
-      messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
-    behave like pageWithTitle(messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
+      messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween))
+    behave like pageWithTitle(messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween))
     behave like pageWithContinueButtonForm("/check-income-tax/update-income/bonus-payments")
 
     "return no errors with valid 'yes' choice" in {
