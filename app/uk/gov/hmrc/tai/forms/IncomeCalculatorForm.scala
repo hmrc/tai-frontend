@@ -66,7 +66,8 @@ object HoursWorkedForm extends EditIncomeIrregularPayConstants {
 }
 
 case class PayPeriodForm(payPeriod: Option[String],
-                         otherInDays: Option[Int] = None)
+                         otherInDays: Option[String] = None) {
+}
 
 object PayPeriodForm{
   implicit val formats = Json.format[PayPeriodForm]
@@ -81,13 +82,16 @@ object PayPeriodForm{
       case _ => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
     }
 
-    def otherInDaysValidation(payPeriod : Option[String]) : Constraint[Option[Int]] = {
-      Constraint[Option[Int]]("days") {
-        days => {
-          if(payPeriod.getOrElse("") == "other" && days.isEmpty) {
-            Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
-          } else {
-            Valid
+    def otherInDaysValidation(payPeriod : Option[String]) : Constraint[Option[String]] = {
+      val digitsOnly = """^\d*$""".r
+
+      Constraint[Option[String]]("days") {
+        days: Option[String] => {
+          (payPeriod, days) match {
+            case (Some("other"), Some(digitsOnly())) => Valid
+            case (Some("other"), None) => Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
+            case (Some("other"), _) => Invalid(messages("tai.payPeriod.error.form.incomes.other.invalid"))
+            case _ => Valid
           }
         }
       }
@@ -96,7 +100,7 @@ object PayPeriodForm{
     Form[PayPeriodForm](
       mapping(
         "payPeriod" -> optional(text).verifying(payPeriodValidation),
-        "otherInDays" -> optional(number).verifying(otherInDaysValidation(payPeriod))
+        "otherInDays" -> optional(text).verifying(otherInDaysValidation(payPeriod))
       )(PayPeriodForm.apply)(PayPeriodForm.unapply)
     )
   }

@@ -63,13 +63,15 @@ class IncomeCalculatorFormSpec  extends PlaySpec with OneAppPerSuite with I18nSu
         )
       }
 
-      "provided with a 'other' payPeriod with invalid input for number of days" in {
-        val invalidDaysMap = Map("otherInDays" -> "Nope")
-        val payPeriodForm = PayPeriodForm.createForm(None, Some("other")).bind(invalidDaysMap)
-        payPeriodForm.errors must contain(FormError("otherInDays",
-          List(Messages("tai.payPeriod.error.form.incomes.other.invalid")))
-        )
-      }
+      Seq("Nope", "123A", "A123", "2232.00", "Ten", "3 Days").foreach(invalidInput => {
+        s"provided with a 'other' payPeriod with invalid input '$invalidInput' for number of days" in {
+          val invalidDaysMap = Map("payPeriod" -> "other", "otherInDays" -> invalidInput)
+          val payPeriodForm = PayPeriodForm.createForm(None, Some("other")).bind(invalidDaysMap)
+          payPeriodForm.errors must contain(FormError("otherInDays",
+            List(Messages("tai.payPeriod.error.form.incomes.other.invalid")))
+          )
+        }
+      })
     }
   }
 }
