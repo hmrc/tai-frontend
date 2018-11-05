@@ -22,7 +22,7 @@ import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
-import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
+import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, EditIncomePayPeriodConstants}
 
 case class HowToUpdateForm(howToUpdate: Option[String])
 
@@ -69,14 +69,14 @@ case class PayPeriodForm(payPeriod: Option[String],
                          otherInDays: Option[String] = None) {
 }
 
-object PayPeriodForm{
+object PayPeriodForm extends EditIncomePayPeriodConstants{
   implicit val formats = Json.format[PayPeriodForm]
 
   def createForm(howOftenError: Option[String], payPeriod : Option[String] = None)(implicit messages: Messages): Form[PayPeriodForm] = {
 
     val payPeriodValidation = Constraint[Option[String]]("Please select a period"){
       case Some(txt) => txt match {
-        case "other" | "monthly" | "weekly" | "fortnightly" => Valid
+        case OTHER | MONTHLY | WEEKLY | FORTNIGHTLY => Valid
         case _ => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
       }
       case _ => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
@@ -88,9 +88,9 @@ object PayPeriodForm{
       Constraint[Option[String]]("days") {
         days: Option[String] => {
           (payPeriod, days) match {
-            case (Some("other"), Some(digitsOnly())) => Valid
-            case (Some("other"), None) => Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
-            case (Some("other"), _) => Invalid(messages("tai.payPeriod.error.form.incomes.other.invalid"))
+            case (Some(OTHER), Some(digitsOnly())) => Valid
+            case (Some(OTHER), None) => Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
+            case (Some(OTHER), _) => Invalid(messages("tai.payPeriod.error.form.incomes.other.invalid"))
             case _ => Valid
           }
         }
@@ -99,8 +99,8 @@ object PayPeriodForm{
 
     Form[PayPeriodForm](
       mapping(
-        "payPeriod" -> optional(text).verifying(payPeriodValidation),
-        "otherInDays" -> optional(text).verifying(otherInDaysValidation(payPeriod))
+        PAY_PERIOD_KEY -> optional(text).verifying(payPeriodValidation),
+        OTHER_IN_DAYS_KEY -> optional(text).verifying(otherInDaysValidation(payPeriod))
       )(PayPeriodForm.apply)(PayPeriodForm.unapply)
     )
   }
