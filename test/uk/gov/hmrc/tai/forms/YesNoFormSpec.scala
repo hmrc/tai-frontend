@@ -51,5 +51,5 @@ class YesNoFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport with F
     }
   }
 
-  private val form = YesNoForm.form("select yes or no", "enter some text")
+  private val form = YesNoForm.form("select yes or no")
 }

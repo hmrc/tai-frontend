@@ -30,9 +30,7 @@ object YesNoForm extends FormValuesConstants {
     case _ => Invalid(emptySelectionMsg)
   }
 
-  def form(emptySelectionMsg: String = "",
-           emptyTextFieldMsg: String = "",
-           additionalTextConstraint: Option[Constraint[String]] = None) = Form[YesNoForm](
+  def form(emptySelectionMsg: String = "") = Form[YesNoForm](
     mapping(
       YesNoChoice -> optional(text).verifying(yesNoChoiceValidation(emptySelectionMsg))
     )(YesNoForm.apply)(YesNoForm.unapply)

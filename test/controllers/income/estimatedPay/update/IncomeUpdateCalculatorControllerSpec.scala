@@ -42,7 +42,7 @@ import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
-import uk.gov.hmrc.tai.util.{JourneyCacheConstants, TaiConstants, TaxYearRangeUtil}
+import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants, TaiConstants, TaxYearRangeUtil}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -52,7 +52,8 @@ class IncomeUpdateCalculatorControllerSpec
     with FakeTaiPlayApplication
     with MockitoSugar
     with JourneyCacheConstants
-    with EditIncomeIrregularPayConstants {
+    with EditIncomeIrregularPayConstants
+    with FormValuesConstants{
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
@@ -423,7 +424,7 @@ class IncomeUpdateCalculatorControllerSpec
         val testController = createTestIncomeUpdateCalculatorController
         val cacheMap = Map(UpdateIncome_BonusPaymentsKey -> "Yes")
         when(testController.journeyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(Map("" -> "")))
-        val result = testController.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("bonusPayments" -> "Yes"))
+        val result = testController.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(YesNoChoice -> YesValue))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url)
       }
@@ -435,7 +436,7 @@ class IncomeUpdateCalculatorControllerSpec
         when(testController.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map("" -> "")))
         when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
         when(testController.journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
-        val result = testController.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("bonusPayments" -> "No"))
+        val result = testController.handleBonusPayments()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(YesNoChoice -> NoValue))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage().url)
       }

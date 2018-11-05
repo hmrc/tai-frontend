@@ -248,7 +248,7 @@ tai.benefits.updateOrRemove.decision.heading=Do you currently get {0} benefit fr
 tai.benefits.updateOrRemove.decision.radio.no=No, I do not get this benefit any more
 tai.benefits.updateOrRemove.decision.radio.yes=Yes, I currently get this benefit
 tai.benefits.updateOrRemove.journey.preHeader=Update or remove company benefit
-tai.bonusPayments.error.form.incomes.radioButton.mandatory=Select yes if your payslip includes bonus or overtime payments
+tai.bonusPayments.error.form.incomes.radioButton.mandatory=Select yes if you will get any bonus or overtime payments between {0}
 tai.bonusPayments.error.form.likely=Select yes if you’re likely to receive any more bonus or overtime this year
 tai.bonusPayments.moreThisYear=Do you think you will receive any more bonus or overtime payments through the year?
 tai.bonusPayments.preHeading=Update your estimated income from {0}
@@ -1273,7 +1273,6 @@ your.paye.income.tax.overview=Your PAYE Income Tax overview
 your.total.income.from.employment.desc=Your total income from employment is estimated at {0} this tax year. You have a {1} for your employment income. This means the first {2} of your employment earnings are tax free.
 your.total.income.from.paye.desc=Your total income from PAYE is estimated at {0} this tax year. You have a {1} for your PAYE income. This means the first {2} of your PAYE earnings are tax free.
 your.total.income.from.private.pension.desc=Your total income from private pension is estimated at {0} this tax year. You have a {1} for your private pension income. This means the first {2} of your private pension earnings are tax free.
-
 taxCode.change.journey.preHeading= Your tax code change
 taxCode.change.whatHappensNext.paragragh1=If the information about your tax code is right, you do not need to do anything.
 taxCode.change.whatHappensNext.paragragh2=You can check {0} to see how much tax we think you will pay.
@@ -1297,8 +1296,6 @@ taxCode.change.yourTaxCodeChanged.currentTaxCodes=Current tax codes
 taxCode.change.yourTaxCodeChanged.understand=Understand what {0} means
 taxCode.change.yourTaxCodeChanged.currentTaxCodeDetails.screenReader=From {0} your tax code for {2} is {3}
 taxCode.change.yourTaxCodeChanged.previousTaxCodeDetails.screenReader=From {0} to {1} your tax code for {2} was {3}
-
-
 tai.estimatedPay.update.checkYourAnswers.paymentFrequency = How often you get paid
 tai.estimatedPay.update.checkYourAnswers.totalPay = Total pay this {0}
 tai.estimatedPay.update.checkYourAnswers.hasDeduction = Does your payslip show deductions?
