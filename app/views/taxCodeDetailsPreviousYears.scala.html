@@ -44,12 +44,6 @@
         <div class="grid grid-2-3">
             <div class="inner-block">
 
-                <div class="section flush--bottom">
-                    <p id="ledeMessage">
-                        <span class="lede">@taxCodeViewModel.ledeMessage</span>
-                    </p>
-                </div>
-
                 @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
 
                 <section class="section" aria-labelledby="taxCodeList@{listIdx.toString}Heading">

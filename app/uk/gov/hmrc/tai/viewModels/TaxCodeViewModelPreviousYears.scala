@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
@@ -36,7 +37,6 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
             year: TaxYear = TaxYear())
            (implicit messages: Messages): TaxCodeViewModelPreviousYears = {
 
-//    val previousOrCurrent = if (year <= TaxYear().prev) ".prev" else ""
     val isCurrentYear = false
     val preHeader = messages(s"tai.taxCode.prev.preHeader")
 
@@ -44,7 +44,16 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
       val taxCode = taxCodeRecord.taxCode
       val explanation = describeTaxCode(taxCode, taxCodeRecord.basisOfOperation, scottishTaxRateBands, isCurrentYear)
 
-      DescriptionListViewModel(Messages(s"tai.taxCode.prev.subheading", taxCodeRecord.employerName, taxCode), explanation)
+      DescriptionListViewModel(
+        Messages(
+          s"tai.taxCode.prev.subheading",
+          taxCodeRecord.employerName,
+          Dates.formatDate(taxCodeRecord.startDate),
+          Dates.formatDate(taxCodeRecord.endDate),
+          taxCode
+        ),
+        explanation
+      )
     }
 
     val taxCodesPrefix = if (taxCodeRecords.size > 1) {
@@ -58,8 +67,8 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
       Dates.formatDate(year.end))
 
     val TaxYearRangeHtmlNonBreak = messages("tai.taxYear",
-      htmlNonBroken(Dates.formatDate(year.start)),
-      htmlNonBroken(Dates.formatDate(year.end)))
+      htmlNonBroken(Dates.formatDate(year.start)), // what if you just use this for both??
+      htmlNonBroken(Dates.formatDate(year.end))) // also this doesn't seem to be actually doing what it looks like it might be supposed to do :(
 
     val title = s"$taxCodesPrefix $TaxYearRange"
     val mainHeading = s"$taxCodesPrefix $TaxYearRangeHtmlNonBreak"

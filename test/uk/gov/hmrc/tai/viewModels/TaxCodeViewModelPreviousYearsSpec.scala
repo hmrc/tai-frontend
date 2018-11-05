@@ -20,6 +20,7 @@ import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -53,11 +54,11 @@ class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplica
     "be able to create a tax code description table heading" when {
       "BasisOperations is OtherBasisOperation for a previous tax year" in {
         val result = previousYearTestViewModel(Seq(taxCodeRecord1))
-        result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.prev.subheading", "employer", "1150L")
+        result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.prev.subheading", "employer", Dates.formatDate(LocalDate.now), Dates.formatDate(LocalDate.now), "1150L")
       }
       "BasisOperations is Week1Month1BasisOperation for a previous tax year" in {
         val result = previousYearTestViewModel(Seq(taxCodeRecord2))
-        result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.prev.subheading", "employer2", "BRX")
+        result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.prev.subheading", "employer2", Dates.formatDate(LocalDate.now), Dates.formatDate(LocalDate.now), "BRX")
       }
     }
 
