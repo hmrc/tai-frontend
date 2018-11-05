@@ -27,24 +27,23 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @gaEventActionString = @{"Update your annual taxable pay"}
 
 @header = @{
-ptaHeader(
-formForErrorSummary = Some(income),
-displayBackLink = true,
-backLinkGaEventAction = Some(gaEventActionString),
-mainHeadingText = messages("tai.incomes.edit.heading", currentTaxYearRangeHtmlNonBreak),
-preHeadingText = messages("tai.howToUpdate.preHeading", income("name").value.getOrElse("")),
-headerWidthClasses = Some("column-full")
-)
+    ptaHeader(
+        formForErrorSummary = Some(income),
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = messages("tai.incomes.edit.heading", currentTaxYearRangeHtmlNonBreak),
+        preHeadingText = messages("tai.howToUpdate.preHeading", income("name").value.getOrElse("")),
+        headerWidthClasses = Some("column-full")
+    )
 }
 
 @main(
-title = messages("tai.incomes.edit.heading", currentTaxYearRangeHtmlNonBreak),
-user = Some(user),
-pageHeader = Some(header),
-articleClasses = None,
-employerName = income("name").value,
-webChat = webChat,
-gaCustomTitle = None
+    title = messages("tai.incomes.edit.title"),
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    employerName = income("name").value,
+    webChat = webChat
 ){
 <div>
     <h2 class="heading-medium">@messages("tai.incomes.edit.incomeTax.update.heading", income("name").value.getOrElse(""))</h2>

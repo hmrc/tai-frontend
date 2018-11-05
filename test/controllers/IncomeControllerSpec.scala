@@ -70,7 +70,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.edit.heading", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(Messages("tai.incomes.edit.title"))
       }
     }
 
@@ -384,7 +384,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.edit.heading", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(Messages("tai.incomes.edit.title"))
       }
     }
 

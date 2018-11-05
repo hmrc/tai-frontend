@@ -736,6 +736,7 @@ tai.incomes.confirm.save.messageEquals=The amount entered is £{0}
 tai.incomes.confirm.save.title=Confirm your estimated taxable income for {0}
 tai.incomes.confirm.save=Confirm and send
 tai.incomes.edit.ceased.text=Your total pay to date is provided by your employer. It is shown on your P45 as ‘Total pay to date’.
+tai.incomes.edit.title=Update your estimated taxable income
 tai.incomes.edit.heading=Update your estimated taxable income for {0}
 tai.incomes.edit.howTo.charity=charitable payments made through a payroll giving scheme
 tai.incomes.edit.howTo.contribution=any contributions to your employer’s or private pension scheme

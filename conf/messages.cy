@@ -734,6 +734,7 @@ tai.incomes.confirm.save.messageEquals=Y swm a roddwyd yw £{0}
 tai.incomes.confirm.save.title=Cadarnhewch eich incwm trethadwy amcangyfrifedig ar gyfer {0}
 tai.incomes.confirm.save=Cadarnhau ac anfon
 tai.incomes.edit.ceased.text=Rhoddir cyfanswm eich cyflog hyd yn hyn gan eich cyflogwr. Fe''i dangosir ar eich P45 fel ''Cyfanswm cyflog hyd yn hyn''.
+tai.incomes.edit.title=Diweddarwch eich incwm trethadwy amcangyfrifedig
 tai.incomes.edit.heading=Diweddarwch eich incwm trethadwy amcangyfrifedig ar gyfer {0}
 tai.incomes.edit.howTo.charity=taliadau elusennol a wneir drwy gynllun Rhoi drwy’r Gyflogres
 tai.incomes.edit.howTo.contribution=unrhyw gyfraniadau at gynllun pensiwn eich cyflogwr neu gynllun pensiwn preifat
