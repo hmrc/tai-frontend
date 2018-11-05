@@ -21,6 +21,7 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
 import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.viewModels.TaxCodeViewModelPreviousYears.htmlNonBroken
 
 
 case class TaxCodeViewModel(title: String,
@@ -45,22 +46,14 @@ object TaxCodeViewModel extends ViewModelHelper with TaxCodeDescriptor {
       DescriptionListViewModel(messages(s"tai.taxCode.subheading", taxCodeRecord.employerName, taxCode), explanation)
     }
 
-    val taxCodesPrefix = if (taxCodeRecords.size > 1) {
-      messages(s"tai.taxCode.multiple.code.title.pt1")
-    } else {
-      messages(s"tai.taxCode.single.code.title.pt1")
-    }
+    val titleMessageKey = if (taxCodeRecords.size > 1) "tai.taxCode.multiple.code.title" else "tai.taxCode.single.code.title"
+    val startOfTaxYearNonBroken = htmlNonBroken(Dates.formatDate(year.start))
+    val endOfTaxYearNonBroken = htmlNonBroken(Dates.formatDate(year.end))
+    val taxCodesTitle = messages(titleMessageKey, startOfTaxYearNonBroken, endOfTaxYearNonBroken)
 
-    val TaxYearRange = messages("tai.taxYear",
-      Dates.formatDate(year.start),
-      Dates.formatDate(year.end))
+    val title = taxCodesTitle
+    val mainHeading = taxCodesTitle
 
-    val TaxYearRangeHtmlNonBreak = messages("tai.taxYear",
-      htmlNonBroken(Dates.formatDate(year.start)),
-      htmlNonBroken(Dates.formatDate(year.end)))
-
-    val title = s"$taxCodesPrefix $TaxYearRange"
-    val mainHeading = s"$taxCodesPrefix $TaxYearRangeHtmlNonBreak"
     val ledeMessage = if (taxCodeRecords.size > 1) {
       messages(s"tai.taxCode.multiple.info")
     } else {

@@ -39,7 +39,7 @@ class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplica
         val result = previousYearTestViewModel(Seq(taxCodeRecord1))
         result.mainHeading mustBe s"${Messages("tai.taxCode.prev.single.code.title.pt1")} $prevExpectedNonBreakSuffix"
         result.ledeMessage mustBe Messages("tai.taxCode.prev.single.info")
-        result.title mustBe s"${Messages("tai.taxCode.prev.single.code.title.pt1")} $prevTaxYearSuffix"
+        result.title mustBe s"${Messages("tai.taxCode.prev.single.code.title.pt1")} $prevExpectedNonBreakSuffix"
       }
     }
 
@@ -48,7 +48,7 @@ class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplica
         val result = previousYearTestViewModel(Seq(taxCodeRecord1, taxCodeRecord2))
         result.mainHeading mustBe s"${Messages("tai.taxCode.prev.multiple.code.title.pt1")} $prevExpectedNonBreakSuffix"
         result.ledeMessage mustBe Messages("tai.taxCode.prev.multiple.info")
-        result.title mustBe s"${Messages("tai.taxCode.prev.multiple.code.title.pt1")} $prevTaxYearSuffix"
+        result.title mustBe s"${Messages("tai.taxCode.prev.multiple.code.title.pt1")} $prevExpectedNonBreakSuffix"
       }
     }
     "be able to create a tax code description table heading" when {

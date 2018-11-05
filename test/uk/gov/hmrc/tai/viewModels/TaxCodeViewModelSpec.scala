@@ -38,9 +38,9 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
     "be able to form view model object with single TaxCodeIncome" when {
       "provided with valid input" in {
         val result = testViewModel(Seq(taxCodeRecord1))
-        result.mainHeading mustBe s"${Messages("tai.taxCode.single.code.title.pt1")} $expectedNonBreakSuffix"
+        result.mainHeading mustBe Messages("tai.taxCode.single.code.title",taxYearStartNonBreak,taxYearEndNonBreak)
         result.ledeMessage mustBe Messages("tai.taxCode.single.info")
-        result.title mustBe s"${Messages("tai.taxCode.single.code.title.pt1")} $taxYearSuffix"
+        result.title mustBe Messages("tai.taxCode.single.code.title",taxYearStartNonBreak,taxYearEndNonBreak)
       }
 
     }
@@ -48,9 +48,9 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
     "be able to form view model object with multiple TaxCodeIncome" when {
       "provided with valid input" in {
         val result = testViewModel(Seq(taxCodeRecord1, taxCodeRecord2))
-        result.mainHeading mustBe s"${Messages("tai.taxCode.multiple.code.title.pt1")} $expectedNonBreakSuffix"
+        result.mainHeading mustBe Messages("tai.taxCode.multiple.code.title",taxYearStartNonBreak,taxYearEndNonBreak)
         result.ledeMessage mustBe Messages("tai.taxCode.multiple.info")
-        result.title mustBe s"${Messages("tai.taxCode.multiple.code.title.pt1")} $taxYearSuffix"
+        result.title mustBe Messages("tai.taxCode.multiple.code.title",taxYearStartNonBreak,taxYearEndNonBreak)
       }
 
     }
@@ -214,6 +214,9 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
   val taxYearSuffix = Messages("tai.taxCode.title.pt2",
     taxYear.start.toString("d MMMM yyyy"),
     taxYear.end.toString("d MMMM yyyy"))
+
+  val taxYearStartNonBreak = taxYear.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
+  val taxYearEndNonBreak = taxYear.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
   val expectedNonBreakSuffix = Messages("tai.taxCode.title.pt2",
     taxYear.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0"),
     taxYear.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0"))

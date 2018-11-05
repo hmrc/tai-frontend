@@ -45,7 +45,7 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
       val explanation = describeTaxCode(taxCode, taxCodeRecord.basisOfOperation, scottishTaxRateBands, isCurrentYear)
 
       DescriptionListViewModel(
-        Messages(
+        messages(
           s"tai.taxCode.prev.subheading",
           taxCodeRecord.employerName,
           Dates.formatDate(taxCodeRecord.startDate),
@@ -56,23 +56,19 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
       )
     }
 
-    val taxCodesPrefix = if (taxCodeRecords.size > 1) {
-      Messages(s"tai.taxCode.prev.multiple.code.title.pt1")
+    val titleMessageKey = if (taxCodeRecords.size > 1) "tai.taxCode.prev.multiple.code.title" else "tai.taxCode.prev.single.code.title"
+    val startOfTaxYearNonBroken = htmlNonBroken(Dates.formatDate(year.start))
+    val endOfTaxYearNonBroken = htmlNonBroken(Dates.formatDate(year.end))
+    val taxCodesTitle = messages(titleMessageKey, startOfTaxYearNonBroken, endOfTaxYearNonBroken)
+
+    val title = taxCodesTitle
+    val mainHeading = taxCodesTitle
+
+    val ledeMessage = if (taxCodeRecords.size > 1) {
+      messages(s"tai.taxCode.prev.multiple.info")
     } else {
-      Messages(s"tai.taxCode.prev.single.code.title.pt1")
+      messages(s"tai.taxCode.prev.single.info")
     }
-
-    val TaxYearRange = messages("tai.taxYear",
-      Dates.formatDate(year.start),
-      Dates.formatDate(year.end))
-
-    val TaxYearRangeHtmlNonBreak = messages("tai.taxYear",
-      htmlNonBroken(Dates.formatDate(year.start)), // what if you just use this for both??
-      htmlNonBroken(Dates.formatDate(year.end))) // also this doesn't seem to be actually doing what it looks like it might be supposed to do :(
-
-    val title = s"$taxCodesPrefix $TaxYearRange"
-    val mainHeading = s"$taxCodesPrefix $TaxYearRangeHtmlNonBreak"
-    val ledeMessage = if (taxCodeRecords.size > 1) Messages(s"tai.taxCode.prev.multiple.info") else Messages(s"tai.taxCode.prev.single.info")
 
     TaxCodeViewModelPreviousYears(title, mainHeading, ledeMessage, descriptionListViewModels, preHeader)
   }
