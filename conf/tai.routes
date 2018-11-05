@@ -119,17 +119,6 @@ GET         /redirect-company-car/:employmentId                                 
 GET         /end-company-car/decision                                                  controllers.CompanyCarController.getCompanyCarDetails
 POST        /end-company-car/decision                                                  controllers.CompanyCarController.handleUserJourneyChoice
 
-GET         /end-company-car/car-end-date                                              controllers.CompanyCarController.getCompanyCarEndDate
-POST        /end-company-car/car-end-date                                              controllers.CompanyCarController.handleCompanyCarEndDate
-
-GET         /end-company-car/fuel-end-date                                             controllers.CompanyCarController.getFuelBenefitEndDate
-POST        /end-company-car/fuel-end-date                                             controllers.CompanyCarController.handleFuelBenefitEndDate
-
-GET         /end-company-car/check-your-answers                                        controllers.CompanyCarController.checkYourAnswers
-POST        /end-company-car/check-your-answers                                        controllers.CompanyCarController.handleCheckYourAnswers
-
-GET         /end-company-car/success                                                   controllers.CompanyCarController.confirmation
-
 ## New Income and Tax Codes page
 GET         /tax-free-allowance                                                        controllers.TaxFreeAmountController.taxFreeAmount
 GET         /taxable-income                                                            controllers.TaxFreeAmountController.taxFreeAmount
