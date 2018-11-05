@@ -28,38 +28,38 @@ user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateR
 @import uk.gov.hmrc.tai.util.DateHelper
 
 @main(
-title = Messages("tai.estimatedPay.error.incorrectTaxableIncome.title"),
-articleClasses = Some("full-width text"),
-user = Some(user),
-gaCustomTitle = None
+    title = messages("tai.estimatedPay.error.incorrectTaxableIncome.title"),
+    articleClasses = Some("full-width text"),
+    user = Some(user),
+    gaCustomTitle = None
 ){
-<header class="page-header">
-    <h1 class="heading-xlarge " id="currentYearTitle">@Messages("tai.estimatedPay.error.incorrectTaxableIncome.title")</h1>
-</header>
-
-<div class="flash error-summary error-summary--show">
-    <h2 class="error-summary-heading flush--top" >
-        @Messages("tai.estimatedPay.error.incorrectTaxableIncome.errorTitle")
-    </h2>
-    <p>@Messages("tai.estimatedPay.error.incorrectTaxableIncome.description", MoneyPounds(payYTD, 0, true).quantity, DateHelper.monthOfYear(Dates.formatDate(payDate))) </p>
-</div>
-
-<div>
-    <h2>
-        @Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext")
-    </h2>
-    <p>@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line1")</p>
-    <ul class="list list-bullet">
-        <li>@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line2")</li>
-        <li>@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line3")</li>
-        <li>@Messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line4")</li>
-    </ul>
-    @includes.link(
-        copy=Messages("tai.estimatedPay.error.incorrectTaxableIncome.button"),
-        url = income.estimatedPay.update.routes.IncomeUpdateCalculatorController.howToUpdatePage(id).toString,
-        isButton=true,
-        isSecondary=true
-    )
-</div>
+    <header class="page-header">
+        <h1 class="heading-xlarge " id="currentYearTitle">@messages("tai.estimatedPay.error.incorrectTaxableIncome.heading")</h1>
+    </header>
+    
+    <div class="flash error-summary error-summary--show">
+        <h2 class="error-summary-heading flush--top" >
+            @messages("tai.estimatedPay.error.incorrectTaxableIncome.errorTitle")
+        </h2>
+        <p>@messages("tai.estimatedPay.error.incorrectTaxableIncome.description", MoneyPounds(payYTD, 0, true).quantity, DateHelper.monthOfYear(Dates.formatDate(payDate))) </p>
+    </div>
+    
+    <div>
+        <h2>
+            @messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext")
+        </h2>
+        <p>@messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line1")</p>
+        <ul class="list list-bullet">
+            <li>@messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line2")</li>
+            <li>@messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line3")</li>
+            <li>@messages("tai.estimatedPay.error.incorrectTaxableIncome.whatNext.line4")</li>
+        </ul>
+        @includes.link(
+            copy=messages("tai.estimatedPay.error.incorrectTaxableIncome.button"),
+            url = income.estimatedPay.update.routes.IncomeUpdateCalculatorController.howToUpdatePage(id).toString,
+            isButton=true,
+            isSecondary=true
+        )
+    </div>
 
 }
