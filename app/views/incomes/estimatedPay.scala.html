@@ -45,7 +45,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 }
 
 @main(
-    title = messages("tai.estimatedPay.title"),
+    title = messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
     articleClasses = Some("full-width text"),
     user = Some(user),
     pageHeader = Some(header),

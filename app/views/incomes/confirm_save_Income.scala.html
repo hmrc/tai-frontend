@@ -37,7 +37,7 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
 }
 
 @main(
-    title = messages("tai.incomes.confirm.save.title"),
+    title = messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak),
     articleClasses = Some("full-width"),
     pageHeader = Some(header),
     user = Some(user),
