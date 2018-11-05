@@ -617,11 +617,11 @@ tai.incomeTax.taxFree.link=Gwirio''ch swm rhydd o dreth
 tai.incomeTax.totalEstimatedIncome.subheading=Cyfanswm incwm amcangyfrifedig
 tai.incomeTax.totalIncomeTaxEstimate=Cyfanswm Amcangyfrif Treth Incwm
 tai.incomeTaxBand=Haen Treth Incwm
-tai.incomeTaxComparison.heading=Cymhariaeth Treth Incwm: y flwyddyn dreth bresennol a''r flwyddyn nesaf
+
 tai.incomeTaxComparison.incomeSourceAbsent=Ddim ar gael
 tai.incomeTaxComparison.incomeTax.column1=yn dod i ben ar {0}
 tai.incomeTaxComparison.incomeTax.column2=o {0}
-tai.incomeTaxComparison.incomeTax.description=Mae''r data hwn yn amcangyfrif yn seiliedig ar yr hyn yr ydym yn ei wybod amdanoch nawr - gall newid pan gawn ragor o wybodaeth.
+
 tai.incomeTaxComparison.incomeTax.estimate=Amcangyfrif o''ch Treth Incwm TWE
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment =Incwm o gyflogaeth
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions=Incwm o gyflogaeth a phensiynau preifat
@@ -639,7 +639,7 @@ tai.incomeTaxComparison.taxFreeAmount.PA.information1=Mae''r Lwfans Personol saf
 tai.incomeTaxComparison.taxFreeAmount.PA.information2=Gall eich Lwfans Personol fod yn wahanol, yn dibynnu ar eich amgylchiadau.
 tai.incomeTaxComparison.taxFreeAmount.additions.caption=Ychwanegiadau
 tai.incomeTaxComparison.taxFreeAmount.deductions.caption=Didyniadau
-tai.incomeTaxComparison.taxFreeAmount.description=Cyfanswm yr incwm y gallwch ei gael cyn i chi dalu treth.
+
 tai.incomeTaxComparison.taxFreeAmount.noAdditions=Nid oes gennych unrhyw ychwanegiadau
 tai.incomeTaxComparison.taxFreeAmount.noDeductions=Nid oes gennych unrhyw ddidyniadau
 tai.incomeTaxComparison.taxFreeAmount.subHeading=Lwfans rhydd o dreth
