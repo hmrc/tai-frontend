@@ -21,8 +21,7 @@
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @import uk.gov.hmrc.tai.forms.YesNoForm
 
-@(yesNoForm: Form[YesNoForm], id: Int, employerName: String, paySlipDeductions: Boolean = false,
-bonusPaymentSelected: Boolean = false)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
+@(yesNoForm: Form[YesNoForm], id: Int, employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Payslip deductions"}
