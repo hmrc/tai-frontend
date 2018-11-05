@@ -74,9 +74,9 @@ object PayPeriodForm{
   def createForm(howOftenError: Option[String], payPeriod : Option[String] = None)(implicit messages: Messages): Form[PayPeriodForm] = {
 
     val payPeriodValidation = Constraint[Option[String]]("Please select a period"){
-
-      case Some(txt) => txt match {case "other" | "monthly" | "weekly" | "fortnightly" => Valid
-      case _ => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
+      case Some(txt) => txt match {
+        case "other" | "monthly" | "weekly" | "fortnightly" => Valid
+        case _ => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
       }
       case _ => Invalid(messages("tai.payPeriod.error.form.incomes.radioButton.mandatory"))
     }
@@ -84,7 +84,7 @@ object PayPeriodForm{
     def otherInDaysValidation(payPeriod : Option[String]) : Constraint[Option[Int]] = {
       Constraint[Option[Int]]("days") {
         days => {
-          if(payPeriod.getOrElse("") == "other" && !days.isDefined) {
+          if(payPeriod.getOrElse("") == "other" && days.isEmpty) {
             Invalid(messages("tai.payPeriod.error.form.incomes.other.mandatory"))
           } else {
             Valid

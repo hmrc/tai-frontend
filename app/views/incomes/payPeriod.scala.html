@@ -37,11 +37,12 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 }
 
 @howOftenPanel = @{
-    def errorMessage = Messages("tai.payPeriod.error.form.incomes.other.mandatory")
     def labelMessage = Messages("tai.payPeriod.howOften")
     val errorSpan = payPeriodForm.errors.map{error =>
             if(error.key == "otherInDays"){
-                s"""<span class="error-message">${errorMessage}</span>"""
+                s"""<span class="error-message">${messages(error.message)}</span>"""
+            } else {
+                ""
             }
         }.headOption.getOrElse("")
 
