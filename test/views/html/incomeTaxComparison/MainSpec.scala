@@ -54,8 +54,8 @@ class MainSpec extends TaiViewSpec {
     }
 
     "have the tell us about a change section with heading" in {
-      doc(view) must haveSectionWithId("tellAboutChange")
-      doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.tellAboutChange.subHeading"))
+      doc(view) must haveSectionWithId("whatHappensNext")
+      doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.whatHappensNext.subHeading"))
     }
 
     "have the tell us about a change links" in {

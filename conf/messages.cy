@@ -655,7 +655,7 @@ tai.incomeTaxComparison.tellAboutChange.otherIncomeReaderText=Rhoi gwybod i ni a
 tai.incomeTaxComparison.tellAboutChange.otherIncomeText=incwm arall
 tai.incomeTaxComparison.tellAboutChange.stateBenefitsReaderText=Rhoi gwybod i ni am fudd-daliadau’r Wladwriaeth.
 tai.incomeTaxComparison.tellAboutChange.stateBenefitsText=Buddiannau''r Wladwriaeth
-tai.incomeTaxComparison.tellAboutChange.subHeading=Rhowch wybod i ni am unrhyw newid
+
 tai.incomeTaxSummary.addMissingIncome.section.employerLink=Ychwanegu cyflogwr sydd ar goll
 tai.incomeTaxSummary.addMissingIncome.section.heading=Rhywbeth ar goll?
 tai.incomeTaxSummary.addMissingIncome.section.otherLink=Ychwanegu incwm o ffynhonnell arall sydd ar goll
