@@ -49,7 +49,7 @@ class MessagesSpec extends UnitSpec with WithFakeApplication {
 
     "have messages for default and cy only" in {
       messagesAPI.messages("en").size shouldBe 0
-      val englishMessageCount = messagesAPI.messages("default").size - frameworkProvidedKeys.size - excludedGAKeys.size
+      val englishMessageCount = messagesAPI.messages("default").size - frameworkProvidedKeys.size
 
       messagesAPI.messages("cy").size shouldBe englishMessageCount
       messagesAPI.messages("default.play").size shouldBe 46
@@ -133,7 +133,7 @@ class MessagesSpec extends UnitSpec with WithFakeApplication {
 
   private lazy val displayLine = "\n" + ("@" * 42) + "\n"
 
-  private lazy val defaultMessages: Map[String, String] = getExpectedMessages("default") -- (providedKeys ++ excludedGAKeys)
+  private lazy val defaultMessages: Map[String, String] = getExpectedMessages("default") -- providedKeys
 
   private lazy val welshMessages: Map[String, String] = getExpectedMessages("cy") -- commonProvidedKeys
 
@@ -160,16 +160,6 @@ class MessagesSpec extends UnitSpec with WithFakeApplication {
     "global.error.pageNotFound404.heading",
     "global.error.pageNotFound404.message",
     "global.error.pageNotFound404.title"
-  )
-
-  private val excludedGAKeys = Set(
-    "tai.howToUpdate.title.ga",
-    "tai.incomes.landing.title.ga",
-    "tai.incomes.updated.check.title.ga",
-    "tai.irregular.title.ga",
-    "tai.payPeriod.title.ga",
-    "tai.workingHours.title.ga",
-    "tai.payslip.title.ga"
   )
 
   private val providedKeys = commonProvidedKeys ++ frameworkProvidedKeys
