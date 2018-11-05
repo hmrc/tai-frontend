@@ -108,7 +108,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
         val result = SUT.details()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.income.previousYears.details.heading", TaxPeriodLabelService.taxPeriodLabel(previousTaxYear.year)))
+        doc.title() must include(Messages("tai.income.previousYears.details.title"))
       }
     }
   }

@@ -631,6 +631,7 @@ tai.income.previousYears.decision.paragraph.two=To correct your details, contact
 tai.income.previousYears.decision.radio.no=update my details now
 tai.income.previousYears.decision.radio.yes=contact my employer or pension provider first
 tai.income.previousYears.details.customGaTitle=What do you want to tell us about your income details?
+tai.income.previousYears.details.title=What do you want to tell us about your income details?
 tai.income.previousYears.details.heading=What do you want to tell us about your income details for {0}?
 tai.income.previousYears.details.preHeading=Update income details
 tai.income.previousYears.details.textarea.error.blank=Enter what you want to tell us about your income details

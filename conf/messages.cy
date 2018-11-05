@@ -630,6 +630,7 @@ tai.income.previousYears.decision.paragraph.two=I gywiro''ch manylion, cysylltwc
 tai.income.previousYears.decision.radio.no=diweddaru fy manylion nawr
 tai.income.previousYears.decision.radio.yes=cysylltwch â''m cyflogwr neu ddarparwr fy mhensiwn yn y lle cyntaf
 tai.income.previousYears.details.customGaTitle=Beth ydych am roi gwybod i ni am fanylion eich incwm?
+tai.income.previousYears.details.title=Beth ydych am roi gwybod i ni am eich manylion incwm?
 tai.income.previousYears.details.heading=Beth ydych am roi gwybod i ni am eich manylion incwm ar gyfer {0}?
 tai.income.previousYears.details.preHeading=Diweddaru manylion incwm
 tai.income.previousYears.details.textarea.error.blank=Rhowch yr hyn yr ydych am roi gwybod i ni am fanylion eich incwm
