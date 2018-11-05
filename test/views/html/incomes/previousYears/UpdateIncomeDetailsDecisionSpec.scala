@@ -30,7 +30,7 @@ class UpdateIncomeDetailsDecisionSpec extends TaiViewSpec {
 
   "decision" should {
 
-    behave like pageWithTitle(messages("tai.income.previousYears.decision.header", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)))
+    behave like pageWithTitle(messages("tai.income.previousYears.decision.title"))
     behave like pageWithCombinedHeader(messages("tai.income.previousYears.journey.preHeader"),
       messages("tai.income.previousYears.decision.header",TaxPeriodLabelService.taxPeriodLabel(taxYear.year)))
     behave like pageWithBackLink

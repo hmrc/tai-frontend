@@ -623,6 +623,7 @@ tai.income.previousYears.confirmation.back=Return to your income details for pre
 tai.income.previousYears.confirmation.heading=Your update has been received
 tai.income.previousYears.decision.IWantTo=I want to:
 tai.income.previousYears.decision.customGaTitle=Update income decision
+tai.income.previousYears.decision.title=Update income details
 tai.income.previousYears.decision.header=Update income details for {0}
 tai.income.previousYears.decision.paragraph.one=Your employer or pension provider tells HMRC how much pay or pension you get, and how much Income Tax they have deducted.
 tai.income.previousYears.decision.paragraph.three=You can update your details if you are unable to contact your employer or pension provider.

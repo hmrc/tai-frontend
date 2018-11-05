@@ -62,7 +62,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(Messages("tai.income.previousYears.decision.header", TaxPeriodLabelService.taxPeriodLabel(previousTaxYear.year)))
+      doc.title() must include(Messages("tai.income.previousYears.decision.title"))
     }
   }
 

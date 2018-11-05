@@ -622,6 +622,7 @@ tai.income.previousYears.confirmation.back=Dychwelyd i''ch manylion incwm ar gyf
 tai.income.previousYears.confirmation.heading=Mae''ch diweddariad wedi dod i law
 tai.income.previousYears.decision.IWantTo=Rwyf eisiau:
 tai.income.previousYears.decision.customGaTitle=Diweddaru penderfyniad am incwm
+tai.income.previousYears.decision.title=Diweddaru manylion incwm
 tai.income.previousYears.decision.header=Diweddaru manylion incwm ar gyfer {0}
 tai.income.previousYears.decision.paragraph.one=Mae''ch cyflogwr neu ddarparwr eich pensiwn yn rhoi gwybod i CThEM faint o gyflog neu bensiwn a gewch, a faint o Dreth Incwm y maent wedi''i didynnu.
 tai.income.previousYears.decision.paragraph.three=Gallwch ddiweddaru''ch manylion os na allwch gysylltu â''ch cyflogwr neu ddarparwr eich pensiwn.
