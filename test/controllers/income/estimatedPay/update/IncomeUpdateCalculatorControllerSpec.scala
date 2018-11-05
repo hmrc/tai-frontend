@@ -588,7 +588,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(messages("tai.incomes.confirm.save.title"))
       }
 
       "journey cache returns employment name, net amount with large decimal value and id" in {
@@ -602,7 +602,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(messages("tai.incomes.confirm.save.title"))
       }
 
       "journey cache does not returns net amount" in {
@@ -616,7 +616,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(messages("tai.incomes.confirm.save.title"))
       }
     }
   }

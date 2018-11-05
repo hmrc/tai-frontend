@@ -30,14 +30,14 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        mainHeadingText = messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak),
+        mainHeadingText = messages("tai.incomes.confirm.save.heading", currentTaxYearRangeHtmlNonBreak),
         preHeadingText = messages("tai.incomes.edit.preHeading", income.name),
         headerWidthClasses = Some("column-full")
     )
 }
 
 @main(
-    title = messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak),
+    title = messages("tai.incomes.confirm.save.title"),
     articleClasses = Some("full-width"),
     pageHeader = Some(header),
     user = Some(user),
