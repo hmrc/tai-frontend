@@ -702,6 +702,7 @@ tai.incomeTaxSummary.employment.section.heading=Eich incwm o gyflogaeth
 tai.incomeTaxSummary.employmentAndBenefits.link=Gweld manylion cyflogaeth a buddiannau cwmni
 tai.incomeTaxSummary.endDate.prefix=Dyddiad dod i ben: {0}
 tai.incomeTaxSummary.generalAmount.prefix=Y swm yw
+tai.incomeTaxSummary.title=Eich crynodeb Treth Incwm TWE
 tai.incomeTaxSummary.heading.part1=Eich crynodeb Treth Incwm TWE ar gyfer
 tai.incomeTaxSummary.income.link=Gweld manylion incwm
 tai.incomeTaxSummary.incomeAmount.prefix=Eich incwm trethadwy amcangyfrifedig yw

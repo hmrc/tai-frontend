@@ -70,13 +70,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
 
       val doc = Jsoup.parse(contentAsString(result))
 
-      val expectedTitle =
-        Messages("tai.incomeTaxSummary.heading.part1") + " " +
-          Messages("tai.heading.taxYear.interval",
-            TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy"),
-            TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))
-
-      doc.title() must include(expectedTitle)
+      doc.title() must include(messagesApi("tai.incomeTaxSummary.title"))
     }
 
     "raise an audit event" in {
