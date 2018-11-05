@@ -37,18 +37,18 @@ class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplica
     "be able to form view model object with single TaxCodeIncome" when {
       "provided with valid input for a previous tax year" in {
         val result = previousYearTestViewModel(Seq(taxCodeRecord1))
-        result.mainHeading mustBe s"${Messages("tai.taxCode.prev.single.code.title.pt1")} $prevExpectedNonBreakSuffix"
+        result.mainHeading mustBe Messages("tai.taxCode.prev.single.code.title", prevTaxYearStartDateNonBreak, prevTaxYearEndDateNonBreak)
         result.ledeMessage mustBe Messages("tai.taxCode.prev.single.info")
-        result.title mustBe s"${Messages("tai.taxCode.prev.single.code.title.pt1")} $prevExpectedNonBreakSuffix"
+        result.title mustBe Messages("tai.taxCode.prev.single.code.title", prevTaxYearStartDateNonBreak, prevTaxYearEndDateNonBreak)
       }
     }
 
     "be able to form view model object with multiple TaxCodeIncome" when {
       "provided with valid input for a previous tax year" in {
         val result = previousYearTestViewModel(Seq(taxCodeRecord1, taxCodeRecord2))
-        result.mainHeading mustBe s"${Messages("tai.taxCode.prev.multiple.code.title.pt1")} $prevExpectedNonBreakSuffix"
+        result.mainHeading mustBe Messages("tai.taxCode.prev.multiple.code.title", prevTaxYearStartDateNonBreak, prevTaxYearEndDateNonBreak)
         result.ledeMessage mustBe Messages("tai.taxCode.prev.multiple.info")
-        result.title mustBe s"${Messages("tai.taxCode.prev.multiple.code.title.pt1")} $prevExpectedNonBreakSuffix"
+        result.title mustBe Messages("tai.taxCode.prev.multiple.code.title", prevTaxYearStartDateNonBreak, prevTaxYearEndDateNonBreak)
       }
     }
     "be able to create a tax code description table heading" when {
@@ -157,21 +157,10 @@ class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplica
     }
   }
 
-  val taxYear = uk.gov.hmrc.tai.model.TaxYear()
-  val taxYearSuffix = Messages("tai.taxCode.title.pt2",
-    taxYear.start.toString("d MMMM yyyy"),
-    taxYear.end.toString("d MMMM yyyy"))
-  val expectedNonBreakSuffix = Messages("tai.taxCode.title.pt2",
-    taxYear.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0"),
-    taxYear.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0"))
-
   val prevTaxYear = uk.gov.hmrc.tai.model.TaxYear().prev
-  val prevTaxYearSuffix = Messages("tai.taxCode.title.pt2",
-    prevTaxYear.start.toString("d MMMM yyyy"),
-    prevTaxYear.end.toString("d MMMM yyyy"))
-  val prevExpectedNonBreakSuffix = Messages("tai.taxCode.title.pt2",
-    prevTaxYear.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0"),
-    prevTaxYear.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0"))
+
+  val prevTaxYearStartDateNonBreak = prevTaxYear.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
+  val prevTaxYearEndDateNonBreak = prevTaxYear.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
 
   private def makeTestTaxCodeRecord(taxCode: String, basisOfOperation: BasisOfOperation, isPrimary: Boolean = true, employerName: String = "employer") = {
     TaxCodeRecord(taxCode,LocalDate.now,LocalDate.now,basisOfOperation,employerName,false,Some("payrollnumber"),isPrimary)
