@@ -349,7 +349,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
       val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(Messages("tai.checkYourAnswers"))
+      doc.title() must include(Messages("tai.checkYourAnswers.title"))
     }
   }
 
