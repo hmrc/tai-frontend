@@ -43,7 +43,7 @@
         <caption class="visually-hidden">@{incomeSummaryHeading}</caption>
         <thead id="incomeSummeryComparisonTableHeader">
         <tr class="text--right">
-            <th></th>
+            <td></td>
             <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="text--right">
                 @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
                 @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))))
@@ -57,16 +57,16 @@
 
         <tbody id="incomeSummaryComparisonTableBody">
             @for(employmentIncomeSourceDetail <- incomeSourceViewModel.employmentIncomeSourceDetail) {
-                <tr>
-                    <td>@employmentIncomeSourceDetail.name</td>
-                    <td class="text--right">@employmentIncomeSourceDetail.amountCY</td>
-                    <td class="text--right">@employmentIncomeSourceDetail.amountCYPlusOne</td>
-                </tr>
+            <tr>
+                <td style="word-break:break-all">@employmentIncomeSourceDetail.name</td>
+                <td class="text--right">@employmentIncomeSourceDetail.amountCY</td>
+                <td class="text--right">@employmentIncomeSourceDetail.amountCYPlusOne</td>
+            </tr>
             }
 
             @for(pensionIncomeSourceDetail <- incomeSourceViewModel.pensionIncomeSourceDetail) {
             <tr>
-                <td>@pensionIncomeSourceDetail.name</td>
+                <td style="word-break:break-all">@pensionIncomeSourceDetail.name</td>
                 <td class="text--right">@pensionIncomeSourceDetail.amountCY</td>
                 <td class="text--right">@pensionIncomeSourceDetail.amountCYPlusOne</td>
             </tr>

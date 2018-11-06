@@ -53,9 +53,13 @@ class MainSpec extends TaiViewSpec {
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.taxFreeAmount.subHeading"))
     }
 
-    "have the tell us about a change section with heading" in {
+    "have the what happens next with heading" in {
       doc(view) must haveSectionWithId("whatHappensNext")
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.whatHappensNext.subHeading"))
+    }
+
+    "have the tell us about a change text" in {
+      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.tellAboutChange.description"))
     }
 
     "have the tell us about a change links" in {
@@ -76,9 +80,7 @@ class MainSpec extends TaiViewSpec {
         text = messages("tai.incomeTaxComparison.tellAboutChange.otherIncomeText"))
     }
 
-    "have the tell us about a change text" in {
-      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.tellAboutChange.description"))
-    }
+
 
   }
 
