@@ -17,6 +17,8 @@
 package views.html.incomes
 
 import org.scalatest.mock.MockitoSugar
+import play.api.i18n.MessagesApi
+import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm
@@ -28,6 +30,7 @@ class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
   val id = 1
   val employerName = "Employer"
   val bonusPaymentsAmountForm = BonusOvertimeAmountForm.createForm()
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "Bonus payments amount view" should {
     behave like pageWithBackLink
@@ -47,7 +50,30 @@ class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
       doc must haveElementAtPathWithId("input", "amount")
       doc must haveElementAtPathWithClass("input", "form-control-currency")
     }
+
+    "return no errors when a valid monetary amount is entered" in {
+
+      val monetaryAmount = "£10,000"
+      val monetaryAmountRequest = Json.obj("amount" -> monetaryAmount)
+      val validatedForm = bonusPaymentsAmountForm.bind(monetaryAmountRequest)
+
+      validatedForm.errors mustBe empty
+      validatedForm.value.get mustBe BonusOvertimeAmountForm(Some(monetaryAmount))
+    }
+
+    "display an error when the user continues without entering an amount" in {
+
+      val emptySelectionErrorMessage = messages()
+      val invalidRequest = Json.obj("amount" -> "")
+      val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
+
+      val errorView = views.html.incomes.bonusPaymentAmount(invalidatedForm,id, employerName)
+      doc(errorView) must haveErrorLinkWithText(messages())
+      //doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage),"error-message")
+
+    }
+
   }
 
-  override def view: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm,"monthly",id, employerName)
+  override def view: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm,id, employerName)
 }

@@ -17,7 +17,6 @@
 package views.html.incomes
 
 import org.scalatest.mock.MockitoSugar
-import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.twirl.api.Html
@@ -27,7 +26,6 @@ import uk.gov.hmrc.tai.util.{FormValuesConstants, TaxYearRangeUtil}
 
 class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar with FormValuesConstants {
 
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   private val Id = 1
   private val employerName = "Employer"
   private val emptySelectionErrorMessage = messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory",
@@ -60,12 +58,13 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar with FormValuesCon
       validatedForm.value.get mustBe YesNoForm(Some(NoValue))
     }
 
-    "return an error for invalid choice" in {
+    "display an error for invalid choice" in {
       val invalidChoice = Json.obj(choice -> "")
       val invalidatedForm = bonusPaymentsForm.bind(invalidChoice)
 
-      invalidatedForm.errors.head.messages mustBe List(emptySelectionErrorMessage)
-      invalidatedForm.value mustBe None
+      val errorView = views.html.incomes.bonusPayments(invalidatedForm,Id, employerName)
+      doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
+      doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage),"error-message")
     }
 
   }

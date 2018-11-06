@@ -494,9 +494,9 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
         } yield {
           if (moreThisYear.contains("Yes")) {
-            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), "year", id, employerName))
+            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), id, employerName))
           } else {
-            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), payPeriod.getOrElse(""), id, employerName))
+            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), id, employerName))
           }
         }
   }
@@ -516,9 +516,9 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               val id = cache(UpdateIncome_IdKey).toInt
               val employerName = cache.get(UpdateIncome_NameKey).toString
               if (moreThisYear.contains("Yes")) {
-                Future.successful(BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, "year", id, employerName)))
+                Future.successful(BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, id, employerName)))
               } else {
-                Future.successful(BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, payPeriod.getOrElse(""), id, employerName)))
+                Future.successful(BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, id, employerName)))
               }
             },
             formData => {
