@@ -31,14 +31,14 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         formForErrorSummary = Some(payPeriodForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.payPeriod.title"),
-        preHeadingText = Messages("tai.payPeriod.preHeading", employerName),
+        mainHeadingText = messages("tai.payPeriod.title"),
+        preHeadingText = messages("tai.payPeriod.preHeading", employerName),
         headerWidthClasses = Some("column-full")
     )
 }
 
 @howOftenPanel = @{
-    def labelMessage = Messages("tai.payPeriod.howOften")
+    def labelMessage = messages("tai.payPeriod.howOften")
     val errorSpan = payPeriodForm.errors.map{error =>
             if(error.key == "otherInDays"){
                 s"""<span class="error-message">${messages(error.message)}</span>"""
@@ -59,7 +59,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 
 
 @main(
-    title = Messages("tai.payPeriod.title"),
+    title = messages("tai.payPeriod.title"),
     articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
@@ -71,12 +71,12 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
             @{inputRadioGroupStyling(
                 field=payPeriodForm("payPeriod"),
                 radioOptions=Seq(
-                    PayPeriodForm.MONTHLY -> Messages("tai.payPeriod.monthly"),
-                    PayPeriodForm.WEEKLY -> Messages("tai.payPeriod.weekly"),
-                    PayPeriodForm.FORTNIGHTLY -> Messages("tai.payPeriod.fortnightly"),
-                    PayPeriodForm.OTHER -> Messages("tai.payPeriod.other")
+                    PayPeriodForm.MONTHLY -> messages("tai.payPeriod.monthly"),
+                    PayPeriodForm.WEEKLY -> messages("tai.payPeriod.weekly"),
+                    PayPeriodForm.FORTNIGHTLY -> messages("tai.payPeriod.fortnightly"),
+                    PayPeriodForm.OTHER -> messages("tai.payPeriod.other")
                 ),
-                legend=Messages("tai.payPeriod.legend"),
+                legend=messages("tai.payPeriod.legend"),
                 legendHint=None,
                 ('_groupDivClass, "form-group" ),
                 ('_radioOption4WrapAttribute, "data-target=howOftenPanel"),
@@ -85,7 +85,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
                 ('_radioOption4Attributes, Html(s""" ${if(!isNotDaysError) {"checked"} else {""}} """) ),
                 ('_radioOption4AdditionalMarkup, Html(howOftenPanel))
             )}
-            <p><input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/></p>
+            <p><input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/></p>
         }
 
         @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
