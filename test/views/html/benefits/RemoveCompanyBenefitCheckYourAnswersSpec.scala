@@ -71,5 +71,5 @@ class RemoveCompanyBenefitCheckYourAnswersSpec extends TaiViewSpec {
 
   def viewModel = RemoveCompanyBenefitCheckYourAnswersViewModel("Awesome benefit from TestCompany","Hello","Before 6 April",Some("10000"),"Yes",Some("123456789"))
 
-  override def view = views.html.benefits.removeCompnanyBenefitCheckYourAnswers(viewModel)
+  override def view = views.html.benefits.removeCompanyBenefitCheckYourAnswers(viewModel)
 }
