@@ -487,17 +487,9 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   def bonusOvertimeAmountPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        for {
-          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-          moreThisYear <- journeyCacheService.currentValue(UpdateIncome_BonusPaymentsThisYearKey)
-          payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
-        } yield {
-          if (moreThisYear.contains("Yes")) {
-            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), id, employerName))
-          } else {
-            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), id, employerName))
-          }
+        journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
+          mandatoryValues =>
+            Ok(views.html.incomes.bonusPaymentAmount(BonusOvertimeAmountForm.createForm(), mandatoryValues(0).toInt, mandatoryValues(1)))
         }
   }
 
@@ -506,19 +498,11 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
       implicit request =>
         sendActingAttorneyAuditEvent("processBonusOvertimeAmount")
         journeyCacheService.currentCache.flatMap { cache =>
-          val moreThisYear = cache.get(UpdateIncome_BonusPaymentsThisYearKey)
-          val payPeriod = cache.get(UpdateIncome_PayPeriodKey)
-          BonusOvertimeAmountForm.createForm(
-            Some(BonusOvertimeAmountForm.bonusPaymentsAmountErrorMessage(moreThisYear, payPeriod)),
-            Some(BonusOvertimeAmountForm.notAmountMessage(payPeriod))
-          ).bindFromRequest().fold(
+          BonusOvertimeAmountForm.createForm().bindFromRequest().fold(
             formWithErrors => {
-              val id = cache(UpdateIncome_IdKey).toInt
-              val employerName = cache.get(UpdateIncome_NameKey).toString
-              if (moreThisYear.contains("Yes")) {
-                Future.successful(BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, id, employerName)))
-              } else {
-                Future.successful(BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, id, employerName)))
+              journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
+                mandatoryValues =>
+                  BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, mandatoryValues(0).toInt, mandatoryValues(1)))
               }
             },
             formData => {
@@ -540,10 +524,10 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         journeyCacheService.collectedValues(
           Seq(UpdateIncome_NameKey, UpdateIncome_PayPeriodKey, UpdateIncome_TotalSalaryKey, UpdateIncome_PayslipDeductionsKey,
             UpdateIncome_BonusPaymentsKey),
-          Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusPaymentsThisYearKey, UpdateIncome_BonusOvertimeAmountKey)
+          Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey)
         ) map tupled { (mandatorySeq, optionalSeq) => {
           val viewModel = CheckYourAnswersViewModel(mandatorySeq(1), mandatorySeq(2), mandatorySeq(3),
-            optionalSeq(0), mandatorySeq(4), optionalSeq(1), optionalSeq(2))
+            optionalSeq(0), mandatorySeq(4),optionalSeq(1))
           Ok(views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel, mandatorySeq(0)))
         }
         }

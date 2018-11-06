@@ -66,7 +66,7 @@ class CheckYourAnswersSpec extends TaiViewSpec {
 
   override def view = views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel,employerName)
   def viewModel = CheckYourAnswersViewModel(paymentFrequency,totalPay, hasDeductions, Some(taxablePay),
-    hasBonusOrOvertime, Some(hasExtraBonusOrOvertime), Some(totalBonusOrOvertime))
+    hasBonusOrOvertime, Some(totalBonusOrOvertime))
 
 
   val paymentFrequency = "monthly"

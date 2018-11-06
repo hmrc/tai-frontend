@@ -190,23 +190,4 @@ object BonusOvertimeAmountForm{
     )
   }
 
-  def bonusPaymentsAmountErrorMessage(moreThisYear: Option[String], payPeriod: Option[String])(implicit messages: Messages) = {
-    moreThisYear match {
-      case Some("Yes") => messages("tai.bonusPaymentsAmount.year.error")
-      case _ =>
-        payPeriod match {
-          case Some("monthly") => messages("tai.bonusPaymentsAmount.month.error")
-          case Some("fortnightly") => messages("tai.bonusPaymentsAmount.fortnightly.error")
-          case Some("weekly") => messages("tai.bonusPaymentsAmount.week.error")
-          case _ => messages("tai.bonusPaymentsAmount.period.error")
-        }
-    }
-  }
-
-  def notAmountMessage(moreThisYear: Option[String])(implicit messages: Messages) = {
-    moreThisYear match {
-      case Some("Yes") => messages("tai.bonusPaymentsAmount.error.form.notAnAmountAnnual")
-      case _ => messages("tai.bonusPaymentsAmount.error.form.notAnAmount")
-    }
-  }
 }
