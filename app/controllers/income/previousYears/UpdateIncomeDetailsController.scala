@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.forms.income.previousYears.{UpdateIncomeDetailsDecisionFo
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, PersonService, PreviousYearsIncomeService}
-import uk.gov.hmrc.tai.util.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDetailsViewModel, UpdateIncomeDetailsCheckYourAnswersViewModel}
 import views.html.incomes.previousYears.CheckYourAnswers

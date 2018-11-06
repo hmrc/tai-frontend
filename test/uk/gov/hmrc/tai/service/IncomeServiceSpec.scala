@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, PayPeriodForm}
 import uk.gov.hmrc.tai.model.{CalculatedPay, EmploymentAmount, PayDetails, TaxYear}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

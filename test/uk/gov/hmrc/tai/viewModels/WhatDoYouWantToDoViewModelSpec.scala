@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.viewModels
 
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
-import uk.gov.hmrc.tai.util.GoogleAnalyticsConstants
+import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
 import utils.factories.TaxCodeMismatchFactory
 
 class WhatDoYouWantToDoViewModelSpec extends PlaySpec {

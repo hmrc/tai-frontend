@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.model.domain.tracking._
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheConstants {
 

@@ -41,8 +41,8 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCode
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
-import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
-import uk.gov.hmrc.tai.util.{JourneyCacheConstants, TaiConstants, TaxYearRangeUtil}
+import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, JourneyCacheConstants, TaiConstants}
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 import scala.concurrent.Future
 import scala.util.Random
