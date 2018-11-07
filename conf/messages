@@ -733,7 +733,6 @@ tai.incomes.updated.pension.check.text=You can see your update by
 tai.incomes.updated.pension.check.link=viewing your pension details.
 tai.incomes.updated.pension.seeChanges.text=This calculation may change when we get your next pension statement from {0}.
 tai.incomes.workNumber=Employee no:
-
 tai.irregular.mainHeadingText=Update your estimated taxable income for {0} with irregular working hours
 tai.irregular.introduction=We cannot calculate your annual income as you have irregular working hours.
 tai.irregular.secondaryHeading=Enter your own estimate for {0}
@@ -753,7 +752,6 @@ tai.irregular.para4=I want to:
 tai.irregular.preHeadingText=End employment
 tai.irregular.error.error.incorrectTaxableIncome=Your employer told us you were paid £{0} up to {1}. You cannot enter an annual income amount lower than this. If the amount is wrong call HM Revenue and Customs on 0300 200 3300.
 tai.irregular.error.blankValue=Enter a new estimate to continue
-
 tai.item=Item
 tai.iya.check.your.tax.code.text=Check {0} to find out what’s changed.
 tai.iya.paidTooLittle.cy-and-cy-plus-one.text1=We think you’ve paid too little Income Tax this year and owe £{0}. We’ll start to collect this straight away.

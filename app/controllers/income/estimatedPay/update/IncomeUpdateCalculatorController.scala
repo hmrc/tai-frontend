@@ -497,7 +497,6 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     implicit person =>
       implicit request =>
         sendActingAttorneyAuditEvent("processBonusOvertimeAmount")
-        journeyCacheService.currentCache.flatMap { cache =>
           BonusOvertimeAmountForm.createForm().bindFromRequest().fold(
             formWithErrors => {
               journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
@@ -515,7 +514,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               }
             }
           )
-        }
+
   }
 
   def checkYourAnswersPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -526,9 +525,18 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             UpdateIncome_BonusPaymentsKey),
           Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey)
         ) map tupled { (mandatorySeq, optionalSeq) => {
-          val viewModel = CheckYourAnswersViewModel(mandatorySeq(1), mandatorySeq(2), mandatorySeq(3),
-            optionalSeq(0), mandatorySeq(4),optionalSeq(1))
-          Ok(views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel, mandatorySeq(0)))
+
+          val incomeId = mandatorySeq(0)
+          val payPeriodFrequency = mandatorySeq(1)
+          val totalSalaryAmount = mandatorySeq(2)
+          val hasPayslipDeductions = mandatorySeq(3)
+          val taxablePay = optionalSeq(0)
+          val hasBonusPayments = mandatorySeq(4)
+          val bonusPaymentAmount = optionalSeq(1)
+
+          val viewModel = CheckYourAnswersViewModel(payPeriodFrequency, totalSalaryAmount, hasPayslipDeductions,
+            taxablePay, hasBonusPayments, bonusPaymentAmount)
+          Ok(views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel, incomeId))
         }
         }
   }

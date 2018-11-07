@@ -459,57 +459,56 @@ class IncomeUpdateCalculatorControllerSpec
     "display bonusPaymentAmount" in {
 
         val testController = createTestIncomeUpdateCalculatorController
-        when(testController.journeyCacheService.currentValue(Matchers.eq(UpdateIncome_PayPeriodKey))(any())).thenReturn(Future.successful(Some("Weekly")))
+        when(testController.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("1","employer1")))
         val result = testController.bonusOvertimeAmountPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPaymentsAmount.year.title"))
+        doc.title() must include(Messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween))
 
     }
   }
 
   "handleBonusOvertimeAmount" must {
-    "redirect the user to checkYourAnswers page" when {
-      "user selected yes" in {
+    "redirect the user to checkYourAnswers page" in {
         val testController = createTestIncomeUpdateCalculatorController
-        when(testController.journeyCacheService.cache(Matchers.eq(Map(UpdateIncome_BonusOvertimeAmountKey-> "£3,000")))(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(testController.journeyCacheService.cache(Matchers.eq(Map(UpdateIncome_BonusOvertimeAmountKey -> "£3,000")))(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = testController.handleBonusOvertimeAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("amount" -> "£3,000"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage().url)
-      }
     }
 
     "redirect the user to bonusPaymentAmount page" when {
-      "bonus payment is yes" in {
+      "user input has error" in {
         val testController = createTestIncomeUpdateCalculatorController
-        when(testController.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(UpdateIncome_IdKey -> "1")))
-        val result = testController.handleBonusOvertimeAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody())
+        when(testController.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("1","employer1")))
+        val result = testController.handleBonusOvertimeAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("amount" -> ""))
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPaymentsAmount.year.title"))
-      }
-
-      "bonus payment is none" in {
-        val testController = createTestIncomeUpdateCalculatorController
-        when(testController.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(UpdateIncome_IdKey -> "1")))
-        val result = testController.handleBonusOvertimeAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody())
-        status(result) mustBe BAD_REQUEST
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.bonusPaymentsAmount.period.title"))
+        doc.title() must include(Messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween))
       }
     }
   }
 
+
+  Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey)
+
   "checkYourAnswers page" must {
     "display check your answers containing populated values from the journey cache" in {
       val testController = createTestIncomeUpdateCalculatorController
+      val employerName = "Employer1"
+      val payFrequency = "monthly"
+      val totalSalary = "10000"
+      val payslipDeductions = "yes"
+      val bonusPayments = "yes"
+      val taxablePay = "8000"
+      val bonusAmount = "1000"
+
       when(testController.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
         Future.successful((
-          Seq[String]("Employer1","monthly","10000","yes","yes"),
-          Seq[Option[String]](Some("8000"),Some("yes"),Some("1000"))
+          Seq[String](employerName,payFrequency,totalSalary,payslipDeductions,bonusPayments),
+          Seq[Option[String]](Some(taxablePay),Some(bonusAmount))
         ))
       )
       val result = testController.checkYourAnswersPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))

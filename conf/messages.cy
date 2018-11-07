@@ -271,7 +271,6 @@ tai.bonusPaymentsAmount.week.error=Nodwch faint o daliadau bonws neu oramser gaw
 tai.bonusPaymentsAmount.week.title=Taliadau bonws neu oramser yr wythnos hon
 tai.bonusPaymentsAmount.year.description=Faint ydych yn meddwl y byddwch yn ei gael mewn taliadau goramser neu daliadau bonws rhwng 6 Ebrill 2018 a 5 Ebrill 2019?
 tai.bonusPaymentsAmount.year.error=Nodwch faint o daliadau bonws neu oramser rydych yn credu y byddwch yn eu cael eleni
-tai.bonusPaymentsAmount.year.message=Does dim rhaid i hyn fod yn fanwl gywir, dim ond amcangyfrif.
 tai.bonusPaymentsAmount.year.title=Taliadau bonws neu daliadau goramser drwy gydol y flwyddyn
 tai.bonusPaymentsAmount.hint=Does dim rhaid i hyn fod yn fanwl gywir, dim ond amcangyfrif.
 tai.canWeContactByPhone.YesNoChoice.empty=Rhaid i chi ateb y cwestiwn ''A allwn gysylltu â chi?''.
