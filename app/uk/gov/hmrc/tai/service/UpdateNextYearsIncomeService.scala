@@ -44,18 +44,17 @@ final case class UpdateNextYearsIncomeCacheModel(employmentName: String, employm
   }
 }
 
-class UpdateNextYearsIncomeService(implicit hc: HeaderCarrier) {
+class UpdateNextYearsIncomeService {
 
   lazy val journeyCacheService: JourneyCacheService = JourneyCacheService(UpdateNextYearsIncomeConstants.JOURNEY_KEY)
   lazy val employmentService: EmploymentService = EmploymentService
   lazy val taxAccountService: TaxAccountService = TaxAccountService
 
-  private def setup(employmentId: Int)(implicit user: TaiUser): Future[UpdateNextYearsIncomeCacheModel] = {
+  def setup(employmentId: Int)(implicit hc: HeaderCarrier, user: TaiUser): Future[UpdateNextYearsIncomeCacheModel] = {
 
     val nino: Nino = Nino(user.getNino)
     val taxCodeIncomeFuture = taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)
     val employmentFuture = employmentService.employment(nino, employmentId)
-
 
     for {
       taxCodeIncomeOption <- taxCodeIncomeFuture
@@ -71,7 +70,7 @@ class UpdateNextYearsIncomeService(implicit hc: HeaderCarrier) {
     }
   }
 
-  def get(employmentId: Int)(implicit user: TaiUser): Future[UpdateNextYearsIncomeCacheModel] = {
+  def get(employmentId: Int)(implicit hc: HeaderCarrier, user: TaiUser): Future[UpdateNextYearsIncomeCacheModel] = {
     journeyCacheService.currentCache flatMap {
       case cache: Map[String, String] if cache.isEmpty => setup(employmentId)
       case cache: Map[String, String] => {
@@ -89,7 +88,7 @@ class UpdateNextYearsIncomeService(implicit hc: HeaderCarrier) {
     }
   }
 
-  def setNewAmount(newValue: Int, employmentId: Int)(implicit user: TaiUser): Future[UpdateNextYearsIncomeCacheModel] = {
+  def setNewAmount(newValue: Int, employmentId: Int)(implicit hc: HeaderCarrier, user: TaiUser): Future[UpdateNextYearsIncomeCacheModel] = {
     get(employmentId) map { model =>
       val updatedValue = model.copy(newValue = Some(newValue))
 

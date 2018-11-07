@@ -22,7 +22,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.JourneyCacheService
+import uk.gov.hmrc.tai.service.{JourneyCacheService, UpdateNextYearsIncomeService}
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
 trait UpdateIncomeNextYearController extends TaiBaseController {
@@ -31,7 +31,7 @@ trait UpdateIncomeNextYearController extends TaiBaseController {
 //    implicit person =>
 //      implicit request =>
 //    for {
-//      model: UpdateNextYearsIncomeCacheModel <- UpdateNextYearsIncomeService
+//      model: UpdateNextYearsIncomeCacheModel <- updateNextYearIncomeService.setup(employmentId)
 //    } yield {
 //      viewModel = new ViewModel(model)
 //      Ok(view(cacheViewModel))
@@ -52,4 +52,7 @@ object UpdateIncomeNextYearController
 
   override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
+
+  val updateNextYearIncomeService: UpdateNextYearsIncomeService = new UpdateNextYearsIncomeService
+
 }
