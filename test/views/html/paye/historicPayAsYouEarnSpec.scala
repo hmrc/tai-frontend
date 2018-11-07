@@ -63,7 +63,6 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
         val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false,Some("payrollNumber"))
         val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true), 1, taxCodeChangeEnabled = true)
 
-        println(view)
         doc(view) must haveLinkWithUrlWithID("taxCodeDescription", controllers.routes.YourTaxCodeController.prevTaxCodes(cyMinusOneTaxYear).url)
       }
     }
