@@ -17,14 +17,21 @@
 package views.html.incomeTaxComparison
 
 import play.twirl.api.Html
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels._
+import uk.gov.hmrc.time.TaxYearResolver
 
 class TaxFreeAmountSpec extends TaiViewSpec {
   "Tax free amount comparision view" must {
 
     "display heading" in {
       doc must haveHeadingH2WithText(messages("tai.incomeTaxComparison.taxFreeAmount.subHeading"))
+    }
+
+    "display information emphases test with dynamic dates" in {
+      val startOfNextTaxYear = Dates.formatDate(TaxYearResolver.startOfNextTaxYear)
+      doc must haveStrongWithText(messages("tai.incomeTaxComparison.taxFreeAmount.PA.information1", startOfNextTaxYear))
     }
 
     "display paragraph" in {

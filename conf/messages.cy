@@ -635,7 +635,7 @@ tai.incomeTaxComparison.taxCodes.description=Defnyddir eich codau treth i gyfrif
 tai.incomeTaxComparison.taxCodes.scottishInfo=Bydd eich cod treth ar gyfer y flwyddyn nesaf yn dechrau gydag ''S'' oherwydd y byddwch yn drethdalwr yn yr Alban. {0}
 tai.incomeTaxComparison.taxCodes.subHeading=Codau treth
 tai.incomeTaxComparison.taxFreeAmount.NA=ddim yn gymwys
-tai.incomeTaxComparison.taxFreeAmount.PA.information1=Mae''r Lwfans Personol safonol yn cynyddu i £11,850 o 6 Ebrill 2018 ymlaen.
+
 tai.incomeTaxComparison.taxFreeAmount.PA.information2=Gall eich Lwfans Personol fod yn wahanol, yn dibynnu ar eich amgylchiadau.
 tai.incomeTaxComparison.taxFreeAmount.additions.caption=Ychwanegiadau
 tai.incomeTaxComparison.taxFreeAmount.deductions.caption=Didyniadau

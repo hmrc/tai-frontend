@@ -16,7 +16,8 @@
 
 @import uk.gov.hmrc.tai.viewModels.TaxFreeAmountComparisonViewModel
 @import uk.gov.hmrc.play.views.formatting.Money._
-
+@import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @(model: TaxFreeAmountComparisonViewModel)(implicit messages: Messages)
 
 <h2 class="heading-large" id="taxFreeAmountHeading">@messages("tai.incomeTaxComparison.taxFreeAmount.subHeading")</h2>
@@ -24,7 +25,7 @@
 <p>@messages("tai.incomeTaxComparison.taxFreeAmount.description")</p>
 <p class="notice text">
     <i class="icon icon-information"><span class="visuallyhidden">Information</span></i>
-    <strong class="bold-small">@messages("tai.incomeTaxComparison.taxFreeAmount.PA.information1")</strong>
+    <strong class="bold-small">@messages("tai.incomeTaxComparison.taxFreeAmount.PA.information1", s"${Dates.formatDate(TaxYearResolver.startOfNextTaxYear)}")</strong>
 </p>
 <p>@messages("tai.incomeTaxComparison.taxFreeAmount.PA.information2")</p>
 
