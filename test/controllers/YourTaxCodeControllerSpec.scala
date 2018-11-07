@@ -109,10 +109,10 @@ class YourTaxCodeControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
       val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation,"A Employer 1", false, Some("1234"), false)
       val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
-      val taxCodeChange = TaxCodeChange(Seq(previousTaxCodeRecord1), Seq(currentTaxCodeRecord1))
+      val taxCodeRecords = Seq(previousTaxCodeRecord1)
 
-      when(testController.taxCodeChangeService.taxCodeChange(any(), any())(any()))
-        .thenReturn(Future.successful(taxCodeChange))
+      when(testController.taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
+        .thenReturn(Future.successful(taxCodeRecords))
 
       val result = testController.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

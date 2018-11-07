@@ -123,6 +123,43 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
       }
     }
 
+  "lastTaxCodeRecords" must {
+    "fetch the most recent tax code records when given valid nino and year" in {
+      val testConnector = createTestConnector
+      val nino = generateNino
+      val year = TaxYear().prev.year
+
+      val latestTaxCodeRecordUrl = s"/tai/${nino.nino}/tax-account/tax-code-records/$year"
+
+      val startDate = TaxYearResolver.startOfCurrentTaxYear
+      val taxCodeRecord = TaxCodeRecord("code", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
+
+      val json = Json.obj(
+        "data" -> Json.arr(
+          Json.obj(
+            "taxCode" -> "code",
+            "startDate" -> startDate,
+            "endDate" -> startDate.plusDays(1),
+            "basisOfOperation" -> "Cumulative",
+            "employerName" -> "Employer 1",
+            "pensionIndicator" -> false,
+            "payrollNumber" -> "1234",
+            "primary" -> true
+          )
+        ),
+        "links" -> JsArray(Seq())
+      )
+
+      val expectedResult = Seq(taxCodeRecord)
+
+      server.stubFor(
+        get(urlEqualTo(latestTaxCodeRecordUrl)).willReturn(ok(json.toString()))
+      )
+
+      val result = Await.result(testConnector.lastTaxCodeRecords(nino, TaxYear().prev), 5 seconds)
+      result mustEqual TaiSuccessResponseWithPayload(expectedResult)
+    }
+  }
 
   "has tax code changed" must {
     "tax code change url" must {

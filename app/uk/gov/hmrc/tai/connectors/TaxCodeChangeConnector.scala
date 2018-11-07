@@ -22,7 +22,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector.baseUrl
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeMismatch}
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeMismatch, TaxCodeRecord}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -72,6 +72,19 @@ trait TaxCodeChangeConnector {
         TaiTaxAccountFailureResponse(e.getMessage)
     }
   }
+
+  def lastTaxCodeRecordsUrl(nino: String, year: Int): String = baseTaxAccountUrl(nino) + s"tax-code-records/$year"
+
+  def lastTaxCodeRecords(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+    httpHandler.getFromApi(lastTaxCodeRecordsUrl(nino.nino, year.year)) map (
+      json => TaiSuccessResponseWithPayload((json \ "data").as[Seq[TaxCodeRecord]])
+      ) recover {
+      case e: Exception =>
+        Logger.warn(s"Couldn't retrieve tax code records for $nino for year $year with exception:${e.getMessage}")
+        TaiTaxAccountFailureResponse(e.getMessage)
+    }
+  }
+
 }
 
 object TaxCodeChangeConnector extends TaxCodeChangeConnector {

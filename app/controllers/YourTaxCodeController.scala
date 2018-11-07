@@ -70,10 +70,10 @@ trait YourTaxCodeController extends TaiBaseController
               val nino = user.person.nino
 
               for {
-                taxCodeChange <- taxCodeChangeService.taxCodeChange(nino, year)
-                scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeChange.current.map(_.taxCode))
+                taxCodeRecords <- taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(nino, year)
+                scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeRecords.map(_.taxCode))
               } yield {
-                val taxCodeViewModel = TaxCodeViewModelPreviousYears(taxCodeChange.current, scottishTaxRateBands, year)
+                val taxCodeViewModel = TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, year)
                 Ok(views.html.taxCodeDetailsPreviousYears(taxCodeViewModel))
               }
             }

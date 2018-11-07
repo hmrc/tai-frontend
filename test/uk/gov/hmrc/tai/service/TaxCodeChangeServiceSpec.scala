@@ -24,6 +24,7 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{HasTaxCodeChanged, TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.time.TaxYearResolver
@@ -37,14 +38,15 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
 
   "taxCodeChange" must {
     "return the tax code change given a valid nino" in {
-      val sut = createSut
+      val testService = createTestService
       val nino = generateNino
 
       val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
 
-      when(sut.taxCodeChangeConnector.taxCodeChange(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeChange)))
+      when(testService.taxCodeChangeConnector.taxCodeChange(any(), any())(any()))
+        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeChange)))
 
-      val result = sut.taxCodeChange(nino)
+      val result = testService.taxCodeChange(nino)
       Await.result(result, 5.seconds) mustBe taxCodeChange
     }
   }
@@ -52,46 +54,74 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
   "has tax code changed" must {
     "return a HasTaxCodeChanged object" when {
       "success response from the connectors" in {
-        val sut = createSut
+        val testService = createTestService
         val nino = generateNino
 
         val taxCodeMismatch = TaxCodeMismatchFactory.matchedTaxCode
         val hasTaxCodeChanged = HasTaxCodeChanged(true, Some(taxCodeMismatch))
 
-        when(sut.taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
-        when(sut.taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
+        when(testService.taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
+        when(testService.taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
 
-        val result = sut.hasTaxCodeChanged(nino)
+        val result = testService.hasTaxCodeChanged(nino)
         Await.result(result, 5.seconds) mustBe hasTaxCodeChanged
       }
     }
 
     "throws a could not fetch tax code mismatch" when {
       "invalid response is returned fromm taxCodeChangeConnector.taxCodeMismatch" in {
-        val sut = createSut
+        val testService = createTestService
         val nino = generateNino
 
-        when(sut.taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
-        when(sut.taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
+        when(testService.taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
+        when(testService.taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
 
-        val ex = the[RuntimeException] thrownBy Await.result(sut.hasTaxCodeChanged(nino), 5 seconds)
+        val ex = the[RuntimeException] thrownBy Await.result(testService.hasTaxCodeChanged(nino), 5 seconds)
         ex.getMessage must include("Could not fetch tax code mismatch")
       }
     }
 
     "throws a could not fetch tax code mismatch" when {
       "invalid response is returned fromm taxCodeChangeConnector.hasTaxCodeChanged" in {
-        val sut = createSut
+        val testService = createTestService
         val nino = generateNino
 
         val taxCodeMismatch = TaxCodeMismatchFactory.matchedTaxCode
 
-        when(sut.taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
-        when(sut.taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
+        when(testService.taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
+        when(testService.taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
 
-        val ex = the[RuntimeException] thrownBy Await.result(sut.hasTaxCodeChanged(nino), 5 seconds)
+        val ex = the[RuntimeException] thrownBy Await.result(testService.hasTaxCodeChanged(nino), 5 seconds)
         ex.getMessage must include("Could not fetch tax code change")
       }
+    }
+  }
+
+  "lastTaxCodeRecordsInYearPerEmployment" must {
+    "return a sequence of TaxCodeRecords when given a valid nino and year" in {
+      val testService = createTestService
+      val nino = generateNino
+
+      val taxCodeRecords = Seq(taxCodeRecord1)
+
+      when(testService.taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
+        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeRecords)))
+
+      val result = testService.lastTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev)
+      Await.result(result, 5.seconds) mustBe taxCodeRecords
+    }
+
+    "throw an exception if could not get last tax codes for given year" in {
+      val testService = createTestService
+      val nino = generateNino
+
+      val taxCodeRecords = Seq(taxCodeRecord1)
+
+      when(testService.taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
+        .thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
+
+      val ex = the[RuntimeException] thrownBy Await.result(testService.lastTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev), 5 seconds)
+      ex.getMessage must include(s"Could not fetch last tax code records for year ${TaxYear().prev}")
     }
   }
 
@@ -101,7 +131,7 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   private def generateNino: Nino = new Generator(new Random).nextNino
-  private def createSut = new TestService
+  private def createTestService = new TestService
 
   private class TestService extends TaxCodeChangeService {
     override val taxCodeChangeConnector: TaxCodeChangeConnector = mock[TaxCodeChangeConnector]

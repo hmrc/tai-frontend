@@ -22,7 +22,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{HasTaxCodeChanged, TaxCodeChange, TaxCodeMismatch}
+import uk.gov.hmrc.tai.model.domain.{HasTaxCodeChanged, TaxCodeChange, TaxCodeMismatch, TaxCodeRecord}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -51,6 +51,13 @@ trait TaxCodeChangeService {
         case (_: Boolean, _: TaxCodeMismatch) => HasTaxCodeChanged(hasTaxCodeChanged, Some(taxCodeMismatch))
         case _ => throw new RuntimeException("Could not fetch has tax code changed")
       }
+    }
+  }
+
+  def lastTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[TaxCodeRecord]] = {
+    taxCodeChangeConnector.lastTaxCodeRecords(nino, year) map {
+      case TaiSuccessResponseWithPayload(taxCodeRecords: Seq[TaxCodeRecord]) => taxCodeRecords
+      case _ => throw new RuntimeException(s"Could not fetch last tax code records for year $year")
     }
   }
 
