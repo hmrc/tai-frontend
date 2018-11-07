@@ -651,6 +651,7 @@ tai.incomeTaxComparison.taxFreeAmount.totalTFA=Eich cyfanswm sy''n rhydd o dreth
 
 tai.incomeTaxComparison.whatHappensNext.subHeading=Yr hyn sy’n digwydd nesaf
 tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text=Os yw’r wybodaeth hon yn gywir, nid oes angen i chi wneud unrhyw beth.
+tai.incomeTaxComparison.whatHappensNext.tellUsAboutChanges.description=Gallwch roi gwybod i ni am newidiadau a fydd yn gymwys o {0} ymlaen ar gyfer unrhyw rai o’r canlynol:
 
 tai.incomeTaxComparison.tellAboutChange.companyBenefitsReaderText=Rhoi gwybod i ni am fuddiannau cwmni.
 tai.incomeTaxComparison.tellAboutChange.companyBenefitsText=buddiannau cwmni
