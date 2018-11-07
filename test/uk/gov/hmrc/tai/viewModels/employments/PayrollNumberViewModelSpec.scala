@@ -18,8 +18,8 @@ package uk.gov.hmrc.tai.viewModels.employments
 
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants}
 import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
 
 class PayrollNumberViewModelSpec extends PlaySpec  with JourneyCacheConstants with FormValuesConstants with FakeTaiPlayApplication {
 

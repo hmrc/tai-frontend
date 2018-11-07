@@ -34,7 +34,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
 import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
-import uk.gov.hmrc.tai.util.BankAccountDecisionConstants
+import uk.gov.hmrc.tai.util.constants.BankAccountDecisionConstants
 
 import scala.concurrent.Future
 import scala.util.Random

@@ -24,7 +24,8 @@ import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax._
 import uk.gov.hmrc.tai.model.domain.{MaintenancePayments => _, _}
 import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
-import uk.gov.hmrc.tai.util.{BandTypesConstants, IncomeTaxEstimateHelper, ViewModelHelper}
+import uk.gov.hmrc.tai.util.constants.BandTypesConstants
+import uk.gov.hmrc.tai.util.{IncomeTaxEstimateHelper, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.{HelpLink, Label}
 import uk.gov.hmrc.urls.Link
 

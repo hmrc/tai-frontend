@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.forms.employments.{IrregularPayForm, IrregularPayFormData
 import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 import play.api.data.Form
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.IrregularPayConstants
+import uk.gov.hmrc.tai.util.constants.IrregularPayConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class EndEmploymentIrregularPaymentErrorPageSpec extends TaiViewSpec with IrregularPayConstants {

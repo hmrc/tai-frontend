@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import play.api.Play.current
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.ViewModelHelper
-import uk.gov.hmrc.tai.util.GoogleAnalyticsConstants._
+import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants._
 
 case class PotentialUnderpaymentViewModel(iyaCYAmount: BigDecimal,
                                           iyaTaxCodeChangeAmount: BigDecimal,

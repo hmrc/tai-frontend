@@ -20,14 +20,14 @@ import play.api.mvc.Results.Redirect
 import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.play.frontend.auth._
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.ConfidenceLevel
-import uk.gov.hmrc.tai.util.TaiConstants
-import uk.gov.hmrc.tai.util.TaiConstants.{CompletionUrl, FailureUrl, Origin}
+import uk.gov.hmrc.tai.util.constants.TaiConstants.{CompletionUrl, FailureUrl, Origin}
 
 import scala.concurrent.Future
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter.fromHeadersAndSession
 import uk.gov.hmrc.tai.config
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 trait TaiConfidenceLevelPredicate extends PageVisibilityPredicate {
 
