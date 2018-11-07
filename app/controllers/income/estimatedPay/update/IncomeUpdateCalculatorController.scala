@@ -461,7 +461,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
       implicit request =>
         sendActingAttorneyAuditEvent("processBonusPayments")
         YesNoForm.form(Messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory",
-          TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak)).bindFromRequest().fold(
+          TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween)).bindFromRequest().fold(
           formWithErrors => {
             journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
               mandatoryValues =>

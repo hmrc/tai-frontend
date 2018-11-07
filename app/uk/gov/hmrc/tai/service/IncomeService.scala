@@ -22,7 +22,6 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaiConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
-import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, PayPeriodForm}
 import uk.gov.hmrc.tai.model.{TaxYear, _}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome

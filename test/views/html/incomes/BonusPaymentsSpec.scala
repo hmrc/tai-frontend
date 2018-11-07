@@ -29,7 +29,7 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar with FormValuesCon
   private val Id = 1
   private val employerName = "Employer"
   private val emptySelectionErrorMessage = messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory",
-    TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak)
+    TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween)
   private val bonusPaymentsForm = YesNoForm.form(emptySelectionErrorMessage)
   private val choice = YesNoForm.YesNoChoice
 

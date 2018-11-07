@@ -61,16 +61,27 @@ class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
       validatedForm.value.get mustBe BonusOvertimeAmountForm(Some(monetaryAmount))
     }
 
-    "display an error when the user continues without entering an amount" in {
+    "display an error" when {
+      "the user continues without entering an amount" in {
+        val emptySelectionErrorMessage = messages("tai.bonusPaymentsAmount.error.form.mandatory",
+          TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween)
+        val invalidRequest = Json.obj("amount" -> "")
+        val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
 
-//      val emptySelectionErrorMessage = messages()
-//      val invalidRequest = Json.obj("amount" -> "")
-//      val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
-//
-//      val errorView = views.html.incomes.bonusPaymentAmount(invalidatedForm,id, employerName)
-//      doc(errorView) must haveErrorLinkWithText(messages())
-      //doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage),"error-message")
+        val errorView = views.html.incomes.bonusPaymentAmount(invalidatedForm, id, employerName)
+        doc(errorView) must haveErrorLinkWithText(emptySelectionErrorMessage)
+        doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
+      }
 
+      "the user enters an invalid monetary amount" in {
+        val invalidAmountErrorMessage = messages("error.invalid.monetaryAmount.format.invalid")
+        val invalidRequest = Json.obj("amount" -> "£10,0")
+        val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
+
+        val errorView = views.html.incomes.bonusPaymentAmount(invalidatedForm, id, employerName)
+        doc(errorView) must haveErrorLinkWithText(invalidAmountErrorMessage)
+        doc(errorView) must haveClassWithText(messages(invalidAmountErrorMessage), "error-message")
+      }
     }
 
   }
