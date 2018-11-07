@@ -20,7 +20,7 @@ import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
-import uk.gov.hmrc.tai.util.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 
 class RemoveCompanyBenefitStopDateFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport with FormValuesConstants{
 

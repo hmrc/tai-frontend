@@ -20,7 +20,7 @@ import org.joda.time.LocalDate
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.TaiConstants.EYU_DATE_FORMAT
+import uk.gov.hmrc.tai.util.constants.TaiConstants.EYU_DATE_FORMAT
 import play.api.i18n.Messages
 import play.api.Play.current
 import uk.gov.hmrc.tai.config.ApplicationConfig

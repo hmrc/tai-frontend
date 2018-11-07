@@ -23,7 +23,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.hmrc.tai.util.FormHelper.isValidCurrency
 import uk.gov.voa.play.form.ConditionalMappings._
-import uk.gov.hmrc.tai.util.{BankAccountClosingInterestConstants, FormValuesConstants}
+import uk.gov.hmrc.tai.util.constants.{BankAccountClosingInterestConstants, FormValuesConstants}
 
 
 case class BankAccountClosingInterestForm(closingBankAccountInterestChoice: Option[String], closingInterestEntry: Option[String])

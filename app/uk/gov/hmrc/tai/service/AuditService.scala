@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWith
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.util.TaiConstants._
+import uk.gov.hmrc.tai.util.constants.TaiConstants._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

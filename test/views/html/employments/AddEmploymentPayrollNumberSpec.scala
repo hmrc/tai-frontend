@@ -22,7 +22,7 @@ import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm
-import uk.gov.hmrc.tai.util.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
 

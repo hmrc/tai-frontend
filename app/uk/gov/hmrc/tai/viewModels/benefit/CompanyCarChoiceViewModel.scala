@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.viewModels.benefit
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 case class CompanyCarChoiceViewModel(carModel: String,
                                      carProvider: String)
