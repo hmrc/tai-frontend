@@ -20,7 +20,8 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.tax.{NonSavingsIncomeCategory, TotalTax}
 import uk.gov.hmrc.tai.model.domain.{Employment, UnderPaymentFromPreviousYear}
-import uk.gov.hmrc.tai.util.{BandTypesConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 
 case class PreviousYearUnderpaymentViewModel(
                                               shouldHavePaid: BigDecimal,

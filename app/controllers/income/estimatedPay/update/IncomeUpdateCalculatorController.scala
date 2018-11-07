@@ -22,7 +22,7 @@ import controllers.{AuthenticationConnectors, TaiBaseController}
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -32,14 +32,14 @@ import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
-import uk.gov.hmrc.tai.model.domain.{Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
+import uk.gov.hmrc.tai.model.domain.{Employment, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
-import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
-import uk.gov.hmrc.tai.util.TaiConstants.MONTH_AND_YEAR
-import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.CheckYourAnswersViewModel
+import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
+import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, JourneyCacheConstants, TaiConstants}
+import uk.gov.hmrc.tai.util.FormHelper
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{CheckYourAnswersViewModel, EstimatedPayViewModel}
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmIncomeIrregularHoursViewModel, EditIncomeIrregularHoursViewModel}
 
 import scala.Function.tupled
@@ -66,7 +66,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   val incomeService: IncomeService
 
 
-  def   estimatedPayLandingPage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+  def estimatedPayLandingPage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
 
@@ -89,17 +89,25 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         }
   }
 
-
   def howToUpdatePage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
 
         employmentService.employment(Nino(user.getNino), id) flatMap {
-          case Some(employment) =>
+          case Some(employment: Employment) =>
+
+            val incomeType = incomeTypeIdentifier(employment.receivingOccupationalPension)
+            val incomeToEditFuture = incomeService.employmentAmount(Nino(user.getNino), id)
+            val taxCodeIncomeDetailsFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
+
             for {
-              incomeToEdit <- incomeService.employmentAmount(Nino(user.getNino), id)
-              taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
-              _ <- journeyCache(cacheMap = Map(UpdateIncome_NameKey -> employment.name, UpdateIncome_IdKey -> id.toString))
+              incomeToEdit: EmploymentAmount <- incomeToEditFuture
+              taxCodeIncomeDetails <- taxCodeIncomeDetailsFuture
+              _ <- journeyCache(cacheMap = Map(
+                UpdateIncome_NameKey -> employment.name,
+                UpdateIncome_IdKey -> id.toString,
+                UpdateIncome_IncomeTypeKey -> incomeType)
+              )
             } yield {
               processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails)
             }
@@ -260,11 +268,11 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey).flatMap(cache => {
-            val employerName :: newPay :: Nil = cache.toList
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey).flatMap(cache => {
+            val employerName :: newPay :: employerId :: Nil = cache.toList
 
             taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) map {
-              case TaiSuccessResponse => Ok(views.html.incomes.editSuccess(employerName))
+              case TaiSuccessResponse => Ok(views.html.incomes.editSuccess(employerName, employerId.toInt))
               case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
             }
           })
@@ -290,12 +298,12 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
         PayPeriodForm.createForm(None, payPeriod).bindFromRequest().fold(
           formWithErrors => {
-            val isNotDaysError = formWithErrors.errors.filter { error => error.key == "otherInDays" }.isEmpty
+            val isDaysError = formWithErrors.errors.exists { error => error.key == PayPeriodForm.OTHER_IN_DAYS_KEY }
             for {
               id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
               employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
             } yield {
-              BadRequest(views.html.incomes.payPeriod(formWithErrors, id, employerName, isNotDaysError))
+              BadRequest(views.html.incomes.payPeriod(formWithErrors, id, employerName, !isDaysError))
             }
           },
           formData => {
@@ -578,8 +586,11 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
 
             journeyCache(cacheMap = cache) map { _ =>
-              Ok(views.html.incomes.estimatedPay(calculatedPay.grossAnnualPay, calculatedPay.netAnnualPay, id, isBonusPayment,
-                calculatedPay.annualAmount, calculatedPay.startDate, employerName, calculatedPay.grossAnnualPay == calculatedPay.netAnnualPay))
+
+              val viewModel = EstimatedPayViewModel(calculatedPay.grossAnnualPay, calculatedPay.netAnnualPay, id, isBonusPayment,
+                                                    calculatedPay.annualAmount, calculatedPay.startDate, employerName)
+
+              Ok(views.html.incomes.estimatedPay(viewModel))
             }
 
           } else {
@@ -602,6 +613,10 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           val newAmount = income.copy(newAmount = netAmount.map(netAmountValue => BigDecimal(netAmountValue).intValue()).getOrElse(income.oldAmount))
           Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = newAmount).get))
         }
+  }
+
+  private def incomeTypeIdentifier(isPension: Boolean): String = {
+    if (isPension) { TaiConstants.IncomeTypePension } else { TaiConstants.IncomeTypeEmployment }
   }
 }
 

@@ -37,7 +37,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.domain.{Employment, IncorrectIncome}
 import uk.gov.hmrc.tai.service.{EmploymentService, JourneyCacheService, PersonService}
-import uk.gov.hmrc.tai.util.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 
 import scala.concurrent.Future
 import scala.language.postfixOps

@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.util.TaiConstants.encodedMinusSign
+import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.time.TaxYearResolver
 

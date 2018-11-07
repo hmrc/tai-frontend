@@ -36,7 +36,7 @@ import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.AuditConstants
+import uk.gov.hmrc.tai.util.constants.AuditConstants
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

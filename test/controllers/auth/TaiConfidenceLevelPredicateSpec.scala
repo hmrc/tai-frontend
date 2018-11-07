@@ -24,8 +24,8 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.ConfidenceLevel.{L100, L
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.CredentialStrength.Strong
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.{AuthContext, PageBlocked, PageIsVisible}
-import uk.gov.hmrc.tai.util.TaiConstants
-import uk.gov.hmrc.tai.util.TaiConstants.{CompletionUrl, FailureUrl, Origin}
+import uk.gov.hmrc.tai.util.constants.TaiConstants.{CompletionUrl, FailureUrl, Origin}
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.Await
 import scala.concurrent.duration._

@@ -22,7 +22,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{OtherBasisOfOperation, Week1Month1BasisOfOperation}
-import uk.gov.hmrc.tai.util.TaiConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 

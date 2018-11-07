@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.viewModels.pensions
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
 
 case class PensionNumberViewModel(pensionProviderName: String,
                                   firstPayChoice: Boolean)

@@ -42,7 +42,7 @@ import uk.gov.hmrc.tai.forms.DateForm
 import uk.gov.hmrc.tai.model.CloseAccountRequest
 import uk.gov.hmrc.tai.model.domain.BankAccount
 import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
-import uk.gov.hmrc.tai.util.{BankAccountClosingInterestConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.{BankAccountClosingInterestConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.duration._

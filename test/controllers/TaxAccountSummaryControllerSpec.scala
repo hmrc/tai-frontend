@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiT
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.{AuditConstants, TaiConstants}
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.ExecutionContext.Implicits.global

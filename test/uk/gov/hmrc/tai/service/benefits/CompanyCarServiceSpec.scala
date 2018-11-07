@@ -28,13 +28,13 @@ import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheSer
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit, WithdrawCarAndFuel}
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 class CompanyCarServiceSpec extends PlaySpec
   with MockitoSugar

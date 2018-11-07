@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.forms.pensions
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.IncorrectPensionDecisionConstants
+import uk.gov.hmrc.tai.util.constants.IncorrectPensionDecisionConstants
 
 object UpdateRemovePensionForm extends IncorrectPensionDecisionConstants {
   def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](

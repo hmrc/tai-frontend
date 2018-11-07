@@ -33,7 +33,8 @@ import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnecto
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.model.AmountRequest
 import uk.gov.hmrc.tai.model.domain.BankAccount
-import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.FormHelper
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.Future
 

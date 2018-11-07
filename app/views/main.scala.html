@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.http.SessionKeys
 @import uk.gov.hmrc.play.views.helpers.AttorneyRegime.standAlone
 @import uk.gov.hmrc.play.views.html.layouts
-@import uk.gov.hmrc.tai.util.TaiConstants
+@import uk.gov.hmrc.tai.util.constants.TaiConstants
 @import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig}
 @import uk.gov.hmrc.play.language.LanguageUtils
 
@@ -124,7 +124,7 @@
 @inlineScript = {
     @if(webChat){
         <script type="text/javascript">
-            var EG_ACT_ID = "@Play.configuration.getString("webchat.id ")";
+            var EG_ACT_ID = "@Play.configuration.getString("webchat.id")";
             (function(e, f) {
                 var d, c, b, a = e.createElement("iframe");
                 a.src = "about:blank";

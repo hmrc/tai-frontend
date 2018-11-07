@@ -26,7 +26,7 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.tai.util.TaxRegionConstants
+import uk.gov.hmrc.tai.util.constants.TaxRegionConstants
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{Band, BandedGraph, ComplexTaxView, SimpleTaxView}
 
 

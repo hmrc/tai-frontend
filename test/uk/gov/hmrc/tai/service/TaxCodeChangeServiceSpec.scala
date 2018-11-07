@@ -58,7 +58,7 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
         val nino = generateNino
 
         val taxCodeMismatch = TaxCodeMismatchFactory.matchedTaxCode
-        val hasTaxCodeChanged = HasTaxCodeChanged(true, Some(taxCodeMismatch))
+        val hasTaxCodeChanged = HasTaxCodeChanged(changed = true, Some(taxCodeMismatch))
 
         when(testService.taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
         when(testService.taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
@@ -68,16 +68,18 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
       }
     }
 
-    "throws a could not fetch tax code mismatch" when {
+    "returns hasTaxCodeChanged = false" when {
       "invalid response is returned fromm taxCodeChangeConnector.taxCodeMismatch" in {
         val testService = createTestService
         val nino = generateNino
 
+        val hasTaxCodeChanged = HasTaxCodeChanged(changed = false, None)
+
         when(testService.taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
         when(testService.taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
 
-        val ex = the[RuntimeException] thrownBy Await.result(testService.hasTaxCodeChanged(nino), 5 seconds)
-        ex.getMessage must include("Could not fetch tax code mismatch")
+        val result = testService.hasTaxCodeChanged(nino)
+        Await.result(result, 5.seconds) mustBe hasTaxCodeChanged
       }
     }
 

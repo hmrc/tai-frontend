@@ -16,27 +16,84 @@
 
 package views.html.incomes
 
+import org.joda.time.LocalDate
 import org.scalatest.mock.MockitoSugar
 import play.api.mvc.Call
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
+import uk.gov.hmrc.time.TaxYearResolver
 
-class EstimatedPaySpec extends TaiViewSpec with MockitoSugar {
+class EstimatedPaySpec extends TaiViewSpec with MockitoSugar{
 
   val id = 1
   val employerName = "Employer"
 
-  "Estimated pay view without bonusOverTime" should {
+  "Estimated Pay" must {
     behave like pageWithBackLink
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     behave like pageWithCombinedHeader(
       messages("tai.estimatedPay.preHeading", employerName),
-      messages("tai.estimatedPay.title"))
-  }
-  "Estimated pay view with bonusOverTime" should {
-    val testView: Html = views.html.incomes.estimatedPay(None,None,id,true,None,None,employerName,false)
-    doc(testView) must haveBackLink
+      messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+    behave like pageWithTitle(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+
+    "display summary sub-title paragraph" in {
+      doc must haveParagraphWithText(messages("tai.estimatedPay.weHaveCalculated"))
+    }
+
+    "display heading subtitle" in {
+      doc must haveH2HeadingWithText(messages("tai.estimatedPay.yourPay"))
+    }
+
+    "display basic pay explanation" in {
+      doc must haveParagraphWithText(messages("tai.estimatedPay.basicPayExplanation"))
+    }
+
+    "display your taxable pay paragraph" in {
+      doc must haveParagraphWithText(messages("tai.estimatedPay.yourTaxablePay.text"))
+    }
+
+    "contain summary with text and a hidden text" when {
+      "the gross pay is apportioned" in {
+        val employmentStartDate = TaxYearResolver.startOfCurrentTaxYear.plusMonths(2)
+
+        val detailedSummaryView = views.html.incomes.estimatedPay(createViewModel(Some(employmentStartDate)))
+
+        doc(detailedSummaryView) must haveSummaryWithText(messages("tai.estimatedPay.whyLower.title"))
+
+      }
+
+      "the grossAnnualPay equals the netAnnualPay" in {
+
+        val grossAnnualPay = 20000
+        val netAnnualPay = 20000
+        val grossEqualsNet = true
+
+        val grossEqualsNetView = views.html.incomes.estimatedPay(createViewModel())
+
+        doc(grossEqualsNetView) must haveSummaryWithText(messages("tai.estimatedPay.whySame.title"))
+
+      }
+    }
+
+    "display a tax code change explanation statement" in {
+      doc must haveParagraphWithText(messages("tai.estimatedPay.taxCodeChange.explanation"))
+    }
+
+    "confirm and send" in {
+      doc must haveLinkElement("confirmAndSend",
+        controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleCalculationResult().url,
+        messages("tai.estimatedPay.checkTaxEstimate"))
+    }
   }
 
-  override def view: Html = views.html.incomes.estimatedPay(None,None,id,false,None,None,employerName,false)
+  override def view: Html = views.html.incomes.estimatedPay(createViewModel())
+
+  def createViewModel(employmentStartDate:Option[LocalDate] = None) = {
+
+    val grossAnnualPay = Some(BigDecimal(20000))
+    val netAnnualPay = Some(BigDecimal(20000))
+    EstimatedPayViewModel(grossAnnualPay, netAnnualPay, id, false, Some(20000), employmentStartDate, employerName)
+  }
 }

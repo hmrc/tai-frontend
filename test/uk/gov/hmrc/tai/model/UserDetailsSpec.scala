@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.model
 
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.util.TaiConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 class UserDetailsSpec extends PlaySpec{
 

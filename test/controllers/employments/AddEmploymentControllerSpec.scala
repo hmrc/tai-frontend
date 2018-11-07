@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm._
 import uk.gov.hmrc.tai.forms.employments.{AddEmploymentFirstPayForm, EmploymentAddDateForm}
 import uk.gov.hmrc.tai.model.domain.AddEmployment
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, PersonService}
-import uk.gov.hmrc.tai.util.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
