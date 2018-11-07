@@ -15,6 +15,8 @@
  *@
 
 @import includes.ptaHeader
+@import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import incomeTaxComparison._
 @import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
 @import uk.gov.hmrc.urls.Link
@@ -71,7 +73,8 @@
                 <h2 class="heading-medium">@messages("tai.incomeTaxComparison.whatHappensNext.subHeading")</h2>
 
 
-                <p>@messages("tai.incomeTaxComparison.tellAboutChange.description")</p>
+                <p>@messages("tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text")</p>
+                <p>@messages("tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text",s"${Dates.formatDate(TaxYearResolver.startOfNextTaxYear)}")</p>
 
                 <ul class="list list-bullet">
                     <li>

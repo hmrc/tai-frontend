@@ -17,11 +17,14 @@
 package views.html.incomeTaxComparison
 
 import play.twirl.api.Html
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.util.{DateHelper, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonViewModel, IncomeSourceViewModel, TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
+import uk.gov.hmrc.time.TaxYearResolver
 
 class MainSpec extends TaiViewSpec {
   "Cy plus one view" must {
@@ -58,9 +61,15 @@ class MainSpec extends TaiViewSpec {
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.whatHappensNext.subHeading"))
     }
 
-    "have the tell us about a change text" in {
-      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.tellAboutChange.description"))
+    "have the what happens next text - do nothing" in {
+      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text"))
     }
+
+    "have the what happens next text - estimation apply date" in {
+      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text",startOfNextTaxYear))
+    }
+
+
 
     "have the tell us about a change links" in {
       doc(view) must haveLinkElement(id = "companyBenefitsLink",
@@ -85,6 +94,7 @@ class MainSpec extends TaiViewSpec {
   }
 
   private lazy val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
+  private lazy val startOfNextTaxYear = Dates.formatDate(TaxYearResolver.startOfNextTaxYear)
   private lazy val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 200)
   private lazy val estimatedIncomeTaxComparisonViewModel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
 
