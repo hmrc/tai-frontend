@@ -61,12 +61,16 @@ class MainSpec extends TaiViewSpec {
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.whatHappensNext.subHeading"))
     }
 
-    "have the what happens next text - do nothing" in {
+    "have the what happens next section with paragraph - do nothing" in {
       doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text"))
     }
 
-    "have the what happens next text - estimation apply date" in {
+    "have the what happens next section with paragraph - estimation apply date" in {
       doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text",startOfNextTaxYear))
+    }
+
+    "have the what happens next section with paragraph - calculation may change" in {
+      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text"))
     }
 
 
