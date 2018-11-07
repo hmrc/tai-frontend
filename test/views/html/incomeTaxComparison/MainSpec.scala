@@ -73,6 +73,11 @@ class MainSpec extends TaiViewSpec {
       doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text"))
     }
 
+    "have the if information is wrong or incomplete title" in {
+      doc(view) must haveHeadingH3WithText(messages("tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading"))
+    }
+
+
 
 
     "have the tell us about a change links" in {

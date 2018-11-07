@@ -70,12 +70,14 @@
             </section>
 
             <section class="section" id="whatHappensNext" aria-labelledby="whatHappensNextHeading">
-                <h2 class="heading-medium">@messages("tai.incomeTaxComparison.whatHappensNext.subHeading")</h2>
+                <h2 class="heading-large">@messages("tai.incomeTaxComparison.whatHappensNext.subHeading")</h2>
 
 
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text")</p>
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text",s"${Dates.formatDate(TaxYearResolver.startOfNextTaxYear)}")</p>
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text")</p>
+
+                <h3 class="heading-medium">@messages("tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading")</h3>
 
 
                 <ul class="list list-bullet">

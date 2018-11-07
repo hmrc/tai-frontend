@@ -626,6 +626,7 @@ tai.incomeTaxComparison.incomeTax.estimate=Amcangyfrif o''ch Treth Incwm TWE
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment =Incwm o gyflogaeth
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions=Incwm o gyflogaeth a phensiynau preifat
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromPrivatePensions=Incwm o bensiynau preifat
+tai.incomeTaxComparison.incomeTax.incomeFromEmployment.description=Gallwch ddiweddaru’ch incwm o gyflogaeth neu bensiwn, a bydd hyn yn newid sail ein hamcangyfrif ar gyfer treth y flwyddyn nesaf.
 tai.incomeTaxComparison.incomeTax.subHeading.less=Rydym yn amcangyfrif y byddwch yn talu {0} yn llai o dreth y flwyddyn nesaf
 tai.incomeTaxComparison.incomeTax.subHeading.more=Rydym yn amcangyfrif y byddwch yn talu {0} yn fwy o dreth y flwyddyn nesaf
 tai.incomeTaxComparison.incomeTax.subHeading.same=Rydym yn amcangyfrif y byddwch yn talu''r un faint o dreth y flwyddyn nesaf
@@ -643,9 +644,14 @@ tai.incomeTaxComparison.taxFreeAmount.deductions.caption=Didyniadau
 tai.incomeTaxComparison.taxFreeAmount.noAdditions=Nid oes gennych unrhyw ychwanegiadau
 tai.incomeTaxComparison.taxFreeAmount.noDeductions=Nid oes gennych unrhyw ddidyniadau
 tai.incomeTaxComparison.taxFreeAmount.subHeading=Lwfans rhydd o dreth
+tai.incomeTaxComparison.taxFreeAmount.description=Eich swm rhydd o dreth yw’r incwm y gallwch ei gael cyn dechrau talu treth.
 tai.incomeTaxComparison.taxFreeAmount.totalAdditions=Cyfanswm yr ychwanegiadau
 tai.incomeTaxComparison.taxFreeAmount.totalDeductions=Cyfanswm y didyniadau
 tai.incomeTaxComparison.taxFreeAmount.totalTFA=Eich cyfanswm sy''n rhydd o dreth
+
+tai.incomeTaxComparison.whatHappensNext.subHeading=Yr hyn sy’n digwydd nesaf
+tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text=Os yw’r wybodaeth hon yn gywir, nid oes angen i chi wneud unrhyw beth.
+
 tai.incomeTaxComparison.tellAboutChange.companyBenefitsReaderText=Rhoi gwybod i ni am fuddiannau cwmni.
 tai.incomeTaxComparison.tellAboutChange.companyBenefitsText=buddiannau cwmni
 tai.incomeTaxComparison.tellAboutChange.description=Os yw''ch manylion fan hyn yn anghywir neu os oes rhywbeth ar goll, rhowch wybod i ni am newidiadau i''ch:
