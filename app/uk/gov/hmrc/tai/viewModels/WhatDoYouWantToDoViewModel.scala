@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.viewModels
 
 import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
-import uk.gov.hmrc.tai.util.GoogleAnalyticsConstants
+import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
 
 import scala.collection.immutable.ListMap
 

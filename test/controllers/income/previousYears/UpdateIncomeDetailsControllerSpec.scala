@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.{FormValuesConstants, JourneyCacheConstants, UpdateHistoricIncomeChoiceConstants}
+import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, UpdateHistoricIncomeChoiceConstants}
 
 import scala.concurrent.Future
 import scala.util.Random

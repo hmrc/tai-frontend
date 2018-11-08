@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.util
 
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.TaiConstants.encodedMinusSign
+import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
 
 object MonetaryUtil {
 

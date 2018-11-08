@@ -21,7 +21,7 @@ import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import uk.gov.voa.play.form.ConditionalMappings._
-import uk.gov.hmrc.tai.util.{AddPensionNumberConstants, FormValuesConstants}
+import uk.gov.hmrc.tai.util.constants.{AddPensionNumberConstants, FormValuesConstants}
 
 case class AddPensionProviderNumberForm(payrollNumberChoice: Option[String], payrollNumberEntry: Option[String])
 

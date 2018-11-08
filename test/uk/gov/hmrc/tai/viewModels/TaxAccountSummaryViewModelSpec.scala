@@ -22,7 +22,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.util.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform, encodedMinusSign}
+import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform, encodedMinusSign}
 import uk.gov.hmrc.time.TaxYearResolver
 
 class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {

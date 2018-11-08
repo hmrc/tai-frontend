@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.util.TaiConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

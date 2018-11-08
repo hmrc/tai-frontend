@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.{LocalTemplateRenderer, UserDetailsConnector}
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
-import uk.gov.hmrc.tai.util.TaiConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.Future
 

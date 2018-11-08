@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.forms.pensions.AddPensionProviderNumberForm._
 import uk.gov.hmrc.tai.forms.pensions.{AddPensionProviderFirstPayForm, PensionAddDateForm}
 import uk.gov.hmrc.tai.model.domain.AddPensionProvider
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

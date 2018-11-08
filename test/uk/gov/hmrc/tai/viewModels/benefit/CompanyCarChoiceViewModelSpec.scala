@@ -18,8 +18,8 @@ package uk.gov.hmrc.tai.viewModels.benefit
 
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
 import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 class CompanyCarChoiceViewModelSpec extends PlaySpec
   with JourneyCacheConstants with FakeTaiPlayApplication {

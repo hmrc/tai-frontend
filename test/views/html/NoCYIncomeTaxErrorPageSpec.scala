@@ -20,7 +20,7 @@ import controllers.routes
 import uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
-import uk.gov.hmrc.tai.util.TaiConstants.EmployeePensionIForm
+import uk.gov.hmrc.tai.util.constants.TaiConstants.EmployeePensionIForm
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class NoCYIncomeTaxErrorPageSpec extends TaiViewSpec {

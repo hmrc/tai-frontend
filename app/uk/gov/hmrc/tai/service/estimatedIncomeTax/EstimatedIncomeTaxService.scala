@@ -20,7 +20,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, OtherNonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax._
-import uk.gov.hmrc.tai.util.{BandTypesConstants, TaxRegionConstants}
+import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
 import scala.math.BigDecimal

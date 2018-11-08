@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.forms.employments
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.EmploymentDecisionConstants
+import uk.gov.hmrc.tai.util.constants.EmploymentDecisionConstants
 
 object UpdateRemoveEmploymentForm extends EmploymentDecisionConstants {
   def form(implicit messages: Messages): Form[Option[String]] = Form[Option[String]](

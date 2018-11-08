@@ -22,7 +22,7 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.Call
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class CanWeContactByPhoneSpec extends TaiViewSpec with FormValuesConstants {

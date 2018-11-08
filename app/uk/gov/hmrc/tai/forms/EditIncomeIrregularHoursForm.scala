@@ -22,7 +22,7 @@ import play.api.data.Forms.mapping
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
-import uk.gov.hmrc.tai.util.TaiConstants.MONTH_AND_YEAR
+import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 
 case class EditIncomeIrregularHoursForm(income: Option[String])
 

@@ -21,7 +21,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.BankAccountDecisionConstants
+import uk.gov.hmrc.tai.util.constants.BankAccountDecisionConstants
 
 
 case class BankAccountsDecisionFormData(bankAccountsDecision: Option[String])

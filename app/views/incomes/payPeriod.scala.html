@@ -22,6 +22,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @import includes.cancelLink
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.forms.inputRadioGroupStyling
+@import uk.gov.hmrc.tai.forms.PayPeriodForm
 
 @gaEventActionString = @{"How often do you get paid?"}
 
@@ -37,11 +38,12 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 }
 
 @howOftenPanel = @{
-    def errorMessage = messages("tai.payPeriod.error.form.incomes.other.mandatory")
     def labelMessage = messages("tai.payPeriod.howOften")
     val errorSpan = payPeriodForm.errors.map{error =>
             if(error.key == "otherInDays"){
-                s"""<span class="error-message">${errorMessage}</span>"""
+                s"""<span class="error-message">${messages(error.message)}</span>"""
+            } else {
+                ""
             }
         }.headOption.getOrElse("")
 
@@ -67,7 +69,12 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){
             @{inputRadioGroupStyling(
                 field=payPeriodForm("payPeriod"),
-                radioOptions=Seq(("monthly" -> messages("tai.payPeriod.monthly")), ("weekly" -> messages("tai.payPeriod.weekly")),("fortnightly" -> messages("tai.payPeriod.fortnightly")),("other" -> messages("tai.payPeriod.other"))),
+                radioOptions=Seq(
+                    PayPeriodForm.MONTHLY -> messages("tai.payPeriod.monthly"),
+                    PayPeriodForm.WEEKLY -> messages("tai.payPeriod.weekly"),
+                    PayPeriodForm.FORTNIGHTLY -> messages("tai.payPeriod.fortnightly"),
+                    PayPeriodForm.OTHER -> messages("tai.payPeriod.other")
+                ),
                 legend=messages("tai.payPeriod.legend"),
                 legendHint=None,
                 ('_groupDivClass, "form-group" ),

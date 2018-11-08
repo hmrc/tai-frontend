@@ -20,7 +20,7 @@ import controllers.routes
 import org.jsoup.Jsoup
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.util.TaiConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{CompanyBenefitViewModel, IncomeSourceSummaryViewModel}
 
