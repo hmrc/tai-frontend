@@ -657,6 +657,7 @@ tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText=budd
 tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsReaderText=Rhoi gwybod i ni am fuddiannau cwmni.
 tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText=incwm o ffynhonnell arall
 tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText=lwfansau neu ryddhad treth
+tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link=Dychwelyd i’r Trosolwg o’ch Treth Incwm TWE
 
 tai.incomeTaxSummary.addMissingIncome.section.employerLink=Ychwanegu cyflogwr sydd ar goll
 tai.incomeTaxSummary.addMissingIncome.section.heading=Rhywbeth ar goll?

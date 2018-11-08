@@ -98,6 +98,12 @@ class MainSpec extends TaiViewSpec {
         text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText"))
     }
 
+    "display a link to return to PAYE Income Tax overview" in {
+      val incomeTaxOverviewURL = controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url
+      doc must haveLinkWithUrlWithID("returnToPAYEIncomeOverviewLink", incomeTaxOverviewURL)
+      doc must haveLinkWithText(messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link"))
+    }
+
 
 
   }
