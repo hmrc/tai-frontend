@@ -651,17 +651,12 @@ tai.incomeTaxComparison.taxFreeAmount.totalTFA=Eich cyfanswm sy''n rhydd o dreth
 
 tai.incomeTaxComparison.whatHappensNext.subHeading=Yr hyn sy’n digwydd nesaf
 tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text=Os yw’r wybodaeth hon yn gywir, nid oes angen i chi wneud unrhyw beth.
-tai.incomeTaxComparison.whatHappensNext.tellUsAboutChanges.description=Gallwch roi gwybod i ni am newidiadau a fydd yn gymwys o {0} ymlaen ar gyfer unrhyw rai o’r canlynol:
-
-tai.incomeTaxComparison.tellAboutChange.companyBenefitsReaderText=Rhoi gwybod i ni am fuddiannau cwmni.
-tai.incomeTaxComparison.tellAboutChange.companyBenefitsText=buddiannau cwmni
-tai.incomeTaxComparison.tellAboutChange.description=Os yw''ch manylion fan hyn yn anghywir neu os oes rhywbeth ar goll, rhowch wybod i ni am newidiadau i''ch:
-tai.incomeTaxComparison.tellAboutChange.investmentIncomeReaderText=Rhoi gwybod i ni am incwm o fuddsoddiadau.
-tai.incomeTaxComparison.tellAboutChange.investmentIncomeText=incwm o fuddsoddiadau
-tai.incomeTaxComparison.tellAboutChange.otherIncomeReaderText=Rhoi gwybod i ni am incwm arall.
-tai.incomeTaxComparison.tellAboutChange.otherIncomeText=incwm arall
-tai.incomeTaxComparison.tellAboutChange.stateBenefitsReaderText=Rhoi gwybod i ni am fudd-daliadau’r Wladwriaeth.
-tai.incomeTaxComparison.tellAboutChange.stateBenefitsText=Buddiannau''r Wladwriaeth
+tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text=Caiff eich codau treth a’ch amcangyfrifon incwm ar gyfer y flwyddyn dreth nesaf eu defnyddio ar gyfer eich cyfrif o {0} ymlaen.
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description=Gallwch roi gwybod i ni am newidiadau a fydd yn gymwys o {0} ymlaen ar gyfer unrhyw rai o’r canlynol:
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText=buddiannau cwmni
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsReaderText=Rhoi gwybod i ni am fuddiannau cwmni.
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText=incwm o ffynhonnell arall
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText=lwfansau neu ryddhad treth
 
 tai.incomeTaxSummary.addMissingIncome.section.employerLink=Ychwanegu cyflogwr sydd ar goll
 tai.incomeTaxSummary.addMissingIncome.section.heading=Rhywbeth ar goll?

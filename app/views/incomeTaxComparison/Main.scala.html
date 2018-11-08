@@ -78,7 +78,7 @@
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text")</p>
 
                 <h3 class="heading-medium">@messages("tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading")</h3>
-                <p>@messages("tai.incomeTaxComparison.whatHappensNext.tellUsAboutChanges.description",s"${Dates.formatDate(TaxYearResolver.startOfNextTaxYear)}")</p>
+                <p>@messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description",s"${Dates.formatDate(TaxYearResolver.startOfNextTaxYear)}")</p>
 
 
                 <ul class="list list-bullet">
@@ -86,32 +86,26 @@
                         @includes.link(
                             id = Some("companyBenefitsLink"),
                             url = ApplicationConfig.companyBenefitsLinkUrl,
-                            copy = Messages("tai.incomeTaxComparison.tellAboutChange.companyBenefitsText"),
-                            altCopy = Some(Messages("tai.incomeTaxComparison.tellAboutChange.companyBenefitsReaderText"))
+                            copy = Messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText"),
+                            altCopy = Some(Messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsReaderText"))
                         )
                     </li>
+
                     <li>
                         @includes.link(
-                            id = Some("investmentIncomeLink"),
-                            url = ApplicationConfig.investmentIncomeLinkUrl,
-                            copy = Messages("tai.incomeTaxComparison.tellAboutChange.investmentIncomeText"),
-                            altCopy = Some(Messages("tai.incomeTaxComparison.tellAboutChange.investmentIncomeReaderText"))
+                        id = Some("allowancesTaxReliefsLink"),
+                        url = ApplicationConfig.taxFreeAllowanceLinkUrl,
+                        copy = Messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText"),
+                        altCopy = Some(Messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefReaderText"))
                         )
                     </li>
-                    <li>
-                        @includes.link(
-                            id = Some("taxableStateBenefitLink"),
-                            url = ApplicationConfig.taxableStateBenefitLinkUrl,
-                            copy = Messages("tai.incomeTaxComparison.tellAboutChange.stateBenefitsText"),
-                            altCopy = Some(Messages("tai.incomeTaxComparison.tellAboutChange.stateBenefitsReaderText"))
-                        )
-                    </li>
+
                     <li>
                         @includes.link(
                             id = Some("otherIncomeLink"),
                             url = ApplicationConfig.otherIncomeLinkUrl,
-                            copy = Messages("tai.incomeTaxComparison.tellAboutChange.otherIncomeText"),
-                            altCopy = Some(Messages("tai.incomeTaxComparison.tellAboutChange.otherIncomeReaderText"))
+                            copy = Messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText"),
+                            altCopy = Some(Messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeReaderText"))
                         )
                     </li>
                 </ul>

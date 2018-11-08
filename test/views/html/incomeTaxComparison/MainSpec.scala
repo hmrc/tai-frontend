@@ -78,7 +78,7 @@ class MainSpec extends TaiViewSpec {
     }
 
     "have the tell us about a change paragraph" in {
-      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.tellUsAboutChanges.description",startOfNextTaxYear))
+      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description",startOfNextTaxYear))
     }
 
 
@@ -87,19 +87,15 @@ class MainSpec extends TaiViewSpec {
     "have the tell us about a change links" in {
       doc(view) must haveLinkElement(id = "companyBenefitsLink",
         href = ApplicationConfig.companyBenefitsLinkUrl,
-        text = messages("tai.incomeTaxComparison.tellAboutChange.companyBenefitsText"))
+        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText"))
 
-      doc(view) must haveLinkElement(id = "investmentIncomeLink",
-        href = ApplicationConfig.investmentIncomeLinkUrl,
-        text = messages("tai.incomeTaxComparison.tellAboutChange.investmentIncomeText"))
-
-      doc(view) must haveLinkElement(id = "taxableStateBenefitLink",
-        href = ApplicationConfig.taxableStateBenefitLinkUrl,
-        text = messages("tai.incomeTaxComparison.tellAboutChange.stateBenefitsText"))
+      doc(view) must haveLinkElement(id = "allowancesTaxReliefsLink",
+        href = ApplicationConfig.taxFreeAllowanceLinkUrl,
+        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText"))
 
       doc(view) must haveLinkElement(id = "otherIncomeLink",
         href = ApplicationConfig.otherIncomeLinkUrl,
-        text = messages("tai.incomeTaxComparison.tellAboutChange.otherIncomeText"))
+        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText"))
     }
 
 
