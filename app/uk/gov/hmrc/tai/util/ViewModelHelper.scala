@@ -50,6 +50,10 @@ trait ViewModelHelper {
     TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak
   }
 
+  def currentTaxYearRangeHtmlNonBreakBetween(implicit messages: Messages): String = {
+    TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween
+  }
+
   def dynamicDateRangeHtmlNonBreak(from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {
     TaxYearRangeUtil.dynamicDateRangeHtmlNonBreak(from, to)
   }

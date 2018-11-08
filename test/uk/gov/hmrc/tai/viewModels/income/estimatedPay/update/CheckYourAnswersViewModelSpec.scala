@@ -126,15 +126,9 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
   )
 
   lazy val hasBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
-    messagesApi("tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime"),
+    messagesApi("tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime", currentTaxYearRangeHtmlNonBreakBetween),
     hasBonusOrOvertime,
     controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
-  )
-
-  lazy val totalBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
-    messagesApi("tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime", "month"),
-    withPoundPrefixAndSign(MoneyPounds(BigDecimal(totalBonusOrOvertime),zeroDecimalPlaces)),
-    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url
   )
 
   lazy val totalYearlyBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(

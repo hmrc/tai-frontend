@@ -59,7 +59,7 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
     )
 
     val hasBonusOrOvertimeConfirmationLine = createCheckYourAnswerConfirmationLine(
-      messages("tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime"),
+      messages("tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime",currentTaxYearRangeHtmlNonBreakBetween),
       Some(messages(s"tai.label.${hasBonusOrOvertime.toLowerCase}")),
       controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
     )
