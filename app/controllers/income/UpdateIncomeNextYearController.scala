@@ -22,12 +22,9 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.JourneyCacheService
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
 
 trait UpdateIncomeNextYearController extends TaiBaseController {
-
-  def journeyCacheService: JourneyCacheService
 
   def start(employmentId: Int): Action[AnyContent] = ???
   def edit(employmentId: Int): Action[AnyContent] = ???
@@ -38,11 +35,11 @@ trait UpdateIncomeNextYearController extends TaiBaseController {
 
 object UpdateIncomeNextYearController
   extends UpdateIncomeNextYearController
-    with AuthenticationConnectors
-    with JourneyCacheConstants {
+    with AuthenticationConnectors {
 
   override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
-  override val journeyCacheService = JourneyCacheService(UpdateNextYearsIncome_JourneyKey)
+  val updateNextYearIncomeService: UpdateNextYearsIncomeService = new UpdateNextYearsIncomeService
+
 }

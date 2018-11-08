@@ -51,7 +51,9 @@ trait JourneyCacheConnector {
   }
 
   def cache(journeyName: String, data: Map[String,String])(implicit hc: HeaderCarrier): Future[Map[String,String]] = {
-    httpHandler.postToApi(cacheUrl(journeyName), data).map(_.json.as[Map[String,String]])
+    httpHandler.postToApi(
+      cacheUrl(journeyName), data
+    ).map(_.json.as[Map[String,String]])
   }
 
   def flush(journeyName: String)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
