@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.service
 
-import controllers.auth.TaiUser
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
@@ -27,20 +26,14 @@ import scala.concurrent.Future
 
 final case class UpdateNextYearsIncomeCacheModel(employmentName: String, employmentId: Int, currentValue: BigDecimal, newValue: Option[Int] = None) {
   def toCacheMap: Map[String, String] = {
-    if (newValue.isDefined) {
-      Map(
-        UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME -> employmentName,
-        UpdateNextYearsIncomeConstants.EMPLOYMENT_ID -> employmentId.toString,
-        UpdateNextYearsIncomeConstants.CURRENT_AMOUNT -> currentValue.toString,
-        UpdateNextYearsIncomeConstants.NEW_AMOUNT -> newValue.toString
-      )
-    } else {
-      Map(
-        UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME -> employmentName,
-        UpdateNextYearsIncomeConstants.EMPLOYMENT_ID -> employmentId.toString,
-        UpdateNextYearsIncomeConstants.CURRENT_AMOUNT -> currentValue.toString
-      )
-    }
+    Map(
+      UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME -> employmentName,
+      UpdateNextYearsIncomeConstants.EMPLOYMENT_ID -> employmentId.toString,
+      UpdateNextYearsIncomeConstants.CURRENT_AMOUNT -> currentValue.toString
+    ) ++ { newValue match {
+      case Some(_) => Map(UpdateNextYearsIncomeConstants.NEW_AMOUNT -> newValue.get.toString)
+      case None => Map()
+    }}
   }
 }
 
@@ -50,9 +43,7 @@ class UpdateNextYearsIncomeService {
   lazy val employmentService: EmploymentService = EmploymentService
   lazy val taxAccountService: TaxAccountService = TaxAccountService
 
-  def setup(employmentId: Int)(implicit hc: HeaderCarrier, user: TaiUser): Future[UpdateNextYearsIncomeCacheModel] = {
-
-    val nino: Nino = Nino(user.getNino)
+  def setup(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] = {
     val taxCodeIncomeFuture = taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)
     val employmentFuture = employmentService.employment(nino, employmentId)
 
@@ -67,35 +58,38 @@ class UpdateNextYearsIncomeService {
 
         model
       }
+      case _ => throw new RuntimeException("[UpdateNextYearsIncomeService] Could not set up next years estimated income journey")
     }
   }
 
-  def get(employmentId: Int)(implicit hc: HeaderCarrier, user: TaiUser): Future[UpdateNextYearsIncomeCacheModel] = {
+  def get(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] = {
     journeyCacheService.currentCache flatMap {
-      case cache: Map[String, String] if cache.isEmpty => setup(employmentId)
+      case cache: Map[String, String] if cache.isEmpty => setup(employmentId, nino)
       case cache: Map[String, String] => {
-          if (cache.contains(UpdateNextYearsIncomeConstants.NEW_AMOUNT)) {
-            Future.successful(UpdateNextYearsIncomeCacheModel(cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME),
+        if (cache.contains(UpdateNextYearsIncomeConstants.NEW_AMOUNT)) {
+          Future.successful(UpdateNextYearsIncomeCacheModel(
+            cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME),
             cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_ID).toInt,
             cache(UpdateNextYearsIncomeConstants.CURRENT_AMOUNT).toInt,
-            Some(cache(UpdateNextYearsIncomeConstants.NEW_AMOUNT).toInt)))
+            Some(cache(UpdateNextYearsIncomeConstants.NEW_AMOUNT).toInt)
+          ))
         } else {
-            Future.successful(UpdateNextYearsIncomeCacheModel(cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME),
+          Future.successful(UpdateNextYearsIncomeCacheModel(
+            cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME),
             cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_ID).toInt,
-            cache(UpdateNextYearsIncomeConstants.CURRENT_AMOUNT).toInt))
+            cache(UpdateNextYearsIncomeConstants.CURRENT_AMOUNT).toInt
+          ))
         }
       }
     }
   }
 
-  def setNewAmount(newValue: Int, employmentId: Int)(implicit hc: HeaderCarrier, user: TaiUser): Future[UpdateNextYearsIncomeCacheModel] = {
-    get(employmentId) map { model =>
+  def setNewAmount(newValue: Int, employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] = {
+    get(employmentId, nino) map { model =>
       val updatedValue = model.copy(newValue = Some(newValue))
-
       journeyCacheService.cache(updatedValue.toCacheMap)
 
       updatedValue
     }
   }
-
 }
