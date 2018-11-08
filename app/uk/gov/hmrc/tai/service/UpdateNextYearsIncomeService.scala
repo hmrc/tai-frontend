@@ -21,21 +21,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
-
+import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import scala.concurrent.Future
-
-final case class UpdateNextYearsIncomeCacheModel(employmentName: String, employmentId: Int, currentValue: BigDecimal, newValue: Option[Int] = None) {
-  def toCacheMap: Map[String, String] = {
-    Map(
-      UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME -> employmentName,
-      UpdateNextYearsIncomeConstants.EMPLOYMENT_ID -> employmentId.toString,
-      UpdateNextYearsIncomeConstants.CURRENT_AMOUNT -> currentValue.toString
-    ) ++ { newValue match {
-      case Some(_) => Map(UpdateNextYearsIncomeConstants.NEW_AMOUNT -> newValue.get.toString)
-      case None => Map()
-    }}
-  }
-}
 
 class UpdateNextYearsIncomeService {
 

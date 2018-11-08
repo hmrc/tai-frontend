@@ -22,24 +22,11 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.{JourneyCacheService, UpdateNextYearsIncomeService}
-import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
+import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
 
 trait UpdateIncomeNextYearController extends TaiBaseController {
 
-  def start(employmentId: Int): Action[AnyContent] = {
-//    implicit person =>
-//      implicit request =>
-//    for {
-//      model: UpdateNextYearsIncomeCacheModel <- updateNextYearIncomeService.setup(employmentId)
-//    } yield {
-//      viewModel = new ViewModel(model)
-//      Ok(view(cacheViewModel))
-//    }
-
-
-    ???
-  }
+  def start(employmentId: Int): Action[AnyContent] = ???
   def edit(employmentId: Int): Action[AnyContent] = ???
   def confirm(employmentId: Int): Action[AnyContent] = ???
   def success(employmentId: Int): Action[AnyContent] = ???
