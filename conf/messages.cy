@@ -1285,3 +1285,5 @@ tai.estimatedPay.update.checkYourAnswers.timePeriod.month=y mis hwn
 tai.estimatedPay.update.checkYourAnswers.timePeriod.week=yr wythnos hon
 tai.estimatedPay.update.checkYourAnswers.timePeriod.fortnight=y pythefnos hwn
 tai.estimatedPay.update.checkYourAnswers.timePeriod.period=yn y cyfnod hwn
+
+tai.updateIncome.CYPlus1.preheading=Diweddarwch yr amcangyfrif o’ch incwm oddi wrth {0} ar gyfer y flwyddyn nesaf
