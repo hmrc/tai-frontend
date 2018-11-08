@@ -29,9 +29,12 @@ import uk.gov.hmrc.domain.Generator
 import org.mockito.Matchers.any
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import builders.{AuthBuilder, RequestBuilder, UserBuilder}
+import controllers.auth.TaiUser
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
@@ -56,16 +59,22 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         when(testController.updateNextYearsIncomeService.setup(Matchers.eq(employmentID), Matchers.eq(nino))(any()))
           .thenReturn(Future.successful(model))
 
-//        val expectedView = testController.startView(model)
+        implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-        val result = testController.start(employmentID)(RequestBuilder.buildFakeRequestWithOnlySession("GET"))
+        val expectedView = updateIncomeCYPlus1Start(model)
+
+        val result: Future[Result] = testController.start(employmentID)(fakeRequest)
+
         status(result) mustBe OK
+
+        contentAsString(result) must equal(expectedView.toString)
       }
     }
   }
 
-
-
+  implicit val user: TaiUser = UserBuilder.apply()
+  implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
+  implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
   private val generateNino = new Generator(new Random).nextNino
 
   private def createTestIncomeController = new TestUpdateIncomeNextYearController
@@ -78,18 +87,10 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
-//    implicit val user = UserBuilder.apply()
-    implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
-
-//    def startView(model: UpdateNextYearsIncomeCacheModel) = {
-//      implicit request: FakeRequest[_] => {
-//        updateIncomeCYPlus1Start(model)
-//      }
-//    }
 
   }
 }
