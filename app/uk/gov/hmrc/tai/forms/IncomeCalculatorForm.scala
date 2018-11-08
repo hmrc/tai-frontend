@@ -23,7 +23,7 @@ import play.api.i18n.Messages
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
+import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, EditIncomePayPeriodConstants}
 
 case class HowToUpdateForm(howToUpdate: Option[String])
 
