@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCarBenefit, WithdrawCarAndF
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{CarBenefit, Employment}
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService}
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

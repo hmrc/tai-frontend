@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.forms.employments
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.AddEmploymentFirstPayChoiceConstants
+import uk.gov.hmrc.tai.util.constants.AddEmploymentFirstPayChoiceConstants
 
 
 object AddEmploymentFirstPayForm extends AddEmploymentFirstPayChoiceConstants {

@@ -19,7 +19,7 @@ package views.html.estimatedIncomeTax
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.domain.tax.TaxBand
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.util.{BandTypesConstants, TaxRegionConstants}
+import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
 
 class taxBandTableSpec extends TaiViewSpec with BandTypesConstants with TaxRegionConstants {
 

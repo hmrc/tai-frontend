@@ -25,8 +25,9 @@ import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.{TaxYear, _}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.model.domain.income.Ceased
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

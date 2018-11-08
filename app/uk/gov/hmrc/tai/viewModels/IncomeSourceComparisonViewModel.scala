@@ -20,7 +20,10 @@ import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.filters.TaxAccountFilter
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.util.{TaiConstants, ViewModelHelper}
+import uk.gov.hmrc.tai.util.constants.TaiConstants
+import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.constants.TaiConstants
+
 
 case class IncomeSourceComparisonViewModel(employmentIncomeSourceDetail: Seq[IncomeSourceComparisonDetail],
                                            pensionIncomeSourceDetail: Seq[IncomeSourceComparisonDetail]) extends ViewModelHelper

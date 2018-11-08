@@ -37,9 +37,9 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{Employment, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.TaiConstants.MONTH_AND_YEAR
-import uk.gov.hmrc.tai.util._
-import uk.gov.hmrc.tai.util.constants.EditIncomeIrregularPayConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
+import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
+import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{CheckYourAnswersViewModel, EstimatedPayViewModel}
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmIncomeIrregularHoursViewModel, EditIncomeIrregularHoursViewModel}
 
@@ -300,12 +300,12 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
         PayPeriodForm.createForm(None, payPeriod).bindFromRequest().fold(
           formWithErrors => {
-            val isNotDaysError = formWithErrors.errors.filter { error => error.key == "otherInDays" }.isEmpty
+            val isDaysError = formWithErrors.errors.exists { error => error.key == PayPeriodForm.OTHER_IN_DAYS_KEY }
             for {
               id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
               employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
             } yield {
-              BadRequest(views.html.incomes.payPeriod(formWithErrors, id, employerName, isNotDaysError))
+              BadRequest(views.html.incomes.payPeriod(formWithErrors, id, employerName, !isDaysError))
             }
           },
           formData => {

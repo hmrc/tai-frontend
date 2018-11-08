@@ -35,7 +35,8 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.model.CloseAccountRequest
 import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.time.TaxYearResolver
-import uk.gov.hmrc.tai.util.{FormHelper, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.FormHelper
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.Future
 

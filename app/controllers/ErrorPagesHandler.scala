@@ -28,8 +28,8 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.util.TaiConstants
-import uk.gov.hmrc.tai.util.TaiConstants._
+import uk.gov.hmrc.tai.util.constants.TaiConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
