@@ -16,29 +16,25 @@
 
 package controllers.income
 
-import controllers.{AuthenticationConnectors, FakeTaiPlayApplication}
+import builders.{AuthBuilder, RequestBuilder}
+import controllers.{ControllerViewTestHelper, FakeTaiPlayApplication}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers
+import org.mockito.Matchers.any
+import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
-import org.mockito.Mockito.when
-import uk.gov.hmrc.domain.Generator
-import org.mockito.Matchers.any
-import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
-import builders.{AuthBuilder, RequestBuilder, UserBuilder}
-import controllers.auth.TaiUser
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Result
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.twirl.api.HtmlFormat
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
+import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
 import views.html.incomes.nextYear.updateIncomeCYPlus1Start
 
 import scala.concurrent.Future
@@ -46,11 +42,13 @@ import scala.util.Random
 
 class UpdateIncomeNextYearControllerSpec extends PlaySpec
   with FakeTaiPlayApplication
-  with MockitoSugar {
+  with MockitoSugar
+  with ControllerViewTestHelper {
 
   "start" must {
     "return OK with the start view" when {
-      "income service returns full data" in {
+      "employment data is available for the nino" in {
+
         val testController = createTestIncomeController
         val employmentID = 1
         val currentEstPay = 1234
@@ -61,29 +59,23 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
         implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-        val expectedView = updateIncomeCYPlus1Start(model)
-
         val result: Future[Result] = testController.start(employmentID)(fakeRequest)
 
         status(result) mustBe OK
-
-        contentAsString(result) must equal(expectedView.toString)
+        result rendersTheSameViewAs updateIncomeCYPlus1Start(model)
       }
     }
   }
 
-  implicit val user: TaiUser = UserBuilder.apply()
-  implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-  implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
   private val generateNino = new Generator(new Random).nextNino
 
-  private def createTestIncomeController = new TestUpdateIncomeNextYearController
+  private def createTestIncomeController: UpdateIncomeNextYearController = new TestUpdateIncomeNextYearController
 
   private class TestUpdateIncomeNextYearController extends UpdateIncomeNextYearController {
     override val personService = mock[PersonService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
-    override val updateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
+    override val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
