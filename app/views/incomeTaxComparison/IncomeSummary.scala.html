@@ -58,7 +58,7 @@
         <tbody id="incomeSummaryComparisonTableBody">
             @for(employmentIncomeSourceDetail <- incomeSourceViewModel.employmentIncomeSourceDetail) {
             <tr>
-                <td style="word-break:break-all">@employmentIncomeSourceDetail.name</td>
+                <td class="carry-over">@employmentIncomeSourceDetail.name</td>
                 <td class="text--right">@employmentIncomeSourceDetail.amountCY</td>
                 <td class="text--right">@employmentIncomeSourceDetail.amountCYPlusOne</td>
             </tr>
@@ -66,7 +66,7 @@
 
             @for(pensionIncomeSourceDetail <- incomeSourceViewModel.pensionIncomeSourceDetail) {
             <tr>
-                <td style="word-break:break-all">@pensionIncomeSourceDetail.name</td>
+                <td class="carry-over">@pensionIncomeSourceDetail.name</td>
                 <td class="text--right">@pensionIncomeSourceDetail.amountCY</td>
                 <td class="text--right">@pensionIncomeSourceDetail.amountCYPlusOne</td>
             </tr>

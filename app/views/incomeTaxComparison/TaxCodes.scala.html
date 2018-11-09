@@ -51,7 +51,7 @@
 
         @for(taxCodeDetail <- model.employmentTaxCodes) {
             <tr>
-                <td scope="row" style="word-break:break-all">@taxCodeDetail.name</td>
+                <td scope="row" class="carry-over">@taxCodeDetail.name</td>
                 @for(taxCode <- taxCodeDetail.taxCodes) {
                     <td class="text--right">@taxCode</td>
                 }
@@ -60,7 +60,7 @@
 
         @for(taxCodeDetail <- model.pensionTaxCodes) {
             <tr>
-                <td scope="row" style="word-break:break-all">@taxCodeDetail.name</td>
+                <td scope="row" class="carry-over">@taxCodeDetail.name</td>
                 @for(taxCode <- taxCodeDetail.taxCodes) {
                     <td class="text--right">@taxCode</td>
                 }
