@@ -30,14 +30,14 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         formForErrorSummary = Some(bonusOvertimeAmountForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween),
+        mainHeadingText = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
         preHeadingText = Messages("tai.bonusPaymentsAmount.preHeading", employerName),
         headerWidthClasses = Some("column-full")
     )
 }
 
 @main(
-    title = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween),
+    title = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),

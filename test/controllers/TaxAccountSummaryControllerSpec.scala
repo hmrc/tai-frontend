@@ -38,6 +38,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiT
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -73,8 +74,8 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
       val expectedTitle =
         Messages("tai.incomeTaxSummary.heading.part1") + " " +
           Messages("tai.heading.taxYear.interval",
-            TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy"),
-            TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))
+            HtmlFormatter.htmlNonBroken(TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")),
+            HtmlFormatter.htmlNonBroken(TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")))
 
       doc.title() must include(expectedTitle)
     }

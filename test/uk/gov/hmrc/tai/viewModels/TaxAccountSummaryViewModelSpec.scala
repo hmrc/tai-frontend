@@ -22,6 +22,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
+import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform, encodedMinusSign}
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -30,20 +31,20 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
   "TaxAccountSummaryViewModel apply method" must {
     "return a view model" which {
+
+      val currentTaxYearRange = Messages("tai.heading.taxYear.interval",
+        HtmlFormatter.htmlNonBroken(TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")),
+        HtmlFormatter.htmlNonBroken(TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")))
+
       "has header relating to current tax year" in {
-        val expectedHeader = Messages("tai.incomeTaxSummary.heading.part1") + " " +
-          Messages("tai.heading.taxYear.interval",
-            TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy").replace(" ", "\u00A0"),
-            TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy").replace(" ", "\u00A0"))
+        val expectedHeader = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRange
+
         val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, true, nonTaxCodeIncome)
         sut.header mustBe expectedHeader
       }
 
       "has title relating to current tax year" in {
-        val expectedTitle = Messages("tai.incomeTaxSummary.heading.part1") + " " +
-          Messages("tai.heading.taxYear.interval",
-            TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy"),
-            TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))
+        val expectedTitle = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRange
         val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, true, nonTaxCodeIncome)
         sut.title mustBe expectedTitle
       }
@@ -502,4 +503,5 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
   val nonTaxCodeIncome = NonTaxCodeIncome(Some(uk.gov.hmrc.tai.model.domain.income.UntaxedInterest(UntaxedInterestIncome, None, 100, "Untaxed Interest", Seq.empty[BankAccount])), Seq(
     OtherNonTaxCodeIncome(Profit, None, 100, "Profit")
   ))
+
 }

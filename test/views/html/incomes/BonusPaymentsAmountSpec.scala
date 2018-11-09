@@ -37,8 +37,8 @@ class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     behave like pageWithCombinedHeader(
       messages("tai.bonusPaymentsAmount.preHeading", employerName),
-      messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween))
-    behave like pageWithTitle(messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween))
+      messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
+    behave like pageWithTitle(messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
     behave like pageWithContinueButtonForm("/check-income-tax/update-income/bonus-overtime-amount")
 
     "contain hint with static text" in {
@@ -64,7 +64,7 @@ class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
     "display an error" when {
       "the user continues without entering an amount" in {
         val emptySelectionErrorMessage = messages("tai.bonusPaymentsAmount.error.form.mandatory",
-          TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween)
+          TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)
         val invalidRequest = Json.obj("amount" -> "")
         val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
 

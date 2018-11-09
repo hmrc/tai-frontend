@@ -31,14 +31,14 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         formForErrorSummary = Some(yesNoForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween),
+        mainHeadingText = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
         preHeadingText = messages("tai.bonusPayments.preHeading", employerName),
         headerWidthClasses = Some("column-full")
     )
 }
 
 @main(
-    title = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween),
+    title = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     articleClasses = Some(""),
     user = Some(user),
     pageHeader = Some(header),

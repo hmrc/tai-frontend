@@ -51,7 +51,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with TaxAccountFilter 
             nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
     val header = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak
-    val title = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRange
+    val title = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak
 
     val taxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
     val estimatedIncomeTaxAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))

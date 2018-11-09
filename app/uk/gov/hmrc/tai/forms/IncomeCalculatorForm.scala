@@ -168,7 +168,7 @@ object BonusOvertimeAmountForm{
   def createForm(nonEmptyMessage: Option[String]=None, notAnAmountMessage: Option[String]=None)(implicit messages: Messages): Form[BonusOvertimeAmountForm] = {
     Form[BonusOvertimeAmountForm](
       mapping("amount" -> TaiValidator.validateNewAmounts(messages("tai.bonusPaymentsAmount.error.form.mandatory",
-                                                            TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween),
+                                                            TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
                                                           messages("error.invalid.monetaryAmount.format.invalid"),
                                                           messages("error.tai.updateDataEmployment.maxLength")))(
                                                           BonusOvertimeAmountForm.apply)(BonusOvertimeAmountForm.unapply)

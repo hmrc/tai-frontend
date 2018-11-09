@@ -53,7 +53,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   with JourneyCacheConstants
   with EditIncomeIrregularPayConstants
   with UpdatedEstimatedPayJourneyCache
-  with FormValuesConstants{
+  with FormValuesConstants {
 
   def personService: PersonService
 
@@ -461,7 +461,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
       implicit request =>
         sendActingAttorneyAuditEvent("processBonusPayments")
         YesNoForm.form(Messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory",
-          TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreakBetween)).bindFromRequest().fold(
+          TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)).bindFromRequest().fold(
           formWithErrors => {
             journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
               mandatoryValues =>
