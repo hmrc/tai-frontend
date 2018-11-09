@@ -40,6 +40,7 @@ class MainSpec extends TaiViewSpec {
 
     "display a link to return to choose tax year page" in {
       doc must haveLinkWithUrlWithID("returnToChooseTaxYearLink", controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
+      doc must haveLinkWithText(messages("your.paye.income.tax.overview"))
     }
 
 
