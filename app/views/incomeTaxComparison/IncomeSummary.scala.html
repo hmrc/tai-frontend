@@ -43,7 +43,7 @@
         <caption class="visually-hidden">@{incomeSummaryHeading}</caption>
         <thead id="incomeSummeryComparisonTableHeader">
         <tr class="text--right">
-            <td></td>
+            <th><span class="visuallyhidden">@messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")</span></th>
             <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="text--right">
                 @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
                 @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))))
