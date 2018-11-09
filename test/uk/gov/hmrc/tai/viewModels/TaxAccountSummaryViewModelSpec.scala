@@ -39,11 +39,8 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         sut.header mustBe expectedHeader
       }
 
-      "has title relating to current tax year" in {
-        val expectedTitle = Messages("tai.incomeTaxSummary.heading.part1") + " " +
-          Messages("tai.heading.taxYear.interval",
-            TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy"),
-            TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))
+      "has title" in {
+        val expectedTitle = Messages("tai.incomeTaxSummary.title")
         val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, true, nonTaxCodeIncome)
         sut.title mustBe expectedTitle
       }

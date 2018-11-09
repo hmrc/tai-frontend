@@ -30,7 +30,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         formForErrorSummary = Some(bonusPaymentsForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.bonusPayments.title"),
+        mainHeadingText = Messages("tai.bonusPayments.heading"),
         preHeadingText = Messages("tai.bonusPayments.preHeading", employerName),
         headerWidthClasses = Some("column-full")
     )
@@ -41,9 +41,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     articleClasses = Some(""),
     user = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName),
-    gaCustomTitle = None
-    ) {
+    employerName = Some(employerName)
+) {
     @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
 
         @{inputRadioGroupStyling(

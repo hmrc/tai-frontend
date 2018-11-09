@@ -36,7 +36,7 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar {
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(Id).url))
     behave like pageWithCombinedHeader(
       messages("tai.bonusPayments.preHeading", employerName),
-      messages("tai.bonusPayments.title"))
+      messages("tai.bonusPayments.heading"))
   }
 
   lazy val field = mock[Field]
