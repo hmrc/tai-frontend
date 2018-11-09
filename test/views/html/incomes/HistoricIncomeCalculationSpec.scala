@@ -32,7 +32,7 @@ class HistoricIncomeCalculationSpec extends TaiViewSpec {
   override def view: Html = views.html.incomes.historicIncomeCalculation(historicIncomeCalculationVM)
 
   "The income calculation previous year page" should {
-    behave like pageWithTitle(messages("tai.income.calculation.TaxableIncomeDetails", "Foo"))
+    behave like pageWithTitle(messages("tai.yourIncome.heading"))
     behave like pageWithCombinedHeader(
         messages("tai.yourIncome.preHeading"),
         messages("tai.income.calculation.TaxableIncomeDetails", "Foo"))

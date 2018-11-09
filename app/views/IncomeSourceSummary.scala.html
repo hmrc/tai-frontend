@@ -41,7 +41,7 @@
     }
 }
 
-@gaTitle = @{
+@title = @{
     if(model.isPension){
         messages("tai.pension.income.details.mainHeading.gaTitle", model.startOfCurrentYear, model.endOfCurrentYear)
     } else {
@@ -70,11 +70,11 @@
 }
 
 @main(
-    title = gaTitle,
+    title = title,
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = Some(gaTitle)
+    gaCustomTitle = Some(title)
 ) {
 
     @if(model.isPension){
