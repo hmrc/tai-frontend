@@ -24,8 +24,8 @@ class RemoveCompanyBenefitCheckYourAnswersSpec extends TaiViewSpec {
 
   "checkYourAnswers" should {
 
-    behave like pageWithTitle(messages("tai.checkYourAnswers"))
-    behave like pageWithCombinedHeader(messages("tai.benefits.ended.journey.preHeader"), messages("tai.checkYourAnswers"))
+    behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
+    behave like pageWithCombinedHeader(messages("tai.benefits.ended.journey.preHeader"), messages("tai.checkYourAnswers.title"))
     behave like pageWithButtonForm("/check-income-tax/remove-company-benefit/submit-your-answers", messages("tai.confirmAndSend"))
     behave like pageWithCancelLink(controllers.benefits.routes.RemoveCompanyBenefitController.cancel)
     behave like pageWithCheckYourAnswersSummary

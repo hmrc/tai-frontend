@@ -23,10 +23,10 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class UpdateEmploymentCheckYourAnswersSpec extends TaiViewSpec {
 
   "check your answers page" must {
-    behave like pageWithTitle(messages("tai.checkYourAnswers"))
+    behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
     behave like pageWithCombinedHeader(
       messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
-      messages("tai.checkYourAnswers"))
+      messages("tai.checkYourAnswers.title"))
     behave like pageWithButtonForm(
       "/check-income-tax/update-employment/check-your-answers",
       messages("tai.confirmAndSend"))

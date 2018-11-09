@@ -31,7 +31,7 @@ object EditIncomeIrregularHoursViewModel  extends ViewModelHelper {
 
     val taxYearMessage = currentTaxYearRangeHtmlNonBreak
 
-    val heading = messages("tai.irregular.mainHeadingText", taxYearMessage)
+    val heading = messages("tai.irregular.heading", taxYearMessage)
     val preHeading = messages("tai.estimatedPay.preHeading", employerName)
 
     val currentAmountBigDecimal: String = withPoundPrefix(MoneyPounds(BigDecimal(currentAmount),0))
@@ -45,7 +45,7 @@ object EditIncomeIrregularHoursViewModel  extends ViewModelHelper {
 
     val taxYearMessage = currentTaxYearRangeHtmlNonBreak
 
-    val heading = messages("tai.irregular.mainHeadingText", taxYearMessage)
+    val heading = messages("tai.irregular.heading", taxYearMessage)
     val preHeading = messages("tai.estimatedPay.preHeading", employerName)
 
 

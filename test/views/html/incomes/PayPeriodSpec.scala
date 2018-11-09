@@ -35,7 +35,7 @@ class PayPeriodSpec extends TaiViewSpec with MockitoSugar {
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     behave like pageWithCombinedHeader(
       messages("tai.payPeriod.preHeading", employerName),
-      messages("tai.payPeriod.title"))
+      messages("tai.payPeriod.heading"))
   }
 
   val payPeriodForm = mock[Form[PayPeriodForm]]

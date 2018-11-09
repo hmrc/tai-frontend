@@ -31,7 +31,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         formForErrorSummary = Some(payPeriodForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.payPeriod.title"),
+        mainHeadingText = messages("tai.payPeriod.heading"),
         preHeadingText = messages("tai.payPeriod.preHeading", employerName),
         headerWidthClasses = Some("column-full")
     )
@@ -63,8 +63,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName),
-    gaCustomTitle = None
+    employerName = Some(employerName)
 ){
     <div class="section flush--bottom">
         @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handlePayPeriod, Symbol("data-dynamic-form") -> "true"){

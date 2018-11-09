@@ -18,16 +18,15 @@
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
-    title = messages("tai.incomes.updated.check.title", employerName),
+    title = messages("tai.incomes.updated.check.title"),
     articleClasses = Some("full-width"),
     user = Some(user),
-    employerName = Some(employerName),
-    gaCustomTitle = None
+    employerName = Some(employerName)
 ){
     <div class="column-two-thirds">
         <header class="grid-row margin-bottom-large">
             <div class="govuk-box-highlight">
-                <h1 class="heading-large" id="currentYearTitle">@messages("tai.incomes.updated.check.title", employerName)</h1>
+                <h1 class="heading-large" id="currentYearTitle">@messages("tai.incomes.updated.check.heading", employerName)</h1>
             </div>
         </header>
 

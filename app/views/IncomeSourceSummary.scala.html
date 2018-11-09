@@ -69,7 +69,13 @@
         preHeadingText = model.displayName)
 }
 
-@main(title = mainTitle, user = Some(user), pageHeader = Some(header), articleClasses = None, gaCustomTitle = Some(gaTitle)){
+@main(
+    title = gaTitle,
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = Some(gaTitle)
+) {
 
     @if(model.isPension){
         <p  aria-hidden="true">

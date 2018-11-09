@@ -29,25 +29,25 @@
         formForErrorSummary = Some(updateRemoveForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.employment.decision.heading", employmentName),
-        preHeadingText = Messages("tai.employment.decision.preHeading")
+        mainHeadingText = messages("tai.employment.decision.heading", employmentName),
+        preHeadingText = messages("tai.employment.decision.preHeading")
     )
 }
 
 @main(
-    title = Messages("tai.employment.decision.title", employmentName),
+    title = messages("tai.employment.decision.customGaTitle"),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = Some(Messages("tai.employment.decision.customGaTitle"))) {
+    gaCustomTitle = Some(messages("tai.employment.decision.customGaTitle"))) {
 
     @form(action = controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove(empId), Symbol("data-journey-dynamic-radios") -> "" ) {
         <div class="form-group">
 
             @{inputRadioGroupStyling(
                 field=updateRemoveForm(UpdateRemoveEmploymentForm.EmploymentDecision),
-                radioOptions=Seq(("Yes" -> Messages("tai.employment.decision.radio1")), ("No" -> Messages("tai.employment.decision.radio2")) ),
-                legend=Messages("tai.employment.decision.legend"),
+                radioOptions=Seq(("Yes" -> messages("tai.employment.decision.radio1")), ("No" -> messages("tai.employment.decision.radio2")) ),
+                legend=messages("tai.employment.decision.legend"),
                 legendHint=None,
                 ('_groupDivClass, "form-group" ),
                 ('_fieldsetAttributes, "id=employmentDecision" ),

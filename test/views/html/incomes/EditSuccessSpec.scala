@@ -27,7 +27,7 @@ class EditSuccessSpec extends TaiViewSpec with MockitoSugar{
 
   "Edit Success Employment view" should {
     "contain the success heading" in {
-      doc(view).getElementsByTag("h1").text must include(messages("tai.incomes.updated.check.title", employerName))
+      doc(view).getElementsByTag("h1").text must include(messages("tai.incomes.updated.check.heading", employerName))
     }
 
     "contain the success paragraph and link" in {
