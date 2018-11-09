@@ -24,10 +24,10 @@ import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersV
 class UpdatePensionsCheckYourAnswersSpec extends TaiViewSpec {
 
   "check your answers page" must {
-    behave like pageWithTitle(messages("tai.checkYourAnswers"))
+    behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
     behave like pageWithCombinedHeader(
       messages("tai.updatePension.preHeading"),
-      messages("tai.checkYourAnswers"))
+      messages("tai.checkYourAnswers.title"))
     behave like pageWithButtonForm(
       "/check-income-tax/incorrect-pension/check-your-answers",
       messages("tai.confirmAndSend"))

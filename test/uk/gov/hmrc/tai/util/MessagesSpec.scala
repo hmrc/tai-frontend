@@ -50,6 +50,7 @@ class MessagesSpec extends UnitSpec with WithFakeApplication {
     "have messages for default and cy only" in {
       messagesAPI.messages("en").size shouldBe 0
       val englishMessageCount = messagesAPI.messages("default").size - frameworkProvidedKeys.size
+
       messagesAPI.messages("cy").size shouldBe englishMessageCount
       messagesAPI.messages("default.play").size shouldBe 46
     }
@@ -132,9 +133,9 @@ class MessagesSpec extends UnitSpec with WithFakeApplication {
 
   private lazy val displayLine = "\n" + ("@" * 42) + "\n"
 
-  private lazy val defaultMessages = getExpectedMessages("default") -- providedKeys
+  private lazy val defaultMessages: Map[String, String] = getExpectedMessages("default") -- providedKeys
 
-  private lazy val welshMessages = getExpectedMessages("cy") -- commonProvidedKeys
+  private lazy val welshMessages: Map[String, String] = getExpectedMessages("cy") -- commonProvidedKeys
 
   private def getExpectedMessages(languageCode: String) = messagesAPI.messages.getOrElse(languageCode, throw new Exception(s"Missing messages for $languageCode"))
 
@@ -146,7 +147,8 @@ class MessagesSpec extends UnitSpec with WithFakeApplication {
   }
 
   private val commonProvidedKeys = Set(
-    "error.address.invalid.character")
+    "error.address.invalid.character"
+  )
 
   private val frameworkProvidedKeys = Set(
     "global.error.InternalServerError500.heading",
