@@ -31,7 +31,6 @@
     </p>
 }
 
-
 <p>@messages("tai.incomeTaxComparison.taxFreeAmount.PA.information2")</p>
 
 
@@ -40,7 +39,7 @@
 
     <thead id="taxFreeAmountComparisonTableHeader">
         <tr class=" text--right">
-            <td></td>
+            <th></th>
             <th id="taxFreeAmountComparisonTableHeaderCol1" scope="col" class=" text--right">
                 @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
@@ -70,7 +69,6 @@
 
     <thead class="visually-hidden">
         <tr class="text--right">
-            <td></td>
             <th scope="col" class="text--right">
                 @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
@@ -117,7 +115,6 @@
 
     <thead class="visually-hidden">
         <tr class="text--right">
-            <td></td>
             <th scope="col" class="text--right">
                 @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
@@ -163,7 +160,6 @@
     <caption class="visually-hidden">@messages("tai.incomeTaxComparison.taxFreeAmount.totalTFA")</caption>
     <thead class="visually-hidden">
     <tr class="text--right">
-        <td></td>
         <th scope="col">
             @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
             @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
