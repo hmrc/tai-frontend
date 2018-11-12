@@ -23,10 +23,15 @@
 <h2 class="heading-large" id="taxFreeAmountHeading">@messages("tai.incomeTaxComparison.taxFreeAmount.subHeading")</h2>
 
 <p>@messages("tai.incomeTaxComparison.taxFreeAmount.description")</p>
-<p class="notice text">
-    <i class="icon icon-information"><span class="visuallyhidden">Information</span></i>
-    <strong class="bold-small">@model.personalAllowanceIncreaseInfo</strong>
-</p>
+
+@model.personalAllowanceIncreaseInfo.map{ paIncreasedMessage =>
+    <p class="notice text">
+        <i class="icon icon-information"><span class="visuallyhidden">Information</span></i>
+        <strong class="bold-small">@paIncreasedMessage</strong>
+    </p>
+}
+
+
 <p>@messages("tai.incomeTaxComparison.taxFreeAmount.PA.information2")</p>
 
 
