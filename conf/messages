@@ -1290,3 +1290,5 @@ tai.estimatedPay.update.checkYourAnswers.timePeriod.fortnight=fortnight
 tai.estimatedPay.update.checkYourAnswers.timePeriod.period=period
 
 tai.updateIncome.CYPlus1.preheading=Update your estimated income from {0} for next tax year
+tai.updateIncome.CYPlus1.start.paragraph1=You should update your estimated income if you know there will be a change to your income from {0} next year and you think it will affect your tax rate band.
+tai.updateIncome.CYPlus1.start.paragraph2=If your employment with {0} will be ending next year, you can tell us after it has ended.

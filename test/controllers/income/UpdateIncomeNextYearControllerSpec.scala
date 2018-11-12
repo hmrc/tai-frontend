@@ -72,7 +72,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
   private def createTestIncomeController: UpdateIncomeNextYearController = new TestUpdateIncomeNextYearController
 
   private class TestUpdateIncomeNextYearController extends UpdateIncomeNextYearController {
-    override val personService = mock[PersonService]
+    override val personService: PersonService = mock[PersonService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
     override val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]

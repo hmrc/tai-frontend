@@ -45,7 +45,6 @@ trait UpdateIncomeNextYearController extends TaiBaseController
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             updateNextYearsIncomeService.setup(employmentId, Nino(user.getNino)) map { model =>
-              println(model)
               Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Start(model))
             }
           }
