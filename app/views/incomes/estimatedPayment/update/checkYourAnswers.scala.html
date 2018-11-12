@@ -23,18 +23,18 @@
 @(viewModel: CheckYourAnswersViewModel, employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
-ptaHeader(
-displayBackLink = true,
-mainHeadingText = messages("tai.checkYourAnswers"),
-preHeadingText = messages("tai.incomes.edit.preHeading", employerName))
+    ptaHeader(
+        displayBackLink = true,
+        mainHeadingText = messages("tai.checkYourAnswers.heading"),
+        preHeadingText = messages("tai.incomes.edit.preHeading", employerName)
+    )
 }
 
 @main(
-title = Messages("tai.checkYourAnswers"),
-user = Some(user),
-pageHeader = Some(header),
-articleClasses = None,
-gaCustomTitle = None
+    title = messages("tai.checkYourAnswers.title"),
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None
 ){
 
 <section>
@@ -52,7 +52,7 @@ gaCustomTitle = None
 @Link.toInternalPage(
     id=Some("estimatedPayLink"),
     url=income.estimatedPay.update.routes.IncomeUpdateCalculatorController.estimatedPayPage().url,
-    value=Some(Messages("tai.WhatDoYouWantToDo.submit")),
+    value=Some(messages("tai.WhatDoYouWantToDo.submit")),
     cssClasses=Some("button")
 ).toHtml
 

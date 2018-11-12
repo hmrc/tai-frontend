@@ -28,11 +28,11 @@ class AddPensionCheckYourAnswersSpec extends TaiViewSpec {
 
   "Income Check Your Answers page" must {
 
-    behave like pageWithTitle(messages("tai.checkYourAnswers"))
+    behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
 
     behave like pageWithCombinedHeader(
       preHeading,
-      messages("tai.checkYourAnswers"))
+      messages("tai.checkYourAnswers.title"))
 
     behave like pageWithButtonForm("/fake/submission/url",
       messages("tai.confirmAndSend"))

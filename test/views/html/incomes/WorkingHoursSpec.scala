@@ -31,7 +31,7 @@ class WorkingHoursSpec extends TaiViewSpec {
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(empId).url))
     behave like pageWithCombinedHeader(
       messages("tai.workingHours.preHeading", employerName),
-      messages("tai.workingHours.title"))
+      messages("tai.workingHours.heading"))
   }
 
   override def view: Html = views.html.incomes.workingHours(HoursWorkedForm.createForm(), empId, employerName)
