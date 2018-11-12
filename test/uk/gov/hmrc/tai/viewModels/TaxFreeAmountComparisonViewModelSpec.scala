@@ -21,8 +21,15 @@ import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import play.api.i18n.Messages.Implicits._
+import play.api.i18n.MessagesApi
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.util.MonetaryUtil
+import uk.gov.hmrc.time.TaxYearResolver
+
 
 class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
+  implicit val messages: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "Tax Free Amount comparison view model" must {
     "return empty model" when {
@@ -89,6 +96,44 @@ class TaxFreeAmountComparisonViewModelSpec extends PlaySpec with FakeTaiPlayAppl
       }
     }
 
+
+    "Personal Allowance increase information message" should{
+      "be shown if personal allowance is present for cy and cy+1" when{
+        "there is an increase" in{
+          val personalAllowanceCyPlusOne = MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(11850,0))
+          val startOfNextTaxYear = Dates.formatDate(TaxYearResolver.startOfNextTaxYear)
+          val expectedMessage = Some(messages("tai.incomeTaxComparison.taxFreeAmount.PA.information1",personalAllowanceCyPlusOne,startOfNextTaxYear))
+
+
+          val component = CodingComponent(PersonalAllowancePA, None, 11500, "Personal Allowance")
+          val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(component))
+          val nextYearComponents = CodingComponentForYear(nextTaxYear, Seq(component.copy(amount = 11850)))
+
+          val model = TaxFreeAmountComparisonViewModel(Seq(nextYearComponents,currentYearComponents),
+            Seq.empty[TaxAccountSummaryForYear])
+
+          model.personalAllowanceIncreaseInfo mustBe expectedMessage
+        }
+      }
+
+
+      "not displayed if personal allowance is present for cy and cy +1" when{
+        "there is no increase" in{
+          val personalAllowanceCyPlusOne = MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(11500,0))
+          val startOfNextTaxYear = Dates.formatDate(TaxYearResolver.startOfNextTaxYear)
+          val expectedMessage = None
+          val component = CodingComponent(PersonalAllowancePA, None, 11500, "Personal Allowance")
+          val currentYearComponents = CodingComponentForYear(currentTaxYear, Seq(component))
+          val nextYearComponents = CodingComponentForYear(nextTaxYear, Seq(component.copy(amount = 11500)))
+
+          val model = TaxFreeAmountComparisonViewModel(Seq(currentYearComponents,nextYearComponents),
+            Seq.empty[TaxAccountSummaryForYear])
+
+          model.personalAllowanceIncreaseInfo mustBe expectedMessage
+        }
+      }
+
+    }
 
     "return additions" when {
       "personal allowance is present" in {

@@ -639,7 +639,7 @@ tai.incomeTaxComparison.taxCodes.subHeading=Tax codes
 tai.incomeTaxComparison.taxCodes.table.employmentsReaderText=Employer name
 
 tai.incomeTaxComparison.taxFreeAmount.NA=not applicable
-tai.incomeTaxComparison.taxFreeAmount.PA.information1=The standard Personal Allowance increases to £11,850 from {0}.
+tai.incomeTaxComparison.taxFreeAmount.PA.information1=The standard Personal Allowance increases to {0} from {1}.
 tai.incomeTaxComparison.taxFreeAmount.PA.information2=Your Personal Allowance may be different depending on your circumstances.
 tai.incomeTaxComparison.taxFreeAmount.additions.caption=Additions
 tai.incomeTaxComparison.taxFreeAmount.deductions.caption=Deductions
