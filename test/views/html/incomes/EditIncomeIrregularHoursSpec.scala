@@ -49,15 +49,15 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
     }
 
     "display the users current estimated income" in {
-      doc(view) must haveParagraphWithText(messages("tai.irregular.currentAmount"))
+      doc(view) must haveClassWithText(messages("tai.irregular.currentAmount"), "form-label")
       doc(view) must haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentAmount),0)))
     }
 
     "have an input box for user to enter new amount" in {
-      doc(view) must haveSpanWithText(
+      doc(view) must haveInputLabelWithText("income",
         messages("tai.irregular.newAmount") + " " + messages("tai.inPounds")
       )
-      doc(view).getElementsByClass("edit-income__input").size() mustBe employmentId
+      doc(view).getElementsByClass("form-control-currency").size() mustBe 1
     }
   }
 

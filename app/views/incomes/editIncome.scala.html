@@ -29,6 +29,7 @@
 
 @import includes.ptaHeader
 @import includes.forms.input
+@import includes.compareValueInput
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 @import includes.cancelLink
@@ -78,17 +79,13 @@
                     <span class="error-notification validation-error__inline-error">@messages(error.message)</span>
                 }
 
-                <div class="grid-row">
-                    <div class="column-half">
-                        <div class="form-label form-label-bold">@messages("tai.incomes.amount.current")</div>
-                        <input type="hidden" id="oldAmount" name='@income("oldAmount").name' value='@income("oldAmount").value' />
-                        <p>£@MoneyPounds(income("oldAmount").value.getOrElse("0").toInt,0).quantity</p>
-                    </div>
-                    <div class="column-half">
-                        <label class="form-label form-label-bold" for="newAmount" id="amountLabel">@messages("tai.incomes.amount.new")</label>
-                        @input(income("newAmount"), isCurrency = true, fieldErrorsEnabled = false)
-                    </div>
-                </div>
+                @compareValueInput(
+                    previousLabel = messages("tai.incomes.amount.current"),
+                    newLabel = messages("tai.incomes.amount.new"),
+                    previousFieldName = income("oldAmount").name,
+                    previousFieldValue = income("oldAmount").value.getOrElse("0"),
+                    newField = income("newAmount")
+                )
 
                 <input type="hidden" id="name" name='@income("name").name' value='@income("name").value' />
                 <input type="hidden" id="worksNumber" name='@income("worksNumber").name' value='@income("worksNumber").value' />
