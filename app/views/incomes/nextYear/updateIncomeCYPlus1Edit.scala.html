@@ -14,7 +14,11 @@
  * limitations under the License.
  *@
 
-@()(
+@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
+@import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
+
+@(model: UpdateNextYearsIncomeCacheModel, incomeForm: Form[uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm])(
     implicit request: Request[_],
     messages: Messages,
     user: controllers.auth.TaiUser,
@@ -23,15 +27,27 @@
 )
 
 @updateIncomeCYPlus1Template(
-    employerName = "CHANGE ME",
-    employmentId = 1,
+    employerName = model.employmentName,
+    employmentId = model.employmentId,
     form = None,
-    gaEventAction = "EDIT ME",
-    title = "CHANGE ME",
-    heading = "CHANGE ME"
+    gaEventAction = "Your estimated pay for next year edit",
+    title = messages("tai.income.details.updateTaxableIncome.update"),
+    heading = messages("tai.updateIncome.CYPlus1.edit.heading", currentTaxYearRangeHtmlNonBreak)
 ){
     <div>
-        Edit
+        <p>@messages("tai.updateIncome.CYPlus1.edit.paragraph1")</p>
+        <p>@messages("tai.incomes.edit.howTo.grossAmount")</p>
+        <ul class="bullets">
+            <li>@messages("tai.incomes.edit.howTo.contribution")</li>
+            <li>@messages("tai.incomes.edit.howTo.charity")</li>
+            <li>@messages("tai.incomes.edit.howTo.expenses")</li>
+        </ul>
     </div>
+
+    @form(action = controllers.income.routes.UpdateIncomeNextYearController.update(model.employmentId)){
+    <div>
+        <p><input type="submit" class="button" id="CYPlus1EditButton" value='@messages("tai.continue")'/></p>
+    </div>
+    }
 }
 

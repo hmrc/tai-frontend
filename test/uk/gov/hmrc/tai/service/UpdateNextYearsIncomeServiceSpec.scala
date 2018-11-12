@@ -148,7 +148,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
           Future.successful(expectedMap(employmentName, employmentId, employmentAmount))
         )
 
-        val result = Await.result(updateNextYearsIncomeService.setNewAmount(employmentAmount, employmentId, nino), 5.seconds)
+        val result = Await.result(updateNextYearsIncomeService.setNewAmount(employmentAmount.toString, employmentId, nino), 5.seconds)
 
         result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, employmentAmount, Some(employmentAmount))
 

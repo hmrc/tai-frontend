@@ -20,7 +20,8 @@ import controllers.audit.Auditable
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import controllers.auth.WithAuthorisedForTaiLite
-import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
+import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController, routes}
+import org.joda.time.LocalDate
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -29,6 +30,10 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm
+
+import scala.Function.tupled
+import scala.concurrent.Future
 
 trait UpdateIncomeNextYearController extends TaiBaseController
   with DelegationAwareActions
@@ -50,15 +55,55 @@ trait UpdateIncomeNextYearController extends TaiBaseController
           }
   }
 
-  def edit(employmentId: Int): Action[AnyContent] = ???
-  def confirm(employmentId: Int): Action[AnyContent] = ???
-  def success(employmentId: Int): Action[AnyContent] = ???
+  def edit(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
 
+            updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map {
+              model => {
+                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model, EditIncomeIrregularHoursForm.createForm(taxablePayYTD = Some(model.currentValue))))
+              }
+            }
+          }
+  }
+
+  def confirm (employmentId: Int): Action[AnyContent] = ???
+  def success (employmentId: Int): Action[AnyContent] = ???
+
+  def update (employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            EditIncomeIrregularHoursForm.createForm().bindFromRequest().fold(
+
+              formWithErrors => {
+                updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
+                  BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model, formWithErrors))
+                }
+              },
+
+              validForm => {
+                validForm.income.fold(throw new RuntimeException) { income =>
+                  updateNextYearsIncomeService.setNewAmount(income, employmentId, Nino(user.getNino)) map { _ =>
+                    Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
+                  }
+                }
+              }
+            )
+
+        }
+  }
 }
+
 
 object UpdateIncomeNextYearController extends UpdateIncomeNextYearController with AuthenticationConnectors {
   override val personService = PersonService
+
   override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
+
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService = new UpdateNextYearsIncomeService

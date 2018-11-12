@@ -71,9 +71,9 @@ class UpdateNextYearsIncomeService {
     }
   }
 
-  def setNewAmount(newValue: Int, employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] = {
+  def setNewAmount(newValue: String, employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] = {
     get(employmentId, nino) map { model =>
-      val updatedValue = model.copy(newValue = Some(newValue))
+      val updatedValue = model.copy(newValue = Some(newValue.toInt))
       journeyCacheService.cache(updatedValue.toCacheMap)
 
       updatedValue

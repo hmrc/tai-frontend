@@ -33,9 +33,10 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
-import views.html.incomes.nextYear.updateIncomeCYPlus1Start
+import views.html.incomes.nextYear.{updateIncomeCYPlus1Edit, updateIncomeCYPlus1Start}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -45,15 +46,17 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
   with MockitoSugar
   with ControllerViewTestHelper {
 
+  val employmentID = 1
+  val currentEstPay = 1234
+
+  val model = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, currentEstPay)
+
   "start" must {
     "return OK with the start view" when {
       "employment data is available for the nino" in {
 
         val testController = createTestIncomeController
-        val employmentID = 1
-        val currentEstPay = 1234
         val nino = generateNino
-        val model = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, currentEstPay)
         when(testController.updateNextYearsIncomeService.setup(Matchers.eq(employmentID), Matchers.eq(nino))(any()))
           .thenReturn(Future.successful(model))
 
@@ -67,6 +70,65 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
     }
   }
 
+  "edit" must {
+    "return OK with the edit view" when {
+      "employment data is available for the nino" in {
+
+        val testController = createTestIncomeController
+        val nino = generateNino
+        when(testController.updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(nino))(any()))
+          .thenReturn(Future.successful(model))
+
+        implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+        val result: Future[Result] = testController.edit(employmentID)(fakeRequest)
+
+        status(result) mustBe OK
+        result rendersTheSameViewAs updateIncomeCYPlus1Edit(model, EditIncomeIrregularHoursForm.createForm(taxablePayYTD = Some(currentEstPay)))
+      }
+    }
+  }
+
+  "update" must {
+    "redirect to the confirm page" when {
+      "valid input is passed" in {
+
+        val testController = createTestIncomeController
+        val newEstPay = "999"
+        val nino = generateNino
+        when(testController.updateNextYearsIncomeService.setNewAmount(Matchers.eq(newEstPay), Matchers.eq(employmentID), Matchers.eq(nino))(any()))
+          .thenReturn(Future.successful(model))
+
+        val result = testController.update(employmentID)(
+          RequestBuilder
+            .buildFakeRequestWithOnlySession(POST)
+            .withFormUrlEncodedBody("income" -> newEstPay))
+
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.confirm(employmentID).url.toString)
+      }
+
+    }
+
+    "respond with a BAD_REQUEST" when {
+      "no input is passed" in {
+        val testController = createTestIncomeController
+        val newEstPay = ""
+        val nino = generateNino
+        implicit val fakeRequest = RequestBuilder.buildFakeRequestWithOnlySession(POST).withFormUrlEncodedBody("income" -> newEstPay)
+
+        when(testController.updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(nino))(any()))
+          .thenReturn(Future.successful(model))
+
+        val result: Future[Result] = testController.update(employmentID)(fakeRequest)
+
+        status(result) mustBe BAD_REQUEST
+
+        result rendersTheSameViewAs updateIncomeCYPlus1Edit(model, EditIncomeIrregularHoursForm.createForm(taxablePayYTD = Some(currentEstPay)))
+      }
+    }
+  }
   private val generateNino = new Generator(new Random).nextNino
 
   private def createTestIncomeController: UpdateIncomeNextYearController = new TestUpdateIncomeNextYearController
