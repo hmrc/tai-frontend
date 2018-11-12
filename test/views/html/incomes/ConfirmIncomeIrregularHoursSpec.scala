@@ -20,7 +20,7 @@ import org.scalatest.mock.MockitoSugar
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.income.ConfirmIncomeIrregularHoursViewModel
+import uk.gov.hmrc.tai.viewModels.income.confirmAmountEntered.ConfirmIncomeIrregularHoursViewModel
 
 class ConfirmIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
 

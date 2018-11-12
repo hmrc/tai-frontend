@@ -18,19 +18,19 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import includes.forms.input
 @import includes.forms.submit
-@import uk.gov.hmrc.tai.viewModels.income.ConfirmIncomeIrregularHoursViewModel
+@import uk.gov.hmrc.tai.viewModels.income.confirmAmountEntered.ConfirmAmountEnteredViewModel
 
-@(viewModel: ConfirmIncomeIrregularHoursViewModel)(
-    implicit request: Request[_],
-    messages: Messages,
-    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: ConfirmAmountEnteredViewModel
+)(implicit request: Request[_],
+  messages: Messages,
+  templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
     ptaHeader(
         displayBackLink = true,
         backLinkGaEventAction = None,
-        mainHeadingText = messages("tai.irregular.confirm.mainHeading", viewModel.currentTaxYearRange),
+        mainHeadingText = messages("tai.irregular.confirm.mainHeading", viewModel.yearRange),
         preHeadingText = messages("tai.estimatedPay.preHeading", viewModel.employerName),
         headerWidthClasses = Some("column-full")
     )
@@ -42,7 +42,7 @@
     articleClasses = Some("")
 ){
 
-    <p>@messages("tai.irregular.confirm.estimatedIncome", viewModel.estimatedIncome)</p>
+    <p>@viewModel.mainText</p>
 
     <div class="panel panel-border-narrow">
         <p>@messages("tai.irregular.confirm.effectOfChange")</p>
@@ -50,9 +50,9 @@
 
 
 
-    <p><a id="confirmAndSend" class="button section" role="button" href="@viewModel.submitUrl">@messages("tai.confirmAndSend")</a></p>
+    <p><a id="confirmAndSend" class="button section" role="button" href="@viewModel.onConfirm">@messages("tai.confirmAndSend")</a></p>
 
-    <p><a href="@routes.IncomeSourceSummaryController.onPageLoad(viewModel.employmentId)">@messages("tai.cancel.noSave")</a></p>
+    <p><a href="@viewModel.onCancel">@messages("tai.cancel.noSave")</a></p>
 
 }
 

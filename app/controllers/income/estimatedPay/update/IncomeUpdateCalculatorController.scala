@@ -40,7 +40,8 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{CheckYourAnswersViewModel, EstimatedPayViewModel}
-import uk.gov.hmrc.tai.viewModels.income.{ConfirmIncomeIrregularHoursViewModel, EditIncomeIrregularHoursViewModel}
+import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
+import uk.gov.hmrc.tai.viewModels.income.confirmAmountEntered.ConfirmIncomeIrregularHoursViewModel
 
 import scala.Function.tupled
 import scala.concurrent.Future
