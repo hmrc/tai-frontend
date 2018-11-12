@@ -211,24 +211,9 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
   }
 
   val taxYear = uk.gov.hmrc.tai.model.TaxYear()
-  val taxYearSuffix = Messages("tai.taxCode.title.pt2",
-    taxYear.start.toString("d MMMM yyyy"),
-    taxYear.end.toString("d MMMM yyyy"))
 
   val taxYearStartNonBreak = taxYear.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
   val taxYearEndNonBreak = taxYear.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
-  val expectedNonBreakSuffix = Messages("tai.taxCode.title.pt2",
-    taxYear.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0"),
-    taxYear.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0"))
-
-
-  val prevTaxYear = uk.gov.hmrc.tai.model.TaxYear().prev
-  val prevTaxYearSuffix = Messages("tai.taxCode.title.pt2",
-    prevTaxYear.start.toString("d MMMM yyyy"),
-    prevTaxYear.end.toString("d MMMM yyyy"))
-  val prevExpectedNonBreakSuffix = Messages("tai.taxCode.title.pt2",
-    prevTaxYear.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0"),
-    prevTaxYear.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0"))
 
   private def makeTestTaxCodeRecord(taxCode: String, basisOfOperation: BasisOfOperation, isPrimary: Boolean = true, employerName: String = "employer") = {
     TaxCodeRecord(taxCode,LocalDate.now,LocalDate.now,basisOfOperation,employerName,false,Some("payrollnumber"),isPrimary)
