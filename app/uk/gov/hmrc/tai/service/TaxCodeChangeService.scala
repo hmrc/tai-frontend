@@ -62,7 +62,7 @@ trait TaxCodeChangeService {
   def lastTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[TaxCodeRecord]] = {
     taxCodeChangeConnector.lastTaxCodeRecords(nino, year) map {
       case TaiSuccessResponseWithPayload(taxCodeRecords: Seq[TaxCodeRecord]) => taxCodeRecords
-      case _ => throw new RuntimeException(s"Could not fetch last tax code records for year $year")
+      case TaiTaxAccountFailureResponse(x) => throw new RuntimeException(s"Could not fetch last tax code records for year $year")
     }
   }
 

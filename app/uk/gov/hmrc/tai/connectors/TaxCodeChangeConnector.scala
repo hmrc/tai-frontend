@@ -73,11 +73,13 @@ trait TaxCodeChangeConnector {
     }
   }
 
-  def lastTaxCodeRecordsUrl(nino: String, year: Int): String = baseTaxAccountUrl(nino) + s"tax-code-records/$year"
+  def lastTaxCodeRecordsUrl(nino: String, year: Int): String = baseTaxAccountUrl(nino) + s"latest-tax-code/$year"
 
   def lastTaxCodeRecords(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     httpHandler.getFromApi(lastTaxCodeRecordsUrl(nino.nino, year.year)) map (
-      json => TaiSuccessResponseWithPayload((json \ "data").as[Seq[TaxCodeRecord]])
+      json => {
+        TaiSuccessResponseWithPayload((json \ "data").as[Seq[TaxCodeRecord]])
+      }
       ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve tax code records for $nino for year $year with exception:${e.getMessage}")

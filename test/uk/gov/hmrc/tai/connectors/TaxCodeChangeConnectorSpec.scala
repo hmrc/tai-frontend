@@ -129,10 +129,11 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
       val nino = generateNino
       val year = TaxYear().prev.year
 
-      val latestTaxCodeRecordUrl = s"/tai/${nino.nino}/tax-account/tax-code-records/$year"
+      val latestTaxCodeRecordUrl = s"/tai/${nino.nino}/tax-account/latest-tax-code/$year"
 
       val startDate = TaxYearResolver.startOfCurrentTaxYear
       val taxCodeRecord = TaxCodeRecord("code", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
+      val taxCodeRecord2 = TaxCodeRecord("code2", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 2", false, Some("1239"), true)
 
       val json = Json.obj(
         "data" -> Json.arr(
@@ -145,12 +146,22 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
             "pensionIndicator" -> false,
             "payrollNumber" -> "1234",
             "primary" -> true
+          ),
+          Json.obj(
+            "taxCode" -> "code2",
+            "startDate" -> startDate,
+            "endDate" -> startDate.plusDays(1),
+            "basisOfOperation" -> "Cumulative",
+            "employerName" -> "Employer 2",
+            "pensionIndicator" -> false,
+            "payrollNumber" -> "1239",
+            "primary" -> true
           )
         ),
         "links" -> JsArray(Seq())
       )
 
-      val expectedResult = Seq(taxCodeRecord)
+      val expectedResult = Seq(taxCodeRecord, taxCodeRecord2)
 
       server.stubFor(
         get(urlEqualTo(latestTaxCodeRecordUrl)).willReturn(ok(json.toString()))
