@@ -46,10 +46,11 @@ class YesNoFormSpec extends PlaySpec with OneAppPerSuite with I18nSupport with F
       val invalidChoice = Json.obj(YesNoChoice -> "")
       val invalidatedForm = form.bind(invalidChoice)
 
-      invalidatedForm.errors.head.messages mustBe List("select yes or no")
+      invalidatedForm.errors.head.messages mustBe List(errorMessage)
       invalidatedForm.value mustBe None
     }
   }
 
-  private val form = YesNoForm.form("select yes or no")
+  lazy val errorMessage = "select yes or no"
+  val form = YesNoForm.form(errorMessage)
 }

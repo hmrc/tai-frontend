@@ -48,8 +48,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
 
         @{inputRadioGroupStyling(
-            field=yesNoForm("yesNoChoice"),
-            radioOptions=Seq(("Yes" -> messages("tai.label.yes")), ("No" -> messages("tai.label.no"))),
+            field=yesNoForm(YesNoForm.YesNoChoice),
+            radioOptions=Seq((YesNoForm.YesValue -> messages("tai.label.yes")), (YesNoForm.NoValue -> messages("tai.label.no"))),
             legend=messages("tai.bonusPayments.question"),
             legendHint=None,
             ('_groupDivClass, "form-group flush--bottom" ),
