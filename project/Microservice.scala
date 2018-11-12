@@ -28,7 +28,7 @@ trait MicroService {
     val scoverageExcludePatterns = List(
       "<empty>",
       "Reverse.*",
-      "app.Routes.*",
+      "dev.Routes.*",
       "tai.Routes.*",
       "prod.*",
       "testOnlyDoNotUseInAppConf.*",
