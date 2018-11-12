@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.viewModels.income.confirmAmountEntered
+package uk.gov.hmrc.tai.viewModels.income
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 
-object ConfirmIncomeIrregularHoursViewModel {
-  def apply(employmentId: Int, employerName: String, estimatedIncome: Int)(implicit messages: Messages): ConfirmAmountEnteredViewModel = {
+case class ConfirmAmountEnteredViewModel(yearRange: String,
+                                         employerName: String,
+                                         mainText: String,
+                                         onConfirm: String,
+                                         onCancel: String)
+
+object ConfirmAmountEnteredViewModel {
+  def irregularPayCurrentYear(employmentId: Int, employerName: String, estimatedIncome: Int)(implicit messages: Messages): ConfirmAmountEnteredViewModel = {
     val currentYear = currentTaxYearRangeHtmlNonBreak
-    val employerName1 = employerName
     val confirmUrl = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId).url.toString
     val mainParagraphText = messages("tai.irregular.confirm.estimatedIncome", estimatedIncome)
     val onCancelUrl = controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url
 
 
-    new ConfirmAmountEnteredViewModel {
-      val employerName = employerName1
-      val yearRange = currentYear
-      val mainText = mainParagraphText
-      val onConfirm = confirmUrl
-      val onCancel = onCancelUrl
-    }
+    ConfirmAmountEnteredViewModel(
+      employerName = employerName,
+      yearRange = currentYear,
+      mainText = mainParagraphText,
+      onConfirm = confirmUrl,
+      onCancel = onCancelUrl
+    )
   }
 }

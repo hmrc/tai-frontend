@@ -20,7 +20,7 @@ import org.scalatest.mock.MockitoSugar
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.income.confirmAmountEntered.ConfirmIncomeIrregularHoursViewModel
+import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 
 class ConfirmIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
 
@@ -57,6 +57,6 @@ class ConfirmIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
     }
   }
 
-  val vm = ConfirmIncomeIrregularHoursViewModel(employmentId, employerName, estimatedAmount)
-  override lazy val view: Html = views.html.incomes.confirmIncomeIrregularHours(vm)
+  val vm = ConfirmAmountEnteredViewModel(employmentId, employerName, estimatedAmount)
+  override lazy val view: Html = views.html.incomes.confirmAmountEntered(vm)
 }

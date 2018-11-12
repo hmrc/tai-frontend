@@ -40,8 +40,7 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{CheckYourAnswersViewModel, EstimatedPayViewModel}
-import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
-import uk.gov.hmrc.tai.viewModels.income.confirmAmountEntered.ConfirmIncomeIrregularHoursViewModel
+import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel}
 
 import scala.Function.tupled
 import scala.concurrent.Future
@@ -258,9 +257,9 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey).map { cache => {
             val name :: newIrregularPay :: Nil = cache.toList
 
-            val vm = ConfirmIncomeIrregularHoursViewModel(employmentId, name, newIrregularPay.toInt)
+            val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
 
-            Ok(views.html.incomes.confirmIncomeIrregularHours(vm))
+            Ok(views.html.incomes.confirmAmountEntered(vm))
           }}
         }
   }
