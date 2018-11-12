@@ -35,7 +35,7 @@ class PaySlipAmountSpec extends TaiViewSpec with MockitoSugar {
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     behave like pageWithCombinedHeader(
       messages("tai.payslip.preHeading", employerName),
-      messages("tai.payslip.title"))
+      messages("tai.payslip.heading"))
   }
 
   val payslipForm = mock[Form[PayslipForm]]

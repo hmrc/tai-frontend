@@ -93,6 +93,7 @@ trait MicroService {
       parallelExecution in IntegrationTest := false)
     .settings(resolvers ++= Seq(Resolver.jcenterRepo))
     .settings(majorVersion := 0)
+    .settings(Keys.fork in Test := true)
 }
 
 private object ITTestPhases {
