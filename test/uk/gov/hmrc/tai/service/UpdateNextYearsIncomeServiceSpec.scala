@@ -45,7 +45,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
         when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
-          Matchers.eq(nino), Matchers.eq(TaxYear()), Matchers.eq(employmentId))(any())
+          Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
         val result = Await.result(updateNextYearsIncomeService.setup(employmentId, nino), 5.seconds)
@@ -65,7 +65,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
         when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
-          Matchers.eq(nino), Matchers.eq(TaxYear()), Matchers.eq(employmentId))(any())
+          Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(None))
 
         val result: RuntimeException = the[RuntimeException] thrownBy Await.result(updateNextYearsIncomeService.setup(employmentId, nino), 5 seconds)
@@ -80,7 +80,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
           .thenReturn(Future.successful(None))
 
         when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
-          Matchers.eq(nino), Matchers.eq(TaxYear()), Matchers.eq(employmentId))(any())
+          Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
         val result: RuntimeException = the[RuntimeException] thrownBy Await.result(updateNextYearsIncomeService.setup(employmentId, nino), 5 seconds)
@@ -125,7 +125,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
         when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
-          Matchers.eq(nino), Matchers.eq(TaxYear()), Matchers.eq(employmentId))(any())
+          Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
         when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(

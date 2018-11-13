@@ -31,7 +31,7 @@ class UpdateNextYearsIncomeService {
   lazy val taxAccountService: TaxAccountService = TaxAccountService
 
   def setup(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] = {
-    val taxCodeIncomeFuture = taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)
+    val taxCodeIncomeFuture = taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear().next, employmentId)
     val employmentFuture = employmentService.employment(nino, employmentId)
 
     for {

@@ -17,6 +17,7 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 @import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
+@import includes.compareValueInput
 
 @(model: UpdateNextYearsIncomeCacheModel, incomeForm: Form[uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm])(
     implicit request: Request[_],
@@ -29,7 +30,7 @@
 @updateIncomeCYPlus1Template(
     employerName = model.employmentName,
     employmentId = model.employmentId,
-    form = None,
+    form = Some(incomeForm),
     gaEventAction = "Your estimated pay for next year edit",
     title = messages("tai.income.details.updateTaxableIncome.update"),
     heading = messages("tai.updateIncome.CYPlus1.edit.heading", currentTaxYearRangeHtmlNonBreak)
@@ -45,7 +46,17 @@
     </div>
 
     @form(action = controllers.income.routes.UpdateIncomeNextYearController.update(model.employmentId)){
-    <div>
+<div class="form-field-group @if(incomeForm.hasErrors) {form-group-error}">
+    @incomeForm.errors(incomeForm("income").name).map{ error =>
+    <span class="error-notification error-message">@messages(error.message)</span>
+    }
+        @compareValueInput(
+            previousLabel = messages("tai.incomes.amount.current"),
+            newLabel = messages("tai.incomes.amount.new"),
+            previousFieldName = "oldAmount",
+            previousFieldValue= model.currentValue.toString,
+            newField = incomeForm("income")
+        )
         <p><input type="submit" class="button" id="CYPlus1EditButton" value='@messages("tai.continue")'/></p>
     </div>
     }

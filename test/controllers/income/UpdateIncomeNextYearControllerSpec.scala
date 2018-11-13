@@ -125,7 +125,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
         status(result) mustBe BAD_REQUEST
 
-        result rendersTheSameViewAs updateIncomeCYPlus1Edit(model, EditIncomeIrregularHoursForm.createForm(taxablePayYTD = Some(currentEstPay)))
+        result rendersTheSameViewAs updateIncomeCYPlus1Edit(model, EditIncomeIrregularHoursForm.createForm().bindFromRequest()(fakeRequest))
       }
     }
   }

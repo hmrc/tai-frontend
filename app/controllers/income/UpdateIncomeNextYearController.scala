@@ -21,7 +21,6 @@ import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController, routes}
-import org.joda.time.LocalDate
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -31,9 +30,6 @@ import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm
-
-import scala.Function.tupled
-import scala.concurrent.Future
 
 trait UpdateIncomeNextYearController extends TaiBaseController
   with DelegationAwareActions
@@ -63,7 +59,7 @@ trait UpdateIncomeNextYearController extends TaiBaseController
 
             updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map {
               model => {
-                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model, EditIncomeIrregularHoursForm.createForm(taxablePayYTD = Some(model.currentValue))))
+                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model, EditIncomeIrregularHoursForm.createForm()))
               }
             }
           }
