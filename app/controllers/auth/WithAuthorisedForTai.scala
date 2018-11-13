@@ -23,6 +23,7 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits.applicationMessages
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.HeaderCarrierConverter.fromHeadersAndSession
 import uk.gov.hmrc.play.frontend.auth._
@@ -80,7 +81,7 @@ trait WithAuthorisedForTaiLite extends DelegationAwareActions { this: ErrorPages
   private type PlayRequest = (Request[AnyContent] => Result)
   private type AsyncPlayRequest = (Request[AnyContent] => Future[Result])
   private type TaiUserRequest = TaiUser => PlayRequest
-  private type AsyncTaiUserRequest = TaiUser => Person => AsyncPlayRequest
+    private type AsyncTaiUserRequest = TaiUser => Person => AsyncPlayRequest
 
   implicit private def createHeaderCarrier(implicit request: Request[_]): HeaderCarrier =
     fromHeadersAndSession(request.headers,Some(request.session))
@@ -131,5 +132,7 @@ case class TaiUser(authContext: AuthContext, person: Person){
     def getNino = authContext.principal.accounts.paye.map(paye => paye.nino.nino).getOrElse("")
 
     def getUTR = authContext.principal.accounts.sa.map(sa => sa.utr.utr).getOrElse("")
+
+    def nino: Nino = Nino(getNino)
 
 }

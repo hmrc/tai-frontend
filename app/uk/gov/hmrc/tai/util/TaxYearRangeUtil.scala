@@ -22,6 +22,8 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.time.TaxYearResolver
 
+import scala.annotation.tailrec
+
 object TaxYearRangeUtil {
 
   def currentTaxYearRange(implicit messages: Messages): String = {
@@ -34,10 +36,25 @@ object TaxYearRangeUtil {
     HtmlFormatter.htmlNonBroken(currentTaxYearRange)
   }
 
-  def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String = {
+  def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String = futureTaxYearRangeHtmlNonBreak(0)
+
+  def futureTaxYearRangeHtmlNonBreak(add: Int)(implicit messages: Messages): String = {
+    @tailrec
+    def getYear(n: Int, year: TaxYear = TaxYear()): TaxYear = {
+      if (n == 0) {
+        year
+      } else {
+        getYear(n-1, year.next)
+      }
+    }
+
+    val year: TaxYear = getYear(add)
+
+    val st: LocalDate = TaxYearResolver.startOfCurrentTaxYear
+
     messages("tai.taxYear",
-      HtmlFormatter.htmlNonBroken( Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear) ),
-      HtmlFormatter.htmlNonBroken( Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear) ))
+      HtmlFormatter.htmlNonBroken( Dates.formatDate(year.start) ),
+      HtmlFormatter.htmlNonBroken( Dates.formatDate(year.end) ))
   }
 
   def dynamicDateRangeHtmlNonBreak(from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {

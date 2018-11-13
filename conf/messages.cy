@@ -757,7 +757,7 @@ tai.irregular.confirm.effectOfChange=Gall newid eich swm newid eich cod treth a�
 tai.irregular.currentAmount=Y swm presennol
 tai.irregular.instruction.wholePounds=Nodwch y swm mewn punnoedd cyfan – anwybyddwch y ceiniogau.
 tai.irregular.newAmount=Swm newydd
-tai.irregular.confirm.estimatedIncome=Eich incwm amcangyfrifedig newydd yw £{0}
+tai.irregular.confirm.estimatedIncome=Eich incwm amcangyfrifedig newydd yw {0}
 tai.irregular.confirm.mainHeading=Cadarnhewch eich incwm trethadwy amcangyfrifedig ar gyfer {0}
 tai.irregular.introduction=Ni allwn amcangyfrif eich incwm blynyddol oherwydd bod gennych oriau gwaith afreolaidd
 tai.irregular.heading=Diweddarwch eich incwm trethadwy amcangyfrifedig ar gyfer {0} gydag oriau gwaith afreolaidd
@@ -1309,3 +1309,4 @@ tai.updateIncome.CYPlus1.preheading=Diweddarwch yr amcangyfrif o’ch incwm oddi
 
 tai.updateIncome.CYPlus1.start.paragraph1=Dylech ddiweddaru’r amcangyfrif o’ch incwm os ydych yn gwybod y bydd newid yn eich incwm gyda {0} y flwyddyn nesaf a’ch bod yn meddwl y bydd y newid yn effeithio ar eich haen gyfradd dreth.
 tai.updateIncome.CYPlus1.start.paragraph2=Os bydd eich cyflogaeth â {0} yn dod i ben y flwyddyn nesaf, gallwch roi gwybod i ni ar ôl iddi ddod i ben.
+tai.updateIncome.CYPlus1.confirm.paragraph=Rydych wedi nodi {0}.

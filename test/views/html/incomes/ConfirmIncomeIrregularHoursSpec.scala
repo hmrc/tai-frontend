@@ -18,7 +18,7 @@ package views.html.incomes
 
 import org.scalatest.mock.MockitoSugar
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 
@@ -33,10 +33,10 @@ class ConfirmIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
     behave like pageWithTitle(messages("tai.irregular.title"))
     behave like pageWithCombinedHeader(
       messages("tai.payPeriod.preHeading", employerName),
-      messages("tai.irregular.confirm.mainHeading", currentTaxYearRangeHtmlNonBreak))
+      messages("tai.irregular.confirm.mainHeading", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
 
     "display the users current estimated income" in {
-      doc(view) must haveParagraphWithText(messages("tai.irregular.confirm.estimatedIncome", estimatedAmount))
+      doc(view) must haveParagraphWithText(messages("tai.irregular.confirm.estimatedIncome", "£1,000"))
     }
 
     "display a message explaining the results of changing the estimated pay" in {
@@ -57,6 +57,6 @@ class ConfirmIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
     }
   }
 
-  val vm = ConfirmAmountEnteredViewModel(employmentId, employerName, estimatedAmount)
+  val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, employerName, estimatedAmount)
   override lazy val view: Html = views.html.incomes.confirmAmountEntered(vm)
 }

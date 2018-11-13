@@ -29,13 +29,15 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
+import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 
 trait UpdateIncomeNextYearController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable {
 
-  val updateNextYearsIncomeService: UpdateNextYearsIncomeService
+  def updateNextYearsIncomeService: UpdateNextYearsIncomeService
 
   def personService: PersonService
 
@@ -51,7 +53,23 @@ trait UpdateIncomeNextYearController extends TaiBaseController
   }
 
   def edit(employmentId: Int): Action[AnyContent] = ???
-  def confirm(employmentId: Int): Action[AnyContent] = ???
+
+  def confirm(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            updateNextYearsIncomeService.get(employmentId, user.nino).map((cacheModel: UpdateNextYearsIncomeCacheModel) => {
+              cacheModel.newValue.fold(BadRequest("CHANGE ME")) { estimatedAmount =>
+                val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentId, cacheModel.employmentName, estimatedAmount)
+                Ok(views.html.incomes.confirmAmountEntered(vm))
+              }
+            })
+          }
+  }
+
+  def handleConfirm(employmentId: Int): Action[AnyContent] = ???
+
   def success(employmentId: Int): Action[AnyContent] = ???
 
 }
