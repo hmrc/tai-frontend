@@ -21,21 +21,22 @@ import controllers.auth.TaiUser
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.scalatestplus.play.PlaySpec
 import play.api.mvc.Result
-import play.api.test.Helpers.{contentAsString, _}
-import play.twirl.api.Html
+import play.api.test.Helpers.contentAsString
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-trait ControllerViewTestHelper extends PlaySpec{
+trait ControllerViewTestHelper extends PlaySpec {
 
   implicit val user: TaiUser = UserBuilder.apply()
   implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
   implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
 
   implicit class ViewMatcherHelper(result: Future[Result]) {
-    def rendersTheSameViewAs(expected: Html) = {
+    def rendersTheSameViewAs(expected: Html): Unit = {
       contentAsString(result) must equal(expected.toString)
     }
   }
