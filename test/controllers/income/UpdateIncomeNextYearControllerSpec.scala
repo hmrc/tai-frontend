@@ -33,7 +33,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm
+import uk.gov.hmrc.tai.forms.AmountComparitorForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
 import views.html.incomes.nextYear.{updateIncomeCYPlus1Edit, updateIncomeCYPlus1Start}
@@ -84,7 +84,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         val result: Future[Result] = testController.edit(employmentID)(fakeRequest)
 
         status(result) mustBe OK
-        result rendersTheSameViewAs updateIncomeCYPlus1Edit(model, EditIncomeIrregularHoursForm.createForm(taxablePayYTD = Some(currentEstPay)))
+        result rendersTheSameViewAs updateIncomeCYPlus1Edit(model, AmountComparitorForm.createForm(taxablePayYTD = Some(currentEstPay)))
       }
     }
   }
@@ -125,7 +125,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
         status(result) mustBe BAD_REQUEST
 
-        result rendersTheSameViewAs updateIncomeCYPlus1Edit(model, EditIncomeIrregularHoursForm.createForm().bindFromRequest()(fakeRequest))
+        result rendersTheSameViewAs updateIncomeCYPlus1Edit(model, AmountComparitorForm.createForm().bindFromRequest()(fakeRequest))
       }
     }
   }

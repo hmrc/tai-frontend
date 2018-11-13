@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm
+import uk.gov.hmrc.tai.forms.AmountComparitorForm
 
 trait UpdateIncomeNextYearController extends TaiBaseController
   with DelegationAwareActions
@@ -59,7 +59,7 @@ trait UpdateIncomeNextYearController extends TaiBaseController
 
             updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map {
               model => {
-                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model, EditIncomeIrregularHoursForm.createForm()))
+                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model, AmountComparitorForm.createForm()))
               }
             }
           }
@@ -73,7 +73,7 @@ trait UpdateIncomeNextYearController extends TaiBaseController
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            EditIncomeIrregularHoursForm.createForm().bindFromRequest().fold(
+            AmountComparitorForm.createForm().bindFromRequest().fold(
 
               formWithErrors => {
                 updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>

@@ -18,7 +18,7 @@ package views.html.incomes
 
 import org.scalatest.mock.MockitoSugar
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm
+import uk.gov.hmrc.tai.forms.AmountComparitorForm
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
@@ -62,6 +62,6 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
   }
 
   private val viewModel = EditIncomeIrregularHoursViewModel(employmentId, employerName, currentAmount)
-  private val editIncomeForm = EditIncomeIrregularHoursForm.createForm()
+  private val editIncomeForm = AmountComparitorForm.createForm()
   override def view: Html = views.html.incomes.editIncomeIrregularHours(editIncomeForm, viewModel)
 }
