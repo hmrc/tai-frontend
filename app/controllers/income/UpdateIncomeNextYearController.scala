@@ -48,7 +48,6 @@ trait UpdateIncomeNextYearController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          println("***************************************************")
           if(cyPlusOneEnabled){
             ServiceCheckLite.personDetailsCheck {
               updateNextYearsIncomeService.reset flatMap { _ =>
