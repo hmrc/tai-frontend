@@ -100,21 +100,41 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
       }
     }
 
-    "return tax code code comparision results" when {
+    "return mismatched tax code code comparision results" when {
       "there has been a tax code change" in {
         val viewModel = WhatDoYouWantToDoViewModel(false, true, true, Some(mismatchedTaxCode))
 
-        val expected = "TCC=mismatch;CONFIRMED=[1180L,0T];UNCONFIRMED=[1185L,0T];CY=true;PY=true;CY+1=true"
+        val expected = "TCC=true;TCM=true;CONFIRMED=[1180L,0T];UNCONFIRMED=[1185L,0T];CY=true;PY=true;CY+1=true"
 
         viewModel.gaDimensions() mustEqual gaMap(expected)
       }
     }
 
-    "return tax code code comparision results" when {
+    "return mismatched tax code code comparision results" when {
       "there has not been a tax code change" in {
         val viewModel = WhatDoYouWantToDoViewModel(false, true, false, Some(mismatchedTaxCode))
 
-        val expected = "TCC=mismatch;CONFIRMED=[1180L,0T];UNCONFIRMED=[1185L,0T];CY=true;PY=true;CY+1=true"
+        val expected = "TCC=false;TCM=true;CONFIRMED=[1180L,0T];UNCONFIRMED=[1185L,0T];CY=true;PY=true;CY+1=true"
+
+        viewModel.gaDimensions() mustEqual gaMap(expected)
+      }
+    }
+
+    "return matched tax code code comparision results" when {
+      "there has been a tax code change" in {
+        val viewModel = WhatDoYouWantToDoViewModel(false, true, true, Some(matchedTaxCode))
+
+        val expected = "TCC=true;TCM=false;CONFIRMED=[1185L];UNCONFIRMED=[1185L];CY=true;PY=true;CY+1=true"
+
+        viewModel.gaDimensions() mustEqual gaMap(expected)
+      }
+    }
+
+    "return matched tax code code comparision results" when {
+      "there has not been a tax code change" in {
+        val viewModel = WhatDoYouWantToDoViewModel(false, true, false, Some(matchedTaxCode))
+
+        val expected = "TCC=false;TCM=false;CONFIRMED=[1185L];UNCONFIRMED=[1185L];CY=true;PY=true;CY+1=true"
 
         viewModel.gaDimensions() mustEqual gaMap(expected)
       }
