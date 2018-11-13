@@ -107,7 +107,7 @@ trait WithAuthorisedForTaiLite extends DelegationAwareActions { this: ErrorPages
       case e => {
         val ninoString = authContext.principal.accounts.paye.map(paye => paye.nino.nino).getOrElse("")
         Logger.warn(s"<Exception returned during user resolution for nino ${ninoString} @${classOf[AuthorisedByTai].getName} with exception: ${e.getClass()}", e)
-        Future.successful(InternalServerError(error5xxFromNps(Messages("tai.technical.error.message"))))
+        Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
       }
     }
 

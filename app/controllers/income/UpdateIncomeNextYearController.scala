@@ -21,18 +21,22 @@ import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
+import play.api.Logger
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
+import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 
+import scala.concurrent.Future
 trait UpdateIncomeNextYearController extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
+  with FeatureTogglesConfig
   with Auditable {
 
   val updateNextYearsIncomeService: UpdateNextYearsIncomeService
@@ -43,9 +47,20 @@ trait UpdateIncomeNextYearController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            updateNextYearsIncomeService.setup(employmentId, Nino(user.getNino)) map { model =>
-              Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Start(model))
+          if(cyPlusOneEnabled){
+            ServiceCheckLite.personDetailsCheck {
+              updateNextYearsIncomeService.reset flatMap { _ =>
+                updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
+                  Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Start(model.employmentName, employmentId))
+                }
+              }
+            }
+          } else {
+              Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+          }.recoverWith{
+            case e: Exception => {
+              Logger.warn(e.getMessage)
+              Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
             }
           }
   }

@@ -22,22 +22,26 @@ import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import org.scalacheck.Prop.False
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.Result
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
+import scala.concurrent.duration._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
 import views.html.incomes.nextYear.updateIncomeCYPlus1Start
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 import scala.util.Random
 
 class UpdateIncomeNextYearControllerSpec extends PlaySpec
@@ -49,12 +53,15 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
     "return OK with the start view" when {
       "employment data is available for the nino" in {
 
-        val testController = createTestIncomeController
+        val testController = createTestIncomeController()
         val employmentID = 1
+        val employerName = "EmployerName"
         val currentEstPay = 1234
         val nino = generateNino
-        val model = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, currentEstPay)
-        when(testController.updateNextYearsIncomeService.setup(Matchers.eq(employmentID), Matchers.eq(nino))(any()))
+        val model = UpdateNextYearsIncomeCacheModel(employerName, employmentID, currentEstPay)
+
+        when(testController.updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(testController.updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(nino))(any()))
           .thenReturn(Future.successful(model))
 
         implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
@@ -62,16 +69,51 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         val result: Future[Result] = testController.start(employmentID)(fakeRequest)
 
         status(result) mustBe OK
-        result rendersTheSameViewAs updateIncomeCYPlus1Start(model)
+        result rendersTheSameViewAs updateIncomeCYPlus1Start(employerName, employmentID)
+      }
+    }
+
+    "return INTERNAL_SERVER_ERROR" when {
+      "service fails to return valid data" in {
+        val testController = createTestIncomeController()
+        val employmentID = 1
+        val employerName = "EmployerName"
+        val currentEstPay = 1234
+        val nino = generateNino
+        val model = UpdateNextYearsIncomeCacheModel(employerName, employmentID, currentEstPay)
+
+        when(testController.updateNextYearsIncomeService.reset(any())).thenThrow(new RuntimeException("Invalid Data"))
+
+        implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+//        val result: Future[Result] = testController.start(employmentID)(fakeRequest)
+
+        val exception = the[RuntimeException] thrownBy Await.result(testController.updateNextYearsIncomeService.reset(any()), 5.seconds)
+
+        exception.getMessage mustBe "Invalid Data"
+
+      }
+    }
+
+    "return NOT_FOUND" when {
+      "CY Plus 1 is disabled" in {
+        val testController = createTestIncomeController(isCyPlusOneEnabled = false)
+        val employmentID = 1
+
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+        val result: Future[Result] = testController.start(employmentID)(fakeRequest)
+
+        status(result) mustBe NOT_FOUND
       }
     }
   }
 
   private val generateNino = new Generator(new Random).nextNino
 
-  private def createTestIncomeController: UpdateIncomeNextYearController = new TestUpdateIncomeNextYearController
+  private def createTestIncomeController(isCyPlusOneEnabled: Boolean = true): UpdateIncomeNextYearController = new TestUpdateIncomeNextYearController(isCyPlusOneEnabled)
 
-  private class TestUpdateIncomeNextYearController extends UpdateIncomeNextYearController {
+  private class TestUpdateIncomeNextYearController(isCyPlusOneEnabled: Boolean) extends UpdateIncomeNextYearController {
     override val personService: PersonService = mock[PersonService]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
@@ -79,6 +121,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
+    override val cyPlusOneEnabled: Boolean = isCyPlusOneEnabled
 
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)

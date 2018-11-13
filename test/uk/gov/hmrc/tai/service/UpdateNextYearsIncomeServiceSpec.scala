@@ -48,7 +48,10 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
           Matchers.eq(nino), Matchers.eq(TaxYear()), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
-        val result = Await.result(updateNextYearsIncomeService.setup(employmentId, nino), 5.seconds)
+        when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
+          Future.successful(Map.empty[String,String])
+        )
+        val result = Await.result(updateNextYearsIncomeService.get(employmentId, nino), 5.seconds)
 
         verify(updateNextYearsIncomeService.journeyCacheService, times(1))
           .cache(expectedMap(employmentName, employmentId, employmentAmount))
@@ -68,7 +71,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
           Matchers.eq(nino), Matchers.eq(TaxYear()), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(None))
 
-        val result: RuntimeException = the[RuntimeException] thrownBy Await.result(updateNextYearsIncomeService.setup(employmentId, nino), 5 seconds)
+        val result: RuntimeException = the[RuntimeException] thrownBy Await.result(updateNextYearsIncomeService.get(employmentId, nino), 5.seconds)
 
         result.getMessage mustBe "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey"
       }
@@ -83,7 +86,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
           Matchers.eq(nino), Matchers.eq(TaxYear()), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
-        val result: RuntimeException = the[RuntimeException] thrownBy Await.result(updateNextYearsIncomeService.setup(employmentId, nino), 5 seconds)
+        val result: RuntimeException = the[RuntimeException] thrownBy Await.result(updateNextYearsIncomeService.get(employmentId, nino), 5.seconds)
 
         result.getMessage mustBe "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey"
       }

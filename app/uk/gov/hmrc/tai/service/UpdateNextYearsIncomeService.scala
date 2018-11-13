@@ -19,9 +19,11 @@ package uk.gov.hmrc.tai.service
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.tai.connectors.responses.TaiResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
+
 import scala.concurrent.Future
 
 class UpdateNextYearsIncomeService {
@@ -30,7 +32,11 @@ class UpdateNextYearsIncomeService {
   lazy val employmentService: EmploymentService = EmploymentService
   lazy val taxAccountService: TaxAccountService = TaxAccountService
 
-  def setup(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] = {
+  def reset(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+    journeyCacheService.flush()
+  }
+
+  private def setup(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] = {
     val taxCodeIncomeFuture = taxAccountService.taxCodeIncomeForEmployment(nino, TaxYear(), employmentId)
     val employmentFuture = employmentService.employment(nino, employmentId)
 
