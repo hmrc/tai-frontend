@@ -160,6 +160,14 @@ object TaxablePayslipForm{
   }
 }
 
+object BonusPaymentsForm{
+  def createForm(implicit messages: Messages): Form[YesNoForm] = {
+    YesNoForm.form(messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory",
+      TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
+  }
+}
+
+
 case class BonusOvertimeAmountForm(amount: Option[String] = None)
 
 object BonusOvertimeAmountForm{

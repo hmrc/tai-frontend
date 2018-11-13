@@ -20,7 +20,7 @@ import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.forms.YesNoForm
+import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, YesNoForm}
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
@@ -31,7 +31,7 @@ class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar with FormValuesCon
   private val employerName = "Employer"
   private val emptySelectionErrorMessage = messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory",
     TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)
-  private val bonusPaymentsForm = YesNoForm.form(emptySelectionErrorMessage)
+  private val bonusPaymentsForm = BonusPaymentsForm.createForm
   private val choice = YesNoForm.YesNoChoice
 
   "Bonus payments view" should {

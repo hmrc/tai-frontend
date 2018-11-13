@@ -21,7 +21,6 @@ import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import controllers.{AuthenticationConnectors, TaiBaseController}
 import org.joda.time.LocalDate
 import play.api.Play.current
-import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
@@ -37,9 +36,9 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{Employment, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
-import uk.gov.hmrc.tai.util.{FormHelper, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{CheckYourAnswersViewModel, EstimatedPayViewModel}
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmIncomeIrregularHoursViewModel, EditIncomeIrregularHoursViewModel}
 
@@ -452,7 +451,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         sendActingAttorneyAuditEvent("getBonusPaymentsPage")
         journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
           mandatoryValues =>
-            Ok(views.html.incomes.bonusPayments(YesNoForm.form(), mandatoryValues(0).toInt, mandatoryValues(1)))
+            Ok(views.html.incomes.bonusPayments(BonusPaymentsForm.createForm, mandatoryValues(0).toInt, mandatoryValues(1)))
         }
   }
 
@@ -460,8 +459,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     implicit person =>
       implicit request =>
         sendActingAttorneyAuditEvent("processBonusPayments")
-        YesNoForm.form(Messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory",
-          TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)).bindFromRequest().fold(
+        BonusPaymentsForm.createForm.bindFromRequest().fold(
           formWithErrors => {
             journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
               mandatoryValues =>
