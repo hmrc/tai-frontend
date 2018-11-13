@@ -255,6 +255,7 @@ tai.bonusPayments.title=Will you get any bonus or overtime payments between {0}?
 tai.bonusPayments.question=Does this payslip include bonus or overtime?
 tai.bonusPaymentsAmount.title=How much do you think you will get in bonus or overtime payments between {0}?
 tai.bonusPaymentsAmount.error.form.mandatory=Enter how much you think you will get in bonus or overtime payments between {0}
+tai.bonusPaymentsAmount.error.form.invalid=Your bonus or overtime payments must be an amount of money, like 1,000 or 10,000
 tai.bonusPaymentsAmount.preHeading=Update your estimated income from {0}
 tai.bonusPaymentsAmount.hint=This doesn’t have to be accurate, just an estimate.
 tai.canWeContactByPhone.YesNoChoice.empty=Select yes if we can call you if we need more information

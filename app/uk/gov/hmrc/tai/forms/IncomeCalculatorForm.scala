@@ -177,7 +177,7 @@ object BonusOvertimeAmountForm{
     Form[BonusOvertimeAmountForm](
       mapping("amount" -> TaiValidator.validateNewAmounts(messages("tai.bonusPaymentsAmount.error.form.mandatory",
                                                             TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
-                                                          messages("error.invalid.monetaryAmount.format.invalid"),
+                                                          messages("tai.bonusPaymentsAmount.error.form.invalid"),
                                                           messages("error.tai.updateDataEmployment.maxLength")))(
                                                           BonusOvertimeAmountForm.apply)(BonusOvertimeAmountForm.unapply)
     )

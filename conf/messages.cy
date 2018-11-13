@@ -255,6 +255,7 @@ tai.bonusPayments.question=A yw''r slip cyflog hwn yn cynnwys taliadau bonws neu
 tai.bonusPayments.title=A fyddech yn cael unrhyw daliadau bonws neu daliadau goramser rhwng {0}
 tai.bonusPaymentsAmount.title=Faint ydych yn meddwl y byddwch yn ei gael mewn taliadau goramser neu daliadau bonws rhwng {0}?
 tai.bonusPaymentsAmount.error.form.mandatory=Nodwch faint yr ydych yn meddwl y cewch mewn taliadau bonws neu daliadau goramser rhwng {0}
+tai.bonusPaymentsAmount.error.form.invalid=Rhaid i’ch taliadau bonws neu oramser fod yn swm o arian, megis 1,000 neu 10,000
 tai.bonusPaymentsAmount.preHeading=Diweddarwch eich incwm amcangyfrifedig oddi wrth {0}
 tai.bonusPaymentsAmount.hint=Does dim rhaid i hyn fod yn fanwl gywir, dim ond amcangyfrif.
 tai.canWeContactByPhone.YesNoChoice.empty=Rhaid i chi ateb y cwestiwn ''A allwn gysylltu â chi?''.
