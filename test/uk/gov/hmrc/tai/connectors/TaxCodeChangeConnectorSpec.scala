@@ -42,9 +42,8 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
       "fetch the url to connect to TAI to retrieve tax code change" in {
         val testConnector = createTestConnector
         val nino = generateNino.nino
-        val year = TaxYear().year
 
-        testConnector.taxCodeChangeUrl(nino, year) mustBe s"${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-change/$year"
+        testConnector.taxCodeChangeUrl(nino) mustBe s"${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-change"
       }
     }
 
@@ -55,9 +54,8 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
 
           val testConnector = createTestConnector
           val nino = generateNino
-          val year = TaxYear().year
 
-          val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change/$year"
+          val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
 
           val startDate = TaxYearResolver.startOfCurrentTaxYear
           val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
@@ -107,15 +105,14 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
         "tax code change returns 500" in {
           val testConnector = createTestConnector
           val nino = generateNino
-          val year = TaxYear().year
 
-          val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change/$year"
+          val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
 
           server.stubFor(
             get(urlEqualTo(taxCodeChangeUrl)).willReturn(serverError())
           )
 
-          val expectedMessage = s"GET of '${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-change/$year' returned 500. Response body: ''"
+          val expectedMessage = s"GET of '${testConnector.serviceUrl}/tai/$nino/tax-account/tax-code-change' returned 500. Response body: ''"
           val result = Await.result(testConnector.taxCodeChange(nino), 5.seconds)
 
           result mustBe TaiTaxAccountFailureResponse(expectedMessage)

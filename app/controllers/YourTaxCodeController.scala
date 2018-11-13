@@ -51,7 +51,7 @@ trait YourTaxCodeController extends TaiBaseController
             val nino = user.person.nino
 
             for {
-              taxCodeChange <- taxCodeChangeService.taxCodeChange(nino, year)
+              taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
               scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeChange.current.map(_.taxCode))
             } yield {
               val taxCodeViewModel = TaxCodeViewModel(taxCodeChange.current, scottishTaxRateBands, year)

@@ -35,13 +35,12 @@ trait TaxCodeChangeConnector {
 
   def baseTaxAccountUrl(nino: String) = s"$serviceUrl/tai/$nino/tax-account/"
 
-  def taxCodeChangeUrl(nino: String, year: Int): String = baseTaxAccountUrl(nino) + s"tax-code-change/${year}"
+  def taxCodeChangeUrl(nino: String): String = baseTaxAccountUrl(nino) + "tax-code-change"
 
-  def taxCodeChange(nino: Nino, year: TaxYear = TaxYear())(implicit hc: HeaderCarrier): Future[TaiResponse] = {
-    httpHandler.getFromApi(taxCodeChangeUrl(nino.nino, year.year)) map (
-      json => {
+  def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+    httpHandler.getFromApi(taxCodeChangeUrl(nino.nino)) map (
+      json =>
         TaiSuccessResponseWithPayload((json \ "data").as[TaxCodeChange])
-      }
       ) recover {
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve tax code change for $nino with exception:${e.getMessage}")

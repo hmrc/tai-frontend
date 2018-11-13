@@ -31,11 +31,11 @@ trait TaxCodeChangeService {
 
   def taxCodeChangeConnector: TaxCodeChangeConnector
 
-  def taxCodeChange(nino: Nino, year: TaxYear = TaxYear())(implicit hc: HeaderCarrier): Future[TaxCodeChange] = {
+  def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] = {
 
-    taxCodeChangeConnector.taxCodeChange(nino, year) map {
+    taxCodeChangeConnector.taxCodeChange(nino) map {
       case TaiSuccessResponseWithPayload(taxCodeChange: TaxCodeChange) => taxCodeChange
-      case _ => throw new RuntimeException(s"Could not fetch tax code change for year $year")
+      case _ => throw new RuntimeException(s"Could not fetch tax code change")
     }
   }
 
