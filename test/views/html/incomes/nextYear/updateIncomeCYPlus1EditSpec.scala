@@ -19,7 +19,7 @@ package views.html.incomes.nextYear
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.forms.AmountComparitorForm
+import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.util.ViewModelHelper.{currentTaxYearRangeHtmlNonBreak, withPoundPrefix}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -62,5 +62,5 @@ class updateIncomeCYPlus1EditSpec extends TaiViewSpec {
   }
 
 
-  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model, AmountComparitorForm.createForm(taxablePayYTD = Some(currentEstPay)))
+  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model, AmountComparatorForm.createForm(taxablePayYTD = Some(currentEstPay)))
 }

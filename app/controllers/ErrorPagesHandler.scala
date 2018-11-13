@@ -70,8 +70,8 @@ trait ErrorPagesHandler {
       Some(Messages("tai.errorMessage.frontend400.message2.nps")))
   }
 
-  def error5xxFromNps(pageBody: String)
-                     (implicit request: Request[_], messages: Messages)= {
+  def error5xx(pageBody: String)
+              (implicit request: Request[_], messages: Messages)= {
     views.html.error_template_noauth(
       Messages("global.error.InternalServerError500.title"),
       Messages("tai.technical.error.heading"),
@@ -147,19 +147,19 @@ trait ErrorPagesHandler {
 
         case e: InternalServerException => {
           Logger.warn(s"<InternalServerException> - $methodName nino $nino")
-          Future.successful(InternalServerError(error5xxFromNps(
+          Future.successful(InternalServerError(error5xx(
             Messages("tai.technical.error.npsdown.message"))))
         }
 
         case e: Upstream5xxResponse => {
           Logger.warn(s"<Upstream5xxResponse> - $methodName nino $nino")
-          Future.successful(InternalServerError(error5xxFromNps(
+          Future.successful(InternalServerError(error5xx(
             Messages("tai.technical.error.npsdown.message"))))
         }
 
         case e => {
           Logger.warn(s"<Unknown Exception> - $methodName nino $nino", e)
-          Future.successful(InternalServerError(error5xxFromNps(
+          Future.successful(InternalServerError(error5xx(
             Messages("tai.technical.error.message"))))
         }
       }
@@ -180,7 +180,7 @@ trait ErrorPagesHandler {
   def hodInternalErrorResult(implicit request: Request[AnyContent], user: TaiUser, messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e @ (_:InternalServerException | _:HttpException) =>
       Logger.warn(s"<Exception returned from HOD call for nino ${user.getNino} @${rl.getName} with exception: ${e.getClass()}", e)
-      Future.successful(InternalServerError(error5xxFromNps(Messages("tai.technical.error.message"))))
+      Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
   }
 
   def hodBadRequestResult(implicit request: Request[AnyContent], user: TaiUser, messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
@@ -192,7 +192,7 @@ trait ErrorPagesHandler {
   def hodAnyErrorResult(implicit request: Request[AnyContent], user: TaiUser, messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
     case e =>
       Logger.warn(s"<Exception returned from HOD call for nino ${user.getNino} @${rl.getName} with exception: ${e.getClass()}", e)
-      Future.successful(InternalServerError(error5xxFromNps(Messages("tai.technical.error.message"))))
+      Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
   }
 
   def npsTaxAccountDeceasedResult(implicit request: Request[AnyContent], user: TaiUser, messages: Messages, rl: RecoveryLocation): PartialFunction[TaiResponse, Option[Result]] = {

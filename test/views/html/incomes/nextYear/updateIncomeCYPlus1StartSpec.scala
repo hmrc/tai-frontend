@@ -18,17 +18,12 @@ package views.html.incomes.nextYear
 
 import play.api.mvc.Call
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class updateIncomeCYPlus1StartSpec extends TaiViewSpec {
 
   val employerName = "Employer Name"
   val employmentID = 1
-  val currentEstPay = 1234
-
-  val model = UpdateNextYearsIncomeCacheModel(employerName, employmentID, currentEstPay)
 
   "CYPlus1 Start Page" should {
     behave like pageWithBackLink
@@ -46,6 +41,5 @@ class updateIncomeCYPlus1StartSpec extends TaiViewSpec {
 
   }
 
-
-  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Start(model)
+  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Start(employerName, employmentID)
 }
