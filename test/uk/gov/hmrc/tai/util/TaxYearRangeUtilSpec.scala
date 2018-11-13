@@ -91,9 +91,4 @@ class TaxYearRangeUtilSpec extends PlaySpec with FakeTaiPlayApplication {
       caught.getMessage mustBe s"From date:$now cannot be after To date:$yesterday"
     }
   }
-
-
-
-
-
 }
