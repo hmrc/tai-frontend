@@ -16,30 +16,51 @@
 
 package controllers.income
 
-import controllers.{AuthenticationConnectors, TaiBaseController}
+import controllers.audit.Auditable
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import controllers.auth.WithAuthorisedForTaiLite
+import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
+import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 
-trait UpdateIncomeNextYearController extends TaiBaseController {
+trait UpdateIncomeNextYearController extends TaiBaseController
+  with DelegationAwareActions
+  with WithAuthorisedForTaiLite
+  with Auditable {
 
-  def start(employmentId: Int): Action[AnyContent] = ???
+  val updateNextYearsIncomeService: UpdateNextYearsIncomeService
+
+  def personService: PersonService
+
+  def start(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            updateNextYearsIncomeService.setup(employmentId, Nino(user.getNino)) map { model =>
+              Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Start(model))
+            }
+          }
+  }
+
   def edit(employmentId: Int): Action[AnyContent] = ???
   def confirm(employmentId: Int): Action[AnyContent] = ???
   def success(employmentId: Int): Action[AnyContent] = ???
 
 }
 
-object UpdateIncomeNextYearController
-  extends UpdateIncomeNextYearController
-    with AuthenticationConnectors {
-
+object UpdateIncomeNextYearController extends UpdateIncomeNextYearController with AuthenticationConnectors {
+  override val personService = PersonService
   override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
-  val updateNextYearIncomeService: UpdateNextYearsIncomeService = new UpdateNextYearsIncomeService
+  val updateNextYearsIncomeService: UpdateNextYearsIncomeService = new UpdateNextYearsIncomeService
 
 }
