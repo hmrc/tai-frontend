@@ -24,8 +24,8 @@ class CheckYourAnswersSpec extends TaiViewSpec {
 
   "checkYourAnswers" should {
 
-    behave like pageWithTitle(messages("tai.checkYourAnswers"))
-    behave like pageWithCombinedHeader(messages("tai.income.previousYears.journey.preHeader"), messages("tai.checkYourAnswers"))
+    behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
+    behave like pageWithCombinedHeader(messages("tai.income.previousYears.journey.preHeader"), messages("tai.checkYourAnswers.heading"))
     behave like pageWithButtonForm("/check-income-tax/update-income-details/submit-your-answers", messages("tai.confirmAndSend"))
     behave like pageWithCancelLink(controllers.routes.PayeControllerHistoric.payePage(TaxYear().prev))
     behave like pageWithCheckYourAnswersSummary

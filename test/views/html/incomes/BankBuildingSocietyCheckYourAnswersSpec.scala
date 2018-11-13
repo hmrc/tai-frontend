@@ -24,10 +24,10 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
 
   "End BBSI check your answers page" must {
-    behave like pageWithTitle(messages("tai.checkYourAnswers"))
+    behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
     behave like pageWithCombinedHeader(
       messages("account.closed"),
-      messages("tai.checkYourAnswers"))
+      messages("tai.checkYourAnswers.title"))
 
     behave like pageWithButtonForm(
       "/check-income-tax/income/bank-building-society-savings/0/close/check-your-answers",

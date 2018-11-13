@@ -27,16 +27,15 @@
 @header = @{
   ptaHeader(
   displayBackLink = true,
-  mainHeadingText = Messages("tai.checkYourAnswers"),
-  preHeadingText = Messages("tai.income.previousYears.journey.preHeader"))
+  mainHeadingText = messages("tai.checkYourAnswers.heading"),
+  preHeadingText = messages("tai.income.previousYears.journey.preHeader"))
 }
 
 @main(
-  title = Messages("tai.checkYourAnswers"),
+  title = messages("tai.checkYourAnswers.title"),
   user = Some(user),
   pageHeader = Some(header),
-  articleClasses = None,
-  gaCustomTitle = None
+  articleClasses = None
 ){
 
     <div class="section">
@@ -46,7 +45,7 @@
         )
     </div>
 
-    <p class="subsection">@Messages("tai.checkYourAnswers.confirmText")</p>
+    <p class="subsection">@messages("tai.checkYourAnswers.confirmText")</p>
 
 
     @form(action = controllers.income.previousYears.routes.UpdateIncomeDetailsController.submitYourAnswers()) {
