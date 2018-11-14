@@ -29,7 +29,6 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
-import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, UpdateNextYearsIncomeService}
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
@@ -40,7 +39,6 @@ trait UpdateIncomeNextYearController extends TaiBaseController
   with Auditable {
 
   def updateNextYearsIncomeService: UpdateNextYearsIncomeService
-  def taxAccountService: TaxAccountService
 
   def personService: PersonService
 
@@ -81,14 +79,9 @@ trait UpdateIncomeNextYearController extends TaiBaseController
         implicit request =>
           // TODO: add check for CY+1 enabled
           ServiceCheckLite.personDetailsCheck {
-            updateNextYearsIncomeService.get(employmentId, user.nino) flatMap {
-              case UpdateNextYearsIncomeCacheModel(employmentName, _, _, Some(newValue)) => {
-                taxAccountService.updateEstimatedIncome(user.nino, newValue, TaxYear().next, employmentId) map {
-                  case TaiSuccessResponse => Redirect(routes.UpdateIncomeNextYearController.success(employmentId))
-                  case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
-                }
-              }
-              case _ => throw new RuntimeException
+            updateNextYearsIncomeService.submit(employmentId, user.nino) map {
+              case TaiSuccessResponse => Redirect(routes.UpdateIncomeNextYearController.success(employmentId))
+              case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
             }
           }
   }
@@ -102,8 +95,6 @@ object UpdateIncomeNextYearController extends UpdateIncomeNextYearController wit
   override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
-
-  override val taxAccountService: TaxAccountService = TaxAccountService
   override val updateNextYearsIncomeService: UpdateNextYearsIncomeService = new UpdateNextYearsIncomeService
 
 }

@@ -18,23 +18,25 @@ package uk.gov.hmrc.tai.service
 
 import org.mockito.Matchers
 import org.mockito.Mockito.{times, verify, when}
-import org.mockito.Matchers.any
+import org.mockito.Matchers.{any, eq => Meq}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 import uk.gov.hmrc.time.TaxYearResolver
+import utils.WireMockHelper
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
+class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with WireMockHelper {
 
   "setup" must {
     "initialize the journey cache and return the cache model" when {
@@ -155,6 +157,34 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
         verify(updateNextYearsIncomeService.journeyCacheService, times(1))
           .cache(fullMap(employmentName, employmentId, employmentAmount))
       }
+    }
+  }
+
+  "submit" must {
+    "post the values from cache to the tax account" in {
+      val nino = generateNino
+      val service = new UpdateNextYearsIncomeServiceTest
+
+      when(
+        service.journeyCacheService.currentCache(any())
+      ).thenReturn(
+        Future.successful(fullMap(employmentName, employmentId, employmentAmount))
+      )
+
+      when(
+        service.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())
+      ).thenReturn(
+        Future.successful(TaiSuccessResponse)
+      )
+
+      val result = Await.result(service.submit(employmentId, nino), 5.seconds)
+
+      verify(
+        service.taxAccountService, times(1)
+      ).updateEstimatedIncome(
+        Meq(nino), Meq(employmentAmount), Meq(TaxYear().next), Meq(employmentId)
+      )(any())
+
     }
   }
 
