@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.connectors.responses.TaiResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
-
+import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
 import scala.concurrent.Future
 
 class UpdateNextYearsIncomeService {
@@ -45,7 +45,7 @@ class UpdateNextYearsIncomeService {
       employmentOption <- employmentFuture
     } yield (taxCodeIncomeOption, employmentOption) match {
       case (Some(taxCodeIncome), Some(employment)) => {
-        val model = UpdateNextYearsIncomeCacheModel(employment.name, employmentId, taxCodeIncome.amount)
+        val model = UpdateNextYearsIncomeCacheModel(employment.name, employmentId, taxCodeIncome.amount.toInt)
 
         journeyCacheService.cache(model.toCacheMap)
 
@@ -79,7 +79,7 @@ class UpdateNextYearsIncomeService {
 
   def setNewAmount(newValue: String, employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[UpdateNextYearsIncomeCacheModel] = {
     get(employmentId, nino) map { model =>
-      val updatedValue = model.copy(newValue = Some(newValue.toInt))
+      val updatedValue = model.copy(newValue = Some(convertCurrencyToInt(Some(newValue))))
       journeyCacheService.cache(updatedValue.toCacheMap)
 
       updatedValue

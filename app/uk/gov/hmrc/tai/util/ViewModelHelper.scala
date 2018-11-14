@@ -42,16 +42,16 @@ trait ViewModelHelper {
     htmlNonBroken( Dates.formatDate(TaxYearResolver.startOfNextTaxYear) )
   }
 
-  def currentTaxYearRange(implicit messages: Messages): String = {
+  def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String = {
     TaxYearRangeUtil.currentTaxYearRange
   }
 
-  def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String = {
-    TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak
+  def currentTaxYearRangeHtmlNonBreakBetween(implicit messages: Messages): String = {
+    TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited
   }
 
   def dynamicDateRangeHtmlNonBreak(from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {
-    TaxYearRangeUtil.dynamicDateRangeHtmlNonBreak(from, to)
+    TaxYearRangeUtil.dynamicDateRange(from, to)
   }
 
   def htmlNonBroken(string: String) = HtmlFormatter.htmlNonBroken(string)
