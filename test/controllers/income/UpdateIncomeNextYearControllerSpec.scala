@@ -65,13 +65,11 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
       "employment data is available for the nino" in {
 
         val testController = createTestIncomeController()
-        val nino = generateNino
-        val model = UpdateNextYearsIncomeCacheModel(employerName, employmentID, currentEstPay)
 
         when(testController.updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
         mockedGet(testController)
 
-        implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
+        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
         val result: Future[Result] = testController.start(employmentID)(fakeRequest)
 
@@ -83,12 +81,10 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
     "return INTERNAL_SERVER_ERROR" when {
       "service fails to return valid data" in {
         val testController = createTestIncomeController()
-        val nino = generateNino
-        val model = UpdateNextYearsIncomeCacheModel(employerName, employmentID, currentEstPay)
 
         when(testController.updateNextYearsIncomeService.reset(any())).thenThrow(new RuntimeException("Invalid Data"))
 
-        implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
+        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
         val exception = the[RuntimeException] thrownBy Await.result(testController.updateNextYearsIncomeService.reset(any()), 5.seconds)
 
@@ -100,7 +96,6 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
     "return NOT_FOUND" when {
       "CY Plus 1 is disabled" in {
         val testController = createTestIncomeController(isCyPlusOneEnabled = false)
-        val employmentID = 1
 
         val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
@@ -116,10 +111,9 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
       "employment data is available for the nino" in {
 
         val testController = createTestIncomeController()
-        val nino = generateNino
         mockedGet(testController)
 
-        implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
+        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
         val result: Future[Result] = testController.edit(employmentID)(fakeRequest)
 
@@ -131,7 +125,6 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
     "return NOT_FOUND" when {
       "CY Plus 1 is disabled" in {
         val testController = createTestIncomeController(isCyPlusOneEnabled = false)
-        val employmentID = 1
 
         val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
@@ -168,8 +161,9 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
       "no input is passed" in {
         val testController = createTestIncomeController()
         val newEstPay = ""
-        val nino = generateNino
-        implicit val fakeRequest = RequestBuilder.buildFakeRequestWithOnlySession(POST).withFormUrlEncodedBody("income" -> newEstPay)
+
+        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] =
+          RequestBuilder.buildFakeRequestWithOnlySession(POST).withFormUrlEncodedBody("income" -> newEstPay)
 
         mockedGet(testController)
 
@@ -184,7 +178,6 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
     "return NOT_FOUND" when {
       "CY Plus 1 is disabled" in {
         val testController = createTestIncomeController(isCyPlusOneEnabled = false)
-        val employmentID = 1
 
         val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
 
