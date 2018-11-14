@@ -43,6 +43,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.tai.util._
+import uk.gov.hmrc.tai.util.constants.{EmploymentDecisionConstants, FormValuesConstants, IrregularPayConstants, JourneyCacheConstants}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -68,7 +69,7 @@ class EndEmploymentControllerSpec
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
-      doc.title() must include(Messages("tai.employment.decision.title", employerName))
+      doc.title() must include(Messages("tai.employment.decision.customGaTitle"))
     }
 
     "call the Employment service to get the correct employment details" in {

@@ -29,7 +29,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         formForErrorSummary = Some(howToUpdateForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.howToUpdate.title", employerName),
+        mainHeadingText = Messages("tai.howToUpdate.heading", employerName),
         preHeadingText = Messages("tai.howToUpdate.preHeading", employerName),
         headerWidthClasses = Some("column-full")
     )
@@ -37,13 +37,12 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
 
 @main(
-    title = Messages("tai.howToUpdate.title", employerName),
+    title = Messages("tai.howToUpdate.title"),
     articleClasses = Some("full-width text"),
     user = Some(user),
     pageHeader = Some(header),
     employerName = Some(employerName),
-    webChat = true,
-    gaCustomTitle = None
+    webChat = true
 ){
 
     <div class="section flush--bottom">

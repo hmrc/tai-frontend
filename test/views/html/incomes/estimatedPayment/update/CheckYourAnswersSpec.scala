@@ -25,8 +25,8 @@ class CheckYourAnswersSpec extends TaiViewSpec {
 
   "checkYourAnswers" should {
 
-    behave like pageWithTitle(messages("tai.checkYourAnswers"))
-    behave like pageWithCombinedHeader(messages("tai.incomes.edit.preHeading",employerName), messages("tai.checkYourAnswers"))
+    behave like pageWithTitle(messages("tai.checkYourAnswers.title"))
+    behave like pageWithCombinedHeader(messages("tai.incomes.edit.preHeading",employerName), messages("tai.checkYourAnswers.heading"))
     behave like pageWithCancelLink(controllers.routes.TaxAccountSummaryController.onPageLoad)
     behave like pageWithBackLink
 
@@ -66,7 +66,7 @@ class CheckYourAnswersSpec extends TaiViewSpec {
 
   override def view = views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel,employerName)
   def viewModel = CheckYourAnswersViewModel(paymentFrequency,totalPay, hasDeductions, Some(taxablePay),
-    hasBonusOrOvertime, Some(hasExtraBonusOrOvertime), Some(totalBonusOrOvertime))
+    hasBonusOrOvertime, Some(totalBonusOrOvertime))
 
 
   val paymentFrequency = "monthly"

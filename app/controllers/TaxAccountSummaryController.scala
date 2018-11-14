@@ -32,7 +32,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.{AuditConstants, TaiConstants}
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 
 import scala.concurrent.Future

@@ -30,7 +30,7 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.tai.connectors.responses.TaiTaxAccountFailureResponse
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.util.TaiConstants._
+import uk.gov.hmrc.tai.util.constants.TaiConstants._
 
 
 class ErrorPagesHandlerSpec extends PlaySpec

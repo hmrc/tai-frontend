@@ -25,7 +25,7 @@ import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.filters.TaxAccountFilter
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
-import uk.gov.hmrc.tai.util.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
+import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.time.TaxYearResolver
 
@@ -50,8 +50,8 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with TaxAccountFilter 
             isAnyFormInProgress: Boolean,
             nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
-    val header = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak
-    val title = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRange
+    val header = messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak
+    val title = messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak
 
     val taxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
     val estimatedIncomeTaxAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))
@@ -141,7 +141,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
       employment.payrollNumber.isDefined,
       endDate.getOrElse(""),
       endDate.isDefined,
-      Messages("tai.incomeTaxSummary.employment.link"),
+      messages("tai.incomeTaxSummary.employment.link"),
       controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(employment.sequenceNumber).url,
       true)
   }
@@ -151,10 +151,10 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
     val endDate: Option[String] = employment.endDate.map( Dates.formatDate(_) )
     val detailsLinkLabel = taxCodeIncome.componentType match {
-      case EmploymentIncome if taxCodeIncome.status == Live => Messages("tai.incomeTaxSummary.employmentAndBenefits.link")
-      case EmploymentIncome if taxCodeIncome.status != Live => Messages("tai.incomeTaxSummary.employment.link")
-      case PensionIncome => Messages("tai.incomeTaxSummary.pension.link")
-      case _ => Messages("tai.incomeTaxSummary.income.link")
+      case EmploymentIncome if taxCodeIncome.status == Live => messages("tai.incomeTaxSummary.employmentAndBenefits.link")
+      case EmploymentIncome if taxCodeIncome.status != Live => messages("tai.incomeTaxSummary.employment.link")
+      case PensionIncome => messages("tai.incomeTaxSummary.pension.link")
+      case _ => messages("tai.incomeTaxSummary.income.link")
     }
 
     val incomeSourceSummaryUrl =
@@ -180,7 +180,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
     val untaxedInterest = nonTaxCodeIncome.untaxedInterest.map(u =>
       IncomeSourceViewModel(
-        Messages("tai.typeDecodes." + u.incomeComponentType.toString),
+        messages("tai.typeDecodes." + u.incomeComponentType.toString),
         withPoundPrefixAndSign(MoneyPounds(u.amount, 0)),
         "",
         displayTaxCode = false,
@@ -188,7 +188,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
         displayPayrollNumber = false,
         "",
         displayEndDate = false,
-        Messages("tai.bbsi.viewDetails"),
+        messages("tai.bbsi.viewDetails"),
         controllers.income.bbsi.routes.BbsiController.untaxedInterestDetails().url,
         displayDetailsLink = u.bankAccounts.nonEmpty
         )
@@ -197,7 +197,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
     val otherIncomeSources = nonTaxCodeIncome.otherNonTaxCodeIncomes.map(otherNonTaxCodeIncome => {
 
       val model = IncomeSourceViewModel(
-        Messages("tai.typeDecodes." + otherNonTaxCodeIncome.incomeComponentType.toString),
+        messages("tai.typeDecodes." + otherNonTaxCodeIncome.incomeComponentType.toString),
         withPoundPrefixAndSign(MoneyPounds(otherNonTaxCodeIncome.amount, 0)),
         "",
         displayTaxCode = false,
@@ -205,7 +205,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
         displayPayrollNumber = false,
         "",
         displayEndDate = false,
-        Messages("tai.updateOrRemove"),
+        messages("tai.updateOrRemove"),
         "",
         displayDetailsLink = true
       )

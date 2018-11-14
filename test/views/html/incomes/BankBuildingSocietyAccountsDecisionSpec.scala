@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.viewModels.income.BbsiAccountsDecisionViewModel
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.BankAccountDecisionConstants
+import uk.gov.hmrc.tai.util.constants.BankAccountDecisionConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class BankBuildingSocietyAccountsDecisionSpec extends TaiViewSpec with BankAccountDecisionConstants {

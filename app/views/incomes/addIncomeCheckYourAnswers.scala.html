@@ -31,15 +31,16 @@
     ptaHeader(
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.checkYourAnswers"),
-        preHeadingText = viewModel.preHeading) }
+        mainHeadingText = Messages("tai.checkYourAnswers.heading"),
+        preHeadingText = viewModel.preHeading)
+}
 
 @main(
-    title = Messages("tai.checkYourAnswers"),
+    title = Messages("tai.checkYourAnswers.title"),
     user = Some(user),
     pageHeader = Some(header),
-    articleClasses = None,
-    gaCustomTitle = None) {
+    articleClasses = None
+) {
 
     @form(action=Call("POST", viewModel.submissionUrl), args=(Symbol("class"), "subsection")) {
 

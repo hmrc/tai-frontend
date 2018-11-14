@@ -44,7 +44,7 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCode
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
-import uk.gov.hmrc.tai.util.{JourneyCacheConstants, TaiConstants}
+import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -72,7 +72,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.edit.heading", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(Messages("tai.incomes.edit.title", currentTaxYearRangeHtmlNonBreak))
       }
     }
 
@@ -397,7 +397,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.edit.heading", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(Messages("tai.incomes.edit.title", currentTaxYearRangeHtmlNonBreak))
       }
     }
 

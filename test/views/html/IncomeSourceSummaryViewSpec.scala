@@ -20,24 +20,37 @@ import controllers.routes
 import org.jsoup.Jsoup
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.util.TaiConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{CompanyBenefitViewModel, IncomeSourceSummaryViewModel}
 
 class IncomeSourceSummaryViewSpec extends TaiViewSpec {
   "Income details spec" must {
-    behave like pageWithCombinedHeader(model.displayName,
-    messages("tai.employment.income.details.mainHeading", model.empOrPensionName,
-    model.startOfCurrentYear.replace(" ", "\u00A0"), model.endOfCurrentYear.replace(" ", "\u00A0")))
-    behave like pageWithTitle(messages("tai.employment.income.details.mainHeading", model.empOrPensionName,
-      model.startOfCurrentYear, model.endOfCurrentYear))
+    behave like pageWithCombinedHeader(
+      model.displayName,
+      messages("tai.employment.income.details.mainHeading",
+        model.empOrPensionName,
+        model.startOfCurrentYear.replace(" ", "\u00A0"),
+        model.endOfCurrentYear.replace(" ", "\u00A0"
+        )
+      )
+    )
+
+    behave like pageWithTitle(
+      messages("tai.employment.income.details.mainHeading.gaTitle",
+        model.startOfCurrentYear,
+        model.endOfCurrentYear
+      )
+    )
 
     "display headings" when {
       "income source is pension" in {
         pensionDoc must havePreHeadingWithText(pensionModel.displayName)
+
         pensionDoc must haveHeadingWithText(messages("tai.pension.income.details.mainHeading", pensionModel.empOrPensionName,
           pensionModel.startOfCurrentYear.replace(" ", "\u00A0"), pensionModel.endOfCurrentYear.replace(" ", "\u00A0")))
-        pensionDoc.title must include( messages("tai.pension.income.details.mainHeading", pensionModel.empOrPensionName,
+
+        pensionDoc.title must include( messages("tai.pension.income.details.mainHeading.gaTitle",
           pensionModel.startOfCurrentYear, pensionModel.endOfCurrentYear) )
       }
     }

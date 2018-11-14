@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.cacheResolver.estimatedPay
 
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.JourneyCacheService
-import uk.gov.hmrc.tai.util.JourneyCacheConstants
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,8 +44,7 @@ trait UpdatedEstimatedPayJourneyCache extends JourneyCacheConstants{
 
     key match {
       case UpdateIncome_PayslipDeductionsKey => yesNoAnswerResponse(Map(key -> cacheMap(key)), List(UpdateIncome_TaxablePayKey))
-      case UpdateIncome_BonusPaymentsKey =>
-        yesNoAnswerResponse(Map(key -> cacheMap(key)), List(UpdateIncome_BonusPaymentsThisYearKey, UpdateIncome_BonusOvertimeAmountKey))
+      case UpdateIncome_BonusPaymentsKey => yesNoAnswerResponse(Map(key -> cacheMap(key)), List(UpdateIncome_BonusOvertimeAmountKey))
       case _ => journeyCacheService.cache(cacheMap)
     }
   }

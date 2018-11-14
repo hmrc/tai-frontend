@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.forms.employments.{IrregularPayForm, IrregularPayFormData
 import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 import play.api.data.Form
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.IrregularPayConstants
+import uk.gov.hmrc.tai.util.constants.IrregularPayConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class EndEmploymentIrregularPaymentErrorPageSpec extends TaiViewSpec with IrregularPayConstants {
@@ -30,7 +30,7 @@ class EndEmploymentIrregularPaymentErrorPageSpec extends TaiViewSpec with Irregu
     behave like pageWithTitle(messages("tai.irregular.preHeadingText"))
     behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(model.empId))
-    behave like pageWithCombinedHeader(messages("tai.irregular.preHeadingText"), messages("tai.irregular.mainHeadingText", model.employerName))
+    behave like pageWithCombinedHeader(messages("tai.irregular.preHeadingText"), messages("tai.irregular.heading", model.employerName))
     behave like pageWithContinueButtonForm("/check-income-tax/end-employment/handle-irregular-payment/1")
 
     "display paragraphs" in {

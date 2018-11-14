@@ -21,7 +21,7 @@ import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain._
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.TaiConstants.EYU_DATE_FORMAT
+import uk.gov.hmrc.tai.util.constants.TaiConstants.EYU_DATE_FORMAT
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear

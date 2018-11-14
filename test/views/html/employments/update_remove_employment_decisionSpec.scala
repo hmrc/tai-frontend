@@ -19,7 +19,7 @@ package views.html.employments
 import play.api.data.Form
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.employments.UpdateRemoveEmploymentForm
-import uk.gov.hmrc.tai.util.FormValuesConstants
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class update_remove_employment_decisionSpec extends TaiViewSpec with FormValuesConstants {
@@ -34,7 +34,7 @@ class update_remove_employment_decisionSpec extends TaiViewSpec with FormValuesC
     empId = empId)
 
   "update_remove_employment_decision" must {
-    behave like pageWithTitle(messages("tai.employment.decision.title", employmentName))
+    behave like pageWithTitle(messages("tai.employment.decision.customGaTitle"))
 
     behave like pageWithBackLink
 

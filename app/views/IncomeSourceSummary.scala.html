@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.play.views.formatting.Money.pounds
 @import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
 @import uk.gov.hmrc.urls.Link
-@import uk.gov.hmrc.tai.util.TaiConstants
+@import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 @(model: IncomeSourceSummaryViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
 
@@ -41,7 +41,7 @@
     }
 }
 
-@gaTitle = @{
+@title = @{
     if(model.isPension){
         messages("tai.pension.income.details.mainHeading.gaTitle", model.startOfCurrentYear, model.endOfCurrentYear)
     } else {
@@ -69,7 +69,13 @@
         preHeadingText = model.displayName)
 }
 
-@main(title = mainTitle, user = Some(user), pageHeader = Some(header), articleClasses = None, gaCustomTitle = Some(gaTitle)){
+@main(
+    title = title,
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = None,
+    gaCustomTitle = Some(title)
+) {
 
     @if(model.isPension){
         <p  aria-hidden="true">
