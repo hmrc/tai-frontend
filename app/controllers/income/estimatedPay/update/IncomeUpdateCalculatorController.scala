@@ -214,7 +214,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
               (taxCodeIncomeInfoToCache.tupled andThen journeyCacheService.cache)(tci, payment) map { _ =>
                 val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
 
-                Ok(views.html.incomes.editIncomeIrregularHours(EditIncomeIrregularHoursForm.createForm(), viewModel))
+                Ok(views.html.incomes.editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
               }
             }
             case None => throw new RuntimeException(s"Not able to find employment with id $employmentId")
@@ -232,7 +232,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             val ptd: String = cache(UpdateIncome_PayToDateKey)
             val latestPayDate = cache.get(UpdateIncome_DateKey)
 
-            EditIncomeIrregularHoursForm.createForm(latestPayDate, Some(ptd.toInt)).bindFromRequest().fold(
+            AmountComparatorForm.createForm(latestPayDate, Some(ptd.toInt)).bindFromRequest().fold(
 
               formWithErrors => {
                 val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, ptd)

@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.model.cache
 
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
-final case class UpdateNextYearsIncomeCacheModel(employmentName: String, employmentId: Int, currentValue: BigDecimal, newValue: Option[Int] = None) {
+final case class UpdateNextYearsIncomeCacheModel(employmentName: String, employmentId: Int, currentValue: Int, newValue: Option[Int] = None) {
   def toCacheMap: Map[String, String] = {
     Map(
       UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME -> employmentName,
