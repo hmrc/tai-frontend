@@ -24,11 +24,13 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
+
 import scala.concurrent.duration._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
@@ -39,7 +41,7 @@ import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
-import views.html.incomes.nextYear.{updateIncomeCYPlus1Edit, updateIncomeCYPlus1Start}
+import views.html.incomes.nextYear.{updateIncomeCYPlus1Edit, updateIncomeCYPlus1Start, updateIncomeCYPlus1Success}
 
 import scala.concurrent.{Await, Future}
 import scala.util.Random
@@ -74,21 +76,6 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
         status(result) mustBe OK
         result rendersTheSameViewAs updateIncomeCYPlus1Start(employerName, employmentID)
-      }
-    }
-
-    "return INTERNAL_SERVER_ERROR" when {
-      "service fails to return valid data" in {
-        val testController = createTestIncomeController()
-
-        when(testController.updateNextYearsIncomeService.reset(any())).thenThrow(new RuntimeException("Invalid Data"))
-
-        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
-
-        val exception = the[RuntimeException] thrownBy Await.result(testController.updateNextYearsIncomeService.reset(any()), 5.seconds)
-
-        exception.getMessage mustBe "Invalid Data"
-
       }
     }
 
@@ -183,6 +170,37 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         val result: Future[Result] = testController.update(employmentID)(fakeRequest)
 
         status(result) mustBe NOT_FOUND
+      }
+    }
+
+    "success" must {
+      "return OK with the success view" when {
+        "the estimated pay has been successfully submitted" in {
+
+          val testController = createTestIncomeController()
+
+          when(testController.updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
+          mockedGet(testController)
+
+          implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+          val result: Future[Result] = testController.success(employmentID)(fakeRequest)
+
+          status(result) mustBe OK
+          result rendersTheSameViewAs updateIncomeCYPlus1Success(employerName)
+        }
+      }
+
+      "return NOT_FOUND" when {
+        "CY Plus 1 is disabled" in {
+          val testController = createTestIncomeController(isCyPlusOneEnabled = false)
+
+          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+          val result: Future[Result] = testController.success(employmentID)(fakeRequest)
+
+          status(result) mustBe NOT_FOUND
+        }
       }
     }
   }

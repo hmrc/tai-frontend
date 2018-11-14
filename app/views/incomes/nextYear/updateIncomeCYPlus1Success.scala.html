@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@()(
+@(employmentName: String)(
     implicit request: Request[_],
     messages: Messages,
     user: controllers.auth.TaiUser,
@@ -22,15 +22,28 @@
     partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
 )
 
-@updateIncomeCYPlus1Template(
-    employerName = "CHANGE ME",
-    employmentId = 1,
-    form = None,
-    gaEventAction = "EDIT ME",
-    title = "CHANGE ME",
-    heading = "CHANGE ME"
+@main(
+title = messages("tai.updateIncome.CYPlus1.success.title"),
+articleClasses = Some("full-width"),
+user = Some(user),
+employerName = Some(employmentName)
 ){
-    <div>
-        Success
+<div class="column-two-thirds">
+    <header class="grid-row margin-bottom-large">
+        <div class="govuk-box-highlight">
+            <h1 class="heading-large" id="currentYearTitle">@messages("tai.updateIncome.CYPlus1.success.heading", employmentName)</h1>
+        </div>
+    </header>
+
+    <div class="grid-row">
+        <p>
+            @messages("tai.updateIncome.CYPlus1.success.paragraph1")
+            @includes.link(
+                copy = messages("tai.updateIncome.CYPlus1.success.link"),
+                url = controllers.routes.IncomeTaxComparisonController.onPageLoad.url.toString
+            )
+        </p>
+        <p>@messages("tai.updateIncome.CYPlus1.success.paragraph2", employmentName)</p>
     </div>
+</div>
 }
