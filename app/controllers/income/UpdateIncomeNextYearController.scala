@@ -32,6 +32,7 @@ import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
+import uk.gov.hmrc.tai.model.domain.Person
 
 import scala.concurrent.Future
 trait UpdateIncomeNextYearController extends TaiBaseController
@@ -126,8 +127,12 @@ trait UpdateIncomeNextYearController extends TaiBaseController
                 },
                 validForm => {
                   validForm.income.fold(throw new RuntimeException) { income =>
-                    updateNextYearsIncomeService.setNewAmount(income, employmentId, Nino(user.getNino)) map { _ =>
-                      Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
+                    updateNextYearsIncomeService.setNewAmount(income, employmentId, Nino(user.getNino)) map { model =>
+                      if (model.hasEstimatedIncomeChanged) {
+                        Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
+                      } else {
+                        Redirect(controllers.income.routes.UpdateIncomeNextYearController.same(employmentId))
+                      }
                     }
                   }
                 }
