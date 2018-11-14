@@ -22,6 +22,7 @@ import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, EditIncomePayPeriodConstants}
 
 case class HowToUpdateForm(howToUpdate: Option[String])
@@ -113,7 +114,7 @@ object PayslipForm{
 
   def createForm()(implicit messages: Messages): Form[PayslipForm] = {
     Form[PayslipForm](
-      mapping("totalSalary" -> TaiValidator.validateNewAmounts(messages("tai.payslip.error.form.incomes.radioButton.mandatory"),
+      mapping("totalSalary" -> TaiValidator.validateNewAmounts(messages("tai.payslip.error.form.totalPay.mandatory"),
                                                                messages("error.invalid.monetaryAmount.format.invalid"),
                                                                messages("error.tai.updateDataEmployment.maxLength")))(PayslipForm.apply)(PayslipForm.unapply)
     )
@@ -159,40 +160,10 @@ object TaxablePayslipForm{
   }
 }
 
-
-case class BonusPaymentsForm(bonusPayments: Option[String], bonusPaymentsMoreThisYear: Option[String])
-
 object BonusPaymentsForm{
-  implicit val formats = Json.format[BonusPaymentsForm]
-
-  def createForm(bonusPayments : Option[String]= None)(implicit messages: Messages): Form[BonusPaymentsForm] = {
-
-    val bonusPaymentsValidation = Constraint[Option[String]]("Does this payslip include bonus or overtime"){
-
-      case Some(txt) => txt match {case "Yes" | "No" => Valid
-      case _ => Invalid(messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory"))
-      }
-      case _ => Invalid(messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory"))
-    }
-
-    def moreThisYearValidation(bonusPayments : Option[String]) : Constraint[Option[String]] = {
-      Constraint[Option[String]]("moreThisYear") {
-        moreThisYear => {
-          if(bonusPayments.getOrElse("") == "Yes" && !moreThisYear.isDefined) {
-            Invalid(messages("tai.bonusPayments.error.form.likely"))
-          } else {
-            Valid
-          }
-        }
-      }
-    }
-
-    Form[BonusPaymentsForm](
-      mapping("bonusPayments" -> optional(text).verifying(bonusPaymentsValidation),
-        "bonusPaymentsMoreThisYear" -> optional(text).verifying(moreThisYearValidation(bonusPayments))
-      )
-        (BonusPaymentsForm.apply)(BonusPaymentsForm.unapply)
-    )
+  def createForm(implicit messages: Messages): Form[YesNoForm] = {
+    YesNoForm.form(messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory",
+      TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
   }
 }
 
@@ -204,30 +175,12 @@ object BonusOvertimeAmountForm{
 
   def createForm(nonEmptyMessage: Option[String]=None, notAnAmountMessage: Option[String]=None)(implicit messages: Messages): Form[BonusOvertimeAmountForm] = {
     Form[BonusOvertimeAmountForm](
-      mapping("amount" -> TaiValidator.validateNewAmounts(nonEmptyMessage.getOrElse(""),
-                                                          notAnAmountMessage.getOrElse(""),
+      mapping("amount" -> TaiValidator.validateNewAmounts(messages("tai.bonusPaymentsAmount.error.form.mandatory",
+                                                            TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+                                                          messages("error.invalid.monetaryAmount.format.invalid"),
                                                           messages("error.tai.updateDataEmployment.maxLength")))(
                                                           BonusOvertimeAmountForm.apply)(BonusOvertimeAmountForm.unapply)
     )
   }
 
-  def bonusPaymentsAmountErrorMessage(moreThisYear: Option[String], payPeriod: Option[String])(implicit messages: Messages) = {
-    moreThisYear match {
-      case Some("Yes") => messages("tai.bonusPaymentsAmount.year.error")
-      case _ =>
-        payPeriod match {
-          case Some("monthly") => messages("tai.bonusPaymentsAmount.month.error")
-          case Some("fortnightly") => messages("tai.bonusPaymentsAmount.fortnightly.error")
-          case Some("weekly") => messages("tai.bonusPaymentsAmount.week.error")
-          case _ => messages("tai.bonusPaymentsAmount.period.error")
-        }
-    }
-  }
-
-  def notAmountMessage(moreThisYear: Option[String])(implicit messages: Messages) = {
-    moreThisYear match {
-      case Some("Yes") => messages("tai.bonusPaymentsAmount.error.form.notAnAmountAnnual")
-      case _ => messages("tai.bonusPaymentsAmount.error.form.notAnAmount")
-    }
-  }
 }

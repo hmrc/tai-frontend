@@ -14,65 +14,51 @@
  * limitations under the License.
  *@
 
-@(bonusPaymentsForm: Form[uk.gov.hmrc.tai.forms.BonusPaymentsForm], id: Int, employerName: String, paySlipDeductions: Boolean = false,
-bonusPaymentSelected: Boolean = false)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
-
 @import includes.ptaHeader
 @import includes.cancelLink
 @import uk.gov.hmrc.play.views.html.helpers._
-@import includes.forms.inputRadioGroupStyling
+@import includes.forms.{inputRadioGroupStyling, submit}
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+@import uk.gov.hmrc.tai.forms.YesNoForm
+
+@(yesNoForm: Form[YesNoForm], id: Int, employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Payslip deductions"}
 
 @header = @{
     ptaHeader(
-        formForErrorSummary = Some(bonusPaymentsForm),
+        formForErrorSummary = Some(yesNoForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.bonusPayments.heading"),
-        preHeadingText = Messages("tai.bonusPayments.preHeading", employerName),
+        mainHeadingText = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+        preHeadingText = messages("tai.bonusPayments.preHeading", employerName),
         headerWidthClasses = Some("column-full")
     )
 }
 
 @main(
-    title = Messages("tai.bonusPayments.title"),
+    title = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     articleClasses = Some(""),
     user = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName)
-) {
+    employerName = Some(employerName),
+    gaCustomTitle = None
+    ) {
     @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleBonusPayments, Symbol("data-dynamic-form") -> "true") {
 
         @{inputRadioGroupStyling(
-            field=bonusPaymentsForm("bonusPayments"),
-
-            radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no"))),
-            legend=Messages("tai.bonusPayments.question"),
+            field=yesNoForm(YesNoForm.YesNoChoice),
+            radioOptions=Seq((YesNoForm.YesValue -> messages("tai.label.yes")), (YesNoForm.NoValue -> messages("tai.label.no"))),
+            legend=messages("tai.bonusPayments.question"),
             legendHint=None,
             ('_groupDivClass, "form-group flush--bottom" ),
-            ('_radioOption1WrapAttribute, "data-target=bonusPaymentsMoreThisYear"),
             ('_groupClass, "inline" ),
-            ('_legendSpanClass, "form-label-bold"),
-            ('_fieldsetAttributes, "id=bonusPayments" )
+            ('_fieldsetAttributes, "id=yesNoChoice" ),
+            ('_legendSpanClass, "visually-hidden")
         )}
 
-        @{inputRadioGroupStyling(
-            field=bonusPaymentsForm("bonusPaymentsMoreThisYear"),
-            radioOptions=Seq(("Yes" -> Messages("tai.label.yes")), ("No" -> Messages("tai.label.no"))),
-            legend=Messages("tai.bonusPayments.moreThisYear"),
-            legendHint=None,
-            ('_groupDivClass, "form-group data-moreThisYear"),
-            ('_groupClass, "inline" + (if(bonusPaymentsForm.error("bonusPaymentsMoreThisYear").isEmpty) " panel panel-border-narrow" else "") + (if(!bonusPaymentSelected) " js-hidden" else "") ),
-            ('_legendClass, "form-label-bold section flush"),
-            ('_fieldsetAttributes, "id=bonusPaymentsMoreThisYear" )
-        )}
-
-        <div class="section">
-            <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
-
-            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
-        </div>
+        @submit(gaEventAction = Some(gaEventActionString))
+        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     }
 }

@@ -84,7 +84,7 @@
                         url = Some("/check-income-tax/income-summary"),
                         id = "currentTaxYear",
                         heading = messages("current.tax.year"),
-                        bodyContent = Some(messages("check.current.income", TaxYearRangeUtil.taxYearYearRange())),
+                        bodyContent = Some(messages("check.current.income", TaxYearRangeUtil.currentTaxYearRangeYearOnly)),
                         gaAction=Some(gaEventActionString),
                         gaLabel=Some(messages("current.tax.year"))
                     )
