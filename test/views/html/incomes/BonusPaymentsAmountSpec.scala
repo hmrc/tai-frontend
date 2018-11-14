@@ -16,44 +16,75 @@
 
 package views.html.incomes
 
-import org.mockito.Matchers._
-import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
-import play.api.data.{Field, Form}
+import play.api.i18n.MessagesApi
+import play.api.libs.json.Json
+import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
 
   val id = 1
   val employerName = "Employer"
+  val bonusPaymentsAmountForm = BonusOvertimeAmountForm.createForm()
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  val bonusPaymentsAmountForm = mock[Form[BonusOvertimeAmountForm]]
-
-  val field = mock[Field]
-  when(field.value).thenReturn(Some("fakeFieldValue"))
-  when(field.name).thenReturn("fakeFieldValue")
-  when(bonusPaymentsAmountForm(any())).thenReturn(field)
-  when(bonusPaymentsAmountForm.errors).thenReturn(List())
-  when(bonusPaymentsAmountForm.errors(anyString())).thenReturn(List())
-  when(bonusPaymentsAmountForm.hasErrors).thenReturn(false)
-
-  "Bonus payments amount view with monthly pay" should {
+  "Bonus payments amount view" should {
     behave like pageWithBackLink
+    behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     behave like pageWithCombinedHeader(
       messages("tai.bonusPaymentsAmount.preHeading", employerName),
-      messages("tai.bonusPaymentsAmount.month.title"))
+      messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
+    behave like pageWithTitle(messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
+    behave like pageWithContinueButtonForm("/check-income-tax/update-income/bonus-overtime-amount")
+
+    "contain hint with static text" in {
+      val hint = doc(view).select("form .form-hint").get(0).text
+      hint mustBe messages("tai.bonusPaymentsAmount.hint")
+    }
+
+    "contain an input field with pound symbol appended" in {
+      doc must haveElementAtPathWithId("input", "amount")
+      doc must haveElementAtPathWithClass("input", "form-control-currency")
+    }
+
+    "return no errors when a valid monetary amount is entered" in {
+
+      val monetaryAmount = "£10,000"
+      val monetaryAmountRequest = Json.obj("amount" -> monetaryAmount)
+      val validatedForm = bonusPaymentsAmountForm.bind(monetaryAmountRequest)
+
+      validatedForm.errors mustBe empty
+      validatedForm.value.get mustBe BonusOvertimeAmountForm(Some(monetaryAmount))
+    }
+
+    "display an error" when {
+      "the user continues without entering an amount" in {
+        val emptySelectionErrorMessage = messages("tai.bonusPaymentsAmount.error.form.mandatory",
+          TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)
+        val invalidRequest = Json.obj("amount" -> "")
+        val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
+
+        val errorView = views.html.incomes.bonusPaymentAmount(invalidatedForm, id, employerName)
+        doc(errorView) must haveErrorLinkWithText(emptySelectionErrorMessage)
+        doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
+      }
+
+      "the user enters an invalid monetary amount" in {
+        val invalidAmountErrorMessage = messages("error.invalid.monetaryAmount.format.invalid")
+        val invalidRequest = Json.obj("amount" -> "£10,0")
+        val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
+
+        val errorView = views.html.incomes.bonusPaymentAmount(invalidatedForm, id, employerName)
+        doc(errorView) must haveErrorLinkWithText(invalidAmountErrorMessage)
+        doc(errorView) must haveClassWithText(messages(invalidAmountErrorMessage), "error-message")
+      }
+    }
+
   }
 
-  "Bonus payments amount view with yearly pay" should {
-
-    val testView: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm,"year",id, employerName)
-    doc(testView) must haveHeadingWithText(messages("tai.bonusPaymentsAmount.year.title"))
-  }
-
-
-
-
-  override def view: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm,"monthly",id, employerName)
+  override def view: Html = views.html.incomes.bonusPaymentAmount(bonusPaymentsAmountForm,id, employerName)
 }

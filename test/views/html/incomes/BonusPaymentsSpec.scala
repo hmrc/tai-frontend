@@ -16,38 +16,59 @@
 
 package views.html.incomes
 
-import org.mockito.Matchers._
-import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
-import play.api.data.{Field, Form}
+import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.forms.BonusPaymentsForm
+import uk.gov.hmrc.tai.forms.{BonusPaymentsForm, YesNoForm}
+import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
-class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar {
+class BonusPaymentsSpec extends TaiViewSpec with MockitoSugar with FormValuesConstants {
 
-  lazy val Id = 1
-  lazy val employerName = "Employer"
-  lazy val bonusPaymentsForm = mock[Form[BonusPaymentsForm]]
+  private val Id = 1
+  private val employerName = "Employer"
+  private val emptySelectionErrorMessage = messages("tai.bonusPayments.error.form.incomes.radioButton.mandatory",
+    TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)
+  private val bonusPaymentsForm = BonusPaymentsForm.createForm
+  private val choice = YesNoForm.YesNoChoice
 
   "Bonus payments view" should {
     behave like pageWithBackLink
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(Id).url))
     behave like pageWithCombinedHeader(
       messages("tai.bonusPayments.preHeading", employerName),
-      messages("tai.bonusPayments.heading"))
+      messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
+    behave like pageWithTitle(messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
+    behave like pageWithContinueButtonForm("/check-income-tax/update-income/bonus-payments")
+
+    "return no errors with valid 'yes' choice" in {
+      val validYesChoice = Json.obj(choice -> YesValue)
+      val validatedForm = bonusPaymentsForm.bind(validYesChoice)
+
+      validatedForm.errors mustBe empty
+      validatedForm.value.get mustBe YesNoForm(Some(YesValue))
+    }
+
+    "return no errors with valid 'no' choice" in {
+      val validNoChoice = Json.obj(choice -> NoValue)
+      val validatedForm = bonusPaymentsForm.bind(validNoChoice)
+
+      validatedForm.errors mustBe empty
+      validatedForm.value.get mustBe YesNoForm(Some(NoValue))
+    }
+
+    "display an error for invalid choice" in {
+      val invalidChoice = Json.obj(choice -> "")
+      val invalidatedForm = bonusPaymentsForm.bind(invalidChoice)
+
+      val errorView = views.html.incomes.bonusPayments(invalidatedForm,Id, employerName)
+      doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
+      doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage),"error-message")
+    }
+
   }
 
-  lazy val field = mock[Field]
-  when(field.errors).thenReturn(Nil)
-  when(field.value).thenReturn(Some("fakeFieldValue"))
-  when(field.name).thenReturn("fakeFieldValue")
-  when(bonusPaymentsForm(any())).thenReturn(field)
-  when(bonusPaymentsForm.errors).thenReturn(Nil)
-  when(bonusPaymentsForm.errors(anyString())).thenReturn(Nil)
-  when(bonusPaymentsForm.error(any())).thenReturn(None)
-  when(bonusPaymentsForm.hasErrors).thenReturn(false)
-
-  override def view: Html = views.html.incomes.bonusPayments(bonusPaymentsForm,Id, employerName, false, false)
+  override def view: Html = views.html.incomes.bonusPayments(bonusPaymentsForm,Id, employerName)
 }

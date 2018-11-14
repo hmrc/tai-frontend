@@ -43,18 +43,18 @@ trait ViewModelHelper {
   }
 
   @deprecated("Use TaxYearRangeUtil.currentTaxYearRange")
-  def currentTaxYearRange(implicit messages: Messages): String = {
+  def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String = {
     TaxYearRangeUtil.currentTaxYearRange
   }
 
-  @deprecated("Use TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak")
-  def currentTaxYearRangeHtmlNonBreak(implicit messages: Messages): String = {
-    TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak
+  @deprecated("Use TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited")
+  def currentTaxYearRangeHtmlNonBreakBetween(implicit messages: Messages): String = {
+    TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited
   }
 
-  @deprecated("Use TaxYearRangeUtil.dynamicDateRangeHtmlNonBreak")
+  @deprecated("Use TaxYearRangeUtil.dynamicDateRange")
   def dynamicDateRangeHtmlNonBreak(from:LocalDate, to:LocalDate)(implicit messages: Messages): String = {
-    TaxYearRangeUtil.dynamicDateRangeHtmlNonBreak(from, to)
+    TaxYearRangeUtil.dynamicDateRange(from, to)
   }
 
   def htmlNonBroken(string: String) = HtmlFormatter.htmlNonBroken(string)

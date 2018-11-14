@@ -35,12 +35,12 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
     "return all journey lines" when {
       "taxable pay and bonus or overtime pay is provided" in {
 
-        val viewModel = createViewModel(Some(hasExtraBonusOrOvertime), Some(totalBonusOrOvertime), Some(taxablePay))
+        val viewModel = createViewModel(Some(totalBonusOrOvertime), Some(taxablePay))
 
-        viewModel.journeyConfirmationLines.size mustBe 7
+        viewModel.journeyConfirmationLines.size mustBe 6
         viewModel.journeyConfirmationLines mustEqual
           Seq(paymentFrequencyAnswer, totalPayAnswer, hasDeductionAnswer, taxablePayAnswer, hasBonusOrOvertimeAnswer,
-            hasExtraBonusOrOvertimeAnswer, totalYearlyBonusOrOvertimeAnswer)
+            totalYearlyBonusOrOvertimeAnswer)
       }
     }
 
@@ -56,24 +56,20 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
 
 
       "there are no payslip deductions" in {
-        val viewModel = createViewModel(Some(hasExtraBonusOrOvertime), Some(totalBonusOrOvertime))
+        val viewModel = createViewModel(Some(totalBonusOrOvertime))
 
-        viewModel.journeyConfirmationLines.size mustBe 6
+        viewModel.journeyConfirmationLines.size mustBe 5
         viewModel.journeyConfirmationLines mustEqual
           Seq(paymentFrequencyAnswer, totalPayAnswer, hasDeductionAnswer, hasBonusOrOvertimeAnswer,
-            hasExtraBonusOrOvertimeAnswer, totalYearlyBonusOrOvertimeAnswer)
+            totalYearlyBonusOrOvertimeAnswer)
       }
 
     }
 
     "return relevant bonus or overtime message" when {
       "period is yearly" in{
-        val viewModel = createViewModel(Some(hasExtraBonusOrOvertime), Some(totalBonusOrOvertime))
+        val viewModel = createViewModel(Some(totalBonusOrOvertime))
         viewModel.journeyConfirmationLines must contain(totalYearlyBonusOrOvertimeAnswer)
-      }
-      "period is monthly" in {
-        val viewModel = createViewModel(totalBonusOrOvertime = Some(totalBonusOrOvertime))
-        viewModel.journeyConfirmationLines must contain(totalBonusOrOvertimeAnswer)
       }
     }
 
@@ -130,23 +126,9 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
   )
 
   lazy val hasBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
-    messagesApi("tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime"),
+    messagesApi("tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime", currentTaxYearRangeHtmlNonBreakBetween),
     hasBonusOrOvertime,
     controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
-  )
-
-  lazy val hasExtraBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
-    messagesApi("tai.estimatedPay.update.checkYourAnswers.hasExtraBonusOrOvertime",
-      htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)),
-      htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))),
-    hasExtraBonusOrOvertime,
-    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
-  )
-
-  lazy val totalBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
-    messagesApi("tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime", "month"),
-    withPoundPrefixAndSign(MoneyPounds(BigDecimal(totalBonusOrOvertime),zeroDecimalPlaces)),
-    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url
   )
 
   lazy val totalYearlyBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
@@ -155,9 +137,7 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
     controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url
   )
 
-  def createViewModel(hasExtraBonusOrOvertime: Option[String] = None,
-                      totalBonusOrOvertime: Option[String] = None,
-                      taxablePay: Option[String] = None): CheckYourAnswersViewModel = {
+  def createViewModel(totalBonusOrOvertime: Option[String] = None, taxablePay: Option[String] = None): CheckYourAnswersViewModel = {
 
     CheckYourAnswersViewModel(
       paymentFrequency,
@@ -165,7 +145,6 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
       hasDeductions,
       taxablePay,
       hasBonusOrOvertime,
-      hasExtraBonusOrOvertime,
       totalBonusOrOvertime
     )
   }
@@ -175,7 +154,6 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
   val hasDeductions = "Yes"
   val taxablePay = "1800"
   val hasBonusOrOvertime = "Yes"
-  val hasExtraBonusOrOvertime = "Yes"
   val totalBonusOrOvertime = "3000"
 
 }

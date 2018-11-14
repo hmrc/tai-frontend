@@ -25,7 +25,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.BadRequestException
@@ -38,8 +38,8 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiT
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
-import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -70,7 +70,8 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
 
       val doc = Jsoup.parse(contentAsString(result))
 
-      doc.title() must include(messagesApi("tai.incomeTaxSummary.title"))
+      val expectedTitle = s"${messagesApi("tai.incomeTaxSummary.heading.part1")} ${TaxYearRangeUtil.currentTaxYearRange}"
+      doc.title() must include(expectedTitle)
     }
 
     "raise an audit event" in {

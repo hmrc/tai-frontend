@@ -23,6 +23,7 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
 import uk.gov.hmrc.time.TaxYearResolver
@@ -524,17 +525,10 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
 
   val emptyCodingComponents = Seq.empty[CodingComponent]
 
-  val expectedHeader =
-    Messages("tai.taxFreeAmount.heading.pt1") + " " +
-      Messages("tai.taxYear",
-        TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy").replace(" ", "\u00A0"),
-        TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy").replace(" ", "\u00A0"))
-
-  val expectedTitle =
-    Messages("tai.taxFreeAmount.heading.pt1") + " " +
-      Messages("tai.taxYear",
-        TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy"),
-        TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))
+  val expectedHeader, expectedTitle = Messages("tai.taxFreeAmount.heading.pt1") + " " +
+    Messages("tai.taxYear",
+      HtmlFormatter.htmlNonBroken(TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")),
+      HtmlFormatter.htmlNonBroken(TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")))
 
   val employmentNames = Map.empty[Int, String]
   val companyCarBenefits = Seq.empty[CompanyCarBenefit]

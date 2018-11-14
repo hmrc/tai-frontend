@@ -61,7 +61,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         @if(viewModel.isGrossPayApportioned){
             @includes.details_summary(messages("tai.estimatedPay.whyLower.title")) {
                 @Html(messages("tai.estimatedPay.whyLower.message",Dates.formatDate(viewModel.incomeStartDate.get),
-                    TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak,
+                    TaxYearRangeUtil.currentTaxYearRange,
                     MoneyPounds(viewModel.annualAmount.get,0).quantity))
             }
         }
