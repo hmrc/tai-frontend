@@ -36,7 +36,7 @@ trait ControllerViewTestHelper extends PlaySpec {
   implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
 
   implicit class ViewMatcherHelper(result: Future[Result]) {
-    def rendersTheSameViewAs(expected: Html): Unit = {
+    def rendersTheSameViewAs(expected: Html) = {
       contentAsString(result) must equal(expected.toString)
     }
   }

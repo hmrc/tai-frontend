@@ -14,23 +14,29 @@
  * limitations under the License.
  *@
 
-@()(
+@(employmentName: String, employmentId: Int)(
     implicit request: Request[_],
     messages: Messages,
     user: controllers.auth.TaiUser,
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
     partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
 )
-
 @updateIncomeCYPlus1Template(
-    employerName = "CHANGE ME",
+    employerName = employmentName,
     employmentId = 1,
     form = None,
-    gaEventAction = "EDIT ME",
-    title = "CHANGE ME",
-    heading = "CHANGE ME"
+    gaEventAction = "Your estimated pay for next year start",
+    title = messages("tai.updateIncome.CYPlus1.start.title"),
+    heading = messages("tai.updateIncome.CYPlus1.start.heading", employmentName)
 ){
     <div>
-        Start
+        <p>@messages("tai.updateIncome.CYPlus1.start.paragraph1", employmentName)</p>
+        <p>@messages("tai.updateIncome.CYPlus1.start.paragraph2", employmentName)</p>
+        @includes.link(
+            copy=messages("tai.income.details.updateTaxableIncome.update"),
+            url = controllers.income.routes.UpdateIncomeNextYearController.edit(employmentId).url,
+            id = Some("CYPlus1StartButton"),
+            isButton=true
+        )
     </div>
 }

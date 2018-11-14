@@ -1289,3 +1289,8 @@ tai.estimatedPay.update.checkYourAnswers.timePeriod.fortnight=y pythefnos hwn
 tai.estimatedPay.update.checkYourAnswers.timePeriod.period=yn y cyfnod hwn
 
 tai.updateIncome.CYPlus1.preheading=Diweddarwch yr amcangyfrif o’ch incwm oddi wrth {0} ar gyfer y flwyddyn nesaf
+tai.updateIncome.CYPlus1.start.heading=Diweddarwch yr amcangyfrif o’ch incwm oddi wrth {0} ar gyfer y flwyddyn nesaf
+tai.updateIncome.CYPlus1.start.title=Diweddarwch eich incwm amcangyfrifedig
+tai.updateIncome.CYPlus1.start.button=Diweddarwch eich incwm amcangyfrifedig
+tai.updateIncome.CYPlus1.start.paragraph1=Dylech ddiweddaru’r amcangyfrif o’ch incwm os ydych yn gwybod y bydd newid yn eich incwm gyda {0} y flwyddyn nesaf a’ch bod yn meddwl y bydd y newid yn effeithio ar eich haen gyfradd dreth.
+tai.updateIncome.CYPlus1.start.paragraph2=Os bydd eich cyflogaeth â {0} yn dod i ben y flwyddyn nesaf, gallwch roi gwybod i ni ar ôl iddi ddod i ben.
