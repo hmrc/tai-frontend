@@ -34,6 +34,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService}
+import uk.gov.hmrc.tai.util.{HtmlFormatter, TaxYearRangeUtil}
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
@@ -54,10 +55,7 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
       val doc = Jsoup.parse(contentAsString(result))
 
       val expectedTitle =
-        Messages("tai.taxFreeAmount.heading.pt1") + " " +
-          Messages("tai.taxYear",
-            TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy"),
-            TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))
+        s"${messagesApi("tai.taxFreeAmount.heading.pt1")} ${TaxYearRangeUtil.currentTaxYearRange}"
 
       doc.title() must include(expectedTitle)
     }

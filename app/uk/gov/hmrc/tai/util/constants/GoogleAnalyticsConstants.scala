@@ -30,6 +30,7 @@ object GoogleAnalyticsConstants {
   val taiLandingPageCYKey = "CY"
   val taiLandingPagePYKey = "PY"
   val taiLandingPageTCCKey = "TCC"
+  val taiLandingPageTCMKey = "TCM"
   val taiLandingPageCY1Key = "CY+1"
   val taiLandingPageConfirmedKey = "CONFIRMED"
   val taiLandingPageUnconfirmedKey = "UNCONFIRMED"
