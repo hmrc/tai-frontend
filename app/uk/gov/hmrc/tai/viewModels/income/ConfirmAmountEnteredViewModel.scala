@@ -32,7 +32,7 @@ object ConfirmAmountEnteredViewModel {
   private implicit def toMoneyPounds(amount: Int): MoneyPounds = MoneyPounds(amount, 0)
 
   def irregularPayCurrentYear(employmentId: Int, employerName: String, estimatedIncome: Int)(implicit messages: Messages): ConfirmAmountEnteredViewModel = {
-    val currentYear = TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak
+    val currentYear = TaxYearRangeUtil.currentTaxYearRange
     val mainParagraphText = messages("tai.irregular.confirm.estimatedIncome", withPoundPrefix(estimatedIncome))
     val confirmUrl = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId).url.toString
     val onCancelUrl = controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url

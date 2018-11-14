@@ -17,19 +17,21 @@
 package controllers.income
 
 import controllers.audit.Auditable
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
+import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, UpdateNextYearsIncomeService}
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 
 trait UpdateIncomeNextYearController extends TaiBaseController
@@ -38,6 +40,7 @@ trait UpdateIncomeNextYearController extends TaiBaseController
   with Auditable {
 
   def updateNextYearsIncomeService: UpdateNextYearsIncomeService
+  def taxAccountService: TaxAccountService
 
   def personService: PersonService
 
@@ -58,6 +61,7 @@ trait UpdateIncomeNextYearController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
+          // TODO: add check for CY+1 enabled
           ServiceCheckLite.personDetailsCheck {
             updateNextYearsIncomeService.get(employmentId, user.nino).map {
               case UpdateNextYearsIncomeCacheModel(employmentName, _, _, Some(estimatedAmount)) => {
@@ -71,7 +75,23 @@ trait UpdateIncomeNextYearController extends TaiBaseController
           }
   }
 
-  def handleConfirm(employmentId: Int): Action[AnyContent] = ???
+  def handleConfirm(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          // TODO: add check for CY+1 enabled
+          ServiceCheckLite.personDetailsCheck {
+            updateNextYearsIncomeService.get(employmentId, user.nino) flatMap {
+              case UpdateNextYearsIncomeCacheModel(employmentName, _, _, Some(newValue)) => {
+                taxAccountService.updateEstimatedIncome(user.nino, newValue, TaxYear().next, employmentId) map {
+                  case TaiSuccessResponse => Redirect(routes.UpdateIncomeNextYearController.success(employmentId))
+                  case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
+                }
+              }
+              case _ => throw new RuntimeException
+            }
+          }
+  }
 
   def success(employmentId: Int): Action[AnyContent] = ???
 
@@ -82,6 +102,8 @@ object UpdateIncomeNextYearController extends UpdateIncomeNextYearController wit
   override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
-  val updateNextYearsIncomeService: UpdateNextYearsIncomeService = new UpdateNextYearsIncomeService
+
+  override val taxAccountService: TaxAccountService = TaxAccountService
+  override val updateNextYearsIncomeService: UpdateNextYearsIncomeService = new UpdateNextYearsIncomeService
 
 }

@@ -33,7 +33,7 @@ class ConfirmIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
     behave like pageWithTitle(messages("tai.irregular.title"))
     behave like pageWithCombinedHeader(
       messages("tai.payPeriod.preHeading", employerName),
-      messages("tai.irregular.confirm.mainHeading", TaxYearRangeUtil.currentTaxYearRangeHtmlNonBreak))
+      messages("tai.irregular.confirm.mainHeading", TaxYearRangeUtil.currentTaxYearRange))
 
     "display the users current estimated income" in {
       doc(view) must haveParagraphWithText(messages("tai.irregular.confirm.estimatedIncome", "£1,000"))

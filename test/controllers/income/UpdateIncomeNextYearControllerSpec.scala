@@ -24,24 +24,21 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Result}
-import play.api.test.FakeRequest
+import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
-import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, UpdateNextYearsIncomeService}
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
-import views.html.incomes.nextYear.updateIncomeCYPlus1Start
 import views.html.incomes.confirmAmountEntered
+import views.html.incomes.nextYear.updateIncomeCYPlus1Start
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -148,12 +145,45 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
     }
   }
 
+  "handleConfirm" must {
+    "for valid user" must {
+      "respond with and redirect to success" in {
+        implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
+        val controller = createTestIncomeController
+
+        val employerName = "EmployerName"
+        val employmentId = 1
+        val newAmount = 123
+
+        val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentId, 1, Some(newAmount))
+        when(
+          controller.updateNextYearsIncomeService.get(Matchers.eq(employmentId), Matchers.eq(generateNino))(any())
+        ).thenReturn(
+          Future.successful(serviceResponse)
+        )
+
+        when(
+          controller.taxAccountService.updateEstimatedIncome(Matchers.any(), Matchers.eq(newAmount), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
+        ).thenReturn(
+          Future.successful(TaiSuccessResponse)
+        )
+
+        val result = controller.handleConfirm(employmentId)(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.success(employmentId).url)
+      }
+    }
+  }
+
   private val generateNino = new Generator(new Random).nextNino
 
   private def createTestIncomeController: UpdateIncomeNextYearController = new UpdateIncomeNextYearController {
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
     override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
+
     override val updateNextYearsIncomeService: UpdateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
+    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
     override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
 
