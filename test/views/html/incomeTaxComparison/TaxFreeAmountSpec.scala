@@ -19,7 +19,7 @@ package views.html.incomeTaxComparison
 import play.twirl.api.Html
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.MonetaryUtil
+import uk.gov.hmrc.tai.util.{HtmlFormatter, MonetaryUtil}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.time.TaxYearResolver
@@ -32,7 +32,7 @@ class TaxFreeAmountSpec extends TaiViewSpec {
     }
 
     "display personal allowance increase message when CY+1 PA is greater than CY PA" in {
-      val startOfNextTaxYear = Dates.formatDate(TaxYearResolver.startOfNextTaxYear)
+      val startOfNextTaxYear = HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfNextTaxYear))
       val PA_CY_PLUS_ONE_INDEX = 1
       val personalAllowanceCYPlusOneAmount = MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(model.personalAllowance.values(PA_CY_PLUS_ONE_INDEX),0))
       doc must haveStrongWithText(messages("tai.incomeTaxComparison.taxFreeAmount.PA.information1",personalAllowanceCYPlusOneAmount,
