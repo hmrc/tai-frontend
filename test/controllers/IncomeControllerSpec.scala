@@ -149,7 +149,7 @@ class IncomeControllerSpec extends PlaySpec
     }
 
     "return Bad request" when {
-      "new amount is blank" in {
+      "an input error occurs" in {
         val invalidNewAmount = ""
         val testController = createTestIncomeController
         when(testController.journeyCacheService.collectedValues(any(), any())(any())).
@@ -167,62 +167,6 @@ class IncomeControllerSpec extends PlaySpec
 
       }
 
-      "new amount is not a number" in {
-        val invalidNewAmount = "Not a number"
-        val testController = createTestIncomeController
-        when(testController.journeyCacheService.collectedValues(any(), any())(any())).
-          thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
-        when(testController.journeyCacheService.cache(any(), any())(any())).
-          thenReturn(Future.successful(Map.empty[String, String]))
-        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(invalidNewAmount))
-        val formData = Json.toJson(editIncomeForm)
-
-        val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
-        status(result) mustBe BAD_REQUEST
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.body().toString must include(Messages("error.invalid.monetaryAmount.format.invalid"))
-
-      }
-
-      "new amount is too large" in {
-        val invalidNewAmount = "1000000000"
-        val testController = createTestIncomeController
-        when(testController.journeyCacheService.collectedValues(any(), any())(any())).
-          thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
-        when(testController.journeyCacheService.cache(any(), any())(any())).
-          thenReturn(Future.successful(Map.empty[String, String]))
-        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(invalidNewAmount))
-        val formData = Json.toJson(editIncomeForm)
-
-        val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
-        status(result) mustBe BAD_REQUEST
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.body().toString must include(Messages("error.tai.updateDataEmployment.maxLength"))
-
-      }
-
-      "new amount is less than old amount" in {
-        val invalidNewAmount = "50"
-        val date = new LocalDate(2017, 2, 1)
-        val dateForMessage = "February 2017"
-        val EmployerName = "Employer Name"
-        val testController = createTestIncomeController
-        when(testController.journeyCacheService.collectedValues(any(), any())(any())).
-          thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(date.toString))))
-        when(testController.journeyCacheService.cache(any(), any())(any())).
-          thenReturn(Future.successful(Map.empty[String, String]))
-        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(invalidNewAmount))
-        val formData = Json.toJson(editIncomeForm)
-
-        val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
-
-        status(result) mustBe BAD_REQUEST
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.body().toString must include(Messages("error.tai.updateDataEmployment.enterLargerValue", "100", dateForMessage, EmployerName))
-      }
     }
   }
 
