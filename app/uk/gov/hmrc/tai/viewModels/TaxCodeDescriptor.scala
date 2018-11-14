@@ -15,7 +15,6 @@
  */
 
 package uk.gov.hmrc.tai.viewModels
-
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -41,6 +40,7 @@ trait TaxCodeDescriptor {
 
     val explanationRules: Seq[TaxCodeDescriptionTranslator] = Seq(
       scottishTaxCodeExplanation(isCurrentYear),
+      welshTaxCodeExplanation(isCurrentYear),
       untaxedTaxCodeExplanation(isCurrentYear),
       fetchTaxCodeExplanation(isCurrentYear),
       emergencyTaxCodeExplanation(isCurrentYear)
@@ -54,10 +54,23 @@ trait TaxCodeDescriptor {
     val previousOrCurrent = if (isCurrent) "" else ".prev"
     val scottishRegex = "^S".r
     val taxCode = taxCodeDescription.taxCode
-    
+
     scottishRegex.findFirstIn(taxCode) match {
       case Some(code) => ListMap(code -> messages(s"tai.taxCode$previousOrCurrent.$code",
         Link.toExternalPage(url = ApplicationConfig.scottishRateIncomeTaxUrl, value=Some(messages("tai.taxCode.scottishIncomeText.link"))).toHtml))
+      case _ => ListMap[String, String]()
+    }
+  }
+
+  private def welshTaxCodeExplanation(isCurrent: Boolean)(implicit messages: Messages): TaxCodeDescriptionTranslator = (taxCodeDescription: TaxCodeDescription) => {
+    val previousOrCurrent = if (isCurrent) "" else ".prev"
+    val welshRegex = "^C".r
+    val taxCode = taxCodeDescription.taxCode
+    welshRegex.findFirstIn(taxCode) match {
+      case Some(code) => ListMap(code -> messages(s"tai.taxCode$previousOrCurrent.$code",
+        Link.toExternalPage(url =
+          if(messages.lang.language == "cy") {ApplicationConfig.welshRateIncomeTaxWelshUrl} else {ApplicationConfig.welshRateIncomeTaxUrl},
+          value=Some(messages("tai.taxCode.welshIncomeText.link"))).toHtml))
       case _ => ListMap[String, String]()
     }
   }
