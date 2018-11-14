@@ -14,7 +14,11 @@
  * limitations under the License.
  *@
 
-@(employmentName: String, employmentId: BigDecimal, currentValue: Int)(
+@import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
+@import uk.gov.hmrc.play.views.helpers.MoneyPounds
+@import uk.gov.hmrc.tai.util.MonetaryUtil.withPoundPrefix
+
+@(employmentName: String, employmentId: Int, value: Int)(
     implicit request: Request[_],
     messages: Messages,
     user: controllers.auth.TaiUser,
@@ -27,14 +31,15 @@
     employmentId = employmentId,
     form = None,
     gaEventAction = "Your estimated pay for next year same",
-    title = messages("tai.income.details.updateTaxableIncome.same"),
+    title = messages("tai.updateIncome.CYPlus1.same.title"),
+    cancelText = Some(messages("tai.updateIncome.CYPlus1.same.cancel")),
     heading = messages("tai.updateIncome.CYPlus1.same.heading", currentTaxYearRangeHtmlNonBreak)
 ){
     <div>
-        <p>@viewModel.mainText</p>
+        <p>@messages("tai.updateIncome.CYPlus1.same.paragraph1", withPoundPrefix(MoneyPounds(value, 0)))</p>
 
         <div class="panel panel-border-narrow">
-            <p>@messages("tai.irregular.confirm.effectOfChange")</p>
+            <p>@messages("tai.updateIncome.CYPlus1.same.paragraph2", employmentName)</p>
         </div>
     </div>
 }

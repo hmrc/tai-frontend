@@ -80,6 +80,22 @@ trait UpdateIncomeNextYearController extends TaiBaseController
   }
 
   def confirm (employmentId: Int): Action[AnyContent] = ???
+
+  def same (employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          if(cyPlusOneEnabled){
+            ServiceCheckLite.personDetailsCheck {
+              updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
+                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Same(model.employmentName, model.employmentId, model.currentValue))
+              }
+            }
+          } else {
+            Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+          }
+  }
+
   def success (employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>

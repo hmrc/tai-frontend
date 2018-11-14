@@ -19,7 +19,8 @@
   form: Option[Form[_]],
   gaEventAction: String,
   heading: String,
-  title: String
+  title: String,
+  cancelText : Option[String] = None
 )(content: Html
 )(implicit request: Request[_],
   user: controllers.auth.TaiUser,
@@ -52,6 +53,6 @@
     <div class="section flush--bottom soft--top soft--bottom">
         @content
 
-        @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
+        @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url), linkText = cancelText)
     </div>
 }
