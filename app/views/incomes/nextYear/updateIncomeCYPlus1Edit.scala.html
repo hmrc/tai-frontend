@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 @import includes.compareValueInput
 
-@(employmentName: String, employmentId: Int, currentValue: BigDecimal, incomeForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm])(
+@(employmentName: String, employmentId: Int, currentValue: Int, incomeForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm])(
     implicit request: Request[_],
     messages: Messages,
     user: controllers.auth.TaiUser,
