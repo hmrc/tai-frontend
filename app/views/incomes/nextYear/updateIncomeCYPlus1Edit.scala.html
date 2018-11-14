@@ -15,11 +15,10 @@
  *@
 
 @import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 @import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 @import includes.compareValueInput
 
-@(model: UpdateNextYearsIncomeCacheModel, incomeForm: Form[uk.gov.hmrc.tai.forms.AmountComparitorForm])(
+@(employmentName: String, employmentId: Int, currentValue: BigDecimal, incomeForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm])(
     implicit request: Request[_],
     messages: Messages,
     user: controllers.auth.TaiUser,
@@ -28,8 +27,8 @@
 )
 
 @updateIncomeCYPlus1Template(
-    employerName = model.employmentName,
-    employmentId = model.employmentId,
+    employerName = employmentName,
+    employmentId = employmentId,
     form = Some(incomeForm),
     gaEventAction = "Your estimated pay for next year edit",
     title = messages("tai.income.details.updateTaxableIncome.update"),
@@ -37,15 +36,15 @@
 ){
     <div>
         <p>@messages("tai.updateIncome.CYPlus1.edit.paragraph1")</p>
-        <p>@messages("tai.incomes.edit.howTo.grossAmount")</p>
+        <p>@messages("tai.updateIncome.CYPlus1.edit.paragraph2")</p>
         <ul class="bullets">
-            <li>@messages("tai.incomes.edit.howTo.contribution")</li>
-            <li>@messages("tai.incomes.edit.howTo.charity")</li>
-            <li>@messages("tai.incomes.edit.howTo.expenses")</li>
+            <li>@messages("tai.updateIncome.CYPlus1.edit.contribution")</li>
+            <li>@messages("tai.updateIncome.CYPlus1.edit.charity")</li>
+            <li>@messages("tai.updateIncome.CYPlus1.edit.expenses")</li>
         </ul>
     </div>
 
-    @form(action = controllers.income.routes.UpdateIncomeNextYearController.update(model.employmentId)){
+    @form(action = controllers.income.routes.UpdateIncomeNextYearController.update(employmentId)){
 <div class="form-field-group @if(incomeForm.hasErrors) {form-group-error}">
     @incomeForm.errors(incomeForm("income").name).map{ error =>
     <span class="error-notification error-message">@messages(error.message)</span>
@@ -54,7 +53,7 @@
             previousLabel = messages("tai.incomes.amount.current"),
             newLabel = messages("tai.incomes.amount.new"),
             previousFieldName = "oldAmount",
-            previousFieldValue= model.currentValue.toString,
+            previousFieldValue= currentValue.toString,
             newField = incomeForm("income")
         )
         <p><input type="submit" class="button" id="CYPlus1EditButton" value='@messages("tai.continue")'/></p>

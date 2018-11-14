@@ -52,21 +52,24 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
   val employmentID = 1
   val currentEstPay = 1234
-
+  val employerName = "EmployerName"
   val model = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, currentEstPay)
+
+  def mockedGet(testController: UpdateIncomeNextYearController) = {
+    when(testController.updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.any())(any()))
+      .thenReturn(Future.successful(model))
+  }
 
   "start" must {
     "return OK with the start view" when {
       "employment data is available for the nino" in {
 
         val testController = createTestIncomeController()
-        val employerName = "EmployerName"
         val nino = generateNino
         val model = UpdateNextYearsIncomeCacheModel(employerName, employmentID, currentEstPay)
 
         when(testController.updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
-        when(testController.updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(nino))(any()))
-          .thenReturn(Future.successful(model))
+        mockedGet(testController)
 
         implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
 
@@ -80,17 +83,12 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
     "return INTERNAL_SERVER_ERROR" when {
       "service fails to return valid data" in {
         val testController = createTestIncomeController()
-        val employmentID = 1
-        val employerName = "EmployerName"
-        val currentEstPay = 1234
         val nino = generateNino
         val model = UpdateNextYearsIncomeCacheModel(employerName, employmentID, currentEstPay)
 
         when(testController.updateNextYearsIncomeService.reset(any())).thenThrow(new RuntimeException("Invalid Data"))
 
         implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
-
-//        val result: Future[Result] = testController.start(employmentID)(fakeRequest)
 
         val exception = the[RuntimeException] thrownBy Await.result(testController.updateNextYearsIncomeService.reset(any()), 5.seconds)
 
@@ -119,15 +117,27 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
         val testController = createTestIncomeController()
         val nino = generateNino
-        when(testController.updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(nino))(any()))
-          .thenReturn(Future.successful(model))
+        mockedGet(testController)
 
         implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
 
         val result: Future[Result] = testController.edit(employmentID)(fakeRequest)
 
         status(result) mustBe OK
-        result rendersTheSameViewAs updateIncomeCYPlus1Edit(model, AmountComparatorForm.createForm(taxablePayYTD = Some(currentEstPay)))
+        result rendersTheSameViewAs updateIncomeCYPlus1Edit(employerName, employmentID, currentEstPay, AmountComparatorForm.createForm())
+      }
+    }
+
+    "return NOT_FOUND" when {
+      "CY Plus 1 is disabled" in {
+        val testController = createTestIncomeController(isCyPlusOneEnabled = false)
+        val employmentID = 1
+
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+        val result: Future[Result] = testController.edit(employmentID)(fakeRequest)
+
+        status(result) mustBe NOT_FOUND
       }
     }
   }
@@ -161,14 +171,26 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         val nino = generateNino
         implicit val fakeRequest = RequestBuilder.buildFakeRequestWithOnlySession(POST).withFormUrlEncodedBody("income" -> newEstPay)
 
-        when(testController.updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(nino))(any()))
-          .thenReturn(Future.successful(model))
+        mockedGet(testController)
 
         val result: Future[Result] = testController.update(employmentID)(fakeRequest)
 
         status(result) mustBe BAD_REQUEST
 
-        result rendersTheSameViewAs updateIncomeCYPlus1Edit(model, AmountComparatorForm.createForm().bindFromRequest()(fakeRequest))
+        result rendersTheSameViewAs updateIncomeCYPlus1Edit(employerName, employmentID, currentEstPay, AmountComparatorForm.createForm().bindFromRequest()(fakeRequest))
+      }
+    }
+
+    "return NOT_FOUND" when {
+      "CY Plus 1 is disabled" in {
+        val testController = createTestIncomeController(isCyPlusOneEnabled = false)
+        val employmentID = 1
+
+        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+        val result: Future[Result] = testController.update(employmentID)(fakeRequest)
+
+        status(result) mustBe NOT_FOUND
       }
     }
   }

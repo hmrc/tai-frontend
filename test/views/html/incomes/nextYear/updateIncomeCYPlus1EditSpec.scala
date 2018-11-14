@@ -20,7 +20,6 @@ import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
-import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.util.ViewModelHelper.{currentTaxYearRangeHtmlNonBreak, withPoundPrefix}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
@@ -30,7 +29,7 @@ class updateIncomeCYPlus1EditSpec extends TaiViewSpec {
   val employmentID = 1
   val currentEstPay = 1234
 
-  val model = UpdateNextYearsIncomeCacheModel(employerName, employmentID, currentEstPay)
+
 
   "CYPlus1 Start Page" should {
     behave like pageWithBackLink
@@ -62,5 +61,6 @@ class updateIncomeCYPlus1EditSpec extends TaiViewSpec {
   }
 
 
-  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model, AmountComparatorForm.createForm(taxablePayYTD = Some(currentEstPay)))
+  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Edit(employerName, employmentID, currentEstPay,
+    AmountComparatorForm.createForm(taxablePayYTD = Some(currentEstPay)))
 }

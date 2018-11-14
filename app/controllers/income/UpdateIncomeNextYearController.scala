@@ -70,12 +70,21 @@ trait UpdateIncomeNextYearController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          ServiceCheckLite.personDetailsCheck {
+          if(cyPlusOneEnabled){
+            ServiceCheckLite.personDetailsCheck {
 
-            updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map {
-              model => {
-                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model, AmountComparatorForm.createForm()))
+              updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map {
+                model => {
+                  Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model.employmentName, employmentId, model.currentValue, AmountComparatorForm.createForm()))
+                }
               }
+            }
+          } else {
+            Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+          }.recoverWith{
+            case e: Exception => {
+              Logger.warn(e.getMessage)
+              Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
             }
           }
   }
@@ -87,25 +96,32 @@ trait UpdateIncomeNextYearController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            AmountComparatorForm.createForm().bindFromRequest().fold(
+          if(cyPlusOneEnabled){
+            ServiceCheckLite.personDetailsCheck {
+              AmountComparatorForm.createForm().bindFromRequest().fold(
 
-              formWithErrors => {
-                updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
-                  BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model, formWithErrors))
-                }
-              },
-
-              validForm => {
-                validForm.income.fold(throw new RuntimeException) { income =>
-                  updateNextYearsIncomeService.setNewAmount(income, employmentId, Nino(user.getNino)) map { _ =>
-                    Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
+                formWithErrors => {
+                  updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
+                    BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model.employmentName, employmentId, model.currentValue, formWithErrors))
+                  }
+                },
+                validForm => {
+                  validForm.income.fold(throw new RuntimeException) { income =>
+                    updateNextYearsIncomeService.setNewAmount(income, employmentId, Nino(user.getNino)) map { _ =>
+                      Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
+                    }
                   }
                 }
-              }
-            )
-
-        }
+              )
+            }
+          } else {
+            Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+          }.recoverWith{
+            case e: Exception => {
+              Logger.warn(e.getMessage)
+              Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
+            }
+          }
   }
 }
 
