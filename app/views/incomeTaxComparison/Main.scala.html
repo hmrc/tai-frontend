@@ -29,9 +29,9 @@
         @Link.toInternalPage(
             id=Some("returnToChooseTaxYearLink"),
             url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-            value=Some(Messages("your.paye.income.tax.overview")),
+            value=Some(messages("your.paye.income.tax.overview")),
             cssClasses=Some("link-back"),
-            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("your.paye.income.tax.overview")}"))
+            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${messages("your.paye.income.tax.overview")}"))
         ).toHtml
     </p>
 }
