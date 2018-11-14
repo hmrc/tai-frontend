@@ -59,12 +59,15 @@ trait UpdateIncomeNextYearController extends TaiBaseController
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            updateNextYearsIncomeService.get(employmentId, user.nino).map((cacheModel: UpdateNextYearsIncomeCacheModel) => {
-              cacheModel.newValue.fold(BadRequest("CHANGE ME")) { estimatedAmount =>
-                val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentId, cacheModel.employmentName, estimatedAmount)
-                Ok(views.html.incomes.confirmAmountEntered(vm))
+            updateNextYearsIncomeService.get(employmentId, user.nino).map {
+              case UpdateNextYearsIncomeCacheModel(employmentName, _, _, Some(estimatedAmount)) => {
+                  val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentId, employmentName, estimatedAmount)
+                  Ok(views.html.incomes.confirmAmountEntered(vm))
               }
-            })
+              case UpdateNextYearsIncomeCacheModel(employmentName, _, currentValue, None) => {
+                throw new RuntimeException("[UpdateIncomeNextYear] Estimated income for next year not found for user.")
+              }
+            }
           }
   }
 

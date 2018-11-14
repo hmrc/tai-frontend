@@ -75,7 +75,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
   "confirm" must {
     "for valid user" must {
-      "that has entered an estimated amount" in {
+      "that has entered an estimated amount" must {
         "respond with and ok and the view" in {
           implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
           val controller = createTestIncomeController
@@ -101,8 +101,29 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         }
       }
 
-      "that did not enter an estimated amount" in {
-        "respond with and Bad Request and redirect to the edit page " in {
+      "that did not enter an estimated amount" must {
+        "respond with internal server error" in {
+          implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
+          val controller = createTestIncomeController
+
+          val employerName = "EmployerName"
+          val employmentId = 1
+          val newAmount = 123
+
+          val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentId, 1, None)
+          when(
+            controller.updateNextYearsIncomeService.get(Matchers.eq(employmentId), Matchers.eq(generateNino))(any())
+          ).thenReturn(
+            Future.successful(serviceResponse)
+          )
+
+          val result = controller.confirm(employmentId)(fakeRequest)
+
+          status(result) mustBe INTERNAL_SERVER_ERROR
+        }
+
+
+        "respond with and Bad Request and redirect to the edit page " ignore {
           implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
           val controller = createTestIncomeController
 
@@ -120,7 +141,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
           val result = controller.confirm(employmentId)(fakeRequest)
 
           status(result) mustBe BAD_REQUEST
-
+          result rendersTheSameViewAs updateIncomeCYPlus1Start(serviceResponse)
         }
       }
 
