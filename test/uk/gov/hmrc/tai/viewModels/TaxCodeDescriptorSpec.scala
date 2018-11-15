@@ -16,17 +16,27 @@
 
 package uk.gov.hmrc.tai.viewModels
 
+import builders.AuthBuilder
 import controllers.FakeTaiPlayApplication
+import controllers.i18n.TaiLanguageController
+import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import org.mockito.Matchers.any
+import org.mockito.Mockito.when
+import org.scalatest.mock.MockitoSugar._
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Lang, Messages, MessagesApi}
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
+import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.urls.Link
 
 import scala.collection.immutable.ListMap
+import scala.concurrent.Future
 
 class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
 
@@ -81,6 +91,22 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
         TaxCodeDescriptorConcrete.describeTaxCode("S1", OtherBasisOfOperation, Map.empty[String, BigDecimal]) mustBe
           ListMap("S" -> Messages(s"tai.taxCode.S",
             Link.toExternalPage(url = ApplicationConfig.scottishRateIncomeTaxUrl, value=Some(Messages("tai.taxCode.scottishIncomeText.link"))).toHtml))
+      }
+    }
+  }
+
+  "welshTaxCodeExplanation" must {
+    "return the correct explanation" when {
+      "tax code is prefixed with a C with a link to the english tax explanation page  when user is viewing page in English" in {
+        TaxCodeDescriptorConcrete.describeTaxCode("C1", OtherBasisOfOperation, Map.empty[String, BigDecimal]) mustBe
+          ListMap("C" -> Messages(s"tai.taxCode.C",
+            Link.toExternalPage(url = ApplicationConfig.welshRateIncomeTaxUrl, value=Some(Messages("tai.taxCode.welshIncomeText.link"))).toHtml))
+      }
+
+      "tax code is prefixed with a C with a link to the welsh tax explanation page  when user is viewing page in Welsh" in {
+        TaxCodeDescriptorConcrete.describeTaxCode("C1", OtherBasisOfOperation, Map.empty[String, BigDecimal])(Messages.apply(Lang("cy"), messagesApi)) mustBe
+          ListMap("C" -> Messages.apply(Lang("cy"), messagesApi)(s"tai.taxCode.C",
+            Link.toExternalPage(url = ApplicationConfig.welshRateIncomeTaxWelshUrl, value=Some(Messages.apply(Lang("cy"), messagesApi)("tai.taxCode.welshIncomeText.link"))).toHtml))
       }
     }
   }
@@ -152,4 +178,17 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
   private val scottishTaxRateBands = Map.empty[String, BigDecimal]
 
   object TaxCodeDescriptorConcrete extends TaxCodeDescriptor
+
+  private class SUT(welshEnabled: Boolean = true) extends TaiLanguageController {
+    override val personService: PersonService = mock[PersonService]
+    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
+    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
+    override val authConnector: AuthConnector = mock[AuthConnector]
+    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
+    override val isWelshEnabled = welshEnabled
+
+    val authority = AuthBuilder.createFakeAuthData
+    when(authConnector.currentAuthority(any(), any())).thenReturn(authority)
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+  }
 }
