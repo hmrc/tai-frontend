@@ -81,7 +81,7 @@ trait WithAuthorisedForTaiLite extends DelegationAwareActions { this: ErrorPages
   private type PlayRequest = (Request[AnyContent] => Result)
   private type AsyncPlayRequest = (Request[AnyContent] => Future[Result])
   private type TaiUserRequest = TaiUser => PlayRequest
-    private type AsyncTaiUserRequest = TaiUser => Person => AsyncPlayRequest
+  private type AsyncTaiUserRequest = TaiUser => Person => AsyncPlayRequest
 
   implicit private def createHeaderCarrier(implicit request: Request[_]): HeaderCarrier =
     fromHeadersAndSession(request.headers,Some(request.session))

@@ -78,7 +78,6 @@ trait UpdateIncomeNextYearController extends TaiBaseController
         implicit request =>
           if(cyPlusOneEnabled){
             ServiceCheckLite.personDetailsCheck {
-
               updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map {
                 model => {
                   Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model.employmentName, employmentId, model.currentValue, AmountComparatorForm.createForm()))
@@ -101,17 +100,20 @@ trait UpdateIncomeNextYearController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          // TODO: add check for CY+1 enabled
-          ServiceCheckLite.personDetailsCheck {
-            updateNextYearsIncomeService.get(employmentId, user.nino).map {
-              case UpdateNextYearsIncomeCacheModel(employmentName, _, _, Some(estimatedAmount)) => {
+          if (cyPlusOneEnabled) {
+            ServiceCheckLite.personDetailsCheck {
+              updateNextYearsIncomeService.get(employmentId, user.nino).map {
+                case UpdateNextYearsIncomeCacheModel(employmentName, _, _, Some(estimatedAmount)) => {
                   val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentId, employmentName, estimatedAmount)
                   Ok(views.html.incomes.confirmAmountEntered(vm))
-              }
-              case UpdateNextYearsIncomeCacheModel(employmentName, _, currentValue, None) => {
-                throw new RuntimeException("[UpdateIncomeNextYear] Estimated income for next year not found for user.")
+                }
+                case UpdateNextYearsIncomeCacheModel(employmentName, _, currentValue, None) => {
+                  throw new RuntimeException("[UpdateIncomeNextYear] Estimated income for next year not found for user.")
+                }
               }
             }
+          } else {
+            Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
           }
   }
 
@@ -119,13 +121,17 @@ trait UpdateIncomeNextYearController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          // TODO: add check for CY+1 enabled
-          ServiceCheckLite.personDetailsCheck {
-            updateNextYearsIncomeService.submit(employmentId, user.nino) map {
-              case TaiSuccessResponse => Redirect(routes.UpdateIncomeNextYearController.success(employmentId))
-              case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
+          if (cyPlusOneEnabled) {
+            ServiceCheckLite.personDetailsCheck {
+              updateNextYearsIncomeService.submit(employmentId, user.nino) map {
+                case TaiSuccessResponse => Redirect(routes.UpdateIncomeNextYearController.success(employmentId))
+                case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
+              }
             }
+          } else {
+            Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
           }
+
   }
 
   def update (employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
