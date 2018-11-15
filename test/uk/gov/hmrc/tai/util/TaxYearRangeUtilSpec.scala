@@ -23,6 +23,7 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.time.TaxYearResolver
 import play.api.i18n.Messages.Implicits._
 import play.api.i18n.MessagesApi
+import uk.gov.hmrc.tai.model.TaxYear
 
 
 class TaxYearRangeUtilSpec extends PlaySpec with FakeTaiPlayApplication {
@@ -89,6 +90,16 @@ class TaxYearRangeUtilSpec extends PlaySpec with FakeTaiPlayApplication {
       }
 
       caught.getMessage mustBe s"From date:$now cannot be after To date:$yesterday"
+    }
+
+    "futureTaxYearRangeHtmlNonBreak" when {
+      "returns a future date" in {
+        val thisYear = TaxYear().next
+
+        TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1) mustBe messages("tai.taxYear",
+                                                                           HtmlFormatter.htmlNonBroken(Dates.formatDate(thisYear.start)),
+                                                                           HtmlFormatter.htmlNonBroken(Dates.formatDate(thisYear.end)))
+      }
     }
   }
 }

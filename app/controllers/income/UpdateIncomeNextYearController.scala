@@ -46,7 +46,7 @@ trait UpdateIncomeNextYearController extends TaiBaseController
   with FeatureTogglesConfig
   with Auditable {
 
-  def updateNextYearsIncomeService: UpdateNextYearsIncomeService
+  val updateNextYearsIncomeService: UpdateNextYearsIncomeService
 
   def personService: PersonService
 

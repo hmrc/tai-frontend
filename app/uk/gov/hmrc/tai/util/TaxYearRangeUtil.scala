@@ -22,8 +22,6 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.time.TaxYearResolver
 
-import scala.annotation.tailrec
-
 object TaxYearRangeUtil {
 
   private val messageRangeKeyBetween = "tai.taxYear.between"
@@ -50,16 +48,8 @@ object TaxYearRangeUtil {
   }
 
   def futureTaxYearRangeHtmlNonBreak(add: Int)(implicit messages: Messages): String = {
-    @tailrec
-    def getYear(n: Int, year: TaxYear = TaxYear()): TaxYear = {
-      if (n == 0) {
-        year
-      } else {
-        getYear(n - 1, year.next)
-      }
-    }
 
-    val year: TaxYear = getYear(add)
+    val year: TaxYear = TaxYear.fromNow(add)
 
     dateRange(messageRangeKeyFromAndTo, year.start, year.end)
 
