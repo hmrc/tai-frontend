@@ -1253,6 +1253,7 @@ your.paye.income.tax.overview=Trosolwg o’ch Treth Incwm TWE
 your.total.income.from.employment.desc=Mae cyfanswm eich incwm o gyflogaeth wedi ei amcangyfrif yn {0} am y flwyddyn dreth hon. Mae gennych {1} am eich incwm o gyflogaeth. Mae hyn yn golygu bod y {2} cyntaf o''ch enillion o gyflogaeth yn rhydd o dreth.
 your.total.income.from.paye.desc=Amcangyfrifir y bydd cyfanswm eich incwm TWE yn {0} am y flwyddyn dreth hon. Mae gennych {1} ar gyfer eich incwm TWE. Golyga hyn fod y {2} cyntaf o’ch incwm TWE yn rhydd o dreth.
 your.total.income.from.private.pension.desc=Amcangyfrifir y bydd cyfanswm eich incwm o bensiwn preifat yn {0} am y flwyddyn dreth hon. Mae gennych {1} ar gyfer eich incwm o bensiwn preifat. Golyga hyn fod y {2} cyntaf o’ch enillion o bensiwn preifat yn rhydd o dreth.
+
 taxCode.change.journey.preHeading= Newid yn eich cod treth
 taxCode.change.whatHappensNext.paragragh1=Os yw’r wybodaeth am eich cod treth yn gywir, nid oes angen i chi wneud unrhyw beth.
 taxCode.change.whatHappensNext.paragragh2=Gallwch wirio {0} i weld faint o dreth y byddwch yn ei thalu yn ein barn ni.
@@ -1276,6 +1277,7 @@ taxCode.change.yourTaxCodeChanged.currentTaxCodes=Codau treth presennol
 taxCode.change.yourTaxCodeChanged.understand=Deall beth mae {0} yn ei olygu
 taxCode.change.yourTaxCodeChanged.currentTaxCodeDetails.screenReader=O {0} ymlaen, eich cod treth ar gyfer {2} yw {3}
 taxCode.change.yourTaxCodeChanged.previousTaxCodeDetails.screenReader=O {0} i {1}, eich cod treth ar gyfer {2} oedd {3}
+
 tai.estimatedPay.update.checkYourAnswers.paymentFrequency = Pa mor aml rydych yn cael eich talu
 tai.estimatedPay.update.checkYourAnswers.totalPay = Cyfanswm y cyflog {0}
 tai.estimatedPay.update.checkYourAnswers.hasDeduction = Ydy’ch slip cyflog yn dangos didyniadau?
@@ -1289,7 +1291,16 @@ tai.estimatedPay.update.checkYourAnswers.timePeriod.fortnight=y pythefnos hwn
 tai.estimatedPay.update.checkYourAnswers.timePeriod.period=yn y cyfnod hwn
 
 tai.updateIncome.CYPlus1.preheading=Diweddarwch yr amcangyfrif o’ch incwm oddi wrth {0} ar gyfer y flwyddyn nesaf
-
+tai.updateIncome.CYPlus1.start.heading=Diweddarwch yr amcangyfrif o’ch incwm oddi wrth {0} ar gyfer y flwyddyn nesaf
+tai.updateIncome.CYPlus1.start.title=Diweddarwch eich incwm amcangyfrifedig
+tai.updateIncome.CYPlus1.start.button=Diweddarwch eich incwm amcangyfrifedig
 tai.updateIncome.CYPlus1.start.paragraph1=Dylech ddiweddaru’r amcangyfrif o’ch incwm os ydych yn gwybod y bydd newid yn eich incwm gyda {0} y flwyddyn nesaf a’ch bod yn meddwl y bydd y newid yn effeithio ar eich haen gyfradd dreth.
 tai.updateIncome.CYPlus1.start.paragraph2=Os bydd eich cyflogaeth â {0} yn dod i ben y flwyddyn nesaf, gallwch roi gwybod i ni ar ôl iddi ddod i ben.
 tai.updateIncome.CYPlus1.confirm.paragraph=Rydych wedi nodi {0}.
+tai.updateIncome.CYPlus1.edit.heading=Diweddarwch yr amcangyfrif o’ch cyflog trethadwy ar gyfer {0}
+tai.updateIncome.CYPlus1.edit.title=Diweddarwch eich incwm amcangyfrifedig
+tai.updateIncome.CYPlus1.edit.paragraph1=Efallai bod gan eich slip cyflog ffigur “cyflog trethadwy” neu ffigur “gros ar gyfer treth”. Lluoswch hwn â’r nifer o weithiau y cewch eich talu yn ystod blwyddyn i greu amcangyfrif o swm ar gyfer y flwyddyn nesaf.
+tai.updateIncome.CYPlus1.edit.paragraph2=Os na ddangosir hyn ar eich slip cyflog, gallwch weithio allan eich cyflog trethadwy drwy ddod o hyd i’ch swm gros a didynnu eitemau nad ydynt yn drethadwy, megis:
+tai.updateIncome.CYPlus1.edit.contribution=unrhyw gyfraniadau at gynllun pensiwn eich cyflogwr neu gynllun pensiwn preifat
+tai.updateIncome.CYPlus1.edit.charity=taliadau elusennol a wneir drwy gynllun Rhoi drwy’r Gyflogres
+tai.updateIncome.CYPlus1.edit.expenses=unrhyw beth a wariwyd ar dreuliau caniataol

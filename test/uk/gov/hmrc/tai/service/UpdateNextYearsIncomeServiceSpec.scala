@@ -47,10 +47,13 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
         when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
-          Matchers.eq(nino), Matchers.eq(TaxYear()), Matchers.eq(employmentId))(any())
+          Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
-        val result = Await.result(updateNextYearsIncomeService.setup(employmentId, nino), 5.seconds)
+        when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
+          Future.successful(Map.empty[String,String])
+        )
+        val result = Await.result(updateNextYearsIncomeService.get(employmentId, nino), 5.seconds)
 
         verify(updateNextYearsIncomeService.journeyCacheService, times(1))
           .cache(expectedMap(employmentName, employmentId, employmentAmount))
@@ -67,10 +70,10 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
         when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
-          Matchers.eq(nino), Matchers.eq(TaxYear()), Matchers.eq(employmentId))(any())
+          Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(None))
 
-        val result: RuntimeException = the[RuntimeException] thrownBy Await.result(updateNextYearsIncomeService.setup(employmentId, nino), 5 seconds)
+        val result: RuntimeException = the[RuntimeException] thrownBy Await.result(updateNextYearsIncomeService.get(employmentId, nino), 5.seconds)
 
         result.getMessage mustBe "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey"
       }
@@ -82,10 +85,10 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
           .thenReturn(Future.successful(None))
 
         when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
-          Matchers.eq(nino), Matchers.eq(TaxYear()), Matchers.eq(employmentId))(any())
+          Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
-        val result: RuntimeException = the[RuntimeException] thrownBy Await.result(updateNextYearsIncomeService.setup(employmentId, nino), 5 seconds)
+        val result: RuntimeException = the[RuntimeException] thrownBy Await.result(updateNextYearsIncomeService.get(employmentId, nino), 5.seconds)
 
         result.getMessage mustBe "[UpdateNextYearsIncomeService] Could not set up next years estimated income journey"
       }
@@ -127,7 +130,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
         when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
-          Matchers.eq(nino), Matchers.eq(TaxYear()), Matchers.eq(employmentId))(any())
+          Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
         when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
@@ -150,7 +153,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
           Future.successful(expectedMap(employmentName, employmentId, employmentAmount))
         )
 
-        val result = Await.result(updateNextYearsIncomeService.setNewAmount(employmentAmount, employmentId, nino), 5.seconds)
+        val result = Await.result(updateNextYearsIncomeService.setNewAmount(employmentAmount.toString, employmentId, nino), 5.seconds)
 
         result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, employmentAmount, Some(employmentAmount))
 
