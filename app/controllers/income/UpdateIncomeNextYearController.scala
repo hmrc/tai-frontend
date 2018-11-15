@@ -21,7 +21,6 @@ import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
-import play.api.Logger
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -32,7 +31,6 @@ import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
-import uk.gov.hmrc.tai.model.domain.Person
 
 import scala.concurrent.Future
 trait UpdateIncomeNextYearController extends TaiBaseController

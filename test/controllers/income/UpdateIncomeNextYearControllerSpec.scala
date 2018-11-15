@@ -24,14 +24,11 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
-
-import scala.concurrent.duration._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
@@ -42,8 +39,7 @@ import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
 import views.html.incomes.nextYear.{updateIncomeCYPlus1Edit, updateIncomeCYPlus1Same, updateIncomeCYPlus1Start, updateIncomeCYPlus1Success}
-
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 import scala.util.Random
 
 class UpdateIncomeNextYearControllerSpec extends PlaySpec
