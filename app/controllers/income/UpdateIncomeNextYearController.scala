@@ -86,8 +86,10 @@ trait UpdateIncomeNextYearController extends TaiBaseController
         implicit request =>
           if(cyPlusOneEnabled){
             ServiceCheckLite.personDetailsCheck {
+              updateNextYearsIncomeService.reset flatMap { _ =>
               updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
                 Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName))
+                }
               }
             }
           } else {
