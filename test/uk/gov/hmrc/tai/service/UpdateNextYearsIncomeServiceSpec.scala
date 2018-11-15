@@ -175,7 +175,9 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       )
 
       when(
-        service.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())
+        service.taxAccountService.updateEstimatedIncome(
+          Meq(nino), Meq(employmentAmount), Meq(TaxYear().next), Meq(employmentId)
+        )(any())
       ).thenReturn(
         Future.successful(TaiSuccessResponse)
       )
