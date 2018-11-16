@@ -1299,6 +1299,7 @@ tai.updateIncome.CYPlus1.start.button=Diweddarwch eich incwm amcangyfrifedig
 tai.updateIncome.CYPlus1.start.paragraph1=Dylech ddiweddaru’r amcangyfrif o’ch incwm os ydych yn gwybod y bydd newid yn eich incwm gyda {0} y flwyddyn nesaf a’ch bod yn meddwl y bydd y newid yn effeithio ar eich haen gyfradd dreth.
 tai.updateIncome.CYPlus1.start.paragraph2=Os bydd eich cyflogaeth â {0} yn dod i ben y flwyddyn nesaf, gallwch roi gwybod i ni ar ôl iddi ddod i ben.
 tai.updateIncome.CYPlus1.confirm.paragraph=Rydych wedi nodi {0}.
+tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom=Caiff yr amcangyfrifon o’ch incwm ar gyfer y flwyddyn nesaf eu defnyddio ar gyfer eich cyfrif o {0} ymlaen.
 tai.updateIncome.CYPlus1.edit.heading=Diweddarwch yr amcangyfrif o’ch cyflog trethadwy ar gyfer {0}
 tai.updateIncome.CYPlus1.edit.title=Diweddarwch eich incwm amcangyfrifedig
 tai.updateIncome.CYPlus1.edit.paragraph1=Efallai bod gan eich slip cyflog ffigur “cyflog trethadwy” neu ffigur “gros ar gyfer treth”. Lluoswch hwn â’r nifer o weithiau y cewch eich talu yn ystod blwyddyn i greu amcangyfrif o swm ar gyfer y flwyddyn nesaf.

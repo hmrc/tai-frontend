@@ -23,11 +23,11 @@
 )
 @updateIncomeCYPlus1Template(
     employerName = employmentName,
-    employmentId = 1,
     form = None,
     gaEventAction = "Your estimated pay for next year start",
     title = messages("tai.updateIncome.CYPlus1.start.title"),
-    heading = messages("tai.updateIncome.CYPlus1.start.heading", employmentName)
+    heading = messages("tai.updateIncome.CYPlus1.start.heading", employmentName),
+    showCancel = true
 ){
     <div>
         <p>@messages("tai.updateIncome.CYPlus1.start.paragraph1", employmentName)</p>

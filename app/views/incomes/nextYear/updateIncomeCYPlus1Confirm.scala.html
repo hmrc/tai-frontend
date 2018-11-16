@@ -14,23 +14,48 @@
  * limitations under the License.
  *@
 
-@()(
-    implicit request: Request[_],
-    messages: Messages,
-    user: controllers.auth.TaiUser,
-    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
+@import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
+@import uk.gov.hmrc.tai.util.DateHelper.toDisplayFormat
+@import uk.gov.hmrc.time.TaxYearResolver
+
+@(viewModel: ConfirmAmountEnteredViewModel
+)(implicit request: Request[_],
+  messages: Messages,
+  user: controllers.auth.TaiUser,
+  templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
 )
 
 @updateIncomeCYPlus1Template(
-    employerName = "CHANGE ME",
-    employmentId = 1,
+    employerName = viewModel.employerName,
     form = None,
-    gaEventAction = "EDIT ME",
-    title = "CHANGE ME",
-    heading = "CHANGE ME"
+    gaEventAction = "Your estimated pay for next year confirm",
+    title = messages("tai.irregular.title"),
+    heading = messages("tai.irregular.confirm.mainHeading", viewModel.yearRange),
+    showCancel = false
 ){
+
+    <p>@viewModel.mainText</p>
+
+    <div class="panel panel-border-narrow margin-bottom-large">
+        <p>@messages("tai.irregular.confirm.effectOfChange")</p>
+    </div>
+
+    <div class="margin-bottom-large">
+        <p>
+            @messages("tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom", toDisplayFormat(Some(TaxYearResolver.startOfNextTaxYear)))
+        </p>
+    </div>
+
+    <div class="margin-bottom-large">
+        <a id="confirmAndSend" class="button section" role="button" href="@viewModel.onConfirm">
+            @messages("tai.confirmAndSend")
+        </a>
+    </div>
+
     <div>
-        Confirm
+        <a href="@viewModel.onCancel">
+            @messages("tai.cancel.noSave")
+        </a>
     </div>
 }

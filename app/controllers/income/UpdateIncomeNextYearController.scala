@@ -105,7 +105,7 @@ trait UpdateIncomeNextYearController extends TaiBaseController
               updateNextYearsIncomeService.get(employmentId, user.nino).map {
                 case UpdateNextYearsIncomeCacheModel(employmentName, _, _, Some(estimatedAmount)) => {
                   val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentId, employmentName, estimatedAmount)
-                  Ok(views.html.incomes.confirmAmountEntered(vm))
+                  Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm))
                 }
                 case UpdateNextYearsIncomeCacheModel(employmentName, _, currentValue, None) => {
                   throw new RuntimeException("[UpdateIncomeNextYear] Estimated income for next year not found for user.")

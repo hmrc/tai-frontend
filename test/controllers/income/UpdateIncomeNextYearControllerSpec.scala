@@ -39,8 +39,8 @@ import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
-import views.html.incomes.confirmAmountEntered
-import views.html.incomes.nextYear.{updateIncomeCYPlus1Edit, updateIncomeCYPlus1Start}
+import views.html.incomes.nextYear.{updateIncomeCYPlus1Confirm, updateIncomeCYPlus1Edit, updateIncomeCYPlus1Start}
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
@@ -205,7 +205,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
           )
 
           val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentID, employerName, newAmount)
-          val expectedView = confirmAmountEntered(vm)
+          val expectedView = updateIncomeCYPlus1Confirm(vm)
 
           val result = controller.confirm(employmentID)(fakeRequest)
 

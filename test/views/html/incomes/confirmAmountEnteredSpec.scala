@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 
-class ConfirmIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
+class ConfirmAmountEnteredSpec extends TaiViewSpec with MockitoSugar {
 
   private val employerName = "employerName"
   private val estimatedAmount = 1000
