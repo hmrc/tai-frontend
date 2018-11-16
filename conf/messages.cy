@@ -1313,5 +1313,5 @@ tai.updateIncome.CYPlus1.success.paragraph2=Gall y cyfrifiad hwn newid pan gawn 
 tai.updateIncome.CYPlus1.same.heading=Cadarnhewch eich incwm trethadwy amcangyfrifedig ar gyfer {0}
 tai.updateIncome.CYPlus1.same.title=Diweddarwch eich incwm amcangyfrifedig
 tai.updateIncome.CYPlus1.same.paragraph1=Rydych wedi nodi {0}
-tai.updateIncome.CYPlus1.same.paragraph2=
+tai.updateIncome.CYPlus1.same.paragraph2=Mae hyn yr un peth â’r swm sydd gennym eisoes ar gyfer {0} ar gyfer y flwyddyn nesaf, felly does dim angen i chi ddiweddaru’ch incwm.
 tai.updateIncome.CYPlus1.same.cancel=Dychwelwch at fanylion eich incwm
