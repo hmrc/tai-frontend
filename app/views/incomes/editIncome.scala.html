@@ -73,10 +73,10 @@
 
         @form(action = controllers.routes.IncomeController.editRegularIncome){
         <input type="hidden" name="payToDate" value="@payToDate">
-        <div class="form-field-group @if(income.hasErrors) {error}">
+        <div class="form-field-group @if(income.hasErrors) {form-group-error}">
 
                 @income.errors(income("newAmount").name).map{ error =>
-                    <span class="error-notification validation-error__inline-error">@messages(error.message)</span>
+                    <span class="error-message">@messages(error.message)</span>
                 }
 
                 @compareValueInput(
