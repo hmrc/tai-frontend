@@ -242,7 +242,8 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
 
               validForm =>
                 validForm.income.fold(throw new RuntimeException) { income =>
-                  journeyCacheService.cache(UpdateIncome_IrregularAnnualPayKey, income) map { _ =>
+                  val newIncome = FormHelper.stripNumber(income)
+                  journeyCacheService.cache(UpdateIncome_IrregularAnnualPayKey, newIncome) map { _ =>
                     Redirect(routes.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId))
                   }
                 }
