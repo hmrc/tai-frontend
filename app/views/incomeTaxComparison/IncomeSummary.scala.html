@@ -36,7 +36,12 @@
 @if(incomeSourceViewModel.employmentIncomeSourceDetail.size > 0 || incomeSourceViewModel.pensionIncomeSourceDetail.size > 0){
 
     <h2 id="incomeSummaryHeading"
-        class="heading-large">@{incomeSummaryHeading}</h2>
+        class="heading-large">@{incomeSummaryHeading}
+    </h2>
+
+    <p>
+        @messages("tai.incomeTaxComparison.incomeTax.fromEmployer.description")
+    </p>
 
     <table class="table--font-reset flush--bottom" id="incomeSummaryComparisonTable">
         <caption class="visually-hidden">@{incomeSummaryHeading}</caption>
