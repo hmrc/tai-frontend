@@ -20,7 +20,7 @@ import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
-import uk.gov.hmrc.tai.util.ViewModelHelper.{currentTaxYearRangeHtmlNonBreak, withPoundPrefix}
+import uk.gov.hmrc.tai.util.ViewModelHelper.{nextTaxYearHeaderHtmlNonBreak, withPoundPrefix}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class updateIncomeCYPlus1EditSpec extends TaiViewSpec {
@@ -29,14 +29,12 @@ class updateIncomeCYPlus1EditSpec extends TaiViewSpec {
   val employmentID = 1
   val currentEstPay = 1234
 
-
-
   "CYPlus1 Start Page" should {
     behave like pageWithBackLink
     behave like pageWithCancelLink(Call("GET",controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
     behave like pageWithCombinedHeader(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
-      messages("tai.updateIncome.CYPlus1.edit.heading", currentTaxYearRangeHtmlNonBreak))
+      messages("tai.updateIncome.CYPlus1.edit.heading", nextTaxYearHeaderHtmlNonBreak))
     behave like pageWithContinueInputForm(controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url)
 
     "contain the correct content when income is from employment" in {

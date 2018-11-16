@@ -15,7 +15,7 @@
  *@
 
 @import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
+@import uk.gov.hmrc.tai.util.ViewModelHelper.nextTaxYearHeaderHtmlNonBreak
 @import includes.compareValueInput
 
 @(employmentName: String, employmentId: Int, currentValue: Int, incomeForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm])(
@@ -32,7 +32,7 @@
     form = Some(incomeForm),
     gaEventAction = "Your estimated pay for next year edit",
     title = messages("tai.income.details.updateTaxableIncome.update"),
-    heading = messages("tai.updateIncome.CYPlus1.edit.heading", currentTaxYearRangeHtmlNonBreak)
+    heading = messages("tai.updateIncome.CYPlus1.edit.heading", nextTaxYearHeaderHtmlNonBreak)
 ){
     <div>
         <p>@messages("tai.updateIncome.CYPlus1.edit.paragraph1")</p>
