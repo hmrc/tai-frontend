@@ -39,14 +39,16 @@ class IncomeSummarySpec extends TaiViewSpec {
         s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column2",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))}")
 
 
-      doc(view) must haveTdWithText(employmentOneIncomeSourceDetail.name)
+      doc(view) must haveThWithText(employmentOneIncomeSourceDetail.name)
       doc(view) must haveTdWithText(employmentOneIncomeSourceDetail.amountCY)
       doc(view) must haveTdWithText(employmentOneIncomeSourceDetail.amountCYPlusOne)
+      doc(view) must haveTdWithText(s"Update estimated income for ${employmentOneIncomeSourceDetail.name}")
 
-      doc(view) must haveTdWithText(employmentTwoIncomeSourceDetail.name)
+
+      doc(view) must haveThWithText(employmentTwoIncomeSourceDetail.name)
       doc(view) must haveTdWithText(employmentTwoIncomeSourceDetail.amountCY)
       doc(view) must haveTdWithText(employmentTwoIncomeSourceDetail.amountCYPlusOne)
-
+      doc(view) must haveTdWithText(s"Update estimated income for ${employmentTwoIncomeSourceDetail.name}")
     }
 
     "have income from pension header" in {
@@ -62,13 +64,16 @@ class IncomeSummarySpec extends TaiViewSpec {
       doc(view) must haveThWithText(s"${nonBreakable(messages("tai.NextTaxYear"))} " +
         s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column2",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))}")
 
-      doc(viewPensionsOnly) must haveTdWithText(pensionOneIncomeSourceDetail.name)
+      doc(viewPensionsOnly) must haveThWithText(pensionOneIncomeSourceDetail.name)
       doc(viewPensionsOnly) must haveTdWithText(pensionOneIncomeSourceDetail.amountCY)
       doc(viewPensionsOnly) must haveTdWithText(pensionOneIncomeSourceDetail.amountCYPlusOne)
+      doc(viewPensionsOnly) must haveTdWithText(s"Update estimated income for ${pensionOneIncomeSourceDetail.name}")
 
-      doc(viewPensionsOnly) must haveTdWithText(pensionTwoIncomeSourceDetail.name)
+
+      doc(viewPensionsOnly) must haveThWithText(pensionTwoIncomeSourceDetail.name)
       doc(viewPensionsOnly) must haveTdWithText(pensionTwoIncomeSourceDetail.amountCY)
       doc(viewPensionsOnly) must haveTdWithText(pensionTwoIncomeSourceDetail.amountCYPlusOne)
+      doc(viewPensionsOnly) must haveTdWithText(s"Update estimated income for ${pensionTwoIncomeSourceDetail.name}")
 
     }
 
@@ -84,22 +89,25 @@ class IncomeSummarySpec extends TaiViewSpec {
       doc(view) must haveThWithText(s"${nonBreakable(messages("tai.NextTaxYear"))} " +
         s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column2",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))}")
 
-      doc(viewCombined) must haveTdWithText(employmentOneIncomeSourceDetail.name)
+      doc(viewCombined) must haveThWithText(employmentOneIncomeSourceDetail.name)
       doc(viewCombined) must haveTdWithText(employmentOneIncomeSourceDetail.amountCY)
       doc(viewCombined) must haveTdWithText(employmentOneIncomeSourceDetail.amountCYPlusOne)
+      doc(viewCombined) must haveTdWithText(s"Update estimated income for ${employmentOneIncomeSourceDetail.name}")
 
-      doc(viewCombined) must haveTdWithText(employmentTwoIncomeSourceDetail.name)
+      doc(viewCombined) must haveThWithText(employmentTwoIncomeSourceDetail.name)
       doc(viewCombined) must haveTdWithText(employmentTwoIncomeSourceDetail.amountCY)
       doc(viewCombined) must haveTdWithText(employmentTwoIncomeSourceDetail.amountCYPlusOne)
+      doc(viewCombined) must haveTdWithText(s"Update estimated income for ${employmentTwoIncomeSourceDetail.name}")
 
-      doc(viewCombined) must haveTdWithText(pensionOneIncomeSourceDetail.name)
+      doc(viewCombined) must haveThWithText(pensionOneIncomeSourceDetail.name)
       doc(viewCombined) must haveTdWithText(pensionOneIncomeSourceDetail.amountCY)
       doc(viewCombined) must haveTdWithText(pensionOneIncomeSourceDetail.amountCYPlusOne)
+      doc(viewCombined) must haveTdWithText(s"Update estimated income for ${pensionOneIncomeSourceDetail.name}")
 
-      doc(viewCombined) must haveTdWithText(pensionTwoIncomeSourceDetail.name)
+      doc(viewCombined) must haveThWithText(pensionTwoIncomeSourceDetail.name)
       doc(viewCombined) must haveTdWithText(pensionTwoIncomeSourceDetail.amountCY)
       doc(viewCombined) must haveTdWithText(pensionTwoIncomeSourceDetail.amountCYPlusOne)
-
+      doc(viewCombined) must haveTdWithText(s"Update estimated income for ${pensionTwoIncomeSourceDetail.name}")
     }
 
     "display no content when no CY or CY+1 details are available" in{
@@ -113,11 +121,11 @@ class IncomeSummarySpec extends TaiViewSpec {
 
   }
 
-  private lazy val employmentOneIncomeSourceDetail = IncomeSourceComparisonDetail("Company1","£15,000","£15,500")
-  private lazy val employmentTwoIncomeSourceDetail = IncomeSourceComparisonDetail("Company2","£16,000","£16,500")
+  private lazy val employmentOneIncomeSourceDetail = IncomeSourceComparisonDetail(1, "Company1","£15,000","£15,500")
+  private lazy val employmentTwoIncomeSourceDetail = IncomeSourceComparisonDetail(2, "Company2","£16,000","£16,500")
 
-  private lazy val pensionOneIncomeSourceDetail = IncomeSourceComparisonDetail("pension1","£15,000","£15,500")
-  private lazy val pensionTwoIncomeSourceDetail = IncomeSourceComparisonDetail("pension2","£16,000","£16,500")
+  private lazy val pensionOneIncomeSourceDetail = IncomeSourceComparisonDetail(1, "pension1","£15,000","£15,500")
+  private lazy val pensionTwoIncomeSourceDetail = IncomeSourceComparisonDetail(2, "pension2","£16,000","£16,500")
 
   private val employmentIncomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(Seq(employmentOneIncomeSourceDetail,employmentTwoIncomeSourceDetail),Nil)
   private val pensionIncomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(Nil,Seq(pensionOneIncomeSourceDetail,pensionTwoIncomeSourceDetail))
