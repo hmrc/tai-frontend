@@ -58,11 +58,6 @@ trait UpdateIncomeNextYearController extends TaiBaseController
             }
           } else {
               Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
-          }.recoverWith{
-            case e: Exception => {
-              Logger.warn(e.getMessage)
-              Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
-            }
           }
   }
 
@@ -81,16 +76,26 @@ trait UpdateIncomeNextYearController extends TaiBaseController
             }
           } else {
             Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
-          }.recoverWith{
-            case e: Exception => {
-              Logger.warn(e.getMessage)
-              Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
-            }
           }
   }
 
   def confirm (employmentId: Int): Action[AnyContent] = ???
-  def success (employmentId: Int): Action[AnyContent] = ???
+  def success (employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          if(cyPlusOneEnabled){
+            ServiceCheckLite.personDetailsCheck {
+              updateNextYearsIncomeService.reset flatMap { _ =>
+              updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
+                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName))
+                }
+              }
+            }
+          } else {
+            Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+          }
+  }
 
   def update (employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -116,11 +121,6 @@ trait UpdateIncomeNextYearController extends TaiBaseController
             }
           } else {
             Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
-          }.recoverWith{
-            case e: Exception => {
-              Logger.warn(e.getMessage)
-              Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
-            }
           }
   }
 }
