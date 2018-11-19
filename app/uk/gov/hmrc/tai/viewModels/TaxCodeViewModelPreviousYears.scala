@@ -37,24 +37,9 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
             year: TaxYear = TaxYear())
            (implicit messages: Messages): TaxCodeViewModelPreviousYears = {
 
-    val isCurrentYear = false
     val preHeader = messages(s"tai.taxCode.prev.preHeader")
 
-    val descriptionListViewModels = taxCodeRecords.map { taxCodeRecord =>
-      val taxCode = taxCodeRecord.taxCode
-      val explanation = describeTaxCode(taxCode, taxCodeRecord.basisOfOperation, scottishTaxRateBands, isCurrentYear)
-
-      DescriptionListViewModel(
-        messages(
-          s"tai.taxCode.prev.subheading",
-          taxCodeRecord.employerName,
-          htmlNonBroken(Dates.formatDate(taxCodeRecord.startDate)),
-          htmlNonBroken(Dates.formatDate(taxCodeRecord.endDate)),
-          taxCode
-        ),
-        explanation
-      )
-    }
+    val descriptionListViewModels = sortedTaxCodeRecords(taxCodeRecords).map { recordToDescriptionListViewModel(_, scottishTaxRateBands) }
 
     val titleMessageKey = if (taxCodeRecords.size > 1) "tai.taxCode.prev.multiple.code.title" else "tai.taxCode.prev.single.code.title"
     val startOfTaxYearNonBroken = htmlNonBroken(Dates.formatDate(year.start))
@@ -73,4 +58,25 @@ object TaxCodeViewModelPreviousYears extends ViewModelHelper with TaxCodeDescrip
     TaxCodeViewModelPreviousYears(title, mainHeading, ledeMessage, descriptionListViewModels, preHeader)
   }
 
+  private def sortedTaxCodeRecords(records: Seq[TaxCodeRecord]): Seq[TaxCodeRecord] = {
+    val primarySecondaryPensionSort: TaxCodeRecord => (Boolean, Boolean) = (record: TaxCodeRecord) => (!record.primary, record.pensionIndicator)
+    records.sortBy(primarySecondaryPensionSort)
+  }
+
+  private def recordToDescriptionListViewModel(record: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal])
+                                              (implicit messages: Messages): DescriptionListViewModel = {
+    val taxCode = record.taxCode
+    val explanation = describeTaxCode(taxCode, record.basisOfOperation, scottishTaxRateBands, isCurrentYear = false)
+
+    DescriptionListViewModel(
+      messages(
+        s"tai.taxCode.prev.subheading",
+        record.employerName,
+        htmlNonBroken(Dates.formatDate(record.startDate)),
+        htmlNonBroken(Dates.formatDate(record.endDate)),
+        taxCode
+      ),
+      explanation
+    )
+  }
 }

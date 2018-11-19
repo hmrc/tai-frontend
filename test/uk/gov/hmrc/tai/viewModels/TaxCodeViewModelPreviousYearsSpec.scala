@@ -62,6 +62,35 @@ class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplica
       }
     }
 
+    "be able to sort tax code records so that the primary records are first" in {
+      val result = previousYearTestViewModel(Seq(taxCodeRecord2, taxCodeRecord1))
+      result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.prev.subheading", "employer", nowDateNonBreak, nowDateNonBreak, "1150L")
+      result.taxCodeDetails(1).heading mustBe Messages("tai.taxCode.prev.subheading", "employer2", nowDateNonBreak, nowDateNonBreak, "BRX")
+    }
+
+    "be able to sort tax code records so that the pension records are last" in {
+      val taxCodePension = makeTestTaxCodeRecord("BR", OtherBasisOfOperation, false, "Pension", true)
+
+      val result = previousYearTestViewModel(Seq(taxCodePension, taxCodeRecord2, taxCodeRecord1))
+      result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.prev.subheading", "employer", nowDateNonBreak, nowDateNonBreak, "1150L")
+      result.taxCodeDetails(1).heading mustBe Messages("tai.taxCode.prev.subheading", "employer2", nowDateNonBreak, nowDateNonBreak, "BRX")
+      result.taxCodeDetails(2).heading mustBe Messages("tai.taxCode.prev.subheading", "Pension", nowDateNonBreak, nowDateNonBreak, "BR")
+    }
+
+    "be able to sort tax code records when multiple primary, secondary and pensions exist" in {
+      val taxCodePension = makeTestTaxCodeRecord("BR", OtherBasisOfOperation, false, "Pension", true)
+      val taxCodeSecondary2 = makeTestTaxCodeRecord("BR", OtherBasisOfOperation, false, "Secondary")
+      val taxCodePrimaryPension = makeTestTaxCodeRecord("SR", OtherBasisOfOperation, true, "Primary Pension", true)
+
+      val result = previousYearTestViewModel(Seq(taxCodePension, taxCodePrimaryPension, taxCodeSecondary2, taxCodeRecord2, taxCodeRecord1))
+
+      result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.prev.subheading", "employer", nowDateNonBreak, nowDateNonBreak, "1150L")
+      result.taxCodeDetails(1).heading mustBe Messages("tai.taxCode.prev.subheading", "Primary Pension", nowDateNonBreak, nowDateNonBreak, "SR")
+      result.taxCodeDetails(2).heading mustBe Messages("tai.taxCode.prev.subheading", "Secondary", nowDateNonBreak, nowDateNonBreak, "BR")
+      result.taxCodeDetails(3).heading mustBe Messages("tai.taxCode.prev.subheading", "employer2", nowDateNonBreak, nowDateNonBreak, "BRX")
+      result.taxCodeDetails(4).heading mustBe Messages("tai.taxCode.prev.subheading", "Pension", nowDateNonBreak, nowDateNonBreak, "BR")
+    }
+
     val taxCodeRecordS1150L = makeTestTaxCodeRecord("S1150L", OtherBasisOfOperation)
 
     "be able to create table contents for scottish tax code" when {
@@ -164,8 +193,8 @@ class TaxCodeViewModelPreviousYearsSpec extends PlaySpec with FakeTaiPlayApplica
   val prevTaxYearStartDateNonBreak = prevTaxYear.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
   val prevTaxYearEndDateNonBreak = prevTaxYear.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
 
-  private def makeTestTaxCodeRecord(taxCode: String, basisOfOperation: BasisOfOperation, isPrimary: Boolean = true, employerName: String = "employer") = {
-    TaxCodeRecord(taxCode,LocalDate.now,LocalDate.now,basisOfOperation,employerName,false,Some("payrollnumber"),isPrimary)
+  private def makeTestTaxCodeRecord(taxCode: String, basisOfOperation: BasisOfOperation, isPrimary: Boolean = true, employerName: String = "employer", pensionIndicator: Boolean = false) = {
+    TaxCodeRecord(taxCode,LocalDate.now,LocalDate.now,basisOfOperation,employerName,pensionIndicator,Some("payrollnumber"),isPrimary)
   }
 
   private val taxCodeRecord1 = makeTestTaxCodeRecord("1150L", OtherBasisOfOperation)
