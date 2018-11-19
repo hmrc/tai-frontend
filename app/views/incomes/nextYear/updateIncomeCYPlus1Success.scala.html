@@ -43,7 +43,11 @@ employerName = Some(employmentName)
                 url = controllers.routes.IncomeTaxComparisonController.onPageLoad.url.toString
             )
         </p>
-        <p>@messages("tai.updateIncome.CYPlus1.success.paragraph2", employmentName)</p>
+        @if(isPension) {
+            <p>@messages("tai.updateIncome.CYPlus1.success.pension.paragraph2", employmentName)</p>
+        } else {
+            <p>@messages("tai.updateIncome.CYPlus1.success.paragraph2", employmentName)</p>
+        }
     </div>
 </div>
 }
