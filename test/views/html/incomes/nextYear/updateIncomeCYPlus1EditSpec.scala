@@ -32,7 +32,7 @@ class updateIncomeCYPlus1EditSpec extends TaiViewSpec {
 
 
 
-  "CYPlus1 Start Page" should {
+  "CYPlus1 Edit Page" should {
     behave like pageWithBackLink
     behave like pageWithCancelLink(Call("GET",controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
     behave like pageWithCombinedHeader(
