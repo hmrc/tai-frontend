@@ -88,8 +88,10 @@ trait UpdateIncomeNextYearController extends TaiBaseController
       implicit person =>
         implicit request =>
           preAction{
-            updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
-              Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName))
+            updateNextYearsIncomeService.reset flatMap { _ =>
+              updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
+                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName))
+              }
             }
           }
   }
