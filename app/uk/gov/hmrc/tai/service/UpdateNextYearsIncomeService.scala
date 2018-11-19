@@ -23,7 +23,9 @@ import uk.gov.hmrc.tai.connectors.responses.TaiResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
+import uk.gov.hmrc.tai.model.domain.PensionIncome
 import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
+
 import scala.concurrent.Future
 
 class UpdateNextYearsIncomeService {
@@ -45,7 +47,8 @@ class UpdateNextYearsIncomeService {
       employmentOption <- employmentFuture
     } yield (taxCodeIncomeOption, employmentOption) match {
       case (Some(taxCodeIncome), Some(employment)) => {
-        val model = UpdateNextYearsIncomeCacheModel(employment.name, employmentId, taxCodeIncome.amount.toInt)
+        val isPension = taxCodeIncome.componentType == PensionIncome
+        val model = UpdateNextYearsIncomeCacheModel(employment.name, employmentId, isPension, taxCodeIncome.amount.toInt)
 
         journeyCacheService.cache(model.toCacheMap)
 
@@ -63,15 +66,15 @@ class UpdateNextYearsIncomeService {
           Future.successful(UpdateNextYearsIncomeCacheModel(
             cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME),
             cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_ID).toInt,
+            cache(UpdateNextYearsIncomeConstants.IS_PENSION).toBoolean,
             cache(UpdateNextYearsIncomeConstants.CURRENT_AMOUNT).toInt,
-            Some(cache(UpdateNextYearsIncomeConstants.NEW_AMOUNT).toInt)
-          ))
+            Some(cache(UpdateNextYearsIncomeConstants.NEW_AMOUNT).toInt)))
         } else {
-          Future.successful(UpdateNextYearsIncomeCacheModel(
-            cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME),
+          Future.successful(UpdateNextYearsIncomeCacheModel(cache(
+            UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME),
             cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_ID).toInt,
-            cache(UpdateNextYearsIncomeConstants.CURRENT_AMOUNT).toInt
-          ))
+            cache(UpdateNextYearsIncomeConstants.IS_PENSION).toBoolean,
+            cache(UpdateNextYearsIncomeConstants.CURRENT_AMOUNT).toInt))
         }
       }
     }

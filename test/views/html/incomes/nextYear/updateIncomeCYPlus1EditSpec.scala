@@ -28,7 +28,7 @@ class updateIncomeCYPlus1EditSpec extends TaiViewSpec {
   val employerName = "Employer Name"
   val employmentID = 1
   val currentEstPay = 1234
-
+  val isPension = false
 
 
   "CYPlus1 Edit Page" should {
@@ -61,6 +61,6 @@ class updateIncomeCYPlus1EditSpec extends TaiViewSpec {
   }
 
 
-  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Edit(employerName, employmentID, currentEstPay,
+  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Edit(employerName, employmentID, isPension, currentEstPay,
     AmountComparatorForm.createForm(taxablePayYTD = Some(currentEstPay)))
 }

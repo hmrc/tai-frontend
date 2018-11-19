@@ -24,6 +24,7 @@ class updateIncomeCYPlus1StartSpec extends TaiViewSpec {
 
   val employerName = "Employer Name"
   val employmentID = 1
+  val isPension = false
 
   "CYPlus1 Start Page" should {
     behave like pageWithBackLink
@@ -41,5 +42,5 @@ class updateIncomeCYPlus1StartSpec extends TaiViewSpec {
 
   }
 
-  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Start(employerName, employmentID)
+  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Start(employerName, employmentID, isPension)
 }

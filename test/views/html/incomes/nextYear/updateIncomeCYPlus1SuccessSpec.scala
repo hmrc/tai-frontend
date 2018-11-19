@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class updateIncomeCYPlus1SuccessSpec extends TaiViewSpec {
 
   private val employerName = "Employer Name"
-
+  private val isPension = false
   "CYPlus1 Success Page" should {
     "contain the success heading" in {
       doc(view).getElementsByTag("h1").text must include(messages("tai.updateIncome.CYPlus1.success.heading", employerName))
@@ -40,5 +40,5 @@ class updateIncomeCYPlus1SuccessSpec extends TaiViewSpec {
     }
   }
 
-  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Success(employerName)
+  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Success(employerName, isPension)
 }
