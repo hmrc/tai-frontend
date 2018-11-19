@@ -14,30 +14,15 @@
  * limitations under the License.
  *@
 
-@(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm], bonusPeriod: String, id: Int, employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
-
 @import includes.ptaHeader
 @import includes.cancelLink
-@import includes.forms.input
+@import includes.forms.{input, submit}
 @import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
-@pageTitle = @{bonusPeriod match {
-    case "year" => {messages("tai.bonusPaymentsAmount.year.title")}
-    case "monthly" => {messages("tai.bonusPaymentsAmount.month.title")}
-    case "fortnightly" => {messages("tai.bonusPaymentsAmount.fortnightly.title")}
-    case "weekly" => {messages("tai.bonusPaymentsAmount.week.title")}
-    case _ => {messages("tai.bonusPaymentsAmount.period.title")}
-        }
-    }
-@pageDesc = @{bonusPeriod match {
-        case "year" => {messages("tai.bonusPaymentsAmount.year.description")}
-        case "monthly" => {messages("tai.bonusPaymentsAmount.month.description")}
-        case "fortnightly" => {messages("tai.bonusPaymentsAmount.fortnightly.description")}
-        case "weekly" => {messages("tai.bonusPaymentsAmount.week.description")}
-        case _ => {messages("tai.bonusPaymentsAmount.period.description")}
-    }
-}
+@(bonusOvertimeAmountForm: Form[uk.gov.hmrc.tai.forms.BonusOvertimeAmountForm], id: Int, employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser,
+templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
 @gaEventActionString = @{"Bonus or overtime payments"}
 
 @header = @{
@@ -45,23 +30,14 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         formForErrorSummary = Some(bonusOvertimeAmountForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = pageTitle,
-        preHeadingText = messages("tai.bonusPaymentsAmount.preHeading", employerName),
+        mainHeadingText = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+        preHeadingText = Messages("tai.bonusPaymentsAmount.preHeading", employerName),
         headerWidthClasses = Some("column-full")
     )
 }
 
-@hint = @{
-    if(bonusPeriod == "year"){
-        messages("tai.bonusPaymentsAmount.year.message")
-    }
-    else{
-        ""
-    }
-}
-
 @main(
-    title = pageTitle,
+    title = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
@@ -72,16 +48,16 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleBonusOvertimeAmount){
             @includes.forms.input(
                 field = bonusOvertimeAmountForm("amount"),
-                labelText = pageDesc,
+                labelText = "",
                 bold = true,
                 classes = Seq("form-control-1-4"),
-                hintText = hint.toString,
-                hintClass = "body-text",
+                hintText = messages("tai.bonusPaymentsAmount.hint"),
+                hintClass = "form-hint",
                 isCurrency = true
             )
 
-            <input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/>
 
+            @submit(gaEventAction = Some(gaEventActionString))
             @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
         }
     </div>

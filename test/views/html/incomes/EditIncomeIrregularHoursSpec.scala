@@ -18,7 +18,7 @@ package views.html.incomes
 
 import org.scalatest.mock.MockitoSugar
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm
+import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
@@ -49,19 +49,19 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
     }
 
     "display the users current estimated income" in {
-      doc(view) must haveParagraphWithText(messages("tai.irregular.currentAmount"))
+      doc(view) must haveClassWithText(messages("tai.irregular.currentAmount"), "form-label")
       doc(view) must haveParagraphWithText(withPoundPrefix(MoneyPounds(BigDecimal(currentAmount),0)))
     }
 
     "have an input box for user to enter new amount" in {
-      doc(view) must haveSpanWithText(
+      doc(view) must haveInputLabelWithText("income",
         messages("tai.irregular.newAmount") + " " + messages("tai.inPounds")
       )
-      doc(view).getElementsByClass("edit-income__input").size() mustBe employmentId
+      doc(view).getElementsByClass("form-control-currency").size() mustBe 1
     }
   }
 
   private val viewModel = EditIncomeIrregularHoursViewModel(employmentId, employerName, currentAmount)
-  private val editIncomeForm = EditIncomeIrregularHoursForm.createForm()
+  private val editIncomeForm = AmountComparatorForm.createForm()
   override def view: Html = views.html.incomes.editIncomeIrregularHours(editIncomeForm, viewModel)
 }

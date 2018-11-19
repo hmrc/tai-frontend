@@ -1,0 +1,12 @@
+->     /                                    prod.Routes
+
+
+# Routes for development environments
+
+### Update Income CY + 1
+
+GET         /check-income-tax/update-income/next-year/income/:empId/start                               controllers.income.UpdateIncomeNextYearController.start(empId: Int)
+GET         /check-income-tax/update-income/next-year/income/:empId/edit                                controllers.income.UpdateIncomeNextYearController.edit(empId: Int)
+POST        /check-income-tax/update-income/next-year/income/:empId/edit                                controllers.income.UpdateIncomeNextYearController.update(empId: Int)
+GET         /check-income-tax/update-income/next-year/income/:empId/confirm                             controllers.income.UpdateIncomeNextYearController.confirm(empId: Int)
+GET         /check-income-tax/update-income/next-year/income/:empId/success                             controllers.income.UpdateIncomeNextYearController.success(empId: Int)

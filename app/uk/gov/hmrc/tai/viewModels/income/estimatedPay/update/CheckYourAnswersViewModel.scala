@@ -28,7 +28,6 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
                                      hasDeductions: String,
                                      taxablePay: Option[String],
                                      hasBonusOrOvertime: String,
-                                     hasExtraBonusOrOvertime: Option[String],
                                      totalBonusOrOvertime: Option[String]) extends ViewModelHelper {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
@@ -60,42 +59,20 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
     )
 
     val hasBonusOrOvertimeConfirmationLine = createCheckYourAnswerConfirmationLine(
-      messages("tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime"),
+      messages("tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime",currentTaxYearRangeHtmlNonBreakBetween),
       Some(messages(s"tai.label.${hasBonusOrOvertime.toLowerCase}")),
       controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
     )
 
-    val hasExtraBonusOrOvertimeAnswer =
-      if (hasExtraBonusOrOvertime.isDefined) {
-        Some(messages(s"tai.label.${hasExtraBonusOrOvertime.get.toLowerCase}"))
-      }else{
-        hasExtraBonusOrOvertime
-      }
-
-    val hasExtraBonusOrOvertimeConfirmationLine = createCheckYourAnswerConfirmationLine(
-      messages("tai.estimatedPay.update.checkYourAnswers.hasExtraBonusOrOvertime",
-        htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)),
-        htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))),
-      hasExtraBonusOrOvertimeAnswer,
-      controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
-    )
-
-    val totalBonusOrOvertimeMessage =
-      if(hasExtraBonusOrOvertime.getOrElse("") == "Yes"){
-      messages("tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime", currentTaxYearRangeHtmlNonBreak)
-     }else{
-        Messages("tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime", timePeriod(paymentFrequency))
-      }
-
     val totalBonusOrOvertimeConfirmationLine = createCheckYourAnswerConfirmationLine(
-      totalBonusOrOvertimeMessage,
+      messages("tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime", currentTaxYearRangeHtmlNonBreak),
       totalBonusOrOvertime,
       controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url,
       isMonetaryValue
     )
 
     Seq(paymentFrequencyConfirmationLine, totalPayConfirmationLine, hasDeductionConfirmationLine, taxablePayConfirmationLine,
-      hasBonusOrOvertimeConfirmationLine, hasExtraBonusOrOvertimeConfirmationLine, totalBonusOrOvertimeConfirmationLine).flatten
+      hasBonusOrOvertimeConfirmationLine, totalBonusOrOvertimeConfirmationLine).flatten
   }
 
   private def createCheckYourAnswerConfirmationLine(message: String, answer: Option[String], changeUrl: String,

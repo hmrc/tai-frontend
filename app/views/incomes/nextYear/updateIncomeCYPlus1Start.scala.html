@@ -1,0 +1,42 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(employmentName: String, employmentId: Int)(
+    implicit request: Request[_],
+    messages: Messages,
+    user: controllers.auth.TaiUser,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
+)
+@updateIncomeCYPlus1Template(
+    employerName = employmentName,
+    employmentId = 1,
+    form = None,
+    gaEventAction = "Your estimated pay for next year start",
+    title = messages("tai.updateIncome.CYPlus1.start.title"),
+    heading = messages("tai.updateIncome.CYPlus1.start.heading", employmentName)
+){
+    <div>
+        <p>@messages("tai.updateIncome.CYPlus1.start.paragraph1", employmentName)</p>
+        <p>@messages("tai.updateIncome.CYPlus1.start.paragraph2", employmentName)</p>
+        @includes.link(
+            copy=messages("tai.income.details.updateTaxableIncome.update"),
+            url = controllers.income.routes.UpdateIncomeNextYearController.edit(employmentId).url,
+            id = Some("CYPlus1StartButton"),
+            isButton=true
+        )
+    </div>
+}

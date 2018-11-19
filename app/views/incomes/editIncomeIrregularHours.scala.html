@@ -16,11 +16,12 @@
 
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
+@import includes.compareValueInput
 @import includes.ptaHeader
 @import includes.forms.input
 @import includes.forms.submit
 
-@(incomeUpdateForm: Form[uk.gov.hmrc.tai.forms.EditIncomeIrregularHoursForm],
+@(incomeUpdateForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm],
   viewModel: EditIncomeIrregularHoursViewModel)(
     implicit request: Request[_],
     messages: Messages,
@@ -54,25 +55,16 @@
     @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleIncomeIrregularHours(viewModel.employmentId)) {
         <div class="form-field-group @if(incomeUpdateForm.hasErrors) {form-group-error}">
             @incomeUpdateForm.errors(incomeUpdateForm("income").name).map{ error =>
-            <span class="error-notification error-message">@messages(error.message)</span>
+                <span class="error-notification error-message">@messages(error.message)</span>
             }
 
-            <div class="column-one-half soft--left">
-                <p class="bold-small">@messages("tai.irregular.currentAmount")</p>
-                <p>@viewModel.currentAmount</p>
-            </div>
-
-            <div class="column-one-half">
-                @input(
-                    field = incomeUpdateForm("income"),
-                    labelText = messages("tai.irregular.newAmount"),
-                    bold = true,
-                    classes = Seq("edit-income__input"),
-                    hintText = "",
-                    isCurrency = true,
-                    fieldErrorsEnabled=false
-                )
-            </div>
+            @compareValueInput(
+                previousLabel = messages("tai.incomes.amount.current"),
+                newLabel = messages("tai.incomes.amount.new"),
+                previousFieldName = "oldAmount",
+                previousFieldValue= viewModel.currentAmount,
+                newField = incomeUpdateForm("income")
+            )
         </div>
 
         <div class=" form-group">

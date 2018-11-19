@@ -24,27 +24,27 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 
-case class EditIncomeIrregularHoursForm(income: Option[String])
+case class AmountComparatorForm(income: Option[String])
 
-object EditIncomeIrregularHoursForm {
-  implicit val formats = Json.format[EditIncomeIrregularHoursForm]
+object AmountComparatorForm {
+  implicit val formats = Json.format[AmountComparatorForm]
 
   def createForm(latestPayDate: Option[String] = None,
                  taxablePayYTD: Option[BigDecimal] = None)
-                (implicit messages: Messages): Form[EditIncomeIrregularHoursForm] = {
+                (implicit messages: Messages): Form[AmountComparatorForm] = {
 
     val fallbackDate = LocalDate.now().toString(MONTH_AND_YEAR)
 
     val theDate = latestPayDate.fold(fallbackDate)(identity)
 
-    Form[EditIncomeIrregularHoursForm](
+    Form[AmountComparatorForm](
       mapping("income" -> TaiValidator.validateTaxAmounts(
         messages("tai.irregular.error.blankValue"),
         messages("tai.irregular.instruction.wholePounds"),
         messages("error.tai.updateDataEmployment.maxLength"),
         taxablePayYTD.fold("")(messages("tai.irregular.error.error.incorrectTaxableIncome", _, theDate)),
         taxablePayYTD.getOrElse(0)
-      ))(EditIncomeIrregularHoursForm.apply)(EditIncomeIrregularHoursForm.unapply)
+      ))(AmountComparatorForm.apply)(AmountComparatorForm.unapply)
     )
   }
 }

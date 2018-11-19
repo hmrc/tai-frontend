@@ -1,0 +1,57 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@(employerName: String,
+  employmentId: Int,
+  form: Option[Form[_]],
+  gaEventAction: String,
+  heading: String,
+  title: String
+)(content: Html
+)(implicit request: Request[_],
+  user: controllers.auth.TaiUser,
+  messages: Messages,
+  templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@import includes.ptaHeader
+@import includes.cancelLink
+
+@header = @{
+    ptaHeader(
+        formForErrorSummary = form,
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventAction),
+        mainHeadingText = heading,
+        preHeadingText = messages("tai.updateIncome.CYPlus1.preheading", employerName),
+        headerWidthClasses = Some("column-full")
+    )
+}
+
+@main(
+    title = title,
+    articleClasses = Some(""),
+    user = Some(user),
+    pageHeader = Some(header),
+    employerName = Some(employerName),
+    gaCustomTitle = None
+){
+    <div class="section flush--bottom soft--top soft--bottom">
+        @content
+
+        @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
+    </div>
+}
