@@ -53,6 +53,14 @@ class updateIncomeCYPlus1EditSpec extends TaiViewSpec {
       val isPension = true
       val pensionView: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Edit(employerName, employmentID, isPension, currentEstPay,
         AmountComparatorForm.createForm(taxablePayYTD = Some(currentEstPay)))
+
+      doc(pensionView).getElementsByTag("p").text mustNot include(messages("tai.updateIncome.CYPlus1.edit.paragraph1", employerName))
+      doc(pensionView).getElementsByTag("p").text mustNot include(messages("tai.incomes.edit.howTo.grossAmount", employerName))
+      doc(pensionView).getElementsByTag("li").text mustNot include(messages("tai.incomes.edit.howTo.contribution", employerName))
+      doc(pensionView).getElementsByTag("li").text mustNot include(messages("tai.incomes.edit.howTo.contribution", employerName))
+      doc(pensionView).getElementsByTag("li").text mustNot include(messages("tai.incomes.edit.howTo.charity", employerName))
+      doc(pensionView).getElementsByTag("li").text mustNot include(messages("tai.incomes.edit.howTo.expenses", employerName))
+
       doc(pensionView).getElementsByTag("h2").text must include(messages("tai.updateIncome.CYPlus1.edit.subheading", employerName))
       doc(pensionView).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.edit.wholePounds"))
     }

@@ -43,6 +43,7 @@ class updateIncomeCYPlus1SuccessSpec extends TaiViewSpec {
       val isPension = true
       val pensionView: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Success(employerName, isPension)
       doc(pensionView).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.success.pension.paragraph2", employerName))
+      doc(pensionView).getElementsByTag("p").text mustNot include(messages("tai.updateIncome.CYPlus1.success.paragraph2", employerName))
     }
   }
 

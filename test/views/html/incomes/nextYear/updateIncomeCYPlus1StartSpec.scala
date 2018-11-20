@@ -44,6 +44,7 @@ class updateIncomeCYPlus1StartSpec extends TaiViewSpec {
       val isPension = true
       val pensionView: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Start(employerName, employmentID, isPension)
       doc(pensionView).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.start.paragraph1", employerName))
+      doc(pensionView).getElementsByTag("p").text mustNot include(messages("tai.updateIncome.CYPlus1.start.paragraph2", employerName))
       doc(pensionView).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.start.pension.paragraph2", employerName))
       doc(pensionView) must haveLinkWithUrlWithID("CYPlus1StartButton",controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url)
       doc(pensionView).getElementsByClass("button").text must include(messages("tai.income.details.updateTaxableIncome.update"))
