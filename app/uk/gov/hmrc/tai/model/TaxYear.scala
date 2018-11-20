@@ -30,6 +30,7 @@ case class TaxYear(year: Int) extends Ordered[TaxYear] {
   def start: LocalDate = new LocalDate(year, TAX_MONTH_APRIL, START_DATE)
   def end: LocalDate = new LocalDate(year + ONE, TAX_MONTH_APRIL, END_DATE)
   def next = TaxYear(year + ONE)
+  private def next(add: Int) = TaxYear(year + add)
   def prev = TaxYear(year - ONE)
   def startPrev: LocalDate = new LocalDate(prev.year, TAX_MONTH_APRIL, START_DATE)
   def endPrev: LocalDate = new LocalDate(prev.year + ONE, TAX_MONTH_APRIL, END_DATE)
@@ -75,6 +76,16 @@ object TaxYear {
       case YearRange(Year(fYear),Year(tYear)) if tYear == fYear + 1 =>
         TaxYear(fYear)
       case x => throw new IllegalArgumentException(s"Cannot parse $x")
+    }
+  }
+
+  def fromNow(yearsFromNow: Int): TaxYear = {
+    val currentYear: TaxYear = TaxYear()
+
+    if (yearsFromNow == 0) {
+      currentYear
+    } else {
+      currentYear.next(yearsFromNow)
     }
   }
 
