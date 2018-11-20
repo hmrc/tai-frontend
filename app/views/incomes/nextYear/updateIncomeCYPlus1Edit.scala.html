@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 @import includes.compareValueInput
 
-@(employmentName: String, employmentId: Int, currentValue: Int, incomeForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm])(
+@(employmentName: String, employmentId: Int, isPension: Boolean, currentValue: Int, incomeForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm])(
     implicit request: Request[_],
     messages: Messages,
     user: controllers.auth.TaiUser,
@@ -34,14 +34,21 @@
     title = messages("tai.updateIncome.CYPlus1.edit.title"),
     heading = messages("tai.updateIncome.CYPlus1.edit.heading", currentTaxYearRangeHtmlNonBreak)
 ){
+
+    @if(!isPension) {
+        <div>
+            <p>@messages("tai.updateIncome.CYPlus1.edit.paragraph1")</p>
+            <p>@messages("tai.updateIncome.CYPlus1.edit.paragraph2")</p>
+            <ul class="bullets">
+                <li>@messages("tai.updateIncome.CYPlus1.edit.contribution")</li>
+                <li>@messages("tai.updateIncome.CYPlus1.edit.charity")</li>
+                <li>@messages("tai.updateIncome.CYPlus1.edit.expenses")</li>
+            </ul>
+        </div>
+    }
     <div>
-        <p>@messages("tai.updateIncome.CYPlus1.edit.paragraph1")</p>
-        <p>@messages("tai.updateIncome.CYPlus1.edit.paragraph2")</p>
-        <ul class="bullets">
-            <li>@messages("tai.updateIncome.CYPlus1.edit.contribution")</li>
-            <li>@messages("tai.updateIncome.CYPlus1.edit.charity")</li>
-            <li>@messages("tai.updateIncome.CYPlus1.edit.expenses")</li>
-        </ul>
+        <h2 class="heading-medium">@messages("tai.updateIncome.CYPlus1.edit.subheading", employmentName)</h2>
+        <p>@messages("tai.updateIncome.CYPlus1.edit.wholePounds")</p>
     </div>
 
     @form(action = controllers.income.routes.UpdateIncomeNextYearController.update(employmentId)){

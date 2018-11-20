@@ -25,18 +25,19 @@ class UpdateNextYearsIncomeCacheModelSpec extends PlaySpec {
   val employmentName = "EmploymentName"
   val employmentId = 1
   val currentValue = 1000
+  val isPension = false
 
   "hasEstimatedIncomeChanged" must {
     "return true" when {
       "current value is different from new value" in {
         val newValue = 2000
-        val model = UpdateNextYearsIncomeCacheModel(employmentName, employmentId, currentValue, Some(newValue))
+        val model = UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, currentValue, Some(newValue))
 
         model.hasEstimatedIncomeChanged mustBe true
       }
 
       "new value is not defined" in {
-        val model = UpdateNextYearsIncomeCacheModel(employmentName, employmentId, currentValue)
+        val model = UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, currentValue)
 
         model.hasEstimatedIncomeChanged mustBe true
       }
@@ -44,7 +45,7 @@ class UpdateNextYearsIncomeCacheModelSpec extends PlaySpec {
     "return false" when {
       "current value and new value are equal" in {
         val newValue = 1000
-        val model = UpdateNextYearsIncomeCacheModel(employmentName, employmentId, currentValue, Some(newValue))
+        val model = UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, currentValue, Some(newValue))
 
         model.hasEstimatedIncomeChanged mustBe false
       }
@@ -54,11 +55,12 @@ class UpdateNextYearsIncomeCacheModelSpec extends PlaySpec {
   "toCacheMap" must {
     "return a Map[String, String] without a new amount" when {
       "the new amount is None" in {
-        val model = UpdateNextYearsIncomeCacheModel(employmentName, employmentId, currentValue)
+        val model = UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, currentValue)
 
         val expected = Map[String, String](
           UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME -> employmentName,
           UpdateNextYearsIncomeConstants.EMPLOYMENT_ID -> employmentId.toString,
+          UpdateNextYearsIncomeConstants.IS_PENSION -> isPension.toString,
           UpdateNextYearsIncomeConstants.CURRENT_AMOUNT -> currentValue.toString
         )
 
@@ -70,11 +72,12 @@ class UpdateNextYearsIncomeCacheModelSpec extends PlaySpec {
       "the new amount is defined" in {
         val newValue = 2000
 
-        val model = UpdateNextYearsIncomeCacheModel(employmentName, employmentId, currentValue, Some(newValue))
+        val model = UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, currentValue, Some(newValue))
 
         val expected = Map[String, String](
           UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME -> employmentName,
           UpdateNextYearsIncomeConstants.EMPLOYMENT_ID -> employmentId.toString,
+          UpdateNextYearsIncomeConstants.IS_PENSION -> isPension.toString,
           UpdateNextYearsIncomeConstants.CURRENT_AMOUNT -> currentValue.toString,
           UpdateNextYearsIncomeConstants.NEW_AMOUNT -> newValue.toString
         )

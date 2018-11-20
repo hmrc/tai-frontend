@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.model.cache
 
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
-final case class UpdateNextYearsIncomeCacheModel(employmentName: String, employmentId: Int, currentValue: Int, newValue: Option[Int] = None) {
+final case class UpdateNextYearsIncomeCacheModel(employmentName: String, employmentId: Int, isPension: Boolean, currentValue: Int, newValue: Option[Int] = None) {
 
   def hasEstimatedIncomeChanged: Boolean = {
     if (newValue.isDefined) {
@@ -32,6 +32,7 @@ final case class UpdateNextYearsIncomeCacheModel(employmentName: String, employm
     Map(
       UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME -> employmentName,
       UpdateNextYearsIncomeConstants.EMPLOYMENT_ID -> employmentId.toString,
+      UpdateNextYearsIncomeConstants.IS_PENSION -> isPension.toString,
       UpdateNextYearsIncomeConstants.CURRENT_AMOUNT -> currentValue.toString
     ) ++ { newValue match {
       case Some(_) => Map(UpdateNextYearsIncomeConstants.NEW_AMOUNT -> newValue.get.toString)
