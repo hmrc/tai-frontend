@@ -56,9 +56,9 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
         val result = Await.result(updateNextYearsIncomeService.get(employmentId, nino), 5.seconds)
 
         verify(updateNextYearsIncomeService.journeyCacheService, times(1))
-          .cache(expectedMap(employmentName, employmentId, employmentAmount))
+          .cache(expectedMap(employmentName, employmentId, isPension, employmentAmount))
 
-        result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, employmentAmount, None)
+        result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, employmentAmount, None)
       }
     }
 
@@ -101,24 +101,24 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
         val nino = generateNino
 
         when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
-          Future.successful(expectedMap(employmentName, employmentId, employmentAmount))
+          Future.successful(expectedMap(employmentName, employmentId, isPension, employmentAmount))
         )
 
         val result = Await.result(updateNextYearsIncomeService.get(employmentId, nino), 5.seconds)
 
-        result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, employmentAmount, None)
+        result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, employmentAmount, None)
       }
 
       "journey values exist with a new amount in the cache" in {
         val nino = generateNino
 
         when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
-          Future.successful(fullMap(employmentName, employmentId, employmentAmount))
+          Future.successful(fullMap(employmentName, employmentId, isPension, employmentAmount))
         )
 
         val result = Await.result(updateNextYearsIncomeService.get(employmentId, nino), 5.seconds)
 
-        result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, employmentAmount, Some(employmentAmount))
+        result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, employmentAmount, Some(employmentAmount))
       }
     }
 
@@ -139,7 +139,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
 
         val result = Await.result(updateNextYearsIncomeService.get(employmentId, nino), 5.seconds)
 
-        result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, employmentAmount, None)
+        result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, employmentAmount, None)
       }
     }
   }
@@ -150,15 +150,15 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
         val nino = generateNino
 
         when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
-          Future.successful(expectedMap(employmentName, employmentId, employmentAmount))
+          Future.successful(expectedMap(employmentName, employmentId, isPension, employmentAmount))
         )
 
         val result = Await.result(updateNextYearsIncomeService.setNewAmount(employmentAmount.toString, employmentId, nino), 5.seconds)
 
-        result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, employmentAmount, Some(employmentAmount))
+        result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, employmentAmount, Some(employmentAmount))
 
         verify(updateNextYearsIncomeService.journeyCacheService, times(1))
-          .cache(fullMap(employmentName, employmentId, employmentAmount))
+          .cache(fullMap(employmentName, employmentId, isPension, employmentAmount))
       }
     }
   }
@@ -213,20 +213,22 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
     TaxCodeIncome(EmploymentIncome, Some(id), amount, "description", "1185L", name, OtherBasisOfOperation, Live)
   }
 
-  private def expectedMap(name: String, id: Int, amount: Int): Map[String, String] = {
+  private def expectedMap(name: String, id: Int, isPension: Boolean, amount: Int): Map[String, String] = {
     Map(
       UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME -> name,
       UpdateNextYearsIncomeConstants.EMPLOYMENT_ID -> id.toString,
+      UpdateNextYearsIncomeConstants.IS_PENSION -> isPension.toString,
       UpdateNextYearsIncomeConstants.CURRENT_AMOUNT -> amount.toString
     )
   }
 
-  private def fullMap(name: String, id: Int, amount: Int): Map[String, String] = {
-    expectedMap(name, id, amount) ++ Map(UpdateNextYearsIncomeConstants.NEW_AMOUNT -> amount.toString)
+  private def fullMap(name: String, id: Int, isPension: Boolean, amount: Int): Map[String, String] = {
+    expectedMap(name, id, isPension, amount) ++ Map(UpdateNextYearsIncomeConstants.NEW_AMOUNT -> amount.toString)
   }
 
   private val employmentName = "employmentName"
   private val employmentId = 1
+  private val isPension = false
   private val employmentAmount = 1000
   private def generateNino: Nino = new Generator(new Random).nextNino
 

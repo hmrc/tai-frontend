@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class updateIncomeCYPlus1SuccessSpec extends TaiViewSpec {
 
   private val employerName = "Employer Name"
-
+  private val isPension = false
   "CYPlus1 Success Page" should {
     "contain the success heading" in {
       doc(view).getElementsByTag("h1").text must include(messages("tai.updateIncome.CYPlus1.success.heading", employerName))
@@ -35,10 +35,17 @@ class updateIncomeCYPlus1SuccessSpec extends TaiViewSpec {
       )
     }
 
-    "contain the may change paragraph" in {
+    "contain the may change paragraph when income is from employment" in {
       doc(view).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.success.paragraph2", employerName))
+    }
+
+    "contain the may change paragraph when income is from pension" in {
+      val isPension = true
+      val pensionView: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Success(employerName, isPension)
+      doc(pensionView).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.success.pension.paragraph2", employerName))
+      doc(pensionView).getElementsByTag("p").text mustNot include(messages("tai.updateIncome.CYPlus1.success.paragraph2", employerName))
     }
   }
 
-  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Success(employerName)
+  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Success(employerName, isPension)
 }

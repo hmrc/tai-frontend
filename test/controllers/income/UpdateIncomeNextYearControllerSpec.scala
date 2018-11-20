@@ -57,7 +57,8 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
   val employmentID = 1
   val currentEstPay = 1234
   val employerName = "EmployerName"
-  val model = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, currentEstPay)
+  val isPension = false
+  val model = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay)
 
   def mockedGet(testController: UpdateIncomeNextYearController) = {
     when(testController.updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.any())(any()))
@@ -78,7 +79,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         val result: Future[Result] = testController.start(employmentID)(fakeRequest)
 
         status(result) mustBe OK
-        result rendersTheSameViewAs updateIncomeCYPlus1Start(employerName, employmentID)
+        result rendersTheSameViewAs updateIncomeCYPlus1Start(employerName, employmentID, isPension)
       }
     }
 
@@ -107,7 +108,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         val result: Future[Result] = testController.edit(employmentID)(fakeRequest)
 
         status(result) mustBe OK
-        result rendersTheSameViewAs updateIncomeCYPlus1Edit(employerName, employmentID, currentEstPay, AmountComparatorForm.createForm())
+        result rendersTheSameViewAs updateIncomeCYPlus1Edit(employerName, employmentID, isPension, currentEstPay, AmountComparatorForm.createForm())
       }
     }
 
@@ -160,7 +161,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
         status(result) mustBe BAD_REQUEST
 
-        result rendersTheSameViewAs updateIncomeCYPlus1Edit(employerName, employmentID, currentEstPay, AmountComparatorForm.createForm().bindFromRequest()(fakeRequest))
+        result rendersTheSameViewAs updateIncomeCYPlus1Edit(employerName, employmentID, isPension, currentEstPay, AmountComparatorForm.createForm().bindFromRequest()(fakeRequest))
       }
     }
 
@@ -190,7 +191,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
           val result: Future[Result] = testController.success(employmentID)(fakeRequest)
 
           status(result) mustBe OK
-          result rendersTheSameViewAs updateIncomeCYPlus1Success(employerName)
+          result rendersTheSameViewAs updateIncomeCYPlus1Success(employerName, isPension)
         }
       }
 

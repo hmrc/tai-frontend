@@ -58,7 +58,7 @@ trait UpdateIncomeNextYearController extends TaiBaseController
             ServiceCheckLite.personDetailsCheck {
               updateNextYearsIncomeService.reset flatMap { _ =>
                 updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
-                  Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Start(model.employmentName, employmentId))
+                  Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Start(model.employmentName, employmentId, model.isPension))
                 }
               }
             }
@@ -75,7 +75,7 @@ trait UpdateIncomeNextYearController extends TaiBaseController
             ServiceCheckLite.personDetailsCheck {
               updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map {
                 model => {
-                  Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model.employmentName, employmentId, model.currentValue, AmountComparatorForm.createForm()))
+                  Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model.employmentName, employmentId, model.isPension, model.currentValue, AmountComparatorForm.createForm()))
                 }
               }
             }
@@ -92,7 +92,7 @@ trait UpdateIncomeNextYearController extends TaiBaseController
             ServiceCheckLite.personDetailsCheck {
               updateNextYearsIncomeService.reset flatMap { _ =>
               updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
-                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName))
+                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName, model.isPension))
                 }
               }
             }
@@ -149,7 +149,7 @@ trait UpdateIncomeNextYearController extends TaiBaseController
 
                 formWithErrors => {
                   updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
-                    BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model.employmentName, employmentId, model.currentValue, formWithErrors))
+                    BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model.employmentName, employmentId, model.isPension, model.currentValue, formWithErrors))
                   }
                 },
                 validForm => {
