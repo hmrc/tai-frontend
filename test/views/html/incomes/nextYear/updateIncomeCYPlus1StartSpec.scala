@@ -24,6 +24,7 @@ class updateIncomeCYPlus1StartSpec extends TaiViewSpec {
 
   val employerName = "Employer Name"
   val employmentID = 1
+  val isPension = false
 
   "CYPlus1 Start Page" should {
     behave like pageWithBackLink
@@ -39,7 +40,17 @@ class updateIncomeCYPlus1StartSpec extends TaiViewSpec {
       doc(view).getElementsByClass("button").text must include(messages("tai.income.details.updateTaxableIncome.update"))
     }
 
+    "contain the correct content when income is from pension" in {
+      val isPension = true
+      val pensionView: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Start(employerName, employmentID, isPension)
+      doc(pensionView).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.start.paragraph1", employerName))
+      doc(pensionView).getElementsByTag("p").text mustNot include(messages("tai.updateIncome.CYPlus1.start.paragraph2", employerName))
+      doc(pensionView).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.start.pension.paragraph2", employerName))
+      doc(pensionView) must haveLinkWithUrlWithID("CYPlus1StartButton",controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url)
+      doc(pensionView).getElementsByClass("button").text must include(messages("tai.income.details.updateTaxableIncome.update"))
+    }
+
   }
 
-  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Start(employerName, employmentID)
+  override def view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Start(employerName, employmentID, isPension)
 }
