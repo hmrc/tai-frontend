@@ -33,13 +33,13 @@ class UpdateNextYearsIncomeCacheModelSpec extends PlaySpec {
         val newValue = 2000
         val model = UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, currentValue, Some(newValue))
 
-        model.hasEstimatedIncomeChanged mustBe true
+        model.hasEstimatedIncomeChanged mustBe Some(true)
       }
 
       "new value is not defined" in {
         val model = UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, currentValue)
 
-        model.hasEstimatedIncomeChanged mustBe true
+        model.hasEstimatedIncomeChanged mustBe None
       }
     }
     "return false" when {
@@ -47,7 +47,7 @@ class UpdateNextYearsIncomeCacheModelSpec extends PlaySpec {
         val newValue = 1000
         val model = UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, currentValue, Some(newValue))
 
-        model.hasEstimatedIncomeChanged mustBe false
+        model.hasEstimatedIncomeChanged mustBe Some(false)
       }
     }
   }
