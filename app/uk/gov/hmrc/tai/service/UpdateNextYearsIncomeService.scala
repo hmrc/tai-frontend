@@ -93,11 +93,10 @@ class UpdateNextYearsIncomeService {
 
   def submit(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     get(employmentId, nino) flatMap {
-      case UpdateNextYearsIncomeCacheModel(employmentName, _, _, Some(newValue)) => {
+      case UpdateNextYearsIncomeCacheModel(_, _, _, _, Some(newValue)) => {
         taxAccountService.updateEstimatedIncome(nino, newValue, TaxYear().next, employmentId)
       }
       case _ => {
-        // TODO: Should this be something more meaningful?
         throw new RuntimeException
       }
     }

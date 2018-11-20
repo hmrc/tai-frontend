@@ -171,7 +171,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       when(
         service.journeyCacheService.currentCache(any())
       ).thenReturn(
-        Future.successful(fullMap(employmentName, employmentId, employmentAmount))
+        Future.successful(fullMap(employmentName, employmentId, false, employmentAmount))
       )
 
       when(

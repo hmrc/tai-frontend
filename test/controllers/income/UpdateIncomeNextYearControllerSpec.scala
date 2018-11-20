@@ -218,7 +218,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
           val newAmount = 123
 
-          val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, 1, Some(newAmount))
+          val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, false, 1, Some(newAmount))
           when(
             controller.updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
           ).thenReturn(
@@ -240,7 +240,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
           implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
           val controller = createTestIncomeController()
 
-          val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, 1, None)
+          val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, false, 1, None)
           when(
             controller.updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
           ).thenReturn(
@@ -257,7 +257,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
           implicit val fakeRequest = RequestBuilder.buildFakeRequestWithAuth("GET")
           val controller = createTestIncomeController()
 
-          val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, 1, None)
+          val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, false, 1, None)
           when(
             controller.updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
           ).thenReturn(
@@ -267,7 +267,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
           val result = controller.confirm(employmentID)(fakeRequest)
 
           status(result) mustBe BAD_REQUEST
-          result rendersTheSameViewAs updateIncomeCYPlus1Start(employerName, employmentID)
+          result rendersTheSameViewAs updateIncomeCYPlus1Start(employerName, employmentID, isPension)
         }
       }
 
