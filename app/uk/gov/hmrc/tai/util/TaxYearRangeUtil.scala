@@ -47,6 +47,14 @@ object TaxYearRangeUtil {
     dateRangeSingleLine(messageRangeKeyBetween, TaxYearResolver.startOfCurrentTaxYear, TaxYearResolver.endOfCurrentTaxYear)
   }
 
+  def futureTaxYearRangeHtmlNonBreak(yearsFromNow: Int)(implicit messages: Messages): String = {
+
+    val year: TaxYear = TaxYear.fromNow(yearsFromNow)
+
+    dateRange(messageRangeKeyFromAndTo, year.start, year.end)
+
+  }
+
   def currentTaxYearRangeYearOnly(implicit messages: Messages): String = {
     val start = TaxYear().start.toString("yyyy")
     val end = TaxYear().end.toString("yyyy")

@@ -23,6 +23,7 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits.applicationMessages
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.HeaderCarrierConverter.fromHeadersAndSession
 import uk.gov.hmrc.play.frontend.auth._
@@ -131,5 +132,7 @@ case class TaiUser(authContext: AuthContext, person: Person){
     def getNino = authContext.principal.accounts.paye.map(paye => paye.nino.nino).getOrElse("")
 
     def getUTR = authContext.principal.accounts.sa.map(sa => sa.utr.utr).getOrElse("")
+
+    def nino: Nino = Nino(getNino)
 
 }

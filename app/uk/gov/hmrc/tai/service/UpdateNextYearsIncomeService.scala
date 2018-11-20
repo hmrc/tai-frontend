@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.service
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
@@ -27,6 +28,7 @@ import uk.gov.hmrc.tai.model.domain.PensionIncome
 import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
 
 import scala.concurrent.Future
+import scala.util.Try
 
 class UpdateNextYearsIncomeService {
 
@@ -86,6 +88,17 @@ class UpdateNextYearsIncomeService {
       journeyCacheService.cache(updatedValue.toCacheMap)
 
       updatedValue
+    }
+  }
+
+  def submit(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+    get(employmentId, nino) flatMap {
+      case UpdateNextYearsIncomeCacheModel(_, _, _, _, Some(newValue)) => {
+        taxAccountService.updateEstimatedIncome(nino, newValue, TaxYear().next, employmentId)
+      }
+      case _ => {
+        throw new RuntimeException
+      }
     }
   }
 }
