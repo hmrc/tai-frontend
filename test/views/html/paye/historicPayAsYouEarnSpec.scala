@@ -36,7 +36,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
   private val cyMinusFourTaxYear: TaxYear = TaxYear(currentYear - 4)
 
   private val employment: EmploymentViewModel = EmploymentViewModel("test employment", 123.32, 1, false,Some("payrollNumber"))
-  override def view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil), 3, taxCodeChangeEnabled = true)
+  override def view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, true), 3, taxCodeChangeEnabled = true)
 
   private def createSut(vm: HistoricPayAsYouEarnViewModel, noOfPreviousYears: Int = 3): Html =  views.html.paye.historicPayAsYouEarn(vm, noOfPreviousYears, taxCodeChangeEnabled = true)
 
@@ -50,8 +50,8 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
 
     "contain correct header" in {
       val taxYear = cyMinusOneTaxYear
-      val vm = HistoricPayAsYouEarnViewModel(taxYear, Nil, Nil, false)
-      val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil), 3, taxCodeChangeEnabled = true)
+      val vm = HistoricPayAsYouEarnViewModel(taxYear, Nil, Nil, false, true)
+      val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, true), 3, taxCodeChangeEnabled = true)
       val newDoc = doc(view)
 
       newDoc.body.text must include(messages("tai.paye.lastTaxYear.preHeading"))
@@ -59,9 +59,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
     }
 
     "display a link to view the tax code at the end of the year" when {
-      "taxCodeChangeEnabled is true" in {
+      "taxCodeChangeEnabled is true && showTaxCodeDescription is true" in {
         val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false,Some("payrollNumber"))
-        val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true), 1, taxCodeChangeEnabled = true)
+        val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true), 1, taxCodeChangeEnabled = true)
 
         doc(view) must haveLinkWithUrlWithID("taxCodeDescription", controllers.routes.YourTaxCodeController.prevTaxCodes(cyMinusOneTaxYear).url)
       }
@@ -70,7 +70,14 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
     "NOT display a link to view the tax code at the end of the year" when {
       "taxCodeChangeEnabled is false" in {
         val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false,Some("payrollNumber"))
-        val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true), 1, taxCodeChangeEnabled = false)
+        val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true), 1, taxCodeChangeEnabled = false)
+
+        doc(view).toString mustNot include(messages("tai.taxCode.description.link"))
+      }
+
+      "showTaxCodeDescription is false" in {
+        val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false,Some("payrollNumber"))
+        val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, false), 1, taxCodeChangeEnabled = true)
 
         doc(view).toString mustNot include(messages("tai.taxCode.description.link"))
       }
@@ -85,14 +92,14 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
       "have a heading for your income" when {
         "when you have a employment" in {
           val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false,Some("payrollNumber"))
-          val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true), 1, taxCodeChangeEnabled = true)
+          val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true), 1, taxCodeChangeEnabled = true)
           doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
           doc(view) mustNot haveH2HeadingWithText(messages("tai.incomeTaxSummary.pension.section.heading"))
         }
 
         "when you have a pension" in {
           val pension: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, true,Some("payrollNumber"))
-          val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true), 1, taxCodeChangeEnabled = true)
+          val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true, true), 1, taxCodeChangeEnabled = true)
           doc(view) mustNot haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
           doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxSummary.pension.section.heading"))
         }
@@ -100,7 +107,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
         "when you have a pension and employment" in {
           val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false,Some("payrollNumber"))
           val pension: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, true,Some("payrollNumber"))
-          val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Seq(employment), true), 1, taxCodeChangeEnabled = true)
+          val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Seq(employment), true, true), 1, taxCodeChangeEnabled = true)
           doc(view) must haveH2HeadingWithText(messages("tai.paye.incomeEmployment.heading"))
           doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxSummary.pension.section.heading"))
         }
@@ -110,7 +117,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
 
         "the viewmodel contains zero employments" in {
 
-          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Nil, false)
+          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Nil, false, true)
           val sut: Html = createSut(vm)
 
           doc.select("#lastTaxYearIncome").size mustBe 0
@@ -121,7 +128,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
         "the viewmodel contains one employment containing an AnnualAccount which has no payments or updates" in {
 
           val employment: EmploymentViewModel = EmploymentViewModel("employment", 0.00, 1, false,Some("payrollNumber"))
-          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true)
+          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true)
 
           val sut: Html = createSut(vm)
           val doc: Document = Jsoup.parse(sut.toString)
@@ -147,7 +154,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
       "show a payroll number" when {
         "the income source of type employer has a payroll number" in {
           val employment: EmploymentViewModel = EmploymentViewModel("employment", 0.00, 1, false,Some("payrollNumber"))
-          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true)
+          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true)
 
           val sut: Html = createSut(vm)
           val doc: Document = Jsoup.parse(sut.toString)
@@ -159,7 +166,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
       "show a pension number" when {
         "the income source of type pension has a payroll number" in {
           val pension: EmploymentViewModel = EmploymentViewModel("employment", 0.00, 1, true, Some("pensionNumber"))
-          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true)
+          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true, true)
 
           val sut: Html = createSut(vm)
           val doc: Document = Jsoup.parse(sut.toString)
@@ -172,7 +179,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
       "doesnt show a payroll number" when {
         "the income source of type employer does not have a payroll number" in {
           val employment: EmploymentViewModel = EmploymentViewModel("employment", 0.00, 1, false,None)
-          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true)
+          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true)
 
           val sut: Html = createSut(vm)
           val doc: Document = Jsoup.parse(sut.toString)
@@ -184,7 +191,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
       "doesnt show a pension number" when {
         "the income source of type pension does not have a payroll number" in {
           val pension: EmploymentViewModel = EmploymentViewModel("employment", 0.00, 1, true, None)
-          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true)
+          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true, true)
 
           val sut: Html = createSut(vm)
           val doc: Document = Jsoup.parse(sut.toString)
@@ -199,7 +206,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
         "the viewmodel contains one pension" in {
 
           val pension: EmploymentViewModel = EmploymentViewModel("pension", 0.00, 1, true,Some("payrollNumber"))
-          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true)
+          val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq(pension), Nil, true, true)
 
           val sut: Html = createSut(vm)
           val doc: Document = Jsoup.parse(sut.toString)
@@ -227,7 +234,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
 
           val taxYear = cyMinusOneTaxYear
 
-          val vm = HistoricPayAsYouEarnViewModel(taxYear, Nil, Nil, false)
+          val vm = HistoricPayAsYouEarnViewModel(taxYear, Nil, Nil, false, true)
 
           val sut: Html = createSut(vm)
           val doc: Document = Jsoup.parse(sut.toString)
@@ -240,7 +247,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
           "show one employment with YTD totalIncome from one payment" when {
             "one employment exists containing an AnnualAccount which has payments" in {
 
-              val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true)
+              val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true)
 
               val sut: Html = createSut(vm)
               val doc: Document = Jsoup.parse(sut.toString)
@@ -266,7 +273,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
 
               val employment1: EmploymentViewModel = EmploymentViewModel("test employment 1", 123.32, 1, false,Some("payrollNumber"))
               val employment2: EmploymentViewModel = EmploymentViewModel("test employment 2", 345.54, 2, false,Some("payrollNumber"))
-              val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment1, employment2), true)
+              val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment1, employment2), true, true)
 
               val sut: Html = createSut(vm)
               val doc: Document = Jsoup.parse(sut.toString)
@@ -302,7 +309,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
     "show the previous year income section" when {
       "the viewmodel has the realTimeStatus of Available" in {
 
-        val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true)
+        val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true)
 
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -322,7 +329,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
     "show an RTI down message" when {
       "there are no employments" in {
 
-        val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Nil, false)
+        val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Nil, false, true)
 
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -342,7 +349,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
     "not show p800 link" when {
       "the previous tax year is earlier than CY-1 such as CY-2" in {
 
-        val vm = HistoricPayAsYouEarnViewModel(cyMinusTwoTaxYear, Nil, Nil, false)
+        val vm = HistoricPayAsYouEarnViewModel(cyMinusTwoTaxYear, Nil, Nil, false, true)
 
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -352,7 +359,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
 
       "the previous tax year is earlier than CY-1 such as CY-3" in {
 
-        val vm = HistoricPayAsYouEarnViewModel(cyMinusThreeTaxYear, Nil, Nil, false)
+        val vm = HistoricPayAsYouEarnViewModel(cyMinusThreeTaxYear, Nil, Nil, false, true)
 
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -362,7 +369,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
 
       "the previous tax year is earlier than CY-1 such as CY-4" in {
 
-        val vm = HistoricPayAsYouEarnViewModel(cyMinusFourTaxYear, Nil, Nil, false)
+        val vm = HistoricPayAsYouEarnViewModel(cyMinusFourTaxYear, Nil, Nil, false, true)
 
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -374,7 +381,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
     "always show p800 link" when {
       "the previous tax year is CY-1" in {
 
-        val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Nil, false)
+        val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Nil, false, true)
 
         val sut: Html = createSut(vm)
         val doc: Document = Jsoup.parse(sut.toString)
@@ -387,7 +394,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
     "display navigation" when {
       "number of previous years to show is greater than zero" in {
         val employment: EmploymentViewModel = EmploymentViewModel("", 0.00, 0, false,Some("payrollNumber"))
-        val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true)
+        val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true)
 
         val sut: Html = createSut(vm)
 
@@ -400,7 +407,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
     "not display navigation" when {
       "number of previous years to show is 1" in {
         val employment: EmploymentViewModel = EmploymentViewModel("", 0.00, 0, false,Some("payrollNumber"))
-        val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true)
+        val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true)
 
         val sut: Html = createSut(vm, 1)
 
@@ -411,7 +418,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
 
       "number of previous years to show is less than 1" in {
         val employment: EmploymentViewModel = EmploymentViewModel("", 0.00, 0, false,Some("payrollNumber"))
-        val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true)
+        val vm = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true)
 
         val sut: Html = createSut(vm, 0)
 

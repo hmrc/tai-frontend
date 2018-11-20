@@ -117,13 +117,50 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
       val testService = createTestService
       val nino = generateNino
 
-      val taxCodeRecords = Seq(taxCodeRecord1)
-
       when(testService.taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
         .thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
 
       val ex = the[RuntimeException] thrownBy Await.result(testService.lastTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev), 5 seconds)
       ex.getMessage must include(s"Could not fetch last tax code records for year ${TaxYear().prev}")
+    }
+  }
+
+  "hasTaxCodeRecordsInYearPerEmployment" must {
+    "return true when a nonEmpty sequence of tax code records is returned" in {
+      val testService = createTestService
+      val nino = generateNino
+
+      val taxCodeRecords = Seq(taxCodeRecord1)
+
+      when(testService.taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
+        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeRecords)))
+
+      val result = testService.hasTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev)
+      Await.result(result, 5.seconds) mustBe true
+    }
+
+    "return false when a empty sequence of tax code records is returned" in {
+      val testService = createTestService
+      val nino = generateNino
+
+      val taxCodeRecords = Seq()
+
+      when(testService.taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
+        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeRecords)))
+
+      val result = testService.hasTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev)
+      Await.result(result, 5.seconds) mustBe false
+    }
+
+    "return false when a TaiTaxAccountFailureResponse is returned" in {
+      val testService = createTestService
+      val nino = generateNino
+
+      when(testService.taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
+        .thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
+
+      val result = testService.hasTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev)
+      Await.result(result, 5.seconds) mustBe false
     }
   }
 

@@ -66,6 +66,13 @@ trait TaxCodeChangeService {
     }
   }
 
+  def hasTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Boolean] = {
+    taxCodeChangeConnector.lastTaxCodeRecords(nino, year) map {
+      case TaiSuccessResponseWithPayload(taxCodeRecords: Seq[TaxCodeRecord]) if taxCodeRecords.nonEmpty => true
+      case _ => false
+    }
+  }
+
   def latestTaxCodeChangeDate(nino: Nino)(implicit hc: HeaderCarrier): Future[LocalDate] = {
     taxCodeChange(nino).map(_.mostRecentTaxCodeChangeDate)
   }

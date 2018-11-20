@@ -33,7 +33,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxPeriodLabelService}
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxCodeChangeService, TaxPeriodLabelService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
 import scala.concurrent.Future
@@ -68,6 +68,7 @@ class PayeControllerHistoricSpec extends PlaySpec
     "display the last year paye page successfully " in {
 
       val testController = createTestController()
+      canShowTaxCodeDescriptionLink(testController)
 
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -86,6 +87,7 @@ class PayeControllerHistoricSpec extends PlaySpec
       "the supplied year relates to current tax year" in {
 
         val testController = createTestController()
+        canShowTaxCodeDescriptionLink(testController)
 
         val result = testController.payePage(TaxYear())(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -98,6 +100,7 @@ class PayeControllerHistoricSpec extends PlaySpec
       "the supplied year is in advance of this tax year" in {
 
         val testController = createTestController()
+        canShowTaxCodeDescriptionLink(testController)
 
         val result = testController.payePage(TaxYear().next)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -110,6 +113,7 @@ class PayeControllerHistoricSpec extends PlaySpec
 
     "redirect to mci page when mci indicator is true" in {
       val testController = createTestController()
+      canShowTaxCodeDescriptionLink(testController)
       when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(personMci))
 
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -123,6 +127,7 @@ class PayeControllerHistoricSpec extends PlaySpec
     }
     "redirect to deceased page when deceased indicator is true" in {
       val testController = createTestController()
+      canShowTaxCodeDescriptionLink(testController)
       when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(person.copy(isDeceased=true)))
 
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -136,6 +141,7 @@ class PayeControllerHistoricSpec extends PlaySpec
       "employment service call results in a NotFoundException from NPS" in {
 
         val testController = createTestController()
+        canShowTaxCodeDescriptionLink(testController)
         when(testController.employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new NotFoundException("appStatusMessage : not found")))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -152,6 +158,7 @@ class PayeControllerHistoricSpec extends PlaySpec
       "employment service call results in a NotFoundException from RTI" in {
 
         val testController = createTestController()
+        canShowTaxCodeDescriptionLink(testController)
         when(testController.employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new NotFoundException("not found")))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -167,6 +174,7 @@ class PayeControllerHistoricSpec extends PlaySpec
       "employment service call results in a bad request" in {
 
         val testController = createTestController()
+        canShowTaxCodeDescriptionLink(testController)
         when(testController.employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new BadRequestException("Bad request")))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -181,6 +189,7 @@ class PayeControllerHistoricSpec extends PlaySpec
       "employment service call results in a internal server error" in {
 
         val testController = createTestController()
+        canShowTaxCodeDescriptionLink(testController)
         when(testController.employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new InternalServerException("Internal server error")))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -195,6 +204,7 @@ class PayeControllerHistoricSpec extends PlaySpec
       "employment service call results in an exception" in {
 
         val testController = createTestController()
+        canShowTaxCodeDescriptionLink(testController)
         when(testController.employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new HttpException("error", 502)))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -210,6 +220,7 @@ class PayeControllerHistoricSpec extends PlaySpec
 
   "display 'update previous employment' page" in {
     val testController = createTestController()
+    canShowTaxCodeDescriptionLink(testController)
     val result = testController.payePage(TaxYear().prev)()(RequestBuilder.buildFakeRequestWithAuth("GET"))
     val doc = Jsoup.parse(contentAsString(result))
     status(result) mustBe OK
@@ -226,10 +237,15 @@ class PayeControllerHistoricSpec extends PlaySpec
 
   def createTestController(employments: Seq[Employment] = Nil, previousYears: Int = 3) = new PayeControllerHistoricTest(employments, previousYears)
 
+  def canShowTaxCodeDescriptionLink(testController: PayeControllerHistoricTest): Unit = {
+    when(testController.taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any())).thenReturn(Future.successful(true))
+  }
+
   class PayeControllerHistoricTest(employments: Seq[Employment], previousYears: Int) extends PayeControllerHistoric {
 
     override val personService: PersonService = mock[PersonService]
     override val employmentService: EmploymentService = mock[EmploymentService]
+    override val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val authConnector: AuthConnector = mock[AuthConnector]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer

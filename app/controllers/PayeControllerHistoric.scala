@@ -29,7 +29,7 @@ import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Person
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 
 import scala.concurrent.Future
@@ -42,6 +42,7 @@ with Auditable
 
   def personService: PersonService
   def employmentService: EmploymentService
+  def taxCodeChangeService: TaxCodeChangeService
   def numberOfPreviousYearsToShow: Int
 
   def lastYearPaye(): Action[AnyContent] = authorisedForTai(personService).async {
@@ -65,12 +66,17 @@ with Auditable
     if (taxYear >= TaxYear()) {
       Future.successful(Redirect(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage()))
     } else {
+
+      val employmentsFuture = employmentService.employments(nino, taxYear)
+      val hasTaxCodeRecordsFuture = taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(nino, taxYear)
+
       for {
-        employments <- employmentService.employments(nino, taxYear)
+        employments <- employmentsFuture
+        hasTaxCodeRecordsInYearPerEmployment <- hasTaxCodeRecordsFuture
       } yield {
         checkedAgainstPersonDetails(
           person,
-          Ok(views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(taxYear, employments), numberOfPreviousYearsToShow, taxCodeChangeEnabled))
+          Ok(views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment), numberOfPreviousYearsToShow, taxCodeChangeEnabled))
         )
       }
     }
@@ -100,6 +106,7 @@ with Auditable
 // $COVERAGE-OFF$
 object PayeControllerHistoric extends PayeControllerHistoric with AuthenticationConnectors {
   override val employmentService = EmploymentService
+  override val taxCodeChangeService = TaxCodeChangeService
   override implicit def templateRenderer = LocalTemplateRenderer
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
   override val numberOfPreviousYearsToShow: Int = Play.configuration.getInt("tai.numberOfPreviousYearsToShow").getOrElse(3)

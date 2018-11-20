@@ -24,18 +24,19 @@ import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewMo
 case class HistoricPayAsYouEarnViewModel(taxYear: TaxYear,
                                          pensions: Seq[EmploymentViewModel],
                                          employments: Seq[EmploymentViewModel],
-                                         hasEmploymentsOrPensions: Boolean) {
+                                         hasEmploymentsOrPensions: Boolean,
+                                         showTaxCodeDescriptionLink: Boolean) {
 
   val p800ServiceIsAvailable: Boolean = taxYear == TaxYear().prev
 }
 
 object HistoricPayAsYouEarnViewModel {
 
-  def apply(taxYear: TaxYear, employments: Seq[Employment])(implicit messages: Messages): HistoricPayAsYouEarnViewModel = {
+  def apply(taxYear: TaxYear, employments: Seq[Employment], showTaxCodeDescriptionLink: Boolean)(implicit messages: Messages): HistoricPayAsYouEarnViewModel = {
     val incomeSources: Seq[EmploymentViewModel] = filterIncomeSources(taxYear, employments) sortBy(_.id)
     val (pensionsVMs, employmentsVMs): (Seq[EmploymentViewModel], Seq[EmploymentViewModel]) = incomeSources.partition(_.isPension)
 
-    HistoricPayAsYouEarnViewModel(taxYear, pensionsVMs, employmentsVMs, pensionsVMs.nonEmpty || employmentsVMs.nonEmpty)
+    HistoricPayAsYouEarnViewModel(taxYear, pensionsVMs, employmentsVMs, pensionsVMs.nonEmpty || employmentsVMs.nonEmpty, showTaxCodeDescriptionLink)
   }
 
   private def filterIncomeSources(taxYear: TaxYear, employments: Seq[Employment]): Seq[EmploymentViewModel] = {
