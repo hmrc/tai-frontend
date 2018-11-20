@@ -38,11 +38,6 @@ object AmountComparatorForm {
 
     val latestPaymentDate = latestPayDate.fold(fallbackDate)(identity)
 
-    val customApply: Option[String] => AmountComparatorForm =
-      income => AmountComparatorForm(income.map(FormHelper.stripNumber(_)))
-
-    val customUnapply: AmountComparatorForm => Option[Option[String]] = form => Some(form.income)
-
     Form[AmountComparatorForm](
       mapping("income" -> TaiValidator.validateTaxAmounts(
         messages("tai.irregular.error.blankValue"),
@@ -53,4 +48,9 @@ object AmountComparatorForm {
       ))(customApply)(customUnapply)
     )
   }
+
+  val customApply: Option[String] => AmountComparatorForm =
+    income => AmountComparatorForm(income.map(FormHelper.stripNumber))
+
+  val customUnapply: AmountComparatorForm => Option[Option[String]] = form => Some(form.income)
 }
