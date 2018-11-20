@@ -48,16 +48,12 @@ trait UpdateIncomeNextYearController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          if(cyPlusOneEnabled){
-            preAction {
-              updateNextYearsIncomeService.reset flatMap { _ =>
-                updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
-                  Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Start(model.employmentName, employmentId, model.isPension))
-                }
+          preAction {
+            updateNextYearsIncomeService.reset flatMap { _ =>
+              updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
+                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Start(model.employmentName, employmentId, model.isPension))
               }
             }
-          } else {
-              Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
           }
   }
 
@@ -65,16 +61,12 @@ trait UpdateIncomeNextYearController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          if(cyPlusOneEnabled){
-            preAction {
-              updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map {
-                model => {
-                  Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model.employmentName, employmentId, model.isPension, model.currentValue, AmountComparatorForm.createForm()))
-                }
+          preAction {
+            updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map {
+              model => {
+                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model.employmentName, employmentId, model.isPension, model.currentValue, AmountComparatorForm.createForm()))
               }
             }
-          } else {
-            Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
           }
   }
 
@@ -84,14 +76,10 @@ trait UpdateIncomeNextYearController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          if(cyPlusOneEnabled){
-            preAction {
-              updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
-                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Same(model.employmentName, model.employmentId, model.currentValue))
-              }
+          preAction {
+            updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
+              Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Same(model.employmentName, model.employmentId, model.currentValue))
             }
-          } else {
-            Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
           }
   }
 
@@ -99,16 +87,12 @@ trait UpdateIncomeNextYearController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          if(cyPlusOneEnabled){
-            preAction{
-              updateNextYearsIncomeService.reset flatMap { _ =>
-                updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
-                  Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName, model.isPension))
-                }
+          preAction{
+            updateNextYearsIncomeService.reset flatMap { _ =>
+              updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
+                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName, model.isPension))
               }
             }
-          } else {
-            Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
           }
   }
 
@@ -116,34 +100,38 @@ trait UpdateIncomeNextYearController extends TaiBaseController
     implicit user =>
       implicit person =>
         implicit request =>
-          if(cyPlusOneEnabled){
-            preAction {
-              AmountComparatorForm.createForm().bindFromRequest().fold(
+          preAction {
+            AmountComparatorForm.createForm().bindFromRequest().fold(
 
-                formWithErrors => {
-                  updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
-                    BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model.employmentName, employmentId, model.isPension, model.currentValue, formWithErrors))
-                  }
-                },
-                validForm => {
-                  validForm.income.fold(throw new RuntimeException) { income =>
-                    updateNextYearsIncomeService.setNewAmount(income, employmentId, Nino(user.getNino)) map { model =>
-                      if (model.hasEstimatedIncomeChanged) {
-                        Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
-                      } else {
-                        Redirect(controllers.income.routes.UpdateIncomeNextYearController.same(employmentId))
+              formWithErrors => {
+                updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
+                  BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model.employmentName, employmentId, model.isPension, model.currentValue, formWithErrors))
+                }
+              },
+              validForm => {
+                validForm.income.fold(throw new RuntimeException) { income =>
+                  updateNextYearsIncomeService.setNewAmount(income, employmentId, Nino(user.getNino)) map { model =>
+
+                    model.hasEstimatedIncomeChanged match {
+                      case Some(result) => {
+                        if (result) {
+                          Redirect(controllers.income.routes.UpdateIncomeNextYearController.confirm(employmentId))
+                        } else {
+                          Redirect(controllers.income.routes.UpdateIncomeNextYearController.same(employmentId))
+                        }
+                      }
+                      case None => {
+                        Redirect(controllers.income.routes.UpdateIncomeNextYearController.edit(employmentId))
                       }
                     }
                   }
                 }
-              )
-            }
-          } else {
-            Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+              }
+            )
           }
-}
+  }
 
-  def preAction(action: => Future[Result])(implicit user: TaiUser, person: Person, request: Request[AnyContent]): Future[Result] = {
+  private def preAction(action: => Future[Result])(implicit user: TaiUser, person: Person, request: Request[AnyContent]): Future[Result] = {
     if (cyPlusOneEnabled) {
       ServiceCheckLite.personDetailsCheck {
         action

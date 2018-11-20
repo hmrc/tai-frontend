@@ -20,11 +20,10 @@ import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstant
 
 final case class UpdateNextYearsIncomeCacheModel(employmentName: String, employmentId: Int, isPension: Boolean, currentValue: Int, newValue: Option[Int] = None) {
 
-  def hasEstimatedIncomeChanged: Boolean = {
-    if (newValue.isDefined) {
-      currentValue != newValue.get
-    } else {
-      true
+  def hasEstimatedIncomeChanged: Option[Boolean] = {
+    newValue match {
+      case Some(value) => Some(currentValue != value)
+      case None => None
     }
   }
 

@@ -25,7 +25,7 @@ import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
@@ -39,6 +39,7 @@ import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
 import views.html.incomes.nextYear.{updateIncomeCYPlus1Edit, updateIncomeCYPlus1Same, updateIncomeCYPlus1Start, updateIncomeCYPlus1Success}
+
 import scala.concurrent.Future
 import scala.util.Random
 
@@ -67,7 +68,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         when(testController.updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
         mockedGet(testController)
 
-        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+        implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
 
         val result: Future[Result] = testController.start(employmentID)(fakeRequest)
 
@@ -80,7 +81,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
       "CY Plus 1 is disabled" in {
         val testController = createTestIncomeController(isCyPlusOneEnabled = false)
 
-        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+        implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
 
         val result: Future[Result] = testController.start(employmentID)(fakeRequest)
 
@@ -96,7 +97,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         val testController = createTestIncomeController()
         mockedGet(testController)
 
-        implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+        implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
 
         val result: Future[Result] = testController.edit(employmentID)(fakeRequest)
 
@@ -109,7 +110,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
       "CY Plus 1 is disabled" in {
         val testController = createTestIncomeController(isCyPlusOneEnabled = false)
 
-        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+        implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
 
         val result: Future[Result] = testController.edit(employmentID)(fakeRequest)
 
@@ -159,6 +160,27 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
         redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.same(employmentID).url.toString)
       }
+
+      "redirect to the edit page" when {
+        "new estimated income is not present on the cache model" in {
+          val testController = createTestIncomeController()
+          val newEstPay = 1234.toString
+          val nino = generateNino
+          val updatedModel =  UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay, None)
+
+          when(testController.updateNextYearsIncomeService.setNewAmount(Matchers.eq(newEstPay), Matchers.eq(employmentID), Matchers.eq(nino))(any()))
+            .thenReturn(Future.successful(updatedModel))
+
+          val result = testController.update(employmentID)(
+            RequestBuilder
+              .buildFakeRequestWithOnlySession(POST)
+              .withFormUrlEncodedBody("income" -> newEstPay))
+
+          status(result) mustBe SEE_OTHER
+
+          redirectLocation(result) mustBe Some(routes.UpdateIncomeNextYearController.edit(employmentID).url.toString)
+        }
+      }
     }
 
     "respond with a BAD_REQUEST" when {
@@ -183,7 +205,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
       "CY Plus 1 is disabled" in {
         val testController = createTestIncomeController(isCyPlusOneEnabled = false)
 
-        val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+        implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
 
         val result: Future[Result] = testController.update(employmentID)(fakeRequest)
 
@@ -200,7 +222,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
           when(testController.updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
           mockedGet(testController)
 
-          implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+          implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
 
           val result: Future[Result] = testController.same(employmentID)(fakeRequest)
 
@@ -213,7 +235,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         "CY Plus 1 is disabled" in {
           val testController = createTestIncomeController(isCyPlusOneEnabled = false)
 
-          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+          implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
 
           val result: Future[Result] = testController.same(employmentID)(fakeRequest)
 
@@ -231,7 +253,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
           when(testController.updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
           mockedGet(testController)
 
-          implicit val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+          implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
 
           val result: Future[Result] = testController.success(employmentID)(fakeRequest)
 
@@ -244,7 +266,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         "CY Plus 1 is disabled" in {
           val testController = createTestIncomeController(isCyPlusOneEnabled = false)
 
-          val fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded] = RequestBuilder.buildFakeRequestWithAuth("GET")
+          implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
 
           val result: Future[Result] = testController.success(employmentID)(fakeRequest)
 
