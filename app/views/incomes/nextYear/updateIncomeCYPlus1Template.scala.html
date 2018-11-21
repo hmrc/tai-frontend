@@ -19,7 +19,8 @@
   gaEventAction: String,
   heading: String,
   title: String,
-  showCancel: Boolean
+  showCancel: Boolean = true,
+  cancelText : Option[String] = None
 )(content: Html
 )(implicit request: Request[_],
   user: controllers.auth.TaiUser,
@@ -53,8 +54,7 @@
         @content
 
         @if(showCancel){
-            @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
+          @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url), linkText = cancelText)
         }
-
     </div>
 }
