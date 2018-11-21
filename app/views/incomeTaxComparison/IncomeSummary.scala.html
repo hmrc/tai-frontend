@@ -84,7 +84,16 @@
                 <th scope="row">@pensionIncomeSourceDetail.name</th>
                 <td class="text--right">@pensionIncomeSourceDetail.amountCY</td>
                 <td class="text--right">@pensionIncomeSourceDetail.amountCYPlusOne</td>
-                <td width="20%" class="text--right"></td>
+                <td width="20%" class="text--right">
+                    <a id="estimated-income-link-@pensionIncomeSourceDetail.empId"
+                       href="/check-income-tax/update-income/next-year/income/@pensionIncomeSourceDetail.empId/start"
+                    >
+                        @messages("tai.incomeTaxComparison.incomeTax.updateEstimated")
+                        <span class="visuallyhidden">
+                                @messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)
+                        </span>
+                    </a>
+                </td>
             </tr>
             }
         </tbody>

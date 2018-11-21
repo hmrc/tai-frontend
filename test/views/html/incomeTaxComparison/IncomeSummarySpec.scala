@@ -66,10 +66,12 @@ class IncomeSummarySpec extends TaiViewSpec {
       doc(viewPensionsOnly) must haveThWithText(pensionOneIncomeSourceDetail.name)
       doc(viewPensionsOnly) must haveTdWithText(pensionOneIncomeSourceDetail.amountCY)
       doc(viewPensionsOnly) must haveTdWithText(pensionOneIncomeSourceDetail.amountCYPlusOne)
+      hasEstimatedIncomeLink(viewPensionsOnly, pensionOneIncomeSourceDetail)
 
       doc(viewPensionsOnly) must haveThWithText(pensionTwoIncomeSourceDetail.name)
       doc(viewPensionsOnly) must haveTdWithText(pensionTwoIncomeSourceDetail.amountCY)
       doc(viewPensionsOnly) must haveTdWithText(pensionTwoIncomeSourceDetail.amountCYPlusOne)
+      hasEstimatedIncomeLink(viewPensionsOnly, pensionTwoIncomeSourceDetail)
 
     }
 
@@ -88,20 +90,23 @@ class IncomeSummarySpec extends TaiViewSpec {
       doc(viewCombined) must haveThWithText(employmentOneIncomeSourceDetail.name)
       doc(viewCombined) must haveTdWithText(employmentOneIncomeSourceDetail.amountCY)
       doc(viewCombined) must haveTdWithText(employmentOneIncomeSourceDetail.amountCYPlusOne)
-      hasEstimatedIncomeLink(view, employmentOneIncomeSourceDetail)
+      hasEstimatedIncomeLink(viewCombined, employmentOneIncomeSourceDetail)
 
       doc(viewCombined) must haveThWithText(employmentTwoIncomeSourceDetail.name)
       doc(viewCombined) must haveTdWithText(employmentTwoIncomeSourceDetail.amountCY)
       doc(viewCombined) must haveTdWithText(employmentTwoIncomeSourceDetail.amountCYPlusOne)
-      hasEstimatedIncomeLink(view, employmentTwoIncomeSourceDetail)
+      hasEstimatedIncomeLink(viewCombined, employmentTwoIncomeSourceDetail)
 
       doc(viewCombined) must haveThWithText(pensionOneIncomeSourceDetail.name)
       doc(viewCombined) must haveTdWithText(pensionOneIncomeSourceDetail.amountCY)
       doc(viewCombined) must haveTdWithText(pensionOneIncomeSourceDetail.amountCYPlusOne)
+      hasEstimatedIncomeLink(viewCombined, pensionOneIncomeSourceDetail)
 
       doc(viewCombined) must haveThWithText(pensionTwoIncomeSourceDetail.name)
       doc(viewCombined) must haveTdWithText(pensionTwoIncomeSourceDetail.amountCY)
       doc(viewCombined) must haveTdWithText(pensionTwoIncomeSourceDetail.amountCYPlusOne)
+      hasEstimatedIncomeLink(viewCombined, pensionTwoIncomeSourceDetail)
+
     }
 
     "display no content when no CY or CY+1 details are available" in{
@@ -115,7 +120,7 @@ class IncomeSummarySpec extends TaiViewSpec {
   }
 
   private def hasEstimatedIncomeLink(view: Html, income: IncomeSourceComparisonDetail) = {
-    doc(viewCombined) must haveLinkElement(
+    doc(view) must haveLinkElement(
       s"estimated-income-link-${income.empId}",
       s"/check-income-tax/update-income/next-year/income/${income.empId}/start",
       s"Update estimated income for ${income.name}"
@@ -125,8 +130,8 @@ class IncomeSummarySpec extends TaiViewSpec {
   private lazy val employmentOneIncomeSourceDetail = IncomeSourceComparisonDetail(1, "Company1","£15,000","£15,500")
   private lazy val employmentTwoIncomeSourceDetail = IncomeSourceComparisonDetail(2, "Company2","£16,000","£16,500")
 
-  private lazy val pensionOneIncomeSourceDetail = IncomeSourceComparisonDetail(1, "pension1","£15,000","£15,500")
-  private lazy val pensionTwoIncomeSourceDetail = IncomeSourceComparisonDetail(2, "pension2","£16,000","£16,500")
+  private lazy val pensionOneIncomeSourceDetail = IncomeSourceComparisonDetail(3, "pension1","£15,000","£15,500")
+  private lazy val pensionTwoIncomeSourceDetail = IncomeSourceComparisonDetail(4, "pension2","£16,000","£16,500")
 
   private val employmentIncomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(Seq(employmentOneIncomeSourceDetail,employmentTwoIncomeSourceDetail),Nil)
   private val pensionIncomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(Nil,Seq(pensionOneIncomeSourceDetail,pensionTwoIncomeSourceDetail))
