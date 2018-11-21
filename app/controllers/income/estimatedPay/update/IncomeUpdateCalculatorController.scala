@@ -229,14 +229,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         implicit request => {
           journeyCacheService.currentCache flatMap { cache =>
             val name = cache(UpdateIncome_NameKey)
-            val ptd: String = cache(UpdateIncome_PayToDateKey)
+            val paymentToDate: String = cache(UpdateIncome_PayToDateKey)
             val latestPayDate = cache.get(UpdateIncome_DateKey)
 
-            AmountComparatorForm.createForm(latestPayDate, Some(ptd.toInt)).bindFromRequest().fold(
+            AmountComparatorForm.createForm(latestPayDate, Some(paymentToDate.toInt)).bindFromRequest().fold(
 
               formWithErrors => {
-                val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, ptd)
-
+                val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, paymentToDate)
                 Future.successful(BadRequest(views.html.incomes.editIncomeIrregularHours(formWithErrors, viewModel)))
               },
 
