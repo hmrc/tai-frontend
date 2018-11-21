@@ -30,9 +30,8 @@
     employerName = employmentName,
     form = Some(incomeForm),
     gaEventAction = "Your estimated pay for next year edit",
-    title = messages("tai.income.details.updateTaxableIncome.update"),
-    heading = messages("tai.updateIncome.CYPlus1.edit.heading", futureTaxYearRangeHtmlNonBreak(yearsFromNow = 1)),
-    showCancel = true
+    title = messages("tai.updateIncome.CYPlus1.edit.title"),
+    heading = messages("tai.updateIncome.CYPlus1.edit.heading", futureTaxYearRangeHtmlNonBreak(yearsFromNow = 1))
 ){
 
     @if(!isPension) {
