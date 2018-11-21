@@ -17,17 +17,23 @@
 package controllers.income
 
 import controllers.audit.Auditable
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import play.api.Logger
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
+import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
+import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, UpdateNextYearsIncomeService}
+import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
@@ -52,17 +58,12 @@ trait UpdateIncomeNextYearController extends TaiBaseController
             ServiceCheckLite.personDetailsCheck {
               updateNextYearsIncomeService.reset flatMap { _ =>
                 updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
-                  Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Start(model.employmentName, employmentId))
+                  Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Start(model.employmentName, employmentId, model.isPension))
                 }
               }
             }
           } else {
               Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
-          }.recoverWith{
-            case e: Exception => {
-              Logger.warn(e.getMessage)
-              Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
-            }
           }
   }
 
@@ -72,25 +73,71 @@ trait UpdateIncomeNextYearController extends TaiBaseController
         implicit request =>
           if(cyPlusOneEnabled){
             ServiceCheckLite.personDetailsCheck {
-
               updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map {
                 model => {
-                  Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model.employmentName, employmentId, model.currentValue, AmountComparatorForm.createForm()))
+                  Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model.employmentName, employmentId, model.isPension, model.currentValue, AmountComparatorForm.createForm()))
                 }
               }
             }
           } else {
             Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
-          }.recoverWith{
-            case e: Exception => {
-              Logger.warn(e.getMessage)
-              Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
-            }
           }
   }
 
-  def confirm (employmentId: Int): Action[AnyContent] = ???
-  def success (employmentId: Int): Action[AnyContent] = ???
+  def success (employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          if(cyPlusOneEnabled){
+            ServiceCheckLite.personDetailsCheck {
+              updateNextYearsIncomeService.reset flatMap { _ =>
+              updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
+                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Success(model.employmentName, model.isPension))
+                }
+              }
+            }
+          } else {
+            Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+          }
+  }
+
+  def confirm(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          if (cyPlusOneEnabled) {
+            ServiceCheckLite.personDetailsCheck {
+              updateNextYearsIncomeService.get(employmentId, user.nino).map {
+                case UpdateNextYearsIncomeCacheModel(employmentName, _, _, _, Some(estimatedAmount)) => {
+                  val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentId, employmentName, estimatedAmount)
+                  Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm))
+                }
+                case UpdateNextYearsIncomeCacheModel(_, _, _, _, None) => {
+                  throw new RuntimeException("[UpdateIncomeNextYear] Estimated income for next year not found for user.")
+                }
+              }
+            }
+          } else {
+            Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+          }
+  }
+
+  def handleConfirm(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          if (cyPlusOneEnabled) {
+            ServiceCheckLite.personDetailsCheck {
+              updateNextYearsIncomeService.submit(employmentId, user.nino) map {
+                case TaiSuccessResponse => Redirect(routes.UpdateIncomeNextYearController.success(employmentId))
+                case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
+              }
+            }
+          } else {
+            Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
+          }
+
+  }
 
   def update (employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -102,7 +149,7 @@ trait UpdateIncomeNextYearController extends TaiBaseController
 
                 formWithErrors => {
                   updateNextYearsIncomeService.get(employmentId, Nino(user.getNino)) map { model =>
-                    BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model.employmentName, employmentId, model.currentValue, formWithErrors))
+                    BadRequest(views.html.incomes.nextYear.updateIncomeCYPlus1Edit(model.employmentName, employmentId, model.isPension, model.currentValue, formWithErrors))
                   }
                 },
                 validForm => {
@@ -116,11 +163,6 @@ trait UpdateIncomeNextYearController extends TaiBaseController
             }
           } else {
             Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
-          }.recoverWith{
-            case e: Exception => {
-              Logger.warn(e.getMessage)
-              Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
-            }
           }
   }
 }
@@ -133,6 +175,6 @@ object UpdateIncomeNextYearController extends UpdateIncomeNextYearController wit
 
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 
-  val updateNextYearsIncomeService: UpdateNextYearsIncomeService = new UpdateNextYearsIncomeService
+  override val updateNextYearsIncomeService: UpdateNextYearsIncomeService = new UpdateNextYearsIncomeService
 
 }

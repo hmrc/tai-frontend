@@ -22,6 +22,7 @@ object UpdateNextYearsIncomeConstants {
 
   val EMPLOYMENT_NAME = "update-next-years-employment-name"
   val EMPLOYMENT_ID = "update-next-years-employment-id"
+  val IS_PENSION = "update-next-years-pension-indicator"
   val CURRENT_AMOUNT = "update-next-years-current-amount"
   val NEW_AMOUNT = "update-next-years-new-amount"
 
