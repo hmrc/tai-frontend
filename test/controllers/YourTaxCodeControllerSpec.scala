@@ -59,15 +59,6 @@ class YourTaxCodeControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
       when(testController.taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
-      val startDate = TaxYearResolver.startOfCurrentTaxYear
-      val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation,"A Employer 1", false, Some("1234"), false)
-      val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-
-      val taxCodeChange = TaxCodeChange(Seq(previousTaxCodeRecord1), Seq(currentTaxCodeRecord1))
-
-      when(testController.taxCodeChangeService.taxCodeChange(any())(any()))
-        .thenReturn(Future.successful(taxCodeChange))
-
       val result = testController.taxCodes()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe OK
@@ -97,17 +88,12 @@ class YourTaxCodeControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
       val testController = createTestController
       val startOfTaxYear: String = TaxYear().prev.start.toString("d MMMM yyyy")
       val endOfTaxYear: String = TaxYear().prev.end.toString("d MMMM yyyy")
-      val taxCodeIncomes = Seq(TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L",
-        "employment", OtherBasisOfOperation, Live))
 
-      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any()))
-        .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeIncomes)))
       when(testController.taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
       val startDate = TaxYearResolver.startOfCurrentTaxYear
       val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation,"A Employer 1", false, Some("1234"), false)
-      val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
       val taxCodeRecords = Seq(previousTaxCodeRecord1)
 

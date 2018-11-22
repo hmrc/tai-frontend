@@ -25,7 +25,9 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYears}
 
@@ -51,10 +53,10 @@ trait YourTaxCodeController extends TaiBaseController
             val nino = user.person.nino
 
             for {
-              taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
-              scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeChange.current.map(_.taxCode))
+              TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService.taxCodeIncomes(nino, year)
+              scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
             } yield {
-              val taxCodeViewModel = TaxCodeViewModel(taxCodeChange.current, scottishTaxRateBands, year)
+              val taxCodeViewModel = TaxCodeViewModel.applyTaxCodeIncomes(taxCodeIncomes, scottishTaxRateBands, year)
               Ok(views.html.taxCodeDetails(taxCodeViewModel))
             }
           }
