@@ -30,7 +30,7 @@ class IncomeSummarySpec extends TaiViewSpec {
     }
 
     "display income from employment description" in{
-      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.incomeTax.incomeFromEmployment.description"))
+      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.incomeTax.fromEmployer.description"))
     }
 
 
