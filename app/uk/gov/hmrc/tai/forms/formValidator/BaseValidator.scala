@@ -61,7 +61,7 @@ trait BaseValidator extends DateValidator with ViewModelHelper {
 
   def validateInputAmountComparisonWithTaxablePay(taxablePayYTD : BigDecimal, validateTaxablePayYTDError: String): Constraint[Option[String]] = {
     Constraint[Option[String]]("invalidAmount") {
-      case Some(textValue) => Try(BigDecimal(textValue.replace(",",""))) match {
+      case Some(textValue) => Try(BigDecimal(FormHelper.stripNumber(textValue))) match {
         case Success(value) if value >= taxablePayYTD => Valid
         case _ => Invalid(validateTaxablePayYTDError, "validateInputAmount")
       }

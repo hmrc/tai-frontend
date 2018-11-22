@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@(employmentName: String)(
+@(employmentName: String, isPension: Boolean)(
     implicit request: Request[_],
     messages: Messages,
     user: controllers.auth.TaiUser,
@@ -23,10 +23,10 @@
 )
 
 @main(
-title = messages("tai.updateIncome.CYPlus1.success.title"),
-articleClasses = Some("full-width"),
-user = Some(user),
-employerName = Some(employmentName)
+    title = messages("tai.updateIncome.CYPlus1.success.title"),
+    articleClasses = Some("full-width"),
+    user = Some(user),
+    employerName = Some(employmentName)
 ){
 <div class="column-two-thirds">
     <header class="grid-row margin-bottom-large">
@@ -43,7 +43,11 @@ employerName = Some(employmentName)
                 url = controllers.routes.IncomeTaxComparisonController.onPageLoad.url.toString
             )
         </p>
-        <p>@messages("tai.updateIncome.CYPlus1.success.paragraph2", employmentName)</p>
+        @if(isPension) {
+            <p>@messages("tai.updateIncome.CYPlus1.success.pension.paragraph2", employmentName)</p>
+        } else {
+            <p>@messages("tai.updateIncome.CYPlus1.success.paragraph2", employmentName)</p>
+        }
     </div>
 </div>
 }

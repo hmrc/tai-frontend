@@ -45,7 +45,7 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
         incomeSourceComparisonDetail.name mustBe employmentCY.name
         incomeSourceComparisonDetail.amountCY mustBe "£1,111"
         incomeSourceComparisonDetail.amountCYPlusOne mustBe "£2,222"
-
+        incomeSourceComparisonDetail.empId mustBe 1
       }
     }
 
@@ -71,10 +71,13 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
         incomeSourceComparisonDetailCY.name mustBe employmentCY.name
         incomeSourceComparisonDetailCY.amountCY mustBe "£1,111"
         incomeSourceComparisonDetailCY.amountCYPlusOne mustBe NA
+        incomeSourceComparisonDetailCY.empId mustBe 1
 
         incomeSourceComparisonDetailCYPlusOne.name mustBe employmentCYPlusOne.name
         incomeSourceComparisonDetailCYPlusOne.amountCY mustBe NA
         incomeSourceComparisonDetailCYPlusOne.amountCYPlusOne mustBe "£2,222"
+        incomeSourceComparisonDetailCYPlusOne.empId mustBe 2
+
       }
     }
 
@@ -93,12 +96,12 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
         val incomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(
           Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne), Seq(employmentCYPlusOne))
 
-        val incomeSourceComparisonDetail = incomeSourceComparisonViewModel.pensionIncomeSourceDetail(0)
+        val incomeSourceComparisonDetail = incomeSourceComparisonViewModel.pensionIncomeSourceDetail.head
 
         incomeSourceComparisonDetail.name mustBe employmentCY.name
         incomeSourceComparisonDetail.amountCY mustBe "£3,333"
         incomeSourceComparisonDetail.amountCYPlusOne mustBe "£4,444"
-
+        incomeSourceComparisonDetail.empId mustBe 3
       }
     }
 
@@ -123,10 +126,13 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
         incomeSourceComparisonDetailCY.name mustBe employmentCY.name
         incomeSourceComparisonDetailCY.amountCY mustBe "£3,333"
         incomeSourceComparisonDetailCY.amountCYPlusOne mustBe NA
+        incomeSourceComparisonDetailCY.empId mustBe 3
 
         incomeSourceComparisonDetailCYPlusOne.name mustBe employmentCYPlusOne.name
         incomeSourceComparisonDetailCYPlusOne.amountCY mustBe NA
         incomeSourceComparisonDetailCYPlusOne.amountCYPlusOne mustBe "£4,444"
+        incomeSourceComparisonDetailCYPlusOne.empId mustBe 4
+
       }
     }
 

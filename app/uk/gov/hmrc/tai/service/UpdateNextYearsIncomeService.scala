@@ -19,12 +19,16 @@ package uk.gov.hmrc.tai.service
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
+import uk.gov.hmrc.tai.model.domain.PensionIncome
 import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
+
 import scala.concurrent.Future
+import scala.util.Try
 
 class UpdateNextYearsIncomeService {
 
@@ -45,7 +49,8 @@ class UpdateNextYearsIncomeService {
       employmentOption <- employmentFuture
     } yield (taxCodeIncomeOption, employmentOption) match {
       case (Some(taxCodeIncome), Some(employment)) => {
-        val model = UpdateNextYearsIncomeCacheModel(employment.name, employmentId, taxCodeIncome.amount.toInt)
+        val isPension = taxCodeIncome.componentType == PensionIncome
+        val model = UpdateNextYearsIncomeCacheModel(employment.name, employmentId, isPension, taxCodeIncome.amount.toInt)
 
         journeyCacheService.cache(model.toCacheMap)
 
@@ -63,15 +68,15 @@ class UpdateNextYearsIncomeService {
           Future.successful(UpdateNextYearsIncomeCacheModel(
             cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME),
             cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_ID).toInt,
+            cache(UpdateNextYearsIncomeConstants.IS_PENSION).toBoolean,
             cache(UpdateNextYearsIncomeConstants.CURRENT_AMOUNT).toInt,
-            Some(cache(UpdateNextYearsIncomeConstants.NEW_AMOUNT).toInt)
-          ))
+            Some(cache(UpdateNextYearsIncomeConstants.NEW_AMOUNT).toInt)))
         } else {
-          Future.successful(UpdateNextYearsIncomeCacheModel(
-            cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME),
+          Future.successful(UpdateNextYearsIncomeCacheModel(cache(
+            UpdateNextYearsIncomeConstants.EMPLOYMENT_NAME),
             cache(UpdateNextYearsIncomeConstants.EMPLOYMENT_ID).toInt,
-            cache(UpdateNextYearsIncomeConstants.CURRENT_AMOUNT).toInt
-          ))
+            cache(UpdateNextYearsIncomeConstants.IS_PENSION).toBoolean,
+            cache(UpdateNextYearsIncomeConstants.CURRENT_AMOUNT).toInt))
         }
       }
     }
@@ -83,6 +88,17 @@ class UpdateNextYearsIncomeService {
       journeyCacheService.cache(updatedValue.toCacheMap)
 
       updatedValue
+    }
+  }
+
+  def submit(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+    get(employmentId, nino) flatMap {
+      case UpdateNextYearsIncomeCacheModel(_, _, _, _, Some(newValue)) => {
+        taxAccountService.updateEstimatedIncome(nino, newValue, TaxYear().next, employmentId)
+      }
+      case _ => {
+        throw new RuntimeException
+      }
     }
   }
 }
