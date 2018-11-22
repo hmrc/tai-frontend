@@ -46,6 +46,22 @@ class TaxYearSpec extends PlaySpec {
       TaxYear("17") mustBe TaxYear(2017)
     }
 
+    "fromNow" must {
+      "for 0" in {
+        TaxYear.fromNow(1) mustBe TaxYear().next
+      }
+
+      "for > 0" in {
+        TaxYear.fromNow(1) mustBe TaxYear().next
+        TaxYear.fromNow(3) mustBe TaxYear().next.next.next
+      }
+
+      "for < 0" in {
+        TaxYear.fromNow(-1) mustBe TaxYear().prev
+        TaxYear.fromNow(-3) mustBe TaxYear().prev.prev.prev
+      }
+    }
+
   }
 
 }
