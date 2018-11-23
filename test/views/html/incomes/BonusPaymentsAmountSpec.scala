@@ -74,7 +74,7 @@ class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
       }
 
       "the user enters an invalid monetary amount" in {
-        val invalidAmountErrorMessage = messages("error.invalid.monetaryAmount.format.invalid")
+        val invalidAmountErrorMessage = messages("tai.bonusPaymentsAmount.error.form.input.invalid")
         val invalidRequest = Json.obj("amount" -> "£10,0")
         val invalidatedForm = bonusPaymentsAmountForm.bind(invalidRequest)
 

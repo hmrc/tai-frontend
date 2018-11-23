@@ -31,13 +31,13 @@ class updateIncomeCYPlus1StartSpec extends TaiViewSpec {
     behave like pageWithCancelLink(Call("GET",controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
     behave like pageWithCombinedHeader(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
-      messages("tai.updateIncome.CYPlus1.preheading", employerName))
+      messages("tai.updateIncome.CYPlus1.start.heading", employerName))
 
     "contain the correct content when income is from employment" in {
       doc(view).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.start.paragraph1", employerName))
       doc(view).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.start.paragraph2", employerName))
       doc(view) must haveLinkWithUrlWithID("CYPlus1StartButton",controllers.income.routes.UpdateIncomeNextYearController.edit(employmentID).url)
-      doc(view).getElementsByClass("button").text must include(messages("tai.income.details.updateTaxableIncome.update"))
+      doc(view).getElementsByClass("button").text must include(messages("tai.updateIncome.CYPlus1.start.button"))
     }
 
     "contain the correct content when income is from pension" in {

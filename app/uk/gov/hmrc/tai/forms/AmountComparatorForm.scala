@@ -22,6 +22,7 @@ import play.api.data.Forms.mapping
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import uk.gov.hmrc.tai.forms.formValidator.TaiValidator
+import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 
 case class AmountComparatorForm(income: Option[String])
@@ -35,16 +36,21 @@ object AmountComparatorForm {
 
     val fallbackDate = LocalDate.now().toString(MONTH_AND_YEAR)
 
-    val theDate = latestPayDate.fold(fallbackDate)(identity)
+    val latestPaymentDate = latestPayDate.fold(fallbackDate)(identity)
 
     Form[AmountComparatorForm](
       mapping("income" -> TaiValidator.validateTaxAmounts(
         messages("tai.irregular.error.blankValue"),
         messages("tai.irregular.instruction.wholePounds"),
         messages("error.tai.updateDataEmployment.maxLength"),
-        taxablePayYTD.fold("")(messages("tai.irregular.error.error.incorrectTaxableIncome", _, theDate)),
+        taxablePayYTD.fold("")(messages("tai.irregular.error.error.incorrectTaxableIncome",_ , latestPaymentDate)),
         taxablePayYTD.getOrElse(0)
-      ))(AmountComparatorForm.apply)(AmountComparatorForm.unapply)
+      ))(customApply)(customUnapply)
     )
   }
+
+  val customApply: Option[String] => AmountComparatorForm =
+    income => AmountComparatorForm(income.map(FormHelper.stripNumber))
+
+  val customUnapply: AmountComparatorForm => Option[Option[String]] = form => Some(form.income)
 }

@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{CheckYourAnswersViewModel, EstimatedPayViewModel}
-import uk.gov.hmrc.tai.viewModels.income.{ConfirmIncomeIrregularHoursViewModel, EditIncomeIrregularHoursViewModel}
+import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel}
 
 import scala.Function.tupled
 import scala.concurrent.Future
@@ -229,14 +229,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
         implicit request => {
           journeyCacheService.currentCache flatMap { cache =>
             val name = cache(UpdateIncome_NameKey)
-            val ptd: String = cache(UpdateIncome_PayToDateKey)
+            val paymentToDate: String = cache(UpdateIncome_PayToDateKey)
             val latestPayDate = cache.get(UpdateIncome_DateKey)
 
-            AmountComparatorForm.createForm(latestPayDate, Some(ptd.toInt)).bindFromRequest().fold(
+            AmountComparatorForm.createForm(latestPayDate, Some(paymentToDate.toInt)).bindFromRequest().fold(
 
               formWithErrors => {
-                val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, ptd)
-
+                val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, paymentToDate)
                 Future.successful(BadRequest(views.html.incomes.editIncomeIrregularHours(formWithErrors, viewModel)))
               },
 
@@ -258,9 +257,9 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey).map { cache => {
             val name :: newIrregularPay :: Nil = cache.toList
 
-            val vm = ConfirmIncomeIrregularHoursViewModel(employmentId, name, newIrregularPay.toInt)
+            val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
 
-            Ok(views.html.incomes.confirmIncomeIrregularHours(vm))
+            Ok(views.html.incomes.confirmAmountEntered(vm))
           }}
         }
   }
