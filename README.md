@@ -8,7 +8,7 @@ This service Allows users to view and edit their paye tax information
 Summary
 -----------
 This service covers the current tax year. Use the service to:
- * check your tax code and Personal Allowance
+ * check your tax code and Personal
  * tell HM Revenue and Customs (HMRC) about changes that affect your tax code
  * update your employer or pension provider details
  * see an estimate of how much tax you’ll pay over the whole tax year

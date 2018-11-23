@@ -114,8 +114,8 @@ object PayslipForm{
 
   def createForm()(implicit messages: Messages): Form[PayslipForm] = {
     Form[PayslipForm](
-      mapping("totalSalary" -> TaiValidator.validateNewAmounts(messages("tai.payslip.error.form.totalPay.mandatory"),
-                                                               messages("error.invalid.monetaryAmount.format.invalid"),
+      mapping("totalSalary" -> TaiValidator.validateNewAmounts(messages("tai.payslip.error.form.totalPay.input.mandatory"),
+                                                               messages("tai.payslip.error.form.totalPay.input.invalid"),
                                                                messages("error.tai.updateDataEmployment.maxLength")))(PayslipForm.apply)(PayslipForm.unapply)
     )
   }
@@ -152,7 +152,7 @@ object TaxablePayslipForm{
     Form[TaxablePayslipForm](
       mapping("taxablePay" -> TaiValidator.validateNewAmounts(
         messages("tai.taxablePayslip.error.form.incomes.radioButton.mandatory"),
-        messages("error.invalid.monetaryAmount.format.invalid"),
+        messages("tai.taxablePayslip.error.form.incomes.input.invalid"),
         messages("error.tai.updateDataEmployment.maxLength"),
         netSalary
       ))(TaxablePayslipForm.apply)(TaxablePayslipForm.unapply)
@@ -177,7 +177,7 @@ object BonusOvertimeAmountForm{
     Form[BonusOvertimeAmountForm](
       mapping("amount" -> TaiValidator.validateNewAmounts(messages("tai.bonusPaymentsAmount.error.form.mandatory",
                                                             TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
-                                                          messages("error.invalid.monetaryAmount.format.invalid"),
+                                                          messages("tai.bonusPaymentsAmount.error.form.input.invalid"),
                                                           messages("error.tai.updateDataEmployment.maxLength")))(
                                                           BonusOvertimeAmountForm.apply)(BonusOvertimeAmountForm.unapply)
     )
