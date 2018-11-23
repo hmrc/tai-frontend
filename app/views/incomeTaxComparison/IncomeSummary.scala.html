@@ -63,7 +63,7 @@
             @for(employmentIncomeSourceDetail <- incomeSourceViewModel.employmentIncomeSourceDetail) {
 
                 <tr>
-                    <th class="carry-over" scope="row">@employmentIncomeSourceDetail.name</th>
+                    <th scope="row">@employmentIncomeSourceDetail.name</th>
                     <td class="text--right">@employmentIncomeSourceDetail.amountCY</td>
                     <td class="text--right">@employmentIncomeSourceDetail.amountCYPlusOne</td>
                     <td width="20%" class="text--right">
@@ -82,7 +82,7 @@
             @for(pensionIncomeSourceDetail <- incomeSourceViewModel.pensionIncomeSourceDetail) {
             <tr>
 
-                <th class="carry-over" scope="row">@pensionIncomeSourceDetail.name</th>
+                <th scope="row">@pensionIncomeSourceDetail.name</th>
                 <td class="text--right">@pensionIncomeSourceDetail.amountCY</td>
                 <td class="text--right">@pensionIncomeSourceDetail.amountCYPlusOne</td>
                 <td width="20%" class="text--right">
