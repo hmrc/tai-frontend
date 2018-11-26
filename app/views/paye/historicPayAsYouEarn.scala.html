@@ -33,9 +33,9 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
     @Link.toInternalPage(
     id=Some("returnToChooseTaxYearLink"),
     url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-    value=Some(Messages("tai.returnToChooseTaxYear")),
+    value=Some(messages("tai.returnToChooseTaxYear")),
     cssClasses=Some("link-back"),
-    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToChooseTaxYear")}"))
+    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${messages("tai.returnToChooseTaxYear")}"))
     ).toHtml
 </p>
 }
@@ -45,15 +45,15 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
 
 @header = @{
     ptaHeader(
-        mainHeadingText = Messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
-        preHeadingText = Messages("tai.paye.lastTaxYear.preHeading"),
+        mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
+        preHeadingText = messages("tai.paye.lastTaxYear.preHeading"),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         customBackLinkContent = Some(backLinkToChooseTaxYear))
 }
 
 @main(
-    title = Messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
+    title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
     articleClasses = Some("full-width"),
     user = Some(user),
     pageHeader = Some(header),
@@ -67,15 +67,15 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
         <div class="inner-block" id="lastTaxYear">
             @if(!viewModel.hasEmploymentsOrPensions) {
                 <div class="flush--bottom soft--bottom" id="rtiDown">
-                    <p id="rtiDownMessage">@Messages("tai.rti_down_message")</p>
-                    <p id="rtiDownContact">@Messages("tai.rti_down_message_contact")</p>
+                    <p id="rtiDownMessage">@messages("tai.rti_down_message")</p>
+                    <p id="rtiDownContact">@messages("tai.rti_down_message_contact")</p>
                 </div>
             } else {
                 <section id="lastTaxYearIncome">
 
                     @if(employmentPairsList.nonEmpty) {
                         <h2 id="lastYearEmploymentHeading" class="heading-section">
-                            @Messages("tai.paye.incomeEmployment.heading")
+                            @messages("tai.paye.incomeEmployment.heading")
                         </h2>
 
                         @incomeList(employmentPairsList, "employment")
@@ -83,7 +83,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
 
                     @if(pensionPairsList.nonEmpty) {
                         <h2 id="lastYearPensionHeading" class="heading-section">
-                            @Messages("tai.incomeTaxSummary.pension.section.heading")
+                            @messages("tai.incomeTaxSummary.pension.section.heading")
                         </h2>
 
                         @incomeList(pensionPairsList, "pension")
@@ -91,24 +91,24 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                 </section>
             }
 
-            <h3 class="heading-section heading-medium">@Messages("tai.paye.lastTaxYear.incorrectInformation.title")</h3>
+            <h3 class="heading-section heading-medium">@messages("tai.paye.lastTaxYear.incorrectInformation.title")</h3>
             <p>
-                @Messages("tai.paye.lastTaxYear.incorrectInformation.text")
+                @messages("tai.paye.lastTaxYear.incorrectInformation.text")
                 @Link.toInternalPage(
                     url=controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(viewModel.taxYear).url,
-                    value=Some(Messages("tai.paye.lastTaxYear.incorrectInformation.link")),
+                    value=Some(messages("tai.paye.lastTaxYear.incorrectInformation.link")),
                     id=Some("updateEmployment")
                 ).toHtml
             </p>
             @if(viewModel.p800ServiceIsAvailable) {
                 <p>
-                    @Messages("tai.paye.lastTaxYear.checkIncomeTax.text")
+                    @messages("tai.paye.lastTaxYear.checkIncomeTax.text")
                     @Link.toInternalPage(
                         url=ApplicationConfig.taxYouPaidStatus.toString,
-                        value=Some(Messages("tai.paye.lastTaxYear.checkIncomeTax.link")),
+                        value=Some(messages("tai.paye.lastTaxYear.checkIncomeTax.link")),
                         id=Some("p800Link")
                     ).toHtml
-                    @Messages("tai.paye.lastTaxYear.checkIncomeTax.for", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year))
+                    @messages("tai.paye.lastTaxYear.checkIncomeTax.for", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year))
                 </p>
             }
         </div>
@@ -140,7 +140,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                     @if(taxCodeChangeEnabled && viewModel.showTaxCodeDescriptionLink) {
                         @Link.toInternalPage(
                             url=routes.YourTaxCodeController.prevTaxCodes(viewModel.taxYear).toString(),
-                            value=Some(Messages("tai.taxCode.description.link")),
+                            value=Some(messages("tai.taxCode.description.link")),
                             id=Some("taxCodeDescription")
                         ).toHtml
                     }
@@ -148,13 +148,13 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                         @employment.payrollNumber.map{ payrollNumber =>
                                 @if(employment.isPension) {
                                     @textForScreenReader(
-                                        s"${Messages("tai.pensionNumber")}: ${payrollNumber}",
-                                        Messages("tai.pension.income.details.pensionNumber.screenReader", payrollNumber)
+                                        s"${messages("tai.pensionNumber")}: ${payrollNumber}",
+                                        messages("tai.pension.income.details.pensionNumber.screenReader", payrollNumber)
                                     )
                                 } else {
                                     @textForScreenReader(
-                                        Messages("tai.incomeTaxSummary.payrollNumber.prefix", payrollNumber),
-                                        Messages("tai.employment.income.details.payrollNumber.screenReader", payrollNumber)
+                                        messages("tai.incomeTaxSummary.payrollNumber.prefix", payrollNumber),
+                                        messages("tai.employment.income.details.payrollNumber.screenReader", payrollNumber)
                                     )
                                 }
 
@@ -165,8 +165,8 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                         @includes.link(
                             id = Some(s"${incomeType}${idx}-checkDetailsLink"),
                             url = routes.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(viewModel.taxYear, employment.id).toString(),
-                            copy=Messages("tai.paye.lastTaxYear.table.link"),
-                            altCopy=Some(Messages("tai.paye.lastTaxYear.table.reader.link", employment.name))
+                            copy=messages("tai.paye.lastTaxYear.table.link"),
+                            altCopy=Some(messages("tai.paye.lastTaxYear.table.reader.link", employment.name))
                         )
                     </p>
                 </div>

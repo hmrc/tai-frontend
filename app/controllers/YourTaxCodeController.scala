@@ -56,7 +56,7 @@ trait YourTaxCodeController extends TaiBaseController
               TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService.taxCodeIncomes(nino, year)
               scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
             } yield {
-              val taxCodeViewModel = TaxCodeViewModel.applyTaxCodeIncomes(taxCodeIncomes, scottishTaxRateBands, year)
+              val taxCodeViewModel = TaxCodeViewModel.apply(taxCodeIncomes, scottishTaxRateBands)
               Ok(views.html.taxCodeDetails(taxCodeViewModel))
             }
           }
