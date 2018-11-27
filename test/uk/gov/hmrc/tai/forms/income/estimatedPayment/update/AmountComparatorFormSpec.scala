@@ -48,7 +48,7 @@ class AmountComparatorFormSpec extends PlaySpec with OneAppPerSuite with I18nSup
       val invalidChoice = Json.obj("income" -> "11,00")
       val invalidatedForm = form.bind(invalidChoice)
 
-      invalidatedForm.errors.head.messages mustBe List(messagesApi("tai.irregular.instruction.wholePounds"))
+      invalidatedForm.errors.head.messages mustBe List(messagesApi("error.tai.updateDataEmployment.input.invalid"))
       invalidatedForm.value mustBe None
     }
 
