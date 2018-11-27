@@ -72,7 +72,7 @@ trait TaxCodeChangeConnector {
     }
   }
 
-  def lastTaxCodeRecordsUrl(nino: String, year: Int): String = baseTaxAccountUrl(nino) + s"latest-tax-code/$year"
+  def lastTaxCodeRecordsUrl(nino: String, year: Int): String = baseTaxAccountUrl(nino) + s"$year/tax-code/latest"
 
   def lastTaxCodeRecords(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     httpHandler.getFromApi(lastTaxCodeRecordsUrl(nino.nino, year.year)) map (

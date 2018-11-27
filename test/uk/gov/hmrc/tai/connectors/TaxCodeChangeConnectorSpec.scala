@@ -126,7 +126,7 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
       val nino = generateNino
       val year = TaxYear().prev.year
 
-      val latestTaxCodeRecordUrl = s"/tai/${nino.nino}/tax-account/latest-tax-code/$year"
+      val latestTaxCodeRecordUrl = s"/tai/${nino.nino}/tax-account/$year/tax-code/latest"
 
       val startDate = TaxYearResolver.startOfCurrentTaxYear
       val taxCodeRecord = TaxCodeRecord("code", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
@@ -166,6 +166,25 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
 
       val result = Await.result(testConnector.lastTaxCodeRecords(nino, TaxYear().prev), 5 seconds)
       result mustEqual TaiSuccessResponseWithPayload(expectedResult)
+    }
+
+    "return a empty sequence when the api returns no records" in {
+      val testConnector = createTestConnector
+      val nino = generateNino
+      val year = TaxYear().prev.year
+
+      val latestTaxCodeRecordUrl = s"/tai/${nino.nino}/tax-account/$year/tax-code/latest"
+
+      val json = Json.obj(
+        "data" -> Json.arr(),
+        "links" -> JsArray(Seq())
+      )
+      server.stubFor(
+        get(urlEqualTo(latestTaxCodeRecordUrl)).willReturn(ok(json.toString()))
+      )
+
+      val result = Await.result(testConnector.lastTaxCodeRecords(nino, TaxYear().prev), 5 seconds)
+      result mustEqual TaiSuccessResponseWithPayload(Seq.empty)
     }
   }
 
