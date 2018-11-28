@@ -41,7 +41,7 @@ object AmountComparatorForm {
     Form[AmountComparatorForm](
       mapping("income" -> TaiValidator.validateTaxAmounts(
         messages("tai.irregular.error.blankValue"),
-        messages("tai.irregular.instruction.wholePounds"),
+        messages("error.tai.update.estimatedTaxableIncome.input.invalid"),
         messages("error.tai.updateDataEmployment.maxLength"),
         taxablePayYTD.fold("")(messages("tai.irregular.error.error.incorrectTaxableIncome",_ , latestPaymentDate)),
         taxablePayYTD.getOrElse(0)
