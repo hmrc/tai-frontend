@@ -59,6 +59,7 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
       )
       doc(view).getElementsByClass("form-control-currency").size() mustBe 1
     }
+
   }
 
   private val viewModel = EditIncomeIrregularHoursViewModel(employmentId, employerName, currentAmount)
