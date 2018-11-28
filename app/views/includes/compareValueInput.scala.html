@@ -33,10 +33,6 @@
         <p>@withPoundPrefix(MoneyPounds(previousFieldValue.toInt ,0))</p>
     </div>
     <div class="column-half">
-        <label class="form-label form-label-bold" for="@newField.name" id="newAmountLabel">
-            @newLabel
-            <span class="visually-hidden">in pounds.</span>
-        </label>
-        @input(newField, isCurrency = true, fieldErrorsEnabled = false)
+        @input(newField, isCurrency = true,bold = true,  fieldErrorsEnabled = false, labelText= newLabel)
     </div>
 </div>
