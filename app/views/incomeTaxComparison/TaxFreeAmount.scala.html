@@ -16,16 +16,21 @@
 
 @import uk.gov.hmrc.tai.viewModels.TaxFreeAmountComparisonViewModel
 @import uk.gov.hmrc.play.views.formatting.Money._
-
+@import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @(model: TaxFreeAmountComparisonViewModel)(implicit messages: Messages)
 
 <h2 class="heading-large" id="taxFreeAmountHeading">@messages("tai.incomeTaxComparison.taxFreeAmount.subHeading")</h2>
 
 <p>@messages("tai.incomeTaxComparison.taxFreeAmount.description")</p>
-<p class="notice text">
-    <i class="icon icon-information"><span class="visuallyhidden">Information</span></i>
-    <strong class="bold-small">@messages("tai.incomeTaxComparison.taxFreeAmount.PA.information1")</strong>
-</p>
+
+@model.personalAllowanceIncreaseInfo.map{ paIncreasedMessage =>
+    <p class="notice text">
+        <i class="icon icon-information"><span class="visuallyhidden">Information</span></i>
+        <strong class="bold-small">@paIncreasedMessage</strong>
+    </p>
+}
+
 <p>@messages("tai.incomeTaxComparison.taxFreeAmount.PA.information2")</p>
 
 
@@ -34,7 +39,7 @@
 
     <thead id="taxFreeAmountComparisonTableHeader">
         <tr class=" text--right">
-            <td></td>
+            <th></th>
             <th id="taxFreeAmountComparisonTableHeaderCol1" scope="col" class=" text--right">
                 @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
@@ -64,7 +69,6 @@
 
     <thead class="visually-hidden">
         <tr class="text--right">
-            <td></td>
             <th scope="col" class="text--right">
                 @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
@@ -111,7 +115,6 @@
 
     <thead class="visually-hidden">
         <tr class="text--right">
-            <td></td>
             <th scope="col" class="text--right">
                 @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
                 @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))
@@ -157,7 +160,6 @@
     <caption class="visually-hidden">@messages("tai.incomeTaxComparison.taxFreeAmount.totalTFA")</caption>
     <thead class="visually-hidden">
     <tr class="text--right">
-        <td></td>
         <th scope="col">
             @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
             @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", model.currentTaxYearHeader)))

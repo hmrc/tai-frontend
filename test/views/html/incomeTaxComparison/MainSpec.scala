@@ -17,11 +17,14 @@
 package views.html.incomeTaxComparison
 
 import play.twirl.api.Html
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.util.{DateHelper, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonViewModel, IncomeSourceViewModel, TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
+import uk.gov.hmrc.time.TaxYearResolver
 
 class MainSpec extends TaiViewSpec {
   "Cy plus one view" must {
@@ -37,6 +40,7 @@ class MainSpec extends TaiViewSpec {
 
     "display a link to return to choose tax year page" in {
       doc must haveLinkWithUrlWithID("returnToChooseTaxYearLink", controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
+      doc must haveLinkWithText(messages("your.paye.income.tax.overview"))
     }
 
 
@@ -53,36 +57,60 @@ class MainSpec extends TaiViewSpec {
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.taxFreeAmount.subHeading"))
     }
 
-    "have the tell us about a change section with heading" in {
-      doc(view) must haveSectionWithId("tellAboutChange")
-      doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.tellAboutChange.subHeading"))
+    "have the what happens next with heading" in {
+      doc(view) must haveSectionWithId("whatHappensNext")
+      doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.whatHappensNext.subHeading"))
     }
+
+    "have the what happens next section with paragraph - do nothing" in {
+      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text"))
+    }
+
+    "have the what happens next section with paragraph - estimation apply date" in {
+      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text",startOfNextTaxYear))
+    }
+
+    "have the what happens next section with paragraph - calculation may change" in {
+      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text"))
+    }
+
+    "have the if information is wrong or incomplete title" in {
+      doc(view) must haveHeadingH3WithText(messages("tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading"))
+    }
+
+    "have the tell us about a change paragraph" in {
+      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description",startOfNextTaxYear))
+    }
+
+
+
 
     "have the tell us about a change links" in {
       doc(view) must haveLinkElement(id = "companyBenefitsLink",
         href = ApplicationConfig.companyBenefitsLinkUrl,
-        text = messages("tai.incomeTaxComparison.tellAboutChange.companyBenefitsText"))
+        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText"))
 
-      doc(view) must haveLinkElement(id = "investmentIncomeLink",
-        href = ApplicationConfig.investmentIncomeLinkUrl,
-        text = messages("tai.incomeTaxComparison.tellAboutChange.investmentIncomeText"))
-
-      doc(view) must haveLinkElement(id = "taxableStateBenefitLink",
-        href = ApplicationConfig.taxableStateBenefitLinkUrl,
-        text = messages("tai.incomeTaxComparison.tellAboutChange.stateBenefitsText"))
+      doc(view) must haveLinkElement(id = "allowancesTaxReliefsLink",
+        href = ApplicationConfig.taxFreeAllowanceLinkUrl,
+        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText"))
 
       doc(view) must haveLinkElement(id = "otherIncomeLink",
         href = ApplicationConfig.otherIncomeLinkUrl,
-        text = messages("tai.incomeTaxComparison.tellAboutChange.otherIncomeText"))
+        text = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText"))
     }
 
-    "have the tell us about a change text" in {
-      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.tellAboutChange.description"))
+    "display a link to return to PAYE Income Tax overview" in {
+      val incomeTaxOverviewURL = controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url
+      doc must haveLinkWithUrlWithID("returnToPAYEIncomeOverviewLink", incomeTaxOverviewURL)
+      doc must haveLinkWithText(messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link"))
     }
+
+
 
   }
 
   private lazy val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
+  private lazy val startOfNextTaxYear = Dates.formatDate(TaxYearResolver.startOfNextTaxYear)
   private lazy val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 200)
   private lazy val estimatedIncomeTaxComparisonViewModel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
 

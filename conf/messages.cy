@@ -609,14 +609,18 @@ tai.incomeTax.taxFree.link=Gwirio''ch swm rhydd o dreth
 tai.incomeTax.totalEstimatedIncome.subheading=Cyfanswm incwm amcangyfrifedig
 tai.incomeTax.totalIncomeTaxEstimate=Cyfanswm Amcangyfrif Treth Incwm
 tai.incomeTaxBand=Haen Treth Incwm
-tai.incomeTaxComparison.heading=Cymhariaeth Treth Incwm: y flwyddyn dreth bresennol a''r flwyddyn nesaf
+
 tai.incomeTaxComparison.incomeSourceAbsent=Ddim ar gael
 tai.incomeTaxComparison.incomeTax.column1=yn dod i ben ar {0}
 tai.incomeTaxComparison.incomeTax.column2=o {0}
+
+tai.incomeTaxComparison.heading=Cymhariaeth Treth Incwm: y flwyddyn dreth bresennol a’r flwyddyn nesaf
+tai.incomeTaxComparison.incomeTax.description=Mae’r amcangyfrif hwn yn seiliedig ar eich amgylchiadau presennol.
+
 tai.incomeTaxComparison.incomeTax.updateEstimated=Diweddarwch incwm amcangyfrifedig
 tai.incomeTaxComparison.incomeTax.forEmployer=ar gyfer {0}
 tai.incomeTaxComparison.incomeTax.fromEmployer.description=Gallwch ddiweddaru’r amcangyfrif o’ch incwm o gyflogaeth neu bensiynau ar gyfer y flwyddyn nesaf. Bydd hyn yn diweddaru’r amcangyfrif y byddwn yn seilio treth y flwyddyn nesaf arno.
-tai.incomeTaxComparison.incomeTax.description=Mae''r data hwn yn amcangyfrif yn seiliedig ar yr hyn yr ydym yn ei wybod amdanoch nawr - gall newid pan gawn ragor o wybodaeth.
+
 tai.incomeTaxComparison.incomeTax.estimate=Amcangyfrif o''ch Treth Incwm TWE
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment =Incwm o gyflogaeth
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions=Incwm o gyflogaeth a phensiynau preifat
@@ -629,28 +633,35 @@ tai.incomeTaxComparison.sidebar.subHeading=Ewch i''r flwyddyn dreth bresennol
 tai.incomeTaxComparison.taxCodes.description=Defnyddir eich codau treth i gyfrifo faint o Dreth Incwm i''w chymryd o''ch cyflog neu''ch pensiwn.
 tai.incomeTaxComparison.taxCodes.scottishInfo=Bydd eich cod treth ar gyfer y flwyddyn nesaf yn dechrau gydag ''S'' oherwydd y byddwch yn drethdalwr yn yr Alban. {0}
 tai.incomeTaxComparison.taxCodes.subHeading=Codau treth
+tai.incomeTaxComparison.taxCodes.table.employmentsReaderText=Enw''r cyflogwr
 tai.incomeTaxComparison.taxFreeAmount.NA=ddim yn gymwys
-tai.incomeTaxComparison.taxFreeAmount.PA.information1=Mae''r Lwfans Personol safonol yn cynyddu i £11,850 o 6 Ebrill 2018 ymlaen.
+tai.incomeTaxComparison.taxFreeAmount.PA.information1=Mae’r Lwfans Personol safonol yn cynyddu i {0} o {1} ymlaen.
 tai.incomeTaxComparison.taxFreeAmount.PA.information2=Gall eich Lwfans Personol fod yn wahanol, yn dibynnu ar eich amgylchiadau.
 tai.incomeTaxComparison.taxFreeAmount.additions.caption=Ychwanegiadau
 tai.incomeTaxComparison.taxFreeAmount.deductions.caption=Didyniadau
-tai.incomeTaxComparison.taxFreeAmount.description=Cyfanswm yr incwm y gallwch ei gael cyn i chi dalu treth.
+
 tai.incomeTaxComparison.taxFreeAmount.noAdditions=Nid oes gennych unrhyw ychwanegiadau
 tai.incomeTaxComparison.taxFreeAmount.noDeductions=Nid oes gennych unrhyw ddidyniadau
 tai.incomeTaxComparison.taxFreeAmount.subHeading=Lwfans rhydd o dreth
+tai.incomeTaxComparison.taxFreeAmount.description=Eich swm rhydd o dreth yw’r incwm y gallwch ei gael cyn dechrau talu treth.
 tai.incomeTaxComparison.taxFreeAmount.totalAdditions=Cyfanswm yr ychwanegiadau
 tai.incomeTaxComparison.taxFreeAmount.totalDeductions=Cyfanswm y didyniadau
 tai.incomeTaxComparison.taxFreeAmount.totalTFA=Eich cyfanswm sy''n rhydd o dreth
-tai.incomeTaxComparison.tellAboutChange.companyBenefitsReaderText=Rhoi gwybod i ni am fuddiannau cwmni.
-tai.incomeTaxComparison.tellAboutChange.companyBenefitsText=buddiannau cwmni
-tai.incomeTaxComparison.tellAboutChange.description=Os yw''ch manylion fan hyn yn anghywir neu os oes rhywbeth ar goll, rhowch wybod i ni am newidiadau i''ch:
-tai.incomeTaxComparison.tellAboutChange.investmentIncomeReaderText=Rhoi gwybod i ni am incwm o fuddsoddiadau.
-tai.incomeTaxComparison.tellAboutChange.investmentIncomeText=incwm o fuddsoddiadau
-tai.incomeTaxComparison.tellAboutChange.otherIncomeReaderText=Rhoi gwybod i ni am incwm arall.
-tai.incomeTaxComparison.tellAboutChange.otherIncomeText=incwm arall
-tai.incomeTaxComparison.tellAboutChange.stateBenefitsReaderText=Rhoi gwybod i ni am fudd-daliadau’r Wladwriaeth.
-tai.incomeTaxComparison.tellAboutChange.stateBenefitsText=Buddiannau''r Wladwriaeth
-tai.incomeTaxComparison.tellAboutChange.subHeading=Rhowch wybod i ni am unrhyw newid
+
+tai.incomeTaxComparison.whatHappensNext.subHeading=Yr hyn sy’n digwydd nesaf
+tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text=Os yw’r wybodaeth hon yn gywir, nid oes angen i chi wneud unrhyw beth.
+tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text=Caiff eich codau treth a’ch amcangyfrifon incwm ar gyfer y flwyddyn dreth nesaf eu defnyddio ar gyfer eich cyfrif o {0} ymlaen.
+tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text=Gall y cyfrifiad hwn newid pan gawn y diweddariad terfynol o’ch cyflogres neu ddatganiad pensiwn ar gyfer y flwyddyn dreth bresennol.
+tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading=Os yw’r wybodaeth yr ydych wedi’i gweld yn anghywir neu’n anghyflawn
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description=Gallwch roi gwybod i ni am newidiadau a fydd yn gymwys o {0} ymlaen ar gyfer unrhyw rai o’r canlynol:
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText=buddiannau cwmni
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsReaderText=Rhoi gwybod i ni am fuddiannau cwmni.
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText=incwm o ffynhonnell arall
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeReaderText=Rhowch wybod i ni am incwm o ffynhonnell arall
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText=lwfansau neu ryddhad treth
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefReaderText=Rhowch wybod i ni am lwfansau neu ryddhad treth
+tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link=Dychwelyd i’r Trosolwg o’ch Treth Incwm TWE
+
 tai.incomeTaxSummary.addMissingIncome.section.employerLink=Ychwanegu cyflogwr sydd ar goll
 tai.incomeTaxSummary.addMissingIncome.section.heading=Rhywbeth ar goll?
 tai.incomeTaxSummary.addMissingIncome.section.otherLink=Ychwanegu incwm o ffynhonnell arall sydd ar goll

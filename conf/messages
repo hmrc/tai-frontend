@@ -609,14 +609,17 @@ tai.incomeTax.taxFree.link=Check your tax-free amount
 tai.incomeTax.totalEstimatedIncome.subheading=Total estimated income
 tai.incomeTax.totalIncomeTaxEstimate=Total Income Tax estimate
 tai.incomeTaxBand=Income Tax Band
-tai.incomeTaxComparison.heading=Income Tax comparison: current and next tax years
+tai.incomeTaxComparison.heading=Income Tax comparison: current tax year and next tax year
 tai.incomeTaxComparison.incomeSourceAbsent=Not available
 tai.incomeTaxComparison.incomeTax.column1=ends {0}
 tai.incomeTaxComparison.incomeTax.column2=from {0}
+
+tai.incomeTaxComparison.incomeTax.description=This estimate is based on your current circumstances.
+
 tai.incomeTaxComparison.incomeTax.updateEstimated=Update estimated income
 tai.incomeTaxComparison.incomeTax.forEmployer=for {0}
 tai.incomeTaxComparison.incomeTax.fromEmployer.description=You can update your estimated income from employment or pensions for next year. This will update the estimate that we will base next year''s tax on.
-tai.incomeTaxComparison.incomeTax.description=This data is an estimate based on what we know about you now, it may change when we receive more information.
+
 tai.incomeTaxComparison.incomeTax.estimate=Your PAYE Income Tax estimate
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment =Income from employment
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions=Income from employment and private pensions
@@ -629,28 +632,36 @@ tai.incomeTaxComparison.sidebar.subHeading=Go to the current tax year
 tai.incomeTaxComparison.taxCodes.description=Your tax codes are used to work out how much Income Tax to take from your pay or pension.
 tai.incomeTaxComparison.taxCodes.scottishInfo=Your tax code for next year will start with an ‘S’ because you will be a Scottish taxpayer. {0}
 tai.incomeTaxComparison.taxCodes.subHeading=Tax codes
+
+tai.incomeTaxComparison.taxCodes.table.employmentsReaderText=Employer name
+
 tai.incomeTaxComparison.taxFreeAmount.NA=not applicable
-tai.incomeTaxComparison.taxFreeAmount.PA.information1=The standard Personal Allowance increases to £11,850 from 6 April 2018.
+tai.incomeTaxComparison.taxFreeAmount.PA.information1=The standard Personal Allowance increases to {0} from {1}.
 tai.incomeTaxComparison.taxFreeAmount.PA.information2=Your Personal Allowance may be different depending on your circumstances.
 tai.incomeTaxComparison.taxFreeAmount.additions.caption=Additions
 tai.incomeTaxComparison.taxFreeAmount.deductions.caption=Deductions
-tai.incomeTaxComparison.taxFreeAmount.description=The total amount of income you can have before you pay tax.
+tai.incomeTaxComparison.taxFreeAmount.description=Your tax-free amount is the income you can have before paying tax.
 tai.incomeTaxComparison.taxFreeAmount.noAdditions=You have no additions
 tai.incomeTaxComparison.taxFreeAmount.noDeductions=You have no deductions
 tai.incomeTaxComparison.taxFreeAmount.subHeading=Tax-free amount
 tai.incomeTaxComparison.taxFreeAmount.totalAdditions=Total additions
 tai.incomeTaxComparison.taxFreeAmount.totalDeductions=Total deductions
 tai.incomeTaxComparison.taxFreeAmount.totalTFA=Your total tax-free amount
-tai.incomeTaxComparison.tellAboutChange.companyBenefitsReaderText=Tell us about company benefits.
-tai.incomeTaxComparison.tellAboutChange.companyBenefitsText=company benefits
-tai.incomeTaxComparison.tellAboutChange.description=If your details here are wrong or if there is something missing, tell us about changes to your:
-tai.incomeTaxComparison.tellAboutChange.investmentIncomeReaderText=Tell us about investment income.
-tai.incomeTaxComparison.tellAboutChange.investmentIncomeText=investment income
-tai.incomeTaxComparison.tellAboutChange.otherIncomeReaderText=Tell us about other income.
-tai.incomeTaxComparison.tellAboutChange.otherIncomeText=other income
-tai.incomeTaxComparison.tellAboutChange.stateBenefitsReaderText=Tell us about state benefits.
-tai.incomeTaxComparison.tellAboutChange.stateBenefitsText=state benefits
-tai.incomeTaxComparison.tellAboutChange.subHeading=Tell us about a change
+
+tai.incomeTaxComparison.whatHappensNext.subHeading=What happens next
+tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text=If the information you have seen here is right, you do not need to do anything.
+tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text=Your tax codes and income estimates for next tax year will be applied to your account from {0}.
+tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text=This calculation may change when we get your final payroll update or pension statement for the current tax year.
+tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading=If the information you have seen is wrong or incomplete
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description=You can tell us about changes that will apply from {0} for any of the following:
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsReaderText=Tell us about company benefits.
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText=company benefits
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText=income from another source
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeReaderText=Tell us about income from another source.
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText=allowances or tax reliefs
+tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefReaderText=Tell us about allowances or tax reliefs
+tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link=Return to your PAYE Income Tax overview
+
 tai.incomeTaxSummary.addMissingIncome.section.employerLink=Add a missing employer
 tai.incomeTaxSummary.addMissingIncome.section.heading=Something missing?
 tai.incomeTaxSummary.addMissingIncome.section.otherLink=Add missing income from another source

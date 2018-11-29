@@ -15,6 +15,8 @@
  *@
 
 @import includes.ptaHeader
+@import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import incomeTaxComparison._
 @import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
 @import uk.gov.hmrc.urls.Link
@@ -27,9 +29,9 @@
         @Link.toInternalPage(
             id=Some("returnToChooseTaxYearLink"),
             url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-            value=Some(Messages("tai.returnToChooseTaxYear")),
+            value=Some(messages("your.paye.income.tax.overview")),
             cssClasses=Some("link-back"),
-            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.returnToChooseTaxYear")}"))
+            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${messages("your.paye.income.tax.overview")}"))
         ).toHtml
     </p>
 }
@@ -67,46 +69,56 @@
                 @TaxFreeAmount(incomeTaxComparisonViewModel.taxFreeAmountComparisonViewModel)
             </section>
 
-            <section class="section" id="tellAboutChange" aria-labelledby="tellAboutChangeHeading">
-                <h2 class="heading-medium" id="tellAboutChangeHeading">@messages("tai.incomeTaxComparison.tellAboutChange.subHeading")</h2>
+            <section class="section" id="whatHappensNext" aria-labelledby="whatHappensNextHeading">
+                <h2 class="heading-large">@messages("tai.incomeTaxComparison.whatHappensNext.subHeading")</h2>
 
-                <p>@messages("tai.incomeTaxComparison.tellAboutChange.description")</p>
 
-                <ul class="list list-bullet">
+                <p>@messages("tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text")</p>
+                <p>@messages("tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text",s"${Dates.formatDate(TaxYearResolver.startOfNextTaxYear)}")</p>
+                <p>@messages("tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text")</p>
+
+                <h3 class="heading-medium">@messages("tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading")</h3>
+                <p>@messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description",s"${Dates.formatDate(TaxYearResolver.startOfNextTaxYear)}")</p>
+
+
+                <ul class="list list-bullet margin-bottom-large">
                     <li>
                         @includes.link(
                             id = Some("companyBenefitsLink"),
                             url = ApplicationConfig.companyBenefitsLinkUrl,
-                            copy = Messages("tai.incomeTaxComparison.tellAboutChange.companyBenefitsText"),
-                            altCopy = Some(Messages("tai.incomeTaxComparison.tellAboutChange.companyBenefitsReaderText"))
+                            copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText"),
+                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsReaderText"))
                         )
                     </li>
+
                     <li>
                         @includes.link(
-                            id = Some("investmentIncomeLink"),
-                            url = ApplicationConfig.investmentIncomeLinkUrl,
-                            copy = Messages("tai.incomeTaxComparison.tellAboutChange.investmentIncomeText"),
-                            altCopy = Some(Messages("tai.incomeTaxComparison.tellAboutChange.investmentIncomeReaderText"))
+                            id = Some("allowancesTaxReliefsLink"),
+                            url = ApplicationConfig.taxFreeAllowanceLinkUrl,
+                            copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText"),
+                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefReaderText"))
                         )
                     </li>
-                    <li>
-                        @includes.link(
-                            id = Some("taxableStateBenefitLink"),
-                            url = ApplicationConfig.taxableStateBenefitLinkUrl,
-                            copy = Messages("tai.incomeTaxComparison.tellAboutChange.stateBenefitsText"),
-                            altCopy = Some(Messages("tai.incomeTaxComparison.tellAboutChange.stateBenefitsReaderText"))
-                        )
-                    </li>
+
                     <li>
                         @includes.link(
                             id = Some("otherIncomeLink"),
                             url = ApplicationConfig.otherIncomeLinkUrl,
-                            copy = Messages("tai.incomeTaxComparison.tellAboutChange.otherIncomeText"),
-                            altCopy = Some(Messages("tai.incomeTaxComparison.tellAboutChange.otherIncomeReaderText"))
+                            copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText"),
+                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeReaderText"))
                         )
                     </li>
                 </ul>
             </section>
+
+            <p>
+                @Link.toInternalPage(
+                id=Some("returnToPAYEIncomeOverviewLink"),
+                url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
+                value=Some(messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link"))
+                ).toHtml
+            </p>
+
         </div>
     </div>
 }

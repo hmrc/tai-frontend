@@ -29,6 +29,10 @@ class IncomeSummarySpec extends TaiViewSpec {
       doc(view) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment"))
     }
 
+    "display income from employment description" in{
+      doc(view) must haveParagraphWithText(messages("tai.incomeTaxComparison.incomeTax.fromEmployer.description"))
+    }
+
 
     "display employment income summary information" in{
 
