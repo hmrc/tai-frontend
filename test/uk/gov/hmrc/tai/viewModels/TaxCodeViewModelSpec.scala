@@ -55,32 +55,18 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
     "be able to form view model object with single TaxCodeIncome" when {
       "provided with valid input" in {
         val result = testViewModel(Seq(taxCodeIncomes1))
-        result.mainHeading mustBe s"${Messages("tai.taxCode.single.code.title.pt1")} $expectedNonBreakSuffix"
+        result.mainHeading mustBe Messages("tai.taxCode.single.code.title", taxYearStartNonBreak, taxYearEndNonBreak)
         result.ledeMessage mustBe Messages("tai.taxCode.single.info")
-        result.title mustBe s"${Messages("tai.taxCode.single.code.title.pt1")} $taxYearSuffix"
-      }
-
-      "provided with valid input for a previous tax year" in {
-        val result = previusYearTestViewModel(Seq(taxCodeIncomes1))
-        result.mainHeading mustBe s"${Messages("tai.taxCode.prev.single.code.title.pt1")} $prevExpectedNonBreakSuffix"
-        result.ledeMessage mustBe Messages("tai.taxCode.prev.single.info")
-        result.title mustBe s"${Messages("tai.taxCode.prev.single.code.title.pt1")} $prevTaxYearSuffix"
+        result.title mustBe Messages("tai.taxCode.single.code.title", taxYearStartNonBreak, taxYearEndNonBreak)
       }
     }
 
     "be able to form view model object with multiple TaxCodeIncome" when {
       "provided with valid input" in {
         val result = testViewModel(Seq(taxCodeIncomes1, taxCodeIncomes2))
-        result.mainHeading mustBe s"${Messages("tai.taxCode.multiple.code.title.pt1")} $expectedNonBreakSuffix"
+        result.mainHeading mustBe  Messages("tai.taxCode.multiple.code.title",taxYearStartNonBreak,taxYearEndNonBreak)
         result.ledeMessage mustBe Messages("tai.taxCode.multiple.info")
-        result.title mustBe s"${Messages("tai.taxCode.multiple.code.title.pt1")} $taxYearSuffix"
-      }
-
-      "provided with valid input for a previous tax year" in {
-        val result = previusYearTestViewModel(Seq(taxCodeIncomes1, taxCodeIncomes2))
-        result.mainHeading mustBe s"${Messages("tai.taxCode.prev.multiple.code.title.pt1")} $prevExpectedNonBreakSuffix"
-        result.ledeMessage mustBe Messages("tai.taxCode.prev.multiple.info")
-        result.title mustBe s"${Messages("tai.taxCode.prev.multiple.code.title.pt1")} $prevTaxYearSuffix"
+        result.title mustBe Messages("tai.taxCode.multiple.code.title",taxYearStartNonBreak,taxYearEndNonBreak)
       }
     }
 
@@ -90,19 +76,9 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
         result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.subheading", "employer1", "1150L")
       }
 
-      "BasisOperations is OtherBasisOperation for a previous tax year" in {
-        val result = previusYearTestViewModel(Seq(taxCodeIncomes1))
-        result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.prev.subheading", "employer1", "1150L")
-      }
-
       "BasisOperations is Week1Month1BasisOperation" in {
         val result = testViewModel(Seq(taxCodeIncomes2))
         result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.subheading", "employer2", "BRX")
-      }
-
-      "BasisOperations is Week1Month1BasisOperation for a previous tax year" in {
-        val result = previusYearTestViewModel(Seq(taxCodeIncomes2))
-        result.taxCodeDetails.head.heading mustBe Messages("tai.taxCode.prev.subheading", "employer2", "BRX")
       }
     }
 
@@ -117,13 +93,6 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
         val result = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems.head mustBe("S", Messages(s"tai.taxCode.S",
-          Link.toExternalPage(url = ApplicationConfig.scottishRateIncomeTaxUrl, value = Some(Messages("tai.taxCode.scottishIncomeText.link"))).toHtml))
-      }
-
-      "provide taxCodeExplanation for a previous tax year" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
-        val result = previusYearTestViewModel(Seq(taxCodeIncome))
-        result.taxCodeDetails.head.descriptionItems.head mustBe("S", Messages(s"tai.taxCode.prev.S",
           Link.toExternalPage(url = ApplicationConfig.scottishRateIncomeTaxUrl, value = Some(Messages("tai.taxCode.scottishIncomeText.link"))).toHtml))
       }
     }
@@ -141,13 +110,6 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
         result.taxCodeDetails.head.descriptionItems mustBe ListMap("K" -> Messages("tai.taxCode.K"),
           "100" -> Messages(s"tai.taxCode.untaxedAmount", 1000))
       }
-
-      "provide taxCodeExplanation for a previous tax year" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "K100", "employer", OtherBasisOfOperation, Live)
-        val result = previusYearTestViewModel(Seq(taxCodeIncome))
-        result.taxCodeDetails.head.descriptionItems mustBe ListMap("K" -> Messages("tai.taxCode.prev.K"),
-          "100" -> Messages(s"tai.taxCode.untaxedAmount", 1000))
-      }
     }
 
     "be able to create table contents for 0 personal allowance income tax code" when {
@@ -161,12 +123,6 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "0T", "employer", OtherBasisOfOperation, Live)
         val result = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap("0T" -> Messages("tai.taxCode.0T"))
-      }
-
-      "provide taxCodeExplanation for a previous tax year" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "0T", "employer", OtherBasisOfOperation, Live)
-        val result = previusYearTestViewModel(Seq(taxCodeIncome))
-        result.taxCodeDetails.head.descriptionItems mustBe ListMap("0T" -> Messages("tai.taxCode.prev.0T"))
       }
     }
 
@@ -184,13 +140,6 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
           "L" -> Messages("tai.taxCode.L"))
       }
 
-      "provide taxCodeExplanation for a previous tax year" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "1150L", "employer", OtherBasisOfOperation, Live)
-        val result = previusYearTestViewModel(Seq(taxCodeIncome))
-        result.taxCodeDetails.head.descriptionItems mustBe ListMap("1150" -> Messages(s"tai.taxCode.prev.amount", 11500),
-          "L" -> Messages("tai.taxCode.prev.L"))
-      }
-
       "provide taxCodeExplanation when only single digit proceeds letter T" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "2T", "employer", OtherBasisOfOperation, Live)
         val result = testViewModel(Seq(taxCodeIncome))
@@ -198,25 +147,11 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
           "T" -> Messages("tai.taxCode.T"))
       }
 
-      "provide taxCodeExplanation when only single digit proceeds letter T for a previous tax year" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "2T", "employer", OtherBasisOfOperation, Live)
-        val result = previusYearTestViewModel(Seq(taxCodeIncome))
-        result.taxCodeDetails.head.descriptionItems mustBe ListMap("2" -> Messages(s"tai.taxCode.prev.amount", 20),
-          "T" -> Messages("tai.taxCode.prev.T"))
-      }
-
       "provide taxCodeExplanation when only single digit proceeds letter N" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "2N", "employer", OtherBasisOfOperation, Live)
         val result = testViewModel(Seq(taxCodeIncome))
         result.taxCodeDetails.head.descriptionItems mustBe ListMap("2" -> Messages(s"tai.taxCode.amount", 20),
           "N" -> Messages("tai.taxCode.N"))
-      }
-
-      "provide taxCodeExplanation when only single digit proceeds letter N for a previous tax year" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "2N", "employer", OtherBasisOfOperation, Live)
-        val result = previusYearTestViewModel(Seq(taxCodeIncome))
-        result.taxCodeDetails.head.descriptionItems mustBe ListMap("2" -> Messages(s"tai.taxCode.prev.amount", 20),
-          "N" -> Messages("tai.taxCode.prev.N"))
       }
     }
 
@@ -233,14 +168,6 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
         result.taxCodeDetails.head.descriptionItems mustBe ListMap("1150" -> Messages(s"tai.taxCode.amount", 11500),
           "L" -> Messages("tai.taxCode.L"),
           "X" -> Messages("tai.taxCode.X"))
-      }
-
-      "provide taxCodeExplanation for a previous tax year" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "1150L", "employer", Week1Month1BasisOfOperation, Live)
-        val result = previusYearTestViewModel(Seq(taxCodeIncome))
-        result.taxCodeDetails.head.descriptionItems mustBe ListMap("1150" -> Messages(s"tai.taxCode.prev.amount", 11500),
-          "L" -> Messages("tai.taxCode.prev.L"),
-          "X" -> Messages("tai.taxCode.prev.X"))
       }
     }
 
@@ -262,14 +189,6 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
           "0T" -> Messages("tai.taxCode.0T"))
       }
 
-      "provide taxCodeExplanation for scottish and 0 personal allowance code for a previous tax year" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S0T", "employer", OtherBasisOfOperation, Live)
-        val result = previusYearTestViewModel(Seq(taxCodeIncome))
-        result.taxCodeDetails.head.descriptionItems mustBe ListMap("S" -> Messages(s"tai.taxCode.prev.S",
-          Link.toExternalPage(url = ApplicationConfig.scottishRateIncomeTaxUrl, value = Some(Messages("tai.taxCode.scottishIncomeText.link"))).toHtml),
-          "0T" -> Messages("tai.taxCode.prev.0T"))
-      }
-
       "provide taxCodeExplanation for scottish and suffix code" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150M", "employer", OtherBasisOfOperation, Live)
         val result = testViewModel(Seq(taxCodeIncome))
@@ -277,15 +196,6 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
           Link.toExternalPage(url = ApplicationConfig.scottishRateIncomeTaxUrl, value = Some(Messages("tai.taxCode.scottishIncomeText.link"))).toHtml),
           "1150" -> Messages(s"tai.taxCode.amount", 11500),
           "M" -> Messages("tai.taxCode.M"))
-      }
-
-      "provide taxCodeExplanation for scottish and suffix code for a previous tax year" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150M", "employer", OtherBasisOfOperation, Live)
-        val result = previusYearTestViewModel(Seq(taxCodeIncome))
-        result.taxCodeDetails.head.descriptionItems mustBe ListMap("S" -> Messages(s"tai.taxCode.prev.S",
-          Link.toExternalPage(url = ApplicationConfig.scottishRateIncomeTaxUrl, value = Some(Messages("tai.taxCode.scottishIncomeText.link"))).toHtml),
-          "1150" -> Messages(s"tai.taxCode.prev.amount", 11500),
-          "M" -> Messages("tai.taxCode.prev.M"))
       }
 
       "provide taxCodeExplanation for scottish and suffix code with 0T to clash with stand-alone tax code" in {
@@ -297,15 +207,6 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
           "T" -> Messages("tai.taxCode.T"))
       }
 
-      "provide taxCodeExplanation for scottish and suffix code with 0T to clash with stand-alone tax code for a previous tax year" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150T", "employer", OtherBasisOfOperation, Live)
-        val result = previusYearTestViewModel(Seq(taxCodeIncome))
-        result.taxCodeDetails.head.descriptionItems mustBe ListMap("S" -> Messages(s"tai.taxCode.prev.S",
-          Link.toExternalPage(url = ApplicationConfig.scottishRateIncomeTaxUrl, value = Some(Messages("tai.taxCode.scottishIncomeText.link"))).toHtml),
-          "1150" -> Messages(s"tai.taxCode.prev.amount", 11500),
-          "T" -> Messages("tai.taxCode.prev.T"))
-      }
-
       "provide taxCodeExplanation for scottish, suffix code with emergency tax code" in {
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150T", "employer", Week1Month1BasisOfOperation, Live)
         val result = testViewModel(Seq(taxCodeIncome))
@@ -315,18 +216,14 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
           "T" -> Messages("tai.taxCode.T"),
           "X" -> Messages("tai.taxCode.X"))
       }
-
-      "provide taxCodeExplanation for scottish, suffix code with emergency tax code for a previous tax year" in {
-        val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150T", "employer", Week1Month1BasisOfOperation, Live)
-        val result = previusYearTestViewModel(Seq(taxCodeIncome))
-        result.taxCodeDetails.head.descriptionItems mustBe ListMap("S" -> Messages(s"tai.taxCode.prev.S",
-          Link.toExternalPage(url = ApplicationConfig.scottishRateIncomeTaxUrl, value = Some(Messages("tai.taxCode.scottishIncomeText.link"))).toHtml),
-          "1150" -> Messages(s"tai.taxCode.prev.amount", 11500),
-          "T" -> Messages("tai.taxCode.prev.T"),
-          "X" -> Messages("tai.taxCode.prev.X"))
-      }
     }
   }
+
+  val taxYearStartNonBreak = taxYear.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
+  val taxYearEndNonBreak = taxYear.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
+
+  val previousTaxYearStartNonBreak = taxYear.prev.start.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
+  val previousTaxYearEndNonBreak = taxYear.prev.end.toString("d MMMM yyyy").replaceAll(" ", "\u00A0")
 
   private val taxCodeIncomes1 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)
   private val taxCodeIncomes2 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "BR", "employer2", Week1Month1BasisOfOperation, Live)
@@ -334,6 +231,4 @@ class TaxCodeViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18
   private val scottishTaxRateBands = Map.empty[String, BigDecimal]
 
   def testViewModel(taxCodeIncomes: Seq[TaxCodeIncome]) = TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands)
-  def previusYearTestViewModel(taxCodeIncomes: Seq[TaxCodeIncome]) = TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands, TaxYear().prev)
-
 }

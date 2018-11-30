@@ -21,7 +21,8 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
-import uk.gov.hmrc.tai.model.domain.{HasTaxCodeChanged, TaxCodeChange, TaxCodeMismatch}
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.{HasTaxCodeChanged, TaxCodeChange, TaxCodeMismatch, TaxCodeRecord}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -31,9 +32,10 @@ trait TaxCodeChangeService {
   def taxCodeChangeConnector: TaxCodeChangeConnector
 
   def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] = {
+
     taxCodeChangeConnector.taxCodeChange(nino) map {
       case TaiSuccessResponseWithPayload(taxCodeChange: TaxCodeChange) => taxCodeChange
-      case _ => throw new RuntimeException("Could not fetch tax code change")
+      case _ => throw new RuntimeException(s"Could not fetch tax code change")
     }
   }
 
@@ -46,14 +48,28 @@ trait TaxCodeChangeService {
       taxCodeMismatch <- taxCodeMismatchFuture
     } yield {
       (hasTaxCodeChanged, taxCodeMismatch) match {
-        case(_: Boolean, TaiSuccessResponseWithPayload(taxCodeMismatch: TaxCodeMismatch)) => {
+        case (_: Boolean, TaiSuccessResponseWithPayload(taxCodeMismatch: TaxCodeMismatch)) => {
           HasTaxCodeChanged(hasTaxCodeChanged, Some(taxCodeMismatch))
         }
-        case(_: Boolean, _: TaiTaxAccountFailureResponse) => {
+        case (_: Boolean, _: TaiTaxAccountFailureResponse) => {
           HasTaxCodeChanged(changed = false, None)
         }
         case _ => throw new RuntimeException("Could not fetch has tax code changed")
       }
+    }
+  }
+
+  def lastTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[TaxCodeRecord]] = {
+    taxCodeChangeConnector.lastTaxCodeRecords(nino, year) map {
+      case TaiSuccessResponseWithPayload(taxCodeRecords: Seq[TaxCodeRecord]) => taxCodeRecords
+      case TaiTaxAccountFailureResponse(_) => throw new RuntimeException(s"Could not fetch last tax code records for year $year")
+    }
+  }
+
+  def hasTaxCodeRecordsInYearPerEmployment(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Boolean] = {
+    taxCodeChangeConnector.lastTaxCodeRecords(nino, year) map {
+      case TaiSuccessResponseWithPayload(taxCodeRecords: Seq[TaxCodeRecord]) if taxCodeRecords.nonEmpty => true
+      case _ => false
     }
   }
 

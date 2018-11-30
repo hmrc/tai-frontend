@@ -213,6 +213,6 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
   private val annualAccountWithSinglePayment = AnnualAccount("", cyMinusOneTaxYear, Available, singleAnnualAccountsPayment, Nil)
   private val annualAccountWithMultiplePayments = AnnualAccount("", cyMinusOneTaxYear, Available, multipleAnnualAccountsPayments, Nil)
 
-  private def createSut(employments: Seq[Employment]) = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, employments)
-  private def createSut(taxYear: TaxYear, employments: Seq[Employment]) = HistoricPayAsYouEarnViewModel(taxYear, employments)
+  private def createSut(employments: Seq[Employment]) = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, employments, true)
+  private def createSut(taxYear: TaxYear, employments: Seq[Employment]) = HistoricPayAsYouEarnViewModel(taxYear, employments, true)
 }

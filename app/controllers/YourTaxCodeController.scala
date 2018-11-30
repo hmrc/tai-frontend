@@ -28,8 +28,10 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService}
-import uk.gov.hmrc.tai.viewModels.TaxCodeViewModel
+import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, TaxCodeChangeService}
+import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYears}
+
+import scala.concurrent.Future
 
 trait YourTaxCodeController extends TaiBaseController
   with DelegationAwareActions
@@ -40,6 +42,8 @@ trait YourTaxCodeController extends TaiBaseController
   def personService: PersonService
 
   def taxAccountService: TaxAccountService
+
+  def taxCodeChangeService: TaxCodeChangeService
 
   def taxCodes(year: TaxYear = TaxYear()): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -52,23 +56,47 @@ trait YourTaxCodeController extends TaiBaseController
               TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService.taxCodeIncomes(nino, year)
               scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
             } yield {
-              val taxCodeViewModel = TaxCodeViewModel(taxCodeIncomes, scottishTaxRateBands, year)
+              val taxCodeViewModel = TaxCodeViewModel.apply(taxCodeIncomes, scottishTaxRateBands)
               Ok(views.html.taxCodeDetails(taxCodeViewModel))
             }
           }
   }
 
-  def prevTaxCodes(year: TaxYear): Action[AnyContent] = taxCodes(year)
+  def prevTaxCodes(year: TaxYear): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
 
+          if (taxCodeChangeEnabled) {
+            ServiceCheckLite.personDetailsCheck {
+              val nino = user.person.nino
+
+              for {
+                taxCodeRecords <- taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(nino, year)
+                scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeRecords.map(_.taxCode))
+              } yield {
+                val taxCodeViewModel = TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, year)
+                Ok(views.html.taxCodeDetailsPreviousYears(taxCodeViewModel))
+              }
+            }
+          } else {
+            ServiceCheckLite.personDetailsCheck {
+              Future.successful(NotFound)
+            }
+          }
+  }
 }
+
 // $COVERAGE-OFF$
 object YourTaxCodeController extends YourTaxCodeController with AuthenticationConnectors {
   override val personService = PersonService
   override val taxAccountService: TaxAccountService = TaxAccountService
+  override val taxCodeChangeService: TaxCodeChangeService = TaxCodeChangeService
 
   override implicit def templateRenderer = LocalTemplateRenderer
 
   override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
 }
+
 // $COVERAGE-ON$
 

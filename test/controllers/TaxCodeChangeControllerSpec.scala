@@ -63,7 +63,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       }
     }
 
-
     "don't show 'What happens next' page if 'tax code change journey' is toggled off" when {
       "the request has an authorised session" in {
         val SUT = createSUT()

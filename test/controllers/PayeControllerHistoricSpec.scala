@@ -33,8 +33,10 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxPeriodLabelService}
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxCodeChangeService, TaxPeriodLabelService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
+import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
+import views.html.paye.historicPayAsYouEarn
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -44,9 +46,11 @@ class PayeControllerHistoricSpec extends PlaySpec
   with MockitoSugar
   with I18nSupport
   with TaxPeriodLabelService
-  with JsoupMatchers{
+  with JsoupMatchers
+  with ControllerViewTestHelper {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
   private val currentYear: Int = TaxYear().year
   private val cyMinusOneTaxYear: TaxYear = TaxYear(currentYear - 1)
@@ -66,19 +70,17 @@ class PayeControllerHistoricSpec extends PlaySpec
     }
 
     "display the last year paye page successfully " in {
-
       val testController = createTestController()
 
-      val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-      val doc = Jsoup.parse(contentAsString(result))
+      val result = testController.payePage(TaxYear().prev)(request)
 
       status(result) mustBe OK
 
-      doc.title() must include(Messages("tai.paye.heading", taxPeriodLabel(cyMinusOneTaxYear.year)))
+      val viewModel = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq.empty[Employment], true)
 
-      doc.select("#thisTaxYear").size must be(0)
-      doc.select("#lastTaxYear").size must be(1)
+      result rendersTheSameViewAs historicPayAsYouEarn(viewModel, 3, true)
     }
 
     "Redirect to the paye controller" when {
@@ -121,6 +123,7 @@ class PayeControllerHistoricSpec extends PlaySpec
       }
       redirectUrl mustBe "/check-income-tax/tax-estimate-unavailable"
     }
+
     "redirect to deceased page when deceased indicator is true" in {
       val testController = createTestController()
       when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(person.copy(isDeceased=true)))
@@ -132,7 +135,6 @@ class PayeControllerHistoricSpec extends PlaySpec
     }
 
     "display an error page" when {
-
       "employment service call results in a NotFoundException from NPS" in {
 
         val testController = createTestController()
@@ -208,15 +210,6 @@ class PayeControllerHistoricSpec extends PlaySpec
     }
   }
 
-  "display 'update previous employment' page" in {
-    val testController = createTestController()
-    val result = testController.payePage(TaxYear().prev)()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-    val doc = Jsoup.parse(contentAsString(result))
-    status(result) mustBe OK
-    doc.title() must include(Messages("tai.paye.heading", taxPeriodLabel(cyMinusOneTaxYear.year)))
-    doc must haveLinkWithUrlWithID("updateEmployment", controllers.income.previousYears.routes.UpdateIncomeDetailsController.decision(TaxYear().prev).url)
-  }
-
   val fakeNino = new Generator(new Random).nextNino
 
   val fakeAuthority = AuthBuilder.createFakeAuthority(fakeNino.nino)
@@ -224,12 +217,15 @@ class PayeControllerHistoricSpec extends PlaySpec
   val person = fakePerson(fakeNino)
   val personMci = person.copy(hasCorruptData = true)
 
-  def createTestController(employments: Seq[Employment] = Nil, previousYears: Int = 3) = new PayeControllerHistoricTest(employments, previousYears)
+  def createTestController(employments: Seq[Employment] = Nil, previousYears: Int = 3, showTaxCodeDescriptionLink: Boolean = false) = {
+    new PayeControllerHistoricTest(employments, previousYears, showTaxCodeDescriptionLink)
+  }
 
-  class PayeControllerHistoricTest(employments: Seq[Employment], previousYears: Int) extends PayeControllerHistoric {
+  class PayeControllerHistoricTest(employments: Seq[Employment], previousYears: Int, showTaxCodeDescriptionLink: Boolean) extends PayeControllerHistoric {
 
     override val personService: PersonService = mock[PersonService]
     override val employmentService: EmploymentService = mock[EmploymentService]
+    override val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val authConnector: AuthConnector = mock[AuthConnector]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
@@ -237,10 +233,10 @@ class PayeControllerHistoricSpec extends PlaySpec
     override val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override val numberOfPreviousYearsToShow: Int = previousYears
 
-
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(person))
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
+    when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any())).thenReturn(Future.successful(showTaxCodeDescriptionLink))
   }
 
 }
