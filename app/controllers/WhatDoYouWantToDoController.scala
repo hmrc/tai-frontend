@@ -134,36 +134,30 @@ trait WhatDoYouWantToDoController extends TaiBaseController
 
     trackingService.isAnyIFormInProgress(user.getNino) flatMap { trackingResponse =>
 
-      (cyPlusOneEnabled, tileViewEnabled) match {
-        case (true, true) => {
-          val hasTaxCodeChanged: Future[HasTaxCodeChanged] = taxCodeChangeService.hasTaxCodeChanged(Nino(user.getNino))
-          val cy1TaxAccountSummary: Future[TaiResponse] = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear().next)
+      if(cyPlusOneEnabled) {
 
-          for {
-            taxCodeChanged <- hasTaxCodeChanged
-            taxAccountSummary <- cy1TaxAccountSummary
-          } yield {
-            Logger.debug("[WhatDoYouWantToDoController] TaxCodeChanged: " + taxCodeChanged)
-            taxAccountSummary match {
-              case TaiSuccessResponseWithPayload(_) =>
-                Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, taxCodeChanged.changed, taxCodeChanged.mismatch)))
-              case _ =>
-                Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, isCyPlusOneEnabled = false)))
-            }
+        val hasTaxCodeChanged = taxCodeChangeService.hasTaxCodeChanged(Nino(user.getNino))
+        val cy1TaxAccountSummary = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear().next)
+
+        for {
+          taxCodeChanged <- hasTaxCodeChanged
+          taxAccountSummary <- cy1TaxAccountSummary
+        } yield {
+          taxAccountSummary match {
+            case TaiSuccessResponseWithPayload(_) =>
+              Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(
+                trackingResponse, cyPlusOneEnabled, taxCodeChanged.changed, taxCodeChanged.mismatch)))
+            case _ =>
+              Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(
+                trackingResponse, isCyPlusOneEnabled = false)))
           }
         }
-        case (true, false) => taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear().next) map {
-          case TaiSuccessResponseWithPayload(_) =>
-            Ok(views.html.whatDoYouWantToDo(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled)))
-          case _ =>
-            Ok(views.html.whatDoYouWantToDo(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, isCyPlusOneEnabled = false)))
-        }
-        case (false, true) =>
-          taxCodeChangeService.hasTaxCodeChanged(Nino(user.getNino)).map (hasTaxCodeChanged =>
-            Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch)))
-          )
-        case (false, false) =>
-          Future.successful(Ok(views.html.whatDoYouWantToDo(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled))))
+      }
+      else {
+        taxCodeChangeService.hasTaxCodeChanged(Nino(user.getNino)).map (hasTaxCodeChanged =>
+          Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(
+            trackingResponse, cyPlusOneEnabled, hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch)))
+        )
       }
     }
   }
