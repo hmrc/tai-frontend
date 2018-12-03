@@ -16,38 +16,33 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.tai.connectors.responses._
-import uk.gov.hmrc.tai.model.domain.Person
-
+import uk.gov.hmrc.tai.connectors.PersonConnector.baseUrl
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.model.domain.{Person, TaxFreeAmountComparison}
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+
 import scala.concurrent.Future
 
-trait PersonConnector {
+trait TaxFreeAmountComparisonConnector {
 
   val serviceUrl: String
 
   def httpHandler: HttpHandler
 
-  def personUrl(nino: String): String = s"$serviceUrl/tai/$nino/person"
+  def taxFreeAmountComparisonUrl(nino: String) = s"$serviceUrl/tai/$nino/tax-account/tax-free-amount-comparison"
 
-  def person(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
-
-    httpHandler.getFromApi(personUrl(nino.nino)) map (
+  def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+    httpHandler.getFromApi(taxFreeAmountComparisonUrl(nino.nino)) map (
       json =>
-        TaiSuccessResponseWithPayload((json \ "data").as[Person])
-      ) recover {
-        case e: Exception =>
-          Logger.warn(s"Couldn't retrieve person details for $nino with exception:${e.getMessage}", e)
-          TaiNotFoundResponse(e.getMessage)
-      }
+        TaiSuccessResponseWithPayload((json \ "data").as[TaxFreeAmountComparison])
+      )
   }
 }
 
-object PersonConnector extends PersonConnector with ServicesConfig {
+
+object TaxFreeAmountComparisonConnector extends TaxFreeAmountComparisonConnector {
 
   override val serviceUrl = baseUrl("tai")
 

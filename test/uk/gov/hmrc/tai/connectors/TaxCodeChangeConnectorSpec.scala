@@ -274,11 +274,11 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  private def createTestConnector = new testTaxCodeChangeConnector
+  private def createTestConnector = new TestTaxCodeChangeConnector
 
   private def generateNino: Nino = new Generator(new Random).nextNino
 
-  private class testTaxCodeChangeConnector extends TaxCodeChangeConnector {
+  private class TestTaxCodeChangeConnector extends TaxCodeChangeConnector {
     override val serviceUrl: String = s"http://localhost:${server.port()}"
     override val httpHandler: HttpHandler = HttpHandler
   }
