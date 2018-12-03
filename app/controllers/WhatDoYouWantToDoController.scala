@@ -119,6 +119,7 @@ trait WhatDoYouWantToDoController extends TaiBaseController
     val nino = Nino(user.getNino)
     val currentTaxYearEmployments = employmentService.employments(nino, TaxYear())
     val currentTaxYearTaxCodes = taxAccountService.taxCodeIncomes(nino, TaxYear())
+
     (for {
       employments <- currentTaxYearEmployments
       taxCodes <- currentTaxYearTaxCodes
