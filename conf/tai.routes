@@ -1,6 +1,4 @@
 GET         /what-do-you-want-to-do                                                    controllers.WhatDoYouWantToDoController.whatDoYouWantToDoPage
-POST        /what-do-you-want-to-do                                                    controllers.WhatDoYouWantToDoController.handleWhatDoYouWantToDoPage
-
 
 GET         /income-tax/no-info                                                        controllers.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage
 

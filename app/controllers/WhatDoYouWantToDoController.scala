@@ -84,36 +84,6 @@ trait WhatDoYouWantToDoController extends TaiBaseController
           } recoverWith (hodBadRequestResult orElse hodInternalErrorResult)
   }
 
-  def handleWhatDoYouWantToDoPage(): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-
-          WhatDoYouWantToDoForm.createForm.bindFromRequest.fold(
-            formWithErrors => {
-              trackingService.isAnyIFormInProgress(user.getNino) flatMap { trackingResponse =>
-                if(cyPlusOneEnabled){
-                    taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear().next) map {
-                      case TaiSuccessResponseWithPayload(_) =>
-                        BadRequest(views.html.whatDoYouWantToDo(formWithErrors, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled)))
-                      case _ =>
-                        BadRequest(views.html.whatDoYouWantToDo(formWithErrors, WhatDoYouWantToDoViewModel(trackingResponse, isCyPlusOneEnabled = false)))
-                    }
-                } else {
-                  Future.successful(BadRequest(views.html.whatDoYouWantToDo(formWithErrors, WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled))))
-                }
-              }
-            },
-            formData => {
-              formData.whatDoYouWantToDo match {
-                case Some("currentTaxYear") => Future.successful(Redirect(routes.TaxAccountSummaryController.onPageLoad()))
-                case Some("lastTaxYear") => Future.successful(Redirect(routes.PayeControllerHistoric.payePage(TaxYear(TaxYearResolver.currentTaxYear-1))))
-                case Some("nextTaxYear") => Future.successful(Redirect(routes.IncomeTaxComparisonController.onPageLoad()))
-              }
-            }
-          )
-  }
-
   private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: TaiUser): Future[Result] = {
 
     val nino = Nino(user.getNino)
@@ -129,8 +99,8 @@ trait WhatDoYouWantToDoController extends TaiBaseController
         case _ => Seq.empty[TaxCodeIncome]
       }
       auditService.sendUserEntryAuditEvent(nino, request.headers.get("Referer").getOrElse("NA"), employments, noOfTaxCodes)
-    }).recover{
-      auditError
+    }).recover{auditError
+
     }
 
     trackingService.isAnyIFormInProgress(user.getNino) flatMap { trackingResponse =>
