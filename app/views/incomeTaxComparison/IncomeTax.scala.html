@@ -30,30 +30,43 @@
 
     <p>@messages("tai.incomeTaxComparison.incomeTax.description")</p>
 
-    <table class="table--font-reset flush--bottom" id="estimatedIncomeTaxComparisonTable">
+    <table class="table--font-reset flush--bottom responsive-table" role="grid">
         <caption class="visually-hidden">@messages("tai.incomeTaxComparison.incomeTax.estimate")</caption>
         <thead id="estimatedIncomeTaxComparisonTableHeader">
-            <tr class="text--right">
-                <th></th>
-                <th id="estimatedIncomeTaxComparisonTableHeaderCol1" scope="col" class="text--right">
+            <tr role="row">
+                <th scope="col"></th>
+                <th id="estimatedIncomeTaxComparisonTableHeaderCol1" scope="col" class="numeric">
                     @Html(viewmodel.htmlNonBroken(messages("tai.CurrentTaxYear")))
                     @Html(viewmodel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", viewmodel.currentTaxYearHeader)))
                 </th>
-                <th id="estimatedIncomeTaxComparisonTableHeaderCol2" scope="col" class="text--right">
+                <th id="estimatedIncomeTaxComparisonTableHeaderCol2" scope="col" class="numeric">
                     @Html(viewmodel.htmlNonBroken(messages("tai.NextTaxYear")))
                     @Html(viewmodel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", viewmodel.nextTaxYearHeader)))
                 </th>
             </tr>
         </thead>
+        <tbody>
+            <tr role="row">
+                <td scope="row" role="gridcell" id="estimatedIncomeTaxComparisonTableRowDescription">
+                    @messages("tai.incomeTaxComparison.incomeTax.estimate")
+                </td>
 
-        <tbody id="estimatedIncomeTaxComparisonTableBody">
-            <tr id="estimatedIncomeTaxComparisonTableRow">
-                <td id="estimatedIncomeTaxComparisonTableRowDescription">@messages("tai.incomeTaxComparison.incomeTax.estimate")</td>
+                <td scope="row" role="gridcell" class="numeric">
+                    <span class="table-heading" aria-hidden="true">
+                        @Html(viewmodel.htmlNonBroken(messages("tai.CurrentTaxYear")))
+                        @Html(viewmodel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", viewmodel.currentTaxYearHeader)))
+                    </span>
+                    @pounds(viewmodel.comparisonItemsByYear.head.estimatedIncomeTax)
+                </td>
 
-                @viewmodel.comparisonItemsByYear.map { comparisonItem =>
-                    <td class="text--right">@pounds(comparisonItem.estimatedIncomeTax)</td>
-                }
+                <td scope="row" role="gridcell" class="numeric">
+                    <span class="table-heading" aria-hidden="true">
+                        @Html(viewmodel.htmlNonBroken(messages("tai.NextTaxYear")))
+                        @Html(viewmodel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", viewmodel.nextTaxYearHeader)))
+                    </span>
+                    @pounds(viewmodel.comparisonItemsByYear.tail.head.estimatedIncomeTax)
+                </td>
+
             </tr>
         </tbody>
-
     </table>
