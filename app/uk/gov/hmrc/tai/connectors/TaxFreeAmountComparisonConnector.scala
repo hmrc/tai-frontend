@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.PersonConnector.baseUrl
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.{Person, TaxFreeAmountComparison}
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -37,7 +38,11 @@ trait TaxFreeAmountComparisonConnector {
     httpHandler.getFromApi(taxFreeAmountComparisonUrl(nino.nino)) map (
       json =>
         TaiSuccessResponseWithPayload((json \ "data").as[TaxFreeAmountComparison])
-      )
+      ) recover {
+      case e: Exception =>
+        Logger.warn(s"Couldn't retrieve taxFreeAmountComparison for $nino with exception:${e.getMessage}")
+        TaiTaxAccountFailureResponse(e.getMessage)
+    }
   }
 }
 

@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, urlEqualTo}
+import com.github.tomakehurst.wiremock.client.WireMock.{badRequest, get, ok, urlEqualTo}
 import controllers.FakeTaiPlayApplication
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.{CarBenefit, TaxFreeAmountComparison}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import utils.WireMockHelper
@@ -83,6 +83,25 @@ class TaxFreeAmountComparisonConnectorSpec extends PlaySpec with MockitoSugar wi
         val codingComponents = Seq(CodingComponent(CarBenefit, Some(1), 1, "Car Benefit", Some(1)))
 
         val expected = TaiSuccessResponseWithPayload(TaxFreeAmountComparison(codingComponents, codingComponents))
+
+        val result = testConnector.taxFreeAmountComparison(nino)
+
+        Await.result(result, 5.seconds) mustBe expected
+      }
+    }
+
+    "return a TaiTaxAccountFailureResponse" when {
+      "the api responds with invalid json" in {
+        val testConnector = new TestTaxFreeAmountComparisonConnector
+        val nino = new Generator(new Random).nextNino
+
+        val taxFreeAmountUrl = s"/tai/${nino.nino}/tax-account/tax-free-amount-comparison"
+
+        server.stubFor(
+          get(urlEqualTo(taxFreeAmountUrl)).willReturn(badRequest)
+        )
+
+        val expected = TaiTaxAccountFailureResponse(s"GET of '${testConnector.serviceUrl}/tai/$nino/tax-account/tax-free-amount-comparison' returned 400 (Bad Request). Response body ''")
 
         val result = testConnector.taxFreeAmountComparison(nino)
 
