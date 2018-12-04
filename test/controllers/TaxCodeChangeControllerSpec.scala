@@ -33,7 +33,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity, TaxCodeChange, TaxCodeRecord}
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -106,6 +106,23 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         doc.title() must include(messagesApi("global.error.pageNotFound404.title"))
       }
     }
+
+    "get the codingComponents from the taxFreeAmountComparison when comparison toggle is true" in {
+      val SUT = createSUT(true, true)
+
+      val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
+
+      val taxFreeAmountComparison = TaxFreeAmountComparison(Seq(codingComponent1), Seq(codingComponent2))
+
+      when(SUT.codingComponentService.taxFreeAmountComparison(any())(any())).thenReturn(Future.successful(taxFreeAmountComparison))
+      when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
+      when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
+      when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+
+      val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+      status(result) mustBe OK
+    }
   }
 
   "taxCodeComparison" must {
@@ -137,20 +154,21 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   }
 
 
-  private def createSUT(taxCodeChangeJourneyEnabled: Boolean = false) = new SUT(taxCodeChangeJourneyEnabled)
+  private def createSUT(taxCodeChangeJourneyEnabled: Boolean = false, comparisonEnabled: Boolean = false) = new SUT(taxCodeChangeJourneyEnabled, comparisonEnabled)
 
   def generateNino: Nino = new Generator(new Random).nextNino
 
   val giftAmount = 1000
 
-  val codingComponents = Seq(CodingComponent(GiftAidPayments, None, giftAmount, "GiftAidPayments description"),
-    CodingComponent(GiftsSharesCharity, None, giftAmount, "GiftsSharesCharity description"))
+  private val codingComponent1 = CodingComponent(GiftAidPayments, None, giftAmount, "GiftAidPayments description")
+  private val codingComponent2 = CodingComponent(GiftsSharesCharity, None, giftAmount, "GiftsSharesCharity description")
+  val codingComponents = Seq(codingComponent1, codingComponent2)
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
   val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation,"Employer 1", false, Some("1234"), true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
-  private class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController {
+  private class SUT(taxCodeChangeJourneyEnabled: Boolean, comparisonEnabled: Boolean) extends TaxCodeChangeController {
 
     override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
@@ -164,6 +182,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     override protected val authConnector: AuthConnector = mock[AuthConnector]
     override val auditConnector: AuditConnector = mock[AuditConnector]
     override val taxCodeChangeEnabled: Boolean = taxCodeChangeJourneyEnabled
+    override val taxFreeAmountComparisonEnabled: Boolean = comparisonEnabled
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 

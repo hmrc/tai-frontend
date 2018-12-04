@@ -19,9 +19,10 @@ package uk.gov.hmrc.tai.service
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.TaxAccountConnector
+import uk.gov.hmrc.tai.connectors.{TaxAccountConnector, TaxFreeAmountComparisonConnector}
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -31,6 +32,8 @@ trait CodingComponentService {
 
   def taxAccountConnector: TaxAccountConnector
 
+  def taxFreeAmountComparisonConnector: TaxFreeAmountComparisonConnector
+
   def taxFreeAmountComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[CodingComponent]] = {
     taxAccountConnector.codingComponents(nino, year) map {
       case TaiSuccessResponseWithPayload(codingComponents: Seq[CodingComponent]) => filterOutZeroAmountsComponents(codingComponents)
@@ -39,7 +42,22 @@ trait CodingComponentService {
     }
   }
 
-  private def filterOutZeroAmountsComponents(codingComponents: Seq[CodingComponent]) = {
+  def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxFreeAmountComparison] = {
+    taxFreeAmountComparisonConnector.taxFreeAmountComparison(nino) map {
+      case TaiSuccessResponseWithPayload(taxFreeAmountComparison: TaxFreeAmountComparison) => filterOutZeroAmountsComponents(taxFreeAmountComparison)
+      case TaiTaxAccountFailureResponse(e) => throw new RuntimeException(e)
+      case _ => throw new RuntimeException("Could not fetch tax free amount comparison")
+    }
+  }
+
+  private def filterOutZeroAmountsComponents(taxFreeAmountComparison: TaxFreeAmountComparison): TaxFreeAmountComparison = {
+    TaxFreeAmountComparison(
+      filterOutZeroAmountsComponents(taxFreeAmountComparison.previous),
+      filterOutZeroAmountsComponents(taxFreeAmountComparison.current)
+    )
+  }
+
+  private def filterOutZeroAmountsComponents(codingComponents: Seq[CodingComponent]): Seq[CodingComponent] = {
     codingComponents.filter {
       case component if component.amount == 0 => false
       case _ => true
@@ -49,5 +67,6 @@ trait CodingComponentService {
 
 object CodingComponentService extends CodingComponentService {
   override val taxAccountConnector: TaxAccountConnector = TaxAccountConnector
+  override val taxFreeAmountComparisonConnector: TaxFreeAmountComparisonConnector = TaxFreeAmountComparisonConnector
 }
 

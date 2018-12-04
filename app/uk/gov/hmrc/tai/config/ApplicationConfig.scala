@@ -98,6 +98,7 @@ trait FeatureTogglesConfig extends ServicesConfig {
   val companyCarForceRedirectEnabled = configuration.getBoolean("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
   val tileViewEnabled = configuration.getBoolean("tai.tileView.enabled").getOrElse(false)
   val taxCodeChangeEnabled = configuration.getBoolean("tai.taxCodeChange.enabled").getOrElse(false)
+  val taxFreeAmountComparisonEnabled = configuration.getBoolean("tai.taxFreeAmountComparison.enabled").getOrElse(false)
 }
 
 object FeatureTogglesConfig extends FeatureTogglesConfig
