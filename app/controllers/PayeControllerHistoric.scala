@@ -76,7 +76,8 @@ with Auditable
       } yield {
         checkedAgainstPersonDetails(
           person,
-          Ok(views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(taxYear, employments, hasTaxCodeRecordsInYearPerEmployment), numberOfPreviousYearsToShow, taxCodeChangeEnabled))
+          Ok(views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(
+            taxYear, employments, hasTaxCodeRecordsInYearPerEmployment), numberOfPreviousYearsToShow, taxCodeChangeEnabled))
         )
       }
     }
