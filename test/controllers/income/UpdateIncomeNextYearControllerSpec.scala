@@ -34,18 +34,13 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, _}
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
-import views.html.incomes.nextYear.{updateIncomeCYPlus1Edit, updateIncomeCYPlus1Start, updateIncomeCYPlus1Success}
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
-import views.html.incomes.nextYear.{updateIncomeCYPlus1Confirm, updateIncomeCYPlus1Edit, updateIncomeCYPlus1Start}
-import views.html.incomes.nextYear.{updateIncomeCYPlus1Edit, updateIncomeCYPlus1Same, updateIncomeCYPlus1Start, updateIncomeCYPlus1Success}
+import views.html.incomes.nextYear._
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
 import scala.concurrent.Future
 import scala.util.Random
 

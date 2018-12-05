@@ -24,21 +24,24 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
+import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.benefits.CompanyCarService
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -47,7 +50,8 @@ import scala.util.Random
 class TaxCodeChangeControllerSpec extends PlaySpec
   with MockitoSugar
   with FakeTaiPlayApplication
-  with I18nSupport {
+  with I18nSupport
+  with ControllerViewTestHelper {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -55,24 +59,34 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     "show 'What happens next' page" when {
       "the request has an authorised session" in {
         val SUT = createSUT(true)
-        val result = SUT.whatHappensNext()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+        val result = SUT.whatHappensNext()(request)
         status(result) mustBe OK
 
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messagesApi("taxCode.change.whatHappensNext.title"))
+        result rendersTheSameViewAs views.html.taxCodeChange.whatHappensNext()
       }
     }
 
     "don't show 'What happens next' page if 'tax code change journey' is toggled off" when {
       "the request has an authorised session" in {
         val SUT = createSUT()
-        val result = SUT.whatHappensNext()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe OK
+        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messagesApi("global.error.pageNotFound404.title"))
+        val result = SUT.whatHappensNext()(request)
 
+        status(result) mustBe NOT_FOUND
+
+        result rendersTheSameViewAs views.html.error_template_noauth(
+          Messages("global.error.pageNotFound404.title"),
+          Messages("tai.errorMessage.heading"),
+          Messages("tai.errorMessage.frontend404", Link.toInternalPage(
+            url = routes.TaxAccountSummaryController.onPageLoad().url,
+            value = Some(Messages("tai.errorMessage.startAgain"))
+          ).toHtml)
+        )
       }
     }
   }
@@ -82,16 +96,26 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val SUT = createSUT(true)
 
+        val taxFreeAmountComparison = TaxFreeAmountComparison(Seq(codingComponent1), Seq(codingComponent2))
         val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
+        val employmentMap = Map.empty[Int, String]
+        val companyCar = Seq.empty[CompanyCarBenefit]
 
-        when(SUT.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(codingComponents))
-        when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
-        when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
+        when(SUT.codingComponentService.taxFreeAmountComparison(any())(any())).thenReturn(Future.successful(taxFreeAmountComparison))
+        when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(companyCar))
+        when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(employmentMap))
         when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
 
-        val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+        val expectedViewModel: YourTaxFreeAmountViewModel = YourTaxFreeAmountViewModel(
+          taxCodeRecord2.startDate, taxFreeAmountComparison.current, employmentMap, companyCar
+        )
+
+        val result = SUT.yourTaxFreeAmount()(request)
 
         status(result) mustBe OK
+        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel)
       }
     }
 
@@ -100,28 +124,11 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         val SUT = createSUT()
         val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe OK
+        status(result) mustBe NOT_FOUND
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messagesApi("global.error.pageNotFound404.title"))
       }
-    }
-
-    "get the codingComponents from the taxFreeAmountComparison when comparison toggle is true" in {
-      val SUT = createSUT(true, true)
-
-      val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
-
-      val taxFreeAmountComparison = TaxFreeAmountComparison(Seq(codingComponent1), Seq(codingComponent2))
-
-      when(SUT.codingComponentService.taxFreeAmountComparison(any())(any())).thenReturn(Future.successful(taxFreeAmountComparison))
-      when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
-      when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
-      when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
-
-      val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-      status(result) mustBe OK
     }
   }
 
@@ -131,12 +138,19 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         val SUT = createSUT(true)
 
         val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
-        when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
-        when(SUT.taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map[String, BigDecimal]()))
+        val scottishRates = Map.empty[String, BigDecimal]
 
-        val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+        when(SUT.taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(scottishRates))
+
+        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+        val result = SUT.taxCodeComparison()(request)
+
+        val taxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates)
 
         status(result) mustBe OK
+        result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(taxCodeChangeViewModel)
       }
     }
 
@@ -145,7 +159,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         val SUT = createSUT()
         val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe OK
+        status(result) mustBe NOT_FOUND
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messagesApi("global.error.pageNotFound404.title"))

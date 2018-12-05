@@ -28,8 +28,9 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxCodeChangeService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.urls.Link
 
@@ -70,7 +71,7 @@ trait TaxCodeChangeController extends TaiBaseController
             }
           } else {
             ServiceCheckLite.personDetailsCheck {
-              Future.successful(Ok(notFoundView))
+              Future.successful(NotFound(notFoundView))
             }
           }
   }
@@ -85,12 +86,7 @@ trait TaxCodeChangeController extends TaiBaseController
 
               val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
               val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
-
-              val codingComponentsFuture = if (taxFreeAmountComparisonEnabled) {
-                codingComponentService.taxFreeAmountComparison(nino).map(_.current)
-              } else {
-                codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-              }
+              val codingComponentsFuture = codingComponentService.taxFreeAmountComparison(nino).map(_.current)
 
               for {
                 employmentNames <- employmentNameFuture
@@ -105,7 +101,7 @@ trait TaxCodeChangeController extends TaiBaseController
             }
           } else {
             ServiceCheckLite.personDetailsCheck {
-              Future.successful(Ok(notFoundView))
+              Future.successful(NotFound(notFoundView))
             }
           }
   }
@@ -121,18 +117,18 @@ trait TaxCodeChangeController extends TaiBaseController
           }
           else {
             ServiceCheckLite.personDetailsCheck {
-              Future.successful(Ok(notFoundView))
+              Future.successful(NotFound(notFoundView))
             }
           }
   }
 
-  private def notFoundView(implicit request: Request[_]) = views.html.error_template_noauth(Messages("global.error.pageNotFound404.title"),
+  private def notFoundView(implicit request: Request[_]) = views.html.error_template_noauth(
+    Messages("global.error.pageNotFound404.title"),
     Messages("tai.errorMessage.heading"),
     Messages("tai.errorMessage.frontend404", Link.toInternalPage(
       url = routes.TaxAccountSummaryController.onPageLoad().url,
       value = Some(Messages("tai.errorMessage.startAgain"))
     ).toHtml))
-
 }
 
 object TaxCodeChangeController extends TaxCodeChangeController with AuthenticationConnectors {
