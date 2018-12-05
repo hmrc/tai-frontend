@@ -27,8 +27,8 @@ object TaxFreeAmountComparison extends CodingComponentFormatters {
 
   implicit lazy val reads: Reads[TaxFreeAmountComparison] = (
 
-    (JsPath \ "previous").lazyRead(Reads.seq[CodingComponent](codingComponentReads)) and
-      (JsPath \ "current").lazyRead(Reads.seq[CodingComponent](codingComponentReads))
+    (JsPath \ "previous").read(Reads.seq[CodingComponent](codingComponentReads)) and
+      (JsPath \ "current").read(Reads.seq[CodingComponent](codingComponentReads))
 
     )(TaxFreeAmountComparison.apply _)
 }
