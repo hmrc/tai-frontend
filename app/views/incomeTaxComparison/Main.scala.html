@@ -87,7 +87,8 @@
                             id = Some("companyBenefitsLink"),
                             url = ApplicationConfig.companyBenefitsLinkUrl,
                             copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText"),
-                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsReaderText"))
+                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsReaderText")),
+                            attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.companyBenefitsText")}"))
                         )
                     </li>
 
@@ -96,7 +97,8 @@
                             id = Some("allowancesTaxReliefsLink"),
                             url = ApplicationConfig.taxFreeAllowanceLinkUrl,
                             copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText"),
-                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefReaderText"))
+                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefReaderText")),
+                            attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText")}"))
                         )
                     </li>
 
@@ -105,7 +107,8 @@
                             id = Some("otherIncomeLink"),
                             url = ApplicationConfig.otherIncomeLinkUrl,
                             copy = messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText"),
-                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeReaderText"))
+                            altCopy = Some(messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeReaderText")),
+                            attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeText")}"))
                         )
                     </li>
                 </ul>
@@ -115,7 +118,8 @@
                 @Link.toInternalPage(
                 id=Some("returnToPAYEIncomeOverviewLink"),
                 url=routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage.url,
-                value=Some(messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link"))
+                value=Some(messages("tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link")),
+                dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${messages("your.paye.income.tax.overview")}"))
                 ).toHtml
             </p>
 
