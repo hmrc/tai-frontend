@@ -44,7 +44,7 @@
         @includes.link(
             copy=messages("tai.income.details.updateTaxableIncome.update"),
             url = controllers.income.routes.UpdateIncomeNextYearController.edit(employmentId).url,
-            attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.income.details.updateTaxableIncome.update")}")),
+            attributes = Seq(("data-journey-click", s"button - click:${gaEventActionString}:${messages("tai.income.details.updateTaxableIncome.update")}")),
             id = Some("CYPlus1StartButton"),
             isButton=true
         )
