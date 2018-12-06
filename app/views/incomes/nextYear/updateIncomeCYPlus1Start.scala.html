@@ -21,12 +21,16 @@
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
     partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
 )
+
+@gaEventActionString = @{"Your estimated pay for next year start"}
+
 @updateIncomeCYPlus1Template(
     employerName = employmentName,
     form = None,
-    gaEventAction = "Your estimated pay for next year start",
+    gaEventAction = gaEventActionString,
     title = messages("tai.updateIncome.CYPlus1.start.title"),
-    heading = messages("tai.updateIncome.CYPlus1.start.heading", employmentName)
+    heading = messages("tai.updateIncome.CYPlus1.start.heading", employmentName),
+    cancelText = Some("Cancel")
 ){
     <div>
         <p>@messages("tai.updateIncome.CYPlus1.start.paragraph1", employmentName)</p>
@@ -40,6 +44,7 @@
         @includes.link(
             copy=messages("tai.income.details.updateTaxableIncome.update"),
             url = controllers.income.routes.UpdateIncomeNextYearController.edit(employmentId).url,
+            attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.income.details.updateTaxableIncome.update")}")),
             id = Some("CYPlus1StartButton"),
             isButton=true
         )
