@@ -16,20 +16,6 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
-import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.{TaxAccountCalculator, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 
-case class YourTaxFreeAmountViewModel(taxCodeDateRange: String,  annualTaxFreeAmount:String, taxFreeAmountSummary:TaxFreeAmountSummaryViewModel)
-
-object YourTaxFreeAmountViewModel extends ViewModelHelper  {
-
-  def apply(taxFreeAmount: BigDecimal,
-            taxCodeDateRange: String,
-            annualTaxFreeAmount: String,
-            taxFreeAmountSummary: TaxFreeAmountSummaryViewModel)
-           (implicit messages: Messages): YourTaxFreeAmountViewModel = {
-    YourTaxFreeAmountViewModel(taxCodeDateRange, annualTaxFreeAmount, taxFreeAmountSummary)
-  }
-}
-
+case class YourTaxFreeAmountViewModel(taxCodeDateRange: String, annualTaxFreeAmount:String, taxFreeAmountSummary:TaxFreeAmountSummaryViewModel) {}

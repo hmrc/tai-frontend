@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxAccountService, TaxCodeChangeService}
-import uk.gov.hmrc.tai.util.{TaxAccountCalculator, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{TaxAccountCalculator, ViewModelHelper, YourTaxFreeAmount}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
@@ -46,8 +46,7 @@ trait TaxCodeChangeController extends TaiBaseController
   with DelegationAwareActions
   with Auditable
   with FeatureTogglesConfig
-  with ViewModelHelper
-  with TaxAccountCalculator {
+  with YourTaxFreeAmount {
   def personService: PersonService
 
   def codingComponentService: CodingComponentService
@@ -103,20 +102,7 @@ trait TaxCodeChangeController extends TaiBaseController
 
               } yield {
 
-                val taxCodeDateRange = dynamicDateRangeHtmlNonBreak(
-                  taxCodeChange.mostRecentTaxCodeChangeDate,
-                  TaxYearResolver.endOfCurrentTaxYear)
-
-                val taxFreeAmountTotal = taxFreeAmount(codingComponents)
-                val annualTaxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxFreeAmountTotal, 0))
-                val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(
-                  codingComponents, employmentNames, companyCarBenefits, taxFreeAmountTotal)
-
-                val viewModel = YourTaxFreeAmountViewModel(
-                  taxFreeAmountTotal,
-                  taxCodeDateRange,
-                  annualTaxFreeAmount,
-                  taxFreeAmountSummary)
+                val viewModel = buildTaxFreeAmount(taxCodeChange.mostRecentTaxCodeChangeDate, codingComponents, employmentNames, companyCarBenefits)
 
                 Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
               }
