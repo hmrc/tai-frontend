@@ -22,16 +22,21 @@ import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request}
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxAccountService, TaxCodeChangeService}
+import uk.gov.hmrc.tai.util.{TaxAccountCalculator, ViewModelHelper}
+import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
+import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
@@ -40,7 +45,9 @@ trait TaxCodeChangeController extends TaiBaseController
   with WithAuthorisedForTaiLite
   with DelegationAwareActions
   with Auditable
-  with FeatureTogglesConfig {
+  with FeatureTogglesConfig
+  with ViewModelHelper
+  with TaxAccountCalculator {
   def personService: PersonService
 
   def codingComponentService: CodingComponentService
@@ -95,7 +102,22 @@ trait TaxCodeChangeController extends TaiBaseController
                 companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
 
               } yield {
-                val viewModel = YourTaxFreeAmountViewModel(taxCodeChange.mostRecentTaxCodeChangeDate, codingComponents, employmentNames, companyCarBenefits)
+
+                val taxCodeDateRange = dynamicDateRangeHtmlNonBreak(
+                  taxCodeChange.mostRecentTaxCodeChangeDate,
+                  TaxYearResolver.endOfCurrentTaxYear)
+
+                val taxFreeAmountTotal = taxFreeAmount(codingComponents)
+                val annualTaxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxFreeAmountTotal, 0))
+                val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(
+                  codingComponents, employmentNames, companyCarBenefits, taxFreeAmountTotal)
+
+                val viewModel = YourTaxFreeAmountViewModel(
+                  taxFreeAmountTotal,
+                  taxCodeDateRange,
+                  annualTaxFreeAmount,
+                  taxFreeAmountSummary)
+
                 Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
               }
             }

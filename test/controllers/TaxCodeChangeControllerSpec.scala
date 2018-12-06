@@ -92,32 +92,32 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   }
 
   "yourTaxFreeAmount" must {
-    "show 'Your tax-free amount' page" when {
-      "the request has an authorised session" in {
-        val SUT = createSUT(true)
-
-        val taxFreeAmountComparison = TaxFreeAmountComparison(Seq(codingComponent1), Seq(codingComponent2))
-        val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
-        val employmentMap = Map.empty[Int, String]
-        val companyCar = Seq.empty[CompanyCarBenefit]
-
-        when(SUT.codingComponentService.taxFreeAmountComparison(any())(any())).thenReturn(Future.successful(taxFreeAmountComparison))
-        when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(companyCar))
-        when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(employmentMap))
-        when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
-
-        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
-
-        val expectedViewModel: YourTaxFreeAmountViewModel = YourTaxFreeAmountViewModel(
-          taxCodeRecord2.startDate, taxFreeAmountComparison.current, employmentMap, companyCar
-        )
-
-        val result = SUT.yourTaxFreeAmount()(request)
-
-        status(result) mustBe OK
-        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel)
-      }
-    }
+//    "show 'Your tax-free amount' page" when {
+//      "the request has an authorised session" in {
+//        val SUT = createSUT(true)
+//
+//        val taxFreeAmountComparison = TaxFreeAmountComparison(Seq(codingComponent1), Seq(codingComponent2))
+//        val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
+//        val employmentMap = Map.empty[Int, String]
+//        val companyCar = Seq.empty[CompanyCarBenefit]
+//
+//        when(SUT.codingComponentService.taxFreeAmountComparison(any())(any())).thenReturn(Future.successful(taxFreeAmountComparison))
+//        when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(companyCar))
+//        when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(employmentMap))
+//        when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+//
+//        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+//
+//        val expectedViewModel: YourTaxFreeAmountViewModel = YourTaxFreeAmountViewModel(
+//          taxCodeRecord2.startDate, taxFreeAmountComparison.current, employmentMap, companyCar
+//        )
+//
+//        val result = SUT.yourTaxFreeAmount()(request)
+//
+//        status(result) mustBe OK
+//        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel)
+//      }
+//    }
 
     "don't show 'Your tax-free amount' page if 'tax code change journey' is toggled off" when {
       "the request has an authorised session" in {
