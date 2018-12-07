@@ -92,21 +92,21 @@ trait TaxCodeChangeController extends TaiBaseController
 
               val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
               val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
-//              val previousCodingComponentsFuture = codingComponentService.taxFreeAmountComparison(nino).map(_.previous)
+          //    val previousCodingComponentsFuture = codingComponentService.taxFreeAmountComparison(nino).map(_.previous)
               val currentCodingComponentsFuture = codingComponentService.taxFreeAmountComparison(nino).map(_.current)
 
               for {
                 employmentNames <- employmentNameFuture
                 taxCodeChange <- taxCodeChangeFuture
-//                previousCodingComponentsFuture <- previousCodingComponentsFuture
-                currentCodingComponentsFuture <- currentCodingComponentsFuture
-                companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, currentCodingComponentsFuture)
+           //     previousCodingComponentsFuture <- previousCodingComponentsFuture
+                currentCodingComponents <- currentCodingComponentsFuture
+                companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, currentCodingComponents)
 
               } yield {
 
                 val viewModel = buildTaxFreeAmount(
                   taxCodeChange.mostRecentTaxCodeChangeDate,
-                  currentCodingComponentsFuture,
+                  currentCodingComponents,
                   employmentNames,
                   companyCarBenefits)
 
