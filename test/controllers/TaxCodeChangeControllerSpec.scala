@@ -39,6 +39,8 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
+import uk.gov.hmrc.tai.util.YourTaxFreeAmount
+import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
@@ -92,32 +94,31 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   }
 
   "yourTaxFreeAmount" must {
-//    "show 'Your tax-free amount' page" when {
-//      "the request has an authorised session" in {
-//        val SUT = createSUT(true)
-//
-//        val taxFreeAmountComparison = TaxFreeAmountComparison(Seq(codingComponent1), Seq(codingComponent2))
-//        val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
-//        val employmentMap = Map.empty[Int, String]
-//        val companyCar = Seq.empty[CompanyCarBenefit]
-//
-//        when(SUT.codingComponentService.taxFreeAmountComparison(any())(any())).thenReturn(Future.successful(taxFreeAmountComparison))
-//        when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(companyCar))
-//        when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(employmentMap))
-//        when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
-//
-//        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
-//
-//        val expectedViewModel: YourTaxFreeAmountViewModel = YourTaxFreeAmountViewModel(
-//          taxCodeRecord2.startDate, taxFreeAmountComparison.current, employmentMap, companyCar
-//        )
-//
-//        val result = SUT.yourTaxFreeAmount()(request)
-//
-//        status(result) mustBe OK
-//        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel)
-//      }
-//    }
+    "show 'Your tax-free amount' page" when {
+      "the request has an authorised session" in {
+        val SUT = createSUT(true)
+
+        val taxFreeAmountComparison = TaxFreeAmountComparison(Seq(codingComponent1), Seq(codingComponent2))
+        val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
+        val employmentMap = Map.empty[Int, String]
+        val companyCar = Seq.empty[CompanyCarBenefit]
+
+        when(SUT.codingComponentService.taxFreeAmountComparison(any())(any())).thenReturn(Future.successful(taxFreeAmountComparison))
+        when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(companyCar))
+        when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(employmentMap))
+        when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+
+        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+
+        val expectedViewModel: YourTaxFreeAmountViewModel =
+          YourTaxFreeAmountViewModel("blah", "annualTaxFreeAmount", TaxFreeAmountSummaryViewModel(Seq.empty))
+
+        val result = SUT.yourTaxFreeAmount()(request)
+
+        status(result) mustBe OK
+        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel)
+      }
+    }
 
     "don't show 'Your tax-free amount' page if 'tax code change journey' is toggled off" when {
       "the request has an authorised session" in {
@@ -179,10 +180,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val codingComponents = Seq(codingComponent1, codingComponent2)
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
-  val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation,"Employer 1", false, Some("1234"), true)
+  val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
-  private class SUT(taxCodeChangeJourneyEnabled: Boolean, comparisonEnabled: Boolean) extends TaxCodeChangeController {
+  private class SUT(taxCodeChangeJourneyEnabled: Boolean, comparisonEnabled: Boolean)
+    extends TaxCodeChangeController
+      with YourTaxFreeAmountMock {
 
     override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
     override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
@@ -203,7 +206,18 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
-    when(taxCodeChangeService.latestTaxCodeChangeDate(generateNino)).thenReturn(Future.successful(new LocalDate(2018,6,11)))
+    when(taxCodeChangeService.latestTaxCodeChangeDate(generateNino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
+  }
+
+  trait YourTaxFreeAmountMock {
+    this: YourTaxFreeAmount =>
+    override def buildTaxFreeAmount(recentTaxCodeChangeDate: LocalDate,
+                                    codingComponents: Seq[CodingComponent],
+                                    employmentNames: Map[Int, String],
+                                    companyCarBenefits: Seq[CompanyCarBenefit])
+                                   (implicit messages: Messages): YourTaxFreeAmountViewModel = {
+      YourTaxFreeAmountViewModel("blah", "annualTaxFreeAmount", TaxFreeAmountSummaryViewModel(Seq.empty))
+    }
   }
 
 }
