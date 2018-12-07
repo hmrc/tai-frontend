@@ -92,25 +92,32 @@ trait TaxCodeChangeController extends TaiBaseController
 
               val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
               val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
-          //    val previousCodingComponentsFuture = codingComponentService.taxFreeAmountComparison(nino).map(_.previous)
+              val previousCodingComponentsFuture = codingComponentService.taxFreeAmountComparison(nino).map(_.previous)
               val currentCodingComponentsFuture = codingComponentService.taxFreeAmountComparison(nino).map(_.current)
 
               for {
                 employmentNames <- employmentNameFuture
                 taxCodeChange <- taxCodeChangeFuture
-           //     previousCodingComponentsFuture <- previousCodingComponentsFuture
                 currentCodingComponents <- currentCodingComponentsFuture
-                companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, currentCodingComponents)
+                currentCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, currentCodingComponents)
+
+                previousCodingComponents <- previousCodingComponentsFuture
+                previousCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, currentCodingComponents)
 
               } yield {
-
-                val viewModel = buildTaxFreeAmount(
+                val currentViewModel = buildTaxFreeAmount(
                   taxCodeChange.mostRecentTaxCodeChangeDate,
                   currentCodingComponents,
                   employmentNames,
-                  companyCarBenefits)
+                  currentCompanyCarBenefits)
 
-                Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
+                val previousViewModel = buildTaxFreeAmount(
+                  taxCodeChange.mostRecentPreviousTaxCodeChangeDate,
+                  previousCodingComponents,
+                  employmentNames,
+                  previousCompanyCarBenefits)
+
+                Ok(views.html.taxCodeChange.yourTaxFreeAmount(currentViewModel, previousViewModel))
               }
             }
           } else {

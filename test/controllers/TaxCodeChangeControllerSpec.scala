@@ -116,7 +116,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         val result = SUT.yourTaxFreeAmount()(request)
 
         status(result) mustBe OK
-        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel)
+        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel, expectedViewModel)
       }
     }
 

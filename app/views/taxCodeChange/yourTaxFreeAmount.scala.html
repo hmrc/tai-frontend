@@ -19,7 +19,7 @@
 @import includes.taxFreeAmountSummary
 @import uk.gov.hmrc.urls.Link
 
-@(viewModel:YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(currentTaxFreeAmount: YourTaxFreeAmountViewModel, previousTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax-free amount"}
 
@@ -54,8 +54,8 @@
 
         <div class="column-two-thirds">
 
-            <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.dates", viewModel.taxCodeDateRange)
-                <span class="display-block bold-large section section--narrow flush--bottom">@viewModel.annualTaxFreeAmount</span>
+            <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.dates", currentTaxFreeAmount.taxCodeDateRange)
+                <span class="display-block bold-large section section--narrow flush--bottom">@currentTaxFreeAmount.annualTaxFreeAmount</span>
             </h2>
 
             <section id="yourTaxFreeAmount">
@@ -63,7 +63,7 @@
                 <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</h2>
 
                 <div class="margin-bottom-large">
-                    @taxFreeAmountSummary(viewModel.taxFreeAmountSummary.summaryItems, gaEventActionString, taxCodeChange = true)
+                    @taxFreeAmountSummary(currentTaxFreeAmount.taxFreeAmountSummary.summaryItems, gaEventActionString, taxCodeChange = true)
                 </div>
 
             </section>

@@ -21,7 +21,7 @@ import play.api.libs.json.{JsNull, JsResultException, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.time.TaxYearResolver
-
+import org.joda.time.LocalDate
 import scala.util.Random
 
 class TaxCodeChangeSpec extends PlaySpec{
@@ -43,7 +43,7 @@ class TaxCodeChangeSpec extends PlaySpec{
       }
     }
 
-    "calling mostRecentTaxCodeChangeDate" should {
+    "mostRecentTaxCodeChangeDate" should {
       "return the latest tax code change date from a sequence of tax code records" in {
         val model = TaxCodeChange(Seq(previousTaxCodeRecord1, fullYearTaxCode), Seq(currentTaxCodeRecord1, fullYearTaxCode))
 
@@ -51,7 +51,16 @@ class TaxCodeChangeSpec extends PlaySpec{
       }
     }
 
-    "calling uniqueTaxCodes" should {
+
+    "mostRecentPreviousTaxCodeChangeDate" should {
+      "return the latest tax code change date from a sequence of tax code records" in {
+        val model = TaxCodeChange(Seq(previousTaxCodeRecord1, fullYearTaxCode), Seq(currentTaxCodeRecord1, fullYearTaxCode))
+
+        model.mostRecentPreviousTaxCodeChangeDate mustEqual startDate
+      }
+    }
+
+    "uniqueTaxCodes" should {
       "return a seq of unique tax codes found in the previous and current lists" in {
         val model = TaxCodeChange(Seq(previousTaxCodeRecord1, fullYearTaxCode), Seq(currentTaxCodeRecord1, fullYearTaxCode))
 
@@ -62,6 +71,7 @@ class TaxCodeChangeSpec extends PlaySpec{
 
   val nino = generateNino
   val startDate = TaxYearResolver.startOfCurrentTaxYear
+  // val previousStartDate = new LocalDate(2000, 12, 12)
   val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation,"A Employer 1", false, Some("1234"), false)
   val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
   val fullYearTaxCode = TaxCodeRecord("OT", startDate, TaxYearResolver.endOfCurrentTaxYear, OtherBasisOfOperation, "B Employer 1", false, Some("12345"), false)
