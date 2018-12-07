@@ -32,7 +32,7 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
   "builds tax free amount view model" in {
-    val date = LocalDate.parse("2018-12-12")
+    val date = new LocalDate(2018, 12,12)
     val dateFormatted = TaxYearRangeUtil.dynamicDateRange(date, TaxYearResolver.endOfCurrentTaxYear)
     val annualTaxFreeAmount = "£42"
 
