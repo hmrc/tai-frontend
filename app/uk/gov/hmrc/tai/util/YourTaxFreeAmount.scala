@@ -44,4 +44,15 @@ trait YourTaxFreeAmount extends ViewModelHelper with TaxAccountCalculator {
       taxFreeAmountSummary
     )
   }
+
+  def buildTaxFreeAmountPairs(currentTaxCodeChangeDate: LocalDate,
+                              previousTaxCodeChangeDate: LocalDate,
+                              currentCodingComponents: Seq[CodingComponent],
+                              previousCodingComponents: Seq[CodingComponent],
+                              currentCompanyCarBenefits: Seq[CompanyCarBenefit],
+                              previousCompanyCarBenefits: Seq[CompanyCarBenefit],
+                              employmentNames: Map[Int, String])
+                             (implicit messages: Messages): YourTaxFreeAmountViewModel = {
+    ???
+  }
 }

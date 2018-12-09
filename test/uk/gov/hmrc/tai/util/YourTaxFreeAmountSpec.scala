@@ -31,20 +31,28 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
-  "builds tax free amount view model" in {
-    val date = new LocalDate(2018, 12,12)
-    val dateFormatted = TaxYearRangeUtil.dynamicDateRange(date, TaxYearResolver.endOfCurrentTaxYear)
-    val annualTaxFreeAmount = "£42"
+  "buildTaxFreeAmount" should {
+    "builds tax free amount view model" in {
+      val date = new LocalDate(2018, 12, 12)
+      val dateFormatted = TaxYearRangeUtil.dynamicDateRange(date, TaxYearResolver.endOfCurrentTaxYear)
+      val annualTaxFreeAmount = "£42"
 
-    val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(Seq.empty, Map.empty, Seq.empty, 42)
+      val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(Seq.empty, Map.empty, Seq.empty, 42)
 
-    val expected = YourTaxFreeAmountViewModel(dateFormatted, annualTaxFreeAmount, taxFreeAmountSummary)
+      val expected = YourTaxFreeAmountViewModel(dateFormatted, annualTaxFreeAmount, taxFreeAmountSummary)
 
-    val yourTaxFreeAmount = new YourTaxFreeAmount() with ViewModelHelperMock with TaxAccountCalculatorMock
+      val yourTaxFreeAmount = new YourTaxFreeAmount() with ViewModelHelperMock with TaxAccountCalculatorMock
 
-    val actual = yourTaxFreeAmount.buildTaxFreeAmount(date, Seq.empty, Map.empty, Seq.empty)
+      val actual = yourTaxFreeAmount.buildTaxFreeAmount(date, Seq.empty, Map.empty, Seq.empty)
 
-    actual mustBe expected
+      actual mustBe expected
+    }
+  }
+
+  "buildTaxFreeAmountPairs" should {
+    "builds personal allowance pair" in {
+
+    }
   }
 
   trait TaxAccountCalculatorMock { this: TaxAccountCalculator =>

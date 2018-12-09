@@ -92,28 +92,24 @@ trait TaxCodeChangeController extends TaiBaseController
 
               val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
               val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
-              val previousCodingComponentsFuture = codingComponentService.taxFreeAmountComparison(nino).map(_.previous)
-              val currentCodingComponentsFuture = codingComponentService.taxFreeAmountComparison(nino).map(_.current)
+              val taxFreeAmountComparisonFuture = codingComponentService.taxFreeAmountComparison(nino)
 
               for {
                 employmentNames <- employmentNameFuture
                 taxCodeChange <- taxCodeChangeFuture
-                currentCodingComponents <- currentCodingComponentsFuture
-                currentCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, currentCodingComponents)
-
-                previousCodingComponents <- previousCodingComponentsFuture
-                previousCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, currentCodingComponents)
-
+                taxFreeAmountComparison <- taxFreeAmountComparisonFuture
+                currentCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, taxFreeAmountComparison.current)
+                previousCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, taxFreeAmountComparison.previous)
               } yield {
-                val currentViewModel = buildTaxFreeAmount(
+                val currentViewModel: YourTaxFreeAmountViewModel = buildTaxFreeAmount(
                   taxCodeChange.mostRecentTaxCodeChangeDate,
-                  currentCodingComponents,
+                  taxFreeAmountComparison.current,
                   employmentNames,
                   currentCompanyCarBenefits)
 
-                val previousViewModel = buildTaxFreeAmount(
+                val previousViewModel: YourTaxFreeAmountViewModel = buildTaxFreeAmount(
                   taxCodeChange.mostRecentPreviousTaxCodeChangeDate,
-                  previousCodingComponents,
+                  taxFreeAmountComparison.previous,
                   employmentNames,
                   previousCompanyCarBenefits)
 

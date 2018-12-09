@@ -20,8 +20,9 @@ import builders.{AuthBuilder, RequestBuilder}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
+import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -98,13 +99,20 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val SUT = createSUT(true)
 
-        val taxFreeAmountComparison = TaxFreeAmountComparison(Seq(codingComponent1), Seq(codingComponent2))
+        val previousCodingComponents = Seq(codingComponent1)
+        val currentCodingComponents = Seq(codingComponent2)
+        val taxFreeAmountComparison = TaxFreeAmountComparison(previousCodingComponents,currentCodingComponents)
         val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
         val employmentMap = Map.empty[Int, String]
         val companyCar = Seq.empty[CompanyCarBenefit]
 
-        when(SUT.codingComponentService.taxFreeAmountComparison(any())(any())).thenReturn(Future.successful(taxFreeAmountComparison))
-        when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(companyCar))
+        when(SUT.codingComponentService.taxFreeAmountComparison(Matchers.eq(nino))(any())).thenReturn(Future.successful(taxFreeAmountComparison))
+
+        when(SUT.companyCarService.companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(previousCodingComponents))(any()))
+          .thenReturn(Future.successful(companyCar))
+        when(SUT.companyCarService.companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(currentCodingComponents))(any()))
+          .thenReturn(Future.successful(companyCar))
+
         when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(employmentMap))
         when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
 
@@ -117,6 +125,9 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         status(result) mustBe OK
         result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel, expectedViewModel)
+
+        verify(SUT.companyCarService, times(1)).companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(currentCodingComponents))(any())
+        verify(SUT.companyCarService, times(1)).companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(previousCodingComponents))(any())
       }
     }
 
@@ -171,7 +182,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
   private def createSUT(taxCodeChangeJourneyEnabled: Boolean = false, comparisonEnabled: Boolean = false) = new SUT(taxCodeChangeJourneyEnabled, comparisonEnabled)
 
-  def generateNino: Nino = new Generator(new Random).nextNino
+  val nino: Nino = new Generator(new Random).nextNino
 
   val giftAmount = 1000
 
@@ -203,10 +214,10 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
+    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(nino.toString())))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
-    when(taxCodeChangeService.latestTaxCodeChangeDate(generateNino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+    when(taxCodeChangeService.latestTaxCodeChangeDate(nino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
   }
 
   trait YourTaxFreeAmountMock {
