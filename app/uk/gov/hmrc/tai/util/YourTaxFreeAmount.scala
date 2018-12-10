@@ -32,15 +32,18 @@ trait YourTaxFreeAmount extends ViewModelHelper with TaxAccountCalculator {
 
   def buildTaxFreeAmount(previousTaxCodeChangeDate: LocalDate,
                          currentTaxCodeChangeDate: LocalDate,
+                         previousCodingComponents: Seq[CodingComponent],
                          currentCodingComponents: Seq[CodingComponent],
                          currentCompanyCarBenefits: Seq[CompanyCarBenefit],
                          employmentNames: Map[Int, String])
                         (implicit messages: Messages): YourTaxFreeAmountViewModel = {
 
     val taxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(currentTaxCodeChangeDate, TaxYearResolver.endOfCurrentTaxYear)
-    val taxFreeAmountTotal = taxFreeAmount(currentCodingComponents)
-    val annualTaxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxFreeAmountTotal, 0))
-    val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(currentCodingComponents, employmentNames, currentCompanyCarBenefits, taxFreeAmountTotal)
+
+    val previousAnnualTaxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxFreeAmount(previousCodingComponents), 0))
+    val currentAnnualTaxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxFreeAmount(currentCodingComponents), 0))
+
+    val removeMeTaxFreeAmountSummary = TaxFreeAmountSummaryViewModel(currentCodingComponents, employmentNames, currentCompanyCarBenefits, taxFreeAmount(currentCodingComponents))
 
     val deductions = currentCodingComponents.filter({
       _.componentType match {
@@ -59,8 +62,9 @@ trait YourTaxFreeAmount extends ViewModelHelper with TaxAccountCalculator {
     new YourTaxFreeAmountViewModel(
       Dates.formatDate(previousTaxCodeChangeDate),
       taxCodeDateRange,
-      annualTaxFreeAmount,
-      taxFreeAmountSummary,
+      previousAnnualTaxFreeAmount,
+      currentAnnualTaxFreeAmount,
+      removeMeTaxFreeAmountSummary,
       deductions,
       additions
     )

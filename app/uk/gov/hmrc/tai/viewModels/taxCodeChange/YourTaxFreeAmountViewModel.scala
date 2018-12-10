@@ -21,7 +21,8 @@ import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 
 case class YourTaxFreeAmountViewModel(previousTaxCodeDateRange: String,
                                       currentTaxCodeDateRange: String,
-                                      annualTaxFreeAmount: String,
+                                      previousAnnualTaxFreeAmount: String,
+                                      currentAnnualTaxFreeAmount: String,
                                       taxFreeAmountSummary: TaxFreeAmountSummaryViewModel,
                                       deductions: Seq[CodingComponent],
                                       additions: Seq[CodingComponent]) {}

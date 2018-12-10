@@ -121,7 +121,8 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         val expectedViewModel: YourTaxFreeAmountViewModel =
           YourTaxFreeAmountViewModel("previousTaxDate",
             "currentTaxDate",
-            "annualTaxFreeAmount",
+            "previousAnnualTaxFreeAmount",
+            "currentAnnualTaxFreeAmount",
             TaxFreeAmountSummaryViewModel(Seq.empty),
             Seq.empty,
             Seq.empty)
@@ -229,11 +230,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     this: YourTaxFreeAmount =>
     override def buildTaxFreeAmount(previousTaxCodeChangeDate: LocalDate,
                                     currentTaxCodeChangeDate: LocalDate,
+                                    previousCodingComponents: Seq[CodingComponent],
                                     currentCodingComponents: Seq[CodingComponent],
                                     currentCompanyCarBenefits: Seq[CompanyCarBenefit],
                                     employmentNames: Map[Int, String])
                                    (implicit messages: Messages): YourTaxFreeAmountViewModel = {
-      YourTaxFreeAmountViewModel("previousTaxDate", "currentTaxDate", "annualTaxFreeAmount", TaxFreeAmountSummaryViewModel(Seq.empty), Seq.empty, Seq.empty)
+      YourTaxFreeAmountViewModel("previousTaxDate", "currentTaxDate", "previousAnnualTaxFreeAmount", "currentAnnualTaxFreeAmount", TaxFreeAmountSummaryViewModel(Seq.empty), Seq.empty, Seq.empty)
     }
   }
 

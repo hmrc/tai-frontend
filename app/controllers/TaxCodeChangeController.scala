@@ -104,6 +104,7 @@ trait TaxCodeChangeController extends TaiBaseController
                 val currentViewModel: YourTaxFreeAmountViewModel = buildTaxFreeAmount(
                   taxCodeChange.mostRecentPreviousTaxCodeChangeDate,
                   taxCodeChange.mostRecentTaxCodeChangeDate,
+                  taxFreeAmountComparison.previous,
                   taxFreeAmountComparison.current,
                   currentCompanyCarBenefits,
                   employmentNames)

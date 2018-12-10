@@ -52,7 +52,12 @@
 
     _____________________________________________
 
+    @currentTaxFreeAmount.previousAnnualTaxFreeAmount
+    <br/>
+    @currentTaxFreeAmount.additions
+    <br/>
     @currentTaxFreeAmount.deductions
+    <br/>
 
     _____________________________________________
 
@@ -61,7 +66,7 @@
         <div class="column-two-thirds">
 
             <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.dates", currentTaxFreeAmount.currentTaxCodeDateRange)
-                <span class="display-block bold-large section section--narrow flush--bottom">@currentTaxFreeAmount.annualTaxFreeAmount</span>
+                <span class="display-block bold-large section section--narrow flush--bottom">@currentTaxFreeAmount.currentAnnualTaxFreeAmount</span>
             </h2>
 
             <section id="yourTaxFreeAmount">
