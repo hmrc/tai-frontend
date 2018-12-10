@@ -22,12 +22,14 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain.{AllowanceComponentType, DeductionComponentType}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
 
 trait YourTaxFreeAmount extends ViewModelHelper with TaxAccountCalculator {
+
   def buildTaxFreeAmount(previousTaxCodeChangeDate: LocalDate,
                          currentTaxCodeChangeDate: LocalDate,
                          currentCodingComponents: Seq[CodingComponent],
@@ -40,11 +42,27 @@ trait YourTaxFreeAmount extends ViewModelHelper with TaxAccountCalculator {
     val annualTaxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxFreeAmountTotal, 0))
     val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(currentCodingComponents, employmentNames, currentCompanyCarBenefits, taxFreeAmountTotal)
 
+    val deductions = currentCodingComponents.filter({
+      _.componentType match {
+        case _: AllowanceComponentType => false
+        case _ => true
+      }
+    })
+
+    val additions = currentCodingComponents.filter({
+      _.componentType match {
+        case _: DeductionComponentType => false
+        case _ => true
+      }
+    })
+
     new YourTaxFreeAmountViewModel(
       Dates.formatDate(previousTaxCodeChangeDate),
       taxCodeDateRange,
       annualTaxFreeAmount,
-      taxFreeAmountSummary
+      taxFreeAmountSummary,
+      deductions,
+      additions
     )
   }
 }

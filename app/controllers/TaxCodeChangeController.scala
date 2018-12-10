@@ -108,12 +108,6 @@ trait TaxCodeChangeController extends TaiBaseController
                   currentCompanyCarBenefits,
                   employmentNames)
 
-//                val previousViewModel: YourTaxFreeAmountViewModel = buildTaxFreeAmount(
-//                  taxCodeChange.mostRecentPreviousTaxCodeChangeDate,
-//                  taxFreeAmountComparison.previous,
-//                  employmentNames,
-//                  previousCompanyCarBenefits)
-
                 Ok(views.html.taxCodeChange.yourTaxFreeAmount(currentViewModel))
               }
             }

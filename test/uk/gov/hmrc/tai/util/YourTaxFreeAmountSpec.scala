@@ -23,6 +23,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.model.domain.{DividendTax, PersonalAllowancePA}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
@@ -44,12 +45,16 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
     }
   }
 
-  def createYourTaxFreeAmountViewModel(previousDate: LocalDate, currentDate: LocalDate): YourTaxFreeAmountViewModel = {
+  def createYourTaxFreeAmountViewModel(previousDate: LocalDate,
+                                       currentDate: LocalDate,
+                                       currentCodingComponents: Seq[CodingComponent],
+                                       deductions : Seq[CodingComponent],
+                                       additions : Seq[CodingComponent]): YourTaxFreeAmountViewModel = {
     val formattedPreviousDate = Dates.formatDate(previousDate)
     val formattedCurrentDate = createFormattedDate(currentDate)
     val annualTaxFreeAmount = "£42"
-    val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(Seq.empty, Map.empty, Seq.empty, 42)
-    YourTaxFreeAmountViewModel(formattedPreviousDate, formattedCurrentDate, annualTaxFreeAmount, taxFreeAmountSummary)
+    val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(currentCodingComponents, Map.empty, Seq.empty, 42)
+    YourTaxFreeAmountViewModel(formattedPreviousDate, formattedCurrentDate, annualTaxFreeAmount, taxFreeAmountSummary, deductions, additions)
   }
 
   def createFormattedDate(date: LocalDate): String = {
@@ -64,8 +69,21 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
       val previousDate = new LocalDate(2017, 12, 12)
       val currentDate = new LocalDate(2018, 6, 5)
 
-      val expected = createYourTaxFreeAmountViewModel(previousDate, currentDate)
+      val expected = createYourTaxFreeAmountViewModel(previousDate, currentDate, Seq.empty, Seq.empty, Seq.empty)
       yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, Seq.empty, Seq.empty, Map.empty) mustBe expected
+    }
+
+    "apply deductions" in {
+      val previousDate = new LocalDate(2017, 12, 12)
+      val currentDate = new LocalDate(2018, 6, 5)
+
+      val deduction = Seq(CodingComponent(DividendTax, Some(123), 2500, "DividendTax"));
+      val addition = Seq(CodingComponent(PersonalAllowancePA, Some(123), 5885, "PersonalAllowancePA"));
+      val currentCodingComponents = deduction  ++ addition
+
+      val expected = createYourTaxFreeAmountViewModel(previousDate, currentDate, currentCodingComponents, deduction, addition)
+
+      yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, currentCodingComponents, Seq.empty, Map.empty) mustBe expected
     }
   }
 

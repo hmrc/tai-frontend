@@ -41,7 +41,7 @@ import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.util.YourTaxFreeAmount
-import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
+import uk.gov.hmrc.tai.viewModels.{TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryViewModel}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
@@ -119,7 +119,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
         val expectedViewModel: YourTaxFreeAmountViewModel =
-          YourTaxFreeAmountViewModel("previousTaxDate", "currentTaxDate", "annualTaxFreeAmount", TaxFreeAmountSummaryViewModel(Seq.empty))
+          YourTaxFreeAmountViewModel("previousTaxDate",
+            "currentTaxDate",
+            "annualTaxFreeAmount",
+            TaxFreeAmountSummaryViewModel(Seq.empty),
+            Seq.empty,
+            Seq.empty)
 
         val result = SUT.yourTaxFreeAmount()(request)
 
@@ -228,7 +233,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
                                     currentCompanyCarBenefits: Seq[CompanyCarBenefit],
                                     employmentNames: Map[Int, String])
                                    (implicit messages: Messages): YourTaxFreeAmountViewModel = {
-      YourTaxFreeAmountViewModel("previousTaxDate", "currentTaxDate", "annualTaxFreeAmount", TaxFreeAmountSummaryViewModel(Seq.empty))
+      YourTaxFreeAmountViewModel("previousTaxDate", "currentTaxDate", "annualTaxFreeAmount", TaxFreeAmountSummaryViewModel(Seq.empty), Seq.empty, Seq.empty)
     }
   }
 
