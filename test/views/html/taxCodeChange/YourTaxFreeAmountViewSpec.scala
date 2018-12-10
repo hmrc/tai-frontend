@@ -23,7 +23,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.time.TaxYearResolver
-import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.{MungedCodingComponents, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryRowViewModel, TaxFreeAmountSummaryViewModel}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
@@ -205,7 +205,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
   private def createViewModel(taxCodeDateRange: String = "",
                               annualTaxFreeAmount: String = "£1150",
                               taxFreeAmountSummary: TaxFreeAmountSummaryViewModel = taxFreeAmountSummaryViewModel): YourTaxFreeAmountViewModel = {
-    YourTaxFreeAmountViewModel(taxCodeDateRange, taxCodeDateRange, annualTaxFreeAmount, annualTaxFreeAmount, taxFreeAmountSummary, Seq.empty, Seq.empty)
+    YourTaxFreeAmountViewModel(taxCodeDateRange, taxCodeDateRange, annualTaxFreeAmount, annualTaxFreeAmount, taxFreeAmountSummary, new MungedCodingComponents())
   }
 
   val currentTaxFreeAmount: YourTaxFreeAmountViewModel = createViewModel()

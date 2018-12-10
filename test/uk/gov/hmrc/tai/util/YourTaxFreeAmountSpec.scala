@@ -48,16 +48,25 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
   val previousDate = new LocalDate(2017, 12, 12)
   val currentDate = new LocalDate(2018, 6, 5)
 
-  def createYourTaxFreeAmountViewModel( currentCodingComponents: Seq[CodingComponent],
-                                       deductions : Seq[CodingComponent],
-                                       additions : Seq[CodingComponent]): YourTaxFreeAmountViewModel = {
+  def createYourTaxFreeAmountViewModel(currentCodingComponents: Seq[CodingComponent],
+                                       previousDeductions: Seq[CodingComponent],
+                                       previousAdditions: Seq[CodingComponent],
+                                       currentDeductions: Seq[CodingComponent],
+                                       currentAdditions: Seq[CodingComponent]): YourTaxFreeAmountViewModel = {
     val formattedPreviousDate = Dates.formatDate(previousDate)
     val formattedCurrentDate = createFormattedDate(currentDate)
     val previousTaxFreeAmount = "£42"
     val currentTaxFreeAmount = "£42"
     val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(currentCodingComponents, Map.empty, Seq.empty, 42)
-    YourTaxFreeAmountViewModel(formattedPreviousDate, formattedCurrentDate, previousTaxFreeAmount, currentTaxFreeAmount, taxFreeAmountSummary, deductions, additions)
-  }
+
+    YourTaxFreeAmountViewModel(formattedPreviousDate,
+      formattedCurrentDate,
+      previousTaxFreeAmount,
+      currentTaxFreeAmount,
+      taxFreeAmountSummary,
+      new MungedCodingComponents(previousDeductions, previousAdditions, currentDeductions, currentAdditions)
+    )
+      }
 
   def createFormattedDate(date: LocalDate): String = {
     TaxYearRangeUtil.dynamicDateRange(date, TaxYearResolver.endOfCurrentTaxYear)
@@ -68,19 +77,34 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
 
   "buildTaxFreeAmount" should {
     "builds personal allowance" in {
-      val expected = createYourTaxFreeAmountViewModel(Seq.empty, Seq.empty, Seq.empty)
+      val expected = createYourTaxFreeAmountViewModel(Seq.empty, Seq.empty, Seq.empty, Seq.empty, Seq.empty)
       yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, Seq.empty, Seq.empty, Seq.empty, Map.empty) mustBe expected
     }
 
-    "apply deductions" in {
+    "apply deductions and additions" in {
       val deduction = Seq(CodingComponent(DividendTax, Some(123), 2500, "DividendTax"));
       val addition = Seq(CodingComponent(PersonalAllowancePA, Some(123), 5885, "PersonalAllowancePA"));
-      val currentCodingComponents = deduction  ++ addition
+      val currentCodingComponents = deduction ++ addition
 
-      val expected = createYourTaxFreeAmountViewModel(currentCodingComponents, deduction, addition)
+      val expected = createYourTaxFreeAmountViewModel(currentCodingComponents, Seq.empty, Seq.empty, deduction, addition)
       yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, Seq.empty, currentCodingComponents, Seq.empty, Map.empty) mustBe expected
     }
 
+    "previous deductions and additions" in {
+      val deduction = Seq(CodingComponent(DividendTax, Some(123), 2500, "DividendTax"));
+      val addition = Seq(CodingComponent(PersonalAllowancePA, Some(123), 5885, "PersonalAllowancePA"));
+      val previousCodingComponents = deduction ++ addition
+
+      val expected = createYourTaxFreeAmountViewModel(Seq.empty, deduction, addition, Seq.empty, Seq.empty)
+      yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, previousCodingComponents, Seq.empty, Seq.empty, Map.empty) mustBe expected
+    }
+
+    "should amalgamate common deductions" in {
+      val previousDeduction = Seq(CodingComponent(DividendTax, Some(123), 500, "DividendTax"));
+      val currentDeduction = Seq(CodingComponent(DividendTax, Some(123), 2500, "DividendTax"));
+
+
+    }
   }
 
 }

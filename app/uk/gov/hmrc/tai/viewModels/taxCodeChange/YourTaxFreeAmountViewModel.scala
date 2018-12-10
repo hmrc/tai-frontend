@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
-import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.util.MungedCodingComponents
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 
 case class YourTaxFreeAmountViewModel(previousTaxCodeDateRange: String,
@@ -24,5 +24,4 @@ case class YourTaxFreeAmountViewModel(previousTaxCodeDateRange: String,
                                       previousAnnualTaxFreeAmount: String,
                                       currentAnnualTaxFreeAmount: String,
                                       taxFreeAmountSummary: TaxFreeAmountSummaryViewModel,
-                                      deductions: Seq[CodingComponent],
-                                      additions: Seq[CodingComponent]) {}
+                                      mungedCodingComponents: MungedCodingComponents) {}

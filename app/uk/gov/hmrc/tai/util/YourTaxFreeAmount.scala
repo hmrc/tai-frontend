@@ -22,13 +22,42 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.{AllowanceComponentType, DeductionComponentType}
+import uk.gov.hmrc.tai.model.domain.{AllowanceComponentType, DeductionComponentType, TaxComponentType}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
+case class MungedCodingComponents(previousDeductions: Seq[CodingComponent] = Seq.empty,
+                                  previousAdditions: Seq[CodingComponent]= Seq.empty,
+                                  currentDeductions: Seq[CodingComponent]= Seq.empty,
+                                  currentAdditions: Seq[CodingComponent]= Seq.empty)
+
+
 
 trait YourTaxFreeAmount extends ViewModelHelper with TaxAccountCalculator {
+  private def getDeduction(in: Seq[CodingComponent]) : Seq[CodingComponent] = {
+   in.filter({
+      _.componentType match {
+        case _: AllowanceComponentType => false
+        case _ => true
+      }
+    })
+  }
+
+  private def getAllowance(in: Seq[CodingComponent]) : Seq[CodingComponent] = {
+    // TODO collecting the incorrect types? TaxFreeAmmountSummaryViewModel collects it like:
+    //    private def isPersonalAllowanceComponent(codingComponent: CodingComponent): Boolean = codingComponent.componentType match {
+    //      case PersonalAllowancePA | PersonalAllowanceAgedPAA | PersonalAllowanceElderlyPAE => true
+    //      case _ => false
+    //    }
+
+    in.filter({
+      _.componentType match {
+        case _: DeductionComponentType => false
+        case _ => true
+      }
+    })
+  }
 
   def buildTaxFreeAmount(previousTaxCodeChangeDate: LocalDate,
                          currentTaxCodeChangeDate: LocalDate,
@@ -45,19 +74,16 @@ trait YourTaxFreeAmount extends ViewModelHelper with TaxAccountCalculator {
 
     val removeMeTaxFreeAmountSummary = TaxFreeAmountSummaryViewModel(currentCodingComponents, employmentNames, currentCompanyCarBenefits, taxFreeAmount(currentCodingComponents))
 
-    val deductions = currentCodingComponents.filter({
-      _.componentType match {
-        case _: AllowanceComponentType => false
-        case _ => true
-      }
-    })
+    val currentDeductions = getDeduction(currentCodingComponents)
+    val currentAdditions = getAllowance(currentCodingComponents)
+    val previousDeductions = getDeduction(previousCodingComponents)
+    val previousAdditions = getAllowance(previousCodingComponents)
 
-    val additions = currentCodingComponents.filter({
-      _.componentType match {
-        case _: DeductionComponentType => false
-        case _ => true
-      }
-    })
+    val mungedCodingComponents = MungedCodingComponents(
+      previousDeductions,
+      previousAdditions,
+      currentDeductions,
+      currentAdditions)
 
     new YourTaxFreeAmountViewModel(
       Dates.formatDate(previousTaxCodeChangeDate),
@@ -65,8 +91,7 @@ trait YourTaxFreeAmount extends ViewModelHelper with TaxAccountCalculator {
       previousAnnualTaxFreeAmount,
       currentAnnualTaxFreeAmount,
       removeMeTaxFreeAmountSummary,
-      deductions,
-      additions
+      mungedCodingComponents
     )
   }
 }

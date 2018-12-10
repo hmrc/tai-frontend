@@ -51,15 +51,19 @@
     </div>
 
     _____________________________________________
-
-    @currentTaxFreeAmount.previousAnnualTaxFreeAmount
     <br/>
-    @currentTaxFreeAmount.additions
+    previousAnnualTaxFreeAmount: @currentTaxFreeAmount.previousAnnualTaxFreeAmount
     <br/>
-    @currentTaxFreeAmount.deductions
+    previousDeductions: @currentTaxFreeAmount.mungedCodingComponents.previousDeductions
     <br/>
-
+    previousAdditions: @currentTaxFreeAmount.mungedCodingComponents.previousAdditions
+    <br/>
+    currentDeductions: @currentTaxFreeAmount.mungedCodingComponents.currentDeductions
+    <br/>
+    currentAdditions: @currentTaxFreeAmount.mungedCodingComponents.currentAdditions
+    <br/>
     _____________________________________________
+    <br/>   <br/>
 
     <div class="grid-row">
         
