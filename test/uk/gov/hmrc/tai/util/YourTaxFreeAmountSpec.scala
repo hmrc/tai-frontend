@@ -21,6 +21,7 @@ import org.joda.time.LocalDate
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
@@ -29,41 +30,43 @@ import uk.gov.hmrc.time.TaxYearResolver
 
 class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
 
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
-
-  "buildTaxFreeAmount" should {
-    "builds tax free amount view model" in {
-      val date = new LocalDate(2018, 12, 12)
-      val dateFormatted = TaxYearRangeUtil.dynamicDateRange(date, TaxYearResolver.endOfCurrentTaxYear)
-      val annualTaxFreeAmount = "£42"
-
-      val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(Seq.empty, Map.empty, Seq.empty, 42)
-
-      val expected = YourTaxFreeAmountViewModel(dateFormatted, annualTaxFreeAmount, taxFreeAmountSummary)
-
-      val yourTaxFreeAmount = new YourTaxFreeAmount() with ViewModelHelperMock with TaxAccountCalculatorMock
-
-      val actual = yourTaxFreeAmount.buildTaxFreeAmount(date, Seq.empty, Map.empty, Seq.empty)
-
-      actual mustBe expected
-    }
-  }
-
-  "buildTaxFreeAmountPairs" should {
-    "builds personal allowance pair" in {
-
-    }
-  }
-
-  trait TaxAccountCalculatorMock { this: TaxAccountCalculator =>
+  trait TaxAccountCalculatorMock {
+    this: TaxAccountCalculator =>
     override def taxFreeAmount(codingComponents: Seq[CodingComponent]): BigDecimal = {
       42
     }
   }
 
-  trait ViewModelHelperMock { this: ViewModelHelper =>
+  trait ViewModelHelperMock {
+    this: ViewModelHelper =>
     override def withPoundPrefixAndSign(moneyPounds: MoneyPounds): String = {
       "£42"
     }
   }
+
+  def createYourTaxFreeAmountViewModel(previousDate: LocalDate, currentDate: LocalDate): YourTaxFreeAmountViewModel = {
+    val formattedPreviousDate = Dates.formatDate(previousDate)
+    val formattedCurrentDate = createFormattedDate(currentDate)
+    val annualTaxFreeAmount = "£42"
+    val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(Seq.empty, Map.empty, Seq.empty, 42)
+    YourTaxFreeAmountViewModel(formattedPreviousDate, formattedCurrentDate, annualTaxFreeAmount, taxFreeAmountSummary)
+  }
+
+  def createFormattedDate(date: LocalDate): String = {
+    TaxYearRangeUtil.dynamicDateRange(date, TaxYearResolver.endOfCurrentTaxYear)
+  }
+
+  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+  val yourTaxFreeAmount = new YourTaxFreeAmount() with ViewModelHelperMock with TaxAccountCalculatorMock
+
+  "buildTaxFreeAmount" should {
+    "builds personal allowance" in {
+      val previousDate = new LocalDate(2017, 12, 12)
+      val currentDate = new LocalDate(2018, 6, 5)
+
+      val expected = createYourTaxFreeAmountViewModel(previousDate, currentDate)
+      yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, Seq.empty, Seq.empty, Map.empty) mustBe expected
+    }
+  }
+
 }

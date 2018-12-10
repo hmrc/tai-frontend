@@ -102,18 +102,19 @@ trait TaxCodeChangeController extends TaiBaseController
                 previousCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, taxFreeAmountComparison.previous)
               } yield {
                 val currentViewModel: YourTaxFreeAmountViewModel = buildTaxFreeAmount(
+                  taxCodeChange.mostRecentPreviousTaxCodeChangeDate,
                   taxCodeChange.mostRecentTaxCodeChangeDate,
                   taxFreeAmountComparison.current,
-                  employmentNames,
-                  currentCompanyCarBenefits)
+                  currentCompanyCarBenefits,
+                  employmentNames)
 
-                val previousViewModel: YourTaxFreeAmountViewModel = buildTaxFreeAmount(
-                  taxCodeChange.mostRecentPreviousTaxCodeChangeDate,
-                  taxFreeAmountComparison.previous,
-                  employmentNames,
-                  previousCompanyCarBenefits)
+//                val previousViewModel: YourTaxFreeAmountViewModel = buildTaxFreeAmount(
+//                  taxCodeChange.mostRecentPreviousTaxCodeChangeDate,
+//                  taxFreeAmountComparison.previous,
+//                  employmentNames,
+//                  previousCompanyCarBenefits)
 
-                Ok(views.html.taxCodeChange.yourTaxFreeAmount(currentViewModel, previousViewModel))
+                Ok(views.html.taxCodeChange.yourTaxFreeAmount(currentViewModel))
               }
             }
           } else {

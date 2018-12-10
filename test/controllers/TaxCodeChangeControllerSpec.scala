@@ -119,12 +119,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
         val expectedViewModel: YourTaxFreeAmountViewModel =
-          YourTaxFreeAmountViewModel("blah", "annualTaxFreeAmount", TaxFreeAmountSummaryViewModel(Seq.empty))
+          YourTaxFreeAmountViewModel("previousTaxDate", "currentTaxDate", "annualTaxFreeAmount", TaxFreeAmountSummaryViewModel(Seq.empty))
 
         val result = SUT.yourTaxFreeAmount()(request)
 
         status(result) mustBe OK
-        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel, expectedViewModel)
+        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel)
 
         verify(SUT.companyCarService, times(1)).companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(currentCodingComponents))(any())
         verify(SUT.companyCarService, times(1)).companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(previousCodingComponents))(any())
@@ -222,12 +222,13 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
   trait YourTaxFreeAmountMock {
     this: YourTaxFreeAmount =>
-    override def buildTaxFreeAmount(recentTaxCodeChangeDate: LocalDate,
-                                    codingComponents: Seq[CodingComponent],
-                                    employmentNames: Map[Int, String],
-                                    companyCarBenefits: Seq[CompanyCarBenefit])
+    override def buildTaxFreeAmount(previousTaxCodeChangeDate: LocalDate,
+                                    currentTaxCodeChangeDate: LocalDate,
+                                    currentCodingComponents: Seq[CodingComponent],
+                                    currentCompanyCarBenefits: Seq[CompanyCarBenefit],
+                                    employmentNames: Map[Int, String])
                                    (implicit messages: Messages): YourTaxFreeAmountViewModel = {
-      YourTaxFreeAmountViewModel("blah", "annualTaxFreeAmount", TaxFreeAmountSummaryViewModel(Seq.empty))
+      YourTaxFreeAmountViewModel("previousTaxDate", "currentTaxDate", "annualTaxFreeAmount", TaxFreeAmountSummaryViewModel(Seq.empty))
     }
   }
 

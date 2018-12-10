@@ -19,7 +19,7 @@
 @import includes.taxFreeAmountSummary
 @import uk.gov.hmrc.urls.Link
 
-@(currentTaxFreeAmount: YourTaxFreeAmountViewModel, previousTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax-free amount"}
 
@@ -52,7 +52,7 @@
 
     _____________________________________________
 
-    @previousTaxFreeAmount
+    @currentTaxFreeAmount.previousTaxCodeDateRange
 
     _____________________________________________
 
@@ -60,7 +60,7 @@
         
         <div class="column-two-thirds">
 
-            <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.dates", currentTaxFreeAmount.taxCodeDateRange)
+            <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.dates", currentTaxFreeAmount.currentTaxCodeDateRange)
                 <span class="display-block bold-large section section--narrow flush--bottom">@currentTaxFreeAmount.annualTaxFreeAmount</span>
             </h2>
 

@@ -18,4 +18,7 @@ package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 
-case class YourTaxFreeAmountViewModel(taxCodeDateRange: String, annualTaxFreeAmount:String, taxFreeAmountSummary:TaxFreeAmountSummaryViewModel) {}
+case class YourTaxFreeAmountViewModel(previousTaxCodeDateRange: String,
+                                      currentTaxCodeDateRange: String,
+                                      annualTaxFreeAmount:String,
+                                      taxFreeAmountSummary:TaxFreeAmountSummaryViewModel) {}
