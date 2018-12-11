@@ -52,7 +52,7 @@
 
     _____________________________________________
     <br/>
-    previousAnnualTaxFreeAmount: @currentTaxFreeAmount.previousAnnualTaxFreeAmount
+    previousAnnualTaxFreeAmount: @currentTaxFreeAmount.previousTaxFreeInfo.annualTaxFreeAmount
     <br/>
     previousDeductions: @currentTaxFreeAmount.mungedCodingComponents.previousDeductions
     <br/>
@@ -69,9 +69,9 @@
         
         <div class="column-two-thirds">
 
-            <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.dates", currentTaxFreeAmount.currentTaxCodeDateRange)
+            <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.dates", currentTaxFreeAmount.currentTaxFreeInfo.date)
             <span class="display-block bold-large section section--narrow flush--bottom">
-                @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeAmount.currentAnnualTaxFreeAmount)</span>
+                @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeAmount.currentTaxFreeInfo.annualTaxFreeAmount)</span>
             </h2>
 
             <section id="yourTaxFreeAmount">

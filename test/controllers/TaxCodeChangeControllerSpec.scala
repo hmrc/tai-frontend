@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.util.{MungedCodingComponents, YourTaxFreeAmount}
+import uk.gov.hmrc.tai.util.{MungedCodingComponents, TaxFreeInfo, YourTaxFreeAmount}
 import uk.gov.hmrc.tai.viewModels.{TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryViewModel}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
@@ -119,14 +119,11 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
         val expectedViewModel: YourTaxFreeAmountViewModel =
-          YourTaxFreeAmountViewModel("previousTaxDate",
-            "currentTaxDate",
-            0,
-            0,
+          YourTaxFreeAmountViewModel(
+            TaxFreeInfo("previousTaxDate", 0, 0),
+            TaxFreeInfo("currentTaxDate", 0, 0),
             TaxFreeAmountSummaryViewModel(Seq.empty),
-            new MungedCodingComponents,
-            0,
-            0)
+            new MungedCodingComponents)
 
         val result = SUT.yourTaxFreeAmount()(request)
 
@@ -236,15 +233,11 @@ class TaxCodeChangeControllerSpec extends PlaySpec
                                     currentCompanyCarBenefits: Seq[CompanyCarBenefit],
                                     employmentNames: Map[Int, String])
                                    (implicit messages: Messages): YourTaxFreeAmountViewModel = {
-      YourTaxFreeAmountViewModel(
-        "previousTaxDate",
-        "currentTaxDate",
-        0,
-        0,
-        TaxFreeAmountSummaryViewModel(Seq.empty),
-        new MungedCodingComponents(),
-        0,
-        0)
+        YourTaxFreeAmountViewModel(
+          TaxFreeInfo("previousTaxDate", 0, 0),
+          TaxFreeInfo("currentTaxDate", 0, 0),
+          TaxFreeAmountSummaryViewModel(Seq.empty),
+          new MungedCodingComponents)
     }
   }
 

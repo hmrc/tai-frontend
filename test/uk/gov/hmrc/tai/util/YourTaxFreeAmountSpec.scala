@@ -54,14 +54,11 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
     val currentTaxFreeAmount = 42
     val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(currentCodingComponents, Map.empty, Seq.empty, 42)
 
-    YourTaxFreeAmountViewModel(formattedPreviousDate,
-      formattedCurrentDate,
-      previousTaxFreeAmount,
-      currentTaxFreeAmount,
+    YourTaxFreeAmountViewModel(
+      TaxFreeInfo(formattedPreviousDate, previousTaxFreeAmount, previousPersonalAllowance),
+      TaxFreeInfo(formattedCurrentDate, currentTaxFreeAmount, currentPersonalAllowance),
       taxFreeAmountSummary,
-      new MungedCodingComponents(previousDeductions, previousAdditions, currentDeductions, currentAdditions),
-      previousPersonalAllowance,
-      currentPersonalAllowance)
+      new MungedCodingComponents(previousDeductions, previousAdditions, currentDeductions, currentAdditions))
   }
 
   def createFormattedDate(date: LocalDate): String = {

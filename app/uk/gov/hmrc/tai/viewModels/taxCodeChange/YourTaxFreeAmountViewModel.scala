@@ -18,17 +18,14 @@ package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.{MungedCodingComponents, ViewModelHelper}
+import uk.gov.hmrc.tai.util.{MungedCodingComponents, TaxFreeInfo, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 
-case class YourTaxFreeAmountViewModel(previousTaxCodeDateRange: String,
-                                      currentTaxCodeDateRange: String,
-                                      previousAnnualTaxFreeAmount: BigDecimal,
-                                      currentAnnualTaxFreeAmount: BigDecimal,
+case class YourTaxFreeAmountViewModel(previousTaxFreeInfo: TaxFreeInfo,
+                                      currentTaxFreeInfo: TaxFreeInfo,
                                       taxFreeAmountSummary: TaxFreeAmountSummaryViewModel,
-                                      mungedCodingComponents: MungedCodingComponents,
-                                      previousPersonalAllowance : BigDecimal,
-                                      currentPersonalAllowance: BigDecimal) {}
+                                      mungedCodingComponents: MungedCodingComponents
+                                      ) {}
 
 object YourTaxFreeAmountViewModel extends ViewModelHelper {
   def prettyPrint(value: BigDecimal) : String = {

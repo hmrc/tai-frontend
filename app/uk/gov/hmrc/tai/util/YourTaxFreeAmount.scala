@@ -26,6 +26,8 @@ import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
+case class TaxFreeInfo(date: String, annualTaxFreeAmount: BigDecimal, personalAllowance : BigDecimal)
+
 case class MungedCodingComponents(previousDeductions: Seq[CodingComponent] = Seq.empty,
                                   previousAdditions: Seq[CodingComponent] = Seq.empty,
                                   currentDeductions: Seq[CodingComponent] = Seq.empty,
@@ -41,7 +43,6 @@ trait YourTaxFreeAmount extends TaxAccountCalculator {
                          employmentNames: Map[Int, String])
                         (implicit messages: Messages): YourTaxFreeAmountViewModel = {
 
-    val taxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(currentTaxCodeChangeDate, TaxYearResolver.endOfCurrentTaxYear)
 
     val previousAnnualTaxFreeAmount = taxFreeAmount(previousCodingComponents)
     val currentAnnualTaxFreeAmount = taxFreeAmount(currentCodingComponents)
@@ -63,15 +64,16 @@ trait YourTaxFreeAmount extends TaxAccountCalculator {
     val previousPersonalAllowance = sumOfPersonalAllowances(previousCodingComponents)
     val currentPersonalAllowance = sumOfPersonalAllowances(currentCodingComponents)
 
+    val previousTaxFreeInfo = TaxFreeInfo(Dates.formatDate(previousTaxCodeChangeDate), previousAnnualTaxFreeAmount, previousPersonalAllowance)
+
+    val taxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(currentTaxCodeChangeDate, TaxYearResolver.endOfCurrentTaxYear)
+    val currentTaxFreeInfo = TaxFreeInfo(taxCodeDateRange, currentAnnualTaxFreeAmount, currentPersonalAllowance)
+
     new YourTaxFreeAmountViewModel(
-      Dates.formatDate(previousTaxCodeChangeDate),
-      taxCodeDateRange,
-      previousAnnualTaxFreeAmount,
-      currentAnnualTaxFreeAmount,
+      previousTaxFreeInfo,
+      currentTaxFreeInfo,
       removeMeTaxFreeAmountSummary,
-      mungedCodingComponents,
-      previousPersonalAllowance,
-      currentPersonalAllowance
+      mungedCodingComponents
     )
   }
 
