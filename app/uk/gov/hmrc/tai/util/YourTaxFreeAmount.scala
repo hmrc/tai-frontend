@@ -19,7 +19,6 @@ package uk.gov.hmrc.tai.util
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -34,7 +33,7 @@ case class MungedCodingComponents(previousDeductions: Seq[CodingComponent] = Seq
 
 
 
-trait YourTaxFreeAmount extends ViewModelHelper with TaxAccountCalculator {
+trait YourTaxFreeAmount extends TaxAccountCalculator {
    def buildTaxFreeAmount(previousTaxCodeChangeDate: LocalDate,
                          currentTaxCodeChangeDate: LocalDate,
                          previousCodingComponents: Seq[CodingComponent],
@@ -45,8 +44,8 @@ trait YourTaxFreeAmount extends ViewModelHelper with TaxAccountCalculator {
 
     val taxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(currentTaxCodeChangeDate, TaxYearResolver.endOfCurrentTaxYear)
 
-    val previousAnnualTaxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxFreeAmount(previousCodingComponents), 0))
-    val currentAnnualTaxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxFreeAmount(currentCodingComponents), 0))
+    val previousAnnualTaxFreeAmount = taxFreeAmount(previousCodingComponents)
+    val currentAnnualTaxFreeAmount = taxFreeAmount(currentCodingComponents)
 
     val removeMeTaxFreeAmountSummary =
       TaxFreeAmountSummaryViewModel(currentCodingComponents, employmentNames, currentCompanyCarBenefits, taxFreeAmount(currentCodingComponents))
@@ -62,8 +61,8 @@ trait YourTaxFreeAmount extends ViewModelHelper with TaxAccountCalculator {
       currentDeductions,
       currentAdditions)
 
-     val previousPersonalAllowance = withPoundPrefixAndSign(MoneyPounds(sumOfPersonalAllowances(previousCodingComponents), 0))
-     val currentPersonalAllowance = withPoundPrefixAndSign(MoneyPounds(sumOfPersonalAllowances(currentCodingComponents), 0))
+     val previousPersonalAllowance = sumOfPersonalAllowances(previousCodingComponents)
+     val currentPersonalAllowance = sumOfPersonalAllowances(currentCodingComponents)
 
     new YourTaxFreeAmountViewModel(
       Dates.formatDate(previousTaxCodeChangeDate),

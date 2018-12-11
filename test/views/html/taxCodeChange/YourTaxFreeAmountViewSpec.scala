@@ -46,7 +46,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       val expectedDateRange = ViewModelHelper.dynamicDateRangeHtmlNonBreak(fromDate, toDate)
       val expectedMessage = Messages("taxCode.change.yourTaxFreeAmount.dates", expectedDateRange)
 
-      doc(viewP2Date) must haveH2HeadingWithText(s"$expectedMessage £1150")
+      doc(viewP2Date) must haveH2HeadingWithText(s"$expectedMessage £1,150")
 
       def viewP2Date: Html = createView(createViewModel(expectedDateRange))
     }
@@ -57,7 +57,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
       doc(viewTaxFreeAmount) must haveSpanWithText(taxFreeAmount)
 
-      def viewTaxFreeAmount: Html = createView(createViewModel(annualTaxFreeAmount = taxFreeAmount))
+      def viewTaxFreeAmount: Html = createView(createViewModel(annualTaxFreeAmount =  11500))
     }
 
     "have h2 heading for how tax-free amount is calculated" in {
@@ -203,9 +203,9 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
   val taxFreeAmountSummaryViewModel: TaxFreeAmountSummaryViewModel = createTaxFreeAmountSummaryViewModel()
 
   private def createViewModel(taxCodeDateRange: String = "",
-                              annualTaxFreeAmount: String = "£1150",
+                              annualTaxFreeAmount: BigDecimal = 1150,
                               taxFreeAmountSummary: TaxFreeAmountSummaryViewModel = taxFreeAmountSummaryViewModel): YourTaxFreeAmountViewModel = {
-    YourTaxFreeAmountViewModel(taxCodeDateRange, taxCodeDateRange, annualTaxFreeAmount, annualTaxFreeAmount, taxFreeAmountSummary, new MungedCodingComponents(), "", "")
+    YourTaxFreeAmountViewModel(taxCodeDateRange, taxCodeDateRange, annualTaxFreeAmount, annualTaxFreeAmount, taxFreeAmountSummary, new MungedCodingComponents(), 0, 0)
   }
 
   val currentTaxFreeAmount: YourTaxFreeAmountViewModel = createViewModel()

@@ -121,12 +121,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         val expectedViewModel: YourTaxFreeAmountViewModel =
           YourTaxFreeAmountViewModel("previousTaxDate",
             "currentTaxDate",
-            "previousAnnualTaxFreeAmount",
-            "currentAnnualTaxFreeAmount",
+            0,
+            0,
             TaxFreeAmountSummaryViewModel(Seq.empty),
             new MungedCodingComponents,
-            "",
-            "")
+            0,
+            0)
 
         val result = SUT.yourTaxFreeAmount()(request)
 
@@ -239,12 +239,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       YourTaxFreeAmountViewModel(
         "previousTaxDate",
         "currentTaxDate",
-        "previousAnnualTaxFreeAmount",
-        "currentAnnualTaxFreeAmount",
+        0,
+        0,
         TaxFreeAmountSummaryViewModel(Seq.empty),
         new MungedCodingComponents(),
-        "",
-        "")
+        0,
+        0)
     }
   }
 

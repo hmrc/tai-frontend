@@ -70,7 +70,8 @@
         <div class="column-two-thirds">
 
             <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.dates", currentTaxFreeAmount.currentTaxCodeDateRange)
-                <span class="display-block bold-large section section--narrow flush--bottom">@currentTaxFreeAmount.currentAnnualTaxFreeAmount</span>
+            <span class="display-block bold-large section section--narrow flush--bottom">
+                @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeAmount.currentAnnualTaxFreeAmount)</span>
             </h2>
 
             <section id="yourTaxFreeAmount">

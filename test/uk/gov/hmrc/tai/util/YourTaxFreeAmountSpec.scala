@@ -23,7 +23,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.model.domain.{DividendTax, PersonalAllowancePA}
+import uk.gov.hmrc.tai.model.domain.{DividendTax, MarriageAllowanceReceived, PersonalAllowancePA}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
@@ -38,13 +38,6 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
     }
   }
 
-  trait ViewModelHelperMock {
-    this: ViewModelHelper =>
-    override def withPoundPrefixAndSign(moneyPounds: MoneyPounds): String = {
-      "£42"
-    }
-  }
-
   val previousDate = new LocalDate(2017, 12, 12)
   val currentDate = new LocalDate(2018, 6, 5)
 
@@ -53,12 +46,12 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
                                        previousAdditions: Seq[CodingComponent],
                                        currentDeductions: Seq[CodingComponent],
                                        currentAdditions: Seq[CodingComponent],
-                                       previousPersonalAllowance: String = "£0",
-                                       currentPersonalAllowance: String = "£0"): YourTaxFreeAmountViewModel = {
+                                       previousPersonalAllowance: BigDecimal = 0,
+                                       currentPersonalAllowance: BigDecimal = 0): YourTaxFreeAmountViewModel = {
     val formattedPreviousDate = Dates.formatDate(previousDate)
     val formattedCurrentDate = createFormattedDate(currentDate)
-    val previousTaxFreeAmount = "£42"
-    val currentTaxFreeAmount = "£42"
+    val previousTaxFreeAmount = 42
+    val currentTaxFreeAmount = 42
     val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(currentCodingComponents, Map.empty, Seq.empty, 42)
 
     YourTaxFreeAmountViewModel(formattedPreviousDate,
@@ -67,8 +60,8 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
       currentTaxFreeAmount,
       taxFreeAmountSummary,
       new MungedCodingComponents(previousDeductions, previousAdditions, currentDeductions, currentAdditions),
-      "£42",
-      "£42")
+      previousPersonalAllowance,
+      currentPersonalAllowance)
   }
 
   def createFormattedDate(date: LocalDate): String = {
@@ -76,7 +69,7 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
   }
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  val yourTaxFreeAmount = new YourTaxFreeAmount() with ViewModelHelperMock with TaxAccountCalculatorMock
+  val yourTaxFreeAmount = new YourTaxFreeAmount() with TaxAccountCalculatorMock
 
   "buildTaxFreeAmount" should {
     "builds personal allowance" in {
@@ -86,7 +79,7 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
 
     "apply deductions and additions" in {
       val deduction = Seq(CodingComponent(DividendTax, Some(123), 2500, "DividendTax"));
-      val addition = Seq(CodingComponent(PersonalAllowancePA, Some(123), 5885, "PersonalAllowancePA"));
+      val addition = Seq(CodingComponent(MarriageAllowanceReceived, Some(123), 5885, "MarriageAllowanceReceived"));
       val currentCodingComponents = deduction ++ addition
 
       val expected = createYourTaxFreeAmountViewModel(currentCodingComponents, Seq.empty, Seq.empty, deduction, addition)
@@ -95,7 +88,7 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
 
     "previous deductions and additions" in {
       val deduction = Seq(CodingComponent(DividendTax, Some(123), 2500, "DividendTax"));
-      val addition = Seq(CodingComponent(PersonalAllowancePA, Some(123), 5885, "PersonalAllowancePA"));
+      val addition = Seq(CodingComponent(MarriageAllowanceReceived, Some(123), 5885, "MarriageAllowanceReceived"));
       val previousCodingComponents = deduction ++ addition
 
       val expected = createYourTaxFreeAmountViewModel(Seq.empty, deduction, addition, Seq.empty, Seq.empty)
@@ -105,7 +98,7 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
     "calculate personal allowance" in {
       val currentCodingComponent = Seq(CodingComponent(PersonalAllowancePA, Some(123), 5885, "PersonalAllowancePA"));
 
-      val expected = createYourTaxFreeAmountViewModel(currentCodingComponent, Seq.empty, Seq.empty, Seq.empty, currentCodingComponent)
+      val expected = createYourTaxFreeAmountViewModel(currentCodingComponent, Seq.empty, Seq.empty, Seq.empty, currentCodingComponent, 0, 5885)
       yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, Seq.empty, currentCodingComponent, Seq.empty, Map.empty) mustBe expected
     }
   }
