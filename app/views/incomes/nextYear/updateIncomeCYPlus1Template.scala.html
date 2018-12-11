@@ -54,7 +54,7 @@
         @content
 
         @if(showCancel){
-          @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url), gaEventAction = cancelText, linkText = cancelText)
+          @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url), gaEventAction = Some(gaEventAction), linkText = cancelText)
         }
     </div>
 }
