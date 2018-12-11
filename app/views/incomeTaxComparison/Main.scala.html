@@ -23,7 +23,7 @@
 @import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{IncomeTaxComparisonViewModel, EstimatedIncomeTaxComparisonViewModel}
 
 @(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
-@gaEventActionString = @{"Income Tax comparison: current and next tax years"}
+@gaEventActionString = @{"Income Tax comparison - current and next tax years"}
 @backLinkToChooseTaxYear = {
     <p class="flush--bottom">
         @Link.toInternalPage(
