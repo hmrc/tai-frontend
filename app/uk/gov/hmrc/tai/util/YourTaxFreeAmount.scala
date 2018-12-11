@@ -27,14 +27,13 @@ import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
 case class MungedCodingComponents(previousDeductions: Seq[CodingComponent] = Seq.empty,
-                                  previousAdditions: Seq[CodingComponent]= Seq.empty,
-                                  currentDeductions: Seq[CodingComponent]= Seq.empty,
-                                  currentAdditions: Seq[CodingComponent]= Seq.empty)
-
+                                  previousAdditions: Seq[CodingComponent] = Seq.empty,
+                                  currentDeductions: Seq[CodingComponent] = Seq.empty,
+                                  currentAdditions: Seq[CodingComponent] = Seq.empty)
 
 
 trait YourTaxFreeAmount extends TaxAccountCalculator {
-   def buildTaxFreeAmount(previousTaxCodeChangeDate: LocalDate,
+  def buildTaxFreeAmount(previousTaxCodeChangeDate: LocalDate,
                          currentTaxCodeChangeDate: LocalDate,
                          previousCodingComponents: Seq[CodingComponent],
                          currentCodingComponents: Seq[CodingComponent],
@@ -61,8 +60,8 @@ trait YourTaxFreeAmount extends TaxAccountCalculator {
       currentDeductions,
       currentAdditions)
 
-     val previousPersonalAllowance = sumOfPersonalAllowances(previousCodingComponents)
-     val currentPersonalAllowance = sumOfPersonalAllowances(currentCodingComponents)
+    val previousPersonalAllowance = sumOfPersonalAllowances(previousCodingComponents)
+    val currentPersonalAllowance = sumOfPersonalAllowances(currentCodingComponents)
 
     new YourTaxFreeAmountViewModel(
       Dates.formatDate(previousTaxCodeChangeDate),
@@ -76,7 +75,7 @@ trait YourTaxFreeAmount extends TaxAccountCalculator {
     )
   }
 
-  private def getDeduction(codingComponents: Seq[CodingComponent]) : Seq[CodingComponent] = {
+  private def getDeduction(codingComponents: Seq[CodingComponent]): Seq[CodingComponent] = {
     codingComponents.filter({
       _.componentType match {
         case _: AllowanceComponentType => false
@@ -85,8 +84,8 @@ trait YourTaxFreeAmount extends TaxAccountCalculator {
     })
   }
 
-  private def getAllowances(codingComponents: Seq[CodingComponent]) : Seq[CodingComponent] = {
-    codingComponents.filter({
+  private def getAllowances(codingComponents: Seq[CodingComponent]): Seq[CodingComponent] = {
+    codingComponents.filterNot(isPersonalAllowanceComponent).filter({
       _.componentType match {
         case _: DeductionComponentType => false
         case _ => true
@@ -100,10 +99,6 @@ trait YourTaxFreeAmount extends TaxAccountCalculator {
   }
 
   private def sumOfPersonalAllowances(codingComponents: Seq[CodingComponent]): BigDecimal = {
-    val personalAllowance = codingComponents.filter(isPersonalAllowanceComponent)
-    personalAllowance match {
-      case Nil => BigDecimal(0)
-      case _ => personalAllowance.map(_.amount).sum
-    }
+    codingComponents.filter(isPersonalAllowanceComponent).map(_.amount).sum
   }
 }
