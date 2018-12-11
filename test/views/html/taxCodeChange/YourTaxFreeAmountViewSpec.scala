@@ -205,7 +205,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
   private def createViewModel(taxCodeDateRange: String = "",
                               annualTaxFreeAmount: String = "£1150",
                               taxFreeAmountSummary: TaxFreeAmountSummaryViewModel = taxFreeAmountSummaryViewModel): YourTaxFreeAmountViewModel = {
-    YourTaxFreeAmountViewModel(taxCodeDateRange, taxCodeDateRange, annualTaxFreeAmount, annualTaxFreeAmount, taxFreeAmountSummary, new MungedCodingComponents())
+    YourTaxFreeAmountViewModel(taxCodeDateRange, taxCodeDateRange, annualTaxFreeAmount, annualTaxFreeAmount, taxFreeAmountSummary, new MungedCodingComponents(), "", "")
   }
 
   val currentTaxFreeAmount: YourTaxFreeAmountViewModel = createViewModel()

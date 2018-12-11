@@ -101,7 +101,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         val previousCodingComponents = Seq(codingComponent1)
         val currentCodingComponents = Seq(codingComponent2)
-        val taxFreeAmountComparison = TaxFreeAmountComparison(previousCodingComponents,currentCodingComponents)
+        val taxFreeAmountComparison = TaxFreeAmountComparison(previousCodingComponents, currentCodingComponents)
         val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
         val employmentMap = Map.empty[Int, String]
         val companyCar = Seq.empty[CompanyCarBenefit]
@@ -124,7 +124,9 @@ class TaxCodeChangeControllerSpec extends PlaySpec
             "previousAnnualTaxFreeAmount",
             "currentAnnualTaxFreeAmount",
             TaxFreeAmountSummaryViewModel(Seq.empty),
-            new MungedCodingComponents)
+            new MungedCodingComponents,
+            "",
+            "")
 
         val result = SUT.yourTaxFreeAmount()(request)
 
@@ -234,7 +236,15 @@ class TaxCodeChangeControllerSpec extends PlaySpec
                                     currentCompanyCarBenefits: Seq[CompanyCarBenefit],
                                     employmentNames: Map[Int, String])
                                    (implicit messages: Messages): YourTaxFreeAmountViewModel = {
-      YourTaxFreeAmountViewModel("previousTaxDate", "currentTaxDate", "previousAnnualTaxFreeAmount", "currentAnnualTaxFreeAmount", TaxFreeAmountSummaryViewModel(Seq.empty), new MungedCodingComponents())
+      YourTaxFreeAmountViewModel(
+        "previousTaxDate",
+        "currentTaxDate",
+        "previousAnnualTaxFreeAmount",
+        "currentAnnualTaxFreeAmount",
+        TaxFreeAmountSummaryViewModel(Seq.empty),
+        new MungedCodingComponents(),
+        "",
+        "")
     }
   }
 
