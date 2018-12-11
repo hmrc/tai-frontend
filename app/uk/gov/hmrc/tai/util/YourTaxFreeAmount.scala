@@ -26,15 +26,19 @@ import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
-case class TaxFreeInfo(date: String, annualTaxFreeAmount: BigDecimal, personalAllowance : BigDecimal)
-
 case class MungedCodingComponents(previousDeductions: Seq[CodingComponent] = Seq.empty,
                                   previousAdditions: Seq[CodingComponent] = Seq.empty,
                                   currentDeductions: Seq[CodingComponent] = Seq.empty,
                                   currentAdditions: Seq[CodingComponent] = Seq.empty)
 
+trait isPersonalAllowance {
+  def isPersonalAllowanceComponent(codingComponent: CodingComponent): Boolean = codingComponent.componentType match {
+    case PersonalAllowancePA | PersonalAllowanceAgedPAA | PersonalAllowanceElderlyPAE => true
+    case _ => false
+  }
+}
 
-trait YourTaxFreeAmount extends TaxAccountCalculator {
+trait YourTaxFreeAmount extends TaxAccountCalculator with isPersonalAllowance {
   def buildTaxFreeAmount(previousTaxCodeChangeDate: LocalDate,
                          currentTaxCodeChangeDate: LocalDate,
                          previousCodingComponents: Seq[CodingComponent],
@@ -43,9 +47,6 @@ trait YourTaxFreeAmount extends TaxAccountCalculator {
                          employmentNames: Map[Int, String])
                         (implicit messages: Messages): YourTaxFreeAmountViewModel = {
 
-
-    val previousAnnualTaxFreeAmount = taxFreeAmount(previousCodingComponents)
-    val currentAnnualTaxFreeAmount = taxFreeAmount(currentCodingComponents)
 
     val removeMeTaxFreeAmountSummary =
       TaxFreeAmountSummaryViewModel(currentCodingComponents, employmentNames, currentCompanyCarBenefits, taxFreeAmount(currentCodingComponents))
@@ -61,13 +62,11 @@ trait YourTaxFreeAmount extends TaxAccountCalculator {
       currentDeductions,
       currentAdditions)
 
-    val previousPersonalAllowance = sumOfPersonalAllowances(previousCodingComponents)
-    val currentPersonalAllowance = sumOfPersonalAllowances(currentCodingComponents)
+    val previousTaxCodeDateRange = Dates.formatDate(previousTaxCodeChangeDate)
+    val previousTaxFreeInfo = TaxFreeInfo(previousTaxCodeDateRange, previousCodingComponents)
 
-    val previousTaxFreeInfo = TaxFreeInfo(Dates.formatDate(previousTaxCodeChangeDate), previousAnnualTaxFreeAmount, previousPersonalAllowance)
-
-    val taxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(currentTaxCodeChangeDate, TaxYearResolver.endOfCurrentTaxYear)
-    val currentTaxFreeInfo = TaxFreeInfo(taxCodeDateRange, currentAnnualTaxFreeAmount, currentPersonalAllowance)
+    val currentTaxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(currentTaxCodeChangeDate, TaxYearResolver.endOfCurrentTaxYear)
+    val currentTaxFreeInfo = TaxFreeInfo(currentTaxCodeDateRange, currentCodingComponents)
 
     new YourTaxFreeAmountViewModel(
       previousTaxFreeInfo,
@@ -93,11 +92,6 @@ trait YourTaxFreeAmount extends TaxAccountCalculator {
         case _ => true
       }
     })
-  }
-
-  private def isPersonalAllowanceComponent(codingComponent: CodingComponent): Boolean = codingComponent.componentType match {
-    case PersonalAllowancePA | PersonalAllowanceAgedPAA | PersonalAllowanceElderlyPAE => true
-    case _ => false
   }
 
   private def sumOfPersonalAllowances(codingComponents: Seq[CodingComponent]): BigDecimal = {
