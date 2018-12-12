@@ -18,12 +18,12 @@ package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.model.domain.{AllowanceComponentType, JobExpenses, MarriageAllowanceReceived}
+import uk.gov.hmrc.tai.model.domain._
 
 
 class AllowancesAndDeductionsSpec extends PlaySpec {
 
-  private def createCodingComponent(allowance: AllowanceComponentType,employmentId: Option[Int], allowanceAmount: BigDecimal): CodingComponent = {
+  private def createCodingComponent(allowance: TaxComponentType,employmentId: Option[Int], allowanceAmount: BigDecimal): CodingComponent = {
     CodingComponent(allowance, employmentId, allowanceAmount, allowance.toString)
   }
 
@@ -35,8 +35,8 @@ class AllowancesAndDeductionsSpec extends PlaySpec {
       expected mustBe actual
     }
 
-    "apply additions" when {
-      "a single current allowance component type is passed" in {
+    "create coding component pairs" when {
+      "a single current component type is passed" in {
         val currentCodingComponents = Seq(createCodingComponent(MarriageAllowanceReceived, Some(123), 5885))
         val pairs = Seq(CodingComponentPair(MarriageAllowanceReceived, Some(123), 0, 5885))
 
@@ -45,23 +45,7 @@ class AllowancesAndDeductionsSpec extends PlaySpec {
         pairs mustBe actual.allowances
       }
 
-      "multiple current allowance component types are passed" in {
-        val currentCodingComponents = Seq(
-          createCodingComponent(MarriageAllowanceReceived, Some(123), 5885),
-          createCodingComponent(JobExpenses, Some(456), 1000)
-        )
-
-        val pairs = Seq(
-          CodingComponentPair(MarriageAllowanceReceived, Some(123), 0, 5885),
-          CodingComponentPair(JobExpenses, Some(456), 0, 1000)
-        )
-
-        val actual = AllowancesAndDeductions.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)
-
-        pairs mustBe actual.allowances
-      }
-
-      "matches the current allowance components and previous allowance components where type and employment is the same" in {
+      "the current components and previous components where type and employment is the same" in {
         val currentCodingComponents = Seq(createCodingComponent(MarriageAllowanceReceived, Some(123), 2000))
         val previousCodingComponents = Seq(createCodingComponent(MarriageAllowanceReceived, Some(123), 1000))
 
@@ -72,7 +56,7 @@ class AllowancesAndDeductionsSpec extends PlaySpec {
         pairs mustBe actual.allowances
       }
 
-      "matches the current allowance components and previous allowance components where type is the same and employment id is none" in {
+      "the current components and previous components where type is the same and employment id is none" in {
         val currentCodingComponents = Seq(createCodingComponent(MarriageAllowanceReceived, None, 2000))
         val previousCodingComponents = Seq(createCodingComponent(MarriageAllowanceReceived, None, 1000))
 
@@ -112,8 +96,47 @@ class AllowancesAndDeductionsSpec extends PlaySpec {
       }
     }
 
-    "apply deductions" when {
+    "partitions allowances and deductions" when {
+      "multiple current allowance component types are passed" in {
+        val currentCodingComponents = Seq(
+          createCodingComponent(MarriageAllowanceReceived, Some(123), 5885),
+          createCodingComponent(JobExpenses, Some(456), 1000),
+          createCodingComponent(ChildBenefit, Some(123), 5885),
+          createCodingComponent(OutstandingDebt, Some(456), 1000)
+        )
 
+        val allowancePairs = Seq(
+          CodingComponentPair(MarriageAllowanceReceived, Some(123), 0, 5885),
+          CodingComponentPair(JobExpenses, Some(456), 0, 1000)
+        )
+
+        val deductionPairs = Seq(
+          CodingComponentPair(ChildBenefit, Some(123), 0, 5885),
+          CodingComponentPair(OutstandingDebt, Some(456), 0, 1000)
+        )
+
+        val actual = AllowancesAndDeductions.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)
+
+        allowancePairs mustBe actual.allowances
+        deductionPairs mustBe actual.deductions
+      }
+    }
+
+    "filters out PersonalAllowance component types" in {
+      val currentCodingComponents = Seq(
+        createCodingComponent(PersonalAllowancePA, None, 5885),
+        createCodingComponent(PersonalAllowanceAgedPAA, None, 5885),
+        createCodingComponent(PersonalAllowanceElderlyPAE, None, 5885),
+        createCodingComponent(JobExpenses, None, 1000)
+      )
+
+      val pairs = Seq(
+        CodingComponentPair(JobExpenses, None, 0, 1000)
+      )
+
+      val actual = AllowancesAndDeductions.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)
+
+      pairs mustBe actual.allowances
     }
   }
 }

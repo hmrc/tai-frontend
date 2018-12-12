@@ -30,9 +30,9 @@ object AllowancesAndDeductions {
 
     val pairs = pairCodingComponents(previousCodingComponents, currentCodingComponents)
     val allowances = getAllowances(pairs)
-//    val deductions = getDeductions(pairs)
+    val deductions = getDeductions(pairs)
 
-    AllowancesAndDeductions(allowances, Seq.empty)
+    AllowancesAndDeductions(allowances, deductions)
   }
 
   private def pairCodingComponents(previous: Seq[CodingComponent], current: Seq[CodingComponent]): Seq[CodingComponentPair] = {
