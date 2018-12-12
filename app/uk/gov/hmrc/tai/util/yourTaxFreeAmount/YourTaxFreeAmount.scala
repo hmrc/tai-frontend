@@ -32,10 +32,9 @@ trait YourTaxFreeAmount extends TaxAccountCalculator {
                          previousCodingComponents: Seq[CodingComponent],
                          currentCodingComponents: Seq[CodingComponent],
                          currentCompanyCarBenefits: Seq[CompanyCarBenefit],
+                         previousCompanyCarBenefits: Seq[CompanyCarBenefit],
                          employmentNames: Map[Int, String])
                         (implicit messages: Messages): YourTaxFreeAmountViewModel = {
-
-
     val removeMeTaxFreeAmountSummary =
       TaxFreeAmountSummaryViewModel(currentCodingComponents, employmentNames, currentCompanyCarBenefits, taxFreeAmount(currentCodingComponents))
 

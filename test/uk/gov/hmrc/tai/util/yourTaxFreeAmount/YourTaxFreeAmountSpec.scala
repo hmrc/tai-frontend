@@ -32,6 +32,7 @@ import uk.gov.hmrc.time.TaxYearResolver
 
 class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
 
+  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
   val previousDate = new LocalDate(2017, 12, 12)
   val currentDate = new LocalDate(2018, 6, 5)
 
@@ -52,55 +53,12 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
     TaxYearRangeUtil.dynamicDateRange(date, TaxYearResolver.endOfCurrentTaxYear)
   }
 
-  def createCodingComponent(allowance: AllowanceComponentType, allowanceAmount: BigDecimal) = {
-    CodingComponent(allowance, Some(123), allowanceAmount, allowance.toString)
-  }
-
-  implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
-  val yourTaxFreeAmount = new YourTaxFreeAmount() with TaxAccountCalculatorMock
-
-  "buildTaxFreeAmount" ignore {
-    "builds personal allowance" in {
+  "buildTaxFreeAmount" should {
+    "have the correct date formatting" in {
       val expected = createYourTaxFreeAmountViewModel()
-      yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, Seq.empty, Seq.empty, Seq.empty, Map.empty) mustBe expected
-    }
 
-    "apply deductions and additions" when {
-      "current taxable allowance" in {
-        val deductions = Seq(CodingComponent(DividendTax, Some(123), 2500, "DividendTax"))
-        val additions = Seq(CodingComponent(MarriageAllowanceReceived, Some(123), 5885, "MarriageAllowanceReceived"))
-        val currentCodingComponents = deductions ++ additions
-
-        val actual = yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, Seq.empty, currentCodingComponents, Seq.empty, Map.empty)
-
-//        deductions mustBe actual.allowancesAndDeductions.currentDeductions
-//        additions mustBe actual.allowancesAndDeductions.currentAdditions
-      }
-
-      "previous taxable allowance" in {
-        val deductions = Seq(CodingComponent(DividendTax, Some(123), 2500, "DividendTax"))
-        val additions = Seq(CodingComponent(MarriageAllowanceReceived, Some(123), 5885, "MarriageAllowanceReceived"))
-        val previousCodingComponents = deductions ++ additions
-
-        val actual = yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, previousCodingComponents, Seq.empty, Seq.empty, Map.empty)
-
-//        deductions mustBe actual.allowancesAndDeductions.previousDeductions
-//        additions mustBe actual.allowancesAndDeductions.previousAdditions
-      }
-
-      "ignore personal allowance type components" in {
-        val addition = createCodingComponent(MarriageAllowanceReceived, 5885)
-
-        val ignored1 = createCodingComponent(PersonalAllowancePA, 1000)
-        val ignored2 = createCodingComponent(PersonalAllowanceAgedPAA, 1000)
-        val ignored3 = createCodingComponent(PersonalAllowanceElderlyPAE, 1000)
-
-        val currentCodingComponents = Seq(addition, ignored1, ignored2, ignored3)
-
-        val actual = yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, Seq.empty, currentCodingComponents, Seq.empty, Map.empty)
-
-//        Seq(addition) mustBe actual.allowancesAndDeductions.currentAdditions
-      }
+      val yourTaxFreeAmount = new YourTaxFreeAmount() with TaxAccountCalculatorMock
+      yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, Seq.empty, Seq.empty, Seq.empty, Seq.empty, Map.empty) mustBe expected
     }
   }
 }

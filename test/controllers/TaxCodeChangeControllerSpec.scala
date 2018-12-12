@@ -219,12 +219,13 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
   trait YourTaxFreeAmountMock {
     this: YourTaxFreeAmount =>
-    override def buildTaxFreeAmount(previousTaxCodeChangeDate: LocalDate,
-                                    currentTaxCodeChangeDate: LocalDate,
-                                    previousCodingComponents: Seq[CodingComponent],
-                                    currentCodingComponents: Seq[CodingComponent],
-                                    currentCompanyCarBenefits: Seq[CompanyCarBenefit],
-                                    employmentNames: Map[Int, String])
+    override def buildTaxFreeAmount(unused1: LocalDate,
+                                    unused2: LocalDate,
+                                    unused3: Seq[CodingComponent],
+                                    unused4: Seq[CodingComponent],
+                                    unused5: Seq[CompanyCarBenefit],
+                                    unused6: Seq[CompanyCarBenefit],
+                                    unused7: Map[Int, String])
                                    (implicit messages: Messages): YourTaxFreeAmountViewModel = {
       expectedViewModel
     }
