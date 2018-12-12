@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.util
+package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
@@ -22,14 +22,17 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.util.{TaxAccountCalculator, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
-trait isPersonalAllowance {
-  def isPersonalAllowanceComponent(codingComponent: CodingComponent): Boolean = codingComponent.componentType match {
-    case PersonalAllowancePA | PersonalAllowanceAgedPAA | PersonalAllowanceElderlyPAE => true
-    case _ => false
+object IsPersonalAllowance {
+  def isPersonalAllowanceComponent(codingComponentType: TaxComponentType): Boolean = {
+    codingComponentType match {
+      case PersonalAllowancePA | PersonalAllowanceAgedPAA | PersonalAllowanceElderlyPAE => true
+      case _ => false
+    }
   }
 }
 
@@ -46,7 +49,7 @@ trait YourTaxFreeAmount extends TaxAccountCalculator {
     val removeMeTaxFreeAmountSummary =
       TaxFreeAmountSummaryViewModel(currentCodingComponents, employmentNames, currentCompanyCarBenefits, taxFreeAmount(currentCodingComponents))
 
-    val mungedCodingComponents = MungedCodingComponents(previousCodingComponents, currentCodingComponents)
+    val allowancesAndDeductions = AllowancesAndDeductions.fromCodingComponents(previousCodingComponents, currentCodingComponents)
 
     val previousTaxCodeDateRange = Dates.formatDate(previousTaxCodeChangeDate)
     val previousTaxFreeInfo = TaxFreeInfo(previousTaxCodeDateRange, previousCodingComponents)
@@ -58,7 +61,7 @@ trait YourTaxFreeAmount extends TaxAccountCalculator {
       previousTaxFreeInfo,
       currentTaxFreeInfo,
       removeMeTaxFreeAmountSummary,
-      mungedCodingComponents
+      allowancesAndDeductions
     )
   }
 }

@@ -18,13 +18,14 @@ package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.{MungedCodingComponents, TaxFreeInfo, ViewModelHelper}
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductions, TaxFreeInfo}
+import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 
 case class YourTaxFreeAmountViewModel(previousTaxFreeInfo: TaxFreeInfo,
                                       currentTaxFreeInfo: TaxFreeInfo,
                                       taxFreeAmountSummary: TaxFreeAmountSummaryViewModel,
-                                      mungedCodingComponents: MungedCodingComponents
+                                      allowancesAndDeductions: AllowancesAndDeductions
                                       ) {}
 
 object YourTaxFreeAmountViewModel extends ViewModelHelper {

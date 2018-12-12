@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.util
+package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.util.TaxAccountCalculator
 
 case class TaxFreeInfo(date: String, annualTaxFreeAmount: BigDecimal, personalAllowance : BigDecimal)
 
-object TaxFreeInfo extends TaxAccountCalculator with isPersonalAllowance {
+object TaxFreeInfo extends TaxAccountCalculator {
 
   def apply(date: String, codingComponents: Seq[CodingComponent])(implicit messages: Messages): TaxFreeInfo = {
     val annualTaxFreeAmount = taxFreeAmount(codingComponents)
@@ -31,6 +32,6 @@ object TaxFreeInfo extends TaxAccountCalculator with isPersonalAllowance {
   }
 
   private def sumOfPersonalAllowances(codingComponents: Seq[CodingComponent]): BigDecimal = {
-    codingComponents.filter(isPersonalAllowanceComponent).map(_.amount).sum
+    codingComponents.filter(component => IsPersonalAllowance.isPersonalAllowanceComponent(component.componentType)).map(_.amount).sum
   }
 }

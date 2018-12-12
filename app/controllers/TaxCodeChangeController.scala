@@ -33,7 +33,8 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxAccountService, TaxCodeChangeService}
-import uk.gov.hmrc.tai.util.{TaxAccountCalculator, ViewModelHelper, YourTaxFreeAmount}
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.YourTaxFreeAmount
+import uk.gov.hmrc.tai.util.{TaxAccountCalculator, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.time.TaxYearResolver

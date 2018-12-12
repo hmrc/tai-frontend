@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.util
+package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import controllers.FakeTaiPlayApplication
 import mocks.TaxAccountCalculatorMock
@@ -23,9 +23,9 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 import uk.gov.hmrc.time.TaxYearResolver
@@ -45,7 +45,7 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
       TaxFreeInfo(formattedPreviousDate, 0, 0),
       TaxFreeInfo(formattedCurrentDate, 0, 0),
       taxFreeAmountSummary,
-      MungedCodingComponents(Seq.empty, Seq.empty))
+      AllowancesAndDeductions(Seq.empty, Seq.empty))
   }
 
   def createFormattedDate(date: LocalDate): String = {
@@ -53,7 +53,7 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
   }
 
   def createCodingComponent(allowance: AllowanceComponentType, allowanceAmount: BigDecimal) = {
-    CodingComponent(allowance, Some(123), allowanceAmount, allowance.toString())
+    CodingComponent(allowance, Some(123), allowanceAmount, allowance.toString)
   }
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
@@ -73,8 +73,8 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
 
         val actual = yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, Seq.empty, currentCodingComponents, Seq.empty, Map.empty)
 
-//        deductions mustBe actual.mungedCodingComponents.currentDeductions
-//        additions mustBe actual.mungedCodingComponents.currentAdditions
+//        deductions mustBe actual.allowancesAndDeductions.currentDeductions
+//        additions mustBe actual.allowancesAndDeductions.currentAdditions
       }
 
       "previous taxable allowance" in {
@@ -84,8 +84,8 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
 
         val actual = yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, previousCodingComponents, Seq.empty, Seq.empty, Map.empty)
 
-//        deductions mustBe actual.mungedCodingComponents.previousDeductions
-//        additions mustBe actual.mungedCodingComponents.previousAdditions
+//        deductions mustBe actual.allowancesAndDeductions.previousDeductions
+//        additions mustBe actual.allowancesAndDeductions.previousAdditions
       }
 
       "ignore personal allowance type components" in {
@@ -99,7 +99,7 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
 
         val actual = yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, Seq.empty, currentCodingComponents, Seq.empty, Map.empty)
 
-//        Seq(addition) mustBe actual.mungedCodingComponents.currentAdditions
+//        Seq(addition) mustBe actual.allowancesAndDeductions.currentAdditions
       }
     }
   }

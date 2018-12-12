@@ -40,8 +40,8 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.util.{MungedCodingComponents, TaxFreeInfo, YourTaxFreeAmount}
-import uk.gov.hmrc.tai.viewModels.{TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryViewModel}
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductions, TaxFreeInfo, YourTaxFreeAmount}
+import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
@@ -123,7 +123,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
             TaxFreeInfo("previousTaxDate", 0, 0),
             TaxFreeInfo("currentTaxDate", 0, 0),
             TaxFreeAmountSummaryViewModel(Seq.empty),
-            new MungedCodingComponents)
+            AllowancesAndDeductions(Seq.empty, Seq.empty))
 
         val result = SUT.yourTaxFreeAmount()(request)
 
@@ -237,7 +237,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
           TaxFreeInfo("previousTaxDate", 0, 0),
           TaxFreeInfo("currentTaxDate", 0, 0),
           TaxFreeAmountSummaryViewModel(Seq.empty),
-          new MungedCodingComponents)
+          AllowancesAndDeductions(Seq.empty, Seq.empty))
     }
   }
 

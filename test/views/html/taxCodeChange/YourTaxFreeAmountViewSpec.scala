@@ -20,10 +20,10 @@ import controllers.routes
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductions, TaxFreeInfo}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.time.TaxYearResolver
-import uk.gov.hmrc.tai.util.{MungedCodingComponents, TaxFreeInfo, ViewModelHelper}
+import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryRowViewModel, TaxFreeAmountSummaryViewModel}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
@@ -210,7 +210,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       TaxFreeInfo(taxCodeDateRange, 0, 0),
       TaxFreeInfo(taxCodeDateRange, annualTaxFreeAmount, 0),
       taxFreeAmountSummary,
-      new MungedCodingComponents)
+      AllowancesAndDeductions(Seq.empty, Seq.empty))
   }
 
   val currentTaxFreeAmount: YourTaxFreeAmountViewModel = createViewModel()

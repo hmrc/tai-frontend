@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.util
+package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import controllers.FakeTaiPlayApplication
-import mocks.TaxAccountCalculatorMock
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
