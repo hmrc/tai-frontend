@@ -172,18 +172,12 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
 
         sut.p800ServiceIsAvailable mustBe false
       }
-    }
-
-    "return false for p800ServiceIsAvailable" when {
       "the viewmodel is provided with a tax year earlier than CY-1 such as CY-3" in {
 
         val sut = createSut(cyMinusThreeTaxYear, Nil)
 
         sut.p800ServiceIsAvailable mustBe false
       }
-    }
-
-    "return false for p800ServiceIsAvailable" when {
       "the viewmodel is provided with a tax year earlier than CY-1 such as CY-4" in {
 
         val sut = createSut(cyMinusFourTaxYear, Nil)
