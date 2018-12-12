@@ -118,13 +118,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-        val expectedViewModel: YourTaxFreeAmountViewModel =
-          YourTaxFreeAmountViewModel(
-            TaxFreeInfo("previousTaxDate", 0, 0),
-            TaxFreeInfo("currentTaxDate", 0, 0),
-            TaxFreeAmountSummaryViewModel(Seq.empty),
-            AllowancesAndDeductions(Seq.empty, Seq.empty))
-
         val result = SUT.yourTaxFreeAmount()(request)
 
         status(result) mustBe OK
@@ -233,12 +226,15 @@ class TaxCodeChangeControllerSpec extends PlaySpec
                                     currentCompanyCarBenefits: Seq[CompanyCarBenefit],
                                     employmentNames: Map[Int, String])
                                    (implicit messages: Messages): YourTaxFreeAmountViewModel = {
-        YourTaxFreeAmountViewModel(
-          TaxFreeInfo("previousTaxDate", 0, 0),
-          TaxFreeInfo("currentTaxDate", 0, 0),
-          TaxFreeAmountSummaryViewModel(Seq.empty),
-          AllowancesAndDeductions(Seq.empty, Seq.empty))
+      expectedViewModel
     }
   }
+
+  val expectedViewModel: YourTaxFreeAmountViewModel =
+    YourTaxFreeAmountViewModel(
+      TaxFreeInfo("previousTaxDate", 0, 0),
+      TaxFreeInfo("currentTaxDate", 0, 0),
+      TaxFreeAmountSummaryViewModel(Seq.empty),
+      AllowancesAndDeductions(Seq.empty, Seq.empty))
 
 }
