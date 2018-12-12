@@ -32,6 +32,6 @@ object TaxFreeInfo extends TaxAccountCalculator {
   }
 
   private def sumOfPersonalAllowances(codingComponents: Seq[CodingComponent]): BigDecimal = {
-    codingComponents.filter(component => IsPersonalAllowance.isPersonalAllowanceComponent(component.componentType)).map(_.amount).sum
+    codingComponents.filter(component => PersonalAllowance.isA(component.componentType)).map(_.amount).sum
   }
 }
