@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.WhatDoYouWantToDoForm
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{Employment, HasTaxCodeChanged, TaxCodeMismatch}
+import uk.gov.hmrc.tai.model.domain.{Employment, HasTaxCodeChanged, TaxAccountSummary, TaxCodeMismatch}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
@@ -87,28 +87,15 @@ trait WhatDoYouWantToDoController extends TaiBaseController
   private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: TaiUser): Future[Result] = {
 
     val nino = Nino(user.getNino)
-    val currentTaxYearEmployments = employmentService.employments(nino, TaxYear())
-    val currentTaxYearTaxCodes = taxAccountService.taxCodeIncomes(nino, TaxYear())
 
-    (for {
-      employments <- currentTaxYearEmployments
-      taxCodes <- currentTaxYearTaxCodes
-    } yield {
-      val noOfTaxCodes: Seq[TaxCodeIncome] = taxCodes match {
-        case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) => taxCodeIncomes
-        case _ => Seq.empty[TaxCodeIncome]
-      }
-      auditService.sendUserEntryAuditEvent(nino, request.headers.get("Referer").getOrElse("NA"), employments, noOfTaxCodes)
-    }).recover{auditError
+    auditNumberOfTaxCodesReturned(nino)
 
-    }
-
-    trackingService.isAnyIFormInProgress(user.getNino) flatMap { trackingResponse =>
+    trackingService.isAnyIFormInProgress(nino.nino) flatMap { trackingResponse =>
 
       if(cyPlusOneEnabled) {
 
-        val hasTaxCodeChanged = taxCodeChangeService.hasTaxCodeChanged(Nino(user.getNino))
-        val cy1TaxAccountSummary = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear().next)
+        val hasTaxCodeChanged = taxCodeChangeService.hasTaxCodeChanged(nino)
+        val cy1TaxAccountSummary = taxAccountService.taxAccountSummary(nino, TaxYear().next)
 
         for {
           taxCodeChanged <- hasTaxCodeChanged
@@ -125,13 +112,35 @@ trait WhatDoYouWantToDoController extends TaiBaseController
         }
       }
       else {
-        taxCodeChangeService.hasTaxCodeChanged(Nino(user.getNino)).map (hasTaxCodeChanged =>
+        taxCodeChangeService.hasTaxCodeChanged(nino).map (hasTaxCodeChanged =>
           Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(
             trackingResponse, cyPlusOneEnabled, hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch)))
         )
       }
     }
   }
+
+  private def auditNumberOfTaxCodesReturned(nino: Nino)
+                                           (implicit request: Request[AnyContent],
+                                            user: TaiUser) = {
+
+    val currentTaxYearEmployments: Future[Seq[Employment]] = employmentService.employments(nino, TaxYear())
+    val currentTaxYearTaxCodes: Future[TaiResponse] = taxAccountService.taxCodeIncomes(nino, TaxYear())
+
+    (for {
+      employments <- currentTaxYearEmployments
+      taxCodes <- currentTaxYearTaxCodes
+    } yield {
+      val noOfTaxCodes: Seq[TaxCodeIncome] = taxCodes match {
+        case TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) => taxCodeIncomes
+        case _ => Seq.empty[TaxCodeIncome]
+      }
+      auditService.sendUserEntryAuditEvent(nino, request.headers.get("Referer").getOrElse("NA"), employments, noOfTaxCodes)
+    }).recover{
+      auditError
+    }
+  }
+
 
  private def auditError(implicit request: Request[AnyContent], user: TaiUser): PartialFunction[Throwable, Unit] = {
     case e =>

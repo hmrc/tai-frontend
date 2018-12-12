@@ -39,23 +39,39 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
       }
     }
 
-    "return true" when {
+    "return false" when {
+
       "there has been a tax code change and mismatch is None" in {
         val viewModel = WhatDoYouWantToDoViewModel(false, true, true)
 
         viewModel.showTaxCodeChangeTile() mustEqual false
       }
-    }
 
-    "return false" when {
+      "there are no confirmed taxCodeRecords in the TaxCodeMismatch" in {
+
+        val taxCodeMismatchWithNoConfirmedRecords = TaxCodeMismatch(true, Seq("taxCode"), Seq.empty)
+
+        val viewModel = WhatDoYouWantToDoViewModel(false, true, true, Some(taxCodeMismatchWithNoConfirmedRecords))
+
+        viewModel.showTaxCodeChangeTile() mustEqual false
+
+      }
+
+      "there are no taxCodeRecords in the TaxCodeMismatch at all" in {
+
+        val taxCodeMismatchWithNoRecords = TaxCodeMismatch(false, Seq.empty, Seq.empty)
+
+        val viewModel = WhatDoYouWantToDoViewModel(false, true, true, Some(taxCodeMismatchWithNoRecords))
+
+        viewModel.showTaxCodeChangeTile() mustEqual false
+
+      }
+
       "there has been a tax code change and there is a mismatch" in {
         val viewModel = WhatDoYouWantToDoViewModel(false, true, true, Some(mismatchedTaxCode))
 
         viewModel.showTaxCodeChangeTile() mustEqual false
       }
-    }
-
-    "return false" when {
       "there has not been a tax code change" in {
         val viewModel = WhatDoYouWantToDoViewModel(false, true, false)
 
@@ -108,9 +124,6 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
 
         viewModel.gaDimensions() mustEqual gaMap(expected)
       }
-    }
-
-    "return mismatched tax code code comparision results" when {
       "there has not been a tax code change" in {
         val viewModel = WhatDoYouWantToDoViewModel(false, true, false, Some(mismatchedTaxCode))
 
@@ -128,9 +141,6 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
 
         viewModel.gaDimensions() mustEqual gaMap(expected)
       }
-    }
-
-    "return matched tax code code comparision results" when {
       "there has not been a tax code change" in {
         val viewModel = WhatDoYouWantToDoViewModel(false, true, false, Some(matchedTaxCode))
 
@@ -139,6 +149,5 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
         viewModel.gaDimensions() mustEqual gaMap(expected)
       }
     }
-
   }
 }
