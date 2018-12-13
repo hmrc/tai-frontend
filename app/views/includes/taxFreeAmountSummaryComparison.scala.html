@@ -1,0 +1,227 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
+
+@import uk.gov.hmrc.tai.util.yourTaxFreeAmount.CodingComponentPair
+@(currentTaxFreeAmount: YourTaxFreeAmountViewModel, gaEventActionString: String, taxCodeChange: Boolean = false)(implicit m: Messages)
+
+@previousTaxFreeInfo = @{ currentTaxFreeAmount.previousTaxFreeInfo }
+@currentTaxFreeInfo = @{ currentTaxFreeAmount.currentTaxFreeInfo }
+@allowancesAndDeductions = @{ currentTaxFreeAmount.allowancesAndDeductions }
+@allowances = @{ currentTaxFreeAmount.allowancesAndDeductions.allowances }
+@deductions = @{ currentTaxFreeAmount.allowancesAndDeductions.deductions }
+
+<table class="responsive-table">
+    <thead>
+        <tr role="row">
+            <th scope="col"></th>
+            <th scope="col">Previous tax code from 6&nbspApril&nbsp2018</th>
+            <th scope="col">Current tax code from 2&nbspAugust&nbsp2018</th>
+        </tr>
+    </thead>
+    <tbody>
+        @personalAllowanceRow
+        @iabdBreakdownRows(allowances, "Additions", "Total Additions")
+        @iabdBreakdownRows(deductions, "Deductions", "Total Deductions")
+        @totalTaxFreeAmountRow
+    </tbody>
+</table>
+
+
+@personalAllowanceRow = {
+    <tr role="row">
+        <td>Personal Allowance</td>
+        <td class="numeric">
+            <span aria-hidden="true" class="table-heading">Previous Amount</span>
+            @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.personalAllowance)
+        </td>
+        <td class="numeric">
+            <span aria-hidden="true" class="table-heading">Current Amount</span>
+            @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.personalAllowance)
+        </td>
+    </tr>
+}
+
+@iabdBreakdownRows(sequence: Seq[CodingComponentPair], title: String, totalTitle: String) = {
+
+    <tr role="row">
+        <td><h3>@title</h3></td>
+    </tr>
+
+    @if(sequence.isEmpty) {
+        <tr role="row">
+            <td>You do not have any additions</td>
+            <td><span aria-hidden="true" class="table-heading">Previous Amount</span>£0</td>
+            <td><span aria-hidden="true" class="table-heading">Current Amount</span>£0</td>
+        </tr>
+    } else {
+        @for(pair <- sequence) {
+            <tr role="row">
+                <td>@pair.componentType</td>
+                <td class="numeric"><span aria-hidden="true" class="table-heading">Previous Amount</span>@YourTaxFreeAmountViewModel.prettyPrint(pair.previous)</td>
+                <td class="numeric"><span aria-hidden="true" class="table-heading">Current Amount</span>@YourTaxFreeAmountViewModel.prettyPrint(pair.current)</td>
+            </tr>
+        }
+    }
+
+    <tr role="row">
+        <td>@totalTitle</td>
+        <td class="numeric">
+            <span aria-hidden="true" class="table-heading">Previous Amount</span>
+            @YourTaxFreeAmountViewModel.totalPrevious(sequence)
+        </td>
+        <td class="numeric">
+            <span aria-hidden="true" class="table-heading">Current Amount</span>
+            @YourTaxFreeAmountViewModel.totalCurrent(sequence)
+        </td>
+    </tr>
+
+}
+
+@totalTaxFreeAmountRow = {
+    <tr role="row">
+        <td><h3>Your total tax-free amount</h3></td>
+        <td class="numeric">
+            <span aria-hidden="true" class="table-heading">Previous Amount</span>
+            @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.annualTaxFreeAmount)
+        </td>
+        <td class="numeric">
+            <span aria-hidden="true" class="table-heading">Current Amount</span>
+            @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.annualTaxFreeAmount)
+        </td>
+    </tr>
+}
+
+@items = @{ currentTaxFreeAmount.taxFreeAmountSummary.summaryItems }
+
+@oneOrMoreLinksPresent = @{
+    items.flatMap(item => item.rows.map(row => row.link.isDisplayed).filter(_ == true)).nonEmpty
+}
+
+@for((item, itemIdx) <- items zip (Stream from 1);
+isAllowanceOrTotalItem = item.caption == Messages("tai.taxFreeAmount.table.allowances.caption") || item.caption == Messages("tai.taxFreeAmount.table.totals.caption") ) {
+
+    @if(item.rows.nonEmpty) {
+
+        <div id="summaryTable@{itemIdx.toString}" class="tai-tax-summary-table @if(itemIdx == 1){subsection--wide flush--bottom}">
+
+            @if(!isAllowanceOrTotalItem){
+                <h3 class="heading-small section--narrow flush" id="summaryTable@{itemIdx.toString}Caption">@item.caption</h3>
+            }
+
+            @if(item.rows.length>1) {
+                <ul id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight} else {flush}" role="list">
+
+                @for((row, rowIdx) <- item.rows zip (Stream from 1)) {
+                    <li id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}">
+
+                        <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}-header" class="cya-question break-word">
+                            @row.label.value
+                            @row.label.link.map { link =>
+                                @includes.link(
+                                    id=Some(link.id),
+                                    copy=link.value,
+                                    url = link.href,
+                                    linkClasses = Seq("link-list__item"),
+                                    attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${link.value}")
+                                )
+                            }
+                        </div>
+
+                        <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ValueCell" class="cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
+                        @row.value
+                        </div>
+
+                        @if(!taxCodeChange) {
+                            @if(row.link.isDisplayed ) {
+                                <div id="summaryTable@{itemIdx.toString}Row@{rowIdx.toString}ChangeLinkCell" class="cya-change">
+                                @includes.link(
+                                    id = Some(s"summaryTable${itemIdx.toString}Row${rowIdx.toString}ChangeLink"),
+                                    url = row.link.href,
+                                    copy=Messages("tai.updateOrRemove"),
+                                    altCopy=Some(Messages("tai.updateOrRemove") + " " + row.link.value),
+                                    attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${row.link.value}")
+                                )
+                                </div>
+                            } else @{if(oneOrMoreLinksPresent) {
+                                    <div class="cya-change"></div>
+                            }}
+                        }
+                    </li>
+                }
+                </ul>
+            } else {@if(item.rows.length == 1) {
+
+                <div id="summaryTable@{itemIdx.toString}Body" class="govuk-check-your-answers cya-questions-long govuk-check-your-answers--tax-summary @if(itemIdx == items.length && item.rows.length == 1){subsection highlight heading-small} else {flush}">
+                    <div id="summaryTable@{itemIdx.toString}Row1">
+                        @if(isAllowanceOrTotalItem){
+                            <h3 id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word ">
+                            } else {
+                            <div id="summaryTable@{itemIdx.toString}Row1-header" class="cya-question break-word">
+                            }
+
+                        @item.rows(0).label.value
+
+                        @item.rows(0).label.link.map { link =>
+                            @includes.link(
+                                id=Some(link.id),
+                                copy=link.value,
+                                url = link.href,
+                                linkClasses = Seq("link-list__item"),
+                                attributes = Seq("data-journey-click"->s"link - click:${gaEventActionString}:${link.value}")
+                            )
+                        }
+
+                        @if(isAllowanceOrTotalItem){
+                        </h3>
+                        } else {
+                        </div>
+                    }
+
+                    <div id="summaryTable@{itemIdx.toString}Row1ValueCell" class="cya-answer @if(!oneOrMoreLinksPresent){soft--right}">
+                        @if(isAllowanceOrTotalItem){
+                            <span class="visuallyhidden">@Messages("tai.incomeTaxSummary.generalAmount.prefix")</span>
+                        }
+                        @item.rows(0).value
+                    </div>
+
+                    @if(!taxCodeChange) {
+                        @if(item.rows(0).link.isDisplayed) {
+                            <div id="summaryTable@{itemIdx.toString}Row1ChangeLinkCell" class="cya-change">
+                            @includes.link(
+                                id = Some(s"summaryTable${itemIdx.toString}Row1ChangeLink"),
+                                url = item.rows(0).link.href,
+                                copy=Messages("tai.updateOrRemove"),
+                                altCopy=Some(Messages("tai.updateOrRemove") + " " + item.rows(0).link.value),
+                                attributes = Seq("data-journey-click" -> s"button - click:$gaEventActionString:${item.rows(0).link.value}")
+                            )
+                            </div>
+                        } else @{if(oneOrMoreLinksPresent) {
+                                <div class="cya-change"></div>
+                        }}
+                    }
+
+                </div>
+            </div>
+
+    }}
+
+        </div>
+
+    }
+}
