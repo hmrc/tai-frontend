@@ -21,7 +21,11 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
 case class CodingComponentPair(componentType: TaxComponentType, employmentId: Option[Int], previous: BigDecimal, current: BigDecimal)
 
-case class AllowancesAndDeductions(allowances: Seq[CodingComponentPair], deductions: Seq[CodingComponentPair])
+case class AllowancesAndDeductions(allowances: Seq[CodingComponentPair], deductions: Seq[CodingComponentPair]) {
+  def totalAllowances: (BigDecimal, BigDecimal) = {
+    (allowances.map(_.previous).sum, allowances.map(_.current).sum)
+  }
+}
 
 object AllowancesAndDeductions {
 

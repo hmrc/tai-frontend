@@ -16,7 +16,7 @@
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
-@import includes.taxFreeAmountSummary
+@import includes.taxFreeAmountSummaryComparison
 @import uk.gov.hmrc.urls.Link
 
 @(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
@@ -64,7 +64,7 @@
                 <h2 class="flush--bottom heading-medium">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</h2>
 
                 <div class="margin-bottom-large">
-                    @taxFreeAmountSummary(currentTaxFreeAmount.taxFreeAmountSummary.summaryItems, gaEventActionString, taxCodeChange = true)
+                    @taxFreeAmountSummaryComparison(currentTaxFreeAmount, gaEventActionString, taxCodeChange = true)
                 </div>
 
             </section>
