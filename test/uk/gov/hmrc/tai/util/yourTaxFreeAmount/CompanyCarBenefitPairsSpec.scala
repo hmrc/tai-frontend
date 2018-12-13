@@ -28,7 +28,9 @@ class CompanyCarBenefitPairsSpec extends PlaySpec  with FakeTaiPlayApplication {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
-  val carBenefitCodingComponent = CodingComponent(CarBenefit, Some(123), 456, "car")
+  val employmentId = 787
+
+  val currentCarBenefit = CodingComponent(CarBenefit, Some(employmentId), 456, "car")
 
   def includeAllOf(expectedSubstrings: String*): Matcher[String] =
     new Matcher[String] {
@@ -40,33 +42,22 @@ class CompanyCarBenefitPairsSpec extends PlaySpec  with FakeTaiPlayApplication {
 
   "#apply" should {
     "return a default car description if no id's match" in {
-      val actual = CompanyCarBenefitPairs(Map.empty, carBenefitCodingComponent, carBenefitCodingComponent, Seq.empty, Seq.empty)
+      val actual = CompanyCarBenefitPairs(Map.empty, currentCarBenefit, currentCarBenefit, Seq.empty, Seq.empty)
       val defaultCarDescription = "Car benefit"
       actual.companyCarDescription must includeAllOf(defaultCarDescription)
     }
 
-    "return current car benefit if employment id matches" in {
-      val employmentIds = Map(123 -> "unused")
-      val companyCar = CompanyCar(carSeqNo = 100, "Make Model", false, None, None, None)
-
-      val currentCompanyCarBenefits = Seq(CompanyCarBenefit(123, 456, Seq(companyCar)))
-      val actual = CompanyCarBenefitPairs(employmentIds, carBenefitCodingComponent, carBenefitCodingComponent, currentCompanyCarBenefits, currentCompanyCarBenefits)
-
-      actual.companyCarDescription must includeAllOf("Make Model", "from 123")
-    }
-
     "return a current car benefit that contains the make model and gross amount" in {
-      val employmentIds = Map(123 -> "unused")
+      val employmentIds = Map(employmentId -> "unused")
       val companyCar = CompanyCar(carSeqNo = 100, "Make Model", false, None, None, None)
 
       val expectedGrossAmount = 456
 
-      val currentCompanyCarBenefits = Seq(CompanyCarBenefit(123, expectedGrossAmount, Seq(companyCar)))
-      val actual = CompanyCarBenefitPairs(employmentIds, carBenefitCodingComponent, carBenefitCodingComponent, currentCompanyCarBenefits, currentCompanyCarBenefits)
+      val currentCompanyCarBenefits = Seq(CompanyCarBenefit(employmentId, expectedGrossAmount, Seq(companyCar)))
+      val actual = CompanyCarBenefitPairs(employmentIds, currentCarBenefit, currentCarBenefit, Seq.empty, currentCompanyCarBenefits)
 
       actual.grossAmount mustBe expectedGrossAmount
-      actual.companyCarDescription must includeAllOf("Make Model", "from 123")
+      actual.companyCarDescription must includeAllOf("Make Model", "from 787")
     }
   }
-
 }

@@ -25,6 +25,7 @@ import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.CompanyCarMakeModel
 
 case class ChangeLinkViewModel(isDisplayed: Boolean,
                                value: String = "",
@@ -205,7 +206,7 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
 
       case CodingComponent(CarBenefit, Some(id), _, _, _) if employmentName.contains(id) =>
 
-        val makeModel = companyCarForEmployment(id, companyCarBenefits).getOrElse(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
+        val makeModel = CompanyCarMakeModel.description(id, companyCarBenefits).getOrElse(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
 
         val displayText = s"""${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefitMakeModel", makeModel)}
                              |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentName(id))}""".stripMargin
@@ -250,11 +251,4 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
 
     TaxFreeAmountSummaryRowViewModel(label, value, link)
   }
-
-  private[viewModels] def companyCarForEmployment(employmentId: Int, companyCarBenefits: Seq[CompanyCarBenefit]): Option[String] =
-    for {
-      carBenefits <- companyCarBenefits.find(_.employmentSeqNo == employmentId)
-      model <- carBenefits.companyCars.headOption.map(_.makeModel)
-    } yield model
-
 }

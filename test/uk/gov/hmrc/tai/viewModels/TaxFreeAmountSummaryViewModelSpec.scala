@@ -171,24 +171,6 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
     }
   }
 
-  "companyCarForEmployment" must {
-    "return company car model from list of company car benefits" when {
-      "provided with employment id with company car benefit" in {
-        val result = TaxFreeAmountSummaryRowViewModel.companyCarForEmployment(10, companyCarBenefits)
-        result.contains("Make Model1")
-      }
-    }
-
-    "return None" when {
-      "employment id do not have any associated company car" in {
-        val result = TaxFreeAmountSummaryRowViewModel.companyCarForEmployment(16, companyCarBenefits)
-        result mustBe None
-      }
-    }
-  }
-
-
-
   val employmentNames = Map(1 -> "Employer1", 2 -> "Employer2", 3 -> "Employer3")
 
   val companyCarBenefit10 = CompanyCarBenefit(10, 1000, List(CompanyCar(10,"Make Model1", true, None, None, None)), Some(1))

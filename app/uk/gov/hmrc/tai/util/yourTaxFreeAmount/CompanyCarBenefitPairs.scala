@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.model.domain.CarBenefit
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
@@ -36,7 +35,7 @@ object CompanyCarBenefitPairs {
     // assuming previous and current employment Ids are equal
     val employmentId = currentCarBenefitCodingComponent.employmentId.get
 
-    val makeModel = companyCarForEmployment(employmentId, currentCompanyCarBenefits).getOrElse(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
+    val makeModel = CompanyCarMakeModel.description(employmentId, currentCompanyCarBenefits).getOrElse(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
 
     val text =
       s"""${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefitMakeModel", makeModel)}
@@ -46,11 +45,4 @@ object CompanyCarBenefitPairs {
 
     CarBenefitAmount(grossAmount, text)
   }
-
-  private def companyCarForEmployment(employmentId: Int, companyCarBenefits: Seq[CompanyCarBenefit]): Option[String] =
-    for {
-      carBenefits <- companyCarBenefits.find(_.employmentSeqNo == employmentId)
-      model <- carBenefits.companyCars.headOption.map(_.makeModel)
-    } yield model
-
 }
