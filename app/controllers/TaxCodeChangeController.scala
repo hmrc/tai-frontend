@@ -107,8 +107,8 @@ trait TaxCodeChangeController extends TaiBaseController
                   taxCodeChange.mostRecentTaxCodeChangeDate,
                   taxFreeAmountComparison.previous,
                   taxFreeAmountComparison.current,
-                  currentCompanyCarBenefits,
                   previousCompanyCarBenefits,
+                  currentCompanyCarBenefits,
                   employmentNames)
 
                 Ok(views.html.taxCodeChange.yourTaxFreeAmount(currentViewModel))
