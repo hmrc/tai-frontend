@@ -20,44 +20,108 @@ import controllers.FakeTaiPlayApplication
 import org.scalatest.matchers.{MatchResult, Matcher}
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.model.domain.CarBenefit
+import uk.gov.hmrc.tai.model.domain.{CarBenefit, GiftAidPayments}
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
-class CompanyCarBenefitPairsSpec extends PlaySpec  with FakeTaiPlayApplication {
+class CompanyCarBenefitPairsSpec extends PlaySpec with FakeTaiPlayApplication {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
   val employmentId = 787
+  val currentCarGrossAmount = 456
+  val previousCarBenefitAmount = 555
+  val employmentIds = Map(employmentId -> "unused")
+  val carBenefitCodingComponent = Seq(CodingComponent(CarBenefit, Some(employmentId), currentCarGrossAmount, ""))
+  val companyCar = CompanyCar(100, "", false, None, None, None)
+  val genericCarMakeModel = "Car benefit"
 
-  val currentCarBenefit = CodingComponent(CarBenefit, Some(employmentId), 456, "car")
+  def makeCompanyCar(makeModel: String): CompanyCar = {
+    CompanyCar(100, makeModel, false, None, None, None)
+  }
 
-  def includeAllOf(expectedSubstrings: String*): Matcher[String] =
-    new Matcher[String] {
-      def apply(lhs: String): MatchResult =
-        MatchResult(expectedSubstrings forall lhs.contains,
-          s"""String "$lhs" did not include all of those substrings: ${expectedSubstrings.map(s => s""""$s"""").mkString(", ")}""",
-          s"""String "$lhs" contained all of those substrings: ${expectedSubstrings.map(s => s""""$s"""").mkString(", ")}""")
-    }
+  //  def includeAllOf(expectedSubstrings: String*): Matcher[String] =
+  //    new Matcher[String] {
+  //      def apply(lhs: String): MatchResult =
+  //        MatchResult(
+  //          expectedSubstrings forall lhs.contains,
+  //          s"""String "$lhs" did not include all of those substrings: ${expectedSubstrings.map(s => s""""$s"""").mkString(", ")}""",
+  //          s"""String "$lhs" contained all of those substrings: ${expectedSubstrings.map(s => s""""$s"""").mkString(", ")}""")
+  //    }
 
   "#apply" should {
-    "return a default car description if no id's match" in {
-      val actual = CompanyCarBenefitPairs(Map.empty, currentCarBenefit, currentCarBenefit, Seq.empty, Seq.empty)
-      val defaultCarDescription = "Car benefit"
-      actual.companyCarDescription must includeAllOf(defaultCarDescription)
+    "return no car benefits for empties" in {
+      val actual = CompanyCarBenefitPairs(Map.empty, Seq.empty, Seq.empty, Seq.empty, Seq.empty)
+      actual mustBe CompanyCarBenefitPairs(None, None)
     }
 
-    "return a current car benefit that contains the make model and gross amount" in {
-      val employmentIds = Map(employmentId -> "unused")
-      val companyCar = CompanyCar(carSeqNo = 100, "Make Model", false, None, None, None)
+    "return no car benefits when there are no CarBenefitCodingComponents" in {
+      val codingComponent = CodingComponent(GiftAidPayments, Some(employmentId), 12345, "unused")
+      val previousCodingComponent = Seq(codingComponent)
+      val currentCodingComponent = Seq(codingComponent)
 
-      val expectedGrossAmount = 456
+      val actual = CompanyCarBenefitPairs(employmentIds, previousCodingComponent, currentCodingComponent, Seq.empty, Seq.empty)
+      actual mustBe CompanyCarBenefitPairs(None, None)
+    }
 
-      val currentCompanyCarBenefits = Seq(CompanyCarBenefit(employmentId, expectedGrossAmount, Seq(companyCar)))
-      val actual = CompanyCarBenefitPairs(employmentIds, currentCarBenefit, currentCarBenefit, Seq.empty, currentCompanyCarBenefits)
+    "return a generic car make model if there are no matching id's to the CarBenefitCodingComponent" when {
+      val badId = 987
 
-      actual.grossAmount mustBe expectedGrossAmount
-      actual.companyCarDescription must includeAllOf("Make Model", "from 787")
+      "there is only a current coding component" in {
+        val currentCompanyCarBenefits = Seq(CompanyCarBenefit(badId, currentCarGrossAmount, Seq(companyCar)))
+        val expectedCarGrossAmountPairs = Some(CarGrossAmountPairs(currentCarGrossAmount, genericCarMakeModel))
+        val expected = CompanyCarBenefitPairs(None, expectedCarGrossAmountPairs)
+
+        val actual = CompanyCarBenefitPairs(employmentIds, Seq.empty, carBenefitCodingComponent, Seq.empty, currentCompanyCarBenefits)
+
+        actual mustBe expected
+      }
+
+      "there is only a previous coding component" in {
+        val previousCompanyCarBenefits = Seq(CompanyCarBenefit(badId, currentCarGrossAmount, Seq(companyCar)))
+        val expectedCarGrossAmountPairs = Some(CarGrossAmountPairs(currentCarGrossAmount, genericCarMakeModel))
+        val expected = CompanyCarBenefitPairs(expectedCarGrossAmountPairs, None)
+
+        val actual = CompanyCarBenefitPairs(employmentIds, carBenefitCodingComponent, Seq.empty, previousCompanyCarBenefits, Seq.empty)
+
+        actual mustBe expected
+      }
+    }
+
+    "returns a specific make model when the id matches" in {
+      val carMakeModel = "a specific make model"
+      val companyCar = makeCompanyCar(carMakeModel)
+
+      val currentCompanyCarBenefits = Seq(CompanyCarBenefit(employmentId, currentCarGrossAmount, Seq(companyCar)))
+      val expectedCarGrossAmountPairs = Some(CarGrossAmountPairs(currentCarGrossAmount, carMakeModel))
+      val expected = CompanyCarBenefitPairs(None, expectedCarGrossAmountPairs)
+
+      val actual = CompanyCarBenefitPairs(employmentIds, Seq.empty, carBenefitCodingComponent, Seq.empty, currentCompanyCarBenefits)
+
+      actual mustBe expected
+    }
+
+    "returns a two car benefit pairs when the previous and current car benefits are not the same" in {
+      val previousGrossAmount = 12893
+      val expectedPreviousCarGrossAmountPairs = Some(CarGrossAmountPairs(previousGrossAmount, "previous company car"))
+      val expectedCurrentCarGrossAmountPairs = Some(CarGrossAmountPairs(currentCarGrossAmount, "current company car"))
+      val expected = CompanyCarBenefitPairs(expectedPreviousCarGrossAmountPairs, expectedCurrentCarGrossAmountPairs)
+
+      val previousCompanyCar = makeCompanyCar("previous company car")
+      val previousCarBenefitCodingComponent = Seq(CodingComponent(CarBenefit, Some(employmentId), previousGrossAmount, ""))
+      val previousCompanyCarBenefits = Seq(CompanyCarBenefit(employmentId, previousGrossAmount, Seq(previousCompanyCar)))
+
+      val currentCompanyCar = makeCompanyCar("current company car")
+      val currentCompanyCarBenefits = Seq(CompanyCarBenefit(employmentId, currentCarGrossAmount, Seq(currentCompanyCar)))
+
+      val actual = CompanyCarBenefitPairs(
+        employmentIds,
+        previousCarBenefitCodingComponent,
+        carBenefitCodingComponent,
+        previousCompanyCarBenefits,
+        currentCompanyCarBenefits)
+
+      actual mustBe expected
     }
   }
 }
