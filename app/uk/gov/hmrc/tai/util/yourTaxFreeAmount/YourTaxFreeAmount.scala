@@ -33,10 +33,10 @@ trait YourTaxFreeAmount extends TaxAccountCalculator {
                          currentCodingComponents: Seq[CodingComponent],
                          previousCompanyCarBenefits: Seq[CompanyCarBenefit],
                          currentCompanyCarBenefits: Seq[CompanyCarBenefit],
-                         employmentNames: Map[Int, String])
+                         employmentIds: Map[Int, String])
                         (implicit messages: Messages): YourTaxFreeAmountViewModel = {
     val removeMeTaxFreeAmountSummary =
-      TaxFreeAmountSummaryViewModel(currentCodingComponents, employmentNames, currentCompanyCarBenefits, taxFreeAmount(currentCodingComponents))
+      TaxFreeAmountSummaryViewModel(currentCodingComponents, employmentIds, currentCompanyCarBenefits, taxFreeAmount(currentCodingComponents))
 
     val previousTaxFreeInfo = {
       val previousTaxCodeDateRange = Dates.formatDate(previousTaxCodeChangeDate)
@@ -49,13 +49,16 @@ trait YourTaxFreeAmount extends TaxAccountCalculator {
     }
 
     val allowancesAndDeductions = AllowancesAndDeductions.fromCodingComponents(previousCodingComponents, currentCodingComponents)
-  //  val companyCarBenefits = CompanyCarBenefitPairs.
+
+    val currentCarBenefits = CompanyCarBenefitPairs(employmentIds, previousCodingComponents, currentCodingComponents, previousCompanyCarBenefits, currentCompanyCarBenefits)
+    val carBenefits = CombineCompanyCarBenefits(currentCarBenefits)
 
     YourTaxFreeAmountViewModel(
       previousTaxFreeInfo,
       currentTaxFreeInfo,
       removeMeTaxFreeAmountSummary,
-      allowancesAndDeductions
+      allowancesAndDeductions,
+      carBenefits
     )
   }
 }

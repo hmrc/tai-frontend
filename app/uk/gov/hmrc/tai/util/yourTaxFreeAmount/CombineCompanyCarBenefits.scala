@@ -22,9 +22,14 @@ case class CombinedCarGrossAmountPairs(previous: BigDecimal, current: BigDecimal
 case class CombineCompanyCarBenefits(pairs: Seq[CombinedCarGrossAmountPairs])
 
 object CombineCompanyCarBenefits {
-  def apply(previous: Option[CarGrossAmountPairs], current: Option[CarGrossAmountPairs])
+  def apply(pairs: CompanyCarBenefitPairs)
            (implicit messages: Messages): Seq[CombinedCarGrossAmountPairs] = {
-    if (previous.map(_.carDescription) == current.map(_.carDescription)) {
+    val previous = pairs.previous
+    val current = pairs.current
+
+    if(noBenefits(pairs)) {
+      Seq.empty
+    } else if (previous.map(_.carDescription) == current.map(_.carDescription)) {
       Seq(CombinedCarGrossAmountPairs(
         getAmount(previous),
         getAmount(current),
@@ -39,6 +44,10 @@ object CombineCompanyCarBenefits {
         makeCurrentPair(current)
       )
     }
+  }
+
+  private def noBenefits(pairs: CompanyCarBenefitPairs): Boolean = {
+    pairs.previous.isEmpty && pairs.current.isEmpty
   }
 
   private def makeCurrentPair(current: Option[CarGrossAmountPairs])(implicit messages: Messages):

@@ -26,12 +26,18 @@ class CombineCompanyCarBenefitsSpec extends PlaySpec with FakeTaiPlayApplication
   val carGrossAmount = 12345
 
   "combine" should {
+    "contain nothing if there are no benefits" in {
+      val actual = CombineCompanyCarBenefits(CompanyCarBenefitPairs(None, None))
+
+      actual mustBe Seq.empty
+    }
+
     "only contains current car benefits if previous is empty" in {
       val carMakeModel = "a specific make model"
       val expected = Seq(CombinedCarGrossAmountPairs(previous = 0, carGrossAmount, carMakeModel))
 
       val carGrossAmountPairs = Some(CarGrossAmountPairs(carGrossAmount, carMakeModel))
-      val actual = CombineCompanyCarBenefits(None, carGrossAmountPairs)
+      val actual = CombineCompanyCarBenefits(CompanyCarBenefitPairs(None, carGrossAmountPairs))
 
       actual mustBe expected
     }
@@ -41,7 +47,7 @@ class CombineCompanyCarBenefitsSpec extends PlaySpec with FakeTaiPlayApplication
       val expected = Seq(CombinedCarGrossAmountPairs(carGrossAmount, current = 0, carMakeModel))
 
       val carGrossAmountPairs = Some(CarGrossAmountPairs(carGrossAmount, carMakeModel))
-      val actual = CombineCompanyCarBenefits(carGrossAmountPairs, None)
+      val actual = CombineCompanyCarBenefits(CompanyCarBenefitPairs(carGrossAmountPairs, None))
 
       actual mustBe expected
     }
@@ -51,7 +57,7 @@ class CombineCompanyCarBenefitsSpec extends PlaySpec with FakeTaiPlayApplication
       val expected = Seq(CombinedCarGrossAmountPairs(carGrossAmount, carGrossAmount, carMakeModel))
 
       val carGrossAmountPairs = Some(CarGrossAmountPairs(carGrossAmount, carMakeModel))
-      val actual = CombineCompanyCarBenefits(carGrossAmountPairs, carGrossAmountPairs)
+      val actual = CombineCompanyCarBenefits(CompanyCarBenefitPairs(carGrossAmountPairs, carGrossAmountPairs))
 
       actual mustBe expected
     }
@@ -67,7 +73,7 @@ class CombineCompanyCarBenefitsSpec extends PlaySpec with FakeTaiPlayApplication
       val carGrossAmountPairs1 = Some(CarGrossAmountPairs(aDifferentGrossAmount, carMakeModel))
       val carGrossAmountPairs2 = Some(CarGrossAmountPairs(carGrossAmount, "a different make model"))
 
-      val actual = CombineCompanyCarBenefits(carGrossAmountPairs1, carGrossAmountPairs2)
+      val actual = CombineCompanyCarBenefits(CompanyCarBenefitPairs(carGrossAmountPairs1, carGrossAmountPairs2))
 
       actual mustBe expected
     }
