@@ -76,5 +76,14 @@ hr {
 }
 
 .carry-over{
-word-break:break-all
+  -ms-word-break: break-all;
+  /*        word-break: break-all; */
+
+  word-break: break-word;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  hyphens: none;
 }
