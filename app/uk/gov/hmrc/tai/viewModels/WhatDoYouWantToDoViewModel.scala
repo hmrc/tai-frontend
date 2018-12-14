@@ -28,7 +28,7 @@ case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean,
 
   def showTaxCodeChangeTile(): Boolean = {
     (hasTaxCodeChanged, taxCodeMismatch) match {
-      case (_, Some(mismatch)) if mismatch.hasEmptyConfirmedTaxCodeRecords => false
+      case (_, Some(mismatch)) if mismatch.confirmedTaxCodes.isEmpty => false
       case (true, Some(TaxCodeMismatch(false, _, _))) => true
       case _ => false
     }
