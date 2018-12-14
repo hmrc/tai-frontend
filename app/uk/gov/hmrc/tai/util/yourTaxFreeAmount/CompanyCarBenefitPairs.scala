@@ -36,7 +36,6 @@ object CompanyCarBenefitPairs {
     val currentPair = makePair(employmentIds, currentCodingComponents, currentCompanyCarBenefits)
 
     CompanyCarBenefitPairs(previousPair, currentPair)
-
   }
 
   private def makePair(employmentIds: Map[Int, String], codingCommponent: Seq[CodingComponent],

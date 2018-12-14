@@ -17,12 +17,11 @@
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import controllers.FakeTaiPlayApplication
-import org.scalatest.matchers.{MatchResult, Matcher}
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.model.domain.{CarBenefit, GiftAidPayments}
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain.{CarBenefit, GiftAidPayments}
 
 class CompanyCarBenefitPairsSpec extends PlaySpec with FakeTaiPlayApplication {
 
@@ -39,15 +38,6 @@ class CompanyCarBenefitPairsSpec extends PlaySpec with FakeTaiPlayApplication {
   def makeCompanyCar(makeModel: String): CompanyCar = {
     CompanyCar(100, makeModel, false, None, None, None)
   }
-
-  //  def includeAllOf(expectedSubstrings: String*): Matcher[String] =
-  //    new Matcher[String] {
-  //      def apply(lhs: String): MatchResult =
-  //        MatchResult(
-  //          expectedSubstrings forall lhs.contains,
-  //          s"""String "$lhs" did not include all of those substrings: ${expectedSubstrings.map(s => s""""$s"""").mkString(", ")}""",
-  //          s"""String "$lhs" contained all of those substrings: ${expectedSubstrings.map(s => s""""$s"""").mkString(", ")}""")
-  //    }
 
   "#apply" should {
     "return no car benefits for empties" in {
