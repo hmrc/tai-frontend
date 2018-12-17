@@ -19,15 +19,16 @@ package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 import play.api.i18n.Messages
 
 case class CombinedCarGrossAmountPairs(previous: BigDecimal, current: BigDecimal, carDescription: String)
-case class CombineCompanyCarBenefits(pairs: Seq[CombinedCarGrossAmountPairs])
+
+case class CombineCompanyCarBenefits(combinedCarGrossAmountPairs: Seq[CombinedCarGrossAmountPairs])
 
 object CombineCompanyCarBenefits {
-  def apply(pairs: CompanyCarBenefitPairs)
+  def apply(companyCarBenefitPairs: CompanyCarBenefitPairs)
            (implicit messages: Messages): Seq[CombinedCarGrossAmountPairs] = {
-    val previous = pairs.previous
-    val current = pairs.current
+    val previous = companyCarBenefitPairs.previous
+    val current = companyCarBenefitPairs.current
 
-    if(noBenefits(pairs)) {
+    if(hasNoBenefits(companyCarBenefitPairs)) {
       Seq.empty
     } else if (previous.map(_.carDescription) == current.map(_.carDescription)) {
       Seq(CombinedCarGrossAmountPairs(
@@ -46,8 +47,8 @@ object CombineCompanyCarBenefits {
     }
   }
 
-  private def noBenefits(pairs: CompanyCarBenefitPairs): Boolean = {
-    pairs.previous.isEmpty && pairs.current.isEmpty
+  private def hasNoBenefits(companyCarBenefitPairs: CompanyCarBenefitPairs): Boolean = {
+    companyCarBenefitPairs.previous.isEmpty && companyCarBenefitPairs.current.isEmpty
   }
 
   private def makeCurrentPair(current: Option[CarGrossAmountPairs])(implicit messages: Messages):
