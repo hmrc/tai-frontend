@@ -43,8 +43,7 @@
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.incomes.edit.heading", currentTaxYearRangeHtmlNonBreak),
-        preHeadingText = messages("tai.incomes.edit.preHeading", income("name").value.getOrElse("")),
-        headerWidthClasses = Some("column-full")
+        preHeadingText = messages("tai.incomes.edit.preHeading", income("name").value.getOrElse(""))
     )
 }
 
