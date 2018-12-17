@@ -26,31 +26,29 @@ import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
+case class CodingComponentsWithCarBenefits(date: LocalDate, codingComponents: Seq[CodingComponent], companyCarBenefits: Seq[CompanyCarBenefit])
+
 trait YourTaxFreeAmount extends TaxAccountCalculator {
-  def buildTaxFreeAmount(previousTaxCodeChangeDate: LocalDate,
-                         currentTaxCodeChangeDate: LocalDate,
-                         previousCodingComponents: Seq[CodingComponent],
-                         currentCodingComponents: Seq[CodingComponent],
-                         previousCompanyCarBenefits: Seq[CompanyCarBenefit],
-                         currentCompanyCarBenefits: Seq[CompanyCarBenefit],
+  def buildTaxFreeAmount(previous: CodingComponentsWithCarBenefits,
+                         current: CodingComponentsWithCarBenefits,
                          employmentIds: Map[Int, String])
                         (implicit messages: Messages): YourTaxFreeAmountViewModel = {
     val removeMeTaxFreeAmountSummary =
-      TaxFreeAmountSummaryViewModel(currentCodingComponents, employmentIds, currentCompanyCarBenefits, taxFreeAmount(currentCodingComponents))
+      TaxFreeAmountSummaryViewModel(current.codingComponents, employmentIds, current.companyCarBenefits, taxFreeAmount(current.codingComponents))
 
     val previousTaxFreeInfo = {
-      val previousTaxCodeDateRange = Dates.formatDate(previousTaxCodeChangeDate)
-      TaxFreeInfo(previousTaxCodeDateRange, previousCodingComponents)
+      val previousTaxCodeDateRange = Dates.formatDate(previous.date)
+      TaxFreeInfo(previousTaxCodeDateRange, previous.codingComponents)
     }
 
     val currentTaxFreeInfo = {
-      val currentTaxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(currentTaxCodeChangeDate, TaxYearResolver.endOfCurrentTaxYear)
-      TaxFreeInfo(currentTaxCodeDateRange, currentCodingComponents)
+      val currentTaxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(current.date, TaxYearResolver.endOfCurrentTaxYear)
+      TaxFreeInfo(currentTaxCodeDateRange, current.codingComponents)
     }
 
-    val allowancesAndDeductions = AllowancesAndDeductions.fromCodingComponents(previousCodingComponents, currentCodingComponents)
+    val allowancesAndDeductions = AllowancesAndDeductions.fromCodingComponents(previous.codingComponents, current.codingComponents)
 
-    val currentCarBenefits = CompanyCarBenefitPairs(employmentIds, previousCodingComponents, currentCodingComponents, previousCompanyCarBenefits, currentCompanyCarBenefits)
+    val currentCarBenefits = CompanyCarBenefitPairs(employmentIds, previous, current)
     val carBenefits = CombineCompanyCarBenefits(currentCarBenefits)
 
     YourTaxFreeAmountViewModel(

@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductions, TaxFreeInfo, YourTaxFreeAmount}
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductions, CodingComponentsWithCarBenefits, TaxFreeInfo, YourTaxFreeAmount}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
@@ -219,13 +219,9 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
   trait YourTaxFreeAmountMock {
     this: YourTaxFreeAmount =>
-    override def buildTaxFreeAmount(unused1: LocalDate,
-                                    unused2: LocalDate,
-                                    unused3: Seq[CodingComponent],
-                                    unused4: Seq[CodingComponent],
-                                    unused5: Seq[CompanyCarBenefit],
-                                    unused6: Seq[CompanyCarBenefit],
-                                    unused7: Map[Int, String])
+    override def buildTaxFreeAmount(unused1: CodingComponentsWithCarBenefits,
+                                    unused2: CodingComponentsWithCarBenefits,
+                                    unused3: Map[Int, String])
                                    (implicit messages: Messages): YourTaxFreeAmountViewModel = {
       expectedViewModel
     }

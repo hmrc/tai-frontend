@@ -59,7 +59,9 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
       val expected = createYourTaxFreeAmountViewModel()
 
       val yourTaxFreeAmount = new YourTaxFreeAmount() with TaxAccountCalculatorMock
-      yourTaxFreeAmount.buildTaxFreeAmount(previousDate, currentDate, Seq.empty, Seq.empty, Seq.empty, Seq.empty, Map.empty) mustBe expected
+      val previous = CodingComponentsWithCarBenefits(previousDate, Seq.empty, Seq.empty)
+      val current = CodingComponentsWithCarBenefits(currentDate, Seq.empty, Seq.empty)
+      yourTaxFreeAmount.buildTaxFreeAmount(previous, current, Map.empty) mustBe expected
     }
   }
 }

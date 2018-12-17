@@ -27,13 +27,11 @@ case class CompanyCarBenefitPairs(previous: Option[CarGrossAmountPairs], current
 
 object CompanyCarBenefitPairs {
   def apply(employmentIds: Map[Int, String],
-            previousCodingComponents: Seq[CodingComponent],
-            currentCodingComponents: Seq[CodingComponent],
-            previousCompanyCarBenefits: Seq[CompanyCarBenefit],
-            currentCompanyCarBenefits: Seq[CompanyCarBenefit])
+            previous: CodingComponentsWithCarBenefits,
+            current: CodingComponentsWithCarBenefits)
            (implicit messages: Messages): CompanyCarBenefitPairs = {
-    val previousPair = makePair(employmentIds, previousCodingComponents, previousCompanyCarBenefits)
-    val currentPair = makePair(employmentIds, currentCodingComponents, currentCompanyCarBenefits)
+    val previousPair = makePair(employmentIds, previous.codingComponents, previous.companyCarBenefits)
+    val currentPair = makePair(employmentIds, current.codingComponents, current.companyCarBenefits)
 
     CompanyCarBenefitPairs(previousPair, currentPair)
   }

@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import controllers.FakeTaiPlayApplication
+import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
@@ -26,6 +27,9 @@ import uk.gov.hmrc.tai.model.domain.{CarBenefit, GiftAidPayments}
 class CompanyCarBenefitPairsSpec extends PlaySpec with FakeTaiPlayApplication {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
+
+  val date = LocalDate.now()
+  val emptyCodingComponentsWithCarBenefits = CodingComponentsWithCarBenefits(date, Seq.empty, Seq.empty)
 
   val employmentId = 787
   val currentCarGrossAmount = 456
@@ -41,16 +45,17 @@ class CompanyCarBenefitPairsSpec extends PlaySpec with FakeTaiPlayApplication {
 
   "#apply" should {
     "return no car benefits for empties" in {
-      val actual = CompanyCarBenefitPairs(Map.empty, Seq.empty, Seq.empty, Seq.empty, Seq.empty)
+      val actual = CompanyCarBenefitPairs(Map.empty, emptyCodingComponentsWithCarBenefits, emptyCodingComponentsWithCarBenefits)
       actual mustBe CompanyCarBenefitPairs(None, None)
     }
 
     "return no car benefits when there are no CarBenefitCodingComponents" in {
-      val codingComponent = CodingComponent(GiftAidPayments, Some(employmentId), 12345, "unused")
-      val previousCodingComponent = Seq(codingComponent)
-      val currentCodingComponent = Seq(codingComponent)
+      val codingComponents = Seq(CodingComponent(GiftAidPayments, Some(employmentId), 12345, "unused"))
 
-      val actual = CompanyCarBenefitPairs(employmentIds, previousCodingComponent, currentCodingComponent, Seq.empty, Seq.empty)
+      val previous = CodingComponentsWithCarBenefits(date, codingComponents, Seq.empty)
+      val current = CodingComponentsWithCarBenefits(date, codingComponents, Seq.empty)
+
+      val actual = CompanyCarBenefitPairs(employmentIds, previous, current)
       actual mustBe CompanyCarBenefitPairs(None, None)
     }
 
@@ -62,7 +67,8 @@ class CompanyCarBenefitPairsSpec extends PlaySpec with FakeTaiPlayApplication {
         val expectedCarGrossAmountPairs = Some(CarGrossAmountPairs(currentCarGrossAmount, genericCarMakeModel))
         val expected = CompanyCarBenefitPairs(None, expectedCarGrossAmountPairs)
 
-        val actual = CompanyCarBenefitPairs(employmentIds, Seq.empty, carBenefitCodingComponent, Seq.empty, currentCompanyCarBenefits)
+        val current = CodingComponentsWithCarBenefits(date, carBenefitCodingComponent, currentCompanyCarBenefits)
+        val actual = CompanyCarBenefitPairs(employmentIds, emptyCodingComponentsWithCarBenefits, current)
 
         actual mustBe expected
       }
@@ -72,7 +78,8 @@ class CompanyCarBenefitPairsSpec extends PlaySpec with FakeTaiPlayApplication {
         val expectedCarGrossAmountPairs = Some(CarGrossAmountPairs(currentCarGrossAmount, genericCarMakeModel))
         val expected = CompanyCarBenefitPairs(expectedCarGrossAmountPairs, None)
 
-        val actual = CompanyCarBenefitPairs(employmentIds, carBenefitCodingComponent, Seq.empty, previousCompanyCarBenefits, Seq.empty)
+        val previous = CodingComponentsWithCarBenefits(date, carBenefitCodingComponent, previousCompanyCarBenefits)
+        val actual = CompanyCarBenefitPairs(employmentIds, previous, emptyCodingComponentsWithCarBenefits)
 
         actual mustBe expected
       }
@@ -86,7 +93,8 @@ class CompanyCarBenefitPairsSpec extends PlaySpec with FakeTaiPlayApplication {
       val expectedCarGrossAmountPairs = Some(CarGrossAmountPairs(currentCarGrossAmount, carMakeModel))
       val expected = CompanyCarBenefitPairs(None, expectedCarGrossAmountPairs)
 
-      val actual = CompanyCarBenefitPairs(employmentIds, Seq.empty, carBenefitCodingComponent, Seq.empty, currentCompanyCarBenefits)
+      val current = CodingComponentsWithCarBenefits(date, carBenefitCodingComponent, currentCompanyCarBenefits)
+      val actual = CompanyCarBenefitPairs(employmentIds, emptyCodingComponentsWithCarBenefits, current)
 
       actual mustBe expected
     }
@@ -104,12 +112,10 @@ class CompanyCarBenefitPairsSpec extends PlaySpec with FakeTaiPlayApplication {
       val currentCompanyCar = makeCompanyCar("current company car")
       val currentCompanyCarBenefits = Seq(CompanyCarBenefit(employmentId, currentCarGrossAmount, Seq(currentCompanyCar)))
 
-      val actual = CompanyCarBenefitPairs(
-        employmentIds,
-        previousCarBenefitCodingComponent,
-        carBenefitCodingComponent,
-        previousCompanyCarBenefits,
-        currentCompanyCarBenefits)
+      val previous = CodingComponentsWithCarBenefits(date, previousCarBenefitCodingComponent, previousCompanyCarBenefits)
+      val current = CodingComponentsWithCarBenefits(date, carBenefitCodingComponent, currentCompanyCarBenefits)
+
+      val actual = CompanyCarBenefitPairs(employmentIds, previous, current)
 
       actual mustBe expected
     }

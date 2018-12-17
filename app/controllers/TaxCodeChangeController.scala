@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxAccountService, TaxCodeChangeService}
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.YourTaxFreeAmount
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentsWithCarBenefits, YourTaxFreeAmount}
 import uk.gov.hmrc.tai.util.{TaxAccountCalculator, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
@@ -103,12 +103,16 @@ trait TaxCodeChangeController extends TaiBaseController
                 previousCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, taxFreeAmountComparison.previous)
               } yield {
                 val currentViewModel: YourTaxFreeAmountViewModel = buildTaxFreeAmount(
-                  taxCodeChange.mostRecentPreviousTaxCodeChangeDate,
-                  taxCodeChange.mostRecentTaxCodeChangeDate,
-                  taxFreeAmountComparison.previous,
-                  taxFreeAmountComparison.current,
-                  previousCompanyCarBenefits,
-                  currentCompanyCarBenefits,
+                  CodingComponentsWithCarBenefits(
+                    taxCodeChange.mostRecentPreviousTaxCodeChangeDate,
+                    taxFreeAmountComparison.previous,
+                    previousCompanyCarBenefits
+                  ),
+                  CodingComponentsWithCarBenefits(
+                    taxCodeChange.mostRecentTaxCodeChangeDate,
+                    taxFreeAmountComparison.current,
+                    currentCompanyCarBenefits
+                  ),
                   employmentNames)
 
                 Ok(views.html.taxCodeChange.yourTaxFreeAmount(currentViewModel))
