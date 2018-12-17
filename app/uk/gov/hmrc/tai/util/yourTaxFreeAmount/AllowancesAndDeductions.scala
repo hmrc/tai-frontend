@@ -86,8 +86,8 @@ object AllowancesAndDeductions {
   private def getAllowances(codingComponents: Seq[CodingComponentPair]): Seq[CodingComponentPair] = {
     codingComponents.filterNot(component => PersonalAllowance.isA(component.componentType)).filter({
       _.componentType match {
-        case _: DeductionComponentType => false
-        case _ => true
+        case _: AllowanceComponentType => true
+        case _ => false
       }
     })
   }

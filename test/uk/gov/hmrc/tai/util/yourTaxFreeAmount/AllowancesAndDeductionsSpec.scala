@@ -23,12 +23,12 @@ import uk.gov.hmrc.tai.model.domain._
 
 class AllowancesAndDeductionsSpec extends PlaySpec {
 
-  private def createCodingComponent(allowance: TaxComponentType,employmentId: Option[Int], allowanceAmount: BigDecimal): CodingComponent = {
+  private def createCodingComponent(allowance: TaxComponentType, employmentId: Option[Int], allowanceAmount: BigDecimal): CodingComponent = {
     CodingComponent(allowance, employmentId, allowanceAmount, allowance.toString)
   }
 
   "#fromCodingComponents" should {
-    "return a MungedCodingComponent" in {
+    "return a AllowancesAndDeductions" in {
       val expected = AllowancesAndDeductions.fromCodingComponents(Seq.empty, Seq.empty)
       val actual = AllowancesAndDeductions.fromCodingComponents(Seq.empty[CodingComponent], Seq.empty[CodingComponent])
 
@@ -132,6 +132,23 @@ class AllowancesAndDeductionsSpec extends PlaySpec {
 
       val pairs = Seq(
         CodingComponentPair(JobExpenses, None, 0, 1000)
+      )
+
+      val actual = AllowancesAndDeductions.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)
+
+      pairs mustBe actual.allowances
+    }
+
+    "include AllowanceComponentTypes for allowances" in {
+      val currentCodingComponents = Seq(
+        createCodingComponent(BenefitInKind, None, 5885),
+        createCodingComponent(MarriedCouplesAllowanceToWifeMAW, None, 5885),
+        createCodingComponent(NonCodedIncome, None, 5885),
+        createCodingComponent(GiftAidPayments, None, 1000)
+      )
+
+      val pairs = Seq(
+        CodingComponentPair(GiftAidPayments, None, 0, 1000)
       )
 
       val actual = AllowancesAndDeductions.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)
