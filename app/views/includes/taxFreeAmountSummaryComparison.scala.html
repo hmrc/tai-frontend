@@ -60,7 +60,7 @@
 @iabdBreakdownRows(sequence: Seq[CodingComponentPair], title: String, totalTitle: String) = {
 
     <tr role="row">
-        <td><h3>@title</h3></td>
+        <td colspan="3"><h3>@title</h3></td>
     </tr>
 
     @if(sequence.isEmpty) {
@@ -93,7 +93,7 @@
 }
 
 @totalTaxFreeAmountRow = {
-    <tr role="row">
+    <tr  class="highlight" role="row">
         <td><h3>Your total tax-free amount</h3></td>
         <td class="numeric">
             <span aria-hidden="true" class="table-heading">Previous Amount</span>
