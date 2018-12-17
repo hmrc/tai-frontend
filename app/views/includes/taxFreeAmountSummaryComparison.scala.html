@@ -65,9 +65,9 @@
 
     @if(sequence.isEmpty) {
         <tr role="row">
-            <td>You do not have any additions</td>
-            <td><span aria-hidden="true" class="table-heading">Previous Amount</span>£0</td>
-            <td><span aria-hidden="true" class="table-heading">Current Amount</span>£0</td>
+            <td>You do not have any @title</td>
+            <td class="numeric"><span aria-hidden="true" class="table-heading">Previous Amount</span>£0</td>
+            <td class="numeric"><span aria-hidden="true" class="table-heading">Current Amount</span>£0</td>
         </tr>
     } else {
         @for(pair <- sequence) {
@@ -77,20 +77,19 @@
                 <td class="numeric"><span aria-hidden="true" class="table-heading">Current Amount</span>@YourTaxFreeAmountViewModel.prettyPrint(pair.current)</td>
             </tr>
         }
+
+        <tr role="row">
+            <td>@totalTitle</td>
+            <td class="numeric">
+                <span aria-hidden="true" class="table-heading carr">Previous Amount</span>
+                @YourTaxFreeAmountViewModel.totalPrevious(sequence)
+            </td>
+            <td class="numeric">
+                <span aria-hidden="true" class="table-heading">Current Amount</span>
+                @YourTaxFreeAmountViewModel.totalCurrent(sequence)
+            </td>
+        </tr>
     }
-
-    <tr role="row">
-        <td>@totalTitle</td>
-        <td class="numeric">
-            <span aria-hidden="true" class="table-heading">Previous Amount</span>
-            @YourTaxFreeAmountViewModel.totalPrevious(sequence)
-        </td>
-        <td class="numeric">
-            <span aria-hidden="true" class="table-heading">Current Amount</span>
-            @YourTaxFreeAmountViewModel.totalCurrent(sequence)
-        </td>
-    </tr>
-
 }
 
 @totalTaxFreeAmountRow = {
