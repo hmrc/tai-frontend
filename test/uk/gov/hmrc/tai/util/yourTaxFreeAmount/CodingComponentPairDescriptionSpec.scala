@@ -22,15 +22,15 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.{CarBenefit, GiftAidPayments}
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCar, CompanyCarBenefit}
 
-class CodingComponentPairSpec extends PlaySpec with FakeTaiPlayApplication {
+class CodingComponentPairDescriptionSpec extends PlaySpec with FakeTaiPlayApplication {
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
-  "description" should {
-    "return a human readable coding component" in {
+  "#description" should {
+    "return a human readable coding component and pass through the current and previous amounts" in {
       val codingComponentPair = CodingComponentPair(GiftAidPayments, None, 456, 789)
-      val description = codingComponentPair.description(Map.empty, Seq.empty)
+      val actual = CodingComponentPairDescription(codingComponentPair, employmentIds = Map.empty, companyCarBenefits = Seq.empty)
 
-      description mustBe "Gift Aid Payments"
+      actual mustBe CodingComponentPairDescription("Gift Aid Payments", 456, 789)
     }
 
     "return a human readable coding component" when {
@@ -39,18 +39,18 @@ class CodingComponentPairSpec extends PlaySpec with FakeTaiPlayApplication {
 
         val employmentIds = Map(id -> "123")
         val codingComponentPair = CodingComponentPair(GiftAidPayments, Some(id), 456, 789)
-        val description = codingComponentPair.description(employmentIds, Seq.empty)
+        val actual = CodingComponentPairDescription(codingComponentPair, employmentIds, companyCarBenefits = Seq.empty)
 
-        description mustBe "Gift Aid Payments from 123"
+        actual.description mustBe "Gift Aid Payments from 123"
       }
 
       "there is a car benefit" should {
         "display a generic car benefit message when there is no matching ID" in {
           val codingComponentPair = CodingComponentPair(CarBenefit, Some(123), 456, 789)
           val companyCarBenefit = Seq(CompanyCarBenefit(456, 123, Seq.empty))
-          val description = codingComponentPair.description(Map.empty, companyCarBenefit)
+          val actual = CodingComponentPairDescription(codingComponentPair, employmentIds = Map.empty, companyCarBenefit)
 
-          description mustBe "Car benefit"
+          actual.description mustBe "Car benefit"
         }
 
         "display the car make model when there is a matching ID" in {
@@ -60,9 +60,9 @@ class CodingComponentPairSpec extends PlaySpec with FakeTaiPlayApplication {
           val codingComponentPair = CodingComponentPair(CarBenefit, Some(id), 456, 789)
           val companyCar = CompanyCar(98, "Make Model", false, None, None, None)
           val companyCarBenefit = Seq(CompanyCarBenefit(id, 45678, Seq(companyCar)))
-          val description = codingComponentPair.description(employmentIds, companyCarBenefit)
+          val actual = CodingComponentPairDescription(codingComponentPair, employmentIds, companyCarBenefit)
 
-          description mustBe "Make Model from 123"
+          actual.description mustBe "Make Model from 123"
         }
       }
     }

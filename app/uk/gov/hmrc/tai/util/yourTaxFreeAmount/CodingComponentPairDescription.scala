@@ -20,10 +20,17 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.{CarBenefit, TaxComponentType}
 
-case class CodingComponentPair(componentType: TaxComponentType, employmentId: Option[Int], previous: BigDecimal, current: BigDecimal) {
+case class CodingComponentPair(componentType: TaxComponentType, employmentId: Option[Int], previous: BigDecimal, current: BigDecimal)
 
-  def description(employmentIds: Map[Int, String], companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages): String = {
-    (componentType, employmentId) match {
+case class CodingComponentPairDescription(description: String, previous: BigDecimal, current: BigDecimal)
+
+object CodingComponentPairDescription {
+  def apply(codingComponentPair: CodingComponentPair,
+            employmentIds: Map[Int, String],
+            companyCarBenefits: Seq[CompanyCarBenefit])
+           (implicit messages: Messages): CodingComponentPairDescription = {
+
+    val description = (codingComponentPair.componentType, codingComponentPair.employmentId) match {
       case (CarBenefit, Some(id)) if employmentIds.contains(id) =>
         val makeModel = CompanyCarMakeModel.description(id, companyCarBenefits).getOrElse(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
 
@@ -31,11 +38,16 @@ case class CodingComponentPair(componentType: TaxComponentType, employmentId: Op
           s"${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentIds(id))}"
 
       case (_, Some(id)) if employmentIds.contains(id) =>
-        s"${Messages(s"tai.taxFreeAmount.table.taxComponent.${componentType.toString}")}" + " " +
+        s"${Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponentPair.componentType.toString}")}" + " " +
           s"${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentIds(id))}"
 
       case _ =>
-        Messages(s"tai.taxFreeAmount.table.taxComponent.${componentType.toString}")
+        Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponentPair.componentType.toString}")
     }
+
+    CodingComponentPairDescription(description, codingComponentPair.previous, codingComponentPair.current)
   }
 }
+
+
+

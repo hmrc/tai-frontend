@@ -210,7 +210,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
       TaxFreeInfo(taxCodeDateRange, 0, 0),
       TaxFreeInfo(taxCodeDateRange, annualTaxFreeAmount, 0),
       taxFreeAmountSummary,
-      AllowancesAndDeductions(Seq.empty, Seq.empty),
+      Seq.empty,
       Seq.empty)
   }
 

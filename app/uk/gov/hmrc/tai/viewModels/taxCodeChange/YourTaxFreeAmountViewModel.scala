@@ -25,21 +25,20 @@ import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 case class YourTaxFreeAmountViewModel(previousTaxFreeInfo: TaxFreeInfo,
                                       currentTaxFreeInfo: TaxFreeInfo,
                                       taxFreeAmountSummary: TaxFreeAmountSummaryViewModel,
-                                      allowancesAndDeductions: AllowancesAndDeductions,
-                                      carBenefits: Seq[CombinedCarGrossAmountPairs]
-                                      ) {}
+                                      allowances: Seq[CodingComponentPairDescription],
+                                      deductions: Seq[CodingComponentPairDescription]) {}
 
 object YourTaxFreeAmountViewModel extends ViewModelHelper {
   def prettyPrint(value: BigDecimal) : String = {
     withPoundPrefixAndSign(MoneyPounds(value, 0))
   }
 
-  def totalPrevious(sequence: Seq[CodingComponentPair]): String = {
+  def totalPrevious(sequence: Seq[CodingComponentPairDescription]): String = {
     val total = sequence.map(_.previous).sum
     prettyPrint(total)
   }
 
-  def totalCurrent(sequence: Seq[CodingComponentPair]): String = {
+  def totalCurrent(sequence: Seq[CodingComponentPairDescription]): String = {
     val total = sequence.map(_.current).sum
     prettyPrint(total)
   }

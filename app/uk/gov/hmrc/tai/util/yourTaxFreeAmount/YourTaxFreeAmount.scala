@@ -47,16 +47,19 @@ trait YourTaxFreeAmount extends TaxAccountCalculator {
     }
 
     val allowancesAndDeductions = AllowancesAndDeductions.fromCodingComponents(previous.codingComponents, current.codingComponents)
+    val allowancesDescription = for(
+      allowance <- allowancesAndDeductions.allowances
+    ) yield CodingComponentPairDescription(allowance, employmentIds, previous.companyCarBenefits ++ current.companyCarBenefits)
 
-    val currentCarBenefits = CompanyCarBenefitPairs(employmentIds, previous, current)
-    val carBenefits = CombineCompanyCarBenefits(currentCarBenefits)
+    val deductionsDescription = for(
+      deduction <- allowancesAndDeductions.deductions
+    ) yield CodingComponentPairDescription(deduction, employmentIds, previous.companyCarBenefits ++ current.companyCarBenefits)
 
     YourTaxFreeAmountViewModel(
       previousTaxFreeInfo,
       currentTaxFreeInfo,
       removeMeTaxFreeAmountSummary,
-      allowancesAndDeductions,
-      carBenefits
-    )
+      allowancesDescription,
+      deductionsDescription)
   }
 }

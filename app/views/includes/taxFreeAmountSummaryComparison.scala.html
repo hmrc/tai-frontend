@@ -18,13 +18,13 @@
 @import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
 @import uk.gov.hmrc.tai.util.yourTaxFreeAmount.CodingComponentPair
+@import uk.gov.hmrc.tai.util.yourTaxFreeAmount.CodingComponentPairDescription
 @(currentTaxFreeAmount: YourTaxFreeAmountViewModel, gaEventActionString: String, taxCodeChange: Boolean = false)(implicit m: Messages)
 
 @previousTaxFreeInfo = @{ currentTaxFreeAmount.previousTaxFreeInfo }
 @currentTaxFreeInfo = @{ currentTaxFreeAmount.currentTaxFreeInfo }
-@allowancesAndDeductions = @{ currentTaxFreeAmount.allowancesAndDeductions }
-@allowances = @{ currentTaxFreeAmount.allowancesAndDeductions.allowances }
-@deductions = @{ currentTaxFreeAmount.allowancesAndDeductions.deductions }
+@allowances = @{ currentTaxFreeAmount.allowances }
+@deductions = @{ currentTaxFreeAmount.deductions }
 
 <table class="responsive-table">
     <thead>
@@ -57,7 +57,7 @@
     </tr>
 }
 
-@iabdBreakdownRows(sequence: Seq[CodingComponentPair], title: String, totalTitle: String) = {
+@iabdBreakdownRows(sequence: Seq[CodingComponentPairDescription], title: String, totalTitle: String) = {
 
     <tr role="row">
         <td colspan="3"><h3>@title</h3></td>
@@ -72,7 +72,7 @@
     } else {
         @for(pair <- sequence) {
             <tr role="row">
-                <td>@pair.componentType</td>
+                <td>@pair.description</td>
                 <td class="numeric"><span aria-hidden="true" class="table-heading">Previous Amount</span>@YourTaxFreeAmountViewModel.prettyPrint(pair.previous)</td>
                 <td class="numeric"><span aria-hidden="true" class="table-heading">Current Amount</span>@YourTaxFreeAmountViewModel.prettyPrint(pair.current)</td>
             </tr>
