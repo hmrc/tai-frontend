@@ -16,6 +16,7 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
@@ -23,34 +24,36 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxCodeChangeService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService, TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
 
-trait TaxCodeChangeController extends TaiBaseController
+class TaxCodeChangeController @Inject()(val personService: PersonService,
+                                        val codingComponentService: CodingComponentService,
+                                        val employmentService: EmploymentService,
+                                        val companyCarService: CompanyCarService,
+                                        val taxCodeChangeService: TaxCodeChangeService,
+                                        val taxAccountService: TaxAccountService,
+                                        val auditConnector: AuditConnector,
+                                        val delegationConnector: DelegationConnector,
+                                        val authConnector: AuthConnector,
+                                        override implicit val partialRetriever: FormPartialRetriever,
+                                        override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with WithAuthorisedForTaiLite
   with DelegationAwareActions
   with Auditable
   with FeatureTogglesConfig {
-  def personService: PersonService
-
-  def codingComponentService: CodingComponentService
-
-  def employmentService: EmploymentService
-
-  def companyCarService: CompanyCarService
-
-  def taxCodeChangeService: TaxCodeChangeService
-
-  def taxAccountService: TaxAccountService
 
   def taxCodeComparison: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -129,15 +132,15 @@ trait TaxCodeChangeController extends TaiBaseController
     ).toHtml))
 
 }
-
-object TaxCodeChangeController extends TaxCodeChangeController with AuthenticationConnectors {
-
-  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-  override implicit val templateRenderer = LocalTemplateRenderer
-  override val personService: PersonService = PersonService
-  override val taxCodeChangeService: TaxCodeChangeService = TaxCodeChangeService
-  override val codingComponentService: CodingComponentService = CodingComponentService
-  override val employmentService: EmploymentService = EmploymentService
-  override val companyCarService: CompanyCarService = CompanyCarService
-  override val taxAccountService: TaxAccountService = TaxAccountService
-}
+//
+//object TaxCodeChangeController extends TaxCodeChangeController with AuthenticationConnectors {
+//
+//  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
+//  override implicit val templateRenderer = LocalTemplateRenderer
+//  override val personService: PersonService = PersonService
+//  override val taxCodeChangeService: TaxCodeChangeService = TaxCodeChangeService
+//  override val codingComponentService: CodingComponentService = CodingComponentService
+//  override val employmentService: EmploymentService = EmploymentService
+//  override val companyCarService: CompanyCarService = CompanyCarService
+//  override val taxAccountService: TaxAccountService = TaxAccountService
+//}
