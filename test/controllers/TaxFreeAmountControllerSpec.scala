@@ -79,16 +79,24 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
   val codingComponents = Seq(CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
     CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description"))
 
-  private class SUT() extends TaxFreeAmountController {
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override val authConnector: AuthConnector = mock[AuthConnector]
-    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
-    override val personService: PersonService = mock[PersonService]
-    override val codingComponentService: CodingComponentService = mock[CodingComponentService]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val companyCarService: CompanyCarService = mock[CompanyCarService]
+  val personService: PersonService = mock[PersonService]
+
+  private class SUT() extends TaxFreeAmountController(
+    personService,mock[CodingComponentService],
+    mock[EmploymentService],mock[CompanyCarService],mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
+//    override val auditConnector: AuditConnector = mock[AuditConnector]
+//    override val authConnector: AuthConnector = mock[AuthConnector]
+//    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
+//    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
+//    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
+//    override val personService: PersonService = mock[PersonService]
+//    override val codingComponentService: CodingComponentService = mock[CodingComponentService]
+//    override val employmentService: EmploymentService = mock[EmploymentService]
+//    override val companyCarService: CompanyCarService = mock[CompanyCarService]
 
     val ad = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
