@@ -132,15 +132,3 @@ class TaxCodeChangeController @Inject()(val personService: PersonService,
     ).toHtml))
 
 }
-//
-//object TaxCodeChangeController extends TaxCodeChangeController with AuthenticationConnectors {
-//
-//  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-//  override implicit val templateRenderer = LocalTemplateRenderer
-//  override val personService: PersonService = PersonService
-//  override val taxCodeChangeService: TaxCodeChangeService = TaxCodeChangeService
-//  override val codingComponentService: CodingComponentService = CodingComponentService
-//  override val employmentService: EmploymentService = EmploymentService
-//  override val companyCarService: CompanyCarService = CompanyCarService
-//  override val taxAccountService: TaxAccountService = TaxAccountService
-//}
