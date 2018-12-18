@@ -57,16 +57,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
       newDoc.body.text must include(messages("tai.paye.lastTaxYear.preHeading"))
       newDoc.body.text must include(messages("tai.paye.heading", taxPeriodLabel(taxYear.year)))
     }
-
-    "display a link to view the tax code at the end of the year" when {
-      "taxCodeChangeEnabled is true && showTaxCodeDescription is true" in {
-        val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false,Some("payrollNumber"))
-        val view: Html = views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Nil, Seq(employment), true, true), 1, taxCodeChangeEnabled = true)
-
-        doc(view) must haveLinkWithUrlWithID("taxCodeDescription", controllers.routes.YourTaxCodeController.prevTaxCodes(cyMinusOneTaxYear).url)
-      }
-    }
-
+    
     "NOT display a link to view the tax code at the end of the year" when {
       "taxCodeChangeEnabled is false" in {
         val employment: EmploymentViewModel = EmploymentViewModel("test employment", 0.00, 1, false,Some("payrollNumber"))
