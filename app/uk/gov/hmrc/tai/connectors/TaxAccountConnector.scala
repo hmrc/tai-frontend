@@ -119,7 +119,7 @@ trait TaxAccountConnector extends CodingComponentFormatters {
 }
 // $COVERAGE-OFF$
 object TaxAccountConnector extends TaxAccountConnector {
-  override val serviceUrl = baseUrl("tai")
+  override lazy val serviceUrl = baseUrl("tai")
 
   override def httpHandler: HttpHandler = HttpHandler
 }

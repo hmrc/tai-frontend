@@ -60,7 +60,7 @@ object TaiHtmlPartialRetriever extends FormPartialRetriever {
 }
 
 object FrontendAuthConnector extends AuthConnector with ServicesConfig {
-  val serviceUrl = baseUrl("auth")
+  lazy val serviceUrl = baseUrl("auth")
   lazy val http = WSHttp
 }
 

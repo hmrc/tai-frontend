@@ -69,7 +69,7 @@ trait CompanyCarConnector {
 }
 // $COVERAGE-OFF$
 object CompanyCarConnector extends CompanyCarConnector {
-  override val serviceUrl = baseUrl("tai")
+  override lazy val serviceUrl = baseUrl("tai")
   override def httpHandler: HttpHandler = HttpHandler
 }
 // $COVERAGE-ON$

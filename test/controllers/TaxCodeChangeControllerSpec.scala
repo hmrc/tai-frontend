@@ -150,19 +150,24 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation,"Employer 1", false, Some("1234"), true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
-  private class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController {
+  val personService: PersonService = mock[PersonService]
+  val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
 
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override val personService: PersonService = mock[PersonService]
-    override val codingComponentService: CodingComponentService = mock[CodingComponentService]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val companyCarService: CompanyCarService = mock[CompanyCarService]
-    override val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
+
+  private class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController(
+    personService,
+    mock[CodingComponentService],
+    mock[EmploymentService],
+    mock[CompanyCarService],
+    taxCodeChangeService,
+    mock[TaxAccountService],
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
+
     override val taxCodeChangeEnabled: Boolean = taxCodeChangeJourneyEnabled
 
     implicit val hc: HeaderCarrier = HeaderCarrier()

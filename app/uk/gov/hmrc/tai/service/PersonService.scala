@@ -43,5 +43,5 @@ trait PersonService {
 
 object PersonService extends PersonService {
   override val taiClient = TaiConnector
-  override val personConnector = PersonConnector
+  override lazy val personConnector = PersonConnector
 }
