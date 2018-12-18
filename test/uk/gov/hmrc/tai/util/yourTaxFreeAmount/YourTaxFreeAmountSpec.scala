@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
-class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
+class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with YourTaxFreeAmount {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
   val previousDate = new LocalDate(2017, 12, 12)
@@ -40,7 +40,7 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
 
     val formattedPreviousDate = Dates.formatDate(previousDate)
     val formattedCurrentDate = createFormattedDate(currentDate)
-    val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(Seq.empty, Map.empty, Seq.empty, 42)
+    val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(Seq.empty, Map.empty, Seq.empty, 0)
 
     YourTaxFreeAmountViewModel(
       TaxFreeInfo(formattedPreviousDate, 0, 0),
@@ -58,10 +58,9 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
     "have the correct date formatting" in {
       val expected = createYourTaxFreeAmountViewModel()
 
-      val yourTaxFreeAmount = new YourTaxFreeAmount() with TaxAccountCalculatorMock
       val previous = CodingComponentsWithCarBenefits(previousDate, Seq.empty, Seq.empty)
       val current = CodingComponentsWithCarBenefits(currentDate, Seq.empty, Seq.empty)
-      yourTaxFreeAmount.buildTaxFreeAmount(previous, current, Map.empty) mustBe expected
+       buildTaxFreeAmount(previous, current, Map.empty) mustBe expected
     }
   }
 }

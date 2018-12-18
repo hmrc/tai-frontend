@@ -20,13 +20,15 @@ import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
-class TaxAccountCalculatorSpec extends PlaySpec with TaxAccountCalculator {
+class TaxAccountCalculatorSpec extends PlaySpec {
+
+  val taxAccountCalculator: TaxAccountCalculator = new TaxAccountCalculatorImpl
 
   "taxFreeAmount" must {
     "return zero" when {
       "there is no codingComponent" in {
         val codingComponents = Seq.empty[CodingComponent]
-        taxFreeAmount(codingComponents) mustBe 0
+        taxAccountCalculator.taxFreeAmount(codingComponents) mustBe 0
       }
     }
   }
@@ -38,7 +40,8 @@ class TaxAccountCalculatorSpec extends PlaySpec with TaxAccountCalculator {
           CodingComponent(PersonalAllowancePA, Some(234), 11500, "PersonalAllowancePA"),
           CodingComponent(MarriageAllowanceReceived, Some(234), 200, "MarriageAllowanceReceived")
         )
-        taxFreeAmount(codingComponents) mustBe 11700
+
+        taxAccountCalculator.taxFreeAmount(codingComponents) mustBe 11700
       }
     }
     "subtract all the other coding componentTypes from taxFreeAmount value" when {
@@ -52,7 +55,8 @@ class TaxAccountCalculatorSpec extends PlaySpec with TaxAccountCalculator {
           CodingComponent(MarriageAllowanceTransferred, Some(31), 10, "MarriageAllowanceTransferred"),
           CodingComponent(UnderPaymentFromPreviousYear, Some(31), 10, "MarriageAllowanceTransferred")
         )
-        taxFreeAmount(codingComponents) mustBe -620
+
+        taxAccountCalculator.taxFreeAmount(codingComponents) mustBe -620
       }
     }
   }

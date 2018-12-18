@@ -17,43 +17,49 @@
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import controllers.FakeTaiPlayApplication
+import org.mockito.Matchers
+import org.mockito.Matchers.any
+import org.mockito.Mockito.when
+import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.util.TaxAccountCalculator
 
-class TaxFreeInfoSpec extends PlaySpec with FakeTaiPlayApplication {
+class TaxFreeInfoSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
   val date = "Date"
+  val taxAccountCalculatorMock = mock[TaxAccountCalculator]
+  val taxFreeAmount = 123
 
   def createCodingComponent(allowance: AllowanceComponentType, allowanceAmount: BigDecimal) = {
     CodingComponent(allowance, Some(123), allowanceAmount, allowance.toString())
   }
 
   "#apply" should {
+    when(taxAccountCalculatorMock.taxFreeAmount(any())).thenReturn(taxFreeAmount)
+
     "return a TaxFreeInfo" in {
-      val actual = TaxFreeInfo(date, Seq.empty)
+      when(taxAccountCalculatorMock.taxFreeAmount(Matchers.eq(Seq.empty))).thenReturn(0)
+
       val expected = TaxFreeInfo(date, 0, 0)
-      actual mustBe expected
+      TaxFreeInfo(date, Seq.empty, taxAccountCalculatorMock) mustBe expected
     }
 
     "calculate the annual tax free amount" in {
-      val codingComponents = Seq(CodingComponent(MarriageAllowanceReceived, Some(123), 5885, "MarriageAllowanceReceived"))
+      val codingComponents = Seq(CodingComponent(MarriageAllowanceReceived, Some(taxFreeAmount), 5885, "MarriageAllowanceReceived"))
+      val expected = TaxFreeInfo(date, taxFreeAmount, 0)
 
-      val actual = TaxFreeInfo(date, codingComponents)
-      val expected = TaxFreeInfo(date, 5885, 0)
-
-      actual mustBe expected
+      TaxFreeInfo(date, codingComponents, taxAccountCalculatorMock) mustBe expected
     }
 
     "calculate the personal allowance" in {
-      val codingComponents = Seq(CodingComponent(PersonalAllowancePA, Some(123), 11850, "MarriageAllowanceReceived"))
+      val codingComponents = Seq(CodingComponent(PersonalAllowancePA, Some(taxFreeAmount), 11850, "MarriageAllowanceReceived"))
+      val expected = TaxFreeInfo(date, taxFreeAmount, 11850)
 
-      val actual = TaxFreeInfo(date, codingComponents)
-      val expected = TaxFreeInfo(date, 11850, 11850)
-
-      actual mustBe expected
+      TaxFreeInfo(date, codingComponents, taxAccountCalculatorMock) mustBe expected
     }
 
     "ignores non personal allowances when accumulating taxable amount" in {
@@ -65,8 +71,8 @@ class TaxFreeInfoSpec extends PlaySpec with FakeTaiPlayApplication {
 
       val codingComponents = Seq(marriageAllowanceRecieved, allowancePa, allowanceAgedPAA, allowanceElderlyPAE)
 
-      val actual = TaxFreeInfo(date, codingComponents)
-      val expected = TaxFreeInfo(date, 1155, 600)
+      val actual = TaxFreeInfo(date, codingComponents, taxAccountCalculatorMock)
+      val expected = TaxFreeInfo(date, taxFreeAmount, 600)
 
       actual mustBe expected
     }

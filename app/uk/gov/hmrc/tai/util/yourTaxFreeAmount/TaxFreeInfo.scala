@@ -22,10 +22,9 @@ import uk.gov.hmrc.tai.util.TaxAccountCalculator
 
 case class TaxFreeInfo(date: String, annualTaxFreeAmount: BigDecimal, personalAllowance : BigDecimal)
 
-object TaxFreeInfo extends TaxAccountCalculator {
-
-  def apply(date: String, codingComponents: Seq[CodingComponent])(implicit messages: Messages): TaxFreeInfo = {
-    val annualTaxFreeAmount = taxFreeAmount(codingComponents)
+object TaxFreeInfo {
+  def apply(date: String, codingComponents: Seq[CodingComponent], taxAccountCalculator: TaxAccountCalculator)(implicit messages: Messages): TaxFreeInfo = {
+    val annualTaxFreeAmount = taxAccountCalculator.taxFreeAmount(codingComponents)
     val personalAllowanceAmount = sumOfPersonalAllowances(codingComponents)
 
     TaxFreeInfo(date, annualTaxFreeAmount, personalAllowanceAmount)
