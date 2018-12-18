@@ -17,7 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
@@ -29,10 +29,10 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -43,13 +43,14 @@ class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
   with FakeTaiPlayApplication {
 
   override lazy val app = new GuiceApplicationBuilder().build()
+
   def injector = app.injector
 
   val nino = new Generator().nextNino
 
   val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
   val incomeCatergories = IncomeCategory(NonSavingsIncomeCategory, 1000, 5000, 16500, Seq(taxBand))
-  val totalTax : TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
+  val totalTax: TotalTax = TotalTax(1000, Seq(incomeCatergories), None, None, None)
 
   "UnderPaymentFromPreviousYearController" should {
     "respond with OK" when {
@@ -72,18 +73,20 @@ class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
     }
   }
 
-  private class SUT() extends UnderpaymentFromPreviousYearController {
-    override val personService: PersonService = mock[PersonService]
-    override val auditService: AuditService = mock[AuditService]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
-    override val codingComponentService: CodingComponentService = mock[CodingComponentService]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override val authConnector: AuthConnector = mock[AuthConnector]
-    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
+  val personService: PersonService = mock[PersonService]
 
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
+  private class SUT() extends UnderpaymentFromPreviousYearController(
+    personService,
+    mock[CodingComponentService],
+    mock[EmploymentService],
+    mock[CompanyCarService],
+    mock[TaxAccountService],
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
