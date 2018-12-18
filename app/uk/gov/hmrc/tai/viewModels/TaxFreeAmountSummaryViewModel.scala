@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.CompanyCarMakeModel
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentTypeDescription, CompanyCarMakeModel}
 
 case class ChangeLinkViewModel(isDisplayed: Boolean,
                                value: String = "",
@@ -188,42 +188,43 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
             employmentName: Map[Int, String],
             companyCarBenefits: Seq[CompanyCarBenefit])(implicit messages: Messages): TaxFreeAmountSummaryRowViewModel = {
 
-    def generateLabel(componentType: String, href: String, id: String): Label = Label(
-      Messages(s"tai.taxFreeAmount.table.taxComponent.${componentType}"),
-      Some(HelpLink(Messages("what.does.this.mean"), href, id))
-    )
+    val label: Label = createLabel(codingComponent, companyCarBenefits, employmentName)
+    val value = withPoundPrefix(MoneyPounds(codingComponent.amount, 0))
+    val link = createChangeLink(codingComponent)
 
-    val label: Label = codingComponent match {
+    TaxFreeAmountSummaryRowViewModel(label, value, link)
+  }
+
+  private def createLabel(codingComponent: CodingComponent, companyCarBenefits: Seq[CompanyCarBenefit], employmentIdNameMap: Map[Int, String])(implicit messages: Messages): Label = {
+    val labelString = createLabelString(codingComponent, companyCarBenefits, employmentIdNameMap)
+    val labelLink = createLabelLink(codingComponent, companyCarBenefits, employmentIdNameMap)
+
+    Label(labelString, labelLink)
+  }
+
+  private def createLabelString(codingComponent: CodingComponent, companyCarBenefits: Seq[CompanyCarBenefit], employmentIdNameMap: Map[Int, String])(implicit messages: Messages): String = {
+    CodingComponentTypeDescription.describe(codingComponent.componentType, codingComponent.employmentId, companyCarBenefits, employmentIdNameMap)
+  }
+
+  private def createLabelLink(codingComponent: CodingComponent, companyCarBenefits: Seq[CompanyCarBenefit], employmentIdNameMap: Map[Int, String])(implicit messages: Messages): Option[HelpLink] = {
+    codingComponent match {
       case CodingComponent(UnderPaymentFromPreviousYear, _, _, _, _) =>
-        generateLabel(codingComponent.componentType.toString,
-                      controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString,
-                      "underPaymentFromPreviousYear")
+        val href = controllers.routes.UnderpaymentFromPreviousYearController.underpaymentExplanation.url.toString
+        val id = "underPaymentFromPreviousYear"
+        Some(HelpLink(Messages("what.does.this.mean"), href, id))
 
       case CodingComponent(EstimatedTaxYouOweThisYear, _, _, _, _) =>
-        generateLabel(codingComponent.componentType.toString,
-                      controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString,
-                      "estimatedTaxOwedLink")
+        val href = controllers.routes.PotentialUnderpaymentController.potentialUnderpaymentPage.url.toString
+        val id = "estimatedTaxOwedLink"
+        Some(HelpLink(Messages("what.does.this.mean"), href, id))
 
-      case CodingComponent(CarBenefit, Some(id), _, _, _) if employmentName.contains(id) =>
-
-        val makeModel = CompanyCarMakeModel.description(id, companyCarBenefits).getOrElse(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
-
-        val displayText = s"""${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefitMakeModel", makeModel)}
-                             |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentName(id))}""".stripMargin
-        Label(displayText)
-
-      case CodingComponent(_, Some(id), _, _, _) if employmentName.contains(id) =>
-        val displayText = s"""${Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}")}
-                             |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentName(id))}""".stripMargin
-        Label(displayText)
-
-      case CodingComponent(_,_,_,_,_) =>
-        Label(Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponent.componentType.toString}"))
+      case _ =>
+        None
     }
+  }
 
-    val value = withPoundPrefix(MoneyPounds(codingComponent.amount, 0))
-
-    val link = codingComponent.componentType match {
+  private def createChangeLink(codingComponent: CodingComponent)(implicit messages: Messages): ChangeLinkViewModel = {
+    codingComponent.componentType match {
       case MedicalInsurance =>
         val url = routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform).url
         ChangeLinkViewModel(isDisplayed = true, Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"), url)
@@ -248,7 +249,5 @@ object TaxFreeAmountSummaryRowViewModel extends ViewModelHelper {
       case _ =>
         ChangeLinkViewModel(isDisplayed = false)
     }
-
-    TaxFreeAmountSummaryRowViewModel(label, value, link)
   }
 }

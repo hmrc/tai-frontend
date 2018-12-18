@@ -30,22 +30,28 @@ object CodingComponentPairDescription {
             companyCarBenefits: Seq[CompanyCarBenefit])
            (implicit messages: Messages): CodingComponentPairDescription = {
 
-    val description = (codingComponentPair.componentType, codingComponentPair.employmentId) match {
-      case (CarBenefit, Some(id)) if employmentIds.contains(id) =>
+    val description = CodingComponentTypeDescription.describe(codingComponentPair.componentType, codingComponentPair.employmentId, companyCarBenefits, employmentIds)
+
+    CodingComponentPairDescription(description, codingComponentPair.previous, codingComponentPair.current)
+  }
+}
+
+object CodingComponentTypeDescription {
+  def describe(componentType: TaxComponentType, employmentId: Option[Int], companyCarBenefits: Seq[CompanyCarBenefit], employmentIdNameMap: Map[Int, String])(implicit messages: Messages): String = {
+    (componentType, employmentId) match {
+      case (CarBenefit, Some(id)) if employmentIdNameMap.contains(id) =>
         val makeModel = CompanyCarMakeModel.description(id, companyCarBenefits).getOrElse(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
 
         s"${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefitMakeModel", makeModel)}" + " " +
-          s"${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentIds(id))}"
+          s"${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentIdNameMap(id))}"
 
-      case (_, Some(id)) if employmentIds.contains(id) =>
-        s"${Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponentPair.componentType.toString}")}" + " " +
-          s"${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentIds(id))}"
+      case (_, Some(id)) if employmentIdNameMap.contains(id) =>
+        s"${Messages(s"tai.taxFreeAmount.table.taxComponent.${componentType.toString}")}" + " " +
+          s"${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentIdNameMap(id))}"
 
       case _ =>
-        Messages(s"tai.taxFreeAmount.table.taxComponent.${codingComponentPair.componentType.toString}")
+        Messages(s"tai.taxFreeAmount.table.taxComponent.${componentType.toString}")
     }
-
-    CodingComponentPairDescription(description, codingComponentPair.previous, codingComponentPair.current)
   }
 }
 

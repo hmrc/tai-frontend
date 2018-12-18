@@ -135,8 +135,7 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
         val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(ForeignDividendIncome, Some(1), 111, "ForeignDividendIncome"),
           employmentNames, companyCarBenefits)
         row.label.value mustBe
-          s"""${Messages("tai.taxFreeAmount.table.taxComponent.ForeignDividendIncome")}
-             |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentNames(1))}""".stripMargin
+          s"${Messages("tai.taxFreeAmount.table.taxComponent.ForeignDividendIncome")} ${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentNames(1))}"
       }
 
       "employment id is not available in employment name map" in {
@@ -165,8 +164,7 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
 
       "employment id does not exist in company car benefits" in {
         val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(CarBenefit, Some(1), 11500, "CarBenefit"), employmentNames, companyCarBenefits)
-        row.label.value mustBe s"""${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit", "Car benefit")}
-                            |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentNames(1))}""".stripMargin
+        row.label.value mustBe s"${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit", "Car benefit")} ${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentNames(1))}"
       }
     }
   }
