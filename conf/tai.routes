@@ -1,4 +1,4 @@
-GET         /what-do-you-want-to-do                                                    controllers.WhatDoYouWantToDoController.whatDoYouWantToDoPage
+GET         /what-do-you-want-to-do                                                    @controllers.WhatDoYouWantToDoController.whatDoYouWantToDoPage
 
 GET         /income-tax/no-info                                                        controllers.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage
 
@@ -8,7 +8,7 @@ GET         /historic-paye/:taxYear                                             
 GET         /timeout                                                                   controllers.ServiceController.timeoutPage
 GET         /signout                                                                   controllers.ServiceController.serviceSignout
 GET         /tax-estimate-unavailable                                                  controllers.ServiceController.gateKeeper
-GET         /deceased                                                                  controllers.DeceasedController.deceased
+GET         /deceased                                                                  @controllers.DeceasedController.deceased
 
 GET         /start-verify                                                              @controllers.AuthProviderController.verifyEntryPoint
 GET         /start-government-gateway                                                  @controllers.AuthProviderController.governmentGatewayEntryPoint
@@ -82,7 +82,7 @@ GET         /update-employment/check-your-answers                               
 POST        /update-employment/check-your-answers                                      controllers.employments.UpdateEmploymentController.submitYourAnswers
 GET         /update-employment/success                                                 controllers.employments.UpdateEmploymentController.confirmation
 
-GET         /previous-underpayment                                                     controllers.UnderpaymentFromPreviousYearController.underpaymentExplanation
+GET         /previous-underpayment                                                     @controllers.UnderpaymentFromPreviousYearController.underpaymentExplanation
 GET         /underpayment-estimate                                                     controllers.PotentialUnderpaymentController.potentialUnderpaymentPage
 
 
@@ -112,30 +112,30 @@ GET         /income/bank-building-society-savings/remove-success                
 
 
 ## Company car pages
-GET         /redirect-company-car/:employmentId                                        controllers.CompanyCarController.redirectCompanyCarSelection(employmentId: Int)
+GET         /redirect-company-car/:employmentId                                        @controllers.CompanyCarController.redirectCompanyCarSelection(employmentId: Int)
 
-GET         /end-company-car/decision                                                  controllers.CompanyCarController.getCompanyCarDetails
-POST        /end-company-car/decision                                                  controllers.CompanyCarController.handleUserJourneyChoice
+GET         /end-company-car/decision                                                  @controllers.CompanyCarController.getCompanyCarDetails
+POST        /end-company-car/decision                                                  @controllers.CompanyCarController.handleUserJourneyChoice
 
 ## New Income and Tax Codes page
-GET         /tax-free-allowance                                                        controllers.TaxFreeAmountController.taxFreeAmount
-GET         /taxable-income                                                            controllers.TaxFreeAmountController.taxFreeAmount
-GET         /your-tax-free-amount                                                      controllers.TaxFreeAmountController.taxFreeAmount
+GET         /tax-free-allowance                                                        @controllers.TaxFreeAmountController.taxFreeAmount
+GET         /taxable-income                                                            @controllers.TaxFreeAmountController.taxFreeAmount
+GET         /your-tax-free-amount                                                      @controllers.TaxFreeAmountController.taxFreeAmount
 
-GET         /tax-codes                                                                 controllers.YourTaxCodeController.taxCodes()
-GET         /tax-codes/:year                                                           controllers.YourTaxCodeController.prevTaxCodes(year: uk.gov.hmrc.tai.model.TaxYear)
+GET         /tax-codes                                                                 @controllers.YourTaxCodeController.taxCodes()
+GET         /tax-codes/:year                                                           @controllers.YourTaxCodeController.prevTaxCodes(year: uk.gov.hmrc.tai.model.TaxYear)
 
-GET         /paye-income-tax-estimate                                                  controllers.EstimatedIncomeTaxController.estimatedIncomeTax
-GET         /detailed-income-tax-estimate                                              controllers.DetailedIncomeTaxEstimateController.taxExplanationPage
+GET         /paye-income-tax-estimate                                                  @controllers.EstimatedIncomeTaxController.estimatedIncomeTax
+GET         /detailed-income-tax-estimate                                              @controllers.DetailedIncomeTaxEstimateController.taxExplanationPage
 
 GET         /income-tax-comparison                                                     controllers.IncomeTaxComparisonController.onPageLoad
 
 
-GET         /your-income-calculation-details/:id                                       controllers.YourIncomeCalculationController.yourIncomeCalculationPage(id: Int)
-GET         /print-your-income-calculation-details/:id                                 controllers.YourIncomeCalculationController.printYourIncomeCalculationPage(id: Int)
+GET         /your-income-calculation-details/:id                                       @controllers.YourIncomeCalculationController.yourIncomeCalculationPage(id: Int)
+GET         /print-your-income-calculation-details/:id                                 @controllers.YourIncomeCalculationController.printYourIncomeCalculationPage(id: Int)
 
-GET         /your-income-calculation-previous-year/:year/:empId                        controllers.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
-GET         /print-your-income-calculation-previous-year/:year/:empId                  controllers.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
+GET         /your-income-calculation-previous-year/:year/:empId                        @controllers.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
+GET         /print-your-income-calculation-previous-year/:year/:empId                  @controllers.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
 
 
 
@@ -181,32 +181,32 @@ GET         /update-income/estimated-pay                                        
 GET         /update-income/confirm-estimated-pay                                       controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleCalculationResult
 
 ## Regular Income URIs
-GET         /update-income/select-taxable-pay                                          controllers.IncomeController.viewIncomeForEdit
+GET         /update-income/select-taxable-pay                                          @controllers.IncomeController.viewIncomeForEdit
 
-GET         /update-income/edit-taxable-pay                                            controllers.IncomeController.regularIncome
-POST        /update-income/edit-taxable-pay                                            controllers.IncomeController.editRegularIncome
+GET         /update-income/edit-taxable-pay                                            @controllers.IncomeController.regularIncome
+POST        /update-income/edit-taxable-pay                                            @controllers.IncomeController.editRegularIncome
 
 
 ## Pension Income URIs
-GET         /update-income/edit-pension                                                controllers.IncomeController.pensionIncome
-POST        /update-income/edit-pension                                                controllers.IncomeController.editPensionIncome
+GET         /update-income/edit-pension                                                @controllers.IncomeController.pensionIncome
+POST        /update-income/edit-pension                                                @controllers.IncomeController.editPensionIncome
 
 
-GET         /update-income/income/check-save                                           controllers.IncomeController.confirmRegularIncome
+GET         /update-income/income/check-save                                           @controllers.IncomeController.confirmRegularIncome
 
-GET         /update-income/pension/check-save                                          controllers.IncomeController.confirmPensionIncome
+GET         /update-income/pension/check-save                                          @controllers.IncomeController.confirmPensionIncome
 
 
-POST        /update-income/success-page                                                controllers.IncomeController.updateEstimatedIncome
+POST        /update-income/success-page                                                @controllers.IncomeController.updateEstimatedIncome
 
 
 ## Get Help Pages
 GET         /get-help                                                                  controllers.HelpController.helpPage
 
 ## Audit URIs for iForm links
-GET         /audit/link-to-iform/:iformName                                            controllers.AuditController.auditLinksToIForm(iformName: String)
+GET         /audit/link-to-iform/:iformName                                            @controllers.AuditController.auditLinksToIForm(iformName: String)
 ## Audit and invalidate cache url
-GET         /audit-invalidate-cache/link-to-service/:serviceName                       controllers.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(serviceName: String)
+GET         /audit-invalidate-cache/link-to-service/:serviceName                       @controllers.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(serviceName: String)
 
 GET         /assets/*file                                                              @controllers.AssetsController.versioned(path="/public", file: Asset)
 
@@ -223,7 +223,7 @@ POST        /update-income-details/submit-your-answers                          
 GET         /update-income-details/success                                             controllers.income.previousYears.UpdateIncomeDetailsController.confirmation
 
 ## Used by external services
-GET         /income                                                                    controllers.TaxFreeAmountController.taxFreeAmount
+GET         /income                                                                    @controllers.TaxFreeAmountController.taxFreeAmount
 GET         /income-tax-refresh                                                        controllers.TaxAccountSummaryController.onPageLoad
 
 GET         /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.decision

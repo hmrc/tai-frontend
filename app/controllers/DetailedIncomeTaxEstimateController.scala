@@ -16,16 +16,17 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
@@ -34,15 +35,16 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.{CodingComponentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
 
-trait DetailedIncomeTaxEstimateController extends TaiBaseController
+class DetailedIncomeTaxEstimateController @Inject()(val taxAccountService: TaxAccountService,
+                                                    val codingComponentService: CodingComponentService,
+                                                    val personService: PersonService,
+                                                    val auditConnector: AuditConnector,
+                                                    val delegationConnector: DelegationConnector,
+                                                    val authConnector: AuthConnector,
+                                                    override implicit val partialRetriever: FormPartialRetriever,
+                                                    override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
-
-  def personService: PersonService
-
-  def taxAccountService: TaxAccountService
-
-  def codingComponentService: CodingComponentService
 
   def taxExplanationPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -70,7 +72,7 @@ trait DetailedIncomeTaxEstimateController extends TaiBaseController
                   TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
                   TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
                   TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)
-                ) =>
+                  ) =>
                   val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxAccountSummary, codingComponents, nonTaxCodeIncome)
                   Ok(views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model))
                 case _ => throw new RuntimeException("Failed to fetch total tax details")
@@ -80,12 +82,3 @@ trait DetailedIncomeTaxEstimateController extends TaiBaseController
   }
 
 }
-
-object DetailedIncomeTaxEstimateController extends DetailedIncomeTaxEstimateController with AuthenticationConnectors {
-  override val personService: PersonService = PersonService
-  override val taxAccountService: TaxAccountService = TaxAccountService
-  override val codingComponentService: CodingComponentService = CodingComponentService
-  override implicit val templateRenderer: TemplateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-}
-

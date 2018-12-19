@@ -27,7 +27,6 @@ import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http._
@@ -35,7 +34,6 @@ import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -52,7 +50,7 @@ import scala.language.postfixOps
 import scala.util.Random
 
 
-class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with JsoupMatchers{
+class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with JsoupMatchers {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -194,7 +192,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       }
 
       "the deceased AND mci indicators are set on the retrived Person" in {
-        val person = fakePerson(nino).copy(isDeceased=true, hasCorruptData=true)
+        val person = fakePerson(nino).copy(isDeceased = true, hasCorruptData = true)
         val testController = createTestController()
         when(testController.personService.personDetails(any())(any()))
           .thenReturn(Future.successful(person))
@@ -215,7 +213,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
-        val doc = Jsoup.parse( contentAsString(result) )
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Sorry, we are experiencing technical difficulties - 500")
         doc must haveHeadingWithText(Messages("tai.technical.error.heading"))
         doc must haveParagraphWithText(Messages("tai.technical.error.message"))
@@ -230,7 +228,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
-        val doc = Jsoup.parse( contentAsString(result) )
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Bad request - 400")
         doc must haveHeadingWithText(Messages("tai.errorMessage.heading"))
         doc must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message1"))
@@ -251,7 +249,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
         verify(testController.employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
-        val doc = Jsoup.parse( contentAsString(result) )
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Sorry, there is a problem so you can’t use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem2"))
@@ -269,7 +267,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
-        verify(testController.employmentService, times(1)).employments(any(),  Matchers.eq(TaxYear().prev))(any())
+        verify(testController.employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
         redirectLocation(result).get mustBe routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url
       }
 
@@ -282,7 +280,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
-        val doc = Jsoup.parse( contentAsString(result) )
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Sorry, there is a problem so you can’t use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem2"))
@@ -301,7 +299,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
         verify(testController.employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
-        val doc = Jsoup.parse( contentAsString(result) )
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Sorry, there is a problem so you can’t use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem2"))
@@ -330,7 +328,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         verify(testController.employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
-        val doc = Jsoup.parse( contentAsString(result) )
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("your.paye.income.tax.overview"))
       }
 
@@ -354,7 +352,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         verify(testController.employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
-        val doc = Jsoup.parse( contentAsString(result) )
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("your.paye.income.tax.overview"))
       }
 
@@ -484,19 +482,24 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
   private def createTestController(isCyPlusOneEnabled: Boolean = true) = new WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled)
 
-  class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true) extends WhatDoYouWantToDoController {
-    override val personService: PersonService = mock[PersonService]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override val auditService: AuditService = mock[AuditService]
-    override val trackingService: TrackingService = mock[TrackingService]
+  val personService: PersonService = mock[PersonService]
+  val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
+
+  class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true) extends WhatDoYouWantToDoController(
+    personService,
+    mock[EmploymentService],
+    taxCodeChangeService,
+    mock[TaxAccountService],
+    mock[TrackingService],
+    mock[AuditService],
+    mock[AuditConnector],
+    mock[AuthConnector],
+    mock[DelegationConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
+
     override val cyPlusOneEnabled: Boolean = isCyPlusOneEnabled
-    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
-    override val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
 
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
@@ -509,4 +512,5 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary))
     )
   }
+
 }
