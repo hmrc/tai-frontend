@@ -139,7 +139,7 @@ object JourneyCacheService {
   def apply(journey:String) : JourneyCacheService = {
     new JourneyCacheService {
       override val journeyName = journey
-      override val journeyCacheConnector = JourneyCacheConnector
+      override lazy val journeyCacheConnector = JourneyCacheConnector
     }
   }
 }

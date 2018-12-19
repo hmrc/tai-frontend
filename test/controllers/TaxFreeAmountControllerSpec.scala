@@ -17,25 +17,23 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService}
-import uk.gov.hmrc.tai.util.{HtmlFormatter, TaxYearRangeUtil}
-import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -79,16 +77,15 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
   val codingComponents = Seq(CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
     CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description"))
 
-  private class SUT() extends TaxFreeAmountController {
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override val authConnector: AuthConnector = mock[AuthConnector]
-    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
-    override val personService: PersonService = mock[PersonService]
-    override val codingComponentService: CodingComponentService = mock[CodingComponentService]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val companyCarService: CompanyCarService = mock[CompanyCarService]
+  val personService: PersonService = mock[PersonService]
+
+  private class SUT() extends TaxFreeAmountController(
+    personService, mock[CodingComponentService],
+    mock[EmploymentService], mock[CompanyCarService], mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector], mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
 
     val ad = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)

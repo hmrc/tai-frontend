@@ -16,40 +16,33 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.{AuditService, PersonService}
 
-trait AuditController extends TaiBaseController
+class AuditController @Inject()(val personService: PersonService,
+                                val auditService: AuditService,
+                                val delegationConnector: DelegationConnector,
+                                val authConnector: AuthConnector,
+                                override implicit val partialRetriever: FormPartialRetriever,
+                                override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
-
-  def personService: PersonService
-
-  def auditService: AuditService
 
   def auditLinksToIForm(iformName: String): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request => {
-         auditService.sendAuditEventAndGetRedirectUri(Nino(user.getNino), iformName) map { redirectUri =>
-           Redirect(redirectUri)
-         }
+          auditService.sendAuditEventAndGetRedirectUri(Nino(user.getNino), iformName) map { redirectUri =>
+            Redirect(redirectUri)
+          }
         }
   }
 
 }
-// $COVERAGE-OFF$
-object AuditController extends AuditController with AuthenticationConnectors {
-  override implicit def templateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-
-  override val personService = PersonService
-  override val auditService = AuditService
-}
-// $COVERAGE-ON$

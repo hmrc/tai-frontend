@@ -32,7 +32,7 @@
         case _ =>
     }
 }
-
+@gaEventActionString = @{"Income Tax comparison - current tax year and next tax year"}
 @if(incomeSourceViewModel.employmentIncomeSourceDetail.size > 0 || incomeSourceViewModel.pensionIncomeSourceDetail.size > 0){
 
     <h2 id="incomeSummaryHeading" class="heading-large">@{incomeSummaryHeading}</h2>
@@ -69,6 +69,7 @@
                     <td width="20%" class="text--right">
                         <a id="estimated-income-link-@employmentIncomeSourceDetail.empId"
                            href="/check-income-tax/update-income/next-year/income/@employmentIncomeSourceDetail.empId/start"
+                           data-journey-click='link - click:@gaEventActionString:@messages("tai.incomeTaxComparison.incomeTax.updateEstimated")'
                         >
                             @messages("tai.incomeTaxComparison.incomeTax.updateEstimated")
                             <span class="visuallyhidden">
@@ -88,6 +89,7 @@
                 <td width="20%" class="text--right">
                     <a id="estimated-income-link-@pensionIncomeSourceDetail.empId"
                        href="/check-income-tax/update-income/next-year/income/@pensionIncomeSourceDetail.empId/start"
+                       data-journey-click='link - click:@gaEventActionString:@messages("tai.incomeTaxComparison.incomeTax.updateEstimated")'
                     >
                         @messages("tai.incomeTaxComparison.incomeTax.updateEstimated")
                         <span class="visuallyhidden">

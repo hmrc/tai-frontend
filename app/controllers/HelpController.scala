@@ -41,12 +41,19 @@ trait HelpController  extends TaiBaseController
   def webChatURL: String
 
   def helpPage() = authorisedForTai(personService).async {
-    implicit user => implicit person => implicit request =>
-      getEligibilityStatus map { status =>
-        Ok(views.html.help.getHelp(status))
-      } recoverWith handleErrorResponse("getHelpPage", Nino(user.getNino))
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          try {
+            getEligibilityStatus map { status =>
+              Ok(views.html.help.getHelp(status))
+            } recoverWith handleErrorResponse("getHelpPage", Nino(user.getNino))
+          } catch {
+            case e: Exception => {
+              Future.successful(Ok(views.html.help.getHelp(None)))
+            }
+          }
   }
-
 
  private def getEligibilityStatus()(implicit headerCarrier: HeaderCarrier): Future[Option[String]] = {
     httpGet.GET[HttpResponse](webChatURL) map {
@@ -67,6 +74,7 @@ trait HelpController  extends TaiBaseController
     }
   }
 }
+
 // $COVERAGE-OFF$
 object HelpController extends HelpController with AuthenticationConnectors {
   override val personService = PersonService

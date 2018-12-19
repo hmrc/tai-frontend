@@ -39,8 +39,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.estimatedPay.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
-        preHeadingText = messages("tai.estimatedPay.preHeading", viewModel.employerName),
-        headerWidthClasses = Some("column-full")
+        preHeadingText = messages("tai.estimatedPay.preHeading", viewModel.employerName)
     )
 }
 

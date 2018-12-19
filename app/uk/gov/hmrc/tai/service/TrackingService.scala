@@ -54,7 +54,7 @@ trait TrackingService {
 }
 // $COVERAGE-OFF$
 object TrackingService extends TrackingService {
-  override val trackingConnector: TrackingConnector = TrackingConnector
-  override val successfulJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
+  override lazy val trackingConnector: TrackingConnector = TrackingConnector
+  override lazy val successfulJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
 }
 // $COVERAGE-ON$

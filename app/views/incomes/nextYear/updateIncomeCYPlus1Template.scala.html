@@ -37,8 +37,7 @@
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventAction),
         mainHeadingText = heading,
-        preHeadingText = messages("tai.updateIncome.CYPlus1.preheading", employerName),
-        headerWidthClasses = Some("column-full")
+        preHeadingText = messages("tai.updateIncome.CYPlus1.preheading", employerName)
     )
 }
 
@@ -54,7 +53,7 @@
         @content
 
         @if(showCancel){
-          @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url), linkText = cancelText)
+          @cancelLink(Call("GET", controllers.routes.IncomeTaxComparisonController.onPageLoad.url), gaEventAction = Some(gaEventAction), linkText = cancelText)
         }
     </div>
 }
