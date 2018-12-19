@@ -1,6 +1,6 @@
 GET         /what-do-you-want-to-do                                                    @controllers.WhatDoYouWantToDoController.whatDoYouWantToDoPage
 
-GET         /income-tax/no-info                                                        controllers.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage
+GET         /income-tax/no-info                                                        @controllers.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage
 
 GET         /last-year-paye                                                            controllers.PayeControllerHistoric.lastYearPaye()
 GET         /historic-paye/:taxYear                                                    controllers.PayeControllerHistoric.payePage(taxYear: uk.gov.hmrc.tai.model.TaxYear)
