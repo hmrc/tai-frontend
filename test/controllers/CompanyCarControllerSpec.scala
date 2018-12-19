@@ -159,17 +159,16 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
   def createSUT(isCompanyCarForceRedirectEnabled: Boolean = false) = new SUT(isCompanyCarForceRedirectEnabled)
 
-  class SUT(isCompanyCarForceRedirectEnabled: Boolean) extends CompanyCarController {
-
-    override val personService: PersonService = mock[PersonService]
-    override val sessionService: SessionService = mock[SessionService]
-    override val companyCarService: CompanyCarService = mock[CompanyCarService]
-    override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override val authConnector: AuthConnector = mock[AuthConnector]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
+  class SUT(isCompanyCarForceRedirectEnabled: Boolean) extends CompanyCarController(
+    mock[PersonService],
+    mock[CompanyCarService],
+    mock[JourneyCacheService],
+    mock[SessionService],
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    MockPartialRetriever,
+    MockTemplateRenderer){
     override val companyCarForceRedirectEnabled: Boolean = isCompanyCarForceRedirectEnabled
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))

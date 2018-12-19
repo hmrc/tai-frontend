@@ -128,3 +128,5 @@ trait JourneyCacheConstants {
   val EndCompanyBenefit_BenefitNameKey = "benefitName"
   val EndCompanyBenefit_RefererKey = "referer"
 }
+
+object JourneyCacheConstants extends JourneyCacheConstants

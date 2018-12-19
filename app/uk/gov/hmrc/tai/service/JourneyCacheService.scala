@@ -131,8 +131,8 @@ trait JourneyCacheService extends JourneyCacheConstants {
   def flush()(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     journeyCacheConnector.flush(journeyName)
   }
-
 }
+
 // $COVERAGE-OFF$
 object JourneyCacheService {
 
