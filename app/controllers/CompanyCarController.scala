@@ -16,42 +16,43 @@
 
 package controllers
 
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiSuccessResponseWithPayload}
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import uk.gov.hmrc.tai.forms.UpdateOrRemoveCarForm
-import uk.gov.hmrc.tai.forms.benefits.DateForm
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyCarChoiceViewModel
 import play.api.Play.current
-import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, SessionService}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig, TaiHtmlPartialRetriever}
-import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.time.TaxYearResolver
-import uk.gov.hmrc.tai.util.ViewModelHelper._
+import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig}
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.Future
 
-trait CompanyCarController extends TaiBaseController
+class CompanyCarController @Inject()(val personService: PersonService,
+                                     val companyCarService: CompanyCarService,
+                                     @Named("Company Car") val journeyCacheService: JourneyCacheService,
+                                     val sessionService: SessionService,
+                                     val auditConnector: AuditConnector,
+                                     val delegationConnector: DelegationConnector,
+                                     val authConnector: AuthConnector,
+                                     override implicit val partialRetriever: FormPartialRetriever,
+                                     override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
   with JourneyCacheConstants
   with FeatureTogglesConfig {
-
-  def personService: PersonService
-  def companyCarService: CompanyCarService
-  def journeyCacheService : JourneyCacheService
-  def sessionService: SessionService
 
   def redirectCompanyCarSelection(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -101,15 +102,3 @@ trait CompanyCarController extends TaiBaseController
   }
 
 }
-
-// $COVERAGE-OFF$
-object CompanyCarController extends CompanyCarController with AuthenticationConnectors {
-
-  override val personService: PersonService = PersonService
-  override val companyCarService: CompanyCarService = CompanyCarService
-  override val sessionService: SessionService = SessionService
-  override val journeyCacheService : JourneyCacheService = JourneyCacheService(CompanyCar_JourneyKey)
-  override implicit val templateRenderer: TemplateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-}
-// $COVERAGE-ON$

@@ -25,8 +25,10 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
-class TaiModule extends Module  {
+class TaiModule extends Module with JourneyCacheConstants {
+
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = Seq(
     bind[PersonService].toInstance(PersonService),
     bind[FormPartialRetriever].toInstance(TaiHtmlPartialRetriever),
@@ -41,7 +43,8 @@ class TaiModule extends Module  {
     bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
     bind[AuditService].toInstance(AuditService),
     bind[TrackingService].toInstance(TrackingService),
-    bind[HasFormPartialService].toInstance(HasFormPartialService)
-
+    bind[HasFormPartialService].toInstance(HasFormPartialService),
+    bind[SessionService].toInstance(SessionService),
+    bind[JourneyCacheService].qualifiedWith("Company Car").toInstance(JourneyCacheService(CompanyCar_JourneyKey))
   )
 }

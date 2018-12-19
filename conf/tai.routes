@@ -112,10 +112,10 @@ GET         /income/bank-building-society-savings/remove-success                
 
 
 ## Company car pages
-GET         /redirect-company-car/:employmentId                                        controllers.CompanyCarController.redirectCompanyCarSelection(employmentId: Int)
+GET         /redirect-company-car/:employmentId                                        @controllers.CompanyCarController.redirectCompanyCarSelection(employmentId: Int)
 
-GET         /end-company-car/decision                                                  controllers.CompanyCarController.getCompanyCarDetails
-POST        /end-company-car/decision                                                  controllers.CompanyCarController.handleUserJourneyChoice
+GET         /end-company-car/decision                                                  @controllers.CompanyCarController.getCompanyCarDetails
+POST        /end-company-car/decision                                                  @controllers.CompanyCarController.handleUserJourneyChoice
 
 ## New Income and Tax Codes page
 GET         /tax-free-allowance                                                        @controllers.TaxFreeAmountController.taxFreeAmount
@@ -131,11 +131,11 @@ GET         /detailed-income-tax-estimate                                       
 GET         /income-tax-comparison                                                     controllers.IncomeTaxComparisonController.onPageLoad
 
 
-GET         /your-income-calculation-details/:id                                       controllers.YourIncomeCalculationController.yourIncomeCalculationPage(id: Int)
-GET         /print-your-income-calculation-details/:id                                 controllers.YourIncomeCalculationController.printYourIncomeCalculationPage(id: Int)
+GET         /your-income-calculation-details/:id                                       @controllers.YourIncomeCalculationController.yourIncomeCalculationPage(id: Int)
+GET         /print-your-income-calculation-details/:id                                 @controllers.YourIncomeCalculationController.printYourIncomeCalculationPage(id: Int)
 
-GET         /your-income-calculation-previous-year/:year/:empId                        controllers.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
-GET         /print-your-income-calculation-previous-year/:year/:empId                  controllers.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
+GET         /your-income-calculation-previous-year/:year/:empId                        @controllers.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
+GET         /print-your-income-calculation-previous-year/:year/:empId                  @controllers.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
 
 
 
