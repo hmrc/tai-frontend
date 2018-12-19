@@ -573,20 +573,19 @@ class IncomeControllerSpec extends PlaySpec
     None,None,Some(new LocalDate(2000, 5, 20)), None, true, false)
 
   private def createTestIncomeController = new TestIncomeController
-  private class TestIncomeController extends IncomeController {
-    override implicit def templateRenderer: MockTemplateRenderer.type = MockTemplateRenderer
+  private class TestIncomeController extends IncomeController(
+    mock[PersonService],
+    mock[JourneyCacheService],
+    mock[TaxAccountService],
+    mock[EmploymentService],
+    mock[IncomeService],
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer){
 
     implicit val user = UserBuilder.apply()
-
-    override val personService: PersonService = mock[PersonService]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
-    override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override val incomeService: IncomeService = mock[IncomeService]
 
     def renderSuccess(employerName: String, employerId: Int) = {
       implicit request: FakeRequest[_] => {
