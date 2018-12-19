@@ -40,7 +40,8 @@ class TaiModule extends Module  {
     bind[AuthConnector].toInstance(FrontendAuthConnector),
     bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
     bind[AuditService].toInstance(AuditService),
-    bind[TrackingService].toInstance(TrackingService)
+    bind[TrackingService].toInstance(TrackingService),
+    bind[HasFormPartialService].toInstance(HasFormPartialService)
 
   )
 }

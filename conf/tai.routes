@@ -125,7 +125,7 @@ GET         /your-tax-free-amount                                               
 GET         /tax-codes                                                                 @controllers.YourTaxCodeController.taxCodes()
 GET         /tax-codes/:year                                                           @controllers.YourTaxCodeController.prevTaxCodes(year: uk.gov.hmrc.tai.model.TaxYear)
 
-GET         /paye-income-tax-estimate                                                  controllers.EstimatedIncomeTaxController.estimatedIncomeTax
+GET         /paye-income-tax-estimate                                                  @controllers.EstimatedIncomeTaxController.estimatedIncomeTax
 GET         /detailed-income-tax-estimate                                              @controllers.DetailedIncomeTaxEstimateController.taxExplanationPage
 
 GET         /income-tax-comparison                                                     controllers.IncomeTaxComparisonController.onPageLoad
