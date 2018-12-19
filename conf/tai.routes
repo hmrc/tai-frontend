@@ -131,11 +131,11 @@ GET         /detailed-income-tax-estimate                                       
 GET         /income-tax-comparison                                                     controllers.IncomeTaxComparisonController.onPageLoad
 
 
-GET         /your-income-calculation-details/:id                                       controllers.YourIncomeCalculationController.yourIncomeCalculationPage(id: Int)
-GET         /print-your-income-calculation-details/:id                                 controllers.YourIncomeCalculationController.printYourIncomeCalculationPage(id: Int)
+GET         /your-income-calculation-details/:id                                       @controllers.YourIncomeCalculationController.yourIncomeCalculationPage(id: Int)
+GET         /print-your-income-calculation-details/:id                                 @controllers.YourIncomeCalculationController.printYourIncomeCalculationPage(id: Int)
 
-GET         /your-income-calculation-previous-year/:year/:empId                        controllers.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
-GET         /print-your-income-calculation-previous-year/:year/:empId                  controllers.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
+GET         /your-income-calculation-previous-year/:year/:empId                        @controllers.YourIncomeCalculationController.yourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
+GET         /print-your-income-calculation-previous-year/:year/:empId                  @controllers.YourIncomeCalculationController.printYourIncomeCalculationHistoricYears(year: uk.gov.hmrc.tai.model.TaxYear, empId: Int)
 
 
 
