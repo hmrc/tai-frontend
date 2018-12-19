@@ -16,16 +16,18 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import play.twirl.api.Html
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
@@ -35,18 +37,17 @@ import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
-trait EstimatedIncomeTaxController extends TaiBaseController
+class EstimatedIncomeTaxController @Inject()(val personService: PersonService,
+                                             val codingComponentService: CodingComponentService,
+                                             val partialService: HasFormPartialService,
+                                             val taxAccountService: TaxAccountService,
+                                             val auditConnector: AuditConnector,
+                                             val delegationConnector: DelegationConnector,
+                                             val authConnector: AuthConnector,
+                                             override implicit val partialRetriever: FormPartialRetriever,
+                                             override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
-
-  def personService: PersonService
-
-  def partialService: HasFormPartialService
-
-  def codingComponentService: CodingComponentService
-
-  def taxAccountService: TaxAccountService
-
 
   def estimatedIncomeTax(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -74,22 +75,22 @@ trait EstimatedIncomeTaxController extends TaiBaseController
                 TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome),
                 TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome])) =>
                   val taxBands = totalTaxDetails.incomeCategories.flatMap(_.taxBands).toList
-                  val taxViewType = EstimatedIncomeTaxService.taxViewType(codingComponents,totalTaxDetails,nonTaxCodeIncome,
-                    taxAccountSummary.totalEstimatedIncome,taxAccountSummary.taxFreeAllowance,taxAccountSummary.totalEstimatedTax,
+                  val taxViewType = EstimatedIncomeTaxService.taxViewType(codingComponents, totalTaxDetails, nonTaxCodeIncome,
+                    taxAccountSummary.totalEstimatedIncome, taxAccountSummary.taxFreeAllowance, taxAccountSummary.totalEstimatedTax,
                     taxCodeIncomes.nonEmpty)
                   taxViewType match {
                     case NoIncomeTaxView => Ok(views.html.estimatedIncomeTax.noCurrentIncome())
                     case ComplexTaxView => {
-                      val model = ComplexEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary,taxCodeIncomes,taxBands)
-                      Ok(views.html.estimatedIncomeTax.complexEstimatedIncomeTax(model,iFormLinks successfulContentOrElse Html("")))
+                      val model = ComplexEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
+                      Ok(views.html.estimatedIncomeTax.complexEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
                     }
                     case SimpleTaxView => {
-                      val model = SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary,taxCodeIncomes,taxBands)
-                      Ok(views.html.estimatedIncomeTax.simpleEstimatedIncomeTax(model,iFormLinks successfulContentOrElse Html("")))
+                      val model = SimpleEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
+                      Ok(views.html.estimatedIncomeTax.simpleEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
                     }
                     case ZeroTaxView => {
-                      val model = ZeroTaxEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary,taxCodeIncomes,taxBands)
-                      Ok(views.html.estimatedIncomeTax.zeroTaxEstimatedIncomeTax(model,iFormLinks successfulContentOrElse Html("")))
+                      val model = ZeroTaxEstimatedIncomeTaxViewModel(codingComponents, taxAccountSummary, taxCodeIncomes, taxBands)
+                      Ok(views.html.estimatedIncomeTax.zeroTaxEstimatedIncomeTax(model, iFormLinks successfulContentOrElse Html("")))
                     }
                   }
                 case _ => throw new RuntimeException("Failed to get tax summary details")
@@ -98,14 +99,3 @@ trait EstimatedIncomeTaxController extends TaiBaseController
           }
   }
 }
-// $COVERAGE-OFF$
-object EstimatedIncomeTaxController extends EstimatedIncomeTaxController with AuthenticationConnectors {
-  override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-
-  override val personService = PersonService
-  override val partialService: HasFormPartialService = HasFormPartialService
-  override val codingComponentService: CodingComponentService = CodingComponentService
-  override val taxAccountService: TaxAccountService = TaxAccountService
-}
-// $COVERAGE-ON$
