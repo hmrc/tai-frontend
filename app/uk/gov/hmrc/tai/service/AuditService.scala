@@ -129,8 +129,8 @@ trait AuditService {
 
 object AuditService extends AuditService {
 
-  override val appName: String = AppName.appName
-  override val auditConnector: AuditConnector = AuditConnector
-  override val personService: PersonService = PersonService
+  override lazy val appName: String = AppName.appName
+  override lazy val auditConnector: AuditConnector = AuditConnector
+  override lazy val personService: PersonService = PersonService
 }
 

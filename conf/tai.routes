@@ -1,4 +1,4 @@
-GET         /what-do-you-want-to-do                                                    controllers.WhatDoYouWantToDoController.whatDoYouWantToDoPage
+GET         /what-do-you-want-to-do                                                    @controllers.WhatDoYouWantToDoController.whatDoYouWantToDoPage
 
 GET         /income-tax/no-info                                                        controllers.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage
 

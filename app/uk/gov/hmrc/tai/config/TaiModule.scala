@@ -38,7 +38,9 @@ class TaiModule extends Module  {
     bind[TaxAccountService].toInstance(TaxAccountService),
     bind[AuditConnector].toInstance(AuditConnector),
     bind[AuthConnector].toInstance(FrontendAuthConnector),
-    bind[DelegationConnector].toInstance(FrontEndDelegationConnector)
+    bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
+    bind[AuditService].toInstance(AuditService),
+    bind[TrackingService].toInstance(TrackingService)
 
   )
 }
