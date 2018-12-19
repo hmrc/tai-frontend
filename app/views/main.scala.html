@@ -36,6 +36,8 @@
   gaDimensions: Option[Map[String, String]] = None,
   gaCustomTitle: Option[String] = None,
   gaCustomClientIdRequired: Boolean = false,
+  gaCustomSessionIdRequired: Boolean = false,
+  gaCustomHitStampRequired: Boolean = false,
   optimizelyAudience: Option[String] = None,
   pageHeader: Option[Html] = None
 )(mainContent: Html
@@ -43,6 +45,7 @@
   messages: Messages,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
 
 @serviceSuffix = @{
     s"- ${Messages("tai.service.navTitle")} - GOV.UK"
@@ -119,8 +122,11 @@
 }
 
 @gaCustomEvent = @{
-    gaCustomTitle.map(gaTitle => s"""ga('set', 'title', "${gaTitle} ${serviceSuffix}")""").getOrElse(false)
-    if(gaCustomClientIdRequired) s"""ga(function (tracker) { if (tracker) { ga('set', 'dimension66', tracker.get('clientId')); } });"""
+    val customTitle = gaCustomTitle.map(gaTitle => s"""ga('set', 'title', "${gaTitle} ${serviceSuffix}");""").getOrElse("")
+    val clientId = if(gaCustomClientIdRequired) s"""ga(function (tracker) { if (tracker) { ga('set', 'dimension66', tracker.get('clientId')); } });"""
+    val sessionId = if(gaCustomSessionIdRequired) s"""ga('set', 'dimension67', new Date().getTime() + '.' + Math.random().toString(36).substring(5));"""
+    val hitTimeStamp = if(gaCustomHitStampRequired) s"""ga('set', 'dimension68', new Date().toUTCString());"""
+    s"$customTitle $clientId $sessionId $hitTimeStamp"
 }
 
 @inlineScript = {
