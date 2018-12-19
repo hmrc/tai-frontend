@@ -16,15 +16,18 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
@@ -33,17 +36,18 @@ import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYea
 
 import scala.concurrent.Future
 
-trait YourTaxCodeController extends TaiBaseController
+class YourTaxCodeController @Inject()(val personService: PersonService,
+                                      val taxAccountService: TaxAccountService,
+                                      val taxCodeChangeService: TaxCodeChangeService,
+                                      val auditConnector: AuditConnector,
+                                      val delegationConnector: DelegationConnector,
+                                      val authConnector: AuthConnector,
+                                      override implicit val partialRetriever: FormPartialRetriever,
+                                      override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
   with FeatureTogglesConfig {
-
-  def personService: PersonService
-
-  def taxAccountService: TaxAccountService
-
-  def taxCodeChangeService: TaxCodeChangeService
 
   def taxCodes(year: TaxYear = TaxYear()): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -86,17 +90,3 @@ trait YourTaxCodeController extends TaiBaseController
           }
   }
 }
-
-// $COVERAGE-OFF$
-object YourTaxCodeController extends YourTaxCodeController with AuthenticationConnectors {
-  override val personService = PersonService
-  override val taxAccountService: TaxAccountService = TaxAccountService
-  override val taxCodeChangeService: TaxCodeChangeService = TaxCodeChangeService
-
-  override implicit def templateRenderer = LocalTemplateRenderer
-
-  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-}
-
-// $COVERAGE-ON$
-
