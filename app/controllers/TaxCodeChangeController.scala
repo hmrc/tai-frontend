@@ -111,10 +111,6 @@ class TaxCodeChangeController @Inject()(val personService: PersonService,
                   ),
                   employmentNames)
 
-                println("---------")
-                println(currentViewModel)
-                println("---------")
-
                 Ok(views.html.taxCodeChange.yourTaxFreeAmount(currentViewModel))
               }
             }
