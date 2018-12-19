@@ -24,13 +24,13 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
-import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, TotalTax}
+import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.{CodingComponentService, PersonService, TaxAccountService}
 
 import scala.concurrent.Future
@@ -87,25 +87,30 @@ class DetailedIncomeTaxEstimateControllerSpec extends PlaySpec with MockitoSugar
 
 
   val nino: Nino = new Generator(new Random).nextNino
+
   private def createSUT = new SUT
 
-  class SUT extends DetailedIncomeTaxEstimateController {
-    override val personService: PersonService = mock[PersonService]
-    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
-    override val codingComponentService: CodingComponentService = mock[CodingComponentService]
+  val personService: PersonService = mock[PersonService]
 
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
+  class SUT extends DetailedIncomeTaxEstimateController(
+    mock[TaxAccountService],
+    mock[CodingComponentService],
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
 
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
     when(taxAccountService.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(TotalTax(0, Seq.empty, None, None, None))))
     when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome])))
-    when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(TaxAccountSummary(0,0,0,0,0))))
+    when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(TaxAccountSummary(0, 0, 0, 0, 0))))
     when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(NonTaxCodeIncome(None, Seq.empty))))
     when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
   }
+
 }
 
