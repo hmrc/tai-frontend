@@ -35,6 +35,7 @@
   gaCallsAdditionalJs: Option[Html] = None,
   gaDimensions: Option[Map[String, String]] = None,
   gaCustomTitle: Option[String] = None,
+  gaCustomClientIdRequired: Boolean = false,
   optimizelyAudience: Option[String] = None,
   pageHeader: Option[Html] = None
 )(mainContent: Html
@@ -119,6 +120,7 @@
 
 @gaCustomEvent = @{
     gaCustomTitle.map(gaTitle => s"""ga('set', 'title', "${gaTitle} ${serviceSuffix}")""").getOrElse(false)
+    if(gaCustomClientIdRequired) s"""ga(function (tracker) { if (tracker) { ga('set', 'dimension66', tracker.get('clientId')); } });"""
 }
 
 @inlineScript = {
