@@ -16,35 +16,35 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.Future
 
 
-trait DeceasedController extends TaiBaseController
+class DeceasedController @Inject()(val personService: PersonService,
+                                   val auditConnector: AuditConnector,
+                                   val delegationConnector: DelegationConnector,
+                                   val authConnector: AuthConnector,
+                                   override implicit val partialRetriever: FormPartialRetriever,
+                                   override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable {
 
-  def personService: PersonService
-
   def deceased() = authorisedForTai(personService).async {
-    implicit user => implicit person => implicit request =>
-      Future.successful(Ok(views.html.deceased_helpline()))
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          Future.successful(Ok(views.html.deceased_helpline()))
   }
 }
-// $COVERAGE-OFF$
-object DeceasedController extends DeceasedController with AuthenticationConnectors {
-  override val personService = PersonService
-  override implicit def templateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-}
-// $COVERAGE-ON$
