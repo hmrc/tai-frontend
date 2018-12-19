@@ -204,7 +204,7 @@ POST        /update-income/success-page                                         
 GET         /get-help                                                                  controllers.HelpController.helpPage
 
 ## Audit URIs for iForm links
-GET         /audit/link-to-iform/:iformName                                            controllers.AuditController.auditLinksToIForm(iformName: String)
+GET         /audit/link-to-iform/:iformName                                            @controllers.AuditController.auditLinksToIForm(iformName: String)
 ## Audit and invalidate cache url
 GET         /audit-invalidate-cache/link-to-service/:serviceName                       controllers.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(serviceName: String)
 
