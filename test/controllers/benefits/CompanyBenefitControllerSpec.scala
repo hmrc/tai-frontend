@@ -34,10 +34,8 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.domain.{BenefitInKind, Employment}
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, PersonService}
-import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
@@ -52,7 +50,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
   with FormValuesConstants
   with UpdateOrRemoveCompanyBenefitDecisionConstants
   with JourneyCacheConstants
-  with JsoupMatchers{
+  with JsoupMatchers {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -82,8 +80,8 @@ class CompanyBenefitControllerSpec extends PlaySpec
 
         val SUT = createSUT
         val cache = Map(EndCompanyBenefit_EmploymentIdKey -> "1",
-                        EndCompanyBenefit_BenefitTypeKey -> benefitType,
-                        EndCompanyBenefit_RefererKey -> referer)
+          EndCompanyBenefit_BenefitTypeKey -> benefitType,
+          EndCompanyBenefit_RefererKey -> referer)
 
         when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(SUT.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -95,12 +93,12 @@ class CompanyBenefitControllerSpec extends PlaySpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.benefits.updateOrRemove.decision.heading", benefitType, empName))
 
-        verify(SUT.employmentService, times(1)).employment(any(),any())(any())
+        verify(SUT.employmentService, times(1)).employment(any(), any())(any())
         verify(SUT.journeyCacheService, times(1)).currentCache(any())
         verify(SUT.journeyCacheService, times(1)).cache(
           mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> empName,
-                    EndCompanyBenefit_BenefitNameKey -> benefitType,
-                    EndCompanyBenefit_RefererKey -> referer)))(any())
+            EndCompanyBenefit_BenefitNameKey -> benefitType,
+            EndCompanyBenefit_RefererKey -> referer)))(any())
       }
 
     }
@@ -157,8 +155,8 @@ class CompanyBenefitControllerSpec extends PlaySpec
       "the form submission is having blank value" in {
         val SUT = createSUT
         val cache = Map(EndCompanyBenefit_EmploymentNameKey -> "Employer A",
-                        EndCompanyBenefit_BenefitTypeKey -> "Expenses",
-                        EndCompanyBenefit_RefererKey -> "/check-income-tax/income-summary")
+          EndCompanyBenefit_BenefitTypeKey -> "Expenses",
+          EndCompanyBenefit_RefererKey -> "/check-income-tax/income-summary")
 
         when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         val result = SUT.submitDecision(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> ""))
@@ -171,30 +169,30 @@ class CompanyBenefitControllerSpec extends PlaySpec
     }
   }
 
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+
   def generateNino: Nino = new Generator(new Random).nextNino
 
-  private def createSUT = new SUT
+  def createSUT = new SUT
 
-  private val employment = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
+  val employment = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
     Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false)
 
-  private class SUT extends CompanyBenefitController {
-
-    override val personService: PersonService = mock[PersonService]
-    override val auditService: AuditService = mock[AuditService]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override val trackingJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  class SUT extends CompanyBenefitController(
+    mock[PersonService],
+    mock[AuditService],
+    mock[EmploymentService],
+    mock[JourneyCacheService],
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    MockTemplateRenderer,
+    mock[FormPartialRetriever]) {
 
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
   }
+
 }

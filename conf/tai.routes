@@ -226,8 +226,8 @@ GET         /update-income-details/success                                      
 GET         /income                                                                    @controllers.TaxFreeAmountController.taxFreeAmount
 GET         /income-tax-refresh                                                        @controllers.TaxAccountSummaryController.onPageLoad
 
-GET         /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.decision
-POST        /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.submitDecision
+GET         /company-benefit/decision                                                  @controllers.benefits.CompanyBenefitController.decision
+POST        /company-benefit/decision                                                  @controllers.benefits.CompanyBenefitController.submitDecision
 
 GET         /remove-company-benefit/stop-date                                          controllers.benefits.RemoveCompanyBenefitController.stopDate
 POST        /remove-company-benefit/stop-date                                          controllers.benefits.RemoveCompanyBenefitController.submitStopDate
@@ -241,8 +241,8 @@ GET         /remove-company-benefit/success                                     
 GET         /remove-company-benefit/cancel                                             controllers.benefits.RemoveCompanyBenefitController.cancel
 
 ## Company benefit
-GET         /redirect-company-benefit/:employmentId/:benefitType                       controllers.benefits.CompanyBenefitController.redirectCompanyBenefitSelection(employmentId: Int, benefitType: uk.gov.hmrc.tai.model.domain.BenefitComponentType)
-GET         /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.decision
+GET         /redirect-company-benefit/:employmentId/:benefitType                       @controllers.benefits.CompanyBenefitController.redirectCompanyBenefitSelection(employmentId: Int, benefitType: uk.gov.hmrc.tai.model.domain.BenefitComponentType)
+GET         /company-benefit/decision                                                  @controllers.benefits.CompanyBenefitController.decision
 
 GET         /language/:lang                                                            controllers.i18n.TaiLanguageController.switchToLanguage(lang: String)
 
