@@ -29,7 +29,8 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.tai.config.WSHttpProxy
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.tai.config.{ApplicationConfig, WSHttpProxy}
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
@@ -107,18 +108,31 @@ class HelpControllerSpec extends PlaySpec
 
   def createSut = new SUT
 
-  class SUT extends HelpController {
-    override val personService = mock[PersonService]
+  val personService: PersonService = mock[PersonService]
+  val mockWSHttpProxy: WSHttpProxy = mock[WSHttpProxy]
 
-    override val httpGet = mock[WSHttpProxy]
+  class SUT extends HelpController (
+    mock[ApplicationConfig],
+    mockWSHttpProxy,
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
+//    override val personService = mock[PersonService]
+//
+//    override val httpGet = mock[WSHttpProxy]
+//
+//    override val auditConnector = mock[AuditConnector]
+//    override val authConnector = mock[AuthConnector]
+//    override val delegationConnector = mock[DelegationConnector]
+//
+//    override implicit val templateRenderer = MockTemplateRenderer
+//    override implicit val partialRetriever = MockPartialRetriever
+
     override val webChatURL = ""
-
-    override val auditConnector = mock[AuditConnector]
-    override val authConnector = mock[AuthConnector]
-    override val delegationConnector = mock[DelegationConnector]
-    
-    override implicit val templateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever = MockPartialRetriever
 
     val partialHttpGet: HttpGet = mock[HttpGet]
 

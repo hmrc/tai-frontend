@@ -201,7 +201,7 @@ POST        /update-income/success-page                                         
 
 
 ## Get Help Pages
-GET         /get-help                                                                  controllers.HelpController.helpPage
+GET         /get-help                                                                  @controllers.HelpController.helpPage
 
 ## Audit URIs for iForm links
 GET         /audit/link-to-iform/:iformName                                            @controllers.AuditController.auditLinksToIForm(iformName: String)
