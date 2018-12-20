@@ -17,7 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers._
@@ -27,11 +27,10 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.{ForbiddenException, Upstream4xxResponse}
+import uk.gov.hmrc.http.ForbiddenException
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
@@ -88,7 +87,7 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
     }
     "raise an in year adjustment audit events" in {
       val sut = new SUT()
-      Await.result( sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
+      Await.result(sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
       verify(sut.auditService, times(1)).createAndSendAuditEvent(Matchers.eq(PotentialUnderpayment_InYearAdjustment), any())(any(), any())
     }
     "return the service unavailable error page in response to an internal error" in {
@@ -101,17 +100,17 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
     }
   }
 
-  private class SUT() extends PotentialUnderpaymentController {
+  val personService: PersonService = mock[PersonService]
 
-    override val personService: PersonService = mock[PersonService]
-    override val codingComponentService: CodingComponentService = mock[CodingComponentService]
-    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
-    override val auditService: AuditService = mock[AuditService]
-    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override val authConnector: AuthConnector = mock[AuthConnector]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
+  private class SUT() extends PotentialUnderpaymentController(
+    mock[TaxAccountService], mock[CodingComponentService], mock[AuditService],
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
@@ -129,4 +128,5 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
       ))
     )
   }
+
 }
