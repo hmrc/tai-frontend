@@ -17,7 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -28,9 +28,9 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -42,9 +42,9 @@ import scala.concurrent.Future
 import scala.util.Random
 
 class IncomeTaxComparisonControllerSpec extends PlaySpec
-with FakeTaiPlayApplication
-with MockitoSugar
-with I18nSupport {
+  with FakeTaiPlayApplication
+  with MockitoSugar
+  with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -57,9 +57,9 @@ with I18nSupport {
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
       when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
         Future.successful(Seq.empty[CodingComponent]))
-      when(sut.employmentService.employments(Matchers.any(),Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(
+      when(sut.employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(
         Future.successful(Seq(employment)))
-      when(sut.employmentService.employments(Matchers.any(),Matchers.eq(TaxYear().next))(Matchers.any())).thenReturn(
+      when(sut.employmentService.employments(Matchers.any(), Matchers.eq(TaxYear().next))(Matchers.any())).thenReturn(
         Future.successful(Seq(employment)))
 
 
@@ -67,10 +67,10 @@ with I18nSupport {
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include (Messages("tai.incomeTaxComparison.heading"))
+      doc.title() must include(Messages("tai.incomeTaxComparison.heading"))
 
-      verify(sut.employmentService, times(1)).employments(Matchers.any(),Matchers.eq(TaxYear()))(Matchers.any())
-      verify(sut.employmentService, times(1)).employments(Matchers.any(),Matchers.eq(TaxYear().next))(Matchers.any())
+      verify(sut.employmentService, times(1)).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
+      verify(sut.employmentService, times(1)).employments(Matchers.any(), Matchers.eq(TaxYear().next))(Matchers.any())
 
     }
 
@@ -94,27 +94,30 @@ with I18nSupport {
 
   val nino: Nino = new Generator(new Random).nextNino
   val employment = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
-  val taxAccountSummary = TaxAccountSummary(111,222, 333, 444, 111)
+  val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
 
   val taxCodeIncomes = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
   )
 
+  val personService: PersonService = mock[PersonService]
 
   def createSut = new SUT()
 
-  class SUT() extends IncomeTaxComparisonController {
-    override val personService: PersonService = mock[PersonService]
-    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
-    override val codingComponentService: CodingComponentService = mock[CodingComponentService]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val authConnector: AuthConnector = mock[AuthConnector]
-    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override implicit def templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit def partialRetriever: FormPartialRetriever = MockPartialRetriever
-
+  class SUT() extends IncomeTaxComparisonController(
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[TaxAccountService],
+    mock[EmploymentService],
+    mock[CodingComponentService],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
   }
+
 }
