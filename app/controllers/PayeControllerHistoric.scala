@@ -16,6 +16,7 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import play.api.Play
@@ -23,9 +24,12 @@ import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
+import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Person
@@ -34,16 +38,25 @@ import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 
 import scala.concurrent.Future
 
-trait PayeControllerHistoric extends TaiBaseController
+class PayeControllerHistoric @Inject() (val config: ApplicationConfig,
+                                        val taxCodeChangeService: TaxCodeChangeService,
+                                        val employmentService: EmploymentService,
+                                        val personService: PersonService,
+                                        val auditConnector: AuditConnector,
+                                        val delegationConnector: DelegationConnector,
+                                        val authConnector: AuthConnector,
+                                        override implicit val partialRetriever: FormPartialRetriever,
+                                        override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
 with DelegationAwareActions
 with WithAuthorisedForTaiLite
 with Auditable
   with FeatureTogglesConfig {
 
-  def personService: PersonService
-  def employmentService: EmploymentService
-  def taxCodeChangeService: TaxCodeChangeService
-  def numberOfPreviousYearsToShow: Int
+//  def personService: PersonService
+//  def employmentService: EmploymentService
+//  def taxCodeChangeService: TaxCodeChangeService
+
+  val numberOfPreviousYearsToShow: Int = Play.configuration.getInt("tai.numberOfPreviousYearsToShow").getOrElse(3)
 
   def lastYearPaye(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -105,12 +118,12 @@ with Auditable
   }
 }
 // $COVERAGE-OFF$
-object PayeControllerHistoric extends PayeControllerHistoric with AuthenticationConnectors {
-  override val employmentService = EmploymentService
-  override val taxCodeChangeService = TaxCodeChangeService
-  override implicit def templateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-  override val numberOfPreviousYearsToShow: Int = Play.configuration.getInt("tai.numberOfPreviousYearsToShow").getOrElse(3)
-  override val personService: PersonService = PersonService
-}
+//object PayeControllerHistoric extends PayeControllerHistoric with AuthenticationConnectors {
+//  override val employmentService = EmploymentService
+//  override val taxCodeChangeService = TaxCodeChangeService
+//  override implicit def templateRenderer = LocalTemplateRenderer
+//  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
+//  override val numberOfPreviousYearsToShow: Int = Play.configuration.getInt("tai.numberOfPreviousYearsToShow").getOrElse(3)
+//  override val personService: PersonService = PersonService
+//}
 // $COVERAGE-ON$

@@ -2,8 +2,8 @@ GET         /what-do-you-want-to-do                                             
 
 GET         /income-tax/no-info                                                        @controllers.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage
 
-GET         /last-year-paye                                                            controllers.PayeControllerHistoric.lastYearPaye()
-GET         /historic-paye/:taxYear                                                    controllers.PayeControllerHistoric.payePage(taxYear: uk.gov.hmrc.tai.model.TaxYear)
+GET         /last-year-paye                                                            @controllers.PayeControllerHistoric.lastYearPaye()
+GET         /historic-paye/:taxYear                                                    @controllers.PayeControllerHistoric.payePage(taxYear: uk.gov.hmrc.tai.model.TaxYear)
 
 GET         /timeout                                                                   @controllers.ServiceController.timeoutPage
 GET         /signout                                                                   @controllers.ServiceController.serviceSignout

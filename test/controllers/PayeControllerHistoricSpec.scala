@@ -31,6 +31,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxCodeChangeService, TaxPeriodLabelService}
@@ -221,16 +222,31 @@ class PayeControllerHistoricSpec extends PlaySpec
     new PayeControllerHistoricTest(employments, previousYears, showTaxCodeDescriptionLink)
   }
 
-  class PayeControllerHistoricTest(employments: Seq[Employment], previousYears: Int, showTaxCodeDescriptionLink: Boolean) extends PayeControllerHistoric {
+  val personService: PersonService = mock[PersonService]
+  val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
 
-    override val personService: PersonService = mock[PersonService]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override val authConnector: AuthConnector = mock[AuthConnector]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
-    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
+  class PayeControllerHistoricTest(employments: Seq[Employment],
+                                   previousYears: Int,
+                                   showTaxCodeDescriptionLink: Boolean) extends PayeControllerHistoric(
+    mock[ApplicationConfig],
+    taxCodeChangeService,
+    mock[EmploymentService],
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
+
+//    override val personService: PersonService = mock[PersonService]
+//    override val employmentService: EmploymentService = mock[EmploymentService]
+//    override val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
+//    override val auditConnector: AuditConnector = mock[AuditConnector]
+//    override val authConnector: AuthConnector = mock[AuthConnector]
+//    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
+//    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
+//    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
     override val numberOfPreviousYearsToShow: Int = previousYears
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
