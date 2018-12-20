@@ -17,6 +17,7 @@
 package controllers.employments
 
 import com.google.inject.Inject
+import com.google.inject.name.Named
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{ServiceCheckLite, TaiBaseController}
@@ -47,8 +48,8 @@ import scala.concurrent.Future
 class AddEmploymentController @Inject()(val personService: PersonService,
                                         val auditService: AuditService,
                                         val employmentService: EmploymentService,
-                                        val journeyCacheService: JourneyCacheService,
-                                        val successfulJourneyCacheService: JourneyCacheService,
+                                        @Named("Add Employment") val journeyCacheService: JourneyCacheService,
+                                        @Named("Successful Journey")val successfulJourneyCacheService: JourneyCacheService,
                                         val delegationConnector: DelegationConnector,
                                         val auditConnector: AuditConnector,
                                         val authConnector: AuthConnector,
@@ -310,15 +311,3 @@ class AddEmploymentController @Inject()(val personService: PersonService,
           }
   }
 }
-//// $COVERAGE-OFF$
-//object AddEmploymentController extends AddEmploymentController with AuthenticationConnectors {
-//
-//  override val personService: PersonService = PersonService
-//  override val auditService: AuditService = AuditService
-//  override implicit val templateRenderer = LocalTemplateRenderer
-//  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-//  override val employmentService = EmploymentService
-//  override val journeyCacheService = JourneyCacheService(AddEmployment_JourneyKey)
-//  override val successfulJourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
-//}
-//// $COVERAGE-ON$
