@@ -17,40 +17,45 @@
 package controllers.income.bbsi
 
 
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{ServiceCheckLite, TaiBaseController}
 import org.joda.time.LocalDate
-import uk.gov.hmrc.tai.forms.DateForm
-import uk.gov.hmrc.tai.forms.income.bbsi.BankAccountClosingInterestForm
-import uk.gov.hmrc.tai.viewModels.income.BbsiClosedCheckYourAnswersViewModel
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.tai.model.domain.BankAccount
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnector, TaiHtmlPartialRetriever}
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.forms.DateForm
+import uk.gov.hmrc.tai.forms.income.bbsi.BankAccountClosingInterestForm
 import uk.gov.hmrc.tai.model.CloseAccountRequest
+import uk.gov.hmrc.tai.model.domain.BankAccount
 import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
-import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.viewModels.income.BbsiClosedCheckYourAnswersViewModel
+import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 
 
-trait BbsiCloseAccountController extends TaiBaseController
+class BbsiCloseAccountController @Inject()(val bbsiService: BbsiService,
+                                           val personService: PersonService,
+                                           val auditConnector: AuditConnector,
+                                           val delegationConnector: DelegationConnector,
+                                           val authConnector: AuthConnector,
+                                           @Named("Close Bank Account") val journeyCacheService: JourneyCacheService,
+                                           override implicit val partialRetriever: FormPartialRetriever,
+                                           override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with JourneyCacheConstants {
-
-  def personService: PersonService
-
-  def bbsiService: BbsiService
-
-  def journeyCacheService: JourneyCacheService
 
   def futureDateValidation: (LocalDate => Boolean, String) = ((date: LocalDate) => !date.isAfter(LocalDate.now()), Messages("tai.date.error.future"))
 
@@ -59,12 +64,12 @@ trait BbsiCloseAccountController extends TaiBaseController
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            for{
+            for {
               bankAccount <- bbsiService.bankAccount(Nino(user.getNino), id)
               dateCache <- journeyCacheService.currentValueAsDate(CloseBankAccountDateKey)
-            }yield{
+            } yield {
               val form = DateForm(Seq(futureDateValidation), Messages("tai.closeBankAccount.closeDateForm.blankDate")).form
-              val updatedForm = dateCache match{
+              val updatedForm = dateCache match {
                 case Some(d) => form.fill(d)
                 case _ => form
               }
@@ -110,13 +115,13 @@ trait BbsiCloseAccountController extends TaiBaseController
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            for{
-              interestCache <- journeyCacheService.optionalValues(CloseBankAccountInterestChoice,CloseBankAccountInterestKey)
-              bankAccount <-  bbsiService.bankAccount(Nino(user.getNino), id)
-            }yield bankAccount match {
+            for {
+              interestCache <- journeyCacheService.optionalValues(CloseBankAccountInterestChoice, CloseBankAccountInterestKey)
+              bankAccount <- bbsiService.bankAccount(Nino(user.getNino), id)
+            } yield bankAccount match {
               case Some(BankAccount(_, Some(_), Some(_), Some(bankName), _, _)) =>
                 Ok(views.html.incomes.bbsi.close.bank_building_society_closing_interest(id, BankAccountClosingInterestForm.form.fill
-                (BankAccountClosingInterestForm(interestCache(0),interestCache(1)))))
+                (BankAccountClosingInterestForm(interestCache(0), interestCache(1)))))
               case Some(_) => throw new RuntimeException(s"Bank account does not contain name, number or sortcode for nino: [${user.getNino}] and id: [$id]")
               case None => throw new RuntimeException(s"Bank account not found for nino: [${user.getNino}] and id: [$id]")
             }
@@ -133,7 +138,7 @@ trait BbsiCloseAccountController extends TaiBaseController
             },
             form => {
               journeyCacheService.cache(Map(CloseBankAccountInterestKey -> FormHelper.stripNumber(form.closingInterestEntry.getOrElse("")),
-                CloseBankAccountInterestChoice ->form.closingBankAccountInterestChoice.getOrElse(""))) map { _ =>
+                CloseBankAccountInterestChoice -> form.closingBankAccountInterestChoice.getOrElse(""))) map { _ =>
                 Redirect(controllers.income.bbsi.routes.BbsiCloseAccountController.checkYourAnswers(id))
               }
             }
@@ -156,7 +161,7 @@ trait BbsiCloseAccountController extends TaiBaseController
           }
   }
 
-  def checkYourAnswers(id:Int): Action[AnyContent] = authorisedForTai(personService).async {
+  def checkYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -168,19 +173,3 @@ trait BbsiCloseAccountController extends TaiBaseController
           }
   }
 }
-// $COVERAGE-OFF$
-object BbsiCloseAccountController extends BbsiCloseAccountController {
-
-  override val personService = PersonService
-  override val bbsiService = BbsiService
-
-  override val journeyCacheService = JourneyCacheService(CloseBankAccountJourneyKey)
-
-  override protected val delegationConnector = FrontEndDelegationConnector
-  override protected val authConnector = FrontendAuthConnector
-
-  override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever = TaiHtmlPartialRetriever
-}
-// $COVERAGE-ON$
-

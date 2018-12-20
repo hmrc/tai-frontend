@@ -42,6 +42,7 @@ class TaiModule extends Module with JourneyCacheConstants {
     bind[UserDetailsConnector].toInstance(UserDetailsConnector),
     // Services
     bind[AuditService].toInstance(AuditService),
+    bind[BbsiService].toInstance(BbsiService),
     bind[CodingComponentService].toInstance(CodingComponentService),
     bind[BenefitsService].toInstance(BenefitsService),
     bind[CompanyCarService].toInstance(CompanyCarService),
@@ -54,6 +55,7 @@ class TaiModule extends Module with JourneyCacheConstants {
     bind[TaxCodeChangeService].toInstance(TaxCodeChangeService),
     bind[TrackingService].toInstance(TrackingService),
     // Journey Cache Services
+    bind[JourneyCacheService].qualifiedWith("Close Bank Account").toInstance(JourneyCacheService(CloseBankAccountJourneyKey)),
     bind[JourneyCacheService].qualifiedWith("Company Car").toInstance(JourneyCacheService(CompanyCar_JourneyKey)),
     bind[JourneyCacheService].qualifiedWith("Update Income").toInstance(JourneyCacheService(UpdateIncome_JourneyKey))
   )

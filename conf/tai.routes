@@ -98,12 +98,12 @@ GET         /income/bank-building-society-savings/:id/update/check-your-answers 
 POST        /income/bank-building-society-savings/:id/update/check-your-answers        controllers.income.bbsi.BbsiUpdateAccountController.submitYourAnswers(id:Int)
 GET         /income/bank-building-society-savings/update-success                       controllers.income.bbsi.BbsiController.updateConfirmation
 
-GET         /income/bank-building-society-savings/:id/close/date                       controllers.income.bbsi.BbsiCloseAccountController.captureCloseDate(id:Int)
-POST        /income/bank-building-society-savings/:id/close/date                       controllers.income.bbsi.BbsiCloseAccountController.submitCloseDate(id:Int)
-GET         /income/bank-building-society-savings/:id/close/interest                   controllers.income.bbsi.BbsiCloseAccountController.captureClosingInterest(id:Int)
-POST        /income/bank-building-society-savings/:id/close/interest                   controllers.income.bbsi.BbsiCloseAccountController.submitClosingInterest(id:Int)
-GET         /income/bank-building-society-savings/:id/close/check-your-answers         controllers.income.bbsi.BbsiCloseAccountController.checkYourAnswers(id:Int)
-POST        /income/bank-building-society-savings/:id/close/check-your-answers         controllers.income.bbsi.BbsiCloseAccountController.submitYourAnswers(id:Int)
+GET         /income/bank-building-society-savings/:id/close/date                       @controllers.income.bbsi.BbsiCloseAccountController.captureCloseDate(id:Int)
+POST        /income/bank-building-society-savings/:id/close/date                       @controllers.income.bbsi.BbsiCloseAccountController.submitCloseDate(id:Int)
+GET         /income/bank-building-society-savings/:id/close/interest                   @controllers.income.bbsi.BbsiCloseAccountController.captureClosingInterest(id:Int)
+POST        /income/bank-building-society-savings/:id/close/interest                   @controllers.income.bbsi.BbsiCloseAccountController.submitClosingInterest(id:Int)
+GET         /income/bank-building-society-savings/:id/close/check-your-answers         @controllers.income.bbsi.BbsiCloseAccountController.checkYourAnswers(id:Int)
+POST        /income/bank-building-society-savings/:id/close/check-your-answers         @controllers.income.bbsi.BbsiCloseAccountController.submitYourAnswers(id:Int)
 GET         /income/bank-building-society-savings/end-success                          controllers.income.bbsi.BbsiController.endConfirmation
 
 GET         /income/bank-building-society-savings/:id/remove/check-your-answers        controllers.income.bbsi.BbsiRemoveAccountController.checkYourAnswers(id:Int)
