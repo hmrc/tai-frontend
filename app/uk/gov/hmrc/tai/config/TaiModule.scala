@@ -23,7 +23,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.benefits.CompanyCarService
+import uk.gov.hmrc.tai.service.benefits.{BenefitsService, CompanyCarService}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
@@ -45,6 +45,7 @@ class TaiModule extends Module with JourneyCacheConstants {
     bind[TrackingService].toInstance(TrackingService),
     bind[HasFormPartialService].toInstance(HasFormPartialService),
     bind[SessionService].toInstance(SessionService),
+    bind[BenefitsService].toInstance(BenefitsService),
     bind[JourneyCacheService].qualifiedWith("Company Car").toInstance(JourneyCacheService(CompanyCar_JourneyKey)),
     bind[JourneyCacheService].qualifiedWith("Update Income").toInstance(JourneyCacheService(UpdateIncome_JourneyKey)),
     bind[IncomeService].toInstance(IncomeService)
