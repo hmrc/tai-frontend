@@ -22,7 +22,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.connectors.{LocalTemplateRenderer, UserDetailsConnector}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
@@ -30,23 +30,27 @@ import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 class TaiModule extends Module with JourneyCacheConstants {
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = Seq(
-    bind[PersonService].toInstance(PersonService),
     bind[FormPartialRetriever].toInstance(TaiHtmlPartialRetriever),
     bind[TemplateRenderer].toInstance(LocalTemplateRenderer),
-    bind[TaxCodeChangeService].toInstance(TaxCodeChangeService),
-    bind[CodingComponentService].toInstance(CodingComponentService),
-    bind[EmploymentService].toInstance(EmploymentService),
-    bind[CompanyCarService].toInstance(CompanyCarService),
-    bind[TaxAccountService].toInstance(TaxAccountService),
+    // Connectors
     bind[AuditConnector].toInstance(AuditConnector),
     bind[AuthConnector].toInstance(FrontendAuthConnector),
     bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
+    bind[UserDetailsConnector].toInstance(UserDetailsConnector),
+    // Services
     bind[AuditService].toInstance(AuditService),
-    bind[TrackingService].toInstance(TrackingService),
+    bind[CodingComponentService].toInstance(CodingComponentService),
+    bind[CompanyCarService].toInstance(CompanyCarService),
+    bind[EmploymentService].toInstance(EmploymentService),
     bind[HasFormPartialService].toInstance(HasFormPartialService),
+    bind[IncomeService].toInstance(IncomeService),
+    bind[PersonService].toInstance(PersonService),
     bind[SessionService].toInstance(SessionService),
+    bind[TaxAccountService].toInstance(TaxAccountService),
+    bind[TaxCodeChangeService].toInstance(TaxCodeChangeService),
+    bind[TrackingService].toInstance(TrackingService),
+    // Journey Cache Services
     bind[JourneyCacheService].qualifiedWith("Company Car").toInstance(JourneyCacheService(CompanyCar_JourneyKey)),
-    bind[JourneyCacheService].qualifiedWith("Update Income").toInstance(JourneyCacheService(UpdateIncome_JourneyKey)),
-    bind[IncomeService].toInstance(IncomeService)
+    bind[JourneyCacheService].qualifiedWith("Update Income").toInstance(JourneyCacheService(UpdateIncome_JourneyKey))
   )
 }
