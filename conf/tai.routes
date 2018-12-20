@@ -17,20 +17,20 @@ GET         /income-summary                                                     
 GET         /income-tax                                                                @controllers.TaxAccountSummaryController.onPageLoad
 GET         /income-details/:empId                                                     @controllers.IncomeSourceSummaryController.onPageLoad(empId: Int)
 
-GET         /add-employment/employment-name                                            controllers.employments.AddEmploymentController.addEmploymentName
-POST        /add-employment/employment-name                                            controllers.employments.AddEmploymentController.submitEmploymentName
-GET         /add-employment/employment-start-date                                      controllers.employments.AddEmploymentController.addEmploymentStartDate
-POST        /add-employment/employment-start-date                                      controllers.employments.AddEmploymentController.submitEmploymentStartDate
-GET         /add-employment/employment-first-pay                                       controllers.employments.AddEmploymentController.receivedFirstPay
-POST        /add-employment/employment-first-pay                                       controllers.employments.AddEmploymentController.submitFirstPay
-GET         /add-employment/six-weeks                                                  controllers.employments.AddEmploymentController.sixWeeksError
-GET         /add-employment/employment-payroll-number                                  controllers.employments.AddEmploymentController.addEmploymentPayrollNumber
-POST        /add-employment/employment-payroll-number                                  controllers.employments.AddEmploymentController.submitEmploymentPayrollNumber
-GET         /add-employment/telephone-number                                           controllers.employments.AddEmploymentController.addTelephoneNumber
-POST        /add-employment/telephone-number                                           controllers.employments.AddEmploymentController.submitTelephoneNumber
-GET         /add-employment/check-your-answers                                         controllers.employments.AddEmploymentController.addEmploymentCheckYourAnswers
-POST        /add-employment/check-your-answers                                         controllers.employments.AddEmploymentController.submitYourAnswers
-GET         /add-employment/employment-success                                         controllers.employments.AddEmploymentController.confirmation
+GET         /add-employment/employment-name                                            @controllers.employments.AddEmploymentController.addEmploymentName
+POST        /add-employment/employment-name                                            @controllers.employments.AddEmploymentController.submitEmploymentName
+GET         /add-employment/employment-start-date                                      @controllers.employments.AddEmploymentController.addEmploymentStartDate
+POST        /add-employment/employment-start-date                                      @controllers.employments.AddEmploymentController.submitEmploymentStartDate
+GET         /add-employment/employment-first-pay                                       @controllers.employments.AddEmploymentController.receivedFirstPay
+POST        /add-employment/employment-first-pay                                       @controllers.employments.AddEmploymentController.submitFirstPay
+GET         /add-employment/six-weeks                                                  @controllers.employments.AddEmploymentController.sixWeeksError
+GET         /add-employment/employment-payroll-number                                  @controllers.employments.AddEmploymentController.addEmploymentPayrollNumber
+POST        /add-employment/employment-payroll-number                                  @controllers.employments.AddEmploymentController.submitEmploymentPayrollNumber
+GET         /add-employment/telephone-number                                           @controllers.employments.AddEmploymentController.addTelephoneNumber
+POST        /add-employment/telephone-number                                           @controllers.employments.AddEmploymentController.submitTelephoneNumber
+GET         /add-employment/check-your-answers                                         @controllers.employments.AddEmploymentController.addEmploymentCheckYourAnswers
+POST        /add-employment/check-your-answers                                         @controllers.employments.AddEmploymentController.submitYourAnswers
+GET         /add-employment/employment-success                                         @controllers.employments.AddEmploymentController.confirmation
 
 
 
