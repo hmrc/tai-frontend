@@ -16,17 +16,18 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
@@ -34,16 +35,19 @@ import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, PersonServ
 import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 
-trait PotentialUnderpaymentController extends TaiBaseController
+class PotentialUnderpaymentController @Inject()(val taxAccountService: TaxAccountService,
+                                                val codingComponentService: CodingComponentService,
+                                                val auditService: AuditService,
+                                                val personService: PersonService,
+                                                val auditConnector: AuditConnector,
+                                                val delegationConnector: DelegationConnector,
+                                                val authConnector: AuthConnector,
+                                                override implicit val partialRetriever: FormPartialRetriever,
+                                                override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
   with AuditConstants {
-
-  def personService: PersonService
-  def codingComponentService: CodingComponentService
-  def taxAccountService: TaxAccountService
-  def auditService: AuditService
 
   def potentialUnderpaymentPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -66,13 +70,3 @@ trait PotentialUnderpaymentController extends TaiBaseController
           } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", Nino(user.getNino))
   }
 }
-// $COVERAGE-OFF$
-object PotentialUnderpaymentController extends PotentialUnderpaymentController with AuthenticationConnectors {
-  override def personService: PersonService = PersonService
-  override def codingComponentService: CodingComponentService = CodingComponentService
-  override def taxAccountService: TaxAccountService = TaxAccountService
-  override def auditService: AuditService = AuditService
-  override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-}
-// $COVERAGE-ON$

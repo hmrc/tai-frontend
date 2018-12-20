@@ -17,7 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -33,7 +33,6 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
@@ -176,7 +175,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
 
   val employment = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
 
-  val taxAccountSummary = TaxAccountSummary(111,222, 333.33, 444.44, 111.11)
+  val taxAccountSummary = TaxAccountSummary(111, 222, 333.33, 444.44, 111.11)
 
   val taxCodeIncomes = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
@@ -189,19 +188,23 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
 
   def createSUT = new SUT()
 
-  class SUT() extends TaxAccountSummaryController {
-    override val personService: PersonService = mock[PersonService]
-    override val auditService: AuditService = mock[AuditService]
-    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val trackingService: TrackingService = mock[TrackingService]
-    override val authConnector: AuthConnector = mock[AuthConnector]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
+  val personService: PersonService = mock[PersonService]
+
+  class SUT() extends TaxAccountSummaryController(
+    mock[TrackingService],
+    mock[EmploymentService],
+    mock[TaxAccountService],
+    mock[AuditService],
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
   }
+
 }
