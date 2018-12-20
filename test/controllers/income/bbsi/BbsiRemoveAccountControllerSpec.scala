@@ -85,22 +85,14 @@ class BbsiRemoveAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
 
   val personService: PersonService = mock[PersonService]
 
-  class SUT extends BbsiRemoveAccountController (
+  class SUT extends BbsiRemoveAccountController(
     mock[BbsiService],
     personService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],
     mock[FormPartialRetriever],
-    MockTemplateRenderer
-  ) {
-//    override val personService: PersonService = mock[PersonService]
-//    override val bbsiService: BbsiService = mock[BbsiService]
-//    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-//    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-//    override protected val authConnector: AuthConnector = mock[AuthConnector]
-//    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
-
+    MockTemplateRenderer) {
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 

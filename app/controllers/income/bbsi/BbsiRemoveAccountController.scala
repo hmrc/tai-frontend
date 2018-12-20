@@ -34,20 +34,15 @@ import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnecto
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 
 
-class BbsiRemoveAccountController @Inject() (val bbsiService: BbsiService,
-                                             val personService: PersonService,
-                                             val auditConnector: AuditConnector,
-                                             val delegationConnector: DelegationConnector,
-                                             val authConnector: AuthConnector,
-                                             override implicit val partialRetriever: FormPartialRetriever,
-                                             override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
+class BbsiRemoveAccountController @Inject()(val bbsiService: BbsiService,
+                                            val personService: PersonService,
+                                            val auditConnector: AuditConnector,
+                                            val delegationConnector: DelegationConnector,
+                                            val authConnector: AuthConnector,
+                                            override implicit val partialRetriever: FormPartialRetriever,
+                                            override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
-
-//  def personService: PersonService
-//
-//  def bbsiService: BbsiService
-
   def checkYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
@@ -73,13 +68,3 @@ class BbsiRemoveAccountController @Inject() (val bbsiService: BbsiService,
   }
 
 }
-// $COVERAGE-OFF$
-//object BbsiRemoveAccountController extends BbsiRemoveAccountController {
-//  override val personService = PersonService
-//  override val bbsiService = BbsiService
-//  override protected val delegationConnector = FrontEndDelegationConnector
-//  override protected val authConnector = FrontendAuthConnector
-//  override implicit val templateRenderer = LocalTemplateRenderer
-//  override implicit val partialRetriever = TaiHtmlPartialRetriever
-//}
-// $COVERAGE-ON$
