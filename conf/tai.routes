@@ -92,10 +92,10 @@ GET         /income/bank-building-society-savings/accounts                      
 GET         /income/bank-building-society-savings/accounts/:id/decision                @controllers.income.bbsi.BbsiController.decision(id:Int)
 POST        /income/bank-building-society-savings/accounts/:id/decision                @controllers.income.bbsi.BbsiController.handleDecisionPage(id:Int)
 
-GET         /income/bank-building-society-savings/:id/update/interest                  controllers.income.bbsi.BbsiUpdateAccountController.captureInterest(id:Int)
-POST        /income/bank-building-society-savings/:id/update/interest                  controllers.income.bbsi.BbsiUpdateAccountController.submitInterest(id:Int)
-GET         /income/bank-building-society-savings/:id/update/check-your-answers        controllers.income.bbsi.BbsiUpdateAccountController.checkYourAnswers(id:Int)
-POST        /income/bank-building-society-savings/:id/update/check-your-answers        controllers.income.bbsi.BbsiUpdateAccountController.submitYourAnswers(id:Int)
+GET         /income/bank-building-society-savings/:id/update/interest                  @controllers.income.bbsi.BbsiUpdateAccountController.captureInterest(id:Int)
+POST        /income/bank-building-society-savings/:id/update/interest                  @controllers.income.bbsi.BbsiUpdateAccountController.submitInterest(id:Int)
+GET         /income/bank-building-society-savings/:id/update/check-your-answers        @controllers.income.bbsi.BbsiUpdateAccountController.checkYourAnswers(id:Int)
+POST        /income/bank-building-society-savings/:id/update/check-your-answers        @controllers.income.bbsi.BbsiUpdateAccountController.submitYourAnswers(id:Int)
 GET         /income/bank-building-society-savings/update-success                       @controllers.income.bbsi.BbsiController.updateConfirmation
 
 GET         /income/bank-building-society-savings/:id/close/date                       @controllers.income.bbsi.BbsiCloseAccountController.captureCloseDate(id:Int)
