@@ -13,8 +13,8 @@ GET         /deceased                                                           
 GET         /start-verify                                                              @controllers.AuthProviderController.verifyEntryPoint
 GET         /start-government-gateway                                                  @controllers.AuthProviderController.governmentGatewayEntryPoint
 
-GET         /income-summary                                                            controllers.TaxAccountSummaryController.onPageLoad
-GET         /income-tax                                                                controllers.TaxAccountSummaryController.onPageLoad
+GET         /income-summary                                                            @controllers.TaxAccountSummaryController.onPageLoad
+GET         /income-tax                                                                @controllers.TaxAccountSummaryController.onPageLoad
 GET         /income-details/:empId                                                     @controllers.IncomeSourceSummaryController.onPageLoad(empId: Int)
 
 GET         /add-employment/employment-name                                            controllers.employments.AddEmploymentController.addEmploymentName
@@ -224,7 +224,7 @@ GET         /update-income-details/success                                      
 
 ## Used by external services
 GET         /income                                                                    @controllers.TaxFreeAmountController.taxFreeAmount
-GET         /income-tax-refresh                                                        controllers.TaxAccountSummaryController.onPageLoad
+GET         /income-tax-refresh                                                        @controllers.TaxAccountSummaryController.onPageLoad
 
 GET         /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.decision
 POST        /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.submitDecision
