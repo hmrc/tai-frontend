@@ -60,19 +60,19 @@ GET         /add-pension-provider/success                                       
 
 
 
-GET         /update-remove-employment/decision/:empId                                  controllers.employments.EndEmploymentController.employmentUpdateRemove(empId: Int)
-POST        /update-remove-employment/decision/:empId                                  controllers.employments.EndEmploymentController.handleEmploymentUpdateRemove(empId: Int)
+GET         /update-remove-employment/decision/:empId                                  @controllers.employments.EndEmploymentController.employmentUpdateRemove(empId: Int)
+POST        /update-remove-employment/decision/:empId                                  @controllers.employments.EndEmploymentController.handleEmploymentUpdateRemove(empId: Int)
 
-GET         /end-employment/six-weeks                                                  controllers.employments.EndEmploymentController.endEmploymentError
-GET         /end-employment/irregular-payment/:empId                                   controllers.employments.EndEmploymentController.irregularPaymentError(empId: Int)
-POST        /end-employment/handle-irregular-payment/:empId                            controllers.employments.EndEmploymentController.handleIrregularPaymentError(empId: Int)
-GET         /end-employment/check-your-answers                                         controllers.employments.EndEmploymentController.endEmploymentCheckYourAnswers
-POST        /end-employment/check-your-answers                                         controllers.employments.EndEmploymentController.confirmAndSendEndEmployment
-GET         /end-employment/success                                                    controllers.employments.EndEmploymentController.showConfirmationPage
-GET         /end-employment/telephone-number                                           controllers.employments.EndEmploymentController.addTelephoneNumber
-POST        /end-employment/telephone-number                                           controllers.employments.EndEmploymentController.submitTelephoneNumber
-GET         /end-employment/date/:empId                                                controllers.employments.EndEmploymentController.endEmploymentPage(empId: Int)
-POST        /end-employment/date/:empId                                                controllers.employments.EndEmploymentController.handleEndEmploymentPage(empId: Int)
+GET         /end-employment/six-weeks                                                  @controllers.employments.EndEmploymentController.endEmploymentError
+GET         /end-employment/irregular-payment/:empId                                   @controllers.employments.EndEmploymentController.irregularPaymentError(empId: Int)
+POST        /end-employment/handle-irregular-payment/:empId                            @controllers.employments.EndEmploymentController.handleIrregularPaymentError(empId: Int)
+GET         /end-employment/check-your-answers                                         @controllers.employments.EndEmploymentController.endEmploymentCheckYourAnswers
+POST        /end-employment/check-your-answers                                         @controllers.employments.EndEmploymentController.confirmAndSendEndEmployment
+GET         /end-employment/success                                                    @controllers.employments.EndEmploymentController.showConfirmationPage
+GET         /end-employment/telephone-number                                           @controllers.employments.EndEmploymentController.addTelephoneNumber
+POST        /end-employment/telephone-number                                           @controllers.employments.EndEmploymentController.submitTelephoneNumber
+GET         /end-employment/date/:empId                                                @controllers.employments.EndEmploymentController.endEmploymentPage(empId: Int)
+POST        /end-employment/date/:empId                                                @controllers.employments.EndEmploymentController.handleEndEmploymentPage(empId: Int)
 
 GET         /update-employment/what-do-you-want-to-tell-us/:empId                      controllers.employments.UpdateEmploymentController.updateEmploymentDetails(empId: Int)
 POST        /update-employment/what-do-you-want-to-tell-us/:empId                      controllers.employments.UpdateEmploymentController.submitUpdateEmploymentDetails(empId: Int)
@@ -226,8 +226,8 @@ GET         /update-income-details/success                                      
 GET         /income                                                                    @controllers.TaxFreeAmountController.taxFreeAmount
 GET         /income-tax-refresh                                                        @controllers.TaxAccountSummaryController.onPageLoad
 
-GET         /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.decision
-POST        /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.submitDecision
+GET         /company-benefit/decision                                                  @controllers.benefits.CompanyBenefitController.decision
+POST        /company-benefit/decision                                                  @controllers.benefits.CompanyBenefitController.submitDecision
 
 GET         /remove-company-benefit/stop-date                                          @controllers.benefits.RemoveCompanyBenefitController.stopDate
 POST        /remove-company-benefit/stop-date                                          @controllers.benefits.RemoveCompanyBenefitController.submitStopDate
@@ -241,8 +241,8 @@ GET         /remove-company-benefit/success                                     
 GET         /remove-company-benefit/cancel                                             @controllers.benefits.RemoveCompanyBenefitController.cancel
 
 ## Company benefit
-GET         /redirect-company-benefit/:employmentId/:benefitType                       controllers.benefits.CompanyBenefitController.redirectCompanyBenefitSelection(employmentId: Int, benefitType: uk.gov.hmrc.tai.model.domain.BenefitComponentType)
-GET         /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.decision
+GET         /redirect-company-benefit/:employmentId/:benefitType                       @controllers.benefits.CompanyBenefitController.redirectCompanyBenefitSelection(employmentId: Int, benefitType: uk.gov.hmrc.tai.model.domain.BenefitComponentType)
+GET         /company-benefit/decision                                                  @controllers.benefits.CompanyBenefitController.decision
 
 GET         /language/:lang                                                            controllers.i18n.TaiLanguageController.switchToLanguage(lang: String)
 
