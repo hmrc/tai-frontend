@@ -17,7 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -30,7 +30,7 @@ import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerExcep
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxCodeChangeService, TaxPeriodLabelService}
@@ -126,7 +126,7 @@ class PayeControllerHistoricSpec extends PlaySpec
 
     "redirect to deceased page when deceased indicator is true" in {
       val testController = createTestController()
-      when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(person.copy(isDeceased=true)))
+      when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(person.copy(isDeceased = true)))
 
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -144,7 +144,7 @@ class PayeControllerHistoricSpec extends PlaySpec
 
         status(result) mustBe NOT_FOUND
         verify(testController.employmentService, times(1)).employments(any(), any())(any())
-        val doc = Jsoup.parse( contentAsString(result) )
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Page not found - 404")
         doc must haveHeadingWithText(Messages("tai.errorMessage.heading.nps"))
         doc must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message1.nps"))
@@ -160,7 +160,7 @@ class PayeControllerHistoricSpec extends PlaySpec
 
         status(result) mustBe NOT_FOUND
         verify(testController.employmentService, times(1)).employments(any(), any())(any())
-        val doc = Jsoup.parse( contentAsString(result) )
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Page not found - 404")
         doc must haveHeadingWithText(Messages("tai.errorMessage.heading"))
         doc must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message1"))
@@ -174,7 +174,7 @@ class PayeControllerHistoricSpec extends PlaySpec
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe BAD_REQUEST
-        val doc = Jsoup.parse( contentAsString(result) )
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Bad request - 400")
         doc must haveHeadingWithText(Messages("tai.errorMessage.heading"))
         doc must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message1"))
@@ -188,7 +188,7 @@ class PayeControllerHistoricSpec extends PlaySpec
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
-        val doc = Jsoup.parse( contentAsString(result) )
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Sorry, we are experiencing technical difficulties - 500")
         doc must haveHeadingWithText(Messages("tai.technical.error.heading"))
         doc must haveParagraphWithText(Messages("tai.technical.error.message"))
@@ -202,7 +202,7 @@ class PayeControllerHistoricSpec extends PlaySpec
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
-        val doc = Jsoup.parse( contentAsString(result) )
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Sorry, we are experiencing technical difficulties - 500")
         doc must haveHeadingWithText(Messages("tai.technical.error.heading"))
         doc must haveParagraphWithText(Messages("tai.technical.error.message"))
@@ -221,16 +221,23 @@ class PayeControllerHistoricSpec extends PlaySpec
     new PayeControllerHistoricTest(employments, previousYears, showTaxCodeDescriptionLink)
   }
 
-  class PayeControllerHistoricTest(employments: Seq[Employment], previousYears: Int, showTaxCodeDescriptionLink: Boolean) extends PayeControllerHistoric {
+  val personService: PersonService = mock[PersonService]
+  val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
 
-    override val personService: PersonService = mock[PersonService]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override val authConnector: AuthConnector = mock[AuthConnector]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
-    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
+  class PayeControllerHistoricTest(employments: Seq[Employment],
+                                   previousYears: Int,
+                                   showTaxCodeDescriptionLink: Boolean) extends PayeControllerHistoric(
+    mock[ApplicationConfig],
+    taxCodeChangeService,
+    mock[EmploymentService],
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
+    
     override val numberOfPreviousYearsToShow: Int = previousYears
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))

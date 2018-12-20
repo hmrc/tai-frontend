@@ -2,8 +2,8 @@ GET         /what-do-you-want-to-do                                             
 
 GET         /income-tax/no-info                                                        @controllers.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage
 
-GET         /last-year-paye                                                            controllers.PayeControllerHistoric.lastYearPaye()
-GET         /historic-paye/:taxYear                                                    controllers.PayeControllerHistoric.payePage(taxYear: uk.gov.hmrc.tai.model.TaxYear)
+GET         /last-year-paye                                                            @controllers.PayeControllerHistoric.lastYearPaye()
+GET         /historic-paye/:taxYear                                                    @controllers.PayeControllerHistoric.payePage(taxYear: uk.gov.hmrc.tai.model.TaxYear)
 
 GET         /timeout                                                                   @controllers.ServiceController.timeoutPage
 GET         /signout                                                                   @controllers.ServiceController.serviceSignout
@@ -17,20 +17,20 @@ GET         /income-summary                                                     
 GET         /income-tax                                                                @controllers.TaxAccountSummaryController.onPageLoad
 GET         /income-details/:empId                                                     @controllers.IncomeSourceSummaryController.onPageLoad(empId: Int)
 
-GET         /add-employment/employment-name                                            controllers.employments.AddEmploymentController.addEmploymentName
-POST        /add-employment/employment-name                                            controllers.employments.AddEmploymentController.submitEmploymentName
-GET         /add-employment/employment-start-date                                      controllers.employments.AddEmploymentController.addEmploymentStartDate
-POST        /add-employment/employment-start-date                                      controllers.employments.AddEmploymentController.submitEmploymentStartDate
-GET         /add-employment/employment-first-pay                                       controllers.employments.AddEmploymentController.receivedFirstPay
-POST        /add-employment/employment-first-pay                                       controllers.employments.AddEmploymentController.submitFirstPay
-GET         /add-employment/six-weeks                                                  controllers.employments.AddEmploymentController.sixWeeksError
-GET         /add-employment/employment-payroll-number                                  controllers.employments.AddEmploymentController.addEmploymentPayrollNumber
-POST        /add-employment/employment-payroll-number                                  controllers.employments.AddEmploymentController.submitEmploymentPayrollNumber
-GET         /add-employment/telephone-number                                           controllers.employments.AddEmploymentController.addTelephoneNumber
-POST        /add-employment/telephone-number                                           controllers.employments.AddEmploymentController.submitTelephoneNumber
-GET         /add-employment/check-your-answers                                         controllers.employments.AddEmploymentController.addEmploymentCheckYourAnswers
-POST        /add-employment/check-your-answers                                         controllers.employments.AddEmploymentController.submitYourAnswers
-GET         /add-employment/employment-success                                         controllers.employments.AddEmploymentController.confirmation
+GET         /add-employment/employment-name                                            @controllers.employments.AddEmploymentController.addEmploymentName
+POST        /add-employment/employment-name                                            @controllers.employments.AddEmploymentController.submitEmploymentName
+GET         /add-employment/employment-start-date                                      @controllers.employments.AddEmploymentController.addEmploymentStartDate
+POST        /add-employment/employment-start-date                                      @controllers.employments.AddEmploymentController.submitEmploymentStartDate
+GET         /add-employment/employment-first-pay                                       @controllers.employments.AddEmploymentController.receivedFirstPay
+POST        /add-employment/employment-first-pay                                       @controllers.employments.AddEmploymentController.submitFirstPay
+GET         /add-employment/six-weeks                                                  @controllers.employments.AddEmploymentController.sixWeeksError
+GET         /add-employment/employment-payroll-number                                  @controllers.employments.AddEmploymentController.addEmploymentPayrollNumber
+POST        /add-employment/employment-payroll-number                                  @controllers.employments.AddEmploymentController.submitEmploymentPayrollNumber
+GET         /add-employment/telephone-number                                           @controllers.employments.AddEmploymentController.addTelephoneNumber
+POST        /add-employment/telephone-number                                           @controllers.employments.AddEmploymentController.submitTelephoneNumber
+GET         /add-employment/check-your-answers                                         @controllers.employments.AddEmploymentController.addEmploymentCheckYourAnswers
+POST        /add-employment/check-your-answers                                         @controllers.employments.AddEmploymentController.submitYourAnswers
+GET         /add-employment/employment-success                                         @controllers.employments.AddEmploymentController.confirmation
 
 
 
@@ -201,7 +201,7 @@ POST        /update-income/success-page                                         
 
 
 ## Get Help Pages
-GET         /get-help                                                                  controllers.HelpController.helpPage
+GET         /get-help                                                                  @controllers.HelpController.helpPage
 
 ## Audit URIs for iForm links
 GET         /audit/link-to-iform/:iformName                                            @controllers.AuditController.auditLinksToIForm(iformName: String)
