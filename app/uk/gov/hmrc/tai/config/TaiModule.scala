@@ -34,6 +34,7 @@ class TaiModule extends Module with JourneyCacheConstants {
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = Seq(
     bind[FormPartialRetriever].toInstance(TaiHtmlPartialRetriever),
     bind[TemplateRenderer].toInstance(LocalTemplateRenderer),
+    bind[WSHttpProxy].toInstance(WSHttpProxy),
     // Connectors
     bind[AuditConnector].toInstance(AuditConnector),
     bind[AuthConnector].toInstance(FrontendAuthConnector),

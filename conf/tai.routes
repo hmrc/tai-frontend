@@ -2,8 +2,8 @@ GET         /what-do-you-want-to-do                                             
 
 GET         /income-tax/no-info                                                        @controllers.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage
 
-GET         /last-year-paye                                                            controllers.PayeControllerHistoric.lastYearPaye()
-GET         /historic-paye/:taxYear                                                    controllers.PayeControllerHistoric.payePage(taxYear: uk.gov.hmrc.tai.model.TaxYear)
+GET         /last-year-paye                                                            @controllers.PayeControllerHistoric.lastYearPaye()
+GET         /historic-paye/:taxYear                                                    @controllers.PayeControllerHistoric.payePage(taxYear: uk.gov.hmrc.tai.model.TaxYear)
 
 GET         /timeout                                                                   @controllers.ServiceController.timeoutPage
 GET         /signout                                                                   @controllers.ServiceController.serviceSignout
@@ -201,7 +201,7 @@ POST        /update-income/success-page                                         
 
 
 ## Get Help Pages
-GET         /get-help                                                                  controllers.HelpController.helpPage
+GET         /get-help                                                                  @controllers.HelpController.helpPage
 
 ## Audit URIs for iForm links
 GET         /audit/link-to-iform/:iformName                                            @controllers.AuditController.auditLinksToIForm(iformName: String)
