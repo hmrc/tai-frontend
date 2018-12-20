@@ -106,8 +106,8 @@ GET         /income/bank-building-society-savings/:id/close/check-your-answers  
 POST        /income/bank-building-society-savings/:id/close/check-your-answers         @controllers.income.bbsi.BbsiCloseAccountController.submitYourAnswers(id:Int)
 GET         /income/bank-building-society-savings/end-success                          @controllers.income.bbsi.BbsiController.endConfirmation
 
-GET         /income/bank-building-society-savings/:id/remove/check-your-answers        controllers.income.bbsi.BbsiRemoveAccountController.checkYourAnswers(id:Int)
-POST        /income/bank-building-society-savings/:id/remove/check-your-answers        controllers.income.bbsi.BbsiRemoveAccountController.submitYourAnswers(id:Int)
+GET         /income/bank-building-society-savings/:id/remove/check-your-answers        @controllers.income.bbsi.BbsiRemoveAccountController.checkYourAnswers(id:Int)
+POST        /income/bank-building-society-savings/:id/remove/check-your-answers        @controllers.income.bbsi.BbsiRemoveAccountController.submitYourAnswers(id:Int)
 GET         /income/bank-building-society-savings/remove-success                       @controllers.income.bbsi.BbsiController.removeConfirmation
 
 

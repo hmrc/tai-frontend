@@ -27,6 +27,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -82,13 +83,23 @@ class BbsiRemoveAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
 
   def createSut = new SUT
 
-  class SUT extends BbsiRemoveAccountController {
-    override val personService: PersonService = mock[PersonService]
-    override val bbsiService: BbsiService = mock[BbsiService]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
+  val personService: PersonService = mock[PersonService]
+
+  class SUT extends BbsiRemoveAccountController (
+    mock[BbsiService],
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
+//    override val personService: PersonService = mock[PersonService]
+//    override val bbsiService: BbsiService = mock[BbsiService]
+//    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
+//    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
+//    override protected val authConnector: AuthConnector = mock[AuthConnector]
+//    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
 
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
