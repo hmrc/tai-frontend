@@ -5,16 +5,16 @@ GET         /income-tax/no-info                                                 
 GET         /last-year-paye                                                            controllers.PayeControllerHistoric.lastYearPaye()
 GET         /historic-paye/:taxYear                                                    controllers.PayeControllerHistoric.payePage(taxYear: uk.gov.hmrc.tai.model.TaxYear)
 
-GET         /timeout                                                                   controllers.ServiceController.timeoutPage
-GET         /signout                                                                   controllers.ServiceController.serviceSignout
-GET         /tax-estimate-unavailable                                                  controllers.ServiceController.gateKeeper
+GET         /timeout                                                                   @controllers.ServiceController.timeoutPage
+GET         /signout                                                                   @controllers.ServiceController.serviceSignout
+GET         /tax-estimate-unavailable                                                  @controllers.ServiceController.gateKeeper
 GET         /deceased                                                                  @controllers.DeceasedController.deceased
 
 GET         /start-verify                                                              @controllers.AuthProviderController.verifyEntryPoint
 GET         /start-government-gateway                                                  @controllers.AuthProviderController.governmentGatewayEntryPoint
 
-GET         /income-summary                                                            controllers.TaxAccountSummaryController.onPageLoad
-GET         /income-tax                                                                controllers.TaxAccountSummaryController.onPageLoad
+GET         /income-summary                                                            @controllers.TaxAccountSummaryController.onPageLoad
+GET         /income-tax                                                                @controllers.TaxAccountSummaryController.onPageLoad
 GET         /income-details/:empId                                                     @controllers.IncomeSourceSummaryController.onPageLoad(empId: Int)
 
 GET         /add-employment/employment-name                                            controllers.employments.AddEmploymentController.addEmploymentName
@@ -83,7 +83,7 @@ POST        /update-employment/check-your-answers                               
 GET         /update-employment/success                                                 controllers.employments.UpdateEmploymentController.confirmation
 
 GET         /previous-underpayment                                                     @controllers.UnderpaymentFromPreviousYearController.underpaymentExplanation
-GET         /underpayment-estimate                                                     controllers.PotentialUnderpaymentController.potentialUnderpaymentPage
+GET         /underpayment-estimate                                                     @controllers.PotentialUnderpaymentController.potentialUnderpaymentPage
 
 
 ## Savings Income
@@ -224,7 +224,7 @@ GET         /update-income-details/success                                      
 
 ## Used by external services
 GET         /income                                                                    @controllers.TaxFreeAmountController.taxFreeAmount
-GET         /income-tax-refresh                                                        controllers.TaxAccountSummaryController.onPageLoad
+GET         /income-tax-refresh                                                        @controllers.TaxAccountSummaryController.onPageLoad
 
 GET         /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.decision
 POST        /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.submitDecision

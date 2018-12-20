@@ -19,7 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.{AuthBuilder, RequestBuilder}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -33,6 +33,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.tai.config.{ApplicationConfig, WSHttp}
 import uk.gov.hmrc.tai.connectors._
@@ -49,7 +50,7 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
   implicit val hc = HeaderCarrier()
 
   "Time Out page" should {
-    "return page when called" in  {
+    "return page when called" in {
       val fakeRequest = FakeRequest("POST", "").withFormUrlEncodedBody()
       val sut = createSut
       val result = sut.timeoutPage()(fakeRequest)
@@ -61,7 +62,7 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
   }
 
   "Sign Out" should {
-    "redirect to company auth frontend if it is a GG user" in  {
+    "redirect to company auth frontend if it is a GG user" in {
       val sut = createSut
 
       when(sut.userDetailsConnector.userDetails(any[AuthContext](any()))).thenReturn(Future.successful(UserDetails("GovernmentGateway")))
@@ -72,7 +73,7 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
       status(result) shouldBe 303
       redirectLocation(result) shouldBe Some(ApplicationConfig.companyAuthFrontendSignOutUrl)
     }
-    "redirect to citizen auth frontend if it is a Verify user" in  {
+    "redirect to citizen auth frontend if it is a Verify user" in {
       val sut = createSut
 
       when(sut.userDetailsConnector.userDetails(any[AuthContext])(any()))
@@ -84,7 +85,7 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
       redirectLocation(result) shouldBe Some(ApplicationConfig.citizenAuthFrontendSignOutUrl)
       session(result).get(TaiConstants.SessionPostLogoutPage) shouldBe Some(ApplicationConfig.feedbackSurveyUrl)
     }
-    "return 500 when userDetails returns failed" in  {
+    "return 500 when userDetails returns failed" in {
       val request = RequestBuilder.buildFakeRequestWithAuth("GET")
       val sut = createSut
       when(sut.userDetailsConnector.userDetails(any[AuthContext])(any())).thenReturn(Future.failed(new RuntimeException))
@@ -94,7 +95,7 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
   }
 
   "gateKeeper" should {
-    "return return manualCorrespondence page when called" in  {
+    "return return manualCorrespondence page when called" in {
       val fakeRequest = FakeRequest("GET", "").withFormUrlEncodedBody()
       val sut = createSut
       val result = sut.gateKeeper()(authorisedRequest)
@@ -108,25 +109,30 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
   //create TaxSummaryDetail from Json
   class TestTaiConnector extends TaiConnector {
     override def http = WSHttp
+
     override def serviceUrl: String = "test/tai"
 
     def get(key: String)(implicit hc: HeaderCarrier) =
       Future.successful(Some(JsArray()))
 
-    def put(key: String,data: JsValue)(implicit hc: HeaderCarrier) =
+    def put(key: String, data: JsValue)(implicit hc: HeaderCarrier) =
       Future.successful(())
 
   }
 
   def createSut = new SUT
-  class SUT extends ServiceController {
-    override val authConnector = mock[AuthConnector]
-    override val auditConnector = mock[AuditConnector]
-    override val delegationConnector = mock[DelegationConnector]
-    override implicit val templateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever = MockPartialRetriever
-    override val personService = mock[PersonService]
-    override val userDetailsConnector = mock[UserDetailsConnector]
+
+  val personService: PersonService = mock[PersonService]
+
+  class SUT extends ServiceController(
+    mock[UserDetailsConnector],
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
 
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(Nino(nino))))
 
