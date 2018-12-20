@@ -668,19 +668,17 @@ class AddEmploymentControllerSpec extends PlaySpec
 
   private def createSUT = new SUT
 
-  private class SUT extends AddEmploymentController {
-
-    override implicit def templateRenderer: MockTemplateRenderer.type = MockTemplateRenderer
-
-    override val personService: PersonService = mock[PersonService]
-    override val auditService: AuditService = mock[AuditService]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  private class SUT extends AddEmploymentController(
+    mock[PersonService],
+    mock[AuditService],
+    mock[EmploymentService],
+    mock[JourneyCacheService],
+    mock[JourneyCacheService],
+    mock[DelegationConnector],
+    mock[AuditConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer) {
 
     val employmentStartDateForm = EmploymentAddDateForm("employer")
 
