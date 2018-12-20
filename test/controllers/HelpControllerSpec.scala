@@ -17,7 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -38,9 +38,9 @@ import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import scala.concurrent.Future
 
 class HelpControllerSpec extends PlaySpec
-    with JsoupMatchers
-    with MockitoSugar
-    with OneServerPerSuite {
+  with JsoupMatchers
+  with MockitoSugar
+  with OneServerPerSuite {
 
   "show help page" must {
     "call getHelpPage() successfully with an authorized session" in {
@@ -55,7 +55,8 @@ class HelpControllerSpec extends PlaySpec
 
     "successfully receive valid eligibility status" in {
       val sut = createSut
-      val xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+      val xml =
+        """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
           <checkEligibility responseType="1"/>"""
       val response = HttpResponse(1, None, Map("a" -> List("1", "2", "3")), Some(xml.toString))
 
@@ -111,7 +112,7 @@ class HelpControllerSpec extends PlaySpec
   val personService: PersonService = mock[PersonService]
   val mockWSHttpProxy: WSHttpProxy = mock[WSHttpProxy]
 
-  class SUT extends HelpController (
+  class SUT extends HelpController(
     mock[ApplicationConfig],
     mockWSHttpProxy,
     personService,
@@ -121,16 +122,6 @@ class HelpControllerSpec extends PlaySpec
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-//    override val personService = mock[PersonService]
-//
-//    override val httpGet = mock[WSHttpProxy]
-//
-//    override val auditConnector = mock[AuditConnector]
-//    override val authConnector = mock[AuthConnector]
-//    override val delegationConnector = mock[DelegationConnector]
-//
-//    override implicit val templateRenderer = MockTemplateRenderer
-//    override implicit val partialRetriever = MockPartialRetriever
 
     override val webChatURL = ""
 
@@ -141,7 +132,7 @@ class HelpControllerSpec extends PlaySpec
     val fakePerson = Person(nino, "firstname", "surname", false, false)
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(
-      Some( AuthBuilder.createFakeAuthority(nino.nino))))
+      Some(AuthBuilder.createFakeAuthority(nino.nino))))
 
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson))
 
