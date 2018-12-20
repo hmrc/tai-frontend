@@ -87,16 +87,16 @@ GET         /underpayment-estimate                                              
 
 
 ## Savings Income
-GET         /income/bank-building-society-savings                                      controllers.income.bbsi.BbsiController.untaxedInterestDetails
-GET         /income/bank-building-society-savings/accounts                             controllers.income.bbsi.BbsiController.accounts
-GET         /income/bank-building-society-savings/accounts/:id/decision                controllers.income.bbsi.BbsiController.decision(id:Int)
-POST        /income/bank-building-society-savings/accounts/:id/decision                controllers.income.bbsi.BbsiController.handleDecisionPage(id:Int)
+GET         /income/bank-building-society-savings                                      @controllers.income.bbsi.BbsiController.untaxedInterestDetails
+GET         /income/bank-building-society-savings/accounts                             @controllers.income.bbsi.BbsiController.accounts
+GET         /income/bank-building-society-savings/accounts/:id/decision                @controllers.income.bbsi.BbsiController.decision(id:Int)
+POST        /income/bank-building-society-savings/accounts/:id/decision                @controllers.income.bbsi.BbsiController.handleDecisionPage(id:Int)
 
 GET         /income/bank-building-society-savings/:id/update/interest                  controllers.income.bbsi.BbsiUpdateAccountController.captureInterest(id:Int)
 POST        /income/bank-building-society-savings/:id/update/interest                  controllers.income.bbsi.BbsiUpdateAccountController.submitInterest(id:Int)
 GET         /income/bank-building-society-savings/:id/update/check-your-answers        controllers.income.bbsi.BbsiUpdateAccountController.checkYourAnswers(id:Int)
 POST        /income/bank-building-society-savings/:id/update/check-your-answers        controllers.income.bbsi.BbsiUpdateAccountController.submitYourAnswers(id:Int)
-GET         /income/bank-building-society-savings/update-success                       controllers.income.bbsi.BbsiController.updateConfirmation
+GET         /income/bank-building-society-savings/update-success                       @controllers.income.bbsi.BbsiController.updateConfirmation
 
 GET         /income/bank-building-society-savings/:id/close/date                       @controllers.income.bbsi.BbsiCloseAccountController.captureCloseDate(id:Int)
 POST        /income/bank-building-society-savings/:id/close/date                       @controllers.income.bbsi.BbsiCloseAccountController.submitCloseDate(id:Int)
@@ -104,11 +104,11 @@ GET         /income/bank-building-society-savings/:id/close/interest            
 POST        /income/bank-building-society-savings/:id/close/interest                   @controllers.income.bbsi.BbsiCloseAccountController.submitClosingInterest(id:Int)
 GET         /income/bank-building-society-savings/:id/close/check-your-answers         @controllers.income.bbsi.BbsiCloseAccountController.checkYourAnswers(id:Int)
 POST        /income/bank-building-society-savings/:id/close/check-your-answers         @controllers.income.bbsi.BbsiCloseAccountController.submitYourAnswers(id:Int)
-GET         /income/bank-building-society-savings/end-success                          controllers.income.bbsi.BbsiController.endConfirmation
+GET         /income/bank-building-society-savings/end-success                          @controllers.income.bbsi.BbsiController.endConfirmation
 
 GET         /income/bank-building-society-savings/:id/remove/check-your-answers        controllers.income.bbsi.BbsiRemoveAccountController.checkYourAnswers(id:Int)
 POST        /income/bank-building-society-savings/:id/remove/check-your-answers        controllers.income.bbsi.BbsiRemoveAccountController.submitYourAnswers(id:Int)
-GET         /income/bank-building-society-savings/remove-success                       controllers.income.bbsi.BbsiController.removeConfirmation
+GET         /income/bank-building-society-savings/remove-success                       @controllers.income.bbsi.BbsiController.removeConfirmation
 
 
 ## Company car pages

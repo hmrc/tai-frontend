@@ -28,10 +28,10 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
 import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.tai.util.constants.BankAccountDecisionConstants
@@ -51,7 +51,7 @@ class BbsiControllerSpec extends PlaySpec
 
     "show bbsi details page" in {
       val sut = createSUT
-      Mockito.when(sut.bbsiService.untaxedInterest(any())(any())).thenReturn(Future.successful(UntaxedInterest(0,Nil)))
+      Mockito.when(sut.bbsiService.untaxedInterest(any())(any())).thenReturn(Future.successful(UntaxedInterest(0, Nil)))
 
       val result = sut.accounts()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -180,13 +180,13 @@ class BbsiControllerSpec extends PlaySpec
 
         when(sut.bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
-        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String,String]))
+        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           BankAccountDecision -> UpdateInterest))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe  routes.BbsiUpdateAccountController.captureInterest(0).url
+        redirectLocation(result).get mustBe routes.BbsiUpdateAccountController.captureInterest(0).url
       }
     }
 
@@ -196,13 +196,13 @@ class BbsiControllerSpec extends PlaySpec
 
         when(sut.bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
-        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String,String]))
+        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           BankAccountDecision -> CloseAccount))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe  routes.BbsiCloseAccountController.captureCloseDate(0).url
+        redirectLocation(result).get mustBe routes.BbsiCloseAccountController.captureCloseDate(0).url
       }
     }
 
@@ -212,13 +212,13 @@ class BbsiControllerSpec extends PlaySpec
 
         when(sut.bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
-        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String,String]))
+        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           BankAccountDecision -> RemoveAccount))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe  routes.BbsiRemoveAccountController.checkYourAnswers(0).url
+        redirectLocation(result).get mustBe routes.BbsiRemoveAccountController.checkYourAnswers(0).url
       }
     }
 
@@ -228,7 +228,7 @@ class BbsiControllerSpec extends PlaySpec
 
         when(sut.bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
-        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String,String]))
+        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           BankAccountDecision -> "somethingElseNotHandled"))
@@ -300,19 +300,24 @@ class BbsiControllerSpec extends PlaySpec
   val emptyBankAccount: BankAccount = BankAccount(1, None, None, None, 123.4, None)
   val bankAccount: BankAccount = BankAccount(0, Some("0"), Some("0"), Some("TestBank"), 0, None)
 
-  class SUT extends BbsiController {
-    override val personService: PersonService = mock[PersonService]
-    override val bbsiService: BbsiService = mock[BbsiService]
+  val personService: PersonService = mock[PersonService]
 
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
+  class SUT extends BbsiController(
+    mock[BbsiService],
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[JourneyCacheService],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
+
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
-    override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
   }
+
 }
