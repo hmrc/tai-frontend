@@ -46,6 +46,8 @@ class TaiModule extends Module with JourneyCacheConstants {
     bind[HasFormPartialService].toInstance(HasFormPartialService),
     bind[SessionService].toInstance(SessionService),
     bind[BenefitsService].toInstance(BenefitsService),
-    bind[JourneyCacheService].qualifiedWith("Company Car").toInstance(JourneyCacheService(CompanyCar_JourneyKey))
+    bind[JourneyCacheService].qualifiedWith("Company Car").toInstance(JourneyCacheService(CompanyCar_JourneyKey)),
+    bind[JourneyCacheService].qualifiedWith("Update Income").toInstance(JourneyCacheService(UpdateIncome_JourneyKey)),
+    bind[IncomeService].toInstance(IncomeService)
   )
 }

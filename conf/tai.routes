@@ -1,6 +1,6 @@
 GET         /what-do-you-want-to-do                                                    @controllers.WhatDoYouWantToDoController.whatDoYouWantToDoPage
 
-GET         /income-tax/no-info                                                        controllers.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage
+GET         /income-tax/no-info                                                        @controllers.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage
 
 GET         /last-year-paye                                                            controllers.PayeControllerHistoric.lastYearPaye()
 GET         /historic-paye/:taxYear                                                    controllers.PayeControllerHistoric.payePage(taxYear: uk.gov.hmrc.tai.model.TaxYear)
@@ -181,23 +181,23 @@ GET         /update-income/estimated-pay                                        
 GET         /update-income/confirm-estimated-pay                                       controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleCalculationResult
 
 ## Regular Income URIs
-GET         /update-income/select-taxable-pay                                          controllers.IncomeController.viewIncomeForEdit
+GET         /update-income/select-taxable-pay                                          @controllers.IncomeController.viewIncomeForEdit
 
-GET         /update-income/edit-taxable-pay                                            controllers.IncomeController.regularIncome
-POST        /update-income/edit-taxable-pay                                            controllers.IncomeController.editRegularIncome
+GET         /update-income/edit-taxable-pay                                            @controllers.IncomeController.regularIncome
+POST        /update-income/edit-taxable-pay                                            @controllers.IncomeController.editRegularIncome
 
 
 ## Pension Income URIs
-GET         /update-income/edit-pension                                                controllers.IncomeController.pensionIncome
-POST        /update-income/edit-pension                                                controllers.IncomeController.editPensionIncome
+GET         /update-income/edit-pension                                                @controllers.IncomeController.pensionIncome
+POST        /update-income/edit-pension                                                @controllers.IncomeController.editPensionIncome
 
 
-GET         /update-income/income/check-save                                           controllers.IncomeController.confirmRegularIncome
+GET         /update-income/income/check-save                                           @controllers.IncomeController.confirmRegularIncome
 
-GET         /update-income/pension/check-save                                          controllers.IncomeController.confirmPensionIncome
+GET         /update-income/pension/check-save                                          @controllers.IncomeController.confirmPensionIncome
 
 
-POST        /update-income/success-page                                                controllers.IncomeController.updateEstimatedIncome
+POST        /update-income/success-page                                                @controllers.IncomeController.updateEstimatedIncome
 
 
 ## Get Help Pages
