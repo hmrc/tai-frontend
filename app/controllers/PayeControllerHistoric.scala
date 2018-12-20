@@ -29,8 +29,7 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig, TaiHtmlPartialRetriever}
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxCodeChangeService}
@@ -38,23 +37,19 @@ import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 
 import scala.concurrent.Future
 
-class PayeControllerHistoric @Inject() (val config: ApplicationConfig,
-                                        val taxCodeChangeService: TaxCodeChangeService,
-                                        val employmentService: EmploymentService,
-                                        val personService: PersonService,
-                                        val auditConnector: AuditConnector,
-                                        val delegationConnector: DelegationConnector,
-                                        val authConnector: AuthConnector,
-                                        override implicit val partialRetriever: FormPartialRetriever,
-                                        override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-with DelegationAwareActions
-with WithAuthorisedForTaiLite
-with Auditable
+class PayeControllerHistoric @Inject()(val config: ApplicationConfig,
+                                       val taxCodeChangeService: TaxCodeChangeService,
+                                       val employmentService: EmploymentService,
+                                       val personService: PersonService,
+                                       val auditConnector: AuditConnector,
+                                       val delegationConnector: DelegationConnector,
+                                       val authConnector: AuthConnector,
+                                       override implicit val partialRetriever: FormPartialRetriever,
+                                       override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
+  with DelegationAwareActions
+  with WithAuthorisedForTaiLite
+  with Auditable
   with FeatureTogglesConfig {
-
-//  def personService: PersonService
-//  def employmentService: EmploymentService
-//  def taxCodeChangeService: TaxCodeChangeService
 
   val numberOfPreviousYearsToShow: Int = Play.configuration.getInt("tai.numberOfPreviousYearsToShow").getOrElse(3)
 
@@ -108,22 +103,12 @@ with Auditable
 
   def hodStatusRedirect(implicit request: Request[AnyContent], user: TaiUser, person: Person): PartialFunction[Throwable, Future[Result]] = {
 
-    implicit val rl:RecoveryLocation = classOf[WhatDoYouWantToDoController]
+    implicit val rl: RecoveryLocation = classOf[WhatDoYouWantToDoController]
 
     npsEmploymentAbsentResult orElse
-    rtiEmploymentAbsentResult  orElse
-    hodBadRequestResult orElse
-    hodInternalErrorResult orElse
-    hodAnyErrorResult
+      rtiEmploymentAbsentResult orElse
+      hodBadRequestResult orElse
+      hodInternalErrorResult orElse
+      hodAnyErrorResult
   }
 }
-// $COVERAGE-OFF$
-//object PayeControllerHistoric extends PayeControllerHistoric with AuthenticationConnectors {
-//  override val employmentService = EmploymentService
-//  override val taxCodeChangeService = TaxCodeChangeService
-//  override implicit def templateRenderer = LocalTemplateRenderer
-//  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-//  override val numberOfPreviousYearsToShow: Int = Play.configuration.getInt("tai.numberOfPreviousYearsToShow").getOrElse(3)
-//  override val personService: PersonService = PersonService
-//}
-// $COVERAGE-ON$
