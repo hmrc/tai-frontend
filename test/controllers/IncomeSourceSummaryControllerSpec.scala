@@ -17,7 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
@@ -27,11 +27,11 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
@@ -128,19 +128,22 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
 
   def createSUT = new SUT
 
-  class SUT extends IncomeSourceSummaryController {
-    override val personService: PersonService = mock[PersonService]
-    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override val authConnector: AuthConnector = mock[AuthConnector]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
-    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val benefitsService: BenefitsService = mock[BenefitsService]
+  val personService: PersonService = mock[PersonService]
+
+  class SUT extends IncomeSourceSummaryController(
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[TaxAccountService],
+    mock[EmploymentService],
+    mock[BenefitsService],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
 
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
-
 
   }
 
