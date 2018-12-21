@@ -18,7 +18,7 @@ package controllers.income.estimatedPay.update
 
 import builders.{AuthBuilder, RequestBuilder, UserBuilder}
 import controllers.{ControllerViewTestHelper, FakeTaiPlayApplication}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -34,9 +34,8 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.forms.{BonusOvertimeAmountForm, BonusPaymentsForm, YesNoForm}
+import uk.gov.hmrc.tai.forms.{BonusOvertimeAmountForm, BonusPaymentsForm}
 import uk.gov.hmrc.tai.model._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
@@ -969,18 +968,18 @@ class IncomeUpdateCalculatorControllerSpec
 
   private def createTestIncomeUpdateCalculatorController = new TestIncomeUpdateCalculatorController()
 
-  private class TestIncomeUpdateCalculatorController extends IncomeUpdateCalculatorController {
-    override val personService: PersonService = mock[PersonService]
-    override val activityLoggerService: ActivityLoggerService = mock[ActivityLoggerService]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val incomeService: IncomeService = mock[IncomeService]
-    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val personService: PersonService = mock[PersonService]
+
+  private class TestIncomeUpdateCalculatorController extends IncomeUpdateCalculatorController (
+    mock[IncomeService], mock[EmploymentService],mock[TaxAccountService],
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[JourneyCacheService],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
 
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
