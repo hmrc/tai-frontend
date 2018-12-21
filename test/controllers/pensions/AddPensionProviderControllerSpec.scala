@@ -21,7 +21,7 @@ import controllers.FakeTaiPlayApplication
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
+import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{when, _}
 import org.scalatest.BeforeAndAfterEach
@@ -58,10 +58,6 @@ class AddPensionProviderControllerSpec extends PlaySpec
 {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
-  override def beforeEach: Unit = {
-    Mockito.reset(journeyCacheService, successfulJourneyCacheService, personService)
-  }
 
   "addPensionProviderName" must {
     "show the pensionProvider name form page" when {
@@ -729,18 +725,16 @@ class AddPensionProviderControllerSpec extends PlaySpec
   private def createSUT = new SUT
 
   val generateNino: Nino = new Generator().nextNino
-  val personService: PersonService = mock[PersonService]
-  val journeyCacheService = mock[JourneyCacheService]
-  val successfulJourneyCacheService = mock[JourneyCacheService]
 
   private class SUT extends AddPensionProviderController(
-    mock[PensionProviderService], mock[AuditService],
-    personService,
+    mock[PensionProviderService],
+    mock[AuditService],
+    mock[PersonService],
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],
-    journeyCacheService,
-    successfulJourneyCacheService,
+    mock[JourneyCacheService],
+    mock[JourneyCacheService],
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
