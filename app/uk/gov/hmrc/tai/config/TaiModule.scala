@@ -16,37 +16,58 @@
 
 package uk.gov.hmrc.tai.config
 
-import play.api.{Configuration, Environment}
 import play.api.inject.{Binding, Module}
+import play.api.{Configuration, Environment}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.benefits.CompanyCarService
+import uk.gov.hmrc.tai.connectors.{LocalTemplateRenderer, TaxCodeChangeConnector, UserDetailsConnector}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
+import uk.gov.hmrc.tai.service.benefits.{BenefitsService, CompanyCarService}
+import uk.gov.hmrc.tai.util.constants.{BankAccountDecisionConstants, JourneyCacheConstants}
 
-class TaiModule extends Module with JourneyCacheConstants {
+class TaiModule extends Module with JourneyCacheConstants with BankAccountDecisionConstants {
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = Seq(
-    bind[PersonService].toInstance(PersonService),
     bind[FormPartialRetriever].toInstance(TaiHtmlPartialRetriever),
     bind[TemplateRenderer].toInstance(LocalTemplateRenderer),
-    bind[TaxCodeChangeService].toInstance(TaxCodeChangeService),
-    bind[CodingComponentService].toInstance(CodingComponentService),
-    bind[EmploymentService].toInstance(EmploymentService),
-    bind[CompanyCarService].toInstance(CompanyCarService),
-    bind[TaxAccountService].toInstance(TaxAccountService),
+    bind[WSHttpProxy].toInstance(WSHttpProxy),
+    // Connectors
     bind[AuditConnector].toInstance(AuditConnector),
     bind[AuthConnector].toInstance(FrontendAuthConnector),
     bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
+    bind[UserDetailsConnector].toInstance(UserDetailsConnector),
+    bind[TaxCodeChangeConnector].toInstance(TaxCodeChangeConnector),
+    // Services
     bind[AuditService].toInstance(AuditService),
-    bind[TrackingService].toInstance(TrackingService),
+    bind[BbsiService].toInstance(BbsiService),
+    bind[CodingComponentService].toInstance(CodingComponentService),
+    bind[BenefitsService].toInstance(BenefitsService),
+    bind[CompanyCarService].toInstance(CompanyCarService),
+    bind[EmploymentService].toInstance(EmploymentService),
     bind[HasFormPartialService].toInstance(HasFormPartialService),
+    bind[IncomeService].toInstance(IncomeService),
+    bind[PensionProviderService].toInstance(PensionProviderService),
+    bind[PersonService].toInstance(PersonService),
+    bind[PreviousYearsIncomeService].toInstance(PreviousYearsIncomeService),
     bind[SessionService].toInstance(SessionService),
+    bind[TaxAccountService].toInstance(TaxAccountService),
+    bind[TrackingService].toInstance(TrackingService),
+    // Journey Cache Services
+    bind[JourneyCacheService].qualifiedWith("Add Employment").toInstance(JourneyCacheService(AddEmployment_JourneyKey)),
+    bind[JourneyCacheService].qualifiedWith("Add Pension Provider").toInstance(JourneyCacheService(AddPensionProvider_JourneyKey)),
+    bind[JourneyCacheService].qualifiedWith("Close Bank Account").toInstance(JourneyCacheService(CloseBankAccountJourneyKey)),
     bind[JourneyCacheService].qualifiedWith("Company Car").toInstance(JourneyCacheService(CompanyCar_JourneyKey)),
+    bind[JourneyCacheService].qualifiedWith("End Company Benefit").toInstance(JourneyCacheService(EndCompanyBenefit_JourneyKey)),
+    bind[JourneyCacheService].qualifiedWith("End Employment").toInstance(JourneyCacheService(EndEmployment_JourneyKey)),
+    bind[JourneyCacheService].qualifiedWith("Successful Journey").toInstance(JourneyCacheService(TrackSuccessfulJourney_JourneyKey)),
+    bind[JourneyCacheService].qualifiedWith("Track Successful Journey").toInstance(JourneyCacheService(TrackSuccessfulJourney_JourneyKey)),
+    bind[JourneyCacheService].qualifiedWith("Update Bank Account").toInstance(JourneyCacheService(UpdateBankAccountJourneyKey)),
+    bind[JourneyCacheService].qualifiedWith("Update Bank Account Choice").toInstance(JourneyCacheService(UpdateBankAccountChoiceJourneyKey)),
+    bind[JourneyCacheService].qualifiedWith("Update Employment").toInstance(JourneyCacheService(UpdateEmployment_JourneyKey)),
     bind[JourneyCacheService].qualifiedWith("Update Income").toInstance(JourneyCacheService(UpdateIncome_JourneyKey)),
-    bind[IncomeService].toInstance(IncomeService)
+    bind[JourneyCacheService].qualifiedWith("Update Pension Provider").toInstance(JourneyCacheService(UpdatePensionProvider_JourneyKey)),
+    bind[JourneyCacheService].qualifiedWith("Update Previous Years Income").toInstance(JourneyCacheService(UpdatePreviousYearsIncome_JourneyKey))
   )
 }

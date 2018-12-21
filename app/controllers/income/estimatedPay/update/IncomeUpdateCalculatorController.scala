@@ -16,20 +16,22 @@
 
 package controllers.income.estimatedPay.update
 
+import com.google.inject.Inject
+import com.google.inject.name.Named
+import controllers.TaiBaseController
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
-import controllers.{AuthenticationConnectors, TaiBaseController}
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
@@ -45,7 +47,16 @@ import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditInc
 import scala.Function.tupled
 import scala.concurrent.Future
 
-trait IncomeUpdateCalculatorController extends TaiBaseController
+class IncomeUpdateCalculatorController @Inject()(val incomeService: IncomeService,
+                                                 val employmentService: EmploymentService,
+                                                 val taxAccountService: TaxAccountService,
+                                                 val personService: PersonService,
+                                                 val auditConnector: AuditConnector,
+                                                 val delegationConnector: DelegationConnector,
+                                                 val authConnector: AuthConnector,
+                                                 @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
+                                                 override implicit val partialRetriever: FormPartialRetriever,
+                                                 override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
@@ -53,19 +64,6 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   with EditIncomeIrregularPayConstants
   with UpdatedEstimatedPayJourneyCache
   with FormValuesConstants {
-
-  def personService: PersonService
-
-  implicit def journeyCacheService: JourneyCacheService
-
-  def employmentService: EmploymentService
-
-  def activityLoggerService: ActivityLoggerService
-
-  def taxAccountService: TaxAccountService
-
-  val incomeService: IncomeService
-
 
   def estimatedPayLandingPage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
@@ -205,13 +203,13 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request => {
-        val paymentRequest: Future[Option[Payment]] =  incomeService.latestPayment(Nino(user.getNino), employmentId)
+        val paymentRequest: Future[Option[Payment]] = incomeService.latestPayment(Nino(user.getNino), employmentId)
         val taxCodeIncomeRequest = taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId)
 
         paymentRequest flatMap { payment =>
           taxCodeIncomeRequest flatMap {
             case Some(tci) => {
-              (taxCodeIncomeInfoToCache.tupled andThen journeyCacheService.cache)(tci, payment) map { _ =>
+              (taxCodeIncomeInfoToCache.tupled andThen journeyCacheService.cache) (tci, payment) map { _ =>
                 val viewModel = EditIncomeIrregularHoursViewModel(employmentId, tci.name, tci.amount)
 
                 Ok(views.html.incomes.editIncomeIrregularHours(AmountComparatorForm.createForm(), viewModel))
@@ -260,7 +258,8 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
 
             Ok(views.html.incomes.confirmAmountEntered(vm))
-          }}
+          }
+          }
         }
   }
 
@@ -314,7 +313,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             }
 
             journeyCache(cacheMap = cacheMap) map { _ =>
-            Redirect(routes.IncomeUpdateCalculatorController.payslipAmountPage())
+              Redirect(routes.IncomeUpdateCalculatorController.payslipAmountPage())
             }
           }
         )
@@ -349,9 +348,9 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
           },
           formData => {
             formData match {
-              case PayslipForm(Some(value)) => journeyCache(UpdateIncome_TotalSalaryKey,Map(UpdateIncome_TotalSalaryKey -> value)) map { _ =>
-                  Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage())
-                }
+              case PayslipForm(Some(value)) => journeyCache(UpdateIncome_TotalSalaryKey, Map(UpdateIncome_TotalSalaryKey -> value)) map { _ =>
+                Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage())
+              }
               case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage()))
             }
           }
@@ -391,7 +390,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             formData => {
               formData.taxablePay match {
                 case Some(taxablePay) => journeyCache(UpdateIncome_TaxablePayKey, Map(UpdateIncome_TaxablePayKey -> taxablePay)) map { _ =>
-                    Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage())
+                  Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage())
                 }
                 case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage()))
               }
@@ -466,7 +465,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             }
           },
           formData => {
-            val bonusPaymentsAnswer = formData.yesNoChoice.fold(ifEmpty = Map.empty[String, String]){ bonusPayments =>
+            val bonusPaymentsAnswer = formData.yesNoChoice.fold(ifEmpty = Map.empty[String, String]) { bonusPayments =>
               Map(UpdateIncome_BonusPaymentsKey -> bonusPayments)
             }
 
@@ -494,23 +493,23 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
     implicit person =>
       implicit request =>
         sendActingAttorneyAuditEvent("processBonusOvertimeAmount")
-          BonusOvertimeAmountForm.createForm().bindFromRequest().fold(
-            formWithErrors => {
-              journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
-                mandatoryValues =>
-                  BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, mandatoryValues(0).toInt, mandatoryValues(1)))
-              }
-            },
-            formData => {
-              formData.amount match {
-                case Some(amount) =>
-                  journeyCache(UpdateIncome_BonusOvertimeAmountKey, Map(UpdateIncome_BonusOvertimeAmountKey -> amount)) map { _ =>
-                    Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage())
-                  }
-                case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage()))
-              }
+        BonusOvertimeAmountForm.createForm().bindFromRequest().fold(
+          formWithErrors => {
+            journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
+              mandatoryValues =>
+                BadRequest(views.html.incomes.bonusPaymentAmount(formWithErrors, mandatoryValues(0).toInt, mandatoryValues(1)))
             }
-          )
+          },
+          formData => {
+            formData.amount match {
+              case Some(amount) =>
+                journeyCache(UpdateIncome_BonusOvertimeAmountKey, Map(UpdateIncome_BonusOvertimeAmountKey -> amount)) map { _ =>
+                  Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage())
+                }
+              case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage()))
+            }
+          }
+        )
 
   }
 
@@ -562,7 +561,7 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
             journeyCache(cacheMap = cache) map { _ =>
 
               val viewModel = EstimatedPayViewModel(calculatedPay.grossAnnualPay, calculatedPay.netAnnualPay, id, isBonusPayment,
-                                                    calculatedPay.annualAmount, calculatedPay.startDate, employerName)
+                calculatedPay.annualAmount, calculatedPay.startDate, employerName)
 
               Ok(views.html.incomes.estimatedPay(viewModel))
             }
@@ -590,23 +589,10 @@ trait IncomeUpdateCalculatorController extends TaiBaseController
   }
 
   private def incomeTypeIdentifier(isPension: Boolean): String = {
-    if (isPension) { TaiConstants.IncomeTypePension } else { TaiConstants.IncomeTypeEmployment }
+    if (isPension) {
+      TaiConstants.IncomeTypePension
+    } else {
+      TaiConstants.IncomeTypeEmployment
+    }
   }
 }
-
-// $COVERAGE-OFF$
-object IncomeUpdateCalculatorController extends IncomeUpdateCalculatorController with AuthenticationConnectors {
-  override val personService: PersonService = PersonService
-  override val activityLoggerService: ActivityLoggerService = ActivityLoggerService
-  override val journeyCacheService = JourneyCacheService(UpdateIncome_JourneyKey)
-  override val employmentService: EmploymentService = EmploymentService
-  override val incomeService: IncomeService = IncomeService
-  override val taxAccountService: TaxAccountService = TaxAccountService
-
-  override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
-
-  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-
-}
-
-// $COVERAGE-ON$

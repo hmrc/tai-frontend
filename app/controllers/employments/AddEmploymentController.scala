@@ -16,9 +16,11 @@
 
 package controllers.employments
 
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
-import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
+import controllers.{ServiceCheckLite, TaiBaseController}
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
@@ -26,10 +28,11 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.employments.{AddEmploymentFirstPayForm, AddEmploymentPayrollNumberForm, EmploymentAddDateForm, EmploymentNameForm}
 import uk.gov.hmrc.tai.model.domain.AddEmployment
@@ -42,7 +45,16 @@ import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 import scala.Function.tupled
 import scala.concurrent.Future
 
-trait AddEmploymentController extends TaiBaseController
+class AddEmploymentController @Inject()(val personService: PersonService,
+                                        val auditService: AuditService,
+                                        val employmentService: EmploymentService,
+                                        @Named("Add Employment") val journeyCacheService: JourneyCacheService,
+                                        @Named("Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
+                                        val delegationConnector: DelegationConnector,
+                                        val auditConnector: AuditConnector,
+                                        val authConnector: AuthConnector,
+                                        override implicit val partialRetriever: FormPartialRetriever,
+                                        override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
@@ -50,15 +62,7 @@ trait AddEmploymentController extends TaiBaseController
   with AuditConstants
   with FormValuesConstants {
 
-  def personService: PersonService
 
-  def auditService: AuditService
-
-  def employmentService: EmploymentService
-
-  def journeyCacheService: JourneyCacheService
-
-  def successfulJourneyCacheService: JourneyCacheService
 
   def telephoneNumberViewModel(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
     messages("add.missing.employment"),
@@ -307,15 +311,3 @@ trait AddEmploymentController extends TaiBaseController
           }
   }
 }
-// $COVERAGE-OFF$
-object AddEmploymentController extends AddEmploymentController with AuthenticationConnectors {
-
-  override val personService: PersonService = PersonService
-  override val auditService: AuditService = AuditService
-  override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-  override val employmentService = EmploymentService
-  override val journeyCacheService = JourneyCacheService(AddEmployment_JourneyKey)
-  override val successfulJourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
-}
-// $COVERAGE-ON$

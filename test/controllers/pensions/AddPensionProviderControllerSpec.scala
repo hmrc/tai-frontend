@@ -24,6 +24,7 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{when, _}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -50,9 +51,11 @@ class AddPensionProviderControllerSpec extends PlaySpec
   with FakeTaiPlayApplication
   with MockitoSugar
   with I18nSupport
-  with JourneyCacheConstants
   with AuditConstants
-  with FormValuesConstants {
+  with FormValuesConstants
+  with JourneyCacheConstants
+  with BeforeAndAfterEach
+{
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -69,7 +72,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.addNameForm.title"))
-        doc.toString must not include("testPensionName123")
+        doc.toString must not include ("testPensionName123")
       }
     }
   }
@@ -137,7 +140,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
       "the request has an authorised session and no previous value is held in the cache" in {
         val sut = createSUT
         val pensionProviderName = "Pension Provider"
-        when(sut.journeyCacheService.collectedValues(any(),any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(None)))
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(None)))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -149,7 +152,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
       "the request has an authorised session and a previous value of 'No' is held in the cache" in {
         val sut = createSUT
         val pensionProviderName = "Pension Provider"
-        when(sut.journeyCacheService.collectedValues(any(),any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(Some(NoValue))))
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(Some(NoValue))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -161,7 +164,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
       "the request has an authorised session and a previous value of 'Yes' is held in the cache" in {
         val sut = createSUT
         val pensionProviderName = "Pension Provider"
-        when(sut.journeyCacheService.collectedValues(any(),any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(Some(YesValue))))
+        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(pensionProviderName), Seq(Some(YesValue))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -226,7 +229,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         when(sut.journeyCacheService.mandatoryValue(Matchers.eq(AddPensionProvider_NameKey))(any())).thenReturn(Future.successful(pensionProviderName))
 
         Await.result(sut.cantAddPension()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
-          AddPensionProviderFirstPayForm.FirstPayChoice -> NoValue)),5 seconds)
+          AddPensionProviderFirstPayForm.FirstPayChoice -> NoValue)), 5 seconds)
 
         verify(sut.auditService, times(1)).createAndSendAuditEvent(Matchers.eq(AddPension_CantAddPensionProvider), Matchers.eq(Map("nino" -> nino)))(Matchers.any(), Matchers.any())
       }
@@ -245,7 +248,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.addPensionProvider.startDateForm.title", pensionProviderName))
-        doc.toString must not include("2037")
+        doc.toString must not include ("2037")
       }
 
       "the request has an authorised session and a previously cached date is present" in {
@@ -558,7 +561,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         doc.select("input[id=yesNoChoice-yes][checked=checked]").size() mustBe 0
         doc.select("input[id=yesNoTextEntry]").get(0).attributes().get("value") mustBe ""
 
-    }
+      }
 
       "the request has an authorised session and previously cached telephone number choice is 'Yes', and no telephone number is held in cache" in {
         val sut = createSUT
@@ -723,19 +726,18 @@ class AddPensionProviderControllerSpec extends PlaySpec
 
   val generateNino: Nino = new Generator().nextNino
 
-  private class SUT extends AddPensionProviderController {
-
-    override implicit def templateRenderer: MockTemplateRenderer.type = MockTemplateRenderer
-
-    override val personService: PersonService = mock[PersonService]
-    override val auditService: AuditService = mock[AuditService]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override val pensionProviderService: PensionProviderService = mock[PensionProviderService]
-    override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  private class SUT extends AddPensionProviderController(
+    mock[PensionProviderService],
+    mock[AuditService],
+    mock[PersonService],
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[JourneyCacheService],
+    mock[JourneyCacheService],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
 
     val pensionStartDateForm = PensionAddDateForm("pension provider")
 

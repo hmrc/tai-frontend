@@ -65,8 +65,8 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val SUT = createSUT
         val cache = Map(EndCompanyBenefit_EmploymentNameKey -> "Test",
-                        EndCompanyBenefit_BenefitNameKey -> "Test",
-                        EndCompanyBenefit_RefererKey -> "Test")
+          EndCompanyBenefit_BenefitNameKey -> "Test",
+          EndCompanyBenefit_RefererKey -> "Test")
 
         when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
@@ -94,12 +94,12 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
         redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber().url
 
-        verify(SUT.journeyCacheService, times(1)).cache(mockEq(Map("stopDate" -> Messages("tai.remove.company.benefit.beforeTaxYearEnd",startOfTaxYear))))(any())
+        verify(SUT.journeyCacheService, times(1)).cache(mockEq(Map("stopDate" -> Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear))))(any())
       }
     }
 
     "redirect to the 'What was the total value of your benefit' page" when {
-      "the form has the value onOrAfterTaxYearEnd" in{
+      "the form has the value onOrAfterTaxYearEnd" in {
 
         val SUT = createSUT
         when(SUT.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
@@ -111,7 +111,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
         redirectUrl mustBe controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
 
-        verify(SUT.journeyCacheService, times(1)).cache(mockEq(Map("stopDate" -> Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd",startOfTaxYear))))(any())
+        verify(SUT.journeyCacheService, times(1)).cache(mockEq(Map("stopDate" -> Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear))))(any())
       }
     }
 
@@ -119,7 +119,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
       "the form submission is having blank value" in {
         val SUT = createSUT
 
-        when(SUT.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("EmployerA", "Expenses","Url")))
+        when(SUT.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("EmployerA", "Expenses", "Url")))
         val result = SUT.submitStopDate(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(StopDateChoice -> ""))
 
         status(result) mustBe BAD_REQUEST
@@ -342,8 +342,8 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
       val SUT = createSUT
       when(SUT.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
         Future.successful((
-          Seq[String]("TestCompany","AwesomeType","After 6th","Yes","Url"),
-          Seq[Option[String]](Some("10000"),Some("123456789"))
+          Seq[String]("TestCompany", "AwesomeType", "After 6th", "Yes", "Url"),
+          Seq[Option[String]](Some("10000"), Some("123456789"))
         ))
       )
       val result = SUT.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -369,8 +369,8 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
         when(SUT.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
           Future.successful((
-            Seq[String](employmentId,"TestCompany","Accommodation","Before 6th April","Yes"),
-            Seq[Option[String]](Some("1000000"),Some("0123456789"))
+            Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "Yes"),
+            Seq[Option[String]](Some("1000000"), Some("0123456789"))
           ))
         )
         when(SUT.benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
@@ -399,8 +399,8 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
         when(SUT.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
           Future.successful((
-            Seq[String](employmentId,"TestCompany","Accommodation","Before 6th April","No"),
-            Seq[Option[String]](None,None)
+            Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "No"),
+            Seq[Option[String]](None, None)
           ))
         )
         when(SUT.benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
@@ -429,8 +429,8 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
         when(SUT.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
           Future.successful((
-            Seq[String](employmentId,"TestCompany","Accommodation","Before 6th April","No"),
-            Seq[Option[String]](Some("1000000"),None)
+            Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "No"),
+            Seq[Option[String]](Some("1000000"), None)
           ))
         )
         when(SUT.benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
@@ -459,8 +459,8 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
         when(SUT.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
           Future.successful((
-            Seq[String](employmentId,"TestCompany","Accommodation","Before 6th April","Yes"),
-            Seq[Option[String]](None,Some("0123456789"))
+            Seq[String](employmentId, "TestCompany", "Accommodation", "Before 6th April", "Yes"),
+            Seq[Option[String]](None, Some("0123456789"))
           ))
         )
         when(SUT.benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
@@ -507,28 +507,28 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
     }
   }
 
-
-  private val employment = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
+  val employment = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
     Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false)
 
   def generateNino: Nino = new Generator(new Random).nextNino
 
   val startOfTaxYear = Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)
 
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
-  private def createSUT = new SUT
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  private class SUT extends RemoveCompanyBenefitController {
-    override val personService: PersonService = mock[PersonService]
-    override val auditService: AuditService = mock[AuditService]
-    override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override val trackingJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override val benefitsService: BenefitsService = mock[BenefitsService]
+  def createSUT = new SUT
+
+  class SUT extends RemoveCompanyBenefitController(
+    mock[PersonService],
+    mock[AuditService],
+    mock[JourneyCacheService],
+    mock[JourneyCacheService],
+    mock[BenefitsService],
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    MockTemplateRenderer,
+    mock[FormPartialRetriever]) {
 
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)

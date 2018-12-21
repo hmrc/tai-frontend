@@ -21,10 +21,11 @@ import controllers.FakeTaiPlayApplication
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
 import org.mockito.Matchers.{eq => mockEq, _}
 import org.mockito.Mockito._
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.mock.MockitoSugar
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{contentAsString, _}
@@ -49,9 +50,15 @@ class UpdateEmploymentControllerSpec extends PlaySpec
   with I18nSupport
   with JourneyCacheConstants
   with AuditConstants
-  with FormValuesConstants {
+  with FormValuesConstants
+  with BeforeAndAfter
+  with BeforeAndAfterEach {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
+  override def beforeEach: Unit = {
+    Mockito.reset(journeyCacheService, successfulJourneyCacheService, personService)
+  }
 
   "employmentDetailsUpdate" must {
     "show the 'What Do You Want To Tell Us' Page" when {
@@ -90,7 +97,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         val sut = createSUT
         when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        val cacheDetails =Some("updateDetails")
+        val cacheDetails = Some("updateDetails")
         when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(cacheDetails))
         val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
         when(sut.journeyCacheService.cache(Matchers.eq(cache))(any())).thenReturn(Future.successful(cache))
@@ -100,7 +107,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.updateEmployment.whatDoYouWantToTellUs.title", employment.name))
-        doc.toString must include ("updateDetails")
+        doc.toString must include("updateDetails")
         verify(sut.journeyCacheService, times(1)).currentValue(any())(any())
       }
     }
@@ -198,7 +205,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
         val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
         when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(sut.journeyCacheService.mandatoryValueAsInt(any())(any())).thenReturn(Future.successful(1))
-        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(None,None)))
+        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(None, None)))
 
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -379,18 +386,22 @@ class UpdateEmploymentControllerSpec extends PlaySpec
 
   private def createSUT = new SUT
 
-  private class SUT extends UpdateEmploymentController {
+  val personService: PersonService = mock[PersonService]
+  val journeyCacheService = mock[JourneyCacheService]
+  val successfulJourneyCacheService = mock[JourneyCacheService]
 
-    override implicit def templateRenderer: MockTemplateRenderer.type = MockTemplateRenderer
 
-    override val personService: PersonService = mock[PersonService]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  private class SUT extends UpdateEmploymentController(
+    mock[EmploymentService],
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    journeyCacheService,
+    successfulJourneyCacheService,
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
 
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)

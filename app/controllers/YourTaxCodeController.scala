@@ -38,7 +38,7 @@ import scala.concurrent.Future
 
 class YourTaxCodeController @Inject()(val personService: PersonService,
                                       val taxAccountService: TaxAccountService,
-                                      val taxCodeChangeService: TaxCodeChangeService,
+                                      taxCodeChangeService: TaxCodeChangeService,
                                       val auditConnector: AuditConnector,
                                       val delegationConnector: DelegationConnector,
                                       val authConnector: AuthConnector,

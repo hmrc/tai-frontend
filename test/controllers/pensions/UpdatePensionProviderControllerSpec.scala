@@ -32,12 +32,11 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.income.{Live, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, IncorrectPensionProvider, PensionIncome}
-import uk.gov.hmrc.tai.service.{JourneyCacheService, PensionProviderService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, IncorrectPensionDecisionConstants, JourneyCacheConstants}
 
 import scala.concurrent.Future
@@ -136,7 +135,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       "no options are selected" in {
         val sut = createSUT
         when(sut.journeyCacheService.mandatoryValues(any())(any())).
-          thenReturn(Future.successful(Seq("1","TEST")))
+          thenReturn(Future.successful(Seq("1", "TEST")))
 
         val result = sut.handleDoYouGetThisPension()(RequestBuilder.buildFakeRequestWithAuth("POST").
           withFormUrlEncodedBody(IncorrectPensionDecision -> ""))
@@ -149,7 +148,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       "option NO is selected" in {
         val sut = createSUT
         when(sut.journeyCacheService.mandatoryValues(any())(any())).
-          thenReturn(Future.successful(Seq("1","TEST")))
+          thenReturn(Future.successful(Seq("1", "TEST")))
 
         val result = sut.handleDoYouGetThisPension()(RequestBuilder.buildFakeRequestWithAuth("POST").
           withFormUrlEncodedBody(IncorrectPensionDecision -> NoValue))
@@ -163,7 +162,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       "option YES is selected" in {
         val sut = createSUT
         when(sut.journeyCacheService.mandatoryValues(any())(any())).
-          thenReturn(Future.successful(Seq("1","TEST")))
+          thenReturn(Future.successful(Seq("1", "TEST")))
         when(sut.journeyCacheService.cache(any(), any())(any())).
           thenReturn(Future.successful(Map.empty[String, String]))
 
@@ -184,7 +183,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val cache = Seq("TEST")
         val optionalCache = Seq(None)
         when(sut.journeyCacheService.collectedValues(any(), any())(any())).
-          thenReturn(Future.successful(cache,optionalCache))
+          thenReturn(Future.successful(cache, optionalCache))
 
 
         val result = sut.whatDoYouWantToTellUs()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -198,7 +197,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val cache = Seq("TEST")
         val optionalCache = Seq(Some("test1"))
         when(sut.journeyCacheService.collectedValues(any(), any())(any())).
-          thenReturn(Future.successful(cache,optionalCache))
+          thenReturn(Future.successful(cache, optionalCache))
 
         val result = sut.whatDoYouWantToTellUs()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -251,7 +250,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         when(sut.journeyCacheService.mandatoryValueAsInt(any())(any())).
           thenReturn(Future.successful(1))
         when(sut.journeyCacheService.optionalValues(any())(any()))
-          .thenReturn(Future.successful(Seq(None,None)))
+          .thenReturn(Future.successful(Seq(None, None)))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
@@ -263,7 +262,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         when(sut.journeyCacheService.mandatoryValueAsInt(any())(any())).
           thenReturn(Future.successful(1))
         when(sut.journeyCacheService.optionalValues(any())(any()))
-          .thenReturn(Future.successful(Seq(Some("yes"),Some("123456789"))))
+          .thenReturn(Future.successful(Seq(Some("yes"), Some("123456789"))))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
@@ -370,7 +369,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         when(sut.pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(any()))
           .thenReturn(Future.successful("envelope_id_1"))
         when(sut.successfulJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_UpdatePensionKey), Matchers.eq("true"))(any()))
-            .thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdateEmploymentKey -> "true")))
+          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdateEmploymentKey -> "true")))
         when(sut.journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
@@ -423,18 +422,22 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
   val generateNino: Nino = new Generator().nextNino
   val pensionName = "TEST"
 
-  class SUT extends UpdatePensionProviderController {
-    override val personService: PersonService = mock[PersonService]
-    override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  class SUT extends UpdatePensionProviderController(
+    mock[TaxAccountService],
+    mock[PensionProviderService],
+    mock[AuditService],
+    mock[PersonService],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[JourneyCacheService],
+    mock[JourneyCacheService],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
+
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
-    override val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override val pensionProviderService: PensionProviderService = mock[PensionProviderService]
   }
+
 }

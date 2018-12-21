@@ -121,15 +121,14 @@ class NoCYIncomeTaxErrorControllerSpec
 
   def createSUT(person: Person = defaultPerson, employmentDataFailure: Option[Throwable] = None) = new SUT(person, employmentDataFailure)
 
-  class SUT(person: Person, employmentDataFailure: Option[Throwable]) extends NoCYIncomeTaxErrorController {
-    override val personService = mock[PersonService]
-    override implicit val templateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever = MockPartialRetriever
-    override val employmentService = mock[EmploymentService]
-
-    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override val authConnector: AuthConnector = mock[AuthConnector]
+  class SUT(person: Person, employmentDataFailure: Option[Throwable]) extends NoCYIncomeTaxErrorController(
+    mock[PersonService],
+    mock[EmploymentService],
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    MockPartialRetriever,
+    MockTemplateRenderer){
 
     val ad = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)

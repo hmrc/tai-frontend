@@ -1,114 +1,114 @@
 GET         /what-do-you-want-to-do                                                    @controllers.WhatDoYouWantToDoController.whatDoYouWantToDoPage
 
-GET         /income-tax/no-info                                                        controllers.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage
+GET         /income-tax/no-info                                                        @controllers.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage
 
-GET         /last-year-paye                                                            controllers.PayeControllerHistoric.lastYearPaye()
-GET         /historic-paye/:taxYear                                                    controllers.PayeControllerHistoric.payePage(taxYear: uk.gov.hmrc.tai.model.TaxYear)
+GET         /last-year-paye                                                            @controllers.PayeControllerHistoric.lastYearPaye()
+GET         /historic-paye/:taxYear                                                    @controllers.PayeControllerHistoric.payePage(taxYear: uk.gov.hmrc.tai.model.TaxYear)
 
-GET         /timeout                                                                   controllers.ServiceController.timeoutPage
-GET         /signout                                                                   controllers.ServiceController.serviceSignout
-GET         /tax-estimate-unavailable                                                  controllers.ServiceController.gateKeeper
+GET         /timeout                                                                   @controllers.ServiceController.timeoutPage
+GET         /signout                                                                   @controllers.ServiceController.serviceSignout
+GET         /tax-estimate-unavailable                                                  @controllers.ServiceController.gateKeeper
 GET         /deceased                                                                  @controllers.DeceasedController.deceased
 
 GET         /start-verify                                                              @controllers.AuthProviderController.verifyEntryPoint
 GET         /start-government-gateway                                                  @controllers.AuthProviderController.governmentGatewayEntryPoint
 
-GET         /income-summary                                                            controllers.TaxAccountSummaryController.onPageLoad
-GET         /income-tax                                                                controllers.TaxAccountSummaryController.onPageLoad
-GET         /income-details/:empId                                                     controllers.IncomeSourceSummaryController.onPageLoad(empId: Int)
+GET         /income-summary                                                            @controllers.TaxAccountSummaryController.onPageLoad
+GET         /income-tax                                                                @controllers.TaxAccountSummaryController.onPageLoad
+GET         /income-details/:empId                                                     @controllers.IncomeSourceSummaryController.onPageLoad(empId: Int)
 
-GET         /add-employment/employment-name                                            controllers.employments.AddEmploymentController.addEmploymentName
-POST        /add-employment/employment-name                                            controllers.employments.AddEmploymentController.submitEmploymentName
-GET         /add-employment/employment-start-date                                      controllers.employments.AddEmploymentController.addEmploymentStartDate
-POST        /add-employment/employment-start-date                                      controllers.employments.AddEmploymentController.submitEmploymentStartDate
-GET         /add-employment/employment-first-pay                                       controllers.employments.AddEmploymentController.receivedFirstPay
-POST        /add-employment/employment-first-pay                                       controllers.employments.AddEmploymentController.submitFirstPay
-GET         /add-employment/six-weeks                                                  controllers.employments.AddEmploymentController.sixWeeksError
-GET         /add-employment/employment-payroll-number                                  controllers.employments.AddEmploymentController.addEmploymentPayrollNumber
-POST        /add-employment/employment-payroll-number                                  controllers.employments.AddEmploymentController.submitEmploymentPayrollNumber
-GET         /add-employment/telephone-number                                           controllers.employments.AddEmploymentController.addTelephoneNumber
-POST        /add-employment/telephone-number                                           controllers.employments.AddEmploymentController.submitTelephoneNumber
-GET         /add-employment/check-your-answers                                         controllers.employments.AddEmploymentController.addEmploymentCheckYourAnswers
-POST        /add-employment/check-your-answers                                         controllers.employments.AddEmploymentController.submitYourAnswers
-GET         /add-employment/employment-success                                         controllers.employments.AddEmploymentController.confirmation
+GET         /add-employment/employment-name                                            @controllers.employments.AddEmploymentController.addEmploymentName
+POST        /add-employment/employment-name                                            @controllers.employments.AddEmploymentController.submitEmploymentName
+GET         /add-employment/employment-start-date                                      @controllers.employments.AddEmploymentController.addEmploymentStartDate
+POST        /add-employment/employment-start-date                                      @controllers.employments.AddEmploymentController.submitEmploymentStartDate
+GET         /add-employment/employment-first-pay                                       @controllers.employments.AddEmploymentController.receivedFirstPay
+POST        /add-employment/employment-first-pay                                       @controllers.employments.AddEmploymentController.submitFirstPay
+GET         /add-employment/six-weeks                                                  @controllers.employments.AddEmploymentController.sixWeeksError
+GET         /add-employment/employment-payroll-number                                  @controllers.employments.AddEmploymentController.addEmploymentPayrollNumber
+POST        /add-employment/employment-payroll-number                                  @controllers.employments.AddEmploymentController.submitEmploymentPayrollNumber
+GET         /add-employment/telephone-number                                           @controllers.employments.AddEmploymentController.addTelephoneNumber
+POST        /add-employment/telephone-number                                           @controllers.employments.AddEmploymentController.submitTelephoneNumber
+GET         /add-employment/check-your-answers                                         @controllers.employments.AddEmploymentController.addEmploymentCheckYourAnswers
+POST        /add-employment/check-your-answers                                         @controllers.employments.AddEmploymentController.submitYourAnswers
+GET         /add-employment/employment-success                                         @controllers.employments.AddEmploymentController.confirmation
 
 
 
 # Add Pension Provider Journey
 
-GET         /add-pension-provider/name                                                 controllers.pensions.AddPensionProviderController.addPensionProviderName
-POST        /add-pension-provider/name                                                 controllers.pensions.AddPensionProviderController.submitPensionProviderName
+GET         /add-pension-provider/name                                                 @controllers.pensions.AddPensionProviderController.addPensionProviderName
+POST        /add-pension-provider/name                                                 @controllers.pensions.AddPensionProviderController.submitPensionProviderName
 
-GET         /add-pension-provider/received-first-payment                               controllers.pensions.AddPensionProviderController.receivedFirstPay
-POST        /add-pension-provider/received-first-payment                               controllers.pensions.AddPensionProviderController.submitFirstPay
+GET         /add-pension-provider/received-first-payment                               @controllers.pensions.AddPensionProviderController.receivedFirstPay
+POST        /add-pension-provider/received-first-payment                               @controllers.pensions.AddPensionProviderController.submitFirstPay
 
-GET         /add-pension-provider/cannot-add                                           controllers.pensions.AddPensionProviderController.cantAddPension
+GET         /add-pension-provider/cannot-add                                           @controllers.pensions.AddPensionProviderController.cantAddPension
 
-GET         /add-pension-provider/first-payment-date                                   controllers.pensions.AddPensionProviderController.addPensionProviderStartDate
-POST        /add-pension-provider/first-payment-date                                   controllers.pensions.AddPensionProviderController.submitPensionProviderStartDate
+GET         /add-pension-provider/first-payment-date                                   @controllers.pensions.AddPensionProviderController.addPensionProviderStartDate
+POST        /add-pension-provider/first-payment-date                                   @controllers.pensions.AddPensionProviderController.submitPensionProviderStartDate
 
-GET         /add-pension-provider/pension-number                                       controllers.pensions.AddPensionProviderController.addPensionNumber
-POST        /add-pension-provider/pension-number                                       controllers.pensions.AddPensionProviderController.submitPensionNumber
+GET         /add-pension-provider/pension-number                                       @controllers.pensions.AddPensionProviderController.addPensionNumber
+POST        /add-pension-provider/pension-number                                       @controllers.pensions.AddPensionProviderController.submitPensionNumber
 
-GET         /add-pension-provider/telephone-number                                     controllers.pensions.AddPensionProviderController.addTelephoneNumber
-POST        /add-pension-provider/telephone-number                                     controllers.pensions.AddPensionProviderController.submitTelephoneNumber
+GET         /add-pension-provider/telephone-number                                     @controllers.pensions.AddPensionProviderController.addTelephoneNumber
+POST        /add-pension-provider/telephone-number                                     @controllers.pensions.AddPensionProviderController.submitTelephoneNumber
 
-GET         /add-pension-provider/check-your-answers                                   controllers.pensions.AddPensionProviderController.checkYourAnswers
-POST        /add-pension-provider/check-your-answers                                   controllers.pensions.AddPensionProviderController.submitYourAnswers
+GET         /add-pension-provider/check-your-answers                                   @controllers.pensions.AddPensionProviderController.checkYourAnswers
+POST        /add-pension-provider/check-your-answers                                   @controllers.pensions.AddPensionProviderController.submitYourAnswers
 
-GET         /add-pension-provider/success                                              controllers.pensions.AddPensionProviderController.confirmation
+GET         /add-pension-provider/success                                              @controllers.pensions.AddPensionProviderController.confirmation
 
 
 
-GET         /update-remove-employment/decision/:empId                                  controllers.employments.EndEmploymentController.employmentUpdateRemove(empId: Int)
-POST        /update-remove-employment/decision/:empId                                  controllers.employments.EndEmploymentController.handleEmploymentUpdateRemove(empId: Int)
+GET         /update-remove-employment/decision/:empId                                  @controllers.employments.EndEmploymentController.employmentUpdateRemove(empId: Int)
+POST        /update-remove-employment/decision/:empId                                  @controllers.employments.EndEmploymentController.handleEmploymentUpdateRemove(empId: Int)
 
-GET         /end-employment/six-weeks                                                  controllers.employments.EndEmploymentController.endEmploymentError
-GET         /end-employment/irregular-payment/:empId                                   controllers.employments.EndEmploymentController.irregularPaymentError(empId: Int)
-POST        /end-employment/handle-irregular-payment/:empId                            controllers.employments.EndEmploymentController.handleIrregularPaymentError(empId: Int)
-GET         /end-employment/check-your-answers                                         controllers.employments.EndEmploymentController.endEmploymentCheckYourAnswers
-POST        /end-employment/check-your-answers                                         controllers.employments.EndEmploymentController.confirmAndSendEndEmployment
-GET         /end-employment/success                                                    controllers.employments.EndEmploymentController.showConfirmationPage
-GET         /end-employment/telephone-number                                           controllers.employments.EndEmploymentController.addTelephoneNumber
-POST        /end-employment/telephone-number                                           controllers.employments.EndEmploymentController.submitTelephoneNumber
-GET         /end-employment/date/:empId                                                controllers.employments.EndEmploymentController.endEmploymentPage(empId: Int)
-POST        /end-employment/date/:empId                                                controllers.employments.EndEmploymentController.handleEndEmploymentPage(empId: Int)
+GET         /end-employment/six-weeks                                                  @controllers.employments.EndEmploymentController.endEmploymentError
+GET         /end-employment/irregular-payment/:empId                                   @controllers.employments.EndEmploymentController.irregularPaymentError(empId: Int)
+POST        /end-employment/handle-irregular-payment/:empId                            @controllers.employments.EndEmploymentController.handleIrregularPaymentError(empId: Int)
+GET         /end-employment/check-your-answers                                         @controllers.employments.EndEmploymentController.endEmploymentCheckYourAnswers
+POST        /end-employment/check-your-answers                                         @controllers.employments.EndEmploymentController.confirmAndSendEndEmployment
+GET         /end-employment/success                                                    @controllers.employments.EndEmploymentController.showConfirmationPage
+GET         /end-employment/telephone-number                                           @controllers.employments.EndEmploymentController.addTelephoneNumber
+POST        /end-employment/telephone-number                                           @controllers.employments.EndEmploymentController.submitTelephoneNumber
+GET         /end-employment/date/:empId                                                @controllers.employments.EndEmploymentController.endEmploymentPage(empId: Int)
+POST        /end-employment/date/:empId                                                @controllers.employments.EndEmploymentController.handleEndEmploymentPage(empId: Int)
 
-GET         /update-employment/what-do-you-want-to-tell-us/:empId                      controllers.employments.UpdateEmploymentController.updateEmploymentDetails(empId: Int)
-POST        /update-employment/what-do-you-want-to-tell-us/:empId                      controllers.employments.UpdateEmploymentController.submitUpdateEmploymentDetails(empId: Int)
-GET         /update-employment/telephone-number                                        controllers.employments.UpdateEmploymentController.addTelephoneNumber
-POST        /update-employment/telephone-number                                        controllers.employments.UpdateEmploymentController.submitTelephoneNumber
-GET         /update-employment/check-your-answers                                      controllers.employments.UpdateEmploymentController.updateEmploymentCheckYourAnswers
-POST        /update-employment/check-your-answers                                      controllers.employments.UpdateEmploymentController.submitYourAnswers
-GET         /update-employment/success                                                 controllers.employments.UpdateEmploymentController.confirmation
+GET         /update-employment/what-do-you-want-to-tell-us/:empId                      @controllers.employments.UpdateEmploymentController.updateEmploymentDetails(empId: Int)
+POST        /update-employment/what-do-you-want-to-tell-us/:empId                      @controllers.employments.UpdateEmploymentController.submitUpdateEmploymentDetails(empId: Int)
+GET         /update-employment/telephone-number                                        @controllers.employments.UpdateEmploymentController.addTelephoneNumber
+POST        /update-employment/telephone-number                                        @controllers.employments.UpdateEmploymentController.submitTelephoneNumber
+GET         /update-employment/check-your-answers                                      @controllers.employments.UpdateEmploymentController.updateEmploymentCheckYourAnswers
+POST        /update-employment/check-your-answers                                      @controllers.employments.UpdateEmploymentController.submitYourAnswers
+GET         /update-employment/success                                                 @controllers.employments.UpdateEmploymentController.confirmation
 
 GET         /previous-underpayment                                                     @controllers.UnderpaymentFromPreviousYearController.underpaymentExplanation
-GET         /underpayment-estimate                                                     controllers.PotentialUnderpaymentController.potentialUnderpaymentPage
+GET         /underpayment-estimate                                                     @controllers.PotentialUnderpaymentController.potentialUnderpaymentPage
 
 
 ## Savings Income
-GET         /income/bank-building-society-savings                                      controllers.income.bbsi.BbsiController.untaxedInterestDetails
-GET         /income/bank-building-society-savings/accounts                             controllers.income.bbsi.BbsiController.accounts
-GET         /income/bank-building-society-savings/accounts/:id/decision                controllers.income.bbsi.BbsiController.decision(id:Int)
-POST        /income/bank-building-society-savings/accounts/:id/decision                controllers.income.bbsi.BbsiController.handleDecisionPage(id:Int)
+GET         /income/bank-building-society-savings                                      @controllers.income.bbsi.BbsiController.untaxedInterestDetails
+GET         /income/bank-building-society-savings/accounts                             @controllers.income.bbsi.BbsiController.accounts
+GET         /income/bank-building-society-savings/accounts/:id/decision                @controllers.income.bbsi.BbsiController.decision(id:Int)
+POST        /income/bank-building-society-savings/accounts/:id/decision                @controllers.income.bbsi.BbsiController.handleDecisionPage(id:Int)
 
-GET         /income/bank-building-society-savings/:id/update/interest                  controllers.income.bbsi.BbsiUpdateAccountController.captureInterest(id:Int)
-POST        /income/bank-building-society-savings/:id/update/interest                  controllers.income.bbsi.BbsiUpdateAccountController.submitInterest(id:Int)
-GET         /income/bank-building-society-savings/:id/update/check-your-answers        controllers.income.bbsi.BbsiUpdateAccountController.checkYourAnswers(id:Int)
-POST        /income/bank-building-society-savings/:id/update/check-your-answers        controllers.income.bbsi.BbsiUpdateAccountController.submitYourAnswers(id:Int)
-GET         /income/bank-building-society-savings/update-success                       controllers.income.bbsi.BbsiController.updateConfirmation
+GET         /income/bank-building-society-savings/:id/update/interest                  @controllers.income.bbsi.BbsiUpdateAccountController.captureInterest(id:Int)
+POST        /income/bank-building-society-savings/:id/update/interest                  @controllers.income.bbsi.BbsiUpdateAccountController.submitInterest(id:Int)
+GET         /income/bank-building-society-savings/:id/update/check-your-answers        @controllers.income.bbsi.BbsiUpdateAccountController.checkYourAnswers(id:Int)
+POST        /income/bank-building-society-savings/:id/update/check-your-answers        @controllers.income.bbsi.BbsiUpdateAccountController.submitYourAnswers(id:Int)
+GET         /income/bank-building-society-savings/update-success                       @controllers.income.bbsi.BbsiController.updateConfirmation
 
-GET         /income/bank-building-society-savings/:id/close/date                       controllers.income.bbsi.BbsiCloseAccountController.captureCloseDate(id:Int)
-POST        /income/bank-building-society-savings/:id/close/date                       controllers.income.bbsi.BbsiCloseAccountController.submitCloseDate(id:Int)
-GET         /income/bank-building-society-savings/:id/close/interest                   controllers.income.bbsi.BbsiCloseAccountController.captureClosingInterest(id:Int)
-POST        /income/bank-building-society-savings/:id/close/interest                   controllers.income.bbsi.BbsiCloseAccountController.submitClosingInterest(id:Int)
-GET         /income/bank-building-society-savings/:id/close/check-your-answers         controllers.income.bbsi.BbsiCloseAccountController.checkYourAnswers(id:Int)
-POST        /income/bank-building-society-savings/:id/close/check-your-answers         controllers.income.bbsi.BbsiCloseAccountController.submitYourAnswers(id:Int)
-GET         /income/bank-building-society-savings/end-success                          controllers.income.bbsi.BbsiController.endConfirmation
+GET         /income/bank-building-society-savings/:id/close/date                       @controllers.income.bbsi.BbsiCloseAccountController.captureCloseDate(id:Int)
+POST        /income/bank-building-society-savings/:id/close/date                       @controllers.income.bbsi.BbsiCloseAccountController.submitCloseDate(id:Int)
+GET         /income/bank-building-society-savings/:id/close/interest                   @controllers.income.bbsi.BbsiCloseAccountController.captureClosingInterest(id:Int)
+POST        /income/bank-building-society-savings/:id/close/interest                   @controllers.income.bbsi.BbsiCloseAccountController.submitClosingInterest(id:Int)
+GET         /income/bank-building-society-savings/:id/close/check-your-answers         @controllers.income.bbsi.BbsiCloseAccountController.checkYourAnswers(id:Int)
+POST        /income/bank-building-society-savings/:id/close/check-your-answers         @controllers.income.bbsi.BbsiCloseAccountController.submitYourAnswers(id:Int)
+GET         /income/bank-building-society-savings/end-success                          @controllers.income.bbsi.BbsiController.endConfirmation
 
-GET         /income/bank-building-society-savings/:id/remove/check-your-answers        controllers.income.bbsi.BbsiRemoveAccountController.checkYourAnswers(id:Int)
-POST        /income/bank-building-society-savings/:id/remove/check-your-answers        controllers.income.bbsi.BbsiRemoveAccountController.submitYourAnswers(id:Int)
-GET         /income/bank-building-society-savings/remove-success                       controllers.income.bbsi.BbsiController.removeConfirmation
+GET         /income/bank-building-society-savings/:id/remove/check-your-answers        @controllers.income.bbsi.BbsiRemoveAccountController.checkYourAnswers(id:Int)
+POST        /income/bank-building-society-savings/:id/remove/check-your-answers        @controllers.income.bbsi.BbsiRemoveAccountController.submitYourAnswers(id:Int)
+GET         /income/bank-building-society-savings/remove-success                       @controllers.income.bbsi.BbsiController.removeConfirmation
 
 
 ## Company car pages
@@ -128,7 +128,7 @@ GET         /tax-codes/:year                                                    
 GET         /paye-income-tax-estimate                                                  @controllers.EstimatedIncomeTaxController.estimatedIncomeTax
 GET         /detailed-income-tax-estimate                                              @controllers.DetailedIncomeTaxEstimateController.taxExplanationPage
 
-GET         /income-tax-comparison                                                     controllers.IncomeTaxComparisonController.onPageLoad
+GET         /income-tax-comparison                                                     @controllers.IncomeTaxComparisonController.onPageLoad
 
 
 GET         /your-income-calculation-details/:id                                       @controllers.YourIncomeCalculationController.yourIncomeCalculationPage(id: Int)
@@ -140,45 +140,45 @@ GET         /print-your-income-calculation-previous-year/:year/:empId           
 
 
 ## Income calculator URIs
-GET         /update-income/start/:empId                                                controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.estimatedPayLandingPage(empId: Int)
+GET         /update-income/start/:empId                                                @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.estimatedPayLandingPage(empId: Int)
 
-GET         /update-income/how-to-update-income/:empId                                 controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.howToUpdatePage(empId: Int)
-POST        /update-income/how-to-update-income                                        controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleChooseHowToUpdate
+GET         /update-income/how-to-update-income/:empId                                 @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.howToUpdatePage(empId: Int)
+POST        /update-income/how-to-update-income                                        @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleChooseHowToUpdate
 
-GET         /update-income/working-hours                                               controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.workingHoursPage
-POST        /update-income/working-hours                                               controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleWorkingHours
+GET         /update-income/working-hours                                               @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.workingHoursPage
+POST        /update-income/working-hours                                               @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleWorkingHours
 
-GET         /update-income/pay-period                                                  controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payPeriodPage
-POST        /update-income/pay-period                                                  controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayPeriod
-GET         /update-income/edit-income-irregular-hours/:employmentId                   controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.editIncomeIrregularHours(employmentId: Int)
-POST        /update-income/edit-income-irregular-hours/:employmentId                   controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleIncomeIrregularHours(employmentId: Int)
-GET         /update-income/edit-income-irregular-hours/:employmentId/confirm           controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId: Int)
-GET         /update-income/edit-income-irregular-hours/:employmentId/submit            controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId: Int)
+GET         /update-income/pay-period                                                  @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payPeriodPage
+POST        /update-income/pay-period                                                  @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayPeriod
+GET         /update-income/edit-income-irregular-hours/:employmentId                   @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.editIncomeIrregularHours(employmentId: Int)
+POST        /update-income/edit-income-irregular-hours/:employmentId                   @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleIncomeIrregularHours(employmentId: Int)
+GET         /update-income/edit-income-irregular-hours/:employmentId/confirm           @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId: Int)
+GET         /update-income/edit-income-irregular-hours/:employmentId/submit            @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId: Int)
 
 
-GET         /update-income/pay-period                                                  controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payPeriodPage
-POST        /update-income/pay-period                                                  controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayPeriod
+GET         /update-income/pay-period                                                  @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payPeriodPage
+POST        /update-income/pay-period                                                  @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayPeriod
 
-GET         /update-income/payslip-amount                                              controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payslipAmountPage
-POST        /update-income/payslip-amount                                              controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayslipAmount
+GET         /update-income/payslip-amount                                              @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payslipAmountPage
+POST        /update-income/payslip-amount                                              @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayslipAmount
 
-GET         /update-income/payslip-deductions                                          controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payslipDeductionsPage
-POST        /update-income/payslip-deductions                                          controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayslipDeductions
+GET         /update-income/payslip-deductions                                          @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payslipDeductionsPage
+POST        /update-income/payslip-deductions                                          @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayslipDeductions
 
-GET         /update-income/taxable-payslip-amount                                      controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.taxablePayslipAmountPage
-POST        /update-income/taxable-payslip-amount                                      controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleTaxablePayslipAmount
+GET         /update-income/taxable-payslip-amount                                      @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.taxablePayslipAmountPage
+POST        /update-income/taxable-payslip-amount                                      @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleTaxablePayslipAmount
 
-GET         /update-income/bonus-payments                                              controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.bonusPaymentsPage
-POST        /update-income/bonus-payments                                              controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleBonusPayments
+GET         /update-income/bonus-payments                                              @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.bonusPaymentsPage
+POST        /update-income/bonus-payments                                              @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleBonusPayments
 
-GET         /update-income/bonus-overtime-amount                                       controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.bonusOvertimeAmountPage
-POST        /update-income/bonus-overtime-amount                                       controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleBonusOvertimeAmount
+GET         /update-income/bonus-overtime-amount                                       @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.bonusOvertimeAmountPage
+POST        /update-income/bonus-overtime-amount                                       @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleBonusOvertimeAmount
 
-GET         /update-income/check-your-answers                                          controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.checkYourAnswersPage
+GET         /update-income/check-your-answers                                          @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.checkYourAnswersPage
 
-GET         /update-income/estimated-pay                                               controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.estimatedPayPage
+GET         /update-income/estimated-pay                                               @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.estimatedPayPage
 
-GET         /update-income/confirm-estimated-pay                                       controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleCalculationResult
+GET         /update-income/confirm-estimated-pay                                       @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleCalculationResult
 
 ## Regular Income URIs
 GET         /update-income/select-taxable-pay                                          @controllers.IncomeController.viewIncomeForEdit
@@ -201,7 +201,7 @@ POST        /update-income/success-page                                         
 
 
 ## Get Help Pages
-GET         /get-help                                                                  controllers.HelpController.helpPage
+GET         /get-help                                                                  @controllers.HelpController.helpPage
 
 ## Audit URIs for iForm links
 GET         /audit/link-to-iform/:iformName                                            @controllers.AuditController.auditLinksToIForm(iformName: String)
@@ -212,51 +212,51 @@ GET         /assets/*file                                                       
 
 ## Update Income Details - Previous Years
 
-GET         /update-income-details/decision/:year                                      controllers.income.previousYears.UpdateIncomeDetailsController.decision(year: uk.gov.hmrc.tai.model.TaxYear)
-POST        /update-income-details/decision                                            controllers.income.previousYears.UpdateIncomeDetailsController.submitDecision
-GET         /update-income-details/what-do-you-want-to-tell-us                         controllers.income.previousYears.UpdateIncomeDetailsController.details
-POST        /update-income-details/what-do-you-want-to-tell-us                         controllers.income.previousYears.UpdateIncomeDetailsController.submitDetails
-GET         /update-income-details/telephone-number                                    controllers.income.previousYears.UpdateIncomeDetailsController.telephoneNumber
-POST        /update-income-details/telephone-number                                    controllers.income.previousYears.UpdateIncomeDetailsController.submitTelephoneNumber
-GET         /update-income-details/check-your-answers                                  controllers.income.previousYears.UpdateIncomeDetailsController.checkYourAnswers
-POST        /update-income-details/submit-your-answers                                 controllers.income.previousYears.UpdateIncomeDetailsController.submitYourAnswers
-GET         /update-income-details/success                                             controllers.income.previousYears.UpdateIncomeDetailsController.confirmation
+GET         /update-income-details/decision/:year                                      @controllers.income.previousYears.UpdateIncomeDetailsController.decision(year: uk.gov.hmrc.tai.model.TaxYear)
+POST        /update-income-details/decision                                            @controllers.income.previousYears.UpdateIncomeDetailsController.submitDecision
+GET         /update-income-details/what-do-you-want-to-tell-us                         @controllers.income.previousYears.UpdateIncomeDetailsController.details
+POST        /update-income-details/what-do-you-want-to-tell-us                         @controllers.income.previousYears.UpdateIncomeDetailsController.submitDetails
+GET         /update-income-details/telephone-number                                    @controllers.income.previousYears.UpdateIncomeDetailsController.telephoneNumber
+POST        /update-income-details/telephone-number                                    @controllers.income.previousYears.UpdateIncomeDetailsController.submitTelephoneNumber
+GET         /update-income-details/check-your-answers                                  @controllers.income.previousYears.UpdateIncomeDetailsController.checkYourAnswers
+POST        /update-income-details/submit-your-answers                                 @controllers.income.previousYears.UpdateIncomeDetailsController.submitYourAnswers
+GET         /update-income-details/success                                             @controllers.income.previousYears.UpdateIncomeDetailsController.confirmation
 
 ## Used by external services
 GET         /income                                                                    @controllers.TaxFreeAmountController.taxFreeAmount
-GET         /income-tax-refresh                                                        controllers.TaxAccountSummaryController.onPageLoad
+GET         /income-tax-refresh                                                        @controllers.TaxAccountSummaryController.onPageLoad
 
-GET         /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.decision
-POST        /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.submitDecision
+GET         /company-benefit/decision                                                  @controllers.benefits.CompanyBenefitController.decision
+POST        /company-benefit/decision                                                  @controllers.benefits.CompanyBenefitController.submitDecision
 
-GET         /remove-company-benefit/stop-date                                          controllers.benefits.RemoveCompanyBenefitController.stopDate
-POST        /remove-company-benefit/stop-date                                          controllers.benefits.RemoveCompanyBenefitController.submitStopDate
-GET         /remove-company-benefit/total-value-of-benefit                             controllers.benefits.RemoveCompanyBenefitController.totalValueOfBenefit
-POST        /remove-company-benefit/total-value-of-benefit                             controllers.benefits.RemoveCompanyBenefitController.submitBenefitValue
-GET         /remove-company-benefit/telephone-number                                   controllers.benefits.RemoveCompanyBenefitController.telephoneNumber
-POST        /remove-company-benefit/telephone-number                                   controllers.benefits.RemoveCompanyBenefitController.submitTelephoneNumber
-GET         /remove-company-benefit/check-your-answers                                 controllers.benefits.RemoveCompanyBenefitController.checkYourAnswers
-POST        /remove-company-benefit/submit-your-answers                                controllers.benefits.RemoveCompanyBenefitController.submitYourAnswers
-GET         /remove-company-benefit/success                                            controllers.benefits.RemoveCompanyBenefitController.confirmation
-GET         /remove-company-benefit/cancel                                             controllers.benefits.RemoveCompanyBenefitController.cancel
+GET         /remove-company-benefit/stop-date                                          @controllers.benefits.RemoveCompanyBenefitController.stopDate
+POST        /remove-company-benefit/stop-date                                          @controllers.benefits.RemoveCompanyBenefitController.submitStopDate
+GET         /remove-company-benefit/total-value-of-benefit                             @controllers.benefits.RemoveCompanyBenefitController.totalValueOfBenefit
+POST        /remove-company-benefit/total-value-of-benefit                             @controllers.benefits.RemoveCompanyBenefitController.submitBenefitValue
+GET         /remove-company-benefit/telephone-number                                   @controllers.benefits.RemoveCompanyBenefitController.telephoneNumber
+POST        /remove-company-benefit/telephone-number                                   @controllers.benefits.RemoveCompanyBenefitController.submitTelephoneNumber
+GET         /remove-company-benefit/check-your-answers                                 @controllers.benefits.RemoveCompanyBenefitController.checkYourAnswers
+POST        /remove-company-benefit/submit-your-answers                                @controllers.benefits.RemoveCompanyBenefitController.submitYourAnswers
+GET         /remove-company-benefit/success                                            @controllers.benefits.RemoveCompanyBenefitController.confirmation
+GET         /remove-company-benefit/cancel                                             @controllers.benefits.RemoveCompanyBenefitController.cancel
 
 ## Company benefit
-GET         /redirect-company-benefit/:employmentId/:benefitType                       controllers.benefits.CompanyBenefitController.redirectCompanyBenefitSelection(employmentId: Int, benefitType: uk.gov.hmrc.tai.model.domain.BenefitComponentType)
-GET         /company-benefit/decision                                                  controllers.benefits.CompanyBenefitController.decision
+GET         /redirect-company-benefit/:employmentId/:benefitType                       @controllers.benefits.CompanyBenefitController.redirectCompanyBenefitSelection(employmentId: Int, benefitType: uk.gov.hmrc.tai.model.domain.BenefitComponentType)
+GET         /company-benefit/decision                                                  @controllers.benefits.CompanyBenefitController.decision
 
-GET         /language/:lang                                                            controllers.i18n.TaiLanguageController.switchToLanguage(lang: String)
+GET         /language/:lang                                                            @controllers.i18n.TaiLanguageController.switchToLanguage(lang: String)
 
 ## Incorrect Pension
 
-GET         /incorrect-pension/decision/:id                                            controllers.pensions.UpdatePensionProviderController.doYouGetThisPension(id: Int)
-POST        /incorrect-pension/decision                                                controllers.pensions.UpdatePensionProviderController.handleDoYouGetThisPension
-GET         /incorrect-pension/what-do-you-want-to-tell-us                             controllers.pensions.UpdatePensionProviderController.whatDoYouWantToTellUs
-POST        /incorrect-pension/what-do-you-want-to-tell-us                             controllers.pensions.UpdatePensionProviderController.submitWhatDoYouWantToTellUs
-GET         /incorrect-pension/telephone-number                                        controllers.pensions.UpdatePensionProviderController.addTelephoneNumber
-POST        /incorrect-pension/telephone-number                                        controllers.pensions.UpdatePensionProviderController.submitTelephoneNumber
-GET         /incorrect-pension/check-your-answers                                      controllers.pensions.UpdatePensionProviderController.checkYourAnswers
-POST        /incorrect-pension/check-your-answers                                      controllers.pensions.UpdatePensionProviderController.submitYourAnswers
-GET         /incorrect-pension/success                                                 controllers.pensions.UpdatePensionProviderController.confirmation
+GET         /incorrect-pension/decision/:id                                            @controllers.pensions.UpdatePensionProviderController.doYouGetThisPension(id: Int)
+POST        /incorrect-pension/decision                                                @controllers.pensions.UpdatePensionProviderController.handleDoYouGetThisPension
+GET         /incorrect-pension/what-do-you-want-to-tell-us                             @controllers.pensions.UpdatePensionProviderController.whatDoYouWantToTellUs
+POST        /incorrect-pension/what-do-you-want-to-tell-us                             @controllers.pensions.UpdatePensionProviderController.submitWhatDoYouWantToTellUs
+GET         /incorrect-pension/telephone-number                                        @controllers.pensions.UpdatePensionProviderController.addTelephoneNumber
+POST        /incorrect-pension/telephone-number                                        @controllers.pensions.UpdatePensionProviderController.submitTelephoneNumber
+GET         /incorrect-pension/check-your-answers                                      @controllers.pensions.UpdatePensionProviderController.checkYourAnswers
+POST        /incorrect-pension/check-your-answers                                      @controllers.pensions.UpdatePensionProviderController.submitYourAnswers
+GET         /incorrect-pension/success                                                 @controllers.pensions.UpdatePensionProviderController.confirmation
 
 ## Tax Code Change
 
