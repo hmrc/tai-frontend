@@ -66,6 +66,7 @@ class TaiModule extends Module with JourneyCacheConstants with BankAccountDecisi
     bind[JourneyCacheService].qualifiedWith("Update Bank Account").toInstance(JourneyCacheService(UpdateBankAccountJourneyKey)),
     bind[JourneyCacheService].qualifiedWith("Update Bank Account Choice").toInstance(JourneyCacheService(UpdateBankAccountChoiceJourneyKey)),
     bind[JourneyCacheService].qualifiedWith("Update Income").toInstance(JourneyCacheService(UpdateIncome_JourneyKey)),
+    bind[JourneyCacheService].qualifiedWith("Update Pension Provider").toInstance(JourneyCacheService(UpdatePensionProvider_JourneyKey)),
     bind[JourneyCacheService].qualifiedWith("Update Previous Years Income").toInstance(JourneyCacheService(UpdatePreviousYearsIncome_JourneyKey))
   )
 }
