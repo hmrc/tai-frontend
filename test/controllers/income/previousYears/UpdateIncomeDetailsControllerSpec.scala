@@ -20,9 +20,10 @@ import builders.{AuthBuilder, RequestBuilder}
 import controllers.FakeTaiPlayApplication
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.{any, eq => mockEq}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito._
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -33,7 +34,6 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
@@ -49,9 +49,14 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
   with I18nSupport
   with FormValuesConstants
   with UpdateHistoricIncomeChoiceConstants
-  with JourneyCacheConstants {
+  with JourneyCacheConstants
+  with BeforeAndAfterEach {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
+  override def beforeEach: Unit = {
+    Mockito.reset(journeyCacheService, trackingjourneyCacheService, personService)
+  }
 
   "decision" must {
     "return ok" in {
@@ -108,7 +113,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
         val result = SUT.details()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.income.previousYears.details.title",  TaxPeriodLabelService.taxPeriodLabel(previousTaxYear.year)))
+        doc.title() must include(Messages("tai.income.previousYears.details.title", TaxPeriodLabelService.taxPeriodLabel(previousTaxYear.year)))
       }
     }
   }
@@ -176,7 +181,6 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
     }
   }
 
-
   "submitTelephoneNumber" must {
     "redirect to the check your answers page" when {
       "the request has an authorised session, and a telephone number has been provided" in {
@@ -243,7 +247,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
       val SUT = createSUT
       when(SUT.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
         Future.successful((
-          Seq[String]("2016","whatYouToldUs","Yes"),
+          Seq[String]("2016", "whatYouToldUs", "Yes"),
           Seq[Option[String]](Some("123456789"))
         ))
       )
@@ -258,6 +262,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
   "submit your answers" must {
     "invoke the back end 'previous years income details' service and redirect to the confirmation page" when {
       "the request has an authorised session and a telephone number has been provided" in {
+
         val sut = createSUT
         val incorrectIncome = IncorrectIncome("whatYouToldUs", "Yes", Some("123456789"))
         when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
@@ -280,6 +285,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
       }
 
       "the request has an authorised session and telephone number has not been provided" in {
+
         val sut = createSUT
         val incorrectEmployment = IncorrectIncome("whatYouToldUs", "No", None)
         when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
@@ -321,22 +327,27 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private val previousTaxYear = TaxYear().prev
+
   private def createSUT = new SUT
 
-  private class SUT extends UpdateIncomeDetailsController {
+  val personService: PersonService = mock[PersonService]
+  val journeyCacheService = mock[JourneyCacheService]
+  val trackingjourneyCacheService = mock[JourneyCacheService]
 
-    override val personService: PersonService = mock[PersonService]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override val trackingJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
+  private class SUT extends UpdateIncomeDetailsController(
+    mock[PreviousYearsIncomeService],
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    trackingjourneyCacheService,
+    journeyCacheService,
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
+
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
-    override val previousYearsIncomeService: PreviousYearsIncomeService = mock[PreviousYearsIncomeService]
 
-    override val auditService: AuditService = mock[AuditService]
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
