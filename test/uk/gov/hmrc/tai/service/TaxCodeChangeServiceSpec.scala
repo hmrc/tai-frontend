@@ -173,6 +173,6 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
   private def createTestService = new TestService
 
   private class TestService extends TaxCodeChangeService (mock[TaxCodeChangeConnector]) {
-//    override val taxCodeChangeConnector: TaxCodeChangeConnector = mock[TaxCodeChangeConnector]
+
   }
 }
