@@ -244,7 +244,7 @@ GET         /remove-company-benefit/cancel                                      
 GET         /redirect-company-benefit/:employmentId/:benefitType                       @controllers.benefits.CompanyBenefitController.redirectCompanyBenefitSelection(employmentId: Int, benefitType: uk.gov.hmrc.tai.model.domain.BenefitComponentType)
 GET         /company-benefit/decision                                                  @controllers.benefits.CompanyBenefitController.decision
 
-GET         /language/:lang                                                            controllers.i18n.TaiLanguageController.switchToLanguage(lang: String)
+GET         /language/:lang                                                            @controllers.i18n.TaiLanguageController.switchToLanguage(lang: String)
 
 ## Incorrect Pension
 
