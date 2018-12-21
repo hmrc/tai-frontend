@@ -30,8 +30,6 @@ import scala.concurrent.Future
 
 class TaxCodeChangeService @Inject() (val taxCodeChangeConnector: TaxCodeChangeConnector) {
 
-//  def taxCodeChangeConnector: TaxCodeChangeConnector
-
   def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] = {
 
     taxCodeChangeConnector.taxCodeChange(nino) map {
@@ -89,7 +87,3 @@ class TaxCodeChangeService @Inject() (val taxCodeChangeConnector: TaxCodeChangeC
     }
   }
 }
-
-//object TaxCodeChangeService extends TaxCodeChangeService {
-//  override val taxCodeChangeConnector: TaxCodeChangeConnector = TaxCodeChangeConnector
-//}
