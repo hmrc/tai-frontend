@@ -47,6 +47,7 @@ class TaiModule extends Module with JourneyCacheConstants with BankAccountDecisi
     bind[EmploymentService].toInstance(EmploymentService),
     bind[HasFormPartialService].toInstance(HasFormPartialService),
     bind[IncomeService].toInstance(IncomeService),
+    bind[PensionProviderService].toInstance(PensionProviderService),
     bind[PersonService].toInstance(PersonService),
     bind[PreviousYearsIncomeService].toInstance(PreviousYearsIncomeService),
     bind[SessionService].toInstance(SessionService),
@@ -55,6 +56,7 @@ class TaiModule extends Module with JourneyCacheConstants with BankAccountDecisi
     bind[TrackingService].toInstance(TrackingService),
     // Journey Cache Services
     bind[JourneyCacheService].qualifiedWith("Add Employment").toInstance(JourneyCacheService(AddEmployment_JourneyKey)),
+    bind[JourneyCacheService].qualifiedWith("Add Pension Provider").toInstance(JourneyCacheService(AddPensionProvider_JourneyKey)),
     bind[JourneyCacheService].qualifiedWith("Close Bank Account").toInstance(JourneyCacheService(CloseBankAccountJourneyKey)),
     bind[JourneyCacheService].qualifiedWith("Company Car").toInstance(JourneyCacheService(CompanyCar_JourneyKey)),
     bind[JourneyCacheService].qualifiedWith("End Company Benefit").toInstance(JourneyCacheService(EndCompanyBenefit_JourneyKey)),

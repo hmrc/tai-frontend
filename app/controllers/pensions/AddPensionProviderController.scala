@@ -16,19 +16,22 @@
 
 package controllers.pensions
 
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
-import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
+import controllers.{ServiceCheckLite, TaiBaseController}
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint._
 import uk.gov.hmrc.tai.forms.pensions.{AddPensionProviderFirstPayForm, AddPensionProviderNumberForm, PensionAddDateForm, PensionProviderNameForm}
@@ -42,19 +45,22 @@ import scala.Function.tupled
 import scala.concurrent.Future
 import scala.language.postfixOps
 
-trait AddPensionProviderController extends TaiBaseController
+class AddPensionProviderController @Inject()(val pensionProviderService: PensionProviderService,
+                                             val auditService: AuditService,
+                                             val personService: PersonService,
+                                             val auditConnector: AuditConnector,
+                                             val delegationConnector: DelegationConnector,
+                                             val authConnector: AuthConnector,
+                                             @Named("Add Pension Provider") val journeyCacheService: JourneyCacheService,
+                                             @Named("Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
+                                             override implicit val partialRetriever: FormPartialRetriever,
+                                             override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
   with JourneyCacheConstants
   with AuditConstants
   with FormValuesConstants {
-
-  def personService: PersonService
-  def auditService: AuditService
-  def journeyCacheService: JourneyCacheService
-  def successfulJourneyCacheService: JourneyCacheService
-  def pensionProviderService: PensionProviderService
 
   private def contactPhonePensionProvider(implicit messages: Messages): CanWeContactByPhoneViewModel = {
     CanWeContactByPhoneViewModel(
@@ -100,8 +106,8 @@ trait AddPensionProviderController extends TaiBaseController
 
             Ok(views.html.pensions.addPensionReceivedFirstPay(AddPensionProviderFirstPayForm.form.fill(optionalVals(0)), mandatoryVals(0)))
           }
-          }
         }
+  }
 
 
   def submitFirstPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -114,7 +120,7 @@ trait AddPensionProviderController extends TaiBaseController
             }
           },
           yesNo => {
-            journeyCacheService.cache(AddPensionProvider_FirstPaymentKey,yesNo.getOrElse("")) map { _ =>
+            journeyCacheService.cache(AddPensionProvider_FirstPaymentKey, yesNo.getOrElse("")) map { _ =>
               yesNo match {
                 case Some(YesValue) => {
                   journeyCacheService.cache("", "")
@@ -212,23 +218,23 @@ trait AddPensionProviderController extends TaiBaseController
         )
   }
 
-    def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
+  def addTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit person =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
 
-            journeyCacheService.optionalValues(AddPensionProvider_TelephoneQuestionKey,AddPensionProvider_TelephoneNumberKey) map { seq =>
+          journeyCacheService.optionalValues(AddPensionProvider_TelephoneQuestionKey, AddPensionProvider_TelephoneNumberKey) map { seq =>
 
 
-              val telephoneNo = seq(0) match {
-                case Some(YesValue) => seq(1)
-                case _ => None
-              }
-
-              Ok(views.html.can_we_contact_by_phone(contactPhonePensionProvider, YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq(0), telephoneNo))))
+            val telephoneNo = seq(0) match {
+              case Some(YesValue) => seq(1)
+              case _ => None
             }
+
+            Ok(views.html.can_we_contact_by_phone(contactPhonePensionProvider, YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq(0), telephoneNo))))
           }
-    }
+        }
+  }
 
 
   def submitTelephoneNumber(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -261,7 +267,7 @@ trait AddPensionProviderController extends TaiBaseController
           ServiceCheckLite.personDetailsCheck {
 
             journeyCacheService.collectedValues(
-              Seq(AddPensionProvider_NameKey,AddPensionProvider_StartDateKey,AddPensionProvider_PayrollNumberKey, AddPensionProvider_TelephoneQuestionKey),
+              Seq(AddPensionProvider_NameKey, AddPensionProvider_StartDateKey, AddPensionProvider_PayrollNumberKey, AddPensionProvider_TelephoneQuestionKey),
               Seq(AddPensionProvider_TelephoneNumberKey)
             ) map tupled { (mandatoryVals, optionalVals) =>
 
@@ -284,7 +290,7 @@ trait AddPensionProviderController extends TaiBaseController
         implicit request =>
           for {
             (mandatoryVals, optionalVals) <- journeyCacheService.collectedValues(
-              Seq(AddPensionProvider_NameKey,AddPensionProvider_StartDateKey,AddPensionProvider_PayrollNumberKey, AddPensionProvider_TelephoneQuestionKey),
+              Seq(AddPensionProvider_NameKey, AddPensionProvider_StartDateKey, AddPensionProvider_PayrollNumberKey, AddPensionProvider_TelephoneQuestionKey),
               Seq(AddPensionProvider_TelephoneNumberKey))
             model = AddPensionProvider(mandatoryVals.head, LocalDate.parse(mandatoryVals(1)), mandatoryVals(2), mandatoryVals.last, optionalVals.head)
             _ <- pensionProviderService.addPensionProvider(Nino(user.getNino), model)
@@ -305,15 +311,3 @@ trait AddPensionProviderController extends TaiBaseController
   }
 
 }
-
-// $COVERAGE-OFF$
-object AddPensionProviderController extends AddPensionProviderController with AuthenticationConnectors {
-  override val personService: PersonService = PersonService
-  override val auditService: AuditService = AuditService
-  override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-  override val pensionProviderService: PensionProviderService = PensionProviderService
-  override val journeyCacheService = JourneyCacheService(AddPensionProvider_JourneyKey)
-  override val successfulJourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
-}
-// $COVERAGE-ON$
