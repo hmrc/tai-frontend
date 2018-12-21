@@ -172,7 +172,5 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
   private def generateNino: Nino = new Generator(new Random).nextNino
   private def createTestService = new TestService
 
-  private class TestService extends TaxCodeChangeService (mock[TaxCodeChangeConnector]) {
-
-  }
+  private class TestService extends TaxCodeChangeService (mock[TaxCodeChangeConnector])
 }
