@@ -32,7 +32,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
+import uk.gov.hmrc.tai.model.domain.{Employment, IncomeSource, TaxAccountSummary}
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
@@ -78,17 +78,29 @@ class TaxAccountSummaryController @Inject()(val trackingService: TrackingService
 
   private def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(implicit hc: HeaderCarrier, messages: Messages) = {
     for {
-      taxCodeIncomes <- taxAccountService.taxCodeIncomes(nino, TaxYear())
+      livePensionIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "pensions", "live")
+      liveEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "employments", "live")
+      ceasedEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "employments", "ceased")
+      nonMatchingCeasedEmployments <- employmentService.employments(nino, TaxYear()) //TODO Point to the new ceased employments endpoint
       nonTaxCodeIncome <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
-      employments <- employmentService.employments(nino, TaxYear())
       isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
     } yield {
-      (taxCodeIncomes, nonTaxCodeIncome) match {
-        case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+      (livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources, nonMatchingCeasedEmployments, nonTaxCodeIncome) match {
+        case (TaiSuccessResponseWithPayload(livePensionIncomeSources: Seq[IncomeSource]),
+        TaiSuccessResponseWithPayload(liveEmploymentIncomeSources: Seq[IncomeSource]),
+        TaiSuccessResponseWithPayload(ceasedEmploymentIncomeSources: Seq[IncomeSource]),
+        nonMatchingCeasedEmployments: Seq[Employment],
         TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)) =>
-          TaxAccountSummaryViewModel(taxCodeIncomes, employments, taxAccountSummary, isAnyFormInProgress, nonTaxCodeIncome)(messages)
+          TaxAccountSummaryViewModel(taxAccountSummary,
+            isAnyFormInProgress,
+            nonTaxCodeIncome,
+            livePensionIncomeSources,
+            liveEmploymentIncomeSources,
+            ceasedEmploymentIncomeSources,
+            nonMatchingCeasedEmployments)(messages)
         case _ => throw new RuntimeException("Failed to fetch income details")
       }
     }
   }
+
 }

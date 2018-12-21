@@ -31,6 +31,10 @@ trait TaxAccountService {
 
   def taxAccountConnector: TaxAccountConnector
 
+  def incomeSources(nino: Nino, year: TaxYear, incomeType: String, status: String)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+    taxAccountConnector.incomeSources(nino, year, incomeType, status)
+  }
+
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     taxAccountConnector.taxCodeIncomes(nino, year)
   }
@@ -81,8 +85,10 @@ trait TaxAccountService {
     }
   }
 }
+
 // $COVERAGE-OFF$
 object TaxAccountService extends TaxAccountService {
   override val taxAccountConnector: TaxAccountConnector = TaxAccountConnector
 }
+
 // $COVERAGE-ON$
