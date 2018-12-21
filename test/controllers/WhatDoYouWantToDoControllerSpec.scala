@@ -61,7 +61,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
         val controller = createTestController(isCyPlusOneEnabled = true)
 
-        when(controller.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
         when(controller.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(controller.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
@@ -78,7 +78,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "there has not been a tax code change" in {
         val testController = createTestController(isCyPlusOneEnabled = true)
 
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
@@ -96,7 +96,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "there has been a tax code change and cyPlusOne is enabled" in {
         val testController = createTestController(isCyPlusOneEnabled = true)
 
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
@@ -115,7 +115,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "cyPlusOne is disabled" in {
         val testController = createTestController(isCyPlusOneEnabled = false)
 
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
@@ -318,7 +318,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
           .thenReturn(Future.successful(fakeEmploymentData))
         when(testController.employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
@@ -342,7 +342,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
           .thenReturn(Future.successful(fakeEmploymentData))
         when(testController.employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
@@ -363,7 +363,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiNotFoundResponse("Not found")
         ))
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         val doc = Jsoup.parse(contentAsString(result))
@@ -377,7 +377,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         val testController = createTestController(isCyPlusOneEnabled = false)
 
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -392,7 +392,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         val testController = createTestController(isCyPlusOneEnabled = false)
 
         when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         val doc = Jsoup.parse(contentAsString(result))
@@ -411,7 +411,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
       when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
-      when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
       val result = Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
 
@@ -425,7 +425,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
       when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.successful(TaiSuccessResponse))
-      when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
 
       val result = Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
@@ -441,7 +441,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
       when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.failed(new BadRequestException("bad request")))
-      when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
 
       val result = Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)

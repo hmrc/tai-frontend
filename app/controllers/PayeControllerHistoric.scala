@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 import scala.concurrent.Future
 
 class PayeControllerHistoric @Inject()(val config: ApplicationConfig,
-                                       val taxCodeChangeService: TaxCodeChangeService,
+                                       taxCodeChangeService: TaxCodeChangeService,
                                        val employmentService: EmploymentService,
                                        val personService: PersonService,
                                        val auditConnector: AuditConnector,
