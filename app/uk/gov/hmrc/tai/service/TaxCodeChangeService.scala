@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import com.google.inject.Inject
 import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,9 +28,9 @@ import uk.gov.hmrc.tai.model.domain.{HasTaxCodeChanged, TaxCodeChange, TaxCodeMi
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait TaxCodeChangeService {
+class TaxCodeChangeService @Inject() (val taxCodeChangeConnector: TaxCodeChangeConnector) {
 
-  def taxCodeChangeConnector: TaxCodeChangeConnector
+//  def taxCodeChangeConnector: TaxCodeChangeConnector
 
   def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] = {
 
@@ -89,6 +90,6 @@ trait TaxCodeChangeService {
   }
 }
 
-object TaxCodeChangeService extends TaxCodeChangeService {
-  override val taxCodeChangeConnector: TaxCodeChangeConnector = TaxCodeChangeConnector
-}
+//object TaxCodeChangeService extends TaxCodeChangeService {
+//  override val taxCodeChangeConnector: TaxCodeChangeConnector = TaxCodeChangeConnector
+//}

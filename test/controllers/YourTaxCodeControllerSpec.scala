@@ -96,7 +96,7 @@ class YourTaxCodeControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
 
       val taxCodeRecords = Seq(previousTaxCodeRecord1)
 
-      when(testController.taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
+      when(taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(any(), any())(any()))
         .thenReturn(Future.successful(taxCodeRecords))
 
       val result = testController.prevTaxCodes(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))

@@ -45,7 +45,7 @@ import scala.concurrent.Future
 //noinspection ScalaStyle
 class WhatDoYouWantToDoController @Inject()(val personService: PersonService,
                                             val employmentService: EmploymentService,
-                                            val taxCodeChangeService: TaxCodeChangeService,
+                                            taxCodeChangeService: TaxCodeChangeService,
                                             val taxAccountService: TaxAccountService,
                                             val trackingService: TrackingService,
                                             val auditService: AuditService,
