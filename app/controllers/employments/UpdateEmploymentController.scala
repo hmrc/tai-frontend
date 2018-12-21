@@ -16,6 +16,8 @@
 
 package controllers.employments
 
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
@@ -25,8 +27,11 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
@@ -40,7 +45,15 @@ import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploy
 import scala.Function.tupled
 import scala.concurrent.Future
 
-trait UpdateEmploymentController extends TaiBaseController
+class UpdateEmploymentController @Inject() (val employmentService: EmploymentService,
+                                            val personService: PersonService,
+                                            val auditConnector: AuditConnector,
+                                            val delegationConnector: DelegationConnector,
+                                            val authConnector: AuthConnector,
+                                            @Named("Update Employment") val journeyCacheService: JourneyCacheService,
+                                            @Named("Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
+                                            override implicit val partialRetriever: FormPartialRetriever,
+                                            override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
@@ -54,13 +67,13 @@ trait UpdateEmploymentController extends TaiBaseController
       case _ => Valid
     })
 
-  def personService: PersonService
-
-  def employmentService: EmploymentService
-
-  def journeyCacheService: JourneyCacheService
-
-  def successfulJourneyCacheService: JourneyCacheService
+//  def personService: PersonService
+//
+//  def employmentService: EmploymentService
+//
+//  def journeyCacheService: JourneyCacheService
+//
+//  def successfulJourneyCacheService: JourneyCacheService
 
   def telephoneNumberViewModel(id: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
     messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
@@ -200,13 +213,13 @@ trait UpdateEmploymentController extends TaiBaseController
 }
 
 // $COVERAGE-OFF$
-object UpdateEmploymentController extends UpdateEmploymentController with AuthenticationConnectors {
-  override val personService: PersonService = PersonService
-  override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-  override val employmentService = EmploymentService
-  override val journeyCacheService = JourneyCacheService(UpdateEmployment_JourneyKey)
-  override val successfulJourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
-}
+//object UpdateEmploymentController extends UpdateEmploymentController with AuthenticationConnectors {
+//  override val personService: PersonService = PersonService
+//  override implicit val templateRenderer = LocalTemplateRenderer
+//  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
+//  override val employmentService = EmploymentService
+//  override val journeyCacheService = JourneyCacheService(UpdateEmployment_JourneyKey)
+//  override val successfulJourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
+//}
 
 // $COVERAGE-ON$
