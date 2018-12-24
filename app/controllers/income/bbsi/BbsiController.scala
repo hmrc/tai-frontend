@@ -39,7 +39,7 @@ import uk.gov.hmrc.tai.viewModels.income.BbsiAccountsDecisionViewModel
 import scala.concurrent.Future
 
 
-class BbsiController @Inject()(val bbsiService: BbsiService,
+class BbsiController @Inject()(bbsiService: BbsiService,
                                val personService: PersonService,
                                val auditConnector: AuditConnector,
                                val delegationConnector: DelegationConnector,
