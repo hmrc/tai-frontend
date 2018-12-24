@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
-import uk.gov.hmrc.tai.model.CloseAccountRequest
+import com.google.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
@@ -26,9 +26,7 @@ import uk.gov.hmrc.tai.model.{AmountRequest, CloseAccountRequest}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait BbsiService {
-
-  def connector: BbsiConnector
+class BbsiService @Inject() (val connector: BbsiConnector) {
 
   def bankAccounts(nino:Nino)(implicit hc: HeaderCarrier): Future[Seq[BankAccount]] = {
     connector.bankAccounts(nino)
@@ -66,8 +64,3 @@ trait BbsiService {
     }
   }
 }
-// $COVERAGE-OFF$
-object BbsiService extends BbsiService {
-  override val connector: BbsiConnector = BbsiConnector
-}
-// $COVERAGE-ON$

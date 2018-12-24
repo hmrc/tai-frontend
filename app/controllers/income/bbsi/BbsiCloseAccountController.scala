@@ -45,7 +45,7 @@ import uk.gov.hmrc.time.TaxYearResolver
 import scala.concurrent.Future
 
 
-class BbsiCloseAccountController @Inject()(val bbsiService: BbsiService,
+class BbsiCloseAccountController @Inject()(bbsiService: BbsiService,
                                            val personService: PersonService,
                                            val auditConnector: AuditConnector,
                                            val delegationConnector: DelegationConnector,

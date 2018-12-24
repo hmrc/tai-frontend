@@ -22,7 +22,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.connectors.{LocalTemplateRenderer, TaxCodeChangeConnector, UserDetailsConnector}
+import uk.gov.hmrc.tai.connectors.{BbsiConnector, LocalTemplateRenderer, TaxCodeChangeConnector, UserDetailsConnector}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.{BenefitsService, CompanyCarService}
 import uk.gov.hmrc.tai.util.constants.{BankAccountDecisionConstants, JourneyCacheConstants}
@@ -35,13 +35,13 @@ class TaiModule extends Module with JourneyCacheConstants with BankAccountDecisi
     bind[WSHttpProxy].toInstance(WSHttpProxy),
     // Connectors
     bind[AuditConnector].toInstance(AuditConnector),
+    bind[BbsiConnector].toInstance(BbsiConnector),
     bind[AuthConnector].toInstance(FrontendAuthConnector),
     bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
     bind[UserDetailsConnector].toInstance(UserDetailsConnector),
     bind[TaxCodeChangeConnector].toInstance(TaxCodeChangeConnector),
     // Services
     bind[AuditService].toInstance(AuditService),
-    bind[BbsiService].toInstance(BbsiService),
     bind[CodingComponentService].toInstance(CodingComponentService),
     bind[BenefitsService].toInstance(BenefitsService),
     bind[CompanyCarService].toInstance(CompanyCarService),

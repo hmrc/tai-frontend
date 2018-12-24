@@ -142,7 +142,7 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
     "redirect to confirmation page" in {
       val sut = createSut
       when(sut.journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("1,000", "TEST")))
-      when(sut.bbsiService.updateBankAccountInterest(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
+      when(bbsiService.updateBankAccountInterest(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
       when(sut.journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
       val result = sut.submitYourAnswers(1)(RequestBuilder.buildFakeInvalidRequestWithAuth("POST"))
@@ -159,9 +159,10 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
   private val nino = new Generator(new Random).nextNino
   private implicit val hc = HeaderCarrier()
   val personService: PersonService = mock[PersonService]
+  val bbsiService = mock[BbsiService]
 
   class SUT extends BbsiUpdateAccountController(
-    mock[BbsiService],
+    bbsiService,
     personService,
     mock[AuditConnector],
     mock[DelegationConnector],

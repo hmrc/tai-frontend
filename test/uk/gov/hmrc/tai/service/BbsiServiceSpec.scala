@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.service
 
-import uk.gov.hmrc.tai.model.{AmountRequest, CloseAccountRequest, TaxYear}
 import org.joda.time.{DateTime, LocalDate}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -24,8 +23,9 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
 import uk.gov.hmrc.tai.connectors.BbsiConnector
+import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
+import uk.gov.hmrc.tai.model.{AmountRequest, CloseAccountRequest, TaxYear}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -61,7 +61,7 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
     }
 
     "return multiple bank accounts" when {
-      "connector returns multiple bank accounts" in {
+      "connector returns multiple bank accou
 
         val sut = createSUT
 
@@ -210,14 +210,12 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
 
   private val oneBankAccount = Seq(bankAccount1)
 
-  private val multipleBankAccounts = Seq(bankAccount1,bankAccount2)
+  private val multipleBankAccounts = Seq(bankAccount1, bankAccount2)
 
-  private val untaxedInterest = UntaxedInterest(200,Nil)
+  private val untaxedInterest = UntaxedInterest(200, Nil)
 
   def createSUT = new SUT
 
-  class SUT extends BbsiService{
+  class SUT extends BbsiService(mock[BbsiConnector])
 
-    override val connector: BbsiConnector = mock[BbsiConnector]
-  }
 }

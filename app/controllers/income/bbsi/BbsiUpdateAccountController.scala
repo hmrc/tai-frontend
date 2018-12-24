@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.viewModels.income.{BbsiUpdateAccountViewModel, BbsiUpdate
 import scala.concurrent.Future
 
 
-class BbsiUpdateAccountController @Inject()(val bbsiService: BbsiService,
+class BbsiUpdateAccountController @Inject()(bbsiService: BbsiService,
                                             val personService: PersonService,
                                             val auditConnector: AuditConnector,
                                             val delegationConnector: DelegationConnector,
