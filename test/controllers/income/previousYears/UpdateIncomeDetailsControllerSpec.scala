@@ -271,7 +271,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
             Seq[Option[String]](Some("123456789"))
           ))
         )
-        when(sut.previousYearsIncomeService.incorrectIncome(any(), Matchers.eq(1), Matchers.eq(incorrectIncome))(any())).
+        when(previousYearsIncomeService.incorrectIncome(any(), Matchers.eq(1), Matchers.eq(incorrectIncome))(any())).
           thenReturn(Future.successful("1"))
         when(sut.trackingJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey), Matchers.eq("true"))(any())).
           thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey -> "true")))
@@ -294,7 +294,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
             Seq[Option[String]](None)
           ))
         )
-        when(sut.previousYearsIncomeService.incorrectIncome(any(), Matchers.eq(1), Matchers.eq(incorrectEmployment))(any())).
+        when(previousYearsIncomeService.incorrectIncome(any(), Matchers.eq(1), Matchers.eq(incorrectEmployment))(any())).
           thenReturn(Future.successful("1"))
         when(sut.trackingJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey), Matchers.eq("true"))(any())).
           thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey -> "true")))
@@ -333,9 +333,10 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
   val personService: PersonService = mock[PersonService]
   val journeyCacheService = mock[JourneyCacheService]
   val trackingjourneyCacheService = mock[JourneyCacheService]
+  val previousYearsIncomeService = mock[PreviousYearsIncomeService]
 
   private class SUT extends UpdateIncomeDetailsController(
-    mock[PreviousYearsIncomeService],
+    previousYearsIncomeService,
     personService,
     mock[AuditConnector],
     mock[DelegationConnector],
