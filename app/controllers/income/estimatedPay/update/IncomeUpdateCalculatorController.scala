@@ -47,7 +47,7 @@ import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditInc
 import scala.Function.tupled
 import scala.concurrent.Future
 
-class IncomeUpdateCalculatorController @Inject()(val incomeService: IncomeService,
+class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
                                                  val employmentService: EmploymentService,
                                                  val taxAccountService: TaxAccountService,
                                                  val personService: PersonService,
