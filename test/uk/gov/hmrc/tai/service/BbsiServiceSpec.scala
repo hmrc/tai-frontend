@@ -61,7 +61,7 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
     }
 
     "return multiple bank accounts" when {
-      "connector returns multiple bank accou
+      "connector returns multiple bank account" in {
 
         val sut = createSUT
 

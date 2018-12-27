@@ -42,7 +42,6 @@ class TaiModule extends Module with JourneyCacheConstants with BankAccountDecisi
     bind[TaxCodeChangeConnector].toInstance(TaxCodeChangeConnector),
     // Services
     bind[AuditService].toInstance(AuditService),
-    bind[CodingComponentService].toInstance(CodingComponentService),
     bind[BenefitsService].toInstance(BenefitsService),
     bind[CompanyCarService].toInstance(CompanyCarService),
     bind[EmploymentService].toInstance(EmploymentService),

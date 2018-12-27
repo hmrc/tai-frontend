@@ -55,7 +55,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
         Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
       when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
-      when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
+      when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
         Future.successful(Seq.empty[CodingComponent]))
       when(sut.employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(
         Future.successful(Seq(employment)))
@@ -81,7 +81,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
           Future.successful(TaiNotFoundResponse("Not Found")))
         when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
-        when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
           Future.successful(Seq.empty[CodingComponent]))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -102,6 +102,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
   )
 
   val personService: PersonService = mock[PersonService]
+  val codingComponentService = mock[CodingComponentService]
 
   def createSut = new SUT()
 
@@ -112,7 +113,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
     mock[AuthConnector],
     mock[TaxAccountService],
     mock[EmploymentService],
-    mock[CodingComponentService],
+    codingComponentService,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
