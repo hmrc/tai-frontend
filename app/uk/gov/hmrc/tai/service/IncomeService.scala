@@ -37,12 +37,6 @@ class IncomeService @Inject() (val taxAccountService: TaxAccountService,
                                val employmentService: EmploymentService,
                                val taiConnector: TaiConnector) extends JourneyCacheConstants {
 
-//  def taxAccountService: TaxAccountService
-//
-//  def employmentService: EmploymentService
-//
-//  def taiConnector: TaiConnector
-
   def employmentAmount(nino: Nino, id: Int)(implicit hc: HeaderCarrier, messages: Messages): Future[EmploymentAmount] = {
     for {
       taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(nino, TaxYear())
@@ -120,10 +114,3 @@ class IncomeService @Inject() (val taxAccountService: TaxAccountService,
   }
 
 }
-//// $COVERAGE-OFF$
-//object IncomeService extends IncomeService {
-//  override val taxAccountService: TaxAccountService = TaxAccountService
-//  override val employmentService: EmploymentService = EmploymentService
-//  override val taiConnector: TaiConnector = TaiConnector
-//}
-//// $COVERAGE-ON$
