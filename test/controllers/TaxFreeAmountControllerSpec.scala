@@ -44,7 +44,7 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
   "taxFreeAmount" must {
     "show tax free amount page" in {
       val SUT = createSUT()
-      when(SUT.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(codingComponents))
+      when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(codingComponents))
       when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
       when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
       val result = SUT.taxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -61,7 +61,7 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
     "display error page" when {
       "display any error" in {
         val SUT = createSUT()
-        when(SUT.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.failed(new InternalError("error occurred")))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.failed(new InternalError("error occurred")))
 
         val result = SUT.taxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -78,10 +78,14 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
     CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description"))
 
   val personService: PersonService = mock[PersonService]
+  val codingComponentService = mock[CodingComponentService]
 
   private class SUT() extends TaxFreeAmountController(
-    personService, mock[CodingComponentService],
-    mock[EmploymentService], mock[CompanyCarService], mock[AuditConnector],
+    personService,
+    codingComponentService,
+    mock[EmploymentService],
+    mock[CompanyCarService],
+    mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector], mock[FormPartialRetriever],
     MockTemplateRenderer

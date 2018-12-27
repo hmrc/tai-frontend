@@ -38,7 +38,7 @@ import views.html.previousYearUnderpayment
 
 
 class UnderpaymentFromPreviousYearController @Inject()(val personService: PersonService,
-                                                       val codingComponentService: CodingComponentService,
+                                                       codingComponentService: CodingComponentService,
                                                        val employmentService: EmploymentService,
                                                        val companyCarService: CompanyCarService,
                                                        val taxAccountService: TaxAccountService,

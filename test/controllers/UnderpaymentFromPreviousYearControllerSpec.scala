@@ -74,10 +74,11 @@ class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
   }
 
   val personService: PersonService = mock[PersonService]
+  val codingComponentService = mock[CodingComponentService]
 
   private class SUT() extends UnderpaymentFromPreviousYearController(
     personService,
-    mock[CodingComponentService],
+    codingComponentService,
     mock[EmploymentService],
     mock[CompanyCarService],
     mock[TaxAccountService],

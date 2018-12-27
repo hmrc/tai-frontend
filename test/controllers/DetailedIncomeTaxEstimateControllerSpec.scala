@@ -78,7 +78,7 @@ class DetailedIncomeTaxEstimateControllerSpec extends PlaySpec with MockitoSugar
 
       "fetch of tax free amount components" in {
         val sut = createSUT
-        when(sut.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.failed(new Error))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.failed(new Error))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -91,10 +91,11 @@ class DetailedIncomeTaxEstimateControllerSpec extends PlaySpec with MockitoSugar
   private def createSUT = new SUT
 
   val personService: PersonService = mock[PersonService]
+  val codingComponentService = mock[CodingComponentService]
 
   class SUT extends DetailedIncomeTaxEstimateController(
     mock[TaxAccountService],
-    mock[CodingComponentService],
+    codingComponentService,
     personService,
     mock[AuditConnector],
     mock[DelegationConnector],
