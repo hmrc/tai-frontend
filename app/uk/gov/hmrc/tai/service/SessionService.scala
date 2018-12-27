@@ -24,15 +24,8 @@ import scala.concurrent.Future
 
 class SessionService @Inject() (val sessionConnector: SessionConnector) {
 
-//  def sessionConnector: SessionConnector
-
   def invalidateCache()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     sessionConnector.invalidateCache()
   }
 
 }
-//// $COVERAGE-OFF$
-//object SessionService extends SessionService {
-//  override val sessionConnector = SessionConnector
-//}
-//// $COVERAGE-ON$
