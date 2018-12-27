@@ -694,7 +694,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
 
       val expectedModel = AddPensionProvider("a pension provider", LocalDate.parse("2017-06-09"), "pension-ref-1234", "Yes", Some("123456789"))
 
-      when(sut.pensionProviderService.addPensionProvider(any(), Matchers.eq(expectedModel))(any())).thenReturn(Future.successful("envelope-123"))
+      when(pensionProviderService.addPensionProvider(any(), Matchers.eq(expectedModel))(any())).thenReturn(Future.successful("envelope-123"))
       when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
         Future.successful(
           Seq[String]("a pension provider", "2017-06-09", "pension-ref-1234", "Yes"),
@@ -726,8 +726,10 @@ class AddPensionProviderControllerSpec extends PlaySpec
 
   val generateNino: Nino = new Generator().nextNino
 
+  val pensionProviderService = mock[PensionProviderService]
+
   private class SUT extends AddPensionProviderController(
-    mock[PensionProviderService],
+    pensionProviderService,
     mock[AuditService],
     mock[PersonService],
     mock[AuditConnector],
