@@ -42,7 +42,7 @@ import scala.concurrent.Future
 class CompanyCarController @Inject()(val personService: PersonService,
                                      val companyCarService: CompanyCarService,
                                      @Named("Company Car") val journeyCacheService: JourneyCacheService,
-                                     val sessionService: SessionService,
+                                     sessionService: SessionService,
                                      val auditConnector: AuditConnector,
                                      val delegationConnector: DelegationConnector,
                                      val authConnector: AuthConnector,

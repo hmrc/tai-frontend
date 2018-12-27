@@ -16,22 +16,23 @@
 
 package uk.gov.hmrc.tai.service
 
+import com.google.inject.Inject
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.tai.connectors.SessionConnector
 
 import scala.concurrent.Future
 
-trait SessionService {
+class SessionService @Inject() (val sessionConnector: SessionConnector) {
 
-  def sessionConnector: SessionConnector
+//  def sessionConnector: SessionConnector
 
   def invalidateCache()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     sessionConnector.invalidateCache()
   }
 
 }
-// $COVERAGE-OFF$
-object SessionService extends SessionService {
-  override val sessionConnector = SessionConnector
-}
-// $COVERAGE-ON$
+//// $COVERAGE-OFF$
+//object SessionService extends SessionService {
+//  override val sessionConnector = SessionConnector
+//}
+//// $COVERAGE-ON$

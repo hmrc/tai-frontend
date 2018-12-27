@@ -23,6 +23,7 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.mockito.{Matchers, Mockito}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -46,7 +47,16 @@ import scala.concurrent.Future
 import scala.language.postfixOps
 import scala.util.Random
 
-class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with JourneyCacheConstants{
+class CompanyCarControllerSpec extends PlaySpec
+  with MockitoSugar
+  with FakeTaiPlayApplication
+  with I18nSupport
+  with JourneyCacheConstants
+  with BeforeAndAfterEach {
+
+    override def beforeEach: Unit = {
+      Mockito.reset(sessionService)
+    }
 
   "CompanyCarController" should {
 
@@ -82,13 +92,13 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
           val request = FakeRequest("POST", "").withFormUrlEncodedBody("userChoice" -> "removeCar").withSession(
             SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
           )
-          when(sut.sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
+          when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
 
           val result = sut.handleUserJourneyChoice()(request)
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result).get mustBe ApplicationConfig.companyCarDetailsUrl
-          Mockito.verify(sut.sessionService, Mockito.times(1)).invalidateCache()(any())
+          Mockito.verify(sessionService, Mockito.times(1)).invalidateCache()(any())
         }
     }
 
@@ -98,12 +108,12 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
           val request = FakeRequest("POST", "").withFormUrlEncodedBody("userChoice" -> "removeCar").withSession(
             SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
           )
-          when(sut.sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
+          when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
 
           val result = sut.handleUserJourneyChoice()(request)
           status(result) mustBe SEE_OTHER
           redirectLocation(result).get mustBe ApplicationConfig.companyCarServiceUrl
-          Mockito.verify(sut.sessionService, Mockito.times(1)).invalidateCache()(any())
+          Mockito.verify(sessionService, Mockito.times(1)).invalidateCache()(any())
         }
     }
 
@@ -113,12 +123,12 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
         val request = FakeRequest("POST", "").withFormUrlEncodedBody("userChoice" -> "changeCarDetails").withSession(
           SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
         )
-        when(sut.sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
+        when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
 
         val result = sut.handleUserJourneyChoice()(request)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe ApplicationConfig.companyCarServiceUrl
-        Mockito.verify(sut.sessionService, Mockito.times(1)).invalidateCache()(any())
+        Mockito.verify(sessionService, Mockito.times(1)).invalidateCache()(any())
       }
     }
   }
@@ -159,11 +169,13 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
   def createSUT(isCompanyCarForceRedirectEnabled: Boolean = false) = new SUT(isCompanyCarForceRedirectEnabled)
 
+  val sessionService = mock[SessionService]
+
   class SUT(isCompanyCarForceRedirectEnabled: Boolean) extends CompanyCarController(
     mock[PersonService],
     mock[CompanyCarService],
     mock[JourneyCacheService],
-    mock[SessionService],
+    sessionService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],
