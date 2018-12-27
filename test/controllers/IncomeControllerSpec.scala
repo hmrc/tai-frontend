@@ -20,9 +20,10 @@ import builders.{AuthBuilder, RequestBuilder, UserBuilder}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -52,9 +53,14 @@ class IncomeControllerSpec extends PlaySpec
   with MockitoSugar
   with JourneyCacheConstants
   with FakeTaiPlayApplication
-  with I18nSupport {
+  with I18nSupport
+  with BeforeAndAfterEach {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
+  override def beforeEach: Unit = {
+    Mockito.reset(incomeService)
+  }
 
   "regularIncome" must {
     "return OK with regular income view" when {
@@ -62,9 +68,9 @@ class IncomeControllerSpec extends PlaySpec
         val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
-        when(testController.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
-        when(testController.incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(Some(payment)))
-        when(testController.incomeService.cachePaymentForRegularIncome(any())(any())).thenReturn(Map.empty[String, String])
+        when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+        when(incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(Some(payment)))
+        when(incomeService.cachePaymentForRegularIncome(any())(any())).thenReturn(Map.empty[String, String])
         when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = testController.regularIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -330,9 +336,9 @@ class IncomeControllerSpec extends PlaySpec
         val testController = createTestIncomeController
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
-        when(testController.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
-        when(testController.incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(Some(payment)))
-        when(testController.incomeService.cachePaymentForRegularIncome(any())(any())).thenReturn(Map.empty[String, String])
+        when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+        when(incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(Some(payment)))
+        when(incomeService.cachePaymentForRegularIncome(any())(any())).thenReturn(Map.empty[String, String])
         when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = testController.pensionIncome()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -512,7 +518,7 @@ class IncomeControllerSpec extends PlaySpec
 
         val employmentAmount = EmploymentAmount("employment","(Current employer)",1,11,11,None,None,None,None,true,false)
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
-        when(testController.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+        when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
 
         val result = testController.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
@@ -524,7 +530,7 @@ class IncomeControllerSpec extends PlaySpec
 
         val employmentAmount = EmploymentAmount("employment","(Current employer)",1,11,11,None,None,None,None,false,false)
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
-        when(testController.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+        when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
 
         val result = testController.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
@@ -536,7 +542,7 @@ class IncomeControllerSpec extends PlaySpec
 
         val employmentAmount = EmploymentAmount("employment","(Current employer)",1,11,11,None,None,None,None,false, true)
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(1))
-        when(testController.incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+        when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
 
         val result = testController.viewIncomeForEdit()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
@@ -571,13 +577,15 @@ class IncomeControllerSpec extends PlaySpec
   val employmentAmount = EmploymentAmount("employment","(Current employer)",1,1111,1111,
     None,None,Some(new LocalDate(2000, 5, 20)), None, true, false)
 
+  val incomeService = mock[IncomeService]
+
   private def createTestIncomeController = new TestIncomeController
   private class TestIncomeController extends IncomeController(
     mock[PersonService],
     mock[JourneyCacheService],
     mock[TaxAccountService],
     mock[EmploymentService],
-    mock[IncomeService],
+    incomeService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],
