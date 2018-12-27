@@ -45,7 +45,7 @@ import views.html.incomes.previousYears.CheckYourAnswers
 import scala.Function.tupled
 import scala.concurrent.Future
 
-class UpdateIncomeDetailsController @Inject()(val previousYearsIncomeService: PreviousYearsIncomeService,
+class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: PreviousYearsIncomeService,
                                               val personService: PersonService,
                                               val auditConnector: AuditConnector,
                                               val delegationConnector: DelegationConnector,
