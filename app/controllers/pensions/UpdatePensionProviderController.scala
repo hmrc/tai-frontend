@@ -48,7 +48,7 @@ import scala.Function.tupled
 import scala.concurrent.Future
 
 class UpdatePensionProviderController @Inject()(val taxAccountService: TaxAccountService,
-                                                val pensionProviderService: PensionProviderService,
+                                                pensionProviderService: PensionProviderService,
                                                 val auditService: AuditService,
                                                 val personService: PersonService,
                                                 val delegationConnector: DelegationConnector,

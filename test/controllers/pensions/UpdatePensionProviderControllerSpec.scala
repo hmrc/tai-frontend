@@ -366,7 +366,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
             Seq[Option[String]](Some("123456789"))
           ))
         )
-        when(sut.pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(any()))
+        when(pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(any()))
           .thenReturn(Future.successful("envelope_id_1"))
         when(sut.successfulJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_UpdatePensionKey), Matchers.eq("true"))(any()))
           .thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdateEmploymentKey -> "true")))
@@ -388,7 +388,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
             Seq[Option[String]](None)
           ))
         )
-        when(sut.pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(any()))
+        when(pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(any()))
           .thenReturn(Future.successful("envelope_id_1"))
         when(sut.successfulJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_UpdatePensionKey), Matchers.eq("true"))(any()))
           .thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdateEmploymentKey -> "true")))
@@ -422,9 +422,11 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
   val generateNino: Nino = new Generator().nextNino
   val pensionName = "TEST"
 
+  val pensionProviderService = mock[PensionProviderService]
+
   class SUT extends UpdatePensionProviderController(
     mock[TaxAccountService],
-    mock[PensionProviderService],
+    pensionProviderService,
     mock[AuditService],
     mock[PersonService],
     mock[DelegationConnector],

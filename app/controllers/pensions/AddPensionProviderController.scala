@@ -45,7 +45,7 @@ import scala.Function.tupled
 import scala.concurrent.Future
 import scala.language.postfixOps
 
-class AddPensionProviderController @Inject()(val pensionProviderService: PensionProviderService,
+class AddPensionProviderController @Inject()(pensionProviderService: PensionProviderService,
                                              val auditService: AuditService,
                                              val personService: PersonService,
                                              val auditConnector: AuditConnector,
