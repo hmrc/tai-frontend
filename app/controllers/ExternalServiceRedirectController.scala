@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.{AuditService, PersonService, SessionService}
 
-class ExternalServiceRedirectController @Inject()(val sessionService: SessionService,
+class ExternalServiceRedirectController @Inject()(sessionService: SessionService,
                                                   val personService: PersonService,
                                                   val auditService: AuditService,
                                                   val delegationConnector: DelegationConnector,
