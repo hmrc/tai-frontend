@@ -148,9 +148,12 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
 
   private def createSut = new TrackingServiceTest
 
-  private class TrackingServiceTest extends TrackingService {
-    override val trackingConnector: TrackingConnector = mock[TrackingConnector]
-    override val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
-  }
+  val trackingConnector: TrackingConnector = mock[TrackingConnector]
+  val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+
+  private class TrackingServiceTest extends TrackingService(
+    trackingConnector,
+    successfulJourneyCacheService
+  )
 
 }

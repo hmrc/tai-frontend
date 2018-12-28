@@ -62,7 +62,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
       when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
       )
-      when(sut.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
+      when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
 
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -84,7 +84,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
       when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
       )
-      when(sut.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
+      when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
       when(sut.auditService.createAndSendAuditEvent(Matchers.eq(TaxAccountSummary_UserEntersSummaryPage), Matchers.eq(Map("nino" -> nino.nino)))(any(), any())).thenReturn(Future.successful(Success))
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -124,7 +124,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
 
       "a downstream error has occurred in the tax code income service (which does not reply with TaiResponse type)" in {
         val sut = createSUT
-        when(sut.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
+        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiTaxAccountFailureResponse("Failed")))
         when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
@@ -142,7 +142,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
 
       "a downstream error has occurred in one of the TaiResponse responding service methods due to no found primary employment information" in {
         val sut = createSUT
-        when(sut.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
+        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
         when(sut.authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
         when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
@@ -155,7 +155,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
       }
       "a downstream error has occurred in one of the TaiResponse responding service methods due to no employments recorded for current tax year" in {
         val sut = createSUT
-        when(sut.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
+        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
         when(sut.authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
         when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
@@ -189,9 +189,10 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
   def createSUT = new SUT()
 
   val personService: PersonService = mock[PersonService]
+  val trackingService = mock[TrackingService]
 
   class SUT() extends TaxAccountSummaryController(
-    mock[TrackingService],
+    trackingService,
     mock[EmploymentService],
     mock[TaxAccountService],
     mock[AuditService],

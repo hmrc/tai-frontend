@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.tai.service
 
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import play.api.Logger
 import uk.gov.hmrc.tai.connectors.TrackingConnector
 import uk.gov.hmrc.tai.model.domain.tracking.{TrackedForm, TrackedFormDone}
@@ -27,11 +29,9 @@ import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.util.control.NonFatal
 
-trait TrackingService extends JourneyCacheConstants{
-
-  def trackingConnector: TrackingConnector
-
-  def successfulJourneyCacheService: JourneyCacheService
+class TrackingService @Inject() (val trackingConnector: TrackingConnector,
+                                 @Named("Successful Journey") val successfulJourneyCacheService: JourneyCacheService
+                                ) extends JourneyCacheConstants{
 
   def isAnyIFormInProgress(nino: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
     val trackingStatus = trackingForTesForms(nino) map { trackedForm =>
@@ -52,9 +52,3 @@ trait TrackingService extends JourneyCacheConstants{
   }
 
 }
-// $COVERAGE-OFF$
-object TrackingService extends TrackingService {
-  override lazy val trackingConnector: TrackingConnector = TrackingConnector
-  override lazy val successfulJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
-}
-// $COVERAGE-ON$
