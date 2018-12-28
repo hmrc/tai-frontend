@@ -33,10 +33,6 @@ class TrackingService @Inject() (val trackingConnector: TrackingConnector,
                                  @Named("Successful Journey") val successfulJourneyCacheService: JourneyCacheService
                                 ) extends JourneyCacheConstants{
 
-//  def trackingConnector: TrackingConnector
-//
-//  def successfulJourneyCacheService: JourneyCacheService
-
   def isAnyIFormInProgress(nino: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
     val trackingStatus = trackingForTesForms(nino) map { trackedForm =>
       !trackedForm.forall(_.status == TrackedFormDone)
@@ -56,9 +52,3 @@ class TrackingService @Inject() (val trackingConnector: TrackingConnector,
   }
 
 }
-//// $COVERAGE-OFF$
-//object TrackingService extends TrackingService {
-//  override lazy val trackingConnector: TrackingConnector = TrackingConnector
-//  override lazy val successfulJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
-//}
-//// $COVERAGE-ON$
