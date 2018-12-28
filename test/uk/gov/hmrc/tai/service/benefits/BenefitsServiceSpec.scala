@@ -40,7 +40,7 @@ class BenefitsServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
     "return benefits" in {
       val sut = createSut
       val sampleTaxYear = 2018
-      when(sut.benefitsConnector.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+      when(benefitsConnector.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
 
       val result = sut.benefits(generateNino, sampleTaxYear)
       Await.result(result, 5 seconds) mustBe benefits
@@ -52,7 +52,7 @@ class BenefitsServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
       val sut = createSut
       val nino = generateNino
       val endedCompanyBenefit = EndedCompanyBenefit("Accommodation",Messages("tai.noLongerGetBenefit"),"Before 6th April",Some("1000000"),"Yes",Some("0123456789"))
-      when(sut.benefitsConnector.endedCompanyBenefit(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(endedCompanyBenefit))(any())).thenReturn(Future.successful(Some("123-456-789")))
+      when(benefitsConnector.endedCompanyBenefit(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(endedCompanyBenefit))(any())).thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.endedCompanyBenefit(nino, 1, endedCompanyBenefit), 5.seconds)
 
@@ -64,7 +64,7 @@ class BenefitsServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
         val sut = createSut
         val nino = generateNino
         val endedCompanyBenefit = EndedCompanyBenefit("Accommodation",Messages("tai.noLongerGetBenefit"),"Before 6th April",Some("1000000"),"Yes",Some("0123456789"))
-        when(sut.benefitsConnector.endedCompanyBenefit(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(endedCompanyBenefit))(any())).thenReturn(Future.successful(None))
+        when(benefitsConnector.endedCompanyBenefit(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(endedCompanyBenefit))(any())).thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.endedCompanyBenefit(nino, 1, endedCompanyBenefit), 5.seconds)
         rte.getMessage mustBe s"No envelope id was generated when attempting to end company benefit for ${nino.nino}"
@@ -78,8 +78,10 @@ class BenefitsServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApp
 
   private def createSut = new SUT
 
-  private class SUT extends BenefitsService {
-    override val benefitsConnector: BenefitsConnector = mock[BenefitsConnector]
-  }
+  val benefitsConnector = mock[BenefitsConnector]
+
+  private class SUT extends BenefitsService(
+    benefitsConnector
+  )
 
 }
