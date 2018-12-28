@@ -239,11 +239,6 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
     mock[EmploymentService],
     mock[TaxAccountService]
   )
-//  {
-//    override lazy val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-//    override lazy val employmentService: EmploymentService = mock[EmploymentService]
-//    override lazy val taxAccountService: TaxAccountService = mock[TaxAccountService]
-//  }
 
   val updateNextYearsIncomeService = new UpdateNextYearsIncomeServiceTest
 }
