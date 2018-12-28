@@ -234,11 +234,16 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  class UpdateNextYearsIncomeServiceTest extends UpdateNextYearsIncomeService {
-    override lazy val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override lazy val employmentService: EmploymentService = mock[EmploymentService]
-    override lazy val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  }
+  class UpdateNextYearsIncomeServiceTest extends UpdateNextYearsIncomeService(
+    mock[JourneyCacheService],
+    mock[EmploymentService],
+    mock[TaxAccountService]
+  )
+//  {
+//    override lazy val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
+//    override lazy val employmentService: EmploymentService = mock[EmploymentService]
+//    override lazy val taxAccountService: TaxAccountService = mock[TaxAccountService]
+//  }
 
   val updateNextYearsIncomeService = new UpdateNextYearsIncomeServiceTest
 }

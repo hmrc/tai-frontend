@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 
 import scala.concurrent.Future
 
-class UpdateIncomeNextYearController @Inject()(val updateNextYearsIncomeService: UpdateNextYearsIncomeService,
+class UpdateIncomeNextYearController @Inject()(updateNextYearsIncomeService: UpdateNextYearsIncomeService,
                                                val personService: PersonService,
                                                val auditConnector: AuditConnector,
                                                val delegationConnector: DelegationConnector,
