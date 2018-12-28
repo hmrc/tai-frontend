@@ -22,11 +22,14 @@ import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.time.TaxYearResolver
 
 
-object TaxPeriodLabelService {
+trait TaxPeriodLabelService {
 
   def taxPeriodLabel(year: Int)(implicit messages: Messages) : String = {
     HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfTaxYear(year))) + " " + messages("language.to") + " " +
       HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfTaxYear( year + 1).minusDays(1)))
   }
 
+
 }
+
+object TaxPeriodLabelService extends TaxPeriodLabelService

@@ -45,6 +45,7 @@ class PayeControllerHistoricSpec extends PlaySpec
   with FakeTaiPlayApplication
   with MockitoSugar
   with I18nSupport
+  with TaxPeriodLabelService
   with JsoupMatchers
   with ControllerViewTestHelper {
 
