@@ -26,6 +26,7 @@ import uk.gov.hmrc.tai.connectors._
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.{BenefitsService, CompanyCarService}
 import uk.gov.hmrc.tai.util.constants.{BankAccountDecisionConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
 class TaiModule extends Module with JourneyCacheConstants with BankAccountDecisionConstants {
 
@@ -66,6 +67,7 @@ class TaiModule extends Module with JourneyCacheConstants with BankAccountDecisi
     bind[JourneyCacheService].qualifiedWith("Update Bank Account Choice").toInstance(JourneyCacheService(UpdateBankAccountChoiceJourneyKey)),
     bind[JourneyCacheService].qualifiedWith("Update Employment").toInstance(JourneyCacheService(UpdateEmployment_JourneyKey)),
     bind[JourneyCacheService].qualifiedWith("Update Income").toInstance(JourneyCacheService(UpdateIncome_JourneyKey)),
+    bind[JourneyCacheService].qualifiedWith("Update Next Years Income").toInstance(JourneyCacheService(UpdateNextYearsIncomeConstants.JOURNEY_KEY)),
     bind[JourneyCacheService].qualifiedWith("Update Pension Provider").toInstance(JourneyCacheService(UpdatePensionProvider_JourneyKey)),
     bind[JourneyCacheService].qualifiedWith("Update Previous Years Income").toInstance(JourneyCacheService(UpdatePreviousYearsIncome_JourneyKey))
   )
