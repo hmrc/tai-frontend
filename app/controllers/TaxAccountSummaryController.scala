@@ -40,7 +40,7 @@ import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 
 import scala.concurrent.Future
 
-class TaxAccountSummaryController @Inject()(val trackingService: TrackingService,
+class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
                                             val employmentService: EmploymentService,
                                             val taxAccountService: TaxAccountService,
                                             val auditService: AuditService,
