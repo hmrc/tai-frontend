@@ -55,7 +55,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(sut.benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
 
         val result = sut.onPageLoad(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -72,7 +72,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(sut.benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
 
         val result = sut.onPageLoad(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -129,6 +129,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
   def createSUT = new SUT
 
   val personService: PersonService = mock[PersonService]
+  val benefitsService = mock[BenefitsService]
 
   class SUT extends IncomeSourceSummaryController(
     personService,
@@ -137,7 +138,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
     mock[AuthConnector],
     mock[TaxAccountService],
     mock[EmploymentService],
-    mock[BenefitsService],
+    benefitsService,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {

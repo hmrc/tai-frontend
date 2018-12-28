@@ -373,7 +373,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
             Seq[Option[String]](Some("1000000"), Some("0123456789"))
           ))
         )
-        when(SUT.benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
+        when(benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
           thenReturn(Future.successful("1"))
         when(SUT.trackingJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any())).
           thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
@@ -403,7 +403,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
             Seq[Option[String]](None, None)
           ))
         )
-        when(SUT.benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
+        when(benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
           thenReturn(Future.successful("1"))
         when(SUT.trackingJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any())).
           thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
@@ -433,7 +433,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
             Seq[Option[String]](Some("1000000"), None)
           ))
         )
-        when(SUT.benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
+        when(benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
           thenReturn(Future.successful("1"))
         when(SUT.trackingJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any())).
           thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
@@ -463,7 +463,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
             Seq[Option[String]](None, Some("0123456789"))
           ))
         )
-        when(SUT.benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
+        when(benefitsService.endedCompanyBenefit(any(), Matchers.eq(employmentId.toInt), Matchers.eq(endedCompanyBenefit))(any())).
           thenReturn(Future.successful("1"))
         when(SUT.trackingJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentBenefitKey), Matchers.eq("true"))(any())).
           thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")))
@@ -518,12 +518,14 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
   def createSUT = new SUT
 
+  val benefitsService = mock[BenefitsService]
+
   class SUT extends RemoveCompanyBenefitController(
     mock[PersonService],
     mock[AuditService],
     mock[JourneyCacheService],
     mock[JourneyCacheService],
-    mock[BenefitsService],
+    benefitsService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],
