@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import com.google.inject.Inject
 import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
 import play.api.Play.current
 import uk.gov.hmrc.domain.Nino
@@ -27,10 +28,11 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.Person
 
-trait PersonService {
+class PersonService @Inject() (val taiConnector: TaiConnector,
+                               val personConnector: PersonConnector) {
 
-  def taiClient: TaiConnector
-  def personConnector: PersonConnector
+//  def taiClient: TaiConnector
+//  def personConnector: PersonConnector
 
   def personDetails(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] = {
     personConnector.person(nino) map {
@@ -40,8 +42,8 @@ trait PersonService {
   }
 }
 
-
-object PersonService extends PersonService {
-  override val taiClient = TaiConnector
-  override lazy val personConnector = PersonConnector
-}
+//
+//object PersonService extends PersonService {
+//  override val taiClient = TaiConnector
+//  override lazy val personConnector = PersonConnector
+//}

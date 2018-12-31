@@ -49,7 +49,7 @@ trait PersonConnector {
 
 object PersonConnector extends PersonConnector with ServicesConfig {
 
-  override val serviceUrl = baseUrl("tai")
+  override lazy val serviceUrl = baseUrl("tai")
 
   override def httpHandler: HttpHandler = HttpHandler
 }
