@@ -37,14 +37,6 @@ class CompanyCarService @Inject() (val carConnector: CompanyCarConnector,
                                    val auditService: AuditService,
                                    @Named("Company Car") val journeyCacheService: JourneyCacheService) extends JourneyCacheConstants {
 
-//  def carConnector: CompanyCarConnector
-//
-//  def journeyCacheService: JourneyCacheService
-//
-//  def employmentService: EmploymentService
-//
-//  def auditService: AuditService
-
   def companyCarOnCodingComponents(nino: Nino, codingComponents: Seq[CodingComponent])(implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] = {
     if (codingComponents.exists(_.componentType == CarBenefit))
       carConnector.companyCarsForCurrentYearEmployments(nino).map(_.filterNot(isCompanyCarDateWithdrawn))
@@ -123,11 +115,3 @@ class CompanyCarService @Inject() (val carConnector: CompanyCarConnector,
     }
   }
 }
-//// $COVERAGE-OFF$
-//object CompanyCarService extends CompanyCarService {
-//  override val carConnector: CompanyCarConnector = CompanyCarConnector
-//  override val journeyCacheService: JourneyCacheService = JourneyCacheService(CompanyCar_JourneyKey)
-//  override val employmentService: EmploymentService = EmploymentService
-//  override lazy val auditService: AuditService = AuditService
-//}
-//// $COVERAGE-ON$
