@@ -28,8 +28,6 @@ import scala.concurrent.Future
 
 class EmploymentService @Inject() (val employmentsConnector: EmploymentsConnector) {
 
-//  def connector: EmploymentsConnector
-
   def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
     employmentsConnector.employments(nino, year)
   }
@@ -64,9 +62,3 @@ class EmploymentService @Inject() (val employmentsConnector: EmploymentsConnecto
      }
   }
 }
-//// $COVERAGE-OFF$
-//object EmploymentService extends EmploymentService{
-//  override lazy val connector: EmploymentsConnector = EmploymentsConnector
-//}
-//// $COVERAGE-ON$
-

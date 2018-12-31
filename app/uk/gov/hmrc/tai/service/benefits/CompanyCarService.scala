@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class CompanyCarService @Inject() (val carConnector: CompanyCarConnector,
-                                   val employmentService: EmploymentService,
+                                   employmentService: EmploymentService,
                                    auditService: AuditService,
                                    @Named("Company Car") val journeyCacheService: JourneyCacheService) extends JourneyCacheConstants {
 

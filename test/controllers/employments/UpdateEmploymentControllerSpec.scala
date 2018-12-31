@@ -64,7 +64,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
     "show the 'What Do You Want To Tell Us' Page" when {
       "the request has an authorised session" in {
         val sut = createSUT
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
         when(sut.journeyCacheService.cache(Matchers.eq(cache))(any())).thenReturn(Future.successful(cache))
         when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
@@ -81,7 +81,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
     "retrieve the employer name from the cache" when {
       "the request has an authorised session" in {
         val sut = createSUT
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
         when(sut.journeyCacheService.cache(Matchers.eq(cache))(any())).thenReturn(Future.successful(cache))
         when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
@@ -96,7 +96,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
     "retrieve the employment update details from the cache" when {
       "the request has an authorised session" in {
         val sut = createSUT
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         val cacheDetails = Some("updateDetails")
         when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(cacheDetails))
         val cache = Map(UpdateEmployment_EmploymentIdKey -> "1", UpdateEmployment_NameKey -> employment.name)
@@ -115,7 +115,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
     "throw exception" when {
       "employment not found" in {
         val sut = createSUT
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.updateEmploymentDetails(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -327,7 +327,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
             Seq[Option[String]](Some("123456789"))
           ))
         )
-        when(sut.employmentService.incorrectEmployment(any(), Matchers.eq(1), Matchers.eq(incorrectEmployment))(any())).
+        when(employmentService.incorrectEmployment(any(), Matchers.eq(1), Matchers.eq(incorrectEmployment))(any())).
           thenReturn(Future.successful("1"))
         when(sut.successfulJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_UpdateEmploymentKey), Matchers.eq("true"))(any())).
           thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdateEmploymentKey -> "true")))
@@ -349,7 +349,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
             Seq[Option[String]](None)
           ))
         )
-        when(sut.employmentService.incorrectEmployment(any(), Matchers.eq(1), Matchers.eq(incorrectEmployment))(any())).
+        when(employmentService.incorrectEmployment(any(), Matchers.eq(1), Matchers.eq(incorrectEmployment))(any())).
           thenReturn(Future.successful("1"))
         when(sut.successfulJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_UpdateEmploymentKey), Matchers.eq("true"))(any())).
           thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdateEmploymentKey -> "true")))
@@ -389,10 +389,11 @@ class UpdateEmploymentControllerSpec extends PlaySpec
   val personService: PersonService = mock[PersonService]
   val journeyCacheService = mock[JourneyCacheService]
   val successfulJourneyCacheService = mock[JourneyCacheService]
+  val employmentService = mock[EmploymentService]
 
 
   private class SUT extends UpdateEmploymentController(
-    mock[EmploymentService],
+    employmentService,
     personService,
     mock[AuditConnector],
     mock[DelegationConnector],

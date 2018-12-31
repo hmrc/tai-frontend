@@ -43,7 +43,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       "an taxCodeIncome and Employment is returned" in {
         val nino = generateNino
 
-        when(updateNextYearsIncomeService.employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
+        when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
         when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
@@ -66,7 +66,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       "could not retrieve a TaxCodeIncome" in {
         val nino = generateNino
 
-        when(updateNextYearsIncomeService.employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
+        when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
         when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
@@ -81,7 +81,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       "could not retrieve a Employment" in {
         val nino = generateNino
 
-        when(updateNextYearsIncomeService.employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
+        when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
           .thenReturn(Future.successful(None))
 
         when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
@@ -126,7 +126,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       "journey values do not exist in the cache" in {
         val nino = generateNino
 
-        when(updateNextYearsIncomeService.employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
+        when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
         when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
@@ -234,9 +234,11 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
+  val employmentService = mock[EmploymentService]
+
   class UpdateNextYearsIncomeServiceTest extends UpdateNextYearsIncomeService(
     mock[JourneyCacheService],
-    mock[EmploymentService],
+    employmentService,
     mock[TaxAccountService]
   )
 

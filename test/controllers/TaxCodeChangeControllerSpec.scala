@@ -85,7 +85,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(codingComponents))
         when(companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
-        when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
+        when(employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
         when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
 
         val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -153,11 +153,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val codingComponentService = mock[CodingComponentService]
   val companyCarService = mock[CompanyCarService]
+  val employmentService = mock[EmploymentService]
 
   private class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController(
     personService,
     codingComponentService,
-    mock[EmploymentService],
+    employmentService,
     companyCarService,
     taxCodeChangeService,
     mock[TaxAccountService],

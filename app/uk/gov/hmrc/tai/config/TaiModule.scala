@@ -41,6 +41,7 @@ class TaiModule extends Module with JourneyCacheConstants with BankAccountDecisi
     bind[BenefitsConnector].toInstance(BenefitsConnector),
     bind[CompanyCarConnector].toInstance(CompanyCarConnector),
     bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
+    bind[EmploymentsConnector].toInstance(EmploymentsConnector),
     bind[PensionProviderConnector].toInstance(PensionProviderConnector),
     bind[PreviousYearsIncomeConnector].toInstance(PreviousYearsIncomeConnector),
     bind[SessionConnector].toInstance(SessionConnector),

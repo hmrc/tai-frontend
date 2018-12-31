@@ -57,9 +57,9 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
       when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
         Future.successful(Seq.empty[CodingComponent]))
-      when(sut.employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(
+      when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(
         Future.successful(Seq(employment)))
-      when(sut.employmentService.employments(Matchers.any(), Matchers.eq(TaxYear().next))(Matchers.any())).thenReturn(
+      when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear().next))(Matchers.any())).thenReturn(
         Future.successful(Seq(employment)))
 
 
@@ -69,8 +69,8 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(Messages("tai.incomeTaxComparison.heading"))
 
-      verify(sut.employmentService, times(1)).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
-      verify(sut.employmentService, times(1)).employments(Matchers.any(), Matchers.eq(TaxYear().next))(Matchers.any())
+      verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
+      verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(TaxYear().next))(Matchers.any())
 
     }
 
@@ -103,6 +103,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
 
   val personService: PersonService = mock[PersonService]
   val codingComponentService = mock[CodingComponentService]
+  val employmentService = mock[EmploymentService]
 
   def createSut = new SUT()
 
@@ -112,7 +113,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
     mock[DelegationConnector],
     mock[AuthConnector],
     mock[TaxAccountService],
-    mock[EmploymentService],
+    employmentService,
     codingComponentService,
     mock[FormPartialRetriever],
     MockTemplateRenderer

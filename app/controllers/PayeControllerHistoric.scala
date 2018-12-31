@@ -39,7 +39,7 @@ import scala.concurrent.Future
 
 class PayeControllerHistoric @Inject()(val config: ApplicationConfig,
                                        taxCodeChangeService: TaxCodeChangeService,
-                                       val employmentService: EmploymentService,
+                                       employmentService: EmploymentService,
                                        val personService: PersonService,
                                        val auditConnector: AuditConnector,
                                        val delegationConnector: DelegationConnector,

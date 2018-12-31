@@ -66,7 +66,7 @@ class IncomeUpdateCalculatorControllerSpec
       val taxCodeIncome1 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employer", "S1150L", "employer", OtherBasisOfOperation, Live)
       val employment = Employment(employerName, Some("123"), new LocalDate("2016-05-26"), None, Nil, "", "", 1, None, false, false)
 
-      when(testController.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
       when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(taxCodeIncome1))))
       val result = testController.estimatedPayLandingPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -83,7 +83,7 @@ class IncomeUpdateCalculatorControllerSpec
       val employmentAmount = EmploymentAmount(name = "name", description = "description", employmentId = SampleId,
         newAmount = 200, oldAmount = 200, isLive = false, isOccupationalPension = true)
 
-      when(testController.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
       when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
       when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome])))
       when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
@@ -94,7 +94,7 @@ class IncomeUpdateCalculatorControllerSpec
     }
     "employments return empty income is none" in {
       val testController = createTestIncomeUpdateCalculatorController
-      when(testController.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+      when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
       val result = testController.howToUpdatePage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -970,10 +970,11 @@ class IncomeUpdateCalculatorControllerSpec
 
   val personService: PersonService = mock[PersonService]
   val incomeService: IncomeService = mock[IncomeService]
+  val employmentService = mock[EmploymentService]
 
   private class TestIncomeUpdateCalculatorController extends IncomeUpdateCalculatorController (
     incomeService,
-    mock[EmploymentService],
+    employmentService,
     mock[TaxAccountService],
     personService,
     mock[AuditConnector],

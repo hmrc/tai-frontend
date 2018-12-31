@@ -43,7 +43,7 @@ import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploy
 import scala.Function.tupled
 import scala.concurrent.Future
 
-class UpdateEmploymentController @Inject()(val employmentService: EmploymentService,
+class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
                                            val personService: PersonService,
                                            val auditConnector: AuditConnector,
                                            val delegationConnector: DelegationConnector,
