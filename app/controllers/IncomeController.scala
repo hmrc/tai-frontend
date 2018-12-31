@@ -42,7 +42,7 @@ import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, Jour
 import scala.Function.tupled
 import scala.concurrent.Future
 
-class IncomeController @Inject()(val personService: PersonService,
+class IncomeController @Inject()(personService: PersonService,
                                  @Named("Update Income") val journeyCacheService: JourneyCacheService,
                                  val taxAccountService: TaxAccountService,
                                  employmentService: EmploymentService,

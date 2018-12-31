@@ -71,9 +71,9 @@ class PersonServiceSpec extends PlaySpec
 
   def createSut = new PersonServiceTest
 
-  class PersonServiceTest extends PersonService {
-    override val taiClient: TaiConnector = mock[TaiConnector]
-    override val personConnector: PersonConnector = mock[PersonConnector]
-  }
+  class PersonServiceTest extends PersonService(
+    mock[TaiConnector],
+    mock[PersonConnector]
+  )
 
 }

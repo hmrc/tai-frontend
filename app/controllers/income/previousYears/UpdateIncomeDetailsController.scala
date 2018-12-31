@@ -46,7 +46,7 @@ import scala.Function.tupled
 import scala.concurrent.Future
 
 class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: PreviousYearsIncomeService,
-                                              val personService: PersonService,
+                                              personService: PersonService,
                                               val auditConnector: AuditConnector,
                                               val delegationConnector: DelegationConnector,
                                               val authConnector: AuthConnector,

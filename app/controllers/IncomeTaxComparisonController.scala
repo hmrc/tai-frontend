@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, Perso
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 
-class IncomeTaxComparisonController @Inject()(val personService: PersonService,
+class IncomeTaxComparisonController @Inject()(personService: PersonService,
                                               val auditConnector: AuditConnector,
                                               val delegationConnector: DelegationConnector,
                                               val authConnector: AuthConnector,

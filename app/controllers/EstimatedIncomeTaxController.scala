@@ -37,7 +37,7 @@ import uk.gov.hmrc.tai.service.estimatedIncomeTax.EstimatedIncomeTaxService
 import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 
-class EstimatedIncomeTaxController @Inject()(val personService: PersonService,
+class EstimatedIncomeTaxController @Inject()(personService: PersonService,
                                              codingComponentService: CodingComponentService,
                                              val partialService: HasFormPartialService,
                                              val taxAccountService: TaxAccountService,

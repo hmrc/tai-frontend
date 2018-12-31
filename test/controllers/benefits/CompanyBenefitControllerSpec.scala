@@ -179,9 +179,10 @@ class CompanyBenefitControllerSpec extends PlaySpec
     Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false)
 
   val employmentService = mock[EmploymentService]
+  val personService = mock[PersonService]
 
   class SUT extends CompanyBenefitController(
-    mock[PersonService],
+    personService,
     mock[AuditService],
     employmentService,
     mock[JourneyCacheService],

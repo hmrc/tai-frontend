@@ -131,9 +131,10 @@ class NoCYIncomeTaxErrorControllerSpec
   def createSUT(person: Person = defaultPerson, employmentDataFailure: Option[Throwable] = None) = new SUT(person, employmentDataFailure)
 
   val employmentService = mock[EmploymentService]
+  val personService = mock[PersonService]
 
   class SUT(person: Person, employmentDataFailure: Option[Throwable]) extends NoCYIncomeTaxErrorController(
-    mock[PersonService],
+    personService,
     employmentService,
     mock[AuditConnector],
     mock[DelegationConnector],

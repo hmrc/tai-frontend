@@ -621,9 +621,10 @@ class EndEmploymentControllerSpec
 
   val auditService = mock[AuditService]
   val employmentService = mock[EmploymentService]
+  val personService = mock[PersonService]
 
   private class EndEmploymentTest extends EndEmploymentController(
-    mock[PersonService],
+    personService,
     auditService,
     employmentService,
     mock[JourneyCacheService],

@@ -423,12 +423,13 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
   val pensionName = "TEST"
 
   val pensionProviderService = mock[PensionProviderService]
+  val personService = mock[PersonService]
 
   class SUT extends UpdatePensionProviderController(
     mock[TaxAccountService],
     pensionProviderService,
     mock[AuditService],
-    mock[PersonService],
+    personService,
     mock[DelegationConnector],
     mock[AuthConnector],
     mock[JourneyCacheService],

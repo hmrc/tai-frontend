@@ -39,7 +39,7 @@ import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.Future
 
-class CompanyCarController @Inject()(val personService: PersonService,
+class CompanyCarController @Inject()(personService: PersonService,
                                      companyCarService: CompanyCarService,
                                      @Named("Company Car") val journeyCacheService: JourneyCacheService,
                                      sessionService: SessionService,

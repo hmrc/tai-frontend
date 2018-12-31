@@ -579,10 +579,11 @@ class IncomeControllerSpec extends PlaySpec
 
   val incomeService = mock[IncomeService]
   val employmentService = mock[EmploymentService]
+  val personService = mock[PersonService]
 
   private def createTestIncomeController = new TestIncomeController
   private class TestIncomeController extends IncomeController(
-    mock[PersonService],
+    personService,
     mock[JourneyCacheService],
     mock[TaxAccountService],
     employmentService,

@@ -161,7 +161,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
       "mci indicator is true" in {
         val person = fakePerson(nino).copy(hasCorruptData = true)
         val testController = createTestController()
-        when(testController.personService.personDetails(any())(any()))
+        when(personService.personDetails(any())(any()))
           .thenReturn(Future.successful(person))
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -192,7 +192,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
       "the deceased indicator is set on the retrieved Person" in {
         val person = fakePerson(nino).copy(isDeceased = true)
         val testController = createTestController()
-        when(testController.personService.personDetails(any())(any()))
+        when(personService.personDetails(any())(any()))
           .thenReturn(Future.successful(person))
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
 
@@ -204,7 +204,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
       "the deceased AND mci indicators are set on the retrived Person" in {
         val person = fakePerson(nino).copy(isDeceased = true, hasCorruptData = true)
         val testController = createTestController()
-        when(testController.personService.personDetails(any())(any()))
+        when(personService.personDetails(any())(any()))
           .thenReturn(Future.successful(person))
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
 

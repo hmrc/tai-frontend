@@ -42,7 +42,7 @@ import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 
-class WhatDoYouWantToDoController @Inject()(val personService: PersonService,
+class WhatDoYouWantToDoController @Inject()(personService: PersonService,
                                             employmentService: EmploymentService,
                                             taxCodeChangeService: TaxCodeChangeService,
                                             val taxAccountService: TaxAccountService,

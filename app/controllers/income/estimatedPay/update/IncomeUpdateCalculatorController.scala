@@ -50,7 +50,7 @@ import scala.concurrent.Future
 class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
                                                  employmentService: EmploymentService,
                                                  val taxAccountService: TaxAccountService,
-                                                 val personService: PersonService,
+                                                 personService: PersonService,
                                                  val auditConnector: AuditConnector,
                                                  val delegationConnector: DelegationConnector,
                                                  val authConnector: AuthConnector,

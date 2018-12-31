@@ -37,7 +37,7 @@ import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 import views.html.previousYearUnderpayment
 
 
-class UnderpaymentFromPreviousYearController @Inject()(val personService: PersonService,
+class UnderpaymentFromPreviousYearController @Inject()(personService: PersonService,
                                                        codingComponentService: CodingComponentService,
                                                        employmentService: EmploymentService,
                                                        companyCarService: CompanyCarService,

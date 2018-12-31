@@ -36,7 +36,7 @@ import scala.concurrent.Future
 
 @Singleton
 class AuditService @Inject()(val auditConnector: AuditConnector,
-                             val personService: PersonService) {
+                             personService: PersonService) {
 
   val appName = AppName.appName
 

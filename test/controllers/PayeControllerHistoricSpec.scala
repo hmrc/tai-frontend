@@ -118,7 +118,7 @@ class PayeControllerHistoricSpec extends PlaySpec
 
     "redirect to mci page when mci indicator is true" in {
       val testController = createTestController()
-      when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(personMci))
+      when(personService.personDetails(any())(any())).thenReturn(Future.successful(personMci))
 
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -132,7 +132,7 @@ class PayeControllerHistoricSpec extends PlaySpec
 
     "redirect to deceased page when deceased indicator is true" in {
       val testController = createTestController()
-      when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(person.copy(isDeceased = true)))
+      when(personService.personDetails(any())(any())).thenReturn(Future.successful(person.copy(isDeceased = true)))
 
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 

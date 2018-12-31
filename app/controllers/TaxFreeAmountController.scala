@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
 
-class TaxFreeAmountController @Inject()(val personService: PersonService,
+class TaxFreeAmountController @Inject()(personService: PersonService,
                                         codingComponentService: CodingComponentService,
                                         employmentService: EmploymentService,
                                         companyCarService: CompanyCarService,

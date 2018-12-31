@@ -47,7 +47,7 @@ import scala.language.postfixOps
 
 class AddPensionProviderController @Inject()(pensionProviderService: PensionProviderService,
                                              auditService: AuditService,
-                                             val personService: PersonService,
+                                             personService: PersonService,
                                              val auditConnector: AuditConnector,
                                              val delegationConnector: DelegationConnector,
                                              val authConnector: AuthConnector,
