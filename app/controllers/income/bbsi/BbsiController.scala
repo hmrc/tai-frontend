@@ -40,7 +40,7 @@ import scala.concurrent.Future
 
 
 class BbsiController @Inject()(bbsiService: BbsiService,
-                               val personService: PersonService,
+                               personService: PersonService,
                                val auditConnector: AuditConnector,
                                val delegationConnector: DelegationConnector,
                                val authConnector: AuthConnector,

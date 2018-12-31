@@ -154,7 +154,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
         val sut = createSUT
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
         when(sut.authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
-        when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+        when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
         when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDataAbsentMsg.toLowerCase)))
 
@@ -167,7 +167,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
         val sut = createSUT
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
         when(sut.authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
-        when(sut.personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
+        when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
         when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsNoEmploymentForCurrentTaxYear.toLowerCase)))
 

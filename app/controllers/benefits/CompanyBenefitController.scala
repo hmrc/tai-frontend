@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
 import scala.concurrent.Future
 
-class CompanyBenefitController @Inject()(val personService: PersonService,
+class CompanyBenefitController @Inject()(personService: PersonService,
                                          auditService: AuditService,
                                          employmentService: EmploymentService,
                                          @Named("End Company Benefit") val journeyCacheService: JourneyCacheService,

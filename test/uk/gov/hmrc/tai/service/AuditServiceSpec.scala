@@ -507,8 +507,6 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
   ) {
 
     override val appName: String = "test"
-    //    override val auditConnector: AuditConnector = mock[AuditConnector]
-    //    override val personService: PersonService = mock[PersonService]
   }
 
 }

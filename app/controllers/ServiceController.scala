@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants
 import scala.concurrent.Future
 
 class ServiceController @Inject()(val userDetailsConnector: UserDetailsConnector,
-                                  val personService: PersonService,
+                                  personService: PersonService,
                                   val auditConnector: AuditConnector,
                                   val delegationConnector: DelegationConnector,
                                   val authConnector: AuthConnector,

@@ -36,7 +36,7 @@ import scala.concurrent.Future
 
 @Singleton
 class AuditService @Inject()(val auditConnector: AuditConnector,
-                             val personService: PersonService) {
+                             personService: PersonService) {
 
   val appName = AppName.appName
 
@@ -126,12 +126,3 @@ class AuditService @Inject()(val auditConnector: AuditConnector,
   private def authProviderId(hc: HeaderCarrier) = hc.userId.map(_.value).getOrElse("-")
 
 }
-
-//
-//object AuditService extends AuditService {
-//
-//  override lazy val appName: String = AppName.appName
-//  override lazy val auditConnector: AuditConnector = AuditConnector
-//  override lazy val personService: PersonService = PersonService
-//}
-//

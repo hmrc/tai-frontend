@@ -17,22 +17,17 @@
 package uk.gov.hmrc.tai.service
 
 import com.google.inject.Inject
-import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
-import play.api.Play.current
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.tai.model._
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
+import uk.gov.hmrc.tai.model.domain.Person
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiNotFoundResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.model.domain.Person
 
-class PersonService @Inject() (val taiConnector: TaiConnector,
-                               val personConnector: PersonConnector) {
-
-//  def taiClient: TaiConnector
-//  def personConnector: PersonConnector
+class PersonService @Inject()(val taiConnector: TaiConnector,
+                              val personConnector: PersonConnector) {
 
   def personDetails(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] = {
     personConnector.person(nino) map {
@@ -41,9 +36,3 @@ class PersonService @Inject() (val taiConnector: TaiConnector,
     }
   }
 }
-
-//
-//object PersonService extends PersonService {
-//  override val taiClient = TaiConnector
-//  override lazy val personConnector = PersonConnector
-//}

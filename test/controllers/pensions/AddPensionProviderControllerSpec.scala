@@ -728,11 +728,12 @@ class AddPensionProviderControllerSpec extends PlaySpec
 
   val pensionProviderService = mock[PensionProviderService]
   val auditService = mock[AuditService]
+  val personService = mock[PersonService]
 
   private class SUT extends AddPensionProviderController(
     pensionProviderService,
     auditService,
-    mock[PersonService],
+    personService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],

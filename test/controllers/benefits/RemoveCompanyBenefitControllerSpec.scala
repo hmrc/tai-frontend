@@ -519,9 +519,10 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
   def createSUT = new SUT
 
   val benefitsService = mock[BenefitsService]
+  val personService = mock[PersonService]
 
   class SUT extends RemoveCompanyBenefitController(
-    mock[PersonService],
+    personService,
     mock[AuditService],
     mock[JourneyCacheService],
     mock[JourneyCacheService],

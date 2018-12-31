@@ -36,7 +36,7 @@ import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYea
 
 import scala.concurrent.Future
 
-class YourTaxCodeController @Inject()(val personService: PersonService,
+class YourTaxCodeController @Inject()(personService: PersonService,
                                       val taxAccountService: TaxAccountService,
                                       taxCodeChangeService: TaxCodeChangeService,
                                       val auditConnector: AuditConnector,

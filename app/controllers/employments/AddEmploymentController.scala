@@ -45,7 +45,7 @@ import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 import scala.Function.tupled
 import scala.concurrent.Future
 
-class AddEmploymentController @Inject()(val personService: PersonService,
+class AddEmploymentController @Inject()(personService: PersonService,
                                         auditService: AuditService,
                                         employmentService: EmploymentService,
                                         @Named("Add Employment") val journeyCacheService: JourneyCacheService,

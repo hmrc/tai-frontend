@@ -670,9 +670,10 @@ class AddEmploymentControllerSpec extends PlaySpec
 
   val auditService = mock[AuditService]
   val employmentService = mock[EmploymentService]
+  val personService = mock[PersonService]
 
   private class SUT extends AddEmploymentController(
-    mock[PersonService],
+    personService,
     auditService,
     employmentService,
     mock[JourneyCacheService],
