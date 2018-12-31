@@ -42,7 +42,7 @@ import scala.concurrent.Future
 
 class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
                                             employmentService: EmploymentService,
-                                            val taxAccountService: TaxAccountService,
+                                            taxAccountService: TaxAccountService,
                                             auditService: AuditService,
                                             personService: PersonService,
                                             val auditConnector: AuditConnector,

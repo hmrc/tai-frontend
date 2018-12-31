@@ -114,7 +114,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
         when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
-        when(SUT.taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map[String, BigDecimal]()))
+        when(taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map[String, BigDecimal]()))
 
         val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -154,6 +154,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val codingComponentService = mock[CodingComponentService]
   val companyCarService = mock[CompanyCarService]
   val employmentService = mock[EmploymentService]
+  val taxAccountService = mock[TaxAccountService]
 
   private class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController(
     personService,
@@ -161,7 +162,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     employmentService,
     companyCarService,
     taxCodeChangeService,
-    mock[TaxAccountService],
+    taxAccountService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],

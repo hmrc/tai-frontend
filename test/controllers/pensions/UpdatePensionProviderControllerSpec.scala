@@ -59,7 +59,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
           "TEST", Week1Month1BasisOfOperation, Live)
         val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "",
           "", Week1Month1BasisOfOperation, Live)
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
@@ -75,7 +75,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
           "TEST", Week1Month1BasisOfOperation, Live)
         val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "",
           "", Week1Month1BasisOfOperation, Live)
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
         when(sut.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
@@ -91,7 +91,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     "return Internal Server error" when {
       "tax code income sources are not available" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
 
         val result = sut.doYouGetThisPension(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -105,7 +105,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
           "", Week1Month1BasisOfOperation, Live)
         val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "",
           "", Week1Month1BasisOfOperation, Live)
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
         val result = sut.doYouGetThisPension(4)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -120,7 +120,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
           "", Week1Month1BasisOfOperation, Live)
         val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "",
           "", Week1Month1BasisOfOperation, Live)
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
         val result = sut.doYouGetThisPension(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -424,9 +424,10 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
   val pensionProviderService = mock[PensionProviderService]
   val personService = mock[PersonService]
+  val taxAccountService = mock[TaxAccountService]
 
   class SUT extends UpdatePensionProviderController(
-    mock[TaxAccountService],
+    taxAccountService,
     pensionProviderService,
     mock[AuditService],
     personService,

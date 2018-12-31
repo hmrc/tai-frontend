@@ -32,7 +32,7 @@ import scala.concurrent.Future
 
 class UpdateNextYearsIncomeService @Inject()(@Named("Update Next Years Income") val journeyCacheService: JourneyCacheService,
                                              employmentService: EmploymentService,
-                                             val taxAccountService: TaxAccountService) {
+                                             taxAccountService: TaxAccountService) {
 
   def reset(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     journeyCacheService.flush()

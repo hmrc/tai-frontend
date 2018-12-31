@@ -46,7 +46,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
         when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
-        when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
+        when(taxAccountService.taxCodeIncomeForEmployment(
           Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
@@ -69,7 +69,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
         when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
-        when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
+        when(taxAccountService.taxCodeIncomeForEmployment(
           Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(None))
 
@@ -84,7 +84,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
         when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
           .thenReturn(Future.successful(None))
 
-        when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
+        when(taxAccountService.taxCodeIncomeForEmployment(
           Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
@@ -129,7 +129,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
         when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
-        when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
+        when(taxAccountService.taxCodeIncomeForEmployment(
           Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
@@ -175,7 +175,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       )
 
       when(
-        service.taxAccountService.updateEstimatedIncome(
+        taxAccountService.updateEstimatedIncome(
           Meq(nino), Meq(employmentAmount), Meq(TaxYear().next), Meq(employmentId)
         )(any())
       ).thenReturn(
@@ -185,7 +185,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       val result = Await.result(service.submit(employmentId, nino), 5.seconds)
 
       verify(
-        service.taxAccountService, times(1)
+        taxAccountService, times(1)
       ).updateEstimatedIncome(
         Meq(nino), Meq(employmentAmount), Meq(TaxYear().next), Meq(employmentId)
       )(any())
@@ -235,11 +235,12 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val employmentService = mock[EmploymentService]
+  val taxAccountService = mock[TaxAccountService]
 
   class UpdateNextYearsIncomeServiceTest extends UpdateNextYearsIncomeService(
     mock[JourneyCacheService],
     employmentService,
-    mock[TaxAccountService]
+    taxAccountService
   )
 
   val updateNextYearsIncomeService = new UpdateNextYearsIncomeServiceTest

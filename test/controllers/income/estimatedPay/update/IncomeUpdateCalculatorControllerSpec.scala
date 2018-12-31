@@ -67,7 +67,7 @@ class IncomeUpdateCalculatorControllerSpec
       val employment = Employment(employerName, Some("123"), new LocalDate("2016-05-26"), None, Nil, "", "", 1, None, false, false)
 
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(taxCodeIncome1))))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(taxCodeIncome1))))
       val result = testController.estimatedPayLandingPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
 
@@ -85,7 +85,7 @@ class IncomeUpdateCalculatorControllerSpec
 
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
       when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
-      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome])))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome])))
       when(testController.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
       val result = testController.howToUpdatePage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -629,7 +629,7 @@ class IncomeUpdateCalculatorControllerSpec
 
       val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123,"description","taxCode","name",OtherBasisOfOperation,Live)
       when(
-        testController.taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any())
+        taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any())
       ).thenReturn(
         Future.successful(Some(taxCodeIncome))
       )
@@ -661,7 +661,7 @@ class IncomeUpdateCalculatorControllerSpec
         val testController = createTestIncomeUpdateCalculatorController
         val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 123, "description", "taxCode", "name", OtherBasisOfOperation, Live)
 
-        when(testController.taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
+        when(taxAccountService.taxCodeIncomeForEmployment(any(), any(), any())(any()))
           .thenReturn(Future.successful(None))
 
         val result: Future[Result] = testController.editIncomeIrregularHours(2)(
@@ -944,7 +944,7 @@ class IncomeUpdateCalculatorControllerSpec
       )
 
       when(
-        testController.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())
+        taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())
       ).thenReturn(
         Future.successful(TaiSuccessResponse)
       )
@@ -971,11 +971,12 @@ class IncomeUpdateCalculatorControllerSpec
   val personService: PersonService = mock[PersonService]
   val incomeService: IncomeService = mock[IncomeService]
   val employmentService = mock[EmploymentService]
+  val taxAccountService = mock[TaxAccountService]
 
   private class TestIncomeUpdateCalculatorController extends IncomeUpdateCalculatorController (
     incomeService,
     employmentService,
-    mock[TaxAccountService],
+    taxAccountService,
     personService,
     mock[AuditConnector],
     mock[DelegationConnector],

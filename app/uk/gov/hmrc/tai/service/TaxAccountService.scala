@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import com.google.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
@@ -27,9 +28,7 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait TaxAccountService {
-
-  def taxAccountConnector: TaxAccountConnector
+class TaxAccountService @Inject() (val taxAccountConnector: TaxAccountConnector) {
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     taxAccountConnector.taxCodeIncomes(nino, year)
@@ -81,8 +80,3 @@ trait TaxAccountService {
     }
   }
 }
-// $COVERAGE-OFF$
-object TaxAccountService extends TaxAccountService {
-  override val taxAccountConnector: TaxAccountConnector = TaxAccountConnector
-}
-// $COVERAGE-ON$

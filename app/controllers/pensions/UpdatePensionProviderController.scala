@@ -47,7 +47,7 @@ import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersV
 import scala.Function.tupled
 import scala.concurrent.Future
 
-class UpdatePensionProviderController @Inject()(val taxAccountService: TaxAccountService,
+class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountService,
                                                 pensionProviderService: PensionProviderService,
                                                 auditService: AuditService,
                                                 personService: PersonService,

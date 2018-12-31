@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.{CodingComponentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
 
-class DetailedIncomeTaxEstimateController @Inject()(val taxAccountService: TaxAccountService,
+class DetailedIncomeTaxEstimateController @Inject()(taxAccountService: TaxAccountService,
                                                     codingComponentService: CodingComponentService,
                                                     personService: PersonService,
                                                     val auditConnector: AuditConnector,
