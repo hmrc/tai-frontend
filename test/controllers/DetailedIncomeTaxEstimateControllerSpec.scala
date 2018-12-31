@@ -50,28 +50,28 @@ class DetailedIncomeTaxEstimateControllerSpec extends PlaySpec with MockitoSugar
     "return Internal server error" when {
       "fetch total tax details fails" in {
         val sut = createSUT
-        when(sut.taxAccountService.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("testFailure")))
+        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("testFailure")))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "fetch tax code incomes fails" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("testFailure")))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("testFailure")))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "fetch tax account summary fails" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("testFailure")))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("testFailure")))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
       "fetch of non-tax code incomes fails" in {
         val sut = createSUT
-        when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("testFailure")))
+        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("testFailure")))
         val result = sut.taxExplanationPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -92,9 +92,10 @@ class DetailedIncomeTaxEstimateControllerSpec extends PlaySpec with MockitoSugar
 
   val personService: PersonService = mock[PersonService]
   val codingComponentService = mock[CodingComponentService]
+  val taxAccountService = mock[TaxAccountService]
 
   class SUT extends DetailedIncomeTaxEstimateController(
-    mock[TaxAccountService],
+    taxAccountService,
     codingComponentService,
     personService,
     mock[AuditConnector],

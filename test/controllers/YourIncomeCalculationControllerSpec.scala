@@ -48,7 +48,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
     "return rti details page" when {
       "rti details are present" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
@@ -64,7 +64,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
     "return internal server error" when {
       "employment details are not present" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
@@ -75,7 +75,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
 
       "tax code details are not present" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiTaxAccountFailureResponse("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
@@ -86,7 +86,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
 
       "tax code details for passed employment is not present" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiTaxAccountFailureResponse("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
@@ -160,7 +160,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
     "return rti details page" when {
       "rti details are present" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
@@ -176,7 +176,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
     "return internal server error" when {
       "employment details are not present" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
@@ -187,7 +187,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
 
       "tax code details are not present" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiTaxAccountFailureResponse("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
@@ -219,10 +219,11 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
 
   val personService: PersonService = mock[PersonService]
   val employmentService = mock[EmploymentService]
+  val taxAccountService = mock[TaxAccountService]
 
   class SUT extends YourIncomeCalculationController(
     personService,
-    mock[TaxAccountService],
+    taxAccountService,
     employmentService,
     mock[DelegationConnector],
     mock[AuthConnector],

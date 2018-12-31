@@ -52,7 +52,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
     "display the income details page" when {
       "asked for employment details" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
@@ -69,7 +69,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
 
       "asked for pension details" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
@@ -88,7 +88,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
     "throw error" when {
       "failed to read tax code incomes" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiTaxAccountFailureResponse("FAILED")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
@@ -99,7 +99,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
 
       "failed to read employment details" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
@@ -131,13 +131,14 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
   val personService: PersonService = mock[PersonService]
   val benefitsService = mock[BenefitsService]
   val employmentService = mock[EmploymentService]
+  val taxAccountService = mock[TaxAccountService]
 
   class SUT extends IncomeSourceSummaryController(
     personService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],
-    mock[TaxAccountService],
+    taxAccountService,
     employmentService,
     benefitsService,
     mock[FormPartialRetriever],

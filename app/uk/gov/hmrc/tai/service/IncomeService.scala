@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class IncomeService @Inject() (val taxAccountService: TaxAccountService,
+class IncomeService @Inject() (taxAccountService: TaxAccountService,
                                employmentService: EmploymentService,
                                val taiConnector: TaiConnector) extends JourneyCacheConstants {
 

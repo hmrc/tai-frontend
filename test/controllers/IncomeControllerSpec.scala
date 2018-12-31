@@ -89,7 +89,7 @@ class IncomeControllerSpec extends PlaySpec
         val employment = employmentWithAccounts(List(annualAccount))
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
         when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
@@ -107,7 +107,7 @@ class IncomeControllerSpec extends PlaySpec
          val employment = employmentWithAccounts(List(annualAccount))
          when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
            thenReturn(Future.successful(1))
-         when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+         when(taxAccountService.taxCodeIncomes(any(), any())(any())).
            thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
          when(employmentService.employment(any(), any())(any())).
            thenReturn(Future.successful(Some(employment)))
@@ -122,7 +122,7 @@ class IncomeControllerSpec extends PlaySpec
          val testController = createTestIncomeController
          when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
            thenReturn(Future.successful(1))
-         when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+         when(taxAccountService.taxCodeIncomes(any(), any())(any())).
            thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
          when(employmentService.employment(any(), any())(any())).
            thenReturn(Future.successful(None))
@@ -184,7 +184,7 @@ class IncomeControllerSpec extends PlaySpec
         val employment = employmentWithAccounts(List(annualAccount))
         when(testController.journeyCacheService.mandatoryValues(any())(any())).
         thenReturn(Future.successful(Seq("1", "200")))
-        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
@@ -201,7 +201,7 @@ class IncomeControllerSpec extends PlaySpec
         val employment = employmentWithAccounts(Nil)
         when(testController.journeyCacheService.mandatoryValues(any())(any())).
           thenReturn(Future.successful(Seq("1", "200")))
-        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
@@ -220,7 +220,7 @@ class IncomeControllerSpec extends PlaySpec
         val employment = employmentWithAccounts(List(annualAccount))
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
         when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
@@ -237,7 +237,7 @@ class IncomeControllerSpec extends PlaySpec
         val employment = employmentWithAccounts(List(annualAccount))
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
         when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
@@ -251,7 +251,7 @@ class IncomeControllerSpec extends PlaySpec
         val testController = createTestIncomeController
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
         when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(None))
@@ -280,7 +280,7 @@ class IncomeControllerSpec extends PlaySpec
         when(testController.journeyCacheService.mandatoryValues(any())(any()))
           .thenReturn(Future.successful(Seq(employerName, "100,000", employerId.toString, employerType)))
 
-        when(testController.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
+        when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponse))
 
         val result = testController.updateEstimatedIncome()(fakeRequest)
@@ -304,7 +304,7 @@ class IncomeControllerSpec extends PlaySpec
         when(testController.journeyCacheService.mandatoryValues(any())(any()))
           .thenReturn(Future.successful(Seq(employerName, "100,000", employerId.toString, employerType)))
 
-        when(testController.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
+        when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponse))
 
         val result = testController.updateEstimatedIncome()(fakeRequest)
@@ -320,7 +320,7 @@ class IncomeControllerSpec extends PlaySpec
         val testController = createTestIncomeController
         when(testController.journeyCacheService.mandatoryValues(any())(any())).
           thenReturn(Future.successful(Seq("200", "1", "TEST")))
-        when(testController.taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
+        when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
 
         val result = testController.updateEstimatedIncome()(RequestBuilder.buildFakeRequestWithAuth("POST"))
@@ -358,7 +358,7 @@ class IncomeControllerSpec extends PlaySpec
         val employment = employmentWithAccounts(List(annualAccount))
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
         when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
@@ -376,7 +376,7 @@ class IncomeControllerSpec extends PlaySpec
         val employment = employmentWithAccounts(List(annualAccount))
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
         when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
@@ -391,7 +391,7 @@ class IncomeControllerSpec extends PlaySpec
         val testController = createTestIncomeController
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
         when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(None))
@@ -448,7 +448,7 @@ class IncomeControllerSpec extends PlaySpec
         val employment = employmentWithAccounts(List(annualAccount))
         when(testController.journeyCacheService.mandatoryValues(any())(any())).
           thenReturn(Future.successful(Seq("1", "200")))
-        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
@@ -467,7 +467,7 @@ class IncomeControllerSpec extends PlaySpec
         val employment = employmentWithAccounts(List(annualAccount))
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
         when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
@@ -484,7 +484,7 @@ class IncomeControllerSpec extends PlaySpec
         val employment = employmentWithAccounts(List(annualAccount))
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
         when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
@@ -498,7 +498,7 @@ class IncomeControllerSpec extends PlaySpec
         val testController = createTestIncomeController
         when(testController.journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).
           thenReturn(Future.successful(1))
-        when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
         when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(None))
@@ -580,12 +580,13 @@ class IncomeControllerSpec extends PlaySpec
   val incomeService = mock[IncomeService]
   val employmentService = mock[EmploymentService]
   val personService = mock[PersonService]
+  val taxAccountService = mock[TaxAccountService]
 
   private def createTestIncomeController = new TestIncomeController
   private class TestIncomeController extends IncomeController(
     personService,
     mock[JourneyCacheService],
-    mock[TaxAccountService],
+    taxAccountService,
     employmentService,
     incomeService,
     mock[AuditConnector],

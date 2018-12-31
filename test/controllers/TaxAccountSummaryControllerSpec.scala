@@ -64,12 +64,12 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
     "display the income tax summary page" in {
       val sut = createSUT
       when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
-      when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-      when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+      when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[NonTaxCodeIncome](nonTaxCodeIncome))
       )
-      when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+      when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
       )
       when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
@@ -86,12 +86,12 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
     "raise an audit event" in {
       val sut = createSUT
       when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
-      when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-      when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+      when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[NonTaxCodeIncome](nonTaxCodeIncome))
       )
-      when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+      when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
       )
       when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
@@ -105,24 +105,24 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
       "a downstream error has occurred in one of the TaiResponse responding service methods" in {
         val sut = createSUT
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[NonTaxCodeIncome](nonTaxCodeIncome))
         )
-        when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse("Data retrieval failure")))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse("Data retrieval failure")))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
       "a downstream error has occurred in the employment service (which does not reply with TaiResponse type)" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[NonTaxCodeIncome](nonTaxCodeIncome))
         )
-        when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new BadRequestException("no employments recorded for this individual")))
@@ -135,12 +135,12 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
       "a downstream error has occurred in the tax code income service (which does not reply with TaiResponse type)" in {
         val sut = createSUT
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiTaxAccountFailureResponse("Failed")))
-        when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[NonTaxCodeIncome](nonTaxCodeIncome))
         )
-        when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
@@ -156,7 +156,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
         when(sut.authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
         when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
-        when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDataAbsentMsg.toLowerCase)))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDataAbsentMsg.toLowerCase)))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
@@ -169,7 +169,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
         when(sut.authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
         when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
-        when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsNoEmploymentForCurrentTaxYear.toLowerCase)))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsNoEmploymentForCurrentTaxYear.toLowerCase)))
 
         val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
@@ -202,11 +202,12 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
   val trackingService = mock[TrackingService]
   val auditService = mock[AuditService]
   val employmentService = mock[EmploymentService]
+  val taxAccountService = mock[TaxAccountService]
 
   class SUT() extends TaxAccountSummaryController(
     trackingService,
     employmentService,
-    mock[TaxAccountService],
+    taxAccountService,
     auditService,
     personService,
     mock[AuditConnector],

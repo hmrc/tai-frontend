@@ -73,7 +73,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(controller.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
@@ -90,7 +90,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
@@ -108,7 +108,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
@@ -127,7 +127,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
@@ -181,7 +181,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
       "a deceased response is returned from nps tax account call" in {
         val testController = createTestController()
 
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDeceasedMsg)))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -249,7 +249,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
       "nps tax account hod call has returned a not found exception ('no tax account information found'), indicating no current year data is present, " +
         "and no previous year employment data is present" in {
         val testController = createTestController()
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountCYDataAbsentMsg)))
         when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
@@ -268,7 +268,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
       "nps tax account hod call has returned a bad request exception, indicating absence of any tax account data whatsoever, " +
         "and no previous year employment data is present" in {
         val testController = createTestController()
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDataAbsentMsg)))
         when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
@@ -283,7 +283,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
 
       "nps tax account hod call has returned a bad request exception, indicating no employments recorded" in {
         val testController = createTestController()
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsNoEmploymentsRecorded)))
         when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
@@ -299,7 +299,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
       "nps tax account hod call has returned a bad request exception, indicating no employments for current tax year," +
         "and no previous year employment data is present" in {
         val testController = createTestController()
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsNoEmploymentForCurrentTaxYear)))
         when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
@@ -322,7 +322,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
 
         val testController = createTestController()
 
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountCYDataAbsentMsg)))
         when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
@@ -331,7 +331,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
@@ -346,7 +346,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
         "but previous year employment data IS present" in {
         val testController = createTestController()
 
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDataAbsentMsg)))
         when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
@@ -355,7 +355,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
@@ -370,7 +370,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
         val testController = createTestController(isCyPlusOneEnabled = true)
 
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiNotFoundResponse("Not found")
         ))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
@@ -419,7 +419,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
       val testController = createTestController()
 
       when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
       when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
@@ -433,7 +433,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
       val testController = createTestController()
 
       when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.successful(TaiSuccessResponse))
       when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
@@ -449,7 +449,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
       val hasTaxCodeChanged = HasTaxCodeChanged(false, Some(TaxCodeMismatchFactory.matchedTaxCode))
 
       when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.failed(new BadRequestException("bad request")))
       when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
@@ -497,12 +497,13 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
   val trackingService = mock[TrackingService]
   val auditService = mock[AuditService]
   val employmentService = mock[EmploymentService]
+  val taxAccountService = mock[TaxAccountService]
 
   class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true) extends WhatDoYouWantToDoController(
     personService,
     employmentService,
     taxCodeChangeService,
-    mock[TaxAccountService],
+    taxAccountService,
     trackingService,
     auditService,
     mock[AuditConnector],

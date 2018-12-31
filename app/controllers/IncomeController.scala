@@ -44,7 +44,7 @@ import scala.concurrent.Future
 
 class IncomeController @Inject()(personService: PersonService,
                                  @Named("Update Income") val journeyCacheService: JourneyCacheService,
-                                 val taxAccountService: TaxAccountService,
+                                 taxAccountService: TaxAccountService,
                                  employmentService: EmploymentService,
                                  incomeService: IncomeService,
                                  val auditConnector: AuditConnector,

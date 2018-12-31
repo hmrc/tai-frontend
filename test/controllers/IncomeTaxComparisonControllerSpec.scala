@@ -51,9 +51,9 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
   "onPageLoad" must {
     "display the cy plus one page" in {
       val sut = createSut
-      when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-      when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+      when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
       when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
         Future.successful(Seq.empty[CodingComponent]))
@@ -77,9 +77,9 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
     "throw an error page" when {
       "not able to fetch comparision details" in {
         val sut = createSut
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiNotFoundResponse("Not Found")))
-        when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
           Future.successful(Seq.empty[CodingComponent]))
@@ -104,6 +104,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
   val personService: PersonService = mock[PersonService]
   val codingComponentService = mock[CodingComponentService]
   val employmentService = mock[EmploymentService]
+  val taxAccountService = mock[TaxAccountService]
 
   def createSut = new SUT()
 
@@ -112,7 +113,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],
-    mock[TaxAccountService],
+    taxAccountService,
     employmentService,
     codingComponentService,
     mock[FormPartialRetriever],
