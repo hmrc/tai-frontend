@@ -39,7 +39,7 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
     "redirect to external url" when {
       "a valid service and i-form name has been passed" in {
         val sut = createSut
-        when(sut.auditService.sendAuditEventAndGetRedirectUri(Matchers.eq(nino), Matchers.eq("Test"))(any(), any())).thenReturn(Future.successful(redirectUri))
+        when(auditService.sendAuditEventAndGetRedirectUri(Matchers.eq(nino), Matchers.eq("Test"))(any(), any())).thenReturn(Future.successful(redirectUri))
         when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
 
         val result = sut.auditInvalidateCacheAndRedirectService("Test")(RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" ->
@@ -60,11 +60,12 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
 
   val personService: PersonService = mock[PersonService]
   val sessionService = mock[SessionService]
+  val auditService = mock[AuditService]
 
   class SUT extends ExternalServiceRedirectController(
     sessionService,
     personService,
-    mock[AuditService],
+    auditService,
     mock[DelegationConnector],
     mock[AuthConnector],
     mock[FormPartialRetriever],

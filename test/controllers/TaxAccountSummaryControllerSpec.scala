@@ -20,9 +20,10 @@ import builders.{AuthBuilder, RequestBuilder}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -44,9 +45,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Random
 
-class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with AuditConstants {
+class TaxAccountSummaryControllerSpec extends PlaySpec
+  with MockitoSugar
+  with FakeTaiPlayApplication
+  with I18nSupport
+  with AuditConstants
+  with BeforeAndAfterEach {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
+  override def beforeEach: Unit = {
+    Mockito.reset(auditService)
+  }
 
   "onPageLoad" must {
 
@@ -85,10 +95,10 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
       )
       when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
-      when(sut.auditService.createAndSendAuditEvent(Matchers.eq(TaxAccountSummary_UserEntersSummaryPage), Matchers.eq(Map("nino" -> nino.nino)))(any(), any())).thenReturn(Future.successful(Success))
+      when(auditService.createAndSendAuditEvent(Matchers.eq(TaxAccountSummary_UserEntersSummaryPage), Matchers.eq(Map("nino" -> nino.nino)))(any(), any())).thenReturn(Future.successful(Success))
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
-      verify(sut.auditService, times(1)).createAndSendAuditEvent(Matchers.eq(TaxAccountSummary_UserEntersSummaryPage), Matchers.eq(Map("nino" -> nino.nino)))(Matchers.any(), Matchers.any())
+      verify(auditService, times(1)).createAndSendAuditEvent(Matchers.eq(TaxAccountSummary_UserEntersSummaryPage), Matchers.eq(Map("nino" -> nino.nino)))(Matchers.any(), Matchers.any())
     }
 
     "display an error page" when {
@@ -190,12 +200,13 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
 
   val personService: PersonService = mock[PersonService]
   val trackingService = mock[TrackingService]
+  val auditService = mock[AuditService]
 
   class SUT() extends TaxAccountSummaryController(
     trackingService,
     mock[EmploymentService],
     mock[TaxAccountService],
-    mock[AuditService],
+    auditService,
     personService,
     mock[AuditConnector],
     mock[DelegationConnector],

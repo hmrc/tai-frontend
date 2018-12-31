@@ -46,7 +46,7 @@ import scala.concurrent.Future
 import scala.language.postfixOps
 
 class AddPensionProviderController @Inject()(pensionProviderService: PensionProviderService,
-                                             val auditService: AuditService,
+                                             auditService: AuditService,
                                              val personService: PersonService,
                                              val auditConnector: AuditConnector,
                                              val delegationConnector: DelegationConnector,

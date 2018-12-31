@@ -50,7 +50,7 @@ import scala.concurrent.Future
 import scala.math.BigDecimal.RoundingMode
 
 class RemoveCompanyBenefitController @Inject()(val personService: PersonService,
-                                               val auditService: AuditService,
+                                               auditService: AuditService,
                                                @Named("End Company Benefit") val journeyCacheService: JourneyCacheService,
                                                @Named("Successful Journey") val trackingJourneyCacheService: JourneyCacheService,
                                                benefitsService: BenefitsService,

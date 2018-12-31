@@ -46,7 +46,7 @@ import scala.Function.tupled
 import scala.concurrent.Future
 
 class EndEmploymentController @Inject()(val personService: PersonService,
-                                        val auditService: AuditService,
+                                        auditService: AuditService,
                                         val employmentService: EmploymentService,
                                         @Named("Add Employment") val journeyCacheService: JourneyCacheService,
                                         @Named("Successful Journey") val successfulJourneyCacheService: JourneyCacheService,

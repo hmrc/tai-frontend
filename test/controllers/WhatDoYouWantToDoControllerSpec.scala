@@ -21,9 +21,10 @@ import builders.{AuthBuilder, RequestBuilder}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -50,9 +51,18 @@ import scala.language.postfixOps
 import scala.util.Random
 
 
-class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with JsoupMatchers {
+class WhatDoYouWantToDoControllerSpec extends PlaySpec
+  with FakeTaiPlayApplication
+  with MockitoSugar
+  with I18nSupport
+  with JsoupMatchers
+  with BeforeAndAfterEach {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
+  override def beforeEach: Unit = {
+    Mockito.reset(auditService)
+  }
 
   "Calling the What do you want to do page method" must {
     "call whatDoYouWantToDoPage() successfully with an authorised session" when {
@@ -417,7 +427,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
       result.header.status mustBe OK
 
-      verify(testController.auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
+      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
     }
     "landed to the page and get TaiSuccessResponse" in {
       val testController = createTestController()
@@ -432,7 +442,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
       result.header.status mustBe OK
 
-      verify(testController.auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
+      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
     }
     "landed to the page and get failure from taxCodeIncomes" in {
       val testController = createTestController()
@@ -485,6 +495,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
   val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val trackingService = mock[TrackingService]
+  val auditService = mock[AuditService]
 
   class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true) extends WhatDoYouWantToDoController(
     personService,
@@ -492,7 +503,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     taxCodeChangeService,
     mock[TaxAccountService],
     trackingService,
-    mock[AuditService],
+    auditService,
     mock[AuditConnector],
     mock[AuthConnector],
     mock[DelegationConnector],

@@ -37,7 +37,7 @@ import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 
 class PotentialUnderpaymentController @Inject()(val taxAccountService: TaxAccountService,
                                                 codingComponentService: CodingComponentService,
-                                                val auditService: AuditService,
+                                                auditService: AuditService,
                                                 val personService: PersonService,
                                                 val auditConnector: AuditConnector,
                                                 val delegationConnector: DelegationConnector,

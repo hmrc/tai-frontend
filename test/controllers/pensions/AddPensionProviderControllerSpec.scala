@@ -231,7 +231,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         Await.result(sut.cantAddPension()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           AddPensionProviderFirstPayForm.FirstPayChoice -> NoValue)), 5 seconds)
 
-        verify(sut.auditService, times(1)).createAndSendAuditEvent(Matchers.eq(AddPension_CantAddPensionProvider), Matchers.eq(Map("nino" -> nino)))(Matchers.any(), Matchers.any())
+        verify(auditService, times(1)).createAndSendAuditEvent(Matchers.eq(AddPension_CantAddPensionProvider), Matchers.eq(Map("nino" -> nino)))(Matchers.any(), Matchers.any())
       }
     }
   }
@@ -727,10 +727,11 @@ class AddPensionProviderControllerSpec extends PlaySpec
   val generateNino: Nino = new Generator().nextNino
 
   val pensionProviderService = mock[PensionProviderService]
+  val auditService = mock[AuditService]
 
   private class SUT extends AddPensionProviderController(
     pensionProviderService,
-    mock[AuditService],
+    auditService,
     mock[PersonService],
     mock[AuditConnector],
     mock[DelegationConnector],

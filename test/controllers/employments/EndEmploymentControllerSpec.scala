@@ -197,7 +197,7 @@ class EndEmploymentControllerSpec
 
         when(endEmploymentTest.employmentService.employment(any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
-        when(endEmploymentTest.auditService.createAndSendAuditEvent(any(), any())(any(), any())).thenReturn(Future.successful(Success))
+        when(auditService.createAndSendAuditEvent(any(), any())(any(), any())).thenReturn(Future.successful(Success))
 
         val result = endEmploymentTest.handleEmploymentUpdateRemove(1)(request)
 
@@ -613,9 +613,11 @@ class EndEmploymentControllerSpec
 
   private def createEndEmploymentTest = new EndEmploymentTest
 
+  val auditService = mock[AuditService]
+
   private class EndEmploymentTest extends EndEmploymentController(
     mock[PersonService],
-    mock[AuditService],
+    auditService,
     mock[EmploymentService],
     mock[JourneyCacheService],
     mock[JourneyCacheService],
