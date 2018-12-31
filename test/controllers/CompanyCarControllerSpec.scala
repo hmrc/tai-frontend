@@ -63,8 +63,8 @@ class CompanyCarControllerSpec extends PlaySpec
     "Successfully present the update/remove company car view" when {
       "GET'ing the getCompanyCarDetails endpoint with an authorised session" in {
         val sut = createSUT()
-        when(sut.companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(1))
-        when(sut.companyCarService.beginJourney(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(carWithoutFuelBenCache)))
+        when(companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(1))
+        when(companyCarService.beginJourney(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(carWithoutFuelBenCache)))
 
         val result = sut.getCompanyCarDetails()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -76,8 +76,8 @@ class CompanyCarControllerSpec extends PlaySpec
     "redirect to companyCarService" when{
       "the service returns TaiCompanyCarWithdrawnDateFoundResponse" in{
         val sut = createSUT()
-        when(sut.companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(1))
-        when(sut.companyCarService.beginJourney(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(
+        when(companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(1))
+        when(companyCarService.beginJourney(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(
           TaiNoCompanyCarFoundResponse("A car with date withdrawn found!")))
 
         val result = sut.getCompanyCarDetails()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -170,10 +170,11 @@ class CompanyCarControllerSpec extends PlaySpec
   def createSUT(isCompanyCarForceRedirectEnabled: Boolean = false) = new SUT(isCompanyCarForceRedirectEnabled)
 
   val sessionService = mock[SessionService]
+  val companyCarService = mock[CompanyCarService]
 
   class SUT(isCompanyCarForceRedirectEnabled: Boolean) extends CompanyCarController(
     mock[PersonService],
-    mock[CompanyCarService],
+    companyCarService,
     mock[JourneyCacheService],
     sessionService,
     mock[AuditConnector],

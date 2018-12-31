@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.tai.service.benefits
 
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,15 +32,18 @@ import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait CompanyCarService extends JourneyCacheConstants {
+class CompanyCarService @Inject() (val carConnector: CompanyCarConnector,
+                                   val employmentService: EmploymentService,
+                                   val auditService: AuditService,
+                                   @Named("Company Car") val journeyCacheService: JourneyCacheService) extends JourneyCacheConstants {
 
-  def carConnector: CompanyCarConnector
-
-  def journeyCacheService: JourneyCacheService
-
-  def employmentService: EmploymentService
-
-  def auditService: AuditService
+//  def carConnector: CompanyCarConnector
+//
+//  def journeyCacheService: JourneyCacheService
+//
+//  def employmentService: EmploymentService
+//
+//  def auditService: AuditService
 
   def companyCarOnCodingComponents(nino: Nino, codingComponents: Seq[CodingComponent])(implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] = {
     if (codingComponents.exists(_.componentType == CarBenefit))
@@ -118,11 +123,11 @@ trait CompanyCarService extends JourneyCacheConstants {
     }
   }
 }
-// $COVERAGE-OFF$
-object CompanyCarService extends CompanyCarService {
-  override val carConnector: CompanyCarConnector = CompanyCarConnector
-  override val journeyCacheService: JourneyCacheService = JourneyCacheService(CompanyCar_JourneyKey)
-  override val employmentService: EmploymentService = EmploymentService
-  override lazy val auditService: AuditService = AuditService
-}
-// $COVERAGE-ON$
+//// $COVERAGE-OFF$
+//object CompanyCarService extends CompanyCarService {
+//  override val carConnector: CompanyCarConnector = CompanyCarConnector
+//  override val journeyCacheService: JourneyCacheService = JourneyCacheService(CompanyCar_JourneyKey)
+//  override val employmentService: EmploymentService = EmploymentService
+//  override lazy val auditService: AuditService = AuditService
+//}
+//// $COVERAGE-ON$

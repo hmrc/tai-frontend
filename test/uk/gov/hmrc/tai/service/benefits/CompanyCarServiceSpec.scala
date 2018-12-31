@@ -364,11 +364,11 @@ class CompanyCarServiceSpec extends PlaySpec
 
   private def createSut = new SUT
 
-  private class SUT extends CompanyCarService {
-    override val carConnector: CompanyCarConnector = mock[CompanyCarConnector]
-    override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val auditService: AuditService = mock[AuditService]
-  }
+  private class SUT extends CompanyCarService(
+    mock[CompanyCarConnector],
+    mock[EmploymentService],
+    mock[AuditService],
+    mock[JourneyCacheService]
+  )
 
 }
