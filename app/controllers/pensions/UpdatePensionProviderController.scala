@@ -49,7 +49,7 @@ import scala.concurrent.Future
 
 class UpdatePensionProviderController @Inject()(val taxAccountService: TaxAccountService,
                                                 pensionProviderService: PensionProviderService,
-                                                val auditService: AuditService,
+                                                auditService: AuditService,
                                                 val personService: PersonService,
                                                 val delegationConnector: DelegationConnector,
                                                 val authConnector: AuthConnector,

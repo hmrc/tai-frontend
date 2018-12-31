@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.service.{AuditService, PersonService, SessionService}
 
 class ExternalServiceRedirectController @Inject()(sessionService: SessionService,
                                                   val personService: PersonService,
-                                                  val auditService: AuditService,
+                                                  auditService: AuditService,
                                                   val delegationConnector: DelegationConnector,
                                                   val authConnector: AuthConnector,
                                                   override implicit val partialRetriever: FormPartialRetriever,

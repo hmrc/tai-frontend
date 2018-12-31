@@ -34,7 +34,7 @@ import scala.concurrent.Future
 
 class CompanyCarService @Inject() (val carConnector: CompanyCarConnector,
                                    val employmentService: EmploymentService,
-                                   val auditService: AuditService,
+                                   auditService: AuditService,
                                    @Named("Company Car") val journeyCacheService: JourneyCacheService) extends JourneyCacheConstants {
 
   def companyCarOnCodingComponents(nino: Nino, codingComponents: Seq[CodingComponent])(implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] = {

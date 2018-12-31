@@ -19,9 +19,10 @@ package controllers
 import builders.{AuthBuilder, RequestBuilder}
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -44,9 +45,14 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
   with FakeTaiPlayApplication
   with MockitoSugar
   with AuditConstants
-  with I18nSupport {
+  with I18nSupport
+  with BeforeAndAfterEach {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
+  override def beforeEach: Unit = {
+    Mockito.reset(auditService)
+  }
 
   val nino = new Generator().nextNino
 
@@ -88,7 +94,7 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
     "raise an in year adjustment audit events" in {
       val sut = new SUT()
       Await.result(sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
-      verify(sut.auditService, times(1)).createAndSendAuditEvent(Matchers.eq(PotentialUnderpayment_InYearAdjustment), any())(any(), any())
+      verify(auditService, times(1)).createAndSendAuditEvent(Matchers.eq(PotentialUnderpayment_InYearAdjustment), any())(any(), any())
     }
     "return the service unavailable error page in response to an internal error" in {
       val sut = new SUT()
@@ -102,11 +108,12 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
 
   val personService: PersonService = mock[PersonService]
   val codingComponentService = mock[CodingComponentService]
+  val auditService = mock[AuditService]
 
   private class SUT() extends PotentialUnderpaymentController(
     mock[TaxAccountService],
     codingComponentService,
-    mock[AuditService],
+    auditService,
     personService,
     mock[AuditConnector],
     mock[DelegationConnector],

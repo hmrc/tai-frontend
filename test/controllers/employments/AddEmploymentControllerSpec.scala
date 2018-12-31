@@ -320,7 +320,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         Await.result(sut.sixWeeksError()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           AddEmploymentFirstPayForm.FirstPayChoice -> NoValue)),5 seconds)
 
-        verify(sut.auditService, times(1)).createAndSendAuditEvent(Matchers.eq(AddEmployment_CantAddEmployer), Matchers.eq(Map("nino" -> nino)))(Matchers.any(), Matchers.any())
+        verify(auditService, times(1)).createAndSendAuditEvent(Matchers.eq(AddEmployment_CantAddEmployer), Matchers.eq(Map("nino" -> nino)))(Matchers.any(), Matchers.any())
       }
     }
 
@@ -668,9 +668,11 @@ class AddEmploymentControllerSpec extends PlaySpec
 
   private def createSUT = new SUT
 
+  val auditService = mock[AuditService]
+
   private class SUT extends AddEmploymentController(
     mock[PersonService],
-    mock[AuditService],
+    auditService,
     mock[EmploymentService],
     mock[JourneyCacheService],
     mock[JourneyCacheService],

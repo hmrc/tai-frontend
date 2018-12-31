@@ -27,7 +27,7 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.{AuditService, PersonService}
 
 class AuditController @Inject()(val personService: PersonService,
-                                val auditService: AuditService,
+                                auditService: AuditService,
                                 val delegationConnector: DelegationConnector,
                                 val authConnector: AuthConnector,
                                 override implicit val partialRetriever: FormPartialRetriever,
