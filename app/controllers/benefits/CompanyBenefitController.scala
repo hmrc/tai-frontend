@@ -40,7 +40,7 @@ import scala.concurrent.Future
 
 class CompanyBenefitController @Inject()(val personService: PersonService,
                                          auditService: AuditService,
-                                         val employmentService: EmploymentService,
+                                         employmentService: EmploymentService,
                                          @Named("End Company Benefit") val journeyCacheService: JourneyCacheService,
                                          val auditConnector: AuditConnector,
                                          val delegationConnector: DelegationConnector,

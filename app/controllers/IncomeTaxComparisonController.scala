@@ -39,7 +39,7 @@ class IncomeTaxComparisonController @Inject()(val personService: PersonService,
                                               val delegationConnector: DelegationConnector,
                                               val authConnector: AuthConnector,
                                               val taxAccountService: TaxAccountService,
-                                              val employmentService: EmploymentService,
+                                              employmentService: EmploymentService,
                                               codingComponentService: CodingComponentService,
                                               override implicit val partialRetriever: FormPartialRetriever,
                                               override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController

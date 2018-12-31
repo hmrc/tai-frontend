@@ -86,7 +86,7 @@ class CompanyCarServiceSpec extends PlaySpec
       "there is complete company car information" in {
         val sut = createSut
         when(sut.carConnector.companyCarBenefitForEmployment(any(), any())(any())).thenReturn(Future.successful(Some(companyCar)))
-        when(sut.employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(Some(employment)))
         val expectedMap = Map[String, String](
           CompanyCar_Version -> "1",
           CompanyCar_CarModelKey -> "Make Model",
@@ -105,7 +105,7 @@ class CompanyCarServiceSpec extends PlaySpec
       "there is partial company car information, where optional values are absent from the domain model" in {
         val sut = createSut
         when(sut.carConnector.companyCarBenefitForEmployment(any(), any())(any())).thenReturn(Future.successful(Some(companyCarMissingStartDates)))
-        when(sut.employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(Some(employment)))
         val expectedMap = Map[String, String](
           CompanyCar_Version -> "1",
           CompanyCar_CarModelKey -> "Make Model",
@@ -124,7 +124,7 @@ class CompanyCarServiceSpec extends PlaySpec
       "there is a company car with date withdrawn" in{
         val sut = createSut
         when(sut.carConnector.companyCarBenefitForEmployment(any(), any())(any())).thenReturn(Future.successful(Some(companyCarWithDateWithDrawn)))
-        when(sut.employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(Some(employment)))
 
         val expectedResult = TaiNoCompanyCarFoundResponse("No company car found")
         Await.result(sut.beginJourney(generateNino, 1), 5 seconds) mustBe expectedResult
@@ -133,7 +133,7 @@ class CompanyCarServiceSpec extends PlaySpec
       "there are no company car returned from tai" in {
         val sut = createSut
         when(sut.carConnector.companyCarBenefitForEmployment(any(), any())(any())).thenReturn(Future.successful(None))
-        when(sut.employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(Some(employment)))
 
         val expectedResult = TaiNoCompanyCarFoundResponse("No company car found")
         Await.result(sut.beginJourney(generateNino, 1), 5 seconds) mustBe expectedResult
@@ -144,7 +144,7 @@ class CompanyCarServiceSpec extends PlaySpec
         val companyCar = CompanyCarBenefit(10, 1000, Nil, Some(1))
 
         when(sut.carConnector.companyCarBenefitForEmployment(any(), any())(any())).thenReturn(Future.successful(Some(companyCar)))
-        when(sut.employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(Some(employment)))
 
         val expectedResult = TaiNoCompanyCarFoundResponse("No company car found")
         Await.result(sut.beginJourney(generateNino, 1), 5 seconds) mustBe expectedResult
@@ -155,7 +155,7 @@ class CompanyCarServiceSpec extends PlaySpec
         val sut = createSut
 
         when(sut.carConnector.companyCarBenefitForEmployment(any(), any())(any())).thenReturn(Future.successful(Some(companyCar)))
-        when(sut.employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(None))
 
         the[RuntimeException] thrownBy Await.result(sut.beginJourney(generateNino, 1), 5 seconds)
       }
@@ -364,9 +364,11 @@ class CompanyCarServiceSpec extends PlaySpec
 
   private def createSut = new SUT
 
+  val employmentService = mock[EmploymentService]
+
   private class SUT extends CompanyCarService(
     mock[CompanyCarConnector],
-    mock[EmploymentService],
+    employmentService,
     mock[AuditService],
     mock[JourneyCacheService]
   )

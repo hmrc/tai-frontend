@@ -21,7 +21,9 @@ import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
+import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -41,7 +43,14 @@ import scala.util.Random
 class NoCYIncomeTaxErrorControllerSpec
   extends PlaySpec
     with FakeTaiPlayApplication
-    with ScalaFutures with I18nSupport with MockitoSugar {
+    with ScalaFutures
+    with I18nSupport
+    with MockitoSugar
+    with BeforeAndAfterEach {
+
+  override def beforeEach: Unit = {
+    Mockito.reset(employmentService)
+  }
 
   "Calling the Current Year Page method" should {
 
@@ -56,7 +65,7 @@ class NoCYIncomeTaxErrorControllerSpec
     "call employment service to fetch sequence of employments" in {
       val sut = createSUT()
       Await.result(sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
-      verify(sut.employmentService, times(1)).employments(any(), any())(any())
+      verify(employmentService, times(1)).employments(any(), any())(any())
     }
 
     "display the page" when {
@@ -65,7 +74,7 @@ class NoCYIncomeTaxErrorControllerSpec
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         Await.result(result, 5 seconds)
-        verify(sut.employmentService, times(1)).employments(any(), any())(any())
+        verify(employmentService, times(1)).employments(any(), any())(any())
         status(result) mustBe OK
       }
 
@@ -74,7 +83,7 @@ class NoCYIncomeTaxErrorControllerSpec
         val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         Await.result(result, 5 seconds)
-        verify(sut.employmentService, times(1)).employments(any(), any())(any())
+        verify(employmentService, times(1)).employments(any(), any())(any())
         status(result) mustBe OK
       }
     }
@@ -121,9 +130,11 @@ class NoCYIncomeTaxErrorControllerSpec
 
   def createSUT(person: Person = defaultPerson, employmentDataFailure: Option[Throwable] = None) = new SUT(person, employmentDataFailure)
 
+  val employmentService = mock[EmploymentService]
+
   class SUT(person: Person, employmentDataFailure: Option[Throwable]) extends NoCYIncomeTaxErrorController(
     mock[PersonService],
-    mock[EmploymentService],
+    employmentService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],

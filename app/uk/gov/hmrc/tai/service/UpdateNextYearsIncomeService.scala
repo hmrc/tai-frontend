@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstant
 import scala.concurrent.Future
 
 class UpdateNextYearsIncomeService @Inject()(@Named("Update Next Years Income") val journeyCacheService: JourneyCacheService,
-                                             val employmentService: EmploymentService,
+                                             employmentService: EmploymentService,
                                              val taxAccountService: TaxAccountService) {
 
   def reset(implicit hc: HeaderCarrier): Future[TaiResponse] = {

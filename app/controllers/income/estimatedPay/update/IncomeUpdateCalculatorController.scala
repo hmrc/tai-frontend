@@ -48,7 +48,7 @@ import scala.Function.tupled
 import scala.concurrent.Future
 
 class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
-                                                 val employmentService: EmploymentService,
+                                                 employmentService: EmploymentService,
                                                  val taxAccountService: TaxAccountService,
                                                  val personService: PersonService,
                                                  val auditConnector: AuditConnector,

@@ -617,7 +617,7 @@ class AddEmploymentControllerSpec extends PlaySpec
           Seq("empName", "2017-04-04", "I do not know", "Yes"), Seq(Some("123456789"))
         ))
 
-        when(sut.employmentService.addEmployment(any(), Matchers.eq(expectedModel))(any())).thenReturn(Future.successful("envelope-123"))
+        when(employmentService.addEmployment(any(), Matchers.eq(expectedModel))(any())).thenReturn(Future.successful("envelope-123"))
         when(sut.journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
         when(sut.successfulJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_AddEmploymentKey), Matchers.eq("true"))(any())).
           thenReturn(Future.successful(Map(TrackSuccessfulJourney_AddEmploymentKey -> "true")))
@@ -638,7 +638,7 @@ class AddEmploymentControllerSpec extends PlaySpec
           (Seq("empName", "2017-04-04", "I do not know", "No"), Seq(None))
         ))
 
-        when(sut.employmentService.addEmployment(any(), Matchers.eq(expectedModel))(any())).thenReturn(Future.successful("envelope-123"))
+        when(employmentService.addEmployment(any(), Matchers.eq(expectedModel))(any())).thenReturn(Future.successful("envelope-123"))
         when(sut.journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
         when(sut.successfulJourneyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(expectedSuccessfulJourneyCache))
 
@@ -669,11 +669,12 @@ class AddEmploymentControllerSpec extends PlaySpec
   private def createSUT = new SUT
 
   val auditService = mock[AuditService]
+  val employmentService = mock[EmploymentService]
 
   private class SUT extends AddEmploymentController(
     mock[PersonService],
     auditService,
-    mock[EmploymentService],
+    employmentService,
     mock[JourneyCacheService],
     mock[JourneyCacheService],
     mock[DelegationConnector],

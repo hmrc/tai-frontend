@@ -84,7 +84,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
           EndCompanyBenefit_RefererKey -> referer)
 
         when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
-        when(SUT.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(SUT.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.decision(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -93,7 +93,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.benefits.updateOrRemove.decision.heading", benefitType, empName))
 
-        verify(SUT.employmentService, times(1)).employment(any(), any())(any())
+        verify(employmentService, times(1)).employment(any(), any())(any())
         verify(SUT.journeyCacheService, times(1)).currentCache(any())
         verify(SUT.journeyCacheService, times(1)).cache(
           mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> empName,
@@ -106,7 +106,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
     "throw exception" when {
       "employment not found" in {
         val SUT = createSUT
-        when(SUT.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -178,10 +178,12 @@ class CompanyBenefitControllerSpec extends PlaySpec
   val employment = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
     Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false)
 
+  val employmentService = mock[EmploymentService]
+
   class SUT extends CompanyBenefitController(
     mock[PersonService],
     mock[AuditService],
-    mock[EmploymentService],
+    employmentService,
     mock[JourneyCacheService],
     mock[AuditConnector],
     mock[DelegationConnector],

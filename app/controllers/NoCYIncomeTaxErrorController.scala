@@ -40,7 +40,7 @@ import scala.concurrent.Future
 
 
 class NoCYIncomeTaxErrorController @Inject()(val personService: PersonService,
-                                             val employmentService: EmploymentService,
+                                             employmentService: EmploymentService,
                                              val auditConnector: AuditConnector,
                                              val delegationConnector: DelegationConnector,
                                              val authConnector: AuthConnector,

@@ -34,7 +34,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class IncomeService @Inject() (val taxAccountService: TaxAccountService,
-                               val employmentService: EmploymentService,
+                               employmentService: EmploymentService,
                                val taiConnector: TaiConnector) extends JourneyCacheConstants {
 
   def employmentAmount(nino: Nino, id: Int)(implicit hc: HeaderCarrier, messages: Messages): Future[EmploymentAmount] = {

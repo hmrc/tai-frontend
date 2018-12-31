@@ -38,7 +38,7 @@ import scala.concurrent.Future
 
 class YourIncomeCalculationController @Inject()(val personService: PersonService,
                                                 val taxAccountService: TaxAccountService,
-                                                val employmentService: EmploymentService,
+                                                employmentService: EmploymentService,
                                                 val delegationConnector: DelegationConnector,
                                                 val authConnector: AuthConnector,
                                                 override implicit val partialRetriever: FormPartialRetriever,

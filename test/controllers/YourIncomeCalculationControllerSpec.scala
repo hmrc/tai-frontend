@@ -50,7 +50,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
         val sut = createSUT
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -66,7 +66,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
         val sut = createSUT
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -77,7 +77,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
         val sut = createSUT
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiTaxAccountFailureResponse("Error")))
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -88,7 +88,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
         val sut = createSUT
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiTaxAccountFailureResponse("Error")))
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.yourIncomeCalculationPage(3)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -100,7 +100,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
     "show historic data" when {
       "historic data has been passed" in {
         val sut = createSUT
-        when(sut.employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
+        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
         val result = sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
@@ -131,7 +131,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
     "show historic data" when {
       "historic data has been passed" in {
         val sut = createSUT
-        when(sut.employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
+        when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
         val result = sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
@@ -162,7 +162,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
         val sut = createSUT
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -178,7 +178,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
         val sut = createSUT
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -189,7 +189,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
         val sut = createSUT
         when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiTaxAccountFailureResponse("Error")))
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -218,11 +218,12 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
   def createSUT = new SUT
 
   val personService: PersonService = mock[PersonService]
+  val employmentService = mock[EmploymentService]
 
   class SUT extends YourIncomeCalculationController(
     personService,
     mock[TaxAccountService],
-    mock[EmploymentService],
+    employmentService,
     mock[DelegationConnector],
     mock[AuthConnector],
     mock[FormPartialRetriever],

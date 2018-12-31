@@ -37,7 +37,7 @@ import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
 
 class TaxFreeAmountController @Inject()(val personService: PersonService,
                                         codingComponentService: CodingComponentService,
-                                        val employmentService: EmploymentService,
+                                        employmentService: EmploymentService,
                                         companyCarService: CompanyCarService,
                                         val auditConnector: AuditConnector,
                                         val delegationConnector: DelegationConnector,

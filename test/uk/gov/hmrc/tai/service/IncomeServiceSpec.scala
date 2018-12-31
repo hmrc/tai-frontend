@@ -130,7 +130,7 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
     "return none" when {
       "employment details are not found" in {
         val sut = createSUT
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(None))
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None
