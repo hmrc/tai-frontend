@@ -54,8 +54,8 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
                                                 personService: PersonService,
                                                 val delegationConnector: DelegationConnector,
                                                 val authConnector: AuthConnector,
-                                                @Named("Update Pension Provider") val journeyCacheService: JourneyCacheService,
-                                                @Named("Track Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
+                                                @Named("Update Pension Provider") journeyCacheService: JourneyCacheService,
+                                                @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
                                                 override implicit val partialRetriever: FormPartialRetriever,
                                                 override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
