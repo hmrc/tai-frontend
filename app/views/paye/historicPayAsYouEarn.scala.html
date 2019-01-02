@@ -1,5 +1,5 @@
 @*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,6 +136,14 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                     <p class="flush--top">
                         <span class="heading-36 faded-text-dark">@withPoundPrefix(MoneyPounds(employment.taxablePayYTD))</span>
                     </p>
+
+                    @if(taxCodeChangeEnabled && viewModel.showTaxCodeDescriptionLink) {
+                        @Link.toInternalPage(
+                            url=routes.YourTaxCodeController.prevTaxCodes(viewModel.taxYear).toString(),
+                            value=Some(messages("tai.taxCode.description.link")),
+                            id=Some("taxCodeDescription")
+                        ).toHtml
+                    }
 
                     <p>
                         @employment.payrollNumber.map{ payrollNumber =>
