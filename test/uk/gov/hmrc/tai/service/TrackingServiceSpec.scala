@@ -30,14 +30,16 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
-class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheConstants {
+class TrackingServiceSpec extends PlaySpec
+  with MockitoSugar
+  with JourneyCacheConstants {
 
   "isAnyIFormInProgress" must {
     "return true" when {
       "there is an iForm with status In Progress" in {
         val sut = createSut
         when(sut.trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm("TES1", "name1", TrackedFormInProgress))))
-        when(sut.successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
         val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
         Await.result(result, 5 seconds) mustBe true
       }
@@ -45,7 +47,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
       "there is an iForm with status in Acquired" in {
         val sut = createSut
         when(sut.trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm("TES2", "name1", TrackedFormAcquired))))
-        when(sut.successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
         val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
         Await.result(result, 5 seconds) mustBe true
       }
@@ -53,7 +55,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
       "return true when there is an iForm with status in Received" in {
         val sut = createSut
         when(sut.trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm("TES3", "name1", TrackedFormReceived))))
-        when(sut.successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
         val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
         Await.result(result, 5 seconds) mustBe true
       }
@@ -62,7 +64,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
         val sut = createSut
         when(sut.trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm("TES4", "name1", TrackedFormDone),
           TrackedForm("TES1", "name1", TrackedFormReceived))))
-        when(sut.successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
         val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
         Await.result(result, 5 seconds) mustBe true
       }
@@ -70,7 +72,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
       "user has completed add employment iFormJourney but tracking service has return empty sequence" in {
         val sut = createSut
         when(sut.trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
-        when(sut.successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map(TrackSuccessfulJourney_AddEmploymentKey -> "true")))
+        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map(TrackSuccessfulJourney_AddEmploymentKey -> "true")))
         val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
         Await.result(result, 5 seconds) mustBe true
       }
@@ -78,7 +80,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
       "tracking service throws back an exception but user has completed a journey" in {
         val sut = createSut
         when(sut.trackingConnector.getUserTracking(any())(any())).thenReturn(Future.failed(new RuntimeException("an error occurred")))
-        when(sut.successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map[String, String](TrackSuccessfulJourney_AddEmploymentKey -> "true")))
+        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map[String, String](TrackSuccessfulJourney_AddEmploymentKey -> "true")))
         val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
         Await.result(result, 5 seconds) mustBe true
       }
@@ -88,7 +90,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
       "there is no iForm in progress" in {
         val sut = createSut
         when(sut.trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm("TES1", "name1", TrackedFormDone))))
-        when(sut.successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
         val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
         Await.result(result, 5 seconds) mustBe false
       }
@@ -96,7 +98,7 @@ class TrackingServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheCo
       "tracking service throws back an exception" in {
         val sut = createSut
         when(sut.trackingConnector.getUserTracking(any())(any())).thenReturn(Future.failed(new Exception("an error occurred")))
-        when(sut.successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
         val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
         Await.result(result, 5 seconds) mustBe false
       }
