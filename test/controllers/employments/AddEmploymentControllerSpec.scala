@@ -626,7 +626,7 @@ class AddEmploymentControllerSpec extends PlaySpec
 
         when(employmentService.addEmployment(any(), Matchers.eq(expectedModel))(any())).thenReturn(Future.successful("envelope-123"))
         when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
-        when(sut.successfulJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_AddEmploymentKey), Matchers.eq("true"))(any())).
+        when(trackSuccessJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_AddEmploymentKey), Matchers.eq("true"))(any())).
           thenReturn(Future.successful(Map(TrackSuccessfulJourney_AddEmploymentKey -> "true")))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
@@ -647,7 +647,7 @@ class AddEmploymentControllerSpec extends PlaySpec
 
         when(employmentService.addEmployment(any(), Matchers.eq(expectedModel))(any())).thenReturn(Future.successful("envelope-123"))
         when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
-        when(sut.successfulJourneyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(expectedSuccessfulJourneyCache))
+        when(trackSuccessJourneyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(expectedSuccessfulJourneyCache))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 

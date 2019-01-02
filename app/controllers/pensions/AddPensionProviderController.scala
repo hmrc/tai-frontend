@@ -52,8 +52,8 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
                                              val auditConnector: AuditConnector,
                                              val delegationConnector: DelegationConnector,
                                              val authConnector: AuthConnector,
-                                             @Named("Add Pension Provider") val journeyCacheService: JourneyCacheService,
-                                             @Named("Track Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
+                                             @Named("Add Pension Provider") journeyCacheService: JourneyCacheService,
+                                             @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
                                              override implicit val partialRetriever: FormPartialRetriever,
                                              override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
