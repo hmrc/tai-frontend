@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,8 @@ import uk.gov.hmrc.tai.forms.DateForm
 import uk.gov.hmrc.tai.forms.income.bbsi.BankAccountClosingInterestForm
 import uk.gov.hmrc.tai.model.CloseAccountRequest
 import uk.gov.hmrc.tai.model.domain.BankAccount
-import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{BbsiService, PersonService}
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.viewModels.income.BbsiClosedCheckYourAnswersViewModel

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,8 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.employments.{EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
 import uk.gov.hmrc.tai.model.domain.EndEmployment
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, PersonService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
@@ -49,7 +50,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
                                         auditService: AuditService,
                                         employmentService: EmploymentService,
                                         @Named("Add Employment") val journeyCacheService: JourneyCacheService,
-                                        @Named("Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
+                                        @Named("Track Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
                                         val delegationConnector: DelegationConnector,
                                         val authConnector: AuthConnector,
                                         val auditConnector: AuditConnector,
