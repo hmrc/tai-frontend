@@ -51,12 +51,12 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
           Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
-        when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
+        when(journeyCacheService.currentCache(any())).thenReturn(
           Future.successful(Map.empty[String,String])
         )
         val result = Await.result(updateNextYearsIncomeService.get(employmentId, nino), 5.seconds)
 
-        verify(updateNextYearsIncomeService.journeyCacheService, times(1))
+        verify(journeyCacheService, times(1))
           .cache(expectedMap(employmentName, employmentId, isPension, employmentAmount))
 
         result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, employmentAmount, None)
@@ -101,7 +101,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       "journey values exist without a new amount in the cache" in {
         val nino = generateNino
 
-        when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
+        when(journeyCacheService.currentCache(any())).thenReturn(
           Future.successful(expectedMap(employmentName, employmentId, isPension, employmentAmount))
         )
 
@@ -113,7 +113,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       "journey values exist with a new amount in the cache" in {
         val nino = generateNino
 
-        when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
+        when(journeyCacheService.currentCache(any())).thenReturn(
           Future.successful(fullMap(employmentName, employmentId, isPension, employmentAmount))
         )
 
@@ -134,7 +134,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
           Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
-        when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
+        when(journeyCacheService.currentCache(any())).thenReturn(
           Future.successful(Map[String, String]())
         )
 
@@ -150,7 +150,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       "journey values are successfully retrieved from the cache" in {
         val nino = generateNino
 
-        when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
+        when(journeyCacheService.currentCache(any())).thenReturn(
           Future.successful(expectedMap(employmentName, employmentId, isPension, employmentAmount))
         )
 
@@ -158,7 +158,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
 
         result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, employmentAmount, Some(employmentAmount))
 
-        verify(updateNextYearsIncomeService.journeyCacheService, times(1))
+        verify(journeyCacheService, times(1))
           .cache(fullMap(employmentName, employmentId, isPension, employmentAmount))
       }
     }
@@ -170,7 +170,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       val service = new UpdateNextYearsIncomeServiceTest
 
       when(
-        service.journeyCacheService.currentCache(any())
+        journeyCacheService.currentCache(any())
       ).thenReturn(
         Future.successful(fullMap(employmentName, employmentId, false, employmentAmount))
       )
@@ -237,9 +237,10 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
 
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
+  val journeyCacheService = mock[JourneyCacheService]
 
   class UpdateNextYearsIncomeServiceTest extends UpdateNextYearsIncomeService(
-    mock[JourneyCacheService],
+    journeyCacheService,
     employmentService,
     taxAccountService
   )
