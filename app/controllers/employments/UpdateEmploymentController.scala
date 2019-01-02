@@ -49,8 +49,8 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
                                            val auditConnector: AuditConnector,
                                            val delegationConnector: DelegationConnector,
                                            val authConnector: AuthConnector,
-                                           @Named("Update Employment") val journeyCacheService: JourneyCacheService,
-                                           @Named("Track Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
+                                           @Named("Update Employment") journeyCacheService: JourneyCacheService,
+                                           @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
                                            override implicit val partialRetriever: FormPartialRetriever,
                                            override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions

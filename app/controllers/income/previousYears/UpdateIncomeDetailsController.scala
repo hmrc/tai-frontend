@@ -51,8 +51,8 @@ class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: Previo
                                               val auditConnector: AuditConnector,
                                               val delegationConnector: DelegationConnector,
                                               val authConnector: AuthConnector,
-                                              @Named("Track Successful Journey") val trackingJourneyCacheService: JourneyCacheService,
-                                              @Named("Update Previous Years Income") val journeyCacheService: JourneyCacheService,
+                                              @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
+                                              @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
                                               override implicit val partialRetriever: FormPartialRetriever,
                                               override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions

@@ -52,8 +52,8 @@ import scala.math.BigDecimal.RoundingMode
 
 class RemoveCompanyBenefitController @Inject()(personService: PersonService,
                                                auditService: AuditService,
-                                               @Named("End Company Benefit") val journeyCacheService: JourneyCacheService,
-                                               @Named("Track Successful Journey") val trackingJourneyCacheService: JourneyCacheService,
+                                               @Named("End Company Benefit") journeyCacheService: JourneyCacheService,
+                                               @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
                                                benefitsService: BenefitsService,
                                                val auditConnector: AuditConnector,
                                                val delegationConnector: DelegationConnector,
