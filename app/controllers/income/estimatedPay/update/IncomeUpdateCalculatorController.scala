@@ -31,14 +31,13 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{Employment, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.journeyCache.{JourneyCacheService, UpdatedEstimatedPayJourneyCacheService}
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
@@ -55,7 +54,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
                                                  val auditConnector: AuditConnector,
                                                  val delegationConnector: DelegationConnector,
                                                  val authConnector: AuthConnector,
-                                                 @Named("Update Income") implicit val journeyCacheService: JourneyCacheService,
+                                                 journeyCacheService: UpdatedEstimatedPayJourneyCacheService,
                                                  override implicit val partialRetriever: FormPartialRetriever,
                                                  override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
@@ -63,7 +62,6 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   with Auditable
   with JourneyCacheConstants
   with EditIncomeIrregularPayConstants
-  with UpdatedEstimatedPayJourneyCache
   with FormValuesConstants {
 
   def estimatedPayLandingPage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -103,7 +101,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             for {
               incomeToEdit: EmploymentAmount <- incomeToEditFuture
               taxCodeIncomeDetails <- taxCodeIncomeDetailsFuture
-              _ <- journeyCache(cacheMap = Map(
+              _ <- journeyCacheService.journeyCache(cacheMap = Map(
                 UpdateIncome_NameKey -> employment.name,
                 UpdateIncome_IdKey -> id.toString,
                 UpdateIncome_IncomeTypeKey -> incomeType)
@@ -313,7 +311,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
               case _ => Map(UpdateIncome_PayPeriodKey -> formData.payPeriod.getOrElse(""))
             }
 
-            journeyCache(cacheMap = cacheMap) map { _ =>
+            journeyCacheService.journeyCache(cacheMap = cacheMap) map { _ =>
               Redirect(routes.IncomeUpdateCalculatorController.payslipAmountPage())
             }
           }
@@ -349,7 +347,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           },
           formData => {
             formData match {
-              case PayslipForm(Some(value)) => journeyCache(UpdateIncome_TotalSalaryKey, Map(UpdateIncome_TotalSalaryKey -> value)) map { _ =>
+              case PayslipForm(Some(value)) => journeyCacheService.journeyCache(UpdateIncome_TotalSalaryKey, Map(UpdateIncome_TotalSalaryKey -> value)) map { _ =>
                 Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage())
               }
               case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage()))
@@ -390,7 +388,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             },
             formData => {
               formData.taxablePay match {
-                case Some(taxablePay) => journeyCache(UpdateIncome_TaxablePayKey, Map(UpdateIncome_TaxablePayKey -> taxablePay)) map { _ =>
+                case Some(taxablePay) => journeyCacheService.journeyCache(UpdateIncome_TaxablePayKey, Map(UpdateIncome_TaxablePayKey -> taxablePay)) map { _ =>
                   Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage())
                 }
                 case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage()))
@@ -429,12 +427,12 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           formData => {
             formData.payslipDeductions match {
               case Some(payslipDeductions) if payslipDeductions == "Yes" =>
-                journeyCache(UpdateIncome_PayslipDeductionsKey, Map(UpdateIncome_PayslipDeductionsKey -> payslipDeductions)) map { _ =>
+                journeyCacheService.journeyCache(UpdateIncome_PayslipDeductionsKey, Map(UpdateIncome_PayslipDeductionsKey -> payslipDeductions)) map { _ =>
                   Redirect(routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage())
                 }
               case Some(payslipDeductions) =>
 
-                journeyCache(UpdateIncome_PayslipDeductionsKey, Map(UpdateIncome_PayslipDeductionsKey -> payslipDeductions)) map { _ =>
+                journeyCacheService.journeyCache(UpdateIncome_PayslipDeductionsKey, Map(UpdateIncome_PayslipDeductionsKey -> payslipDeductions)) map { _ =>
                   Redirect(routes.IncomeUpdateCalculatorController.bonusPaymentsPage())
                 }
 
@@ -470,7 +468,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
               Map(UpdateIncome_BonusPaymentsKey -> bonusPayments)
             }
 
-            journeyCache(UpdateIncome_BonusPaymentsKey, bonusPaymentsAnswer) map { _ =>
+            journeyCacheService.journeyCache(UpdateIncome_BonusPaymentsKey, bonusPaymentsAnswer) map { _ =>
               if (formData.yesNoChoice.contains(YesValue)) {
                 Redirect(routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage())
               } else {
@@ -503,10 +501,12 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           },
           formData => {
             formData.amount match {
-              case Some(amount) =>
-                journeyCache(UpdateIncome_BonusOvertimeAmountKey, Map(UpdateIncome_BonusOvertimeAmountKey -> amount)) map { _ =>
+              case Some(amount) => {
+                println("********* " + journeyCacheService.journeyCache(UpdateIncome_BonusOvertimeAmountKey, Map(UpdateIncome_BonusOvertimeAmountKey -> amount)))
+                journeyCacheService.journeyCache(UpdateIncome_BonusOvertimeAmountKey, Map(UpdateIncome_BonusOvertimeAmountKey -> amount)) map { _ =>
                   Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage())
                 }
+              }
               case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage()))
             }
           }
@@ -559,7 +559,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
               UpdateIncome_NewAmountKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
             val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
 
-            journeyCache(cacheMap = cache) map { _ =>
+            journeyCacheService.journeyCache(cacheMap = cache) map { _ =>
 
               val viewModel = EstimatedPayViewModel(calculatedPay.grossAnnualPay, calculatedPay.netAnnualPay, id, isBonusPayment,
                 calculatedPay.annualAmount, calculatedPay.startDate, employerName)
