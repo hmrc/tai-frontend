@@ -51,7 +51,7 @@ class BbsiCloseAccountController @Inject()(bbsiService: BbsiService,
                                            val auditConnector: AuditConnector,
                                            val delegationConnector: DelegationConnector,
                                            val authConnector: AuthConnector,
-                                           @Named("Close Bank Account") val journeyCacheService: JourneyCacheService,
+                                           @Named("Close Bank Account") journeyCacheService: JourneyCacheService,
                                            override implicit val partialRetriever: FormPartialRetriever,
                                            override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
