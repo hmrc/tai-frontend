@@ -502,7 +502,6 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           formData => {
             formData.amount match {
               case Some(amount) => {
-                println("********* " + journeyCacheService.journeyCache(UpdateIncome_BonusOvertimeAmountKey, Map(UpdateIncome_BonusOvertimeAmountKey -> amount)))
                 journeyCacheService.journeyCache(UpdateIncome_BonusOvertimeAmountKey, Map(UpdateIncome_BonusOvertimeAmountKey -> amount)) map { _ =>
                   Redirect(routes.IncomeUpdateCalculatorController.checkYourAnswersPage())
                 }

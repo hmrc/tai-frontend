@@ -500,8 +500,7 @@ class IncomeUpdateCalculatorControllerSpec
   "handleBonusOvertimeAmount" must {
     "redirect the user to checkYourAnswers page" in {
         val testController = createTestIncomeUpdateCalculatorController
-//        when(journeyCacheService.cache(Matchers.eq(Map(UpdateIncome_BonusOvertimeAmountKey -> "£3,000")))(any())).thenReturn(Future.successful(Map("" -> "")))
-        when(journeyCacheService.cache(Matchers.any())(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(journeyCacheService.cache(Matchers.eq(Map(UpdateIncome_BonusOvertimeAmountKey -> "£3,000")))(any())).thenReturn(Future.successful(Map("" -> "")))
         val result = testController.handleBonusOvertimeAmount()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody("amount" -> "£3,000"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.checkYourAnswersPage().url)
@@ -1005,6 +1004,7 @@ class IncomeUpdateCalculatorControllerSpec
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(fakeNino)))
     when(journeyCacheService.mandatoryValueAsInt(Matchers.eq(UpdateIncome_IdKey))(any())).thenReturn(Future.successful(SampleId))
     when(journeyCacheService.mandatoryValue(Matchers.eq(UpdateIncome_NameKey))(any())).thenReturn(Future.successful(EmployerName))
+    when(journeyCacheService.journeyCache(any(), any())(any(), any())).thenReturn(Future.successful(Map("" -> "")))
   }
 
 }
