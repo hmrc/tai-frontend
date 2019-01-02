@@ -44,7 +44,7 @@ import scala.Function.tupled
 import scala.concurrent.Future
 
 class IncomeController @Inject()(personService: PersonService,
-                                 @Named("Update Income") val journeyCacheService: JourneyCacheService,
+                                 @Named("Update Income") journeyCacheService: JourneyCacheService,
                                  taxAccountService: TaxAccountService,
                                  employmentService: EmploymentService,
                                  incomeService: IncomeService,
