@@ -36,7 +36,7 @@ import scala.concurrent.Future
 
 class HelpController @Inject()(val config: ApplicationConfig,
                                val httpGet: WSHttpProxy,
-                               val personService: PersonService,
+                               personService: PersonService,
                                val auditConnector: AuditConnector,
                                val delegationConnector: DelegationConnector,
                                val authConnector: AuthConnector,

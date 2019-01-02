@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,10 +83,10 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
 
-        when(SUT.codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(codingComponents))
-        when(SUT.companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
-        when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
-        when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(codingComponents))
+        when(companyCarService.companyCarOnCodingComponents(any(), any())(any())).thenReturn(Future.successful(Nil))
+        when(employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
+        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
 
         val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -113,8 +113,8 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         val SUT = createSUT(true)
 
         val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
-        when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
-        when(SUT.taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map[String, BigDecimal]()))
+        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+        when(taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map[String, BigDecimal]()))
 
         val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -151,15 +151,18 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
   val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-
+  val codingComponentService = mock[CodingComponentService]
+  val companyCarService = mock[CompanyCarService]
+  val employmentService = mock[EmploymentService]
+  val taxAccountService = mock[TaxAccountService]
 
   private class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController(
     personService,
-    mock[CodingComponentService],
-    mock[EmploymentService],
-    mock[CompanyCarService],
+    codingComponentService,
+    employmentService,
+    companyCarService,
     taxCodeChangeService,
-    mock[TaxAccountService],
+    taxAccountService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],

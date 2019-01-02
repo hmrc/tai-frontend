@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.cacheResolver.estimatedPay
 
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.service.JourneyCacheService
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.{ExecutionContext, Future}

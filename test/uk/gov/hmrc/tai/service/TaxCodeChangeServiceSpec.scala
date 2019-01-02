@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -172,7 +172,5 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
   private def generateNino: Nino = new Generator(new Random).nextNino
   private def createTestService = new TestService
 
-  private class TestService extends TaxCodeChangeService {
-    override val taxCodeChangeConnector: TaxCodeChangeConnector = mock[TaxCodeChangeConnector]
-  }
+  private class TestService extends TaxCodeChangeService (mock[TaxCodeChangeConnector])
 }

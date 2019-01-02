@@ -39,8 +39,8 @@ import uk.gov.hmrc.time.TaxYearResolver
 import scala.concurrent.Future
 
 
-class NoCYIncomeTaxErrorController @Inject()(val personService: PersonService,
-                                             val employmentService: EmploymentService,
+class NoCYIncomeTaxErrorController @Inject()(personService: PersonService,
+                                             employmentService: EmploymentService,
                                              val auditConnector: AuditConnector,
                                              val delegationConnector: DelegationConnector,
                                              val authConnector: AuthConnector,

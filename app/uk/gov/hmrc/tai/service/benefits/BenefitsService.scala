@@ -16,17 +16,16 @@
 
 package uk.gov.hmrc.tai.service.benefits
 
+import com.google.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.BenefitsConnector
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, EndedCompanyBenefit}
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait BenefitsService {
-
-  def benefitsConnector: BenefitsConnector
+class BenefitsService  @Inject() (val benefitsConnector: BenefitsConnector) {
 
   def benefits(nino: Nino, taxYear: Int)(implicit hc: HeaderCarrier): Future[Benefits] = {
     benefitsConnector.benefits(nino, taxYear)
@@ -39,8 +38,3 @@ trait BenefitsService {
     }
   }
 }
-// $COVERAGE-OFF$
-object BenefitsService extends BenefitsService {
-  override val benefitsConnector: BenefitsConnector = BenefitsConnector
-}
-// $COVERAGE-ON$

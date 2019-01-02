@@ -82,7 +82,7 @@ trait EmploymentsConnector {
 }
 // $COVERAGE-OFF$
 object EmploymentsConnector extends EmploymentsConnector with ServicesConfig {
-  override val serviceUrl = baseUrl("tai")
+  override lazy val serviceUrl = baseUrl("tai")
 
   override def httpHandler: HttpHandler = HttpHandler
 }

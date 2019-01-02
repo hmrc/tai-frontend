@@ -36,17 +36,18 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
 
 import scala.Function.tupled
 import scala.concurrent.Future
 
-class IncomeController @Inject()(val personService: PersonService,
-                                 @Named("Update Income") val journeyCacheService: JourneyCacheService,
-                                 val taxAccountService: TaxAccountService,
-                                 val employmentService: EmploymentService,
-                                 val incomeService: IncomeService,
+class IncomeController @Inject()(personService: PersonService,
+                                 @Named("Update Income") journeyCacheService: JourneyCacheService,
+                                 taxAccountService: TaxAccountService,
+                                 employmentService: EmploymentService,
+                                 incomeService: IncomeService,
                                  val auditConnector: AuditConnector,
                                  val delegationConnector: DelegationConnector,
                                  val authConnector: AuthConnector,

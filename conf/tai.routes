@@ -36,27 +36,27 @@ GET         /add-employment/employment-success                                  
 
 # Add Pension Provider Journey
 
-GET         /add-pension-provider/name                                                 controllers.pensions.AddPensionProviderController.addPensionProviderName
-POST        /add-pension-provider/name                                                 controllers.pensions.AddPensionProviderController.submitPensionProviderName
+GET         /add-pension-provider/name                                                 @controllers.pensions.AddPensionProviderController.addPensionProviderName
+POST        /add-pension-provider/name                                                 @controllers.pensions.AddPensionProviderController.submitPensionProviderName
 
-GET         /add-pension-provider/received-first-payment                               controllers.pensions.AddPensionProviderController.receivedFirstPay
-POST        /add-pension-provider/received-first-payment                               controllers.pensions.AddPensionProviderController.submitFirstPay
+GET         /add-pension-provider/received-first-payment                               @controllers.pensions.AddPensionProviderController.receivedFirstPay
+POST        /add-pension-provider/received-first-payment                               @controllers.pensions.AddPensionProviderController.submitFirstPay
 
-GET         /add-pension-provider/cannot-add                                           controllers.pensions.AddPensionProviderController.cantAddPension
+GET         /add-pension-provider/cannot-add                                           @controllers.pensions.AddPensionProviderController.cantAddPension
 
-GET         /add-pension-provider/first-payment-date                                   controllers.pensions.AddPensionProviderController.addPensionProviderStartDate
-POST        /add-pension-provider/first-payment-date                                   controllers.pensions.AddPensionProviderController.submitPensionProviderStartDate
+GET         /add-pension-provider/first-payment-date                                   @controllers.pensions.AddPensionProviderController.addPensionProviderStartDate
+POST        /add-pension-provider/first-payment-date                                   @controllers.pensions.AddPensionProviderController.submitPensionProviderStartDate
 
-GET         /add-pension-provider/pension-number                                       controllers.pensions.AddPensionProviderController.addPensionNumber
-POST        /add-pension-provider/pension-number                                       controllers.pensions.AddPensionProviderController.submitPensionNumber
+GET         /add-pension-provider/pension-number                                       @controllers.pensions.AddPensionProviderController.addPensionNumber
+POST        /add-pension-provider/pension-number                                       @controllers.pensions.AddPensionProviderController.submitPensionNumber
 
-GET         /add-pension-provider/telephone-number                                     controllers.pensions.AddPensionProviderController.addTelephoneNumber
-POST        /add-pension-provider/telephone-number                                     controllers.pensions.AddPensionProviderController.submitTelephoneNumber
+GET         /add-pension-provider/telephone-number                                     @controllers.pensions.AddPensionProviderController.addTelephoneNumber
+POST        /add-pension-provider/telephone-number                                     @controllers.pensions.AddPensionProviderController.submitTelephoneNumber
 
-GET         /add-pension-provider/check-your-answers                                   controllers.pensions.AddPensionProviderController.checkYourAnswers
-POST        /add-pension-provider/check-your-answers                                   controllers.pensions.AddPensionProviderController.submitYourAnswers
+GET         /add-pension-provider/check-your-answers                                   @controllers.pensions.AddPensionProviderController.checkYourAnswers
+POST        /add-pension-provider/check-your-answers                                   @controllers.pensions.AddPensionProviderController.submitYourAnswers
 
-GET         /add-pension-provider/success                                              controllers.pensions.AddPensionProviderController.confirmation
+GET         /add-pension-provider/success                                              @controllers.pensions.AddPensionProviderController.confirmation
 
 
 
@@ -74,13 +74,13 @@ POST        /end-employment/telephone-number                                    
 GET         /end-employment/date/:empId                                                @controllers.employments.EndEmploymentController.endEmploymentPage(empId: Int)
 POST        /end-employment/date/:empId                                                @controllers.employments.EndEmploymentController.handleEndEmploymentPage(empId: Int)
 
-GET         /update-employment/what-do-you-want-to-tell-us/:empId                      controllers.employments.UpdateEmploymentController.updateEmploymentDetails(empId: Int)
-POST        /update-employment/what-do-you-want-to-tell-us/:empId                      controllers.employments.UpdateEmploymentController.submitUpdateEmploymentDetails(empId: Int)
-GET         /update-employment/telephone-number                                        controllers.employments.UpdateEmploymentController.addTelephoneNumber
-POST        /update-employment/telephone-number                                        controllers.employments.UpdateEmploymentController.submitTelephoneNumber
-GET         /update-employment/check-your-answers                                      controllers.employments.UpdateEmploymentController.updateEmploymentCheckYourAnswers
-POST        /update-employment/check-your-answers                                      controllers.employments.UpdateEmploymentController.submitYourAnswers
-GET         /update-employment/success                                                 controllers.employments.UpdateEmploymentController.confirmation
+GET         /update-employment/what-do-you-want-to-tell-us/:empId                      @controllers.employments.UpdateEmploymentController.updateEmploymentDetails(empId: Int)
+POST        /update-employment/what-do-you-want-to-tell-us/:empId                      @controllers.employments.UpdateEmploymentController.submitUpdateEmploymentDetails(empId: Int)
+GET         /update-employment/telephone-number                                        @controllers.employments.UpdateEmploymentController.addTelephoneNumber
+POST        /update-employment/telephone-number                                        @controllers.employments.UpdateEmploymentController.submitTelephoneNumber
+GET         /update-employment/check-your-answers                                      @controllers.employments.UpdateEmploymentController.updateEmploymentCheckYourAnswers
+POST        /update-employment/check-your-answers                                      @controllers.employments.UpdateEmploymentController.submitYourAnswers
+GET         /update-employment/success                                                 @controllers.employments.UpdateEmploymentController.confirmation
 
 GET         /previous-underpayment                                                     @controllers.UnderpaymentFromPreviousYearController.underpaymentExplanation
 GET         /underpayment-estimate                                                     @controllers.PotentialUnderpaymentController.potentialUnderpaymentPage
@@ -248,15 +248,15 @@ GET         /language/:lang                                                     
 
 ## Incorrect Pension
 
-GET         /incorrect-pension/decision/:id                                            controllers.pensions.UpdatePensionProviderController.doYouGetThisPension(id: Int)
-POST        /incorrect-pension/decision                                                controllers.pensions.UpdatePensionProviderController.handleDoYouGetThisPension
-GET         /incorrect-pension/what-do-you-want-to-tell-us                             controllers.pensions.UpdatePensionProviderController.whatDoYouWantToTellUs
-POST        /incorrect-pension/what-do-you-want-to-tell-us                             controllers.pensions.UpdatePensionProviderController.submitWhatDoYouWantToTellUs
-GET         /incorrect-pension/telephone-number                                        controllers.pensions.UpdatePensionProviderController.addTelephoneNumber
-POST        /incorrect-pension/telephone-number                                        controllers.pensions.UpdatePensionProviderController.submitTelephoneNumber
-GET         /incorrect-pension/check-your-answers                                      controllers.pensions.UpdatePensionProviderController.checkYourAnswers
-POST        /incorrect-pension/check-your-answers                                      controllers.pensions.UpdatePensionProviderController.submitYourAnswers
-GET         /incorrect-pension/success                                                 controllers.pensions.UpdatePensionProviderController.confirmation
+GET         /incorrect-pension/decision/:id                                            @controllers.pensions.UpdatePensionProviderController.doYouGetThisPension(id: Int)
+POST        /incorrect-pension/decision                                                @controllers.pensions.UpdatePensionProviderController.handleDoYouGetThisPension
+GET         /incorrect-pension/what-do-you-want-to-tell-us                             @controllers.pensions.UpdatePensionProviderController.whatDoYouWantToTellUs
+POST        /incorrect-pension/what-do-you-want-to-tell-us                             @controllers.pensions.UpdatePensionProviderController.submitWhatDoYouWantToTellUs
+GET         /incorrect-pension/telephone-number                                        @controllers.pensions.UpdatePensionProviderController.addTelephoneNumber
+POST        /incorrect-pension/telephone-number                                        @controllers.pensions.UpdatePensionProviderController.submitTelephoneNumber
+GET         /incorrect-pension/check-your-answers                                      @controllers.pensions.UpdatePensionProviderController.checkYourAnswers
+POST        /incorrect-pension/check-your-answers                                      @controllers.pensions.UpdatePensionProviderController.submitYourAnswers
+GET         /incorrect-pension/success                                                 @controllers.pensions.UpdatePensionProviderController.confirmation
 
 ## Tax Code Change
 

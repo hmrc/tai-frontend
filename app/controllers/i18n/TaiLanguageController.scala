@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.Future
 
-class TaiLanguageController @Inject()(val personService: PersonService,
+class TaiLanguageController @Inject()(personService: PersonService,
                                       val delegationConnector: DelegationConnector,
                                       val authConnector: AuthConnector,
                                       override implicit val partialRetriever: FormPartialRetriever,

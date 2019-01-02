@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ class BbsiRemoveAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
   "Bbsi Remove controller" must {
     "display remove confirmation view" in {
       val sut = createSut
-      when(sut.bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
+      when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
       val result = sut.checkYourAnswers(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -57,7 +57,7 @@ class BbsiRemoveAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
     "return not found" when {
       "account not found" in {
         val sut = createSut
-        when(sut.bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(None))
+        when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.checkYourAnswers(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -68,7 +68,7 @@ class BbsiRemoveAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
     "redirect to confirmation page" when {
       "we received envelope-id successfully" in {
         val sut = createSut
-        when(sut.bbsiService.removeBankAccount(any(), any())(any())).thenReturn(Future.successful("123-456-789"))
+        when(bbsiService.removeBankAccount(any(), any())(any())).thenReturn(Future.successful("123-456-789"))
 
         val result = sut.submitYourAnswers(1)(RequestBuilder.buildFakeInvalidRequestWithAuth("POST"))
 
@@ -84,9 +84,10 @@ class BbsiRemoveAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
   def createSut = new SUT
 
   val personService: PersonService = mock[PersonService]
+  val bbsiService = mock[BbsiService]
 
   class SUT extends BbsiRemoveAccountController(
-    mock[BbsiService],
+    bbsiService,
     personService,
     mock[AuditConnector],
     mock[DelegationConnector],

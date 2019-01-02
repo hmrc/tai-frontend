@@ -34,8 +34,8 @@ import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnecto
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 
 
-class BbsiRemoveAccountController @Inject()(val bbsiService: BbsiService,
-                                            val personService: PersonService,
+class BbsiRemoveAccountController @Inject()(bbsiService: BbsiService,
+                                            personService: PersonService,
                                             val auditConnector: AuditConnector,
                                             val delegationConnector: DelegationConnector,
                                             val authConnector: AuthConnector,

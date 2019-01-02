@@ -36,6 +36,9 @@
   gaCallsAdditionalJs: Option[Html] = None,
   gaDimensions: Option[Map[String, String]] = None,
   gaCustomTitle: Option[String] = None,
+  gaCustomClientIdRequired: Boolean = false,
+  gaCustomSessionIdRequired: Boolean = false,
+  gaCustomHitStampRequired: Boolean = false,
   optimizelyAudience: Option[String] = None,
   pageHeader: Option[Html] = None
 )(mainContent: Html
@@ -43,6 +46,7 @@
   messages: Messages,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
 
 @serviceSuffix = @{
     s"- ${Messages("tai.service.navTitle")} - GOV.UK"
@@ -106,7 +110,20 @@
 }
 
 @gaCustomEvent = @{
-    gaCustomTitle.map(gaTitle => s"""ga('set', 'title', "${gaTitle} ${serviceSuffix}")""").getOrElse(false)
+
+    def createGoogleAnalyticJavaScript(dimensionFlag:Boolean, gaJavaScript:String) = {
+        if(dimensionFlag) gaJavaScript else ""
+    }
+
+    val customTitle = gaCustomTitle.map(gaTitle => s"""ga('set', 'title', "${gaTitle} ${serviceSuffix}");""").getOrElse("")
+    val clientId = createGoogleAnalyticJavaScript(gaCustomClientIdRequired, s"""ga(function (tracker) { if (tracker) { ga('set', 'dimension66', tracker.get('clientId')); } });""")
+    val sessionId = createGoogleAnalyticJavaScript(gaCustomSessionIdRequired, s"""ga('set', 'dimension67', new Date().getTime() + '.' + Math.random().toString(36).substring(5));""")
+    val hitTimeStamp = createGoogleAnalyticJavaScript(gaCustomHitStampRequired, s"""ga('set', 'dimension68', new Date().toUTCString());""")
+
+    val combinedCustomDimensions = s"$customTitle $clientId $sessionId $hitTimeStamp"
+
+    if(combinedCustomDimensions.nonEmpty) combinedCustomDimensions else false
+
 }
 
 @inlineScript = {

@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.service
+package uk.gov.hmrc.tai.service.journeyCache
 
+import com.google.inject.Inject
 import org.joda.time.LocalDate
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait JourneyCacheService extends JourneyCacheConstants {
-
-  val journeyName: String
-
-  val journeyCacheConnector: JourneyCacheConnector
+class JourneyCacheService @Inject() (val journeyName: String,
+                                     val journeyCacheConnector: JourneyCacheConnector) {
 
 
   def currentValue(key: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
@@ -132,15 +129,3 @@ trait JourneyCacheService extends JourneyCacheConstants {
     journeyCacheConnector.flush(journeyName)
   }
 }
-
-// $COVERAGE-OFF$
-object JourneyCacheService {
-
-  def apply(journey:String) : JourneyCacheService = {
-    new JourneyCacheService {
-      override val journeyName = journey
-      override lazy val journeyCacheConnector = JourneyCacheConnector
-    }
-  }
-}
-// $COVERAGE-ON$

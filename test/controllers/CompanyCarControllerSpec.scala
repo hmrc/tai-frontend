@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.mockito.{Matchers, Mockito}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -39,22 +40,32 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.benefits.DateForm
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, SessionService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{PersonService, SessionService}
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.Future
 import scala.language.postfixOps
 import scala.util.Random
 
-class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport with JourneyCacheConstants{
+class CompanyCarControllerSpec extends PlaySpec
+  with MockitoSugar
+  with FakeTaiPlayApplication
+  with I18nSupport
+  with JourneyCacheConstants
+  with BeforeAndAfterEach {
+
+    override def beforeEach: Unit = {
+      Mockito.reset(sessionService)
+    }
 
   "CompanyCarController" should {
 
     "Successfully present the update/remove company car view" when {
       "GET'ing the getCompanyCarDetails endpoint with an authorised session" in {
         val sut = createSUT()
-        when(sut.companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(1))
-        when(sut.companyCarService.beginJourney(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(carWithoutFuelBenCache)))
+        when(companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(1))
+        when(companyCarService.beginJourney(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(carWithoutFuelBenCache)))
 
         val result = sut.getCompanyCarDetails()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -66,8 +77,8 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
     "redirect to companyCarService" when{
       "the service returns TaiCompanyCarWithdrawnDateFoundResponse" in{
         val sut = createSUT()
-        when(sut.companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(1))
-        when(sut.companyCarService.beginJourney(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(
+        when(companyCarService.companyCarEmploymentId(any())).thenReturn(Future.successful(1))
+        when(companyCarService.beginJourney(any(), Matchers.eq(1))(any())).thenReturn(Future.successful(
           TaiNoCompanyCarFoundResponse("A car with date withdrawn found!")))
 
         val result = sut.getCompanyCarDetails()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -82,13 +93,13 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
           val request = FakeRequest("POST", "").withFormUrlEncodedBody("userChoice" -> "removeCar").withSession(
             SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
           )
-          when(sut.sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
+          when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
 
           val result = sut.handleUserJourneyChoice()(request)
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result).get mustBe ApplicationConfig.companyCarDetailsUrl
-          Mockito.verify(sut.sessionService, Mockito.times(1)).invalidateCache()(any())
+          Mockito.verify(sessionService, Mockito.times(1)).invalidateCache()(any())
         }
     }
 
@@ -98,12 +109,12 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
           val request = FakeRequest("POST", "").withFormUrlEncodedBody("userChoice" -> "removeCar").withSession(
             SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
           )
-          when(sut.sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
+          when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
 
           val result = sut.handleUserJourneyChoice()(request)
           status(result) mustBe SEE_OTHER
           redirectLocation(result).get mustBe ApplicationConfig.companyCarServiceUrl
-          Mockito.verify(sut.sessionService, Mockito.times(1)).invalidateCache()(any())
+          Mockito.verify(sessionService, Mockito.times(1)).invalidateCache()(any())
         }
     }
 
@@ -113,12 +124,12 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
         val request = FakeRequest("POST", "").withFormUrlEncodedBody("userChoice" -> "changeCarDetails").withSession(
           SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
         )
-        when(sut.sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
+        when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
 
         val result = sut.handleUserJourneyChoice()(request)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe ApplicationConfig.companyCarServiceUrl
-        Mockito.verify(sut.sessionService, Mockito.times(1)).invalidateCache()(any())
+        Mockito.verify(sessionService, Mockito.times(1)).invalidateCache()(any())
       }
     }
   }
@@ -126,7 +137,7 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
   "redirectCompanyCarSelection" must {
     "redirect to getCompanyCarDetails page" in {
       val sut = createSUT()
-      when(sut.journeyCacheService.cache(Matchers.eq(CompanyCar_EmployerIdKey), Matchers.eq("1"))(any())).thenReturn(Future.successful(Map.empty[String, String]))
+      when(journeyCacheService.cache(Matchers.eq(CompanyCar_EmployerIdKey), Matchers.eq("1"))(any())).thenReturn(Future.successful(Map.empty[String, String]))
       val result = sut.redirectCompanyCarSelection(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.CompanyCarController.getCompanyCarDetails().url
@@ -159,11 +170,16 @@ class CompanyCarControllerSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
   def createSUT(isCompanyCarForceRedirectEnabled: Boolean = false) = new SUT(isCompanyCarForceRedirectEnabled)
 
+  val sessionService = mock[SessionService]
+  val companyCarService = mock[CompanyCarService]
+  val personService = mock[PersonService]
+  val journeyCacheService = mock[JourneyCacheService]
+
   class SUT(isCompanyCarForceRedirectEnabled: Boolean) extends CompanyCarController(
-    mock[PersonService],
-    mock[CompanyCarService],
-    mock[JourneyCacheService],
-    mock[SessionService],
+    personService,
+    companyCarService,
+    journeyCacheService,
+    sessionService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],
