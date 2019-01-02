@@ -49,7 +49,7 @@ import scala.concurrent.Future
 class AddEmploymentController @Inject()(personService: PersonService,
                                         auditService: AuditService,
                                         employmentService: EmploymentService,
-                                        @Named("Add Employment") val journeyCacheService: JourneyCacheService,
+                                        @Named("Add Employment") journeyCacheService: JourneyCacheService,
                                         @Named("Track Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
                                         val delegationConnector: DelegationConnector,
                                         val auditConnector: AuditConnector,
