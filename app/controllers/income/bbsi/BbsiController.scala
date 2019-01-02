@@ -45,7 +45,7 @@ class BbsiController @Inject()(bbsiService: BbsiService,
                                val auditConnector: AuditConnector,
                                val delegationConnector: DelegationConnector,
                                val authConnector: AuthConnector,
-                               @Named("Update Bank Account Choice") val journeyCacheService: JourneyCacheService,
+                               @Named("Update Bank Account Choice") journeyCacheService: JourneyCacheService,
                                override implicit val partialRetriever: FormPartialRetriever,
                                override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions

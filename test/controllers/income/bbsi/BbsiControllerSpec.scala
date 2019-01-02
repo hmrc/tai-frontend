@@ -123,7 +123,7 @@ class BbsiControllerSpec extends PlaySpec
       val sut = createSUT
       when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
-      when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
+      when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
 
       val result = sut.decision(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -138,7 +138,7 @@ class BbsiControllerSpec extends PlaySpec
 
       val cache = Some("updateInterest")
 
-      when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(cache))
+      when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(cache))
 
       val result = sut.decision(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -155,7 +155,7 @@ class BbsiControllerSpec extends PlaySpec
         val sut = createSUT
         when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(emptyBankAccount)))
 
-        when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
+        when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.decision(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -165,7 +165,7 @@ class BbsiControllerSpec extends PlaySpec
         val sut = createSUT
         when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(None))
 
-        when(sut.journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
+        when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.decision(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe NOT_FOUND
@@ -181,7 +181,7 @@ class BbsiControllerSpec extends PlaySpec
 
         when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
-        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           BankAccountDecision -> UpdateInterest))
@@ -197,7 +197,7 @@ class BbsiControllerSpec extends PlaySpec
 
         when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
-        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           BankAccountDecision -> CloseAccount))
@@ -213,7 +213,7 @@ class BbsiControllerSpec extends PlaySpec
 
         when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
-        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           BankAccountDecision -> RemoveAccount))
@@ -229,7 +229,7 @@ class BbsiControllerSpec extends PlaySpec
 
         when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
-        when(sut.journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.handleDecisionPage(0)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           BankAccountDecision -> "somethingElseNotHandled"))
@@ -303,6 +303,7 @@ class BbsiControllerSpec extends PlaySpec
 
   val personService: PersonService = mock[PersonService]
   val bbsiService = mock[BbsiService]
+  val journeyCacheService = mock[JourneyCacheService]
 
   class SUT extends BbsiController(
     bbsiService,
@@ -310,7 +311,7 @@ class BbsiControllerSpec extends PlaySpec
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],
-    mock[JourneyCacheService],
+    journeyCacheService,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
