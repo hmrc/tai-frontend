@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,8 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
-import uk.gov.hmrc.tai.service.{EmploymentService, JourneyCacheService, PersonService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploymentCheckYourAnswersViewModel}
@@ -43,13 +44,13 @@ import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploy
 import scala.Function.tupled
 import scala.concurrent.Future
 
-class UpdateEmploymentController @Inject()(val employmentService: EmploymentService,
-                                           val personService: PersonService,
+class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
+                                           personService: PersonService,
                                            val auditConnector: AuditConnector,
                                            val delegationConnector: DelegationConnector,
                                            val authConnector: AuthConnector,
-                                           @Named("Update Employment") val journeyCacheService: JourneyCacheService,
-                                           @Named("Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
+                                           @Named("Update Employment") journeyCacheService: JourneyCacheService,
+                                           @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
                                            override implicit val partialRetriever: FormPartialRetriever,
                                            override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions

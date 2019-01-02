@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnecto
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 
 
-class BbsiRemoveAccountController @Inject()(val bbsiService: BbsiService,
-                                            val personService: PersonService,
+class BbsiRemoveAccountController @Inject()(bbsiService: BbsiService,
+                                            personService: PersonService,
                                             val auditConnector: AuditConnector,
                                             val delegationConnector: DelegationConnector,
                                             val authConnector: AuthConnector,

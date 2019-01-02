@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,8 @@ import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumbe
 import uk.gov.hmrc.tai.forms.income.previousYears.{UpdateIncomeDetailsDecisionForm, UpdateIncomeDetailsForm}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
-import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, PreviousYearsIncomeService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{PersonService, PreviousYearsIncomeService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDetailsViewModel, UpdateIncomeDetailsCheckYourAnswersViewModel}
@@ -45,13 +46,13 @@ import views.html.incomes.previousYears.CheckYourAnswers
 import scala.Function.tupled
 import scala.concurrent.Future
 
-class UpdateIncomeDetailsController @Inject()(val previousYearsIncomeService: PreviousYearsIncomeService,
-                                              val personService: PersonService,
+class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: PreviousYearsIncomeService,
+                                              personService: PersonService,
                                               val auditConnector: AuditConnector,
                                               val delegationConnector: DelegationConnector,
                                               val authConnector: AuthConnector,
-                                              @Named("Track Successful Journey") val trackingJourneyCacheService: JourneyCacheService,
-                                              @Named("Update Previous Years Income") val journeyCacheService: JourneyCacheService,
+                                              @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
+                                              @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
                                               override implicit val partialRetriever: FormPartialRetriever,
                                               override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions

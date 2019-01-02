@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,12 +38,12 @@ import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
 
-class TaxCodeChangeController @Inject()(val personService: PersonService,
-                                        val codingComponentService: CodingComponentService,
-                                        val employmentService: EmploymentService,
-                                        val companyCarService: CompanyCarService,
+class TaxCodeChangeController @Inject()(personService: PersonService,
+                                        codingComponentService: CodingComponentService,
+                                        employmentService: EmploymentService,
+                                        companyCarService: CompanyCarService,
                                         taxCodeChangeService: TaxCodeChangeService,
-                                        val taxAccountService: TaxAccountService,
+                                        taxAccountService: TaxAccountService,
                                         val auditConnector: AuditConnector,
                                         val delegationConnector: DelegationConnector,
                                         val authConnector: AuthConnector,

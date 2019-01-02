@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ trait TrackingConnector extends TrackedFormFormatters{
 }
 // $COVERAGE-OFF$
 object TrackingConnector extends TrackingConnector with ServicesConfig {
-  override val serviceUrl = baseUrl("tracking")
+  override lazy val serviceUrl = baseUrl("tracking")
   override def httpHandler: HttpHandler = HttpHandler
 
 }

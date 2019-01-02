@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,8 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.employments.{AddEmploymentFirstPayForm, AddEmploymentPayrollNumberForm, EmploymentAddDateForm, EmploymentNameForm}
 import uk.gov.hmrc.tai.model.domain.AddEmployment
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, PersonService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
@@ -45,11 +46,11 @@ import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 import scala.Function.tupled
 import scala.concurrent.Future
 
-class AddEmploymentController @Inject()(val personService: PersonService,
-                                        val auditService: AuditService,
-                                        val employmentService: EmploymentService,
-                                        @Named("Add Employment") val journeyCacheService: JourneyCacheService,
-                                        @Named("Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
+class AddEmploymentController @Inject()(personService: PersonService,
+                                        auditService: AuditService,
+                                        employmentService: EmploymentService,
+                                        @Named("Add Employment") journeyCacheService: JourneyCacheService,
+                                        @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
                                         val delegationConnector: DelegationConnector,
                                         val auditConnector: AuditConnector,
                                         val authConnector: AuthConnector,

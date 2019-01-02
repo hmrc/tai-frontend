@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
   val model = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay)
 
   def mockedGet(testController: UpdateIncomeNextYearController) = {
-    when(testController.updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.any())(any()))
+    when(updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.any())(any()))
       .thenReturn(Future.successful(model))
   }
 
@@ -65,7 +65,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
         val testController = createTestIncomeController()
 
-        when(testController.updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
         mockedGet(testController)
 
         implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
@@ -127,7 +127,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         val nino = generateNino
         val updatedModel = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay, Some(newEstPay.toInt))
 
-        when(testController.updateNextYearsIncomeService.setNewAmount(Matchers.eq(newEstPay), Matchers.eq(employmentID), Matchers.eq(nino))(any()))
+        when(updateNextYearsIncomeService.setNewAmount(Matchers.eq(newEstPay), Matchers.eq(employmentID), Matchers.eq(nino))(any()))
           .thenReturn(Future.successful(updatedModel))
 
         val result = testController.update(employmentID)(
@@ -148,7 +148,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         val nino = generateNino
         val updatedModel = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay, Some(newEstPay.toInt))
 
-        when(testController.updateNextYearsIncomeService.setNewAmount(Matchers.eq(newEstPay), Matchers.eq(employmentID), Matchers.eq(nino))(any()))
+        when(updateNextYearsIncomeService.setNewAmount(Matchers.eq(newEstPay), Matchers.eq(employmentID), Matchers.eq(nino))(any()))
           .thenReturn(Future.successful(updatedModel))
 
         val result = testController.update(employmentID)(
@@ -168,7 +168,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
           val nino = generateNino
           val updatedModel = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay, None)
 
-          when(testController.updateNextYearsIncomeService.setNewAmount(Matchers.eq(newEstPay), Matchers.eq(employmentID), Matchers.eq(nino))(any()))
+          when(updateNextYearsIncomeService.setNewAmount(Matchers.eq(newEstPay), Matchers.eq(employmentID), Matchers.eq(nino))(any()))
             .thenReturn(Future.successful(updatedModel))
 
           val result = testController.update(employmentID)(
@@ -219,7 +219,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
           val testController = createTestIncomeController()
 
-          when(testController.updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
+          when(updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
           mockedGet(testController)
 
           implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
@@ -250,7 +250,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
           val testController = createTestIncomeController()
 
-          when(testController.updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
+          when(updateNextYearsIncomeService.reset(any())).thenReturn(Future.successful(TaiSuccessResponse))
           mockedGet(testController)
 
           implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = RequestBuilder.buildFakeRequestWithOnlySession("GET")
@@ -287,7 +287,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
           val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, false, 1, Some(newAmount))
           when(
-            controller.updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
+            updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
           ).thenReturn(
             Future.successful(serviceResponse)
           )
@@ -309,7 +309,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
           val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, false, 1, None)
           when(
-            controller.updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
+            updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
           ).thenReturn(
             Future.successful(serviceResponse)
           )
@@ -326,7 +326,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
           val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, false, 1, None)
           when(
-            controller.updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
+            updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
           ).thenReturn(
             Future.successful(serviceResponse)
           )
@@ -348,7 +348,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         val controller = createTestIncomeController()
 
         when(
-          controller.updateNextYearsIncomeService.submit(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
+          updateNextYearsIncomeService.submit(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
         ).thenReturn(
           Future.successful(TaiSuccessResponse)
         )
@@ -364,7 +364,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         val controller = createTestIncomeController()
 
         when(
-          controller.updateNextYearsIncomeService.submit(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
+          updateNextYearsIncomeService.submit(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
         ).thenReturn(
           Future.successful(TaiTaxAccountFailureResponse("Error"))
         )
@@ -382,9 +382,10 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
   private def createTestIncomeController(isCyPlusOneEnabled: Boolean = true): UpdateIncomeNextYearController = new TestUpdateIncomeNextYearController(isCyPlusOneEnabled)
 
   val personService: PersonService = mock[PersonService]
+  val updateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
 
   private class TestUpdateIncomeNextYearController(isCyPlusOneEnabled: Boolean) extends UpdateIncomeNextYearController(
-    mock[UpdateNextYearsIncomeService],
+    updateNextYearsIncomeService,
     personService,
     mock[AuditConnector],
     mock[DelegationConnector],

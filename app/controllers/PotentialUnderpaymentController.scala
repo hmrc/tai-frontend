@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,10 @@ import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, PersonServ
 import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 
-class PotentialUnderpaymentController @Inject()(val taxAccountService: TaxAccountService,
-                                                val codingComponentService: CodingComponentService,
-                                                val auditService: AuditService,
-                                                val personService: PersonService,
+class PotentialUnderpaymentController @Inject()(taxAccountService: TaxAccountService,
+                                                codingComponentService: CodingComponentService,
+                                                auditService: AuditService,
+                                                personService: PersonService,
                                                 val auditConnector: AuditConnector,
                                                 val delegationConnector: DelegationConnector,
                                                 val authConnector: AuthConnector,

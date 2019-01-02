@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ import scala.concurrent.Future
 
 class PayeControllerHistoric @Inject()(val config: ApplicationConfig,
                                        taxCodeChangeService: TaxCodeChangeService,
-                                       val employmentService: EmploymentService,
-                                       val personService: PersonService,
+                                       employmentService: EmploymentService,
+                                       personService: PersonService,
                                        val auditConnector: AuditConnector,
                                        val delegationConnector: DelegationConnector,
                                        val authConnector: AuthConnector,

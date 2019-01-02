@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import builders.{AuthBuilder, RequestBuilder}
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
+import org.mockito.Mockito
 import org.mockito.Mockito._
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -45,9 +47,13 @@ class PayeControllerHistoricSpec extends PlaySpec
   with FakeTaiPlayApplication
   with MockitoSugar
   with I18nSupport
-  with TaxPeriodLabelService
   with JsoupMatchers
-  with ControllerViewTestHelper {
+  with ControllerViewTestHelper
+  with BeforeAndAfterEach {
+
+  override def beforeEach: Unit = {
+    Mockito.reset(employmentService)
+  }
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
@@ -112,7 +118,7 @@ class PayeControllerHistoricSpec extends PlaySpec
 
     "redirect to mci page when mci indicator is true" in {
       val testController = createTestController()
-      when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(personMci))
+      when(personService.personDetails(any())(any())).thenReturn(Future.successful(personMci))
 
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -126,7 +132,7 @@ class PayeControllerHistoricSpec extends PlaySpec
 
     "redirect to deceased page when deceased indicator is true" in {
       val testController = createTestController()
-      when(testController.personService.personDetails(any())(any())).thenReturn(Future.successful(person.copy(isDeceased = true)))
+      when(personService.personDetails(any())(any())).thenReturn(Future.successful(person.copy(isDeceased = true)))
 
       val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -138,12 +144,12 @@ class PayeControllerHistoricSpec extends PlaySpec
       "employment service call results in a NotFoundException from NPS" in {
 
         val testController = createTestController()
-        when(testController.employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new NotFoundException("appStatusMessage : not found")))
+        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new NotFoundException("appStatusMessage : not found")))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe NOT_FOUND
-        verify(testController.employmentService, times(1)).employments(any(), any())(any())
+        verify(employmentService, times(1)).employments(any(), any())(any())
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Page not found - 404")
         doc must haveHeadingWithText(Messages("tai.errorMessage.heading.nps"))
@@ -154,12 +160,12 @@ class PayeControllerHistoricSpec extends PlaySpec
       "employment service call results in a NotFoundException from RTI" in {
 
         val testController = createTestController()
-        when(testController.employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new NotFoundException("not found")))
+        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new NotFoundException("not found")))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe NOT_FOUND
-        verify(testController.employmentService, times(1)).employments(any(), any())(any())
+        verify(employmentService, times(1)).employments(any(), any())(any())
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Page not found - 404")
         doc must haveHeadingWithText(Messages("tai.errorMessage.heading"))
@@ -169,7 +175,7 @@ class PayeControllerHistoricSpec extends PlaySpec
       "employment service call results in a bad request" in {
 
         val testController = createTestController()
-        when(testController.employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new BadRequestException("Bad request")))
+        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new BadRequestException("Bad request")))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -183,7 +189,7 @@ class PayeControllerHistoricSpec extends PlaySpec
       "employment service call results in a internal server error" in {
 
         val testController = createTestController()
-        when(testController.employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new InternalServerException("Internal server error")))
+        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new InternalServerException("Internal server error")))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -197,7 +203,7 @@ class PayeControllerHistoricSpec extends PlaySpec
       "employment service call results in an exception" in {
 
         val testController = createTestController()
-        when(testController.employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new HttpException("error", 502)))
+        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new HttpException("error", 502)))
 
         val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -223,13 +229,14 @@ class PayeControllerHistoricSpec extends PlaySpec
 
   val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
+  val employmentService = mock[EmploymentService]
 
   class PayeControllerHistoricTest(employments: Seq[Employment],
                                    previousYears: Int,
                                    showTaxCodeDescriptionLink: Boolean) extends PayeControllerHistoric(
     mock[ApplicationConfig],
     taxCodeChangeService,
-    mock[EmploymentService],
+    employmentService,
     personService,
     mock[AuditConnector],
     mock[DelegationConnector],

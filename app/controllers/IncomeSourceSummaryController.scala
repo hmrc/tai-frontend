@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,13 @@ import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 
-class IncomeSourceSummaryController @Inject()(val personService: PersonService,
+class IncomeSourceSummaryController @Inject()(personService: PersonService,
                                               val auditConnector: AuditConnector,
                                               val delegationConnector: DelegationConnector,
                                               val authConnector: AuthConnector,
-                                              val taxAccountService: TaxAccountService,
-                                              val employmentService: EmploymentService,
-                                              val benefitsService: BenefitsService,
+                                              taxAccountService: TaxAccountService,
+                                              employmentService: EmploymentService,
+                                              benefitsService: BenefitsService,
                                               override implicit val partialRetriever: FormPartialRetriever,
                                               override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with WithAuthorisedForTaiLite {

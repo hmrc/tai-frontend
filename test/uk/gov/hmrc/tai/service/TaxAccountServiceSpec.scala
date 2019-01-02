@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -206,8 +206,8 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
 
   private def createSut = new SUT
 
-  private class SUT extends TaxAccountService {
-    override val taxAccountConnector: TaxAccountConnector = mock[TaxAccountConnector]
-  }
+  private class SUT extends TaxAccountService(
+    mock[TaxAccountConnector]
+  )
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
-import play.api.Logger
+import com.google.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxAccountConnector
@@ -27,9 +27,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait CodingComponentService {
-
-  def taxAccountConnector: TaxAccountConnector
+class CodingComponentService @Inject()(val taxAccountConnector: TaxAccountConnector) {
 
   def taxFreeAmountComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[CodingComponent]] = {
     taxAccountConnector.codingComponents(nino, year) map {
@@ -46,8 +44,3 @@ trait CodingComponentService {
     }
   }
 }
-
-object CodingComponentService extends CodingComponentService {
-  override val taxAccountConnector: TaxAccountConnector = TaxAccountConnector
-}
-

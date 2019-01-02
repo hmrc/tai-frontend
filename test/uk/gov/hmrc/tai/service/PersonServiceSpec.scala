@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,9 +71,9 @@ class PersonServiceSpec extends PlaySpec
 
   def createSut = new PersonServiceTest
 
-  class PersonServiceTest extends PersonService {
-    override val taiClient: TaiConnector = mock[TaiConnector]
-    override val personConnector: PersonConnector = mock[PersonConnector]
-  }
+  class PersonServiceTest extends PersonService(
+    mock[TaiConnector],
+    mock[PersonConnector]
+  )
 
 }

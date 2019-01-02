@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +34,13 @@ import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, Perso
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 
-class IncomeTaxComparisonController @Inject()(val personService: PersonService,
+class IncomeTaxComparisonController @Inject()(personService: PersonService,
                                               val auditConnector: AuditConnector,
                                               val delegationConnector: DelegationConnector,
                                               val authConnector: AuthConnector,
-                                              val taxAccountService: TaxAccountService,
-                                              val employmentService: EmploymentService,
-                                              val codingComponentService: CodingComponentService,
+                                              taxAccountService: TaxAccountService,
+                                              employmentService: EmploymentService,
+                                              codingComponentService: CodingComponentService,
                                               override implicit val partialRetriever: FormPartialRetriever,
                                               override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with WithAuthorisedForTaiLite {

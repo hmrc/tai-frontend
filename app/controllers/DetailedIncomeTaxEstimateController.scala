@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,9 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.{CodingComponentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
 
-class DetailedIncomeTaxEstimateController @Inject()(val taxAccountService: TaxAccountService,
-                                                    val codingComponentService: CodingComponentService,
-                                                    val personService: PersonService,
+class DetailedIncomeTaxEstimateController @Inject()(taxAccountService: TaxAccountService,
+                                                    codingComponentService: CodingComponentService,
+                                                    personService: PersonService,
                                                     val auditConnector: AuditConnector,
                                                     val delegationConnector: DelegationConnector,
                                                     val authConnector: AuthConnector,

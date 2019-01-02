@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,13 +39,13 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
       "triggered from any page" which {
         "redirects to appropriate url " in {
           val sut = createSut
-          when(sut.auditService.sendAuditEventAndGetRedirectUri(any(), any())(any(), any())).thenReturn(Future.successful(redirectUri))
+          when(auditService.sendAuditEventAndGetRedirectUri(any(), any())(any(), any())).thenReturn(Future.successful(redirectUri))
 
           val result = Await.result(sut.auditLinksToIForm("any-iform")(RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" ->
             redirectUri)), 5.seconds)
 
           result.header.status mustBe 303
-          verify(sut.auditService, times(1)).sendAuditEventAndGetRedirectUri(Matchers.eq(Nino(nino)),
+          verify(auditService, times(1)).sendAuditEventAndGetRedirectUri(Matchers.eq(Nino(nino)),
             Matchers.eq("any-iform"))(any(), any())
         }
       }
@@ -59,10 +59,11 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
   def createSut = new SUT
 
   val personService: PersonService = mock[PersonService]
+  val auditService = mock[AuditService]
 
   class SUT extends AuditController(
     personService,
-    mock[AuditService],
+    auditService,
     mock[DelegationConnector],
     mock[AuthConnector],
     mock[FormPartialRetriever],

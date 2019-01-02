@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{IncorrectPensionProvider, PensionIncome}
 import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
@@ -47,14 +48,14 @@ import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersV
 import scala.Function.tupled
 import scala.concurrent.Future
 
-class UpdatePensionProviderController @Inject()(val taxAccountService: TaxAccountService,
-                                                val pensionProviderService: PensionProviderService,
-                                                val auditService: AuditService,
-                                                val personService: PersonService,
+class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountService,
+                                                pensionProviderService: PensionProviderService,
+                                                auditService: AuditService,
+                                                personService: PersonService,
                                                 val delegationConnector: DelegationConnector,
                                                 val authConnector: AuthConnector,
-                                                @Named("Update Pension Provider") val journeyCacheService: JourneyCacheService,
-                                                @Named("Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
+                                                @Named("Update Pension Provider") journeyCacheService: JourneyCacheService,
+                                                @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
                                                 override implicit val partialRetriever: FormPartialRetriever,
                                                 override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
