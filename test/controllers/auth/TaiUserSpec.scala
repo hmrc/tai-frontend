@@ -44,10 +44,6 @@ class TaiUserSpec extends PlaySpec with MockitoSugar {
       "return nino" in {
         taiUser.getNino mustBe UserBuilder.nino.nino
       }
-
-      "return UTR as an empty String" in {
-        taiUser.getUTR mustBe ""
-      }
     }
 
   private val user = UserBuilder()

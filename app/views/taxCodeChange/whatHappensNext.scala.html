@@ -1,5 +1,5 @@
 @*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.urls.Link
 
 
-@()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(user: controllers.auth.TaiUserA)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"What happens next"}
 
@@ -35,7 +35,7 @@
     title = Messages("taxCode.change.whatHappensNext.title"),
     articleClasses = Some("full-width"),
     pageHeader = Some(header),
-    user = Some(user),
+    userA = Some(user),
     gaCustomTitle = None
 ){
 

@@ -1,5 +1,5 @@
 @*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@
   sidebarClass: Option[String] = None,
   articleClasses: Option[String] = Some("full-width"),
   user: Option[controllers.auth.TaiUser] = None,
+  userA: Option[controllers.auth.TaiUserA] = None,
   employerName: Option[String] = None,
   includeGridWrapper: Boolean = false,
   webChat: Boolean = false,
@@ -62,7 +63,8 @@
 @isSa = @{
     user.fold(false) {
         user =>
-            user.authContext.principal.accounts.sa.map(_.utr).isDefined
+            true
+            // user.authContext.principal.accounts.sa.map(_.utr).isDefined
     }
 }
 
@@ -76,20 +78,6 @@
             user =>
                 routes.ServiceController.serviceSignout().url
         }
-    }
-}
-
-@actingAttorneyBanner = @{
-    user.fold(HtmlFormat.empty) {
-        authContext =>
-            authContext.authContext.attorney.fold(HtmlFormat.empty) {
-                _ => layouts.attorney_banner(
-                    authContext.authContext.principal.name,
-                    authContext.authContext.attorney.get.returnLink.url,
-                    standAlone,
-                    Some(Messages("attorney.banner.link"))
-                )
-            }
     }
 }
 
@@ -110,7 +98,7 @@
     Map[String, Any](
         "trackingId" -> ApplicationConfig.analyticsToken,
         "cookieDomain" -> ApplicationConfig.analyticsHost,
-        "confidenceLevel" -> user.map(_.authContext.user.confidenceLevel.toString).getOrElse(false),
+        "confidenceLevel" -> true,
         "authProvider" -> authProvider
 
 
@@ -186,7 +174,6 @@
         "isSa" -> isSa,
         "isVerify" -> isVerify,
         "signOutUrl" -> signOutUrl,
-        "actingAttorneyBanner" -> actingAttorneyBanner,
         "mainContentHeader" -> mainContentHeader,
         "sidebar" -> sidebar,
         "getHelpForm" -> helpForm,

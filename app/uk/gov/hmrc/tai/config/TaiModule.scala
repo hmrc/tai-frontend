@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,25 @@
 
 package uk.gov.hmrc.tai.config
 
+import com.google.inject.AbstractModule
+import controllers.AuthClientAuthConnector
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
+import uk.gov.hmrc.auth.core
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import uk.gov.hmrc.play.frontend.auth.connectors.DelegationConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.{LocalTemplateRenderer, UserDetailsConnector}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.{BenefitsService, CompanyCarService}
 import uk.gov.hmrc.tai.util.constants.{BankAccountDecisionConstants, JourneyCacheConstants}
+
+class TaiAuthModule extends AbstractModule {
+  override def configure(): Unit = {
+    bind(classOf[core.AuthConnector]).to(classOf[AuthClientAuthConnector])
+  }
+}
 
 class TaiModule extends Module with JourneyCacheConstants with BankAccountDecisionConstants {
 
@@ -35,7 +44,7 @@ class TaiModule extends Module with JourneyCacheConstants with BankAccountDecisi
     bind[WSHttpProxy].toInstance(WSHttpProxy),
     // Connectors
     bind[AuditConnector].toInstance(AuditConnector),
-    bind[AuthConnector].toInstance(FrontendAuthConnector),
+    bind[uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector].toInstance(FrontendAuthConnector),
     bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
     bind[UserDetailsConnector].toInstance(UserDetailsConnector),
     // Services
