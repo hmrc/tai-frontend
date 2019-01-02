@@ -21,9 +21,10 @@ import controllers.FakeTaiPlayApplication
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -51,7 +52,12 @@ class CompanyBenefitControllerSpec extends PlaySpec
   with FormValuesConstants
   with UpdateOrRemoveCompanyBenefitDecisionConstants
   with JourneyCacheConstants
-  with JsoupMatchers {
+  with JsoupMatchers
+  with BeforeAndAfterEach {
+
+  override def beforeEach: Unit = {
+    Mockito.reset(journeyCacheService)
+  }
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -62,7 +68,7 @@ class CompanyBenefitControllerSpec extends PlaySpec
 
       val SUT = createSUT
 
-      when(SUT.journeyCacheService.cache(Matchers.any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+      when(journeyCacheService.cache(Matchers.any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
       val result = SUT.redirectCompanyBenefitSelection(empId, BenefitInKind)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -84,9 +90,9 @@ class CompanyBenefitControllerSpec extends PlaySpec
           EndCompanyBenefit_BenefitTypeKey -> benefitType,
           EndCompanyBenefit_RefererKey -> referer)
 
-        when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(SUT.journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = SUT.decision(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -95,8 +101,8 @@ class CompanyBenefitControllerSpec extends PlaySpec
         doc.title() must include(Messages("tai.benefits.updateOrRemove.decision.heading", benefitType, empName))
 
         verify(employmentService, times(1)).employment(any(), any())(any())
-        verify(SUT.journeyCacheService, times(1)).currentCache(any())
-        verify(SUT.journeyCacheService, times(1)).cache(
+        verify(journeyCacheService, times(1)).currentCache(any())
+        verify(journeyCacheService, times(1)).cache(
           mockEq(Map(EndCompanyBenefit_EmploymentNameKey -> empName,
             EndCompanyBenefit_BenefitNameKey -> benefitType,
             EndCompanyBenefit_RefererKey -> referer)))(any())
@@ -159,12 +165,12 @@ class CompanyBenefitControllerSpec extends PlaySpec
           EndCompanyBenefit_BenefitTypeKey -> "Expenses",
           EndCompanyBenefit_RefererKey -> "/check-income-tax/income-summary")
 
-        when(SUT.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         val result = SUT.submitDecision(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(DecisionChoice -> ""))
 
         status(result) mustBe BAD_REQUEST
 
-        verify(SUT.journeyCacheService, times(1)).currentCache(any())
+        verify(journeyCacheService, times(1)).currentCache(any())
 
       }
     }
@@ -181,12 +187,13 @@ class CompanyBenefitControllerSpec extends PlaySpec
 
   val employmentService = mock[EmploymentService]
   val personService = mock[PersonService]
+  val journeyCacheService = mock[JourneyCacheService]
 
   class SUT extends CompanyBenefitController(
     personService,
     mock[AuditService],
     employmentService,
-    mock[JourneyCacheService],
+    journeyCacheService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],
