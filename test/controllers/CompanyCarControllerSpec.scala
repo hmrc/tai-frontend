@@ -40,7 +40,8 @@ import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.benefits.DateForm
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, SessionService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{PersonService, SessionService}
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.Future
@@ -136,7 +137,7 @@ class CompanyCarControllerSpec extends PlaySpec
   "redirectCompanyCarSelection" must {
     "redirect to getCompanyCarDetails page" in {
       val sut = createSUT()
-      when(sut.journeyCacheService.cache(Matchers.eq(CompanyCar_EmployerIdKey), Matchers.eq("1"))(any())).thenReturn(Future.successful(Map.empty[String, String]))
+      when(journeyCacheService.cache(Matchers.eq(CompanyCar_EmployerIdKey), Matchers.eq("1"))(any())).thenReturn(Future.successful(Map.empty[String, String]))
       val result = sut.redirectCompanyCarSelection(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.CompanyCarController.getCompanyCarDetails().url
@@ -172,11 +173,12 @@ class CompanyCarControllerSpec extends PlaySpec
   val sessionService = mock[SessionService]
   val companyCarService = mock[CompanyCarService]
   val personService = mock[PersonService]
+  val journeyCacheService = mock[JourneyCacheService]
 
   class SUT(isCompanyCarForceRedirectEnabled: Boolean) extends CompanyCarController(
     personService,
     companyCarService,
-    mock[JourneyCacheService],
+    journeyCacheService,
     sessionService,
     mock[AuditConnector],
     mock[DelegationConnector],

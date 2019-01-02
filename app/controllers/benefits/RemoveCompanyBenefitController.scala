@@ -37,7 +37,8 @@ import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompa
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, PersonService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{AuditService, PersonService}
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
@@ -52,7 +53,7 @@ import scala.math.BigDecimal.RoundingMode
 class RemoveCompanyBenefitController @Inject()(personService: PersonService,
                                                auditService: AuditService,
                                                @Named("End Company Benefit") val journeyCacheService: JourneyCacheService,
-                                               @Named("Successful Journey") val trackingJourneyCacheService: JourneyCacheService,
+                                               @Named("Track Successful Journey") val trackingJourneyCacheService: JourneyCacheService,
                                                benefitsService: BenefitsService,
                                                val auditConnector: AuditConnector,
                                                val delegationConnector: DelegationConnector,

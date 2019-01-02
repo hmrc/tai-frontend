@@ -39,6 +39,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{IncorrectPensionProvider, PensionIncome}
 import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
@@ -54,7 +55,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
                                                 val delegationConnector: DelegationConnector,
                                                 val authConnector: AuthConnector,
                                                 @Named("Update Pension Provider") val journeyCacheService: JourneyCacheService,
-                                                @Named("Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
+                                                @Named("Track Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
                                                 override implicit val partialRetriever: FormPartialRetriever,
                                                 override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions

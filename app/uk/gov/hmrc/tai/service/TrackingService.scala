@@ -25,12 +25,13 @@ import uk.gov.hmrc.tai.model.domain.tracking.{TrackedForm, TrackedFormDone}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.util.control.NonFatal
 
 class TrackingService @Inject() (val trackingConnector: TrackingConnector,
-                                 @Named("Successful Journey") val successfulJourneyCacheService: JourneyCacheService
+                                 @Named("Track Successful Journey") val successfulJourneyCacheService: JourneyCacheService
                                 ) extends JourneyCacheConstants{
 
   def isAnyIFormInProgress(nino: String)(implicit hc: HeaderCarrier): Future[Boolean] = {

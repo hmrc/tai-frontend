@@ -25,12 +25,13 @@ import uk.gov.hmrc.tai.connectors.responses.TaiResponse
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.PensionIncome
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
 import scala.concurrent.Future
 
-class UpdateNextYearsIncomeService @Inject()(@Named("Update Next Years Income") val journeyCacheService: JourneyCacheService,
+class UpdateNextYearsIncomeService @Inject()(@Named("Update Next Years Income") journeyCacheService: JourneyCacheService,
                                              employmentService: EmploymentService,
                                              taxAccountService: TaxAccountService) {
 

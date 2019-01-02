@@ -32,7 +32,8 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.income.bbsi.{BankAccountsDecisionForm, BankAccountsDecisionFormData}
 import uk.gov.hmrc.tai.model.domain.BankAccount
-import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{BbsiService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{BankAccountDecisionConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.income.BbsiAccountsDecisionViewModel
 

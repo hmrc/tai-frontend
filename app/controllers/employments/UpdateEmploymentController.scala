@@ -35,7 +35,8 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
-import uk.gov.hmrc.tai.service.{EmploymentService, JourneyCacheService, PersonService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploymentCheckYourAnswersViewModel}
@@ -49,7 +50,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
                                            val delegationConnector: DelegationConnector,
                                            val authConnector: AuthConnector,
                                            @Named("Update Employment") val journeyCacheService: JourneyCacheService,
-                                           @Named("Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
+                                           @Named("Track Successful Journey") val successfulJourneyCacheService: JourneyCacheService,
                                            override implicit val partialRetriever: FormPartialRetriever,
                                            override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
