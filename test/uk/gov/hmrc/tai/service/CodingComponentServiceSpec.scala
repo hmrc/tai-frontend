@@ -70,7 +70,7 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
     "return exception" when {
       "error is received from TAI" in {
         val sut = createSut
-        when(sut.taxAccountConnector.codingComponents(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("could not fetch coding components")))
+        when(taxAccountConnector.codingComponents(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("could not fetch coding components")))
 
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.taxFreeAmountComponents(generateNino, currrentTaxYear), 5 seconds)
