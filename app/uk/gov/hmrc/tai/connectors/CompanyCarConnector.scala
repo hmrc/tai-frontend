@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.connectors
 
 import com.google.inject.Inject
-import uk.gov.hmrc.tai.connectors.EmploymentsConnector.baseUrl
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
@@ -26,10 +25,11 @@ import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCarBenefit, WithdrawCarAndF
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.util.control.NonFatal
 
-class CompanyCarConnector @Inject() (val httpHandler: HttpHandler){
+class CompanyCarConnector @Inject() (val httpHandler: HttpHandler) extends ServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 

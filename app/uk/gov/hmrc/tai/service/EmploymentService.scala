@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class EmploymentService @Inject() (val employmentsConnector: EmploymentsConnector) {
+class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
 
   def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
     employmentsConnector.employments(nino, year)
