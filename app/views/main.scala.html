@@ -22,6 +22,7 @@
 @import uk.gov.hmrc.tai.util.constants.TaiConstants
 @import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig}
 @import uk.gov.hmrc.play.language.LanguageUtils
+@import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
 @(title: String,
   sidebarLinks: Option[Html] = None,
@@ -33,11 +34,8 @@
   webChat: Boolean = false,
   clickWebChat: Boolean = false,
   gaCallsAdditionalJs: Option[Html] = None,
-  gaDimensions: Option[Map[String, String]] = None,
+  gaSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(),
   gaCustomTitle: Option[String] = None,
-  gaCustomClientIdRequired: Boolean = false,
-  gaCustomSessionIdRequired: Boolean = false,
-  gaCustomHitStampRequired: Boolean = false,
   optimizelyAudience: Option[String] = None,
   pageHeader: Option[Html] = None
 )(mainContent: Html
@@ -118,7 +116,7 @@
         "authProvider" -> authProvider
 
 
-    ) ++ gaDimensions.getOrElse(Map.empty)
+    ) ++ gaSettings.gaDimensions.getOrElse(Map.empty)
 }
 
 @gaCustomEvent = @{
@@ -128,9 +126,9 @@
     }
 
     val customTitle = gaCustomTitle.map(gaTitle => s"""ga('set', 'title', "${gaTitle} ${serviceSuffix}");""").getOrElse("")
-    val clientId = createGoogleAnalyticJavaScript(gaCustomClientIdRequired, s"""ga(function (tracker) { if (tracker) { ga('set', 'dimension66', tracker.get('clientId')); } });""")
-    val sessionId = createGoogleAnalyticJavaScript(gaCustomSessionIdRequired, s"""ga('set', 'dimension67', new Date().getTime() + '.' + Math.random().toString(36).substring(5));""")
-    val hitTimeStamp = createGoogleAnalyticJavaScript(gaCustomHitStampRequired, s"""ga('set', 'dimension68', new Date().toUTCString());""")
+    val clientId = createGoogleAnalyticJavaScript(gaSettings.gaCustomClientIdRequired, s"""ga(function (tracker) { if (tracker) { ga('set', 'dimension66', tracker.get('clientId')); } });""")
+    val sessionId = createGoogleAnalyticJavaScript(gaSettings.gaCustomSessionIdRequired, s"""ga('set', 'dimension67', new Date().getTime() + '.' + Math.random().toString(36).substring(5));""")
+    val hitTimeStamp = createGoogleAnalyticJavaScript(gaSettings.gaCustomHitStampRequired, s"""ga('set', 'dimension68', new Date().toUTCString());""")
 
     val combinedCustomDimensions = s"$customTitle $clientId $sessionId $hitTimeStamp"
 

@@ -25,6 +25,7 @@
 @import includes.forms.card
 @import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil.dynamicDateRange
+@import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
 @(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData],
   model: WhatDoYouWantToDoViewModel
@@ -48,10 +49,12 @@
     title = messages("your.paye.income.tax.overview"),
     user = Some(user),
     gaCustomTitle = None,
-    gaCustomClientIdRequired = true,
-    gaCustomSessionIdRequired = true,
-    gaCustomHitStampRequired = true,
-    gaDimensions = Some(model.gaDimensions),
+    gaSettings = GoogleAnalyticsSettings(
+                                            gaCustomClientIdRequired = true,
+                                            gaCustomSessionIdRequired = true,
+                                            gaCustomHitStampRequired = true,
+                                            gaDimensions = Some(model.gaDimensions)
+                                        ),
     optimizelyAudience = optimizelyAudience
 ) {
 
