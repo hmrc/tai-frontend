@@ -16,22 +16,16 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.google.inject.Inject
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.tai.config.TaiConfig
 
 import scala.concurrent.Future
 
-trait SessionConnector extends TaiUrls with TaiConfig {
-
-  def httpHandler: HttpHandler
+class SessionConnector @Inject() (val httpHandler: HttpHandler) extends TaiUrls with TaiConfig {
 
   def invalidateCache()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     httpHandler.deleteFromApi(invalidateCacheUrl())
   }
 
 }
-// $COVERAGE-OFF$
-object SessionConnector extends SessionConnector {
-  override val httpHandler: HttpHandler = HttpHandler
-}
-// $COVERAGE-ON$
