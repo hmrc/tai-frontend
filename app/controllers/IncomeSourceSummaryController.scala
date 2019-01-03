@@ -16,31 +16,33 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
-
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 
-trait IncomeSourceSummaryController extends TaiBaseController
+class IncomeSourceSummaryController @Inject()(personService: PersonService,
+                                              val auditConnector: AuditConnector,
+                                              val delegationConnector: DelegationConnector,
+                                              val authConnector: AuthConnector,
+                                              taxAccountService: TaxAccountService,
+                                              employmentService: EmploymentService,
+                                              benefitsService: BenefitsService,
+                                              override implicit val partialRetriever: FormPartialRetriever,
+                                              override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with WithAuthorisedForTaiLite {
-
-  def personService: PersonService
-
-  def taxAccountService: TaxAccountService
-
-  def employmentService: EmploymentService
-
-  def benefitsService: BenefitsService
 
   def onPageLoad(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -66,15 +68,3 @@ trait IncomeSourceSummaryController extends TaiBaseController
           }
   }
 }
-// $COVERAGE-OFF$
-object IncomeSourceSummaryController extends IncomeSourceSummaryController with AuthenticationConnectors {
-  override val personService = PersonService
-  override val taxAccountService: TaxAccountService = TaxAccountService
-  override val employmentService: EmploymentService = EmploymentService
-  override val benefitsService: BenefitsService = BenefitsService
-
-  override implicit def templateRenderer = LocalTemplateRenderer
-
-  override implicit def partialRetriever = TaiHtmlPartialRetriever
-}
-// $COVERAGE-ON$

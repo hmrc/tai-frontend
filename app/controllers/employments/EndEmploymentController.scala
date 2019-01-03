@@ -16,6 +16,8 @@
 
 package controllers.employments
 
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import controllers._
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
@@ -26,15 +28,16 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.employments.{EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
 import uk.gov.hmrc.tai.model.domain.EndEmployment
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, PersonService}
-import uk.gov.hmrc.tai.util._
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
@@ -43,7 +46,17 @@ import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 import scala.Function.tupled
 import scala.concurrent.Future
 
-trait EndEmploymentController extends TaiBaseController
+class EndEmploymentController @Inject()(personService: PersonService,
+                                        auditService: AuditService,
+                                        employmentService: EmploymentService,
+                                        @Named("End Employment") journeyCacheService: JourneyCacheService,
+                                        @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
+                                        val delegationConnector: DelegationConnector,
+                                        val authConnector: AuthConnector,
+                                        val auditConnector: AuditConnector,
+                                        implicit val templateRenderer: TemplateRenderer,
+                                        implicit val partialRetriever: FormPartialRetriever
+                                       ) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
@@ -51,16 +64,6 @@ trait EndEmploymentController extends TaiBaseController
   with FormValuesConstants
   with IrregularPayConstants
   with AuditConstants {
-
-  def personService: PersonService
-
-  def auditService: AuditService
-
-  def employmentService: EmploymentService
-
-  def journeyCacheService: JourneyCacheService
-
-  def successfulJourneyCacheService: JourneyCacheService
 
   private def telephoneNumberViewModel(employmentId: Int)(implicit messages: Messages) = CanWeContactByPhoneViewModel(
     messages("tai.endEmployment.preHeadingText"),
@@ -323,16 +326,3 @@ trait EndEmploymentController extends TaiBaseController
         implicit request => Future.successful(Ok(views.html.employments.confirmation()))
   }
 }
-// $COVERAGE-OFF$
-object EndEmploymentController extends EndEmploymentController with
-  AuthenticationConnectors {
-
-  override val personService: PersonService = PersonService
-  override val auditService: AuditService = AuditService
-  override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-  override val employmentService = EmploymentService
-  override val journeyCacheService: JourneyCacheService = JourneyCacheService(EndEmployment_JourneyKey)
-  override val successfulJourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
-}
-// $COVERAGE-ON$

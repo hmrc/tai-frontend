@@ -206,8 +206,8 @@ class TaxAccountServiceSpec extends PlaySpec with MockitoSugar {
 
   private def createSut = new SUT
 
-  private class SUT extends TaxAccountService {
-    override val taxAccountConnector: TaxAccountConnector = mock[TaxAccountConnector]
-  }
+  private class SUT extends TaxAccountService(
+    mock[TaxAccountConnector]
+  )
 
 }

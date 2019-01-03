@@ -27,6 +27,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -44,7 +45,7 @@ class BbsiRemoveAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
   "Bbsi Remove controller" must {
     "display remove confirmation view" in {
       val sut = createSut
-      when(sut.bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
+      when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount)))
 
       val result = sut.checkYourAnswers(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -56,7 +57,7 @@ class BbsiRemoveAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
     "return not found" when {
       "account not found" in {
         val sut = createSut
-        when(sut.bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(None))
+        when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.checkYourAnswers(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -67,7 +68,7 @@ class BbsiRemoveAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
     "redirect to confirmation page" when {
       "we received envelope-id successfully" in {
         val sut = createSut
-        when(sut.bbsiService.removeBankAccount(any(), any())(any())).thenReturn(Future.successful("123-456-789"))
+        when(bbsiService.removeBankAccount(any(), any())(any())).thenReturn(Future.successful("123-456-789"))
 
         val result = sut.submitYourAnswers(1)(RequestBuilder.buildFakeInvalidRequestWithAuth("POST"))
 
@@ -82,14 +83,17 @@ class BbsiRemoveAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
 
   def createSut = new SUT
 
-  class SUT extends BbsiRemoveAccountController {
-    override val personService: PersonService = mock[PersonService]
-    override val bbsiService: BbsiService = mock[BbsiService]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
+  val personService: PersonService = mock[PersonService]
+  val bbsiService = mock[BbsiService]
 
+  class SUT extends BbsiRemoveAccountController(
+    bbsiService,
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer) {
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
 

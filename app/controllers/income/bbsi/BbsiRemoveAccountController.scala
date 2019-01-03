@@ -17,6 +17,7 @@
 package controllers.income.bbsi
 
 
+import com.google.inject.Inject
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{ServiceCheckLite, TaiBaseController}
 import play.api.Play.current
@@ -24,19 +25,24 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.tai.service.{BbsiService, PersonService}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnector, TaiHtmlPartialRetriever}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 
 
-trait BbsiRemoveAccountController extends TaiBaseController
+class BbsiRemoveAccountController @Inject()(bbsiService: BbsiService,
+                                            personService: PersonService,
+                                            val auditConnector: AuditConnector,
+                                            val delegationConnector: DelegationConnector,
+                                            val authConnector: AuthConnector,
+                                            override implicit val partialRetriever: FormPartialRetriever,
+                                            override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
-
-  def personService: PersonService
-
-  def bbsiService: BbsiService
-
   def checkYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
@@ -62,13 +68,3 @@ trait BbsiRemoveAccountController extends TaiBaseController
   }
 
 }
-// $COVERAGE-OFF$
-object BbsiRemoveAccountController extends BbsiRemoveAccountController {
-  override val personService = PersonService
-  override val bbsiService = BbsiService
-  override protected val delegationConnector = FrontEndDelegationConnector
-  override protected val authConnector = FrontendAuthConnector
-  override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever = TaiHtmlPartialRetriever
-}
-// $COVERAGE-ON$

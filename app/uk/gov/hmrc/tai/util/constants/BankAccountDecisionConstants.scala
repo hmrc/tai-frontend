@@ -25,3 +25,5 @@ trait BankAccountDecisionConstants {
   val UpdateBankAccountChoiceJourneyKey = "update-or-remove-bank-account-decision"
   val UpdateBankAccountUserChoiceKey = "userAccountActionDecision"
 }
+
+object BankAccountDecisionConstants extends BankAccountDecisionConstants

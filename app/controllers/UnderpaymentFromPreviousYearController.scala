@@ -37,11 +37,11 @@ import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 import views.html.previousYearUnderpayment
 
 
-class UnderpaymentFromPreviousYearController @Inject()(val personService: PersonService,
-                                                       val codingComponentService: CodingComponentService,
-                                                       val employmentService: EmploymentService,
-                                                       val companyCarService: CompanyCarService,
-                                                       val taxAccountService: TaxAccountService,
+class UnderpaymentFromPreviousYearController @Inject()(personService: PersonService,
+                                                       codingComponentService: CodingComponentService,
+                                                       employmentService: EmploymentService,
+                                                       companyCarService: CompanyCarService,
+                                                       taxAccountService: TaxAccountService,
                                                        val auditConnector: AuditConnector,
                                                        val delegationConnector: DelegationConnector,
                                                        val authConnector: AuthConnector,

@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
 
 
-class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
+class historicPayAsYouEarnSpec extends TaiViewSpec {
 
   private val currentYear: Int = TaxYear().year
   private val cyMinusOneTaxYear: TaxYear = TaxYear(currentYear - 1)
@@ -44,9 +44,9 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
 
     behave like pageWithCombinedHeader(
       messages("tai.paye.lastTaxYear.preHeading"),
-      messages("tai.paye.heading", taxPeriodLabel(cyMinusOneTaxYear.year)))
+      messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(cyMinusOneTaxYear.year)))
 
-    behave like pageWithTitle(messages("tai.paye.heading", taxPeriodLabel(cyMinusOneTaxYear.year)))
+    behave like pageWithTitle(messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(cyMinusOneTaxYear.year)))
 
     "contain correct header" in {
       val taxYear = cyMinusOneTaxYear
@@ -55,7 +55,7 @@ class historicPayAsYouEarnSpec extends TaiViewSpec with TaxPeriodLabelService{
       val newDoc = doc(view)
 
       newDoc.body.text must include(messages("tai.paye.lastTaxYear.preHeading"))
-      newDoc.body.text must include(messages("tai.paye.heading", taxPeriodLabel(taxYear.year)))
+      newDoc.body.text must include(messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)))
     }
 
     "display a link to view the tax code at the end of the year" when {

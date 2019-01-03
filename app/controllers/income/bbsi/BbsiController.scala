@@ -17,36 +17,41 @@
 package controllers.income.bbsi
 
 
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import controllers.auth.WithAuthorisedForTaiLite
 import controllers.{ServiceCheckLite, TaiBaseController}
-import uk.gov.hmrc.tai.forms.income.bbsi.{BankAccountsDecisionForm, BankAccountsDecisionFormData}
-import uk.gov.hmrc.tai.viewModels.income.BbsiAccountsDecisionViewModel
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.tai.model.domain.BankAccount
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnector, TaiHtmlPartialRetriever}
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.forms.income.bbsi.{BankAccountsDecisionForm, BankAccountsDecisionFormData}
+import uk.gov.hmrc.tai.model.domain.BankAccount
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{BbsiService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{BankAccountDecisionConstants, JourneyCacheConstants}
+import uk.gov.hmrc.tai.viewModels.income.BbsiAccountsDecisionViewModel
 
 import scala.concurrent.Future
 
 
-trait BbsiController extends TaiBaseController
+class BbsiController @Inject()(bbsiService: BbsiService,
+                               personService: PersonService,
+                               val auditConnector: AuditConnector,
+                               val delegationConnector: DelegationConnector,
+                               val authConnector: AuthConnector,
+                               @Named("Update Bank Account Choice") journeyCacheService: JourneyCacheService,
+                               override implicit val partialRetriever: FormPartialRetriever,
+                               override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with BankAccountDecisionConstants
   with JourneyCacheConstants {
-
-  def personService: PersonService
-
-  def bbsiService: BbsiService
-
-  def journeyCacheService: JourneyCacheService
 
   def accounts(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -134,7 +139,7 @@ trait BbsiController extends TaiBaseController
             },
             (formData: BankAccountsDecisionFormData) => {
 
-              journeyCacheService.cache(UpdateBankAccountUserChoiceKey,formData.bankAccountsDecision.getOrElse("")) map { _ =>
+              journeyCacheService.cache(UpdateBankAccountUserChoiceKey, formData.bankAccountsDecision.getOrElse("")) map { _ =>
 
                 formData.bankAccountsDecision match {
                   case Some(UpdateInterest) =>
@@ -150,18 +155,3 @@ trait BbsiController extends TaiBaseController
           )
   }
 }
-// $COVERAGE-OFF$
-object BbsiController extends BbsiController {
-
-  override val personService = PersonService
-  override val bbsiService = BbsiService
-  override val journeyCacheService = JourneyCacheService(UpdateBankAccountChoiceJourneyKey)
-
-  override protected val delegationConnector = FrontEndDelegationConnector
-  override protected val authConnector = FrontendAuthConnector
-  override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-
-
-}
-// $COVERAGE-ON$

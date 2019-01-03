@@ -47,7 +47,7 @@ trait PensionProviderConnector {
 }
 // $COVERAGE-OFF$
 object PensionProviderConnector extends PensionProviderConnector with ServicesConfig {
-  override val serviceUrl: String = baseUrl("tai")
+  override lazy val serviceUrl: String = baseUrl("tai")
   override def httpHandler: HttpHandler = HttpHandler
 }
 // $COVERAGE-ON$

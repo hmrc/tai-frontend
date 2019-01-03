@@ -16,27 +16,31 @@
 
 package controllers.benefits
 
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
-import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
+import controllers.{ServiceCheckLite, TaiBaseController}
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
-import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, PersonService}
-import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{AuditService, PersonService}
 import uk.gov.hmrc.tai.util.FormHelper
+import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
@@ -46,32 +50,35 @@ import scala.Function.tupled
 import scala.concurrent.Future
 import scala.math.BigDecimal.RoundingMode
 
-trait RemoveCompanyBenefitController extends TaiBaseController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite
-  with Auditable
-  with JourneyCacheConstants
-  with AuditConstants
-  with FormValuesConstants
-  with RemoveCompanyBenefitStopDateConstants {
-
-  def personService: PersonService
-  def auditService: AuditService
-  def journeyCacheService: JourneyCacheService
-  def trackingJourneyCacheService: JourneyCacheService
-  def benefitsService: BenefitsService
-
+class RemoveCompanyBenefitController @Inject()(personService: PersonService,
+                                               auditService: AuditService,
+                                               @Named("End Company Benefit") journeyCacheService: JourneyCacheService,
+                                               @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
+                                               benefitsService: BenefitsService,
+                                               val auditConnector: AuditConnector,
+                                               val delegationConnector: DelegationConnector,
+                                               val authConnector: AuthConnector,
+                                               implicit val templateRenderer: TemplateRenderer,
+                                               implicit val partialRetriever: FormPartialRetriever)
+  extends TaiBaseController
+    with DelegationAwareActions
+    with WithAuthorisedForTaiLite
+    with Auditable
+    with JourneyCacheConstants
+    with AuditConstants
+    with FormValuesConstants
+    with RemoveCompanyBenefitStopDateConstants {
   def stopDate: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-                journeyCacheService.currentCache map { currentCache =>
-                  Ok(views.html.benefits.removeCompanyBenefitStopDate(
-                    RemoveCompanyBenefitStopDateForm.form,
-                    currentCache(EndCompanyBenefit_BenefitNameKey),
-                    currentCache(EndCompanyBenefit_EmploymentNameKey)))
-                }
+            journeyCacheService.currentCache map { currentCache =>
+              Ok(views.html.benefits.removeCompanyBenefitStopDate(
+                RemoveCompanyBenefitStopDateForm.form,
+                currentCache(EndCompanyBenefit_BenefitNameKey),
+                currentCache(EndCompanyBenefit_EmploymentNameKey)))
+            }
           }
   }
 
@@ -84,7 +91,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
 
           RemoveCompanyBenefitStopDateForm.form.bindFromRequest.fold(
             formWithErrors => {
-              journeyCacheService.mandatoryValues(EndCompanyBenefit_BenefitNameKey,EndCompanyBenefit_EmploymentNameKey) map  {
+              journeyCacheService.mandatoryValues(EndCompanyBenefit_BenefitNameKey, EndCompanyBenefit_EmploymentNameKey) map {
                 mandatoryValues =>
                   BadRequest(views.html.benefits.removeCompanyBenefitStopDate(formWithErrors, mandatoryValues(0), mandatoryValues(1)))
               }
@@ -93,12 +100,12 @@ trait RemoveCompanyBenefitController extends TaiBaseController
             {
               case Some(BeforeTaxYearEnd) =>
                 journeyCacheService.cache(Map(EndCompanyBenefit_BenefitStopDateKey ->
-                  Messages("tai.remove.company.benefit.beforeTaxYearEnd",startOfTaxYear))) map { _ =>
+                  Messages("tai.remove.company.benefit.beforeTaxYearEnd", startOfTaxYear))) map { _ =>
                   Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.telephoneNumber())
                 }
               case Some(OnOrAfterTaxYearEnd) =>
                 journeyCacheService.cache(Map(EndCompanyBenefit_BenefitStopDateKey ->
-                  Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd",startOfTaxYear))) map { _ =>
+                  Messages("tai.remove.company.benefit.onOrAfterTaxYearEnd", startOfTaxYear))) map { _ =>
                   Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit())
                 }
             }
@@ -111,13 +118,13 @@ trait RemoveCompanyBenefitController extends TaiBaseController
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-              journeyCacheService.mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey) flatMap  {
-                mandatoryValues =>
-                  Future.successful(Ok(views.html.benefits.
-                    removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), CompanyBenefitTotalValueForm.form)
-                  ))
-              }
+            journeyCacheService.mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey) flatMap {
+              mandatoryValues =>
+                Future.successful(Ok(views.html.benefits.
+                  removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), CompanyBenefitTotalValueForm.form)
+                ))
             }
+          }
   }
 
   def submitBenefitValue(): Action[AnyContent] = authorisedForTai(personService).async {
@@ -126,7 +133,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
         implicit request =>
           CompanyBenefitTotalValueForm.form.bindFromRequest.fold(
             formWithErrors => {
-              journeyCacheService.mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey) flatMap  {
+              journeyCacheService.mandatoryValues(EndCompanyBenefit_EmploymentNameKey, EndCompanyBenefit_BenefitNameKey) flatMap {
                 mandatoryValues =>
                   Future.successful(BadRequest(views.html.benefits.
                     removeBenefitTotalValue(BenefitViewModel(mandatoryValues(0), mandatoryValues(1)), formWithErrors)
@@ -205,7 +212,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
                   optionalSeq(0),
                   mandatorySeq(3),
                   optionalSeq(1))))
-              }
+            }
             }
           }
   }
@@ -233,7 +240,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
                 optionalCacheSeq(0),
                 mandatoryCacheSeq(4),
                 optionalCacheSeq(1))
-              _ <- benefitsService.endedCompanyBenefit(Nino(user.getNino), mandatoryCacheSeq.head.toInt , model)
+              _ <- benefitsService.endedCompanyBenefit(Nino(user.getNino), mandatoryCacheSeq.head.toInt, model)
               _ <- trackingJourneyCacheService.cache(TrackSuccessfulJourney_EndEmploymentBenefitKey, true.toString)
               _ <- journeyCacheService.flush
             } yield Redirect(controllers.benefits.routes.RemoveCompanyBenefitController.confirmation())
@@ -248,7 +255,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
             for {
               mandatoryValues <- journeyCacheService.mandatoryValues(EndCompanyBenefit_RefererKey)
               _ <- journeyCacheService.flush
-            }yield Redirect(mandatoryValues(0))
+            } yield Redirect(mandatoryValues(0))
           }
   }
 
@@ -261,7 +268,7 @@ trait RemoveCompanyBenefitController extends TaiBaseController
           }
   }
 
-  private def extractViewModelFromCache(cache: Map[String,String]) = {
+  private def extractViewModelFromCache(cache: Map[String, String]) = {
     val backUrl =
       if (cache.contains(EndCompanyBenefit_BenefitValueKey)) {
         controllers.benefits.routes.RemoveCompanyBenefitController.totalValueOfBenefit().url
@@ -279,14 +286,3 @@ trait RemoveCompanyBenefitController extends TaiBaseController
   }
 
 }
-// $COVERAGE-OFF$
-object RemoveCompanyBenefitController extends RemoveCompanyBenefitController with AuthenticationConnectors {
-  override val personService: PersonService = PersonService
-  override val auditService: AuditService = AuditService
-  override val journeyCacheService: JourneyCacheService = JourneyCacheService(EndCompanyBenefit_JourneyKey)
-  override val trackingJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
-  override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-  override def benefitsService: BenefitsService = BenefitsService
-}
-// $COVERAGE-ON$

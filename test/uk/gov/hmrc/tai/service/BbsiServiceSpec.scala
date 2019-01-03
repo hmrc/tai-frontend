@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.tai.service
 
-import uk.gov.hmrc.tai.model.{AmountRequest, CloseAccountRequest, TaxYear}
 import org.joda.time.{DateTime, LocalDate}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -24,8 +23,9 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
 import uk.gov.hmrc.tai.connectors.BbsiConnector
+import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
+import uk.gov.hmrc.tai.model.{AmountRequest, CloseAccountRequest, TaxYear}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -39,7 +39,7 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
 
         val sut = createSUT
 
-        when(sut.connector.bankAccounts(any())(any())).thenReturn(Future.successful(Nil))
+        when(connector.bankAccounts(any())(any())).thenReturn(Future.successful(Nil))
 
         val data = Await.result(sut.bankAccounts(nino), 5.seconds)
 
@@ -52,7 +52,7 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
 
         val sut = createSUT
 
-        when(sut.connector.bankAccounts(any())(any())).thenReturn(Future.successful(oneBankAccount))
+        when(connector.bankAccounts(any())(any())).thenReturn(Future.successful(oneBankAccount))
 
         val data = Await.result(sut.bankAccounts(nino), 5.seconds)
 
@@ -61,11 +61,11 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
     }
 
     "return multiple bank accounts" when {
-      "connector returns multiple bank accounts" in {
+      "connector returns multiple bank account" in {
 
         val sut = createSUT
 
-        when(sut.connector.bankAccounts(any())(any())).thenReturn(Future.successful(multipleBankAccounts))
+        when(connector.bankAccounts(any())(any())).thenReturn(Future.successful(multipleBankAccounts))
 
         val data = Await.result(sut.bankAccounts(nino), 5.seconds)
 
@@ -81,7 +81,7 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
 
         val sut = createSUT
 
-        when(sut.connector.bankAccount(any(), org.mockito.Matchers.eq(1))(any())).thenReturn(Future.successful(None))
+        when(connector.bankAccount(any(), org.mockito.Matchers.eq(1))(any())).thenReturn(Future.successful(None))
 
         val data = Await.result(sut.bankAccount(nino, 1), 5.seconds)
 
@@ -94,7 +94,7 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
 
         val sut = createSUT
 
-        when(sut.connector.bankAccount(any(), org.mockito.Matchers.eq(2))(any())).thenReturn(Future.successful(Some(bankAccount2)))
+        when(connector.bankAccount(any(), org.mockito.Matchers.eq(2))(any())).thenReturn(Future.successful(Some(bankAccount2)))
 
         val data = Await.result(sut.bankAccount(nino, 2), 5.seconds)
 
@@ -106,7 +106,7 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
   "bankAccounts - closeBankAccount" should {
     "return envelope id" in {
       val sut = createSUT
-      when(sut.connector.closeBankAccount(any(), any(), any())(any())).thenReturn(Future.successful(Some("123-456-789")))
+      when(connector.closeBankAccount(any(), any(), any())(any())).thenReturn(Future.successful(Some("123-456-789")))
 
       val data = Await.result(sut.closeBankAccount(nino, 1, CloseAccountRequest(new LocalDate(2017, 1, 1), None)), 5.seconds)
 
@@ -116,7 +116,7 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
     "throw exception" when {
       "envelope id is none" in {
         val sut = createSUT
-        when(sut.connector.closeBankAccount(any(), any(), any())(any())).thenReturn(Future.successful(None))
+        when(connector.closeBankAccount(any(), any(), any())(any())).thenReturn(Future.successful(None))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.closeBankAccount(nino, 1, CloseAccountRequest(new LocalDate(2017, 1, 1), None)), 5.seconds)
 
@@ -132,7 +132,7 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
 
         val sut = createSUT
 
-        when(sut.connector.untaxedInterest(any())(any())).thenReturn(Future.successful(None))
+        when(connector.untaxedInterest(any())(any())).thenReturn(Future.successful(None))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.untaxedInterest(nino), 5.seconds)
 
@@ -146,7 +146,7 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
 
         val sut = createSUT
 
-        when(sut.connector.untaxedInterest(any())(any())).thenReturn(Future.successful(Some(untaxedInterest)))
+        when(connector.untaxedInterest(any())(any())).thenReturn(Future.successful(Some(untaxedInterest)))
 
         val data = Await.result(sut.untaxedInterest(nino), 5.seconds)
 
@@ -158,7 +158,7 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
   "remove bank account" should {
     "return envelope id" in {
       val sut = createSUT
-      when(sut.connector.removeBankAccount(any(), any())(any())).thenReturn(Future.successful(Some("123-456-789")))
+      when(connector.removeBankAccount(any(), any())(any())).thenReturn(Future.successful(Some("123-456-789")))
 
       val data = Await.result(sut.removeBankAccount(nino, 1), 5.seconds)
 
@@ -168,7 +168,7 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
     "throw exception" when {
       "envelope id is none" in {
         val sut = createSUT
-        when(sut.connector.removeBankAccount(any(), any())(any())).thenReturn(Future.successful(None))
+        when(connector.removeBankAccount(any(), any())(any())).thenReturn(Future.successful(None))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.removeBankAccount(nino, 1), 5.seconds)
 
@@ -180,7 +180,7 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
   "update bank account" should {
     "return envelope id" in {
       val sut = createSUT
-      when(sut.connector.updateBankAccountInterest(any(), any(), any())(any())).thenReturn(Future.successful(Some("123-456-789")))
+      when(connector.updateBankAccountInterest(any(), any(), any())(any())).thenReturn(Future.successful(Some("123-456-789")))
 
       val data = Await.result(sut.updateBankAccountInterest(nino, 1, amountRequest), 5.seconds)
 
@@ -190,7 +190,7 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
     "throw exception" when {
       "envelope id is none" in {
         val sut = createSUT
-        when(sut.connector.updateBankAccountInterest(any(), any(), any())(any())).thenReturn(Future.successful(None))
+        when(connector.updateBankAccountInterest(any(), any(), any())(any())).thenReturn(Future.successful(None))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.updateBankAccountInterest(nino, 1, amountRequest), 5.seconds)
 
@@ -210,14 +210,14 @@ class BbsiServiceSpec extends PlaySpec with MockitoSugar {
 
   private val oneBankAccount = Seq(bankAccount1)
 
-  private val multipleBankAccounts = Seq(bankAccount1,bankAccount2)
+  private val multipleBankAccounts = Seq(bankAccount1, bankAccount2)
 
-  private val untaxedInterest = UntaxedInterest(200,Nil)
+  private val untaxedInterest = UntaxedInterest(200, Nil)
 
   def createSUT = new SUT
+  
+  val connector = mock[BbsiConnector]
 
-  class SUT extends BbsiService{
+  class SUT extends BbsiService(connector)
 
-    override val connector: BbsiConnector = mock[BbsiConnector]
-  }
 }

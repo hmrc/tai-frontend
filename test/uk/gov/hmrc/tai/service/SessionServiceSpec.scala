@@ -31,7 +31,7 @@ class SessionServiceSpec extends PlaySpec with MockitoSugar {
   "Session Service" must {
     "invalidate the cache" in {
       val sut = new SUT
-      when(sut.sessionConnector.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(200)))
+      when(sessionConnector.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(200)))
 
       val result = Await.result(sut.invalidateCache()(HeaderCarrier()), 5.seconds)
 
@@ -39,8 +39,10 @@ class SessionServiceSpec extends PlaySpec with MockitoSugar {
     }
   }
 
-  class SUT extends SessionService {
-    override val sessionConnector: SessionConnector = mock[SessionConnector]
-  }
+  val sessionConnector: SessionConnector = mock[SessionConnector]
+
+  class SUT extends SessionService(
+    sessionConnector
+  )
 
 }

@@ -16,6 +16,9 @@
 
 package uk.gov.hmrc.tai.service
 
+import javax.inject.Singleton
+
+import com.google.inject.Inject
 import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -23,9 +26,7 @@ import uk.gov.hmrc.play.audit.AuditExtensions
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.play.config.AppName
-import uk.gov.hmrc.tai.config.{ApplicationConfig, AuditConnector}
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
@@ -33,12 +34,11 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait AuditService {
+@Singleton
+class AuditService @Inject()(val auditConnector: AuditConnector,
+                             personService: PersonService) {
 
-  def appName: String
-
-  def auditConnector: AuditConnector
-  def personService: PersonService
+  val appName = AppName.appName
 
   val userEnterEvent = "userEntersService"
   val employmentPensionEvent = "startedEmploymentPensionJourney"
@@ -126,11 +126,3 @@ trait AuditService {
   private def authProviderId(hc: HeaderCarrier) = hc.userId.map(_.value).getOrElse("-")
 
 }
-
-object AuditService extends AuditService {
-
-  override lazy val appName: String = AppName.appName
-  override lazy val auditConnector: AuditConnector = AuditConnector
-  override lazy val personService: PersonService = PersonService
-}
-

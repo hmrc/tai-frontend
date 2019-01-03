@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import uk.gov.hmrc.tai.model.CloseAccountRequest
+import com.google.inject.Inject
 import play.api.Logger
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.domain.Nino
@@ -29,11 +29,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 
-trait BbsiConnector {
+class BbsiConnector @Inject() (val httpHandler: HttpHandler) extends ServicesConfig {
 
-  def serviceUrl: String
-
-  def httpHandler: HttpHandler
+  val serviceUrl: String = baseUrl("tai")
 
   def bankAccounts(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[BankAccount]] = {
     httpHandler.getFromApi(bbsiAccountsUrl(nino)) map ( json => (json \ "data").as[Seq[BankAccount]]) recover {
@@ -81,10 +79,3 @@ trait BbsiConnector {
   def bbsiSavingsInvestmentsUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/tax-account/income/savings-investments/untaxed-interest"
 
 }
-// $COVERAGE-OFF$
-object BbsiConnector extends BbsiConnector with ServicesConfig {
-
-  override def serviceUrl: String = baseUrl("tai")
-  override def httpHandler: HttpHandler = HttpHandler
-}
-// $COVERAGE-ON$

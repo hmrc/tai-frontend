@@ -17,7 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
@@ -28,7 +28,6 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.{AuditService, PersonService, SessionService}
 
 import scala.concurrent.Future
@@ -40,15 +39,15 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
     "redirect to external url" when {
       "a valid service and i-form name has been passed" in {
         val sut = createSut
-        when(sut.auditService.sendAuditEventAndGetRedirectUri(Matchers.eq(nino), Matchers.eq("Test"))(any(), any())).thenReturn(Future.successful(redirectUri))
-        when(sut.sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
+        when(auditService.sendAuditEventAndGetRedirectUri(Matchers.eq(nino), Matchers.eq("Test"))(any(), any())).thenReturn(Future.successful(redirectUri))
+        when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
 
         val result = sut.auditInvalidateCacheAndRedirectService("Test")(RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" ->
           redirectUri))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe redirectUri
-        verify(sut.sessionService, times(1)).invalidateCache()(any())
+        verify(sessionService, times(1)).invalidateCache()(any())
       }
     }
   }
@@ -59,20 +58,19 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
 
   def createSut = new SUT
 
-  class SUT extends ExternalServiceRedirectController {
-    override val personService: PersonService = mock[PersonService]
+  val personService: PersonService = mock[PersonService]
+  val sessionService = mock[SessionService]
+  val auditService = mock[AuditService]
 
-    override val sessionService: SessionService = mock[SessionService]
-
-    override val auditService: AuditService = mock[AuditService]
-
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-
-    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
-
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
+  class SUT extends ExternalServiceRedirectController(
+    sessionService,
+    personService,
+    auditService,
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
 
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 

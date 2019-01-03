@@ -20,7 +20,7 @@ import play.api.Logger
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.EmploymentsConnector.baseUrl
+import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -118,7 +118,7 @@ trait TaxAccountConnector extends CodingComponentFormatters {
 
 }
 // $COVERAGE-OFF$
-object TaxAccountConnector extends TaxAccountConnector {
+object TaxAccountConnector extends TaxAccountConnector with ServicesConfig {
   override lazy val serviceUrl = baseUrl("tai")
 
   override def httpHandler: HttpHandler = HttpHandler

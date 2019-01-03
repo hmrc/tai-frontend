@@ -28,6 +28,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 import uk.gov.hmrc.time.TaxYearResolver
 import utils.WireMockHelper
@@ -43,19 +44,19 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       "an taxCodeIncome and Employment is returned" in {
         val nino = generateNino
 
-        when(updateNextYearsIncomeService.employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
+        when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
-        when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
+        when(taxAccountService.taxCodeIncomeForEmployment(
           Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
-        when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
+        when(journeyCacheService.currentCache(any())).thenReturn(
           Future.successful(Map.empty[String,String])
         )
         val result = Await.result(updateNextYearsIncomeService.get(employmentId, nino), 5.seconds)
 
-        verify(updateNextYearsIncomeService.journeyCacheService, times(1))
+        verify(journeyCacheService, times(1))
           .cache(expectedMap(employmentName, employmentId, isPension, employmentAmount))
 
         result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, employmentAmount, None)
@@ -66,10 +67,10 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       "could not retrieve a TaxCodeIncome" in {
         val nino = generateNino
 
-        when(updateNextYearsIncomeService.employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
+        when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
-        when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
+        when(taxAccountService.taxCodeIncomeForEmployment(
           Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(None))
 
@@ -81,10 +82,10 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       "could not retrieve a Employment" in {
         val nino = generateNino
 
-        when(updateNextYearsIncomeService.employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
+        when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
           .thenReturn(Future.successful(None))
 
-        when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
+        when(taxAccountService.taxCodeIncomeForEmployment(
           Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
@@ -100,7 +101,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       "journey values exist without a new amount in the cache" in {
         val nino = generateNino
 
-        when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
+        when(journeyCacheService.currentCache(any())).thenReturn(
           Future.successful(expectedMap(employmentName, employmentId, isPension, employmentAmount))
         )
 
@@ -112,7 +113,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       "journey values exist with a new amount in the cache" in {
         val nino = generateNino
 
-        when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
+        when(journeyCacheService.currentCache(any())).thenReturn(
           Future.successful(fullMap(employmentName, employmentId, isPension, employmentAmount))
         )
 
@@ -126,14 +127,14 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       "journey values do not exist in the cache" in {
         val nino = generateNino
 
-        when(updateNextYearsIncomeService.employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
+        when(employmentService.employment(Matchers.eq(nino), Matchers.eq(employmentId))(any()))
           .thenReturn(Future.successful(Some(employment(employmentName))))
 
-        when(updateNextYearsIncomeService.taxAccountService.taxCodeIncomeForEmployment(
+        when(taxAccountService.taxCodeIncomeForEmployment(
           Matchers.eq(nino), Matchers.eq(TaxYear().next), Matchers.eq(employmentId))(any())
         ).thenReturn(Future.successful(Some(taxCodeIncome(employmentName, employmentId, employmentAmount))))
 
-        when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
+        when(journeyCacheService.currentCache(any())).thenReturn(
           Future.successful(Map[String, String]())
         )
 
@@ -149,7 +150,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       "journey values are successfully retrieved from the cache" in {
         val nino = generateNino
 
-        when(updateNextYearsIncomeService.journeyCacheService.currentCache(any())).thenReturn(
+        when(journeyCacheService.currentCache(any())).thenReturn(
           Future.successful(expectedMap(employmentName, employmentId, isPension, employmentAmount))
         )
 
@@ -157,7 +158,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
 
         result mustBe UpdateNextYearsIncomeCacheModel(employmentName, employmentId, isPension, employmentAmount, Some(employmentAmount))
 
-        verify(updateNextYearsIncomeService.journeyCacheService, times(1))
+        verify(journeyCacheService, times(1))
           .cache(fullMap(employmentName, employmentId, isPension, employmentAmount))
       }
     }
@@ -169,13 +170,13 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       val service = new UpdateNextYearsIncomeServiceTest
 
       when(
-        service.journeyCacheService.currentCache(any())
+        journeyCacheService.currentCache(any())
       ).thenReturn(
         Future.successful(fullMap(employmentName, employmentId, false, employmentAmount))
       )
 
       when(
-        service.taxAccountService.updateEstimatedIncome(
+        taxAccountService.updateEstimatedIncome(
           Meq(nino), Meq(employmentAmount), Meq(TaxYear().next), Meq(employmentId)
         )(any())
       ).thenReturn(
@@ -185,7 +186,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
       val result = Await.result(service.submit(employmentId, nino), 5.seconds)
 
       verify(
-        service.taxAccountService, times(1)
+        taxAccountService, times(1)
       ).updateEstimatedIncome(
         Meq(nino), Meq(employmentAmount), Meq(TaxYear().next), Meq(employmentId)
       )(any())
@@ -234,11 +235,15 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  class UpdateNextYearsIncomeServiceTest extends UpdateNextYearsIncomeService {
-    override lazy val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override lazy val employmentService: EmploymentService = mock[EmploymentService]
-    override lazy val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  }
+  val employmentService = mock[EmploymentService]
+  val taxAccountService = mock[TaxAccountService]
+  val journeyCacheService = mock[JourneyCacheService]
+
+  class UpdateNextYearsIncomeServiceTest extends UpdateNextYearsIncomeService(
+    journeyCacheService,
+    employmentService,
+    taxAccountService
+  )
 
   val updateNextYearsIncomeService = new UpdateNextYearsIncomeServiceTest
 }

@@ -16,6 +16,7 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Logger
@@ -23,22 +24,30 @@ import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever, WSHttpProxy}
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.{ApplicationConfig, WSHttpProxy}
 import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.Future
 
-trait HelpController  extends TaiBaseController
+class HelpController @Inject()(val config: ApplicationConfig,
+                               val httpGet: WSHttpProxy,
+                               personService: PersonService,
+                               val auditConnector: AuditConnector,
+                               val delegationConnector: DelegationConnector,
+                               val authConnector: AuthConnector,
+                               override implicit val partialRetriever: FormPartialRetriever,
+                               override implicit val templateRenderer: TemplateRenderer
+                              ) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable {
 
-  def personService: PersonService
-  def httpGet: WSHttpProxy
-  def webChatURL: String
+  val webChatURL = config.webchatAvailabilityUrl
 
   def helpPage() = authorisedForTai(personService).async {
     implicit user =>
@@ -55,7 +64,7 @@ trait HelpController  extends TaiBaseController
           }
   }
 
- private def getEligibilityStatus()(implicit headerCarrier: HeaderCarrier): Future[Option[String]] = {
+  private def getEligibilityStatus()(implicit headerCarrier: HeaderCarrier): Future[Option[String]] = {
     httpGet.GET[HttpResponse](webChatURL) map {
       response =>
         Logger.debug(s"Response Body: $response")
@@ -74,13 +83,3 @@ trait HelpController  extends TaiBaseController
     }
   }
 }
-
-// $COVERAGE-OFF$
-object HelpController extends HelpController with AuthenticationConnectors {
-  override val personService = PersonService
-  override implicit def templateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-  override val httpGet = WSHttpProxy
-  override val webChatURL = ApplicationConfig.webchatAvailabilityUrl
-}
-// $COVERAGE-ON$

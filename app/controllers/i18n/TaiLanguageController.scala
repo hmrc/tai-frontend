@@ -16,29 +16,32 @@
 
 package controllers.i18n
 
+import com.google.inject.Inject
 import controllers.auth.WithAuthorisedForTaiLite
-import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
+import controllers.{ServiceCheckLite, TaiBaseController}
+import play.api.Play.current
 import play.api.i18n.Lang
+import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.language.{LanguageController, LanguageUtils}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.service.PersonService
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 
 import scala.concurrent.Future
 
-trait TaiLanguageController extends LanguageController with TaiBaseController
+class TaiLanguageController @Inject()(personService: PersonService,
+                                      val delegationConnector: DelegationConnector,
+                                      val authConnector: AuthConnector,
+                                      override implicit val partialRetriever: FormPartialRetriever,
+                                      override implicit val templateRenderer: TemplateRenderer) extends LanguageController
+  with TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with FeatureTogglesConfig {
-
-  def personService: PersonService
 
   override protected def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
@@ -49,7 +52,7 @@ trait TaiLanguageController extends LanguageController with TaiBaseController
 
   protected def isWelshEnabled = welshLanguageEnabled
 
-  override def switchToLanguage (language: String): Action[AnyContent] = authorisedForTai(personService).async {
+  override def switchToLanguage(language: String): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -69,12 +72,3 @@ trait TaiLanguageController extends LanguageController with TaiBaseController
           }
   }
 }
-// $COVERAGE-OFF$
-object TaiLanguageController extends TaiLanguageController with AuthenticationConnectors {
-
-  override def personService: PersonService = PersonService
-  override implicit def templateRenderer: TemplateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-}
-// $COVERAGE-ON$
-

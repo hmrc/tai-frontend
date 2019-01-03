@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.google.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
@@ -25,11 +26,9 @@ import uk.gov.hmrc.tai.model.TaxYear
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait EmploymentsConnector {
+class EmploymentsConnector @Inject() (val httpHandler: HttpHandler) extends ServicesConfig {
 
-  val serviceUrl: String
-
-  def httpHandler: HttpHandler
+  val serviceUrl: String = baseUrl("tai")
 
   def employmentUrl(nino: Nino, id: String) = s"$serviceUrl/tai/$nino/employments/$id"
 
@@ -80,10 +79,3 @@ trait EmploymentsConnector {
 
   def incorrectEmploymentServiceUrl(nino: Nino, id: Int) = s"$serviceUrl/tai/$nino/employments/$id/reason"
 }
-// $COVERAGE-OFF$
-object EmploymentsConnector extends EmploymentsConnector with ServicesConfig {
-  override val serviceUrl = baseUrl("tai")
-
-  override def httpHandler: HttpHandler = HttpHandler
-}
-// $COVERAGE-ON$

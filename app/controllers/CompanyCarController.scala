@@ -27,7 +27,7 @@ import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{JourneyCacheService, PersonService, SessionService}
+import uk.gov.hmrc.tai.service.{PersonService, SessionService}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
@@ -35,14 +35,15 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.Future
 
-class CompanyCarController @Inject()(val personService: PersonService,
-                                     val companyCarService: CompanyCarService,
-                                     @Named("Company Car") val journeyCacheService: JourneyCacheService,
-                                     val sessionService: SessionService,
+class CompanyCarController @Inject()(personService: PersonService,
+                                     companyCarService: CompanyCarService,
+                                     @Named("Company Car") journeyCacheService: JourneyCacheService,
+                                     sessionService: SessionService,
                                      val auditConnector: AuditConnector,
                                      val delegationConnector: DelegationConnector,
                                      val authConnector: AuthConnector,

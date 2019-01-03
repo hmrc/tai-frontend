@@ -47,9 +47,9 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
 
         val result = Await.result(sut.employmentAmount(nino, 1), 5.seconds)
@@ -76,9 +76,9 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
@@ -90,9 +90,9 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
@@ -102,9 +102,9 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
 
       "employment not found" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(None))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.employmentAmount(nino, 1), 5.seconds)
@@ -120,7 +120,7 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
 
        Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe Some(payment)
@@ -130,7 +130,7 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
     "return none" when {
       "employment details are not found" in {
         val sut = createSUT
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(None))
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None
@@ -140,7 +140,7 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val sut = createSUT
         val annualAccount = AnnualAccount("", TaxYear(), Available, Seq.empty[Payment], Nil)
         val employment = employmentWithAccounts(List(annualAccount))
-        when(sut.employmentService.employment(any(), any())(any())).
+        when(employmentService.employment(any(), any())(any())).
           thenReturn(Future.successful(Some(employment)))
 
         Await.result(sut.latestPayment(nino, 1), 5.seconds) mustBe None
@@ -154,7 +154,7 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
         val sut = createSUT
         val payDetails = PayDetails("", Some(0), None, Some(0), None, None)
 
-        when(sut.taiConnector.calculateEstimatedPay(payDetails)).thenReturn(Future.successful(CalculatedPay(None, None)))
+        when(taiConnector.calculateEstimatedPay(payDetails)).thenReturn(Future.successful(CalculatedPay(None, None)))
         Await.result(sut.calculateEstimatedPay(Map.empty[String, String], None), 5.seconds) mustBe CalculatedPay(None, None)
       }
 
@@ -170,7 +170,7 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
 
         val payDetails = PayDetails("monthly", Some(100), Some(100), Some(10), Some(100), None)
 
-        when(sut.taiConnector.calculateEstimatedPay(payDetails)).thenReturn(Future.successful(CalculatedPay(None, None)))
+        when(taiConnector.calculateEstimatedPay(payDetails)).thenReturn(Future.successful(CalculatedPay(None, None)))
         Await.result(sut.calculateEstimatedPay(cache, None), 5.seconds) mustBe CalculatedPay(None, None)
       }
     }
@@ -272,10 +272,14 @@ class IncomeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
 
   def createSUT = new SUT
 
-  class SUT extends IncomeService {
-    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val taiConnector: TaiConnector = mock[TaiConnector]
-  }
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val employmentService: EmploymentService = mock[EmploymentService]
+  val taiConnector: TaiConnector = mock[TaiConnector]
+
+  class SUT extends IncomeService(
+    taxAccountService,
+    employmentService,
+    taiConnector
+  )
 
 }

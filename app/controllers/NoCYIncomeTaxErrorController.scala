@@ -16,6 +16,7 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
@@ -23,11 +24,12 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
@@ -37,15 +39,17 @@ import uk.gov.hmrc.time.TaxYearResolver
 import scala.concurrent.Future
 
 
-trait NoCYIncomeTaxErrorController extends FrontendController
+class NoCYIncomeTaxErrorController @Inject()(personService: PersonService,
+                                             employmentService: EmploymentService,
+                                             val auditConnector: AuditConnector,
+                                             val delegationConnector: DelegationConnector,
+                                             val authConnector: AuthConnector,
+                                             override implicit val partialRetriever: FormPartialRetriever,
+                                             override implicit val templateRenderer: TemplateRenderer) extends FrontendController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with ErrorPagesHandler
   with Auditable {
-
-  def personService: PersonService
-
-  def employmentService: EmploymentService
 
   def noCYIncomeTaxErrorPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -68,13 +72,3 @@ trait NoCYIncomeTaxErrorController extends FrontendController
   }
 
 }
-// $COVERAGE-OFF$
-object NoCYIncomeTaxErrorController extends NoCYIncomeTaxErrorController with AuthenticationConnectors {
-  override val personService = PersonService
-  override val employmentService = EmploymentService
-
-  override implicit def templateRenderer = LocalTemplateRenderer
-
-  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-}
-// $COVERAGE-ON$

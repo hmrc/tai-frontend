@@ -16,13 +16,16 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
@@ -31,13 +34,16 @@ import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, Perso
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 
-trait IncomeTaxComparisonController extends TaiBaseController
+class IncomeTaxComparisonController @Inject()(personService: PersonService,
+                                              val auditConnector: AuditConnector,
+                                              val delegationConnector: DelegationConnector,
+                                              val authConnector: AuthConnector,
+                                              taxAccountService: TaxAccountService,
+                                              employmentService: EmploymentService,
+                                              codingComponentService: CodingComponentService,
+                                              override implicit val partialRetriever: FormPartialRetriever,
+                                              override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with WithAuthorisedForTaiLite {
-
-  def personService: PersonService
-  def taxAccountService: TaxAccountService
-  def codingComponentService: CodingComponentService
-  def employmentService: EmploymentService
 
   def onPageLoad(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -71,7 +77,7 @@ trait IncomeTaxComparisonController extends TaiBaseController
                 TaiSuccessResponseWithPayload(taxAccountSummaryCYPlusOne: TaxAccountSummary),
                 TaiSuccessResponseWithPayload(taxCodeIncomesCY: Seq[TaxCodeIncome]),
                 TaiSuccessResponseWithPayload(taxCodeIncomesCYPlusOne: Seq[TaxCodeIncome])
-                ) => {
+                  ) => {
 
                   val cyEstimatedTax = EstimatedIncomeTaxComparisonItem(currentTaxYear, taxAccountSummaryCY.totalEstimatedTax)
                   val cyPlusOneEstimatedTax = EstimatedIncomeTaxComparisonItem(nextTaxYear, taxAccountSummaryCYPlusOne.totalEstimatedTax)
@@ -88,7 +94,7 @@ trait IncomeTaxComparisonController extends TaiBaseController
                   val taxFreeAmountComparisonModel = TaxFreeAmountComparisonViewModel(Seq(cyCodingComponents, cyPlusOneTaxComponents),
                     Seq(cyTaxSummary, cyPlusOneTaxSummary))
 
-                  val employmentViewModel = IncomeSourceComparisonViewModel(taxCodeIncomesCY,employmentsCY,taxCodeIncomesCYPlusOne,employmentsCYPlusOne)
+                  val employmentViewModel = IncomeSourceComparisonViewModel(taxCodeIncomesCY, employmentsCY, taxCodeIncomesCYPlusOne, employmentsCYPlusOne)
 
                   val model = IncomeTaxComparisonViewModel(user.getDisplayName, estimatedIncomeTaxComparisonViewModel,
                     taxCodeComparisonModel, taxFreeAmountComparisonModel, employmentViewModel)
@@ -101,16 +107,3 @@ trait IncomeTaxComparisonController extends TaiBaseController
   }
 
 }
-// $COVERAGE-OFF$
-object IncomeTaxComparisonController extends IncomeTaxComparisonController with AuthenticationConnectors {
-  override val personService = PersonService
-  override val taxAccountService = TaxAccountService
-  override val codingComponentService = CodingComponentService
-  override val employmentService: EmploymentService = EmploymentService
-
-  override implicit def templateRenderer = LocalTemplateRenderer
-
-  override implicit def partialRetriever = TaiHtmlPartialRetriever
-
-}
-// $COVERAGE-ON$

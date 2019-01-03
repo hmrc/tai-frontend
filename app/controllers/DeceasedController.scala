@@ -31,7 +31,7 @@ import uk.gov.hmrc.tai.service.PersonService
 import scala.concurrent.Future
 
 
-class DeceasedController @Inject()(val personService: PersonService,
+class DeceasedController @Inject()(personService: PersonService,
                                    val auditConnector: AuditConnector,
                                    val delegationConnector: DelegationConnector,
                                    val authConnector: AuthConnector,
