@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.google.inject.Inject
 import uk.gov.hmrc.tai.connectors.EmploymentsConnector.baseUrl
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 import play.api.Logger
@@ -28,10 +29,9 @@ import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 
 import scala.util.control.NonFatal
 
-trait CompanyCarConnector {
+class CompanyCarConnector @Inject() (val httpHandler: HttpHandler){
 
-  val serviceUrl: String
-  def httpHandler: HttpHandler
+  val serviceUrl: String = baseUrl("tai")
 
   def companyCarEmploymentUrl(nino: Nino, empId: Int): String = s"$serviceUrl/tai/$nino/tax-account/tax-components/employments/$empId/benefits/company-car"
   def companyCarUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/tax-account/tax-components/benefits/company-cars"
@@ -67,9 +67,3 @@ trait CompanyCarConnector {
   }
 
 }
-// $COVERAGE-OFF$
-object CompanyCarConnector extends CompanyCarConnector {
-  override lazy val serviceUrl = baseUrl("tai")
-  override def httpHandler: HttpHandler = HttpHandler
-}
-// $COVERAGE-ON$
