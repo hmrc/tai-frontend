@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.google.inject.{Inject, Singleton}
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -26,11 +27,10 @@ import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 
 import scala.concurrent.Future
 
-trait TaxFreeAmountComparisonConnector {
+@Singleton
+class TaxFreeAmountComparisonConnector @Inject()(val httpHandler: HttpHandler) extends ServicesConfig {
 
-  val serviceUrl: String
-
-  def httpHandler: HttpHandler
+  val serviceUrl: String = baseUrl("tai")
 
   def taxFreeAmountComparisonUrl(nino: String) = s"$serviceUrl/tai/$nino/tax-account/tax-free-amount-comparison"
 
@@ -44,12 +44,4 @@ trait TaxFreeAmountComparisonConnector {
         TaiTaxAccountFailureResponse(e.getMessage)
     }
   }
-}
-
-
-object TaxFreeAmountComparisonConnector extends TaxFreeAmountComparisonConnector with ServicesConfig {
-
-  override lazy val serviceUrl = baseUrl("tai")
-
-  override def httpHandler: HttpHandler = HttpHandler
 }

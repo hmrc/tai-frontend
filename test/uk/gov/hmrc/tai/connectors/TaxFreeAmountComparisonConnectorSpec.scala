@@ -112,9 +112,10 @@ class TaxFreeAmountComparisonConnectorSpec extends PlaySpec with MockitoSugar wi
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  private class TestTaxFreeAmountComparisonConnector extends TaxFreeAmountComparisonConnector {
+  val httpHandler: HttpHandler = HttpHandler
+
+  private class TestTaxFreeAmountComparisonConnector extends TaxFreeAmountComparisonConnector(httpHandler) {
     override val serviceUrl: String = s"http://localhost:${server.port()}"
-    override val httpHandler: HttpHandler = HttpHandler
   }
 
 }
