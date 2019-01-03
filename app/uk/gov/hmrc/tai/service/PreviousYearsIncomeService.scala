@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PreviousYearsIncomeService @Inject() (val previousYearsIncomeConnector: PreviousYearsIncomeConnector) {
+class PreviousYearsIncomeService @Inject() (previousYearsIncomeConnector: PreviousYearsIncomeConnector) {
 
   def incorrectIncome(nino: Nino, id: Int, incorrectIncome: IncorrectIncome)(implicit hc: HeaderCarrier): Future[String] = {
     previousYearsIncomeConnector.incorrectIncome(nino, id, incorrectIncome) map {

@@ -45,7 +45,7 @@ class PreviousYearsIncomeConnectorSpec extends PlaySpec
       val sut = createSUT()
       val model = IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
-      when(sut.httpHandler.postToApi(Matchers.eq(s"/tai/$nino/employments/years/2016/update"), Matchers.eq(model))
+      when(httpHandler.postToApi(Matchers.eq(s"/tai/$nino/employments/years/2016/update"), Matchers.eq(model))
       (any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.incorrectIncome(nino, 2016, model), 5.seconds)
@@ -62,9 +62,10 @@ class PreviousYearsIncomeConnectorSpec extends PlaySpec
 
   private def createSUT(servUrl: String = "") = new PreviousYearsIncomeConnectorTest(servUrl)
 
-  private class PreviousYearsIncomeConnectorTest(servUrl: String = "") extends PreviousYearsIncomeConnector {
+  val httpHandler: HttpHandler = mock[HttpHandler]
+
+  private class PreviousYearsIncomeConnectorTest(servUrl: String = "") extends PreviousYearsIncomeConnector(httpHandler) {
     override val serviceUrl: String = servUrl
-    override val httpHandler: HttpHandler = mock[HttpHandler]
   }
 }
 
