@@ -1,5 +1,5 @@
 @*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@
     <thead>
         <tr role="row">
             <th scope="col"></th>
-            <th scope="col">Previous tax code from 6&nbspApril&nbsp2018</th>
-            <th scope="col">Current tax code from 2&nbspAugust&nbsp2018</th>
+            <th scope="col" class="numeric">Previous tax code</th>
+            <th scope="col" class="numeric">Current tax code</th>
         </tr>
     </thead>
     <tbody>
@@ -73,8 +73,16 @@
         @for(pair <- sequence) {
             <tr role="row">
                 <td>@pair.description</td>
-                <td class="numeric"><span aria-hidden="true" class="table-heading">Previous Amount</span>@YourTaxFreeAmountViewModel.prettyPrint(pair.previous)</td>
-                <td class="numeric"><span aria-hidden="true" class="table-heading">Current Amount</span>@YourTaxFreeAmountViewModel.prettyPrint(pair.current)</td>
+                <td class="numeric">
+                    <span aria-hidden="true" class="table-heading">Previous Amount</span>
+                    <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(pair.previous)</span>
+                    <span class="visuallyhidden">@pair.description @YourTaxFreeAmountViewModel.prettyPrint(pair.previous)</span>
+                </td>
+                <td class="numeric">
+                    <span aria-hidden="true" class="table-heading">Current Amount</span>
+                    <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(pair.current)</span>
+                    <span class="visuallyhidden">@pair.description @YourTaxFreeAmountViewModel.prettyPrint(pair.current)</span>
+                </td>
             </tr>
         }
 
@@ -82,11 +90,13 @@
             <td>@totalTitle</td>
             <td class="numeric">
                 <span aria-hidden="true" class="table-heading carr">Previous Amount</span>
-                @YourTaxFreeAmountViewModel.totalPrevious(sequence)
+                <span aria-hidden="true">@YourTaxFreeAmountViewModel.totalPrevious(sequence)</span>
+                <span class="visuallyhidden">@totalTitle @YourTaxFreeAmountViewModel.totalPrevious(sequence)</span>
             </td>
             <td class="numeric">
                 <span aria-hidden="true" class="table-heading">Current Amount</span>
-                @YourTaxFreeAmountViewModel.totalCurrent(sequence)
+                <span aria-hidden="true">@YourTaxFreeAmountViewModel.totalCurrent(sequence)</span>
+                <span class="visuallyhidden">@totalTitle @YourTaxFreeAmountViewModel.totalCurrent(sequence)</span>
             </td>
         </tr>
     }
@@ -97,11 +107,13 @@
         <td><h3>Your total tax-free amount</h3></td>
         <td class="numeric">
             <span aria-hidden="true" class="table-heading">Previous Amount</span>
-            @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.annualTaxFreeAmount)
+            <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.annualTaxFreeAmount)</span>
+            <span class="visuallyhidden">Your total tax-free amount @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.annualTaxFreeAmount)</span>
         </td>
         <td class="numeric">
             <span aria-hidden="true" class="table-heading">Current Amount</span>
-            @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.annualTaxFreeAmount)
+            <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.annualTaxFreeAmount)</span>
+            <span class="visuallyhidden">Your total tax-free amount @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.annualTaxFreeAmount)</span>
         </td>
     </tr>
 }
