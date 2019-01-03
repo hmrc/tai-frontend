@@ -23,6 +23,7 @@
 @import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
 @import org.joda.time.LocalDate
 @import uk.gov.hmrc.urls.Link
+@import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
 @(taxCodeChangeViewModel: TaxCodeChangeViewModel, user: controllers.auth.TaiUser)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -44,7 +45,7 @@
     pageHeader = Some(header),
     user = Some(user),
     gaCustomTitle = None,
-    gaDimensions = Some(taxCodeChangeViewModel.gaDimensions)) {
+    gaSettings = GoogleAnalyticsSettings(dimensions = Some(taxCodeChangeViewModel.gaDimensions))) {
 
     <div class="column-two-thirds">
         <div class="grid-row">

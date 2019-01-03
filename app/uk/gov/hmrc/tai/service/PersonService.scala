@@ -27,7 +27,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class PersonService @Inject()(val taiConnector: TaiConnector,
-                              val personConnector: PersonConnector) {
+                              personConnector: PersonConnector) {
 
   def personDetails(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] = {
     personConnector.person(nino) map {

@@ -43,7 +43,7 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
 
       val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
 
-      when(testService.taxCodeChangeConnector.taxCodeChange(any())(any()))
+      when(taxCodeChangeConnector.taxCodeChange(any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeChange)))
 
       val result = testService.taxCodeChange(nino)
@@ -60,8 +60,8 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
         val taxCodeMismatch = TaxCodeMismatchFactory.matchedTaxCode
         val hasTaxCodeChanged = HasTaxCodeChanged(changed = true, Some(taxCodeMismatch))
 
-        when(testService.taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
-        when(testService.taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
+        when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
+        when(taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
 
         val result = testService.hasTaxCodeChanged(nino)
         Await.result(result, 5.seconds) mustBe hasTaxCodeChanged
@@ -75,8 +75,8 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
 
         val hasTaxCodeChanged = HasTaxCodeChanged(changed = false, None)
 
-        when(testService.taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
-        when(testService.taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
+        when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(true)))
+        when(taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
 
         val result = testService.hasTaxCodeChanged(nino)
         Await.result(result, 5.seconds) mustBe hasTaxCodeChanged
@@ -90,8 +90,8 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
 
         val taxCodeMismatch = TaxCodeMismatchFactory.matchedTaxCode
 
-        when(testService.taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
-        when(testService.taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
+        when(taxCodeChangeConnector.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
+        when(taxCodeChangeConnector.taxCodeMismatch(any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeMismatch)))
 
         val ex = the[RuntimeException] thrownBy Await.result(testService.hasTaxCodeChanged(nino), 5 seconds)
         ex.getMessage must include("Could not fetch tax code change")
@@ -106,7 +106,7 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
 
       val taxCodeRecords = Seq(taxCodeRecord1)
 
-      when(testService.taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
+      when(taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeRecords)))
 
       val result = testService.lastTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev)
@@ -117,7 +117,7 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
       val testService = createTestService
       val nino = generateNino
 
-      when(testService.taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
+      when(taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
         .thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
 
       val ex = the[RuntimeException] thrownBy Await.result(testService.lastTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev), 5 seconds)
@@ -132,7 +132,7 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
 
       val taxCodeRecords = Seq(taxCodeRecord1)
 
-      when(testService.taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
+      when(taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeRecords)))
 
       val result = testService.hasTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev)
@@ -145,7 +145,7 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
 
       val taxCodeRecords = Seq()
 
-      when(testService.taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
+      when(taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxCodeRecords)))
 
       val result = testService.hasTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev)
@@ -156,7 +156,7 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
       val testService = createTestService
       val nino = generateNino
 
-      when(testService.taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
+      when(taxCodeChangeConnector.lastTaxCodeRecords(any(), any())(any()))
         .thenReturn(Future.successful(TaiTaxAccountFailureResponse("ERROR")))
 
       val result = testService.hasTaxCodeRecordsInYearPerEmployment(nino, TaxYear().prev)
@@ -171,6 +171,8 @@ class TaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar{
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   private def generateNino: Nino = new Generator(new Random).nextNino
   private def createTestService = new TestService
+  
+  val taxCodeChangeConnector = mock[TaxCodeChangeConnector]
 
-  private class TestService extends TaxCodeChangeService (mock[TaxCodeChangeConnector])
+  private class TestService extends TaxCodeChangeService (taxCodeChangeConnector)
 }
