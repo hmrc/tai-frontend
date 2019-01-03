@@ -57,16 +57,7 @@ class IncomeUpdateCalculatorControllerSpec
     with JourneyCacheConstants
     with EditIncomeIrregularPayConstants
     with FormValuesConstants
-    with ControllerViewTestHelper
-    with BeforeAndAfterEach {
-
-//  override def beforeEach: Unit = {
-//    Mockito.reset(personService,
-//      incomeService,
-//      employmentService,
-//      taxAccountService,
-//      journeyCacheService)
-//  }
+    with ControllerViewTestHelper {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
