@@ -35,11 +35,11 @@ class TaiModule extends Module {
     // Connectors
     bind[AuditConnector].toInstance(AuditConnector),
     bind[AuthConnector].toInstance(FrontendAuthConnector),
-    bind[BbsiConnector].toInstance(BbsiConnector),
     bind[BenefitsConnector].toInstance(BenefitsConnector),
     bind[CompanyCarConnector].toInstance(CompanyCarConnector),
     bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
     bind[EmploymentsConnector].toInstance(EmploymentsConnector),
+    bind[HttpHandler].toInstance(HttpHandler),
     bind[PensionProviderConnector].toInstance(PensionProviderConnector),
     bind[PersonConnector].toInstance(PersonConnector),
     bind[PreviousYearsIncomeConnector].toInstance(PreviousYearsIncomeConnector),
