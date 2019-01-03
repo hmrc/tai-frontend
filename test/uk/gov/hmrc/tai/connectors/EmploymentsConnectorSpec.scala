@@ -18,9 +18,10 @@ package uk.gov.hmrc.tai.connectors
 
 import controllers.FakeTaiPlayApplication
 import org.joda.time.{DateTime, LocalDate}
-import org.mockito.Matchers
+import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsString, Json}
@@ -39,7 +40,12 @@ import scala.util.Random
 class EmploymentsConnectorSpec extends PlaySpec
   with MockitoSugar
   with ServicesConfig
-  with FakeTaiPlayApplication {
+  with FakeTaiPlayApplication
+  with BeforeAndAfterEach {
+
+  override def beforeEach: Unit = {
+    Mockito.reset(httpHandler)
+  }
 
   "EmploymentsConnector" must {
     "return a blank the service url" when {
@@ -73,12 +79,12 @@ class EmploymentsConnectorSpec extends PlaySpec
     "call the employments API with a URL containing a service URL" when {
       "the service URL is supplied" in {
         val SUT = createSUT("test/service")
-        when(SUT.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(oneEmployment)))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(oneEmployment)))
 
         val responseFuture = SUT.employments(nino, year)
 
         Await.result(responseFuture, 5 seconds)
-        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
+        verify(httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
       }
     }
 
@@ -88,13 +94,13 @@ class EmploymentsConnectorSpec extends PlaySpec
 
         val SUT = createSUT()
 
-        when(SUT.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(oneEmployment)))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(oneEmployment)))
 
         val responseFuture = SUT.employments(nino, year)
 
         Await.result(responseFuture, 5 seconds)
 
-        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"/tai/$nino/employments/years/${year.year}"))(any())
+        verify(httpHandler).getFromApi(Matchers.eq(s"/tai/$nino/employments/years/${year.year}"))(any())
       }
     }
 
@@ -104,7 +110,7 @@ class EmploymentsConnectorSpec extends PlaySpec
 
         val SUT = createSUT("test/service")
 
-        when(SUT.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(oneEmployment)))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(oneEmployment)))
 
         val responseFuture = SUT.employments(nino, year)
 
@@ -112,14 +118,14 @@ class EmploymentsConnectorSpec extends PlaySpec
 
         result mustBe oneEmploymentDetails
 
-        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
+        verify(httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
       }
 
       "api provides multiple employments" in {
 
         val SUT = createSUT("test/service")
 
-        when(SUT.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(twoEmployments)))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(twoEmployments)))
 
         val responseFuture = SUT.employments(nino, year)
 
@@ -127,14 +133,14 @@ class EmploymentsConnectorSpec extends PlaySpec
 
         result mustBe twoEmploymentsDetails
 
-        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
+        verify(httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
       }
     }
 
     "return nil when api returns zero employments" in {
       val SUT = createSUT("test/service")
 
-      when(SUT.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(zeroEmployments)))
+      when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(zeroEmployments)))
 
       val responseFuture = SUT.employments(nino, year)
 
@@ -142,32 +148,20 @@ class EmploymentsConnectorSpec extends PlaySpec
 
       result mustBe Nil
 
-      verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
+      verify(httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}"))(any())
     }
 
     "throw an exception" when {
       "invalid json has returned by api" in {
         val SUT = createSUT("test/service")
 
-        when(SUT.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse("""{"test":"test"}""")))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse("""{"test":"test"}""")))
 
         val ex = the[RuntimeException] thrownBy Await.result(SUT.employments(nino, year), 5 seconds)
         ex.getMessage mustBe "Invalid employment json"
       }
     }
 
-
-    "return the base URL for the service" when {
-      "the companion object's serviceURL is referenced" in {
-        EmploymentsConnector.serviceUrl mustBe baseUrl("tai")
-      }
-    }
-
-    "return HttpHandler" when {
-      "the companion object's httpHandler is referenced" in {
-        EmploymentsConnector.httpHandler mustBe HttpHandler
-      }
-    }
   }
 
   "EmploymentsConnector employment" must {
@@ -181,19 +175,19 @@ class EmploymentsConnectorSpec extends PlaySpec
     "return an employment from current year" when {
       "valid id has been passed" in {
         val sut = createSUT()
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(anEmployment)))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(anEmployment)))
 
         val result = Await.result(sut.employment(nino, "123"), 5.seconds)
 
         result mustBe Some(anEmploymentObject)
-        verify(sut.httpHandler, times(1)).getFromApi(any())(any())
+        verify(httpHandler, times(1)).getFromApi(any())(any())
       }
     }
 
     "return none" when {
       "invalid json returned by an api" in {
         val sut = createSUT()
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(zeroEmployments)))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(zeroEmployments)))
 
         Await.result(sut.employment(nino, "123"), 5.seconds) mustBe None
       }
@@ -206,7 +200,7 @@ class EmploymentsConnectorSpec extends PlaySpec
       "we send a PUT request to backend" in {
         val sut = createSUT()
         val json = Json.obj("data" -> JsString("123-456-789"))
-        when(sut.httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        when(httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
         val endEmploymentData = EndEmployment(new LocalDate(2017, 10, 15),"YES", Some("EXT-TEST"))
 
@@ -220,7 +214,7 @@ class EmploymentsConnectorSpec extends PlaySpec
       "json is invalid" in {
         val sut = createSUT()
         val json = Json.obj("test" -> JsString("123-456-789"))
-        when(sut.httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        when(httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
         val endEmploymentData = EndEmployment(new LocalDate(2017, 10, 15),"YES", Some("EXT-TEST"))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.endEmployment(nino, 1, endEmploymentData), 5.seconds)
@@ -235,7 +229,7 @@ class EmploymentsConnectorSpec extends PlaySpec
       val sut = createSUT()
       val addEmployment = AddEmployment(employerName = "testEmployment", payrollNumber = "12345", startDate = new LocalDate(2017, 6, 6), telephoneContactAllowed = "Yes", telephoneNumber=Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
-      when(sut.httpHandler.postToApi(Matchers.eq(sut.addEmploymentServiceUrl(nino)), Matchers.eq(addEmployment))(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+      when(httpHandler.postToApi(Matchers.eq(sut.addEmploymentServiceUrl(nino)), Matchers.eq(addEmployment))(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.addEmployment(nino, addEmployment), 5.seconds)
 
@@ -248,7 +242,7 @@ class EmploymentsConnectorSpec extends PlaySpec
       val sut = createSUT()
       val model = IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
-      when(sut.httpHandler.postToApi(Matchers.eq(s"/tai/$nino/employments/1/reason"), Matchers.eq(model))
+      when(httpHandler.postToApi(Matchers.eq(s"/tai/$nino/employments/1/reason"), Matchers.eq(model))
       (any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
@@ -346,9 +340,10 @@ class EmploymentsConnectorSpec extends PlaySpec
 
   private def createSUT(servUrl: String = "") = new EmploymentsConnectorTest(servUrl)
 
-  private class EmploymentsConnectorTest(servUrl: String = "") extends EmploymentsConnector {
+  val httpHandler: HttpHandler = mock[HttpHandler]
+  
+  private class EmploymentsConnectorTest(servUrl: String = "") extends EmploymentsConnector (httpHandler) {
     override val serviceUrl: String = servUrl
-    override val httpHandler: HttpHandler = mock[HttpHandler]
   }
 
 }

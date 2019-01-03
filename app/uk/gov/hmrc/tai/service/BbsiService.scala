@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.model.{AmountRequest, CloseAccountRequest}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class BbsiService @Inject() (val connector: BbsiConnector) {
+class BbsiService @Inject() (connector: BbsiConnector) {
 
   def bankAccounts(nino:Nino)(implicit hc: HeaderCarrier): Future[Seq[BankAccount]] = {
     connector.bankAccounts(nino)
