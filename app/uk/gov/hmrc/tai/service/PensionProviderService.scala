@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import com.google.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.PensionProviderConnector
@@ -24,26 +25,19 @@ import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvide
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait PensionProviderService {
-
-  def connector: PensionProviderConnector
+class PensionProviderService @Inject() (pensionProviderConnector: PensionProviderConnector) {
 
   def addPensionProvider(nino: Nino, pensionProvider: AddPensionProvider)(implicit hc:HeaderCarrier): Future[String] = {
-    connector.addPensionProvider(nino, pensionProvider) map {
+    pensionProviderConnector.addPensionProvider(nino, pensionProvider) map {
       case Some(envId) => envId
       case _ => throw new RuntimeException(s"No envelope id was generated when adding the new pension provider for ${nino.nino}")
     }
   }
 
   def incorrectPensionProvider(nino: Nino, id: Int, pensionProvider: IncorrectPensionProvider)(implicit hc:HeaderCarrier):
-  Future[String] = {connector.incorrectPensionProvider(nino, id, pensionProvider) map {
+  Future[String] = {pensionProviderConnector.incorrectPensionProvider(nino, id, pensionProvider) map {
     case Some(envId) => envId
     case _ => throw new RuntimeException(s"No envelope id was generated when submitting incorrect pension for ${nino.nino}")
     }
   }
 }
-// $COVERAGE-OFF$
-object PensionProviderService extends PensionProviderService {
-  override val connector: PensionProviderConnector = PensionProviderConnector
-}
-// $COVERAGE-ON$

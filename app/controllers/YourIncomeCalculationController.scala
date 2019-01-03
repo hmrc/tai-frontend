@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import play.api.Play.current
 import play.api.i18n.Messages
@@ -23,9 +24,9 @@ import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Person
@@ -35,15 +36,15 @@ import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncom
 
 import scala.concurrent.Future
 
-trait YourIncomeCalculationController extends TaiBaseController
+class YourIncomeCalculationController @Inject()(personService: PersonService,
+                                                taxAccountService: TaxAccountService,
+                                                employmentService: EmploymentService,
+                                                val delegationConnector: DelegationConnector,
+                                                val authConnector: AuthConnector,
+                                                override implicit val partialRetriever: FormPartialRetriever,
+                                                override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
-
-  def personService: PersonService
-
-  def taxAccountService: TaxAccountService
-
-  def employmentService: EmploymentService
 
   def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -101,7 +102,7 @@ trait YourIncomeCalculationController extends TaiBaseController
         }
   }
 
-  def printYourIncomeCalculationHistoricYears(year: TaxYear,empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+  def printYourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request => {
@@ -117,27 +118,17 @@ trait YourIncomeCalculationController extends TaiBaseController
   }
 
   private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean = false, year: TaxYear)
-                                   (implicit request: Request[AnyContent], user: TaiUser, person: Person, messages: Messages): Future[Result] = {
+                                           (implicit request: Request[AnyContent], user: TaiUser, person: Person, messages: Messages): Future[Result] = {
     for {
-        employment <- employmentService.employments(nino, year)
-      } yield {
-        val historicIncomeCalculationViewModel = HistoricIncomeCalculationViewModel(employment, empId, year)
-        if (printPage) {
-          Ok(views.html.print.historicIncomeCalculation(historicIncomeCalculationViewModel))
-        } else {
-          Ok(views.html.incomes.historicIncomeCalculation(historicIncomeCalculationViewModel))
-        }
+      employment <- employmentService.employments(nino, year)
+    } yield {
+      val historicIncomeCalculationViewModel = HistoricIncomeCalculationViewModel(employment, empId, year)
+      if (printPage) {
+        Ok(views.html.print.historicIncomeCalculation(historicIncomeCalculationViewModel))
+      } else {
+        Ok(views.html.incomes.historicIncomeCalculation(historicIncomeCalculationViewModel))
       }
     }
+  }
 
 }
-// $COVERAGE-OFF$
-object YourIncomeCalculationController extends YourIncomeCalculationController with AuthenticationConnectors {
-  override implicit def templateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-
-  override val personService = PersonService
-  override val taxAccountService: TaxAccountService = TaxAccountService
-  override val employmentService: EmploymentService = EmploymentService
-}
-// $COVERAGE-ON$

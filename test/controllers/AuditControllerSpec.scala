@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -26,7 +26,6 @@ import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.{AuditService, PersonService}
 
@@ -40,13 +39,13 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
       "triggered from any page" which {
         "redirects to appropriate url " in {
           val sut = createSut
-          when(sut.auditService.sendAuditEventAndGetRedirectUri(any(), any())(any(), any())).thenReturn(Future.successful(redirectUri))
+          when(auditService.sendAuditEventAndGetRedirectUri(any(), any())(any(), any())).thenReturn(Future.successful(redirectUri))
 
           val result = Await.result(sut.auditLinksToIForm("any-iform")(RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" ->
             redirectUri)), 5.seconds)
 
           result.header.status mustBe 303
-          verify(sut.auditService, times(1)).sendAuditEventAndGetRedirectUri(Matchers.eq(Nino(nino)),
+          verify(auditService, times(1)).sendAuditEventAndGetRedirectUri(Matchers.eq(Nino(nino)),
             Matchers.eq("any-iform"))(any(), any())
         }
       }
@@ -59,21 +58,21 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
 
   def createSut = new SUT
 
-  class SUT extends AuditController {
-    override val personService: PersonService = mock[PersonService]
+  val personService: PersonService = mock[PersonService]
+  val auditService = mock[AuditService]
 
-    override val auditService: AuditService = mock[AuditService]
-
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-
-    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
-
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
+  class SUT extends AuditController(
+    personService,
+    auditService,
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
 
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(person))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
   }
+
 }

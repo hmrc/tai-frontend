@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.tai.service.benefits
 
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -24,21 +26,17 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiRe
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCarBenefit, WithdrawCarAndFuel}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{CarBenefit, Employment}
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait CompanyCarService extends JourneyCacheConstants {
-
-  def carConnector: CompanyCarConnector
-
-  def journeyCacheService: JourneyCacheService
-
-  def employmentService: EmploymentService
-
-  def auditService: AuditService
+class CompanyCarService @Inject() (carConnector: CompanyCarConnector,
+                                   employmentService: EmploymentService,
+                                   auditService: AuditService,
+                                   @Named("Company Car") journeyCacheService: JourneyCacheService) extends JourneyCacheConstants {
 
   def companyCarOnCodingComponents(nino: Nino, codingComponents: Seq[CodingComponent])(implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] = {
     if (codingComponents.exists(_.componentType == CarBenefit))
@@ -118,11 +116,3 @@ trait CompanyCarService extends JourneyCacheConstants {
     }
   }
 }
-// $COVERAGE-OFF$
-object CompanyCarService extends CompanyCarService {
-  override val carConnector: CompanyCarConnector = CompanyCarConnector
-  override val journeyCacheService: JourneyCacheService = JourneyCacheService(CompanyCar_JourneyKey)
-  override val employmentService: EmploymentService = EmploymentService
-  override val auditService: AuditService = AuditService
-}
-// $COVERAGE-ON$

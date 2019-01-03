@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,10 @@ import controllers.FakeTaiPlayApplication
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.{eq => mockEq, _}
 import org.mockito.Mockito._
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -39,7 +40,8 @@ import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.employments.AddEmploymentPayrollNumberForm._
 import uk.gov.hmrc.tai.forms.employments.{AddEmploymentFirstPayForm, EmploymentAddDateForm}
 import uk.gov.hmrc.tai.model.domain.AddEmployment
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, JourneyCacheService, PersonService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 
 import scala.concurrent.duration._
@@ -52,7 +54,12 @@ class AddEmploymentControllerSpec extends PlaySpec
   with I18nSupport
   with JourneyCacheConstants
   with AuditConstants
-  with FormValuesConstants {
+  with FormValuesConstants
+  with BeforeAndAfterEach {
+
+  override def beforeEach: Unit = {
+    Mockito.reset(addEmploymentJourneyCacheService)
+  }
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -60,7 +67,7 @@ class AddEmploymentControllerSpec extends PlaySpec
     "show the employment name form page" when {
       "the request has an authorised session and no previously supplied employment name is present in cache" in {
         val sut = createSUT
-        when(sut.journeyCacheService.currentValue(Matchers.eq(AddEmployment_NameKey))(any())).thenReturn(Future.successful(None))
+        when(addEmploymentJourneyCacheService.currentValue(Matchers.eq(AddEmployment_NameKey))(any())).thenReturn(Future.successful(None))
         val result = sut.addEmploymentName()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
@@ -70,7 +77,7 @@ class AddEmploymentControllerSpec extends PlaySpec
       }
       "the request has an authorised session and a previously supplied employment name is present in cache" in {
         val sut = createSUT
-        when(sut.journeyCacheService.currentValue(Matchers.eq(AddEmployment_NameKey))(any())).thenReturn(Future.successful(Some("employer one plc")))
+        when(addEmploymentJourneyCacheService.currentValue(Matchers.eq(AddEmployment_NameKey))(any())).thenReturn(Future.successful(Some("employer one plc")))
         val result = sut.addEmploymentName()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
@@ -88,7 +95,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         val sut = createSUT
 
         val expectedCache = Map("employmentName" -> "the employer")
-        when(sut.journeyCacheService.cache(Matchers.eq(expectedCache))(any()))
+        when(addEmploymentJourneyCacheService.cache(Matchers.eq(expectedCache))(any()))
           .thenReturn(Future.successful(expectedCache))
 
         val result = sut.submitEmploymentName()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(("employmentName", "the employer")))
@@ -116,7 +123,7 @@ class AddEmploymentControllerSpec extends PlaySpec
 
         Await.result(sut.submitEmploymentName()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(("employmentName", "the employment"))), 5 seconds)
 
-        verify(sut.journeyCacheService, times(1)).cache(mockEq(Map("employmentName" -> "the employment")))(any())
+        verify(addEmploymentJourneyCacheService, times(1)).cache(mockEq(Map("employmentName" -> "the employment")))(any())
       }
     }
   }
@@ -126,7 +133,7 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the request has an authorised session and no previously supplied start date is present in cache" in {
         val sut = createSUT
         val employmentName = "TEST"
-        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(employmentName), Seq(None)))
+        when(addEmploymentJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(employmentName), Seq(None)))
 
         val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -138,7 +145,7 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the request has an authorised session and a previously supplied start date is present in cache" in {
         val sut = createSUT
         val employmentName = "TEST"
-        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(employmentName), Seq(Some("2017-12-12"))))
+        when(addEmploymentJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(employmentName), Seq(Some("2017-12-12"))))
 
         val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -152,7 +159,7 @@ class AddEmploymentControllerSpec extends PlaySpec
     "return error" when {
       "cache doesn't return data" in {
         val sut = createSUT
-        when(sut.journeyCacheService.currentValueAs[String](any(), any())(any())).thenReturn(Future.successful(None))
+        when(addEmploymentJourneyCacheService.currentValueAs[String](any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -170,7 +177,7 @@ class AddEmploymentControllerSpec extends PlaySpec
           sut.employmentStartDateForm.EmploymentFormMonth -> "02",
           sut.employmentStartDateForm.EmploymentFormYear -> "2017"
         )
-        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(AddEmployment_NameKey -> "Test")))
+        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map(AddEmployment_NameKey -> "Test")))
 
         val result = sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
@@ -187,7 +194,7 @@ class AddEmploymentControllerSpec extends PlaySpec
           sut.employmentStartDateForm.EmploymentFormMonth -> date.getMonthOfYear.toString,
           sut.employmentStartDateForm.EmploymentFormYear -> date.getYear.toString
         )
-        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(AddEmployment_NameKey -> "Test")))
+        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map(AddEmployment_NameKey -> "Test")))
 
         val result = sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
@@ -204,7 +211,7 @@ class AddEmploymentControllerSpec extends PlaySpec
           sut.employmentStartDateForm.EmploymentFormMonth -> "02",
           sut.employmentStartDateForm.EmploymentFormYear -> (LocalDate.now().getYear + 1).toString
         )
-        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(AddEmployment_NameKey -> "Test")))
+        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map(AddEmployment_NameKey -> "Test")))
 
         val result = sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
@@ -220,11 +227,11 @@ class AddEmploymentControllerSpec extends PlaySpec
           sut.employmentStartDateForm.EmploymentFormMonth -> "02",
           sut.employmentStartDateForm.EmploymentFormYear -> "2017"
         )
-        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(AddEmployment_NameKey -> "Test")))
+        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map(AddEmployment_NameKey -> "Test")))
         val result = sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
-        verify(sut.journeyCacheService, times(1)).cache(Matchers.eq(Map(AddEmployment_NameKey -> "Test",
+        verify(addEmploymentJourneyCacheService, times(1)).cache(Matchers.eq(Map(AddEmployment_NameKey -> "Test",
           AddEmployment_StartDateKey -> "2017-02-01", AddEmployment_StartDateWithinSixWeeks -> NoValue)))(any())
       }
 
@@ -237,11 +244,11 @@ class AddEmploymentControllerSpec extends PlaySpec
           sut.employmentStartDateForm.EmploymentFormMonth -> date.getMonthOfYear.toString,
           sut.employmentStartDateForm.EmploymentFormYear -> date.getYear.toString
         )
-        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(AddEmployment_NameKey -> "Test")))
+        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map(AddEmployment_NameKey -> "Test")))
         val result = sut.submitEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
-        verify(sut.journeyCacheService, times(1)).cache(Matchers.eq(Map(AddEmployment_NameKey -> "Test",
+        verify(addEmploymentJourneyCacheService, times(1)).cache(Matchers.eq(Map(AddEmployment_NameKey -> "Test",
           AddEmployment_StartDateKey -> date.toString("yyyy-MM-dd"), AddEmployment_StartDateWithinSixWeeks -> YesValue)))(any())
       }
     }
@@ -252,7 +259,7 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the request has an authorised session and no previous response is held in cache" in {
         val sut = createSUT
         val employmentName = "TEST"
-        when(sut.journeyCacheService.collectedValues(Matchers.eq(Seq(AddEmployment_NameKey)), Matchers.eq(Seq(AddEmployment_RecewivedFirstPayKey)))(any()))
+        when(addEmploymentJourneyCacheService.collectedValues(Matchers.eq(Seq(AddEmployment_NameKey)), Matchers.eq(Seq(AddEmployment_RecewivedFirstPayKey)))(any()))
           .thenReturn(Future.successful((Seq(employmentName), Seq(None))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -267,7 +274,7 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the request has an authorised session and a previous response is held in cache" in {
         val sut = createSUT
         val employmentName = "TEST"
-        when(sut.journeyCacheService.collectedValues(Matchers.eq(Seq(AddEmployment_NameKey)), Matchers.eq(Seq(AddEmployment_RecewivedFirstPayKey)))(any()))
+        when(addEmploymentJourneyCacheService.collectedValues(Matchers.eq(Seq(AddEmployment_NameKey)), Matchers.eq(Seq(AddEmployment_RecewivedFirstPayKey)))(any()))
           .thenReturn(Future.successful((Seq(employmentName), Seq(Some(YesValue)))))
 
         val result = sut.receivedFirstPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -287,7 +294,7 @@ class AddEmploymentControllerSpec extends PlaySpec
     "redirect user to payroll number page" when {
       "yes is selected" in {
         val sut = createSUT
-        when(sut.journeyCacheService.cache(mockEq(AddEmployment_RecewivedFirstPayKey), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(addEmploymentJourneyCacheService.cache(mockEq(AddEmployment_RecewivedFirstPayKey), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.submitFirstPay()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           AddEmploymentFirstPayForm.FirstPayChoice -> YesValue))
@@ -301,7 +308,7 @@ class AddEmploymentControllerSpec extends PlaySpec
       "no is selected" in {
         val sut = createSUT
         val employmentName = "TEST-Employer"
-        when(sut.journeyCacheService.cache(mockEq(AddEmployment_RecewivedFirstPayKey), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(addEmploymentJourneyCacheService.cache(mockEq(AddEmployment_RecewivedFirstPayKey), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = sut.submitFirstPay()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           AddEmploymentFirstPayForm.FirstPayChoice -> NoValue))
@@ -315,12 +322,12 @@ class AddEmploymentControllerSpec extends PlaySpec
       "no is selected" in {
         val sut = createSUT
         val employmentName = "TEST-Employer"
-        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(AddEmployment_NameKey))(any())).thenReturn(Future.successful(employmentName))
+        when(addEmploymentJourneyCacheService.mandatoryValue(Matchers.eq(AddEmployment_NameKey))(any())).thenReturn(Future.successful(employmentName))
 
         Await.result(sut.sixWeeksError()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           AddEmploymentFirstPayForm.FirstPayChoice -> NoValue)),5 seconds)
 
-        verify(sut.auditService, times(1)).createAndSendAuditEvent(Matchers.eq(AddEmployment_CantAddEmployer), Matchers.eq(Map("nino" -> nino)))(Matchers.any(), Matchers.any())
+        verify(auditService, times(1)).createAndSendAuditEvent(Matchers.eq(AddEmployment_CantAddEmployer), Matchers.eq(Map("nino" -> nino)))(Matchers.any(), Matchers.any())
       }
     }
 
@@ -329,7 +336,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         val sut = createSUT
         val employmentName = "TEST-Employer"
 
-        when(sut.journeyCacheService.mandatoryValue(Matchers.eq(AddEmployment_NameKey))(any())).thenReturn(Future.successful(employmentName))
+        when(addEmploymentJourneyCacheService.mandatoryValue(Matchers.eq(AddEmployment_NameKey))(any())).thenReturn(Future.successful(employmentName))
 
         val result = sut.submitFirstPay()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           AddEmploymentFirstPayForm.FirstPayChoice -> ""))
@@ -347,7 +354,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         val sut = createSUT
         val employerName = "TEST"
         val cache = Map(AddEmployment_NameKey -> employerName, AddEmployment_StartDateWithinSixWeeks -> YesValue)
-        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = sut.addEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -367,7 +374,7 @@ class AddEmploymentControllerSpec extends PlaySpec
           AddEmployment_StartDateWithinSixWeeks -> YesValue,
           AddEmployment_PayrollNumberQuestionKey -> NoValue,
           AddEmployment_PayrollNumberKey -> "should be ignored")
-        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = sut.addEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -387,7 +394,7 @@ class AddEmploymentControllerSpec extends PlaySpec
           AddEmployment_StartDateWithinSixWeeks -> YesValue,
           AddEmployment_PayrollNumberQuestionKey -> YesValue,
           AddEmployment_PayrollNumberKey -> "should be displayed")
-        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = sut.addEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -411,11 +418,11 @@ class AddEmploymentControllerSpec extends PlaySpec
           AddEmployment_PayrollNumberQuestionKey -> YesValue,
           AddEmployment_PayrollNumberKey -> payrollNo
         )
-        when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
+        when(addEmploymentJourneyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
         Await.result(sut.submitEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           PayrollNumberChoice -> YesValue, PayrollNumberEntry -> payrollNo)), 5 seconds)
 
-        verify(sut.journeyCacheService, times(1)).cache(mockEq(mapWithPayrollNumber))(any())
+        verify(addEmploymentJourneyCacheService, times(1)).cache(mockEq(mapWithPayrollNumber))(any())
       }
     }
 
@@ -427,7 +434,7 @@ class AddEmploymentControllerSpec extends PlaySpec
           AddEmployment_PayrollNumberQuestionKey -> YesValue,
           AddEmployment_PayrollNumberKey -> payrollNo
         )
-        when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
+        when(addEmploymentJourneyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
         val result = sut.submitEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           PayrollNumberChoice -> YesValue, PayrollNumberEntry -> payrollNo))
         status(result) mustBe SEE_OTHER
@@ -445,12 +452,12 @@ class AddEmploymentControllerSpec extends PlaySpec
           AddEmployment_PayrollNumberKey -> payrollNo
         )
 
-        when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
+        when(addEmploymentJourneyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
 
         Await.result(sut.submitEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           PayrollNumberChoice -> NoValue, PayrollNumberEntry -> "")), 5 seconds)
 
-        verify(sut.journeyCacheService, times(1)).cache(mockEq(mapWithPayrollNumber))(any())
+        verify(addEmploymentJourneyCacheService, times(1)).cache(mockEq(mapWithPayrollNumber))(any())
       }
     }
 
@@ -463,7 +470,7 @@ class AddEmploymentControllerSpec extends PlaySpec
           AddEmployment_PayrollNumberKey -> payrollNo
         )
 
-        when(sut.journeyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
+        when(addEmploymentJourneyCacheService.cache(mockEq(mapWithPayrollNumber))(any())).thenReturn(Future.successful(mapWithPayrollNumber))
 
         val result = sut.submitEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           PayrollNumberChoice -> NoValue, PayrollNumberEntry -> ""))
@@ -478,7 +485,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         val sut = createSUT
         val employerName = "TEST"
         val cache = Map(AddEmployment_NameKey -> employerName, AddEmployment_StartDateWithinSixWeeks -> YesValue)
-        when(sut.journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(addEmploymentJourneyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
 
         val result = sut.submitEmploymentPayrollNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           PayrollNumberChoice -> YesValue, PayrollNumberEntry -> ""))
@@ -494,7 +501,7 @@ class AddEmploymentControllerSpec extends PlaySpec
     "show the contact by telephone page" when {
       "the request has an authorised session and no previous response is held in cache" in {
         val sut = createSUT
-        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(None, None)))
+        when(addEmploymentJourneyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(None, None)))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
@@ -506,7 +513,7 @@ class AddEmploymentControllerSpec extends PlaySpec
       }
       "the request has an authorised session and a previous 'no' response is held in cache" in {
         val sut = createSUT
-        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(NoValue), Some("should be ignored"))))
+        when(addEmploymentJourneyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(NoValue), Some("should be ignored"))))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
@@ -518,7 +525,7 @@ class AddEmploymentControllerSpec extends PlaySpec
       }
       "the request has an authorised session and a previous 'yes' response is held in cache" in {
         val sut = createSUT
-        when(sut.journeyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(YesValue), Some("should be displayed"))))
+        when(addEmploymentJourneyCacheService.optionalValues(any())(any())).thenReturn(Future.successful(Seq(Some(YesValue), Some("should be displayed"))))
         val result = sut.addTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
@@ -537,7 +544,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         val sut = createSUT
 
         val expectedCache = Map(AddEmployment_TelephoneQuestionKey -> YesValue, AddEmployment_TelephoneNumberKey -> "12345678")
-        when(sut.journeyCacheService.cache(mockEq(expectedCache))(any())).thenReturn(Future.successful(expectedCache))
+        when(addEmploymentJourneyCacheService.cache(mockEq(expectedCache))(any())).thenReturn(Future.successful(expectedCache))
         val result = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           YesNoChoice -> YesValue, YesNoTextEntry -> "12345678"))
 
@@ -548,7 +555,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         val sut = createSUT
 
         val expectedCacheWithErasingNumber = Map(AddEmployment_TelephoneQuestionKey -> NoValue, AddEmployment_TelephoneNumberKey -> "")
-        when(sut.journeyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any())).thenReturn(Future.successful(expectedCacheWithErasingNumber))
+        when(addEmploymentJourneyCacheService.cache(mockEq(expectedCacheWithErasingNumber))(any())).thenReturn(Future.successful(expectedCacheWithErasingNumber))
         val result = sut.submitTelephoneNumber()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           YesNoChoice -> NoValue, YesNoTextEntry -> "this value must not be cached"))
 
@@ -590,7 +597,7 @@ class AddEmploymentControllerSpec extends PlaySpec
     "show the check answers summary page" when {
       "the request has an authorised session" in {
         val sut = createSUT
-        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+        when(addEmploymentJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(
           Future.successful((
             Seq[String]("emp-name", "2017-06-15", "emp-ref-1234", "Yes"),
             Seq[Option[String]](Some("123456789"))
@@ -613,13 +620,13 @@ class AddEmploymentControllerSpec extends PlaySpec
 
         val expectedModel = AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "Yes", Some("123456789"))
 
-        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(
+        when(addEmploymentJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(
           Seq("empName", "2017-04-04", "I do not know", "Yes"), Seq(Some("123456789"))
         ))
 
-        when(sut.employmentService.addEmployment(any(), Matchers.eq(expectedModel))(any())).thenReturn(Future.successful("envelope-123"))
-        when(sut.journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
-        when(sut.successfulJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_AddEmploymentKey), Matchers.eq("true"))(any())).
+        when(employmentService.addEmployment(any(), Matchers.eq(expectedModel))(any())).thenReturn(Future.successful("envelope-123"))
+        when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(trackSuccessJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_AddEmploymentKey), Matchers.eq("true"))(any())).
           thenReturn(Future.successful(Map(TrackSuccessfulJourney_AddEmploymentKey -> "true")))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
@@ -634,13 +641,13 @@ class AddEmploymentControllerSpec extends PlaySpec
         val expectedModel = AddEmployment("empName", LocalDate.parse("2017-04-04"), "I do not know", "No", None)
         val expectedSuccessfulJourneyCache = Map("addEmployment" -> "true")
 
-        when(sut.journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(
+        when(addEmploymentJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(
           (Seq("empName", "2017-04-04", "I do not know", "No"), Seq(None))
         ))
 
-        when(sut.employmentService.addEmployment(any(), Matchers.eq(expectedModel))(any())).thenReturn(Future.successful("envelope-123"))
-        when(sut.journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
-        when(sut.successfulJourneyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(expectedSuccessfulJourneyCache))
+        when(employmentService.addEmployment(any(), Matchers.eq(expectedModel))(any())).thenReturn(Future.successful("envelope-123"))
+        when(addEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+        when(trackSuccessJourneyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(expectedSuccessfulJourneyCache))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
 
@@ -668,19 +675,23 @@ class AddEmploymentControllerSpec extends PlaySpec
 
   private def createSUT = new SUT
 
-  private class SUT extends AddEmploymentController {
+  val auditService = mock[AuditService]
+  val employmentService = mock[EmploymentService]
+  val personService = mock[PersonService]
+  val addEmploymentJourneyCacheService = mock[JourneyCacheService]
+  val trackSuccessJourneyCacheService = mock[JourneyCacheService]
 
-    override implicit def templateRenderer: MockTemplateRenderer.type = MockTemplateRenderer
-
-    override val personService: PersonService = mock[PersonService]
-    override val auditService: AuditService = mock[AuditService]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override val journeyCacheService: JourneyCacheService = mock[JourneyCacheService]
-    override val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
+  private class SUT extends AddEmploymentController(
+    personService,
+    auditService,
+    employmentService,
+    addEmploymentJourneyCacheService,
+    trackSuccessJourneyCacheService,
+    mock[DelegationConnector],
+    mock[AuditConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer) {
 
     val employmentStartDateForm = EmploymentAddDateForm("employer")
 

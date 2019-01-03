@@ -1,5 +1,5 @@
 @*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@
     partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
 )
 
+@gaEventActionString = @{"Your estimated pay for next year success"}
+
 @main(
     title = messages("tai.updateIncome.CYPlus1.success.title"),
     articleClasses = Some("full-width"),
@@ -40,7 +42,8 @@
             @messages("tai.updateIncome.CYPlus1.success.paragraph1")
             @includes.link(
                 copy = messages("tai.updateIncome.CYPlus1.success.link"),
-                url = controllers.routes.IncomeTaxComparisonController.onPageLoad.url.toString
+                url = controllers.routes.IncomeTaxComparisonController.onPageLoad.url.toString,
+                attributes = Seq(("data-journey-click", s"link - click:${gaEventActionString}:${messages("tai.updateIncome.CYPlus1.success.link")}"))
             )
         </p>
         @if(isPension) {

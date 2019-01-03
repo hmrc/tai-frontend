@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class PensionProviderServiceSpec extends PlaySpec with MockitoSugar {
     "return an envelope id" in {
       val sut = createSUT
       val model = AddPensionProvider("name", new LocalDate(2017, 6, 9),  "12345", "Yes", Some("123456789"))
-      when(sut.connector.addPensionProvider(Matchers.eq(nino), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
+      when(pensionProviderConnector.addPensionProvider(Matchers.eq(nino), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.addPensionProvider(nino, model), 5 seconds)
 
@@ -47,7 +47,7 @@ class PensionProviderServiceSpec extends PlaySpec with MockitoSugar {
       "no envelope id was returned from the connector layer" in {
         val sut = createSUT
         val model = AddPensionProvider("name", new LocalDate(2017, 6, 9),  "12345", "Yes", Some("123456789"))
-        when(sut.connector.addPensionProvider(Matchers.eq(nino), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
+        when(pensionProviderConnector.addPensionProvider(Matchers.eq(nino), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.addPensionProvider(nino, model), 5.seconds)
         rte.getMessage mustBe s"No envelope id was generated when adding the new pension provider for ${nino.nino}"
@@ -59,7 +59,7 @@ class PensionProviderServiceSpec extends PlaySpec with MockitoSugar {
     "return an envelope id" in {
       val sut = createSUT
       val model = IncorrectPensionProvider(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-      when(sut.connector.incorrectPensionProvider(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
+      when(pensionProviderConnector.incorrectPensionProvider(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.incorrectPensionProvider(nino, 1,model), 5 seconds)
 
@@ -70,7 +70,7 @@ class PensionProviderServiceSpec extends PlaySpec with MockitoSugar {
       "no envelope id was returned from the connector layer" in {
         val sut = createSUT
         val model = IncorrectPensionProvider(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-        when(sut.connector.incorrectPensionProvider(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
+        when(pensionProviderConnector.incorrectPensionProvider(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectPensionProvider(nino, 1,model), 5.seconds)
         rte.getMessage mustBe s"No envelope id was generated when submitting incorrect pension for ${nino.nino}"
@@ -82,7 +82,9 @@ class PensionProviderServiceSpec extends PlaySpec with MockitoSugar {
   private val nino: Nino = new Generator().nextNino
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  private class PensionProviderServiceTest extends PensionProviderService {
-    override val connector: PensionProviderConnector = mock[PensionProviderConnector]
-  }
+  val pensionProviderConnector = mock[PensionProviderConnector]
+
+  private class PensionProviderServiceTest extends PensionProviderService(
+    pensionProviderConnector
+  )
 }

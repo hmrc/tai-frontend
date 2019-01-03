@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -178,14 +178,15 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
   private val scottishTaxRateBands = Map.empty[String, BigDecimal]
 
   object TaxCodeDescriptorConcrete extends TaxCodeDescriptor
+  val personService: PersonService = mock[PersonService]
 
-  private class SUT(welshEnabled: Boolean = true) extends TaiLanguageController {
-    override val personService: PersonService = mock[PersonService]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
-    override val authConnector: AuthConnector = mock[AuthConnector]
-    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override val isWelshEnabled = welshEnabled
+  private class SUT(welshEnabled: Boolean = true) extends TaiLanguageController(
+    personService,
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
 
     val authority = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(authority)

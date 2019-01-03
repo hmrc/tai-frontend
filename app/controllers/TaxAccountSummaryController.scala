@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
@@ -24,9 +25,11 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
@@ -37,17 +40,20 @@ import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 
 import scala.concurrent.Future
 
-trait TaxAccountSummaryController extends TaiBaseController
+class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
+                                            employmentService: EmploymentService,
+                                            taxAccountService: TaxAccountService,
+                                            auditService: AuditService,
+                                            personService: PersonService,
+                                            val auditConnector: AuditConnector,
+                                            val delegationConnector: DelegationConnector,
+                                            val authConnector: AuthConnector,
+                                            override implicit val partialRetriever: FormPartialRetriever,
+                                            override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
   with AuditConstants {
-
-  def personService: PersonService
-  def auditService: AuditService
-  def taxAccountService: TaxAccountService
-  def employmentService: EmploymentService
-  def trackingService: TrackingService
 
   def onPageLoad: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -86,14 +92,3 @@ trait TaxAccountSummaryController extends TaiBaseController
     }
   }
 }
-// $COVERAGE-OFF$
-object TaxAccountSummaryController extends TaxAccountSummaryController with AuthenticationConnectors {
-  override val personService = PersonService
-  override val auditService: AuditService = AuditService
-  override val taxAccountService = TaxAccountService
-  override val employmentService = EmploymentService
-  override val trackingService: TrackingService = TrackingService
-  override implicit def templateRenderer = LocalTemplateRenderer
-  override implicit def partialRetriever = TaiHtmlPartialRetriever
-}
-// $COVERAGE-ON$

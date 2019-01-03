@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.tai.service
 
-import controllers.employments.AddEmploymentController.TrackSuccessfulJourney_JourneyKey
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import play.api.Logger
 import uk.gov.hmrc.tai.connectors.TrackingConnector
 import uk.gov.hmrc.tai.model.domain.tracking.{TrackedForm, TrackedFormDone}
@@ -24,14 +25,14 @@ import uk.gov.hmrc.tai.model.domain.tracking.{TrackedForm, TrackedFormDone}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.util.control.NonFatal
 
-trait TrackingService {
-
-  def trackingConnector: TrackingConnector
-
-  def successfulJourneyCacheService: JourneyCacheService
+class TrackingService @Inject() (val trackingConnector: TrackingConnector,
+                                 @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService
+                                ) extends JourneyCacheConstants{
 
   def isAnyIFormInProgress(nino: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
     val trackingStatus = trackingForTesForms(nino) map { trackedForm =>
@@ -52,9 +53,3 @@ trait TrackingService {
   }
 
 }
-// $COVERAGE-OFF$
-object TrackingService extends TrackingService {
-  override val trackingConnector: TrackingConnector = TrackingConnector
-  override val successfulJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
-}
-// $COVERAGE-ON$

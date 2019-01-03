@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,25 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
-import uk.gov.hmrc.tai.service.{AuditService, SessionService, PersonService}
+import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.service.{AuditService, PersonService, SessionService}
 
-trait ExternalServiceRedirectController extends TaiBaseController
+class ExternalServiceRedirectController @Inject()(sessionService: SessionService,
+                                                  personService: PersonService,
+                                                  auditService: AuditService,
+                                                  val delegationConnector: DelegationConnector,
+                                                  val authConnector: AuthConnector,
+                                                  override implicit val partialRetriever: FormPartialRetriever,
+                                                  override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
-
-  def personService: PersonService
-
-  def auditService: AuditService
-
-  def sessionService: SessionService
 
   def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -48,14 +49,3 @@ trait ExternalServiceRedirectController extends TaiBaseController
         }
   }
 }
-// $COVERAGE-OFF$
-object ExternalServiceRedirectController extends ExternalServiceRedirectController with AuthenticationConnectors {
-  override implicit def templateRenderer = LocalTemplateRenderer
-
-  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-
-  override val personService = PersonService
-  override val auditService = AuditService
-  override val sessionService = SessionService
-}
-// $COVERAGE-ON$

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class PersonServiceSpec extends PlaySpec
       "connector returns successfully" in {
         val sut = createSut
         val person = fakePerson(nino)
-        when(sut.personConnector.person(Matchers.eq(nino))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(person)))
+        when(personConnector.person(Matchers.eq(nino))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(person)))
 
         val result = Await.result(sut.personDetails(nino), testTimeout)
         result mustBe(person)
@@ -57,7 +57,7 @@ class PersonServiceSpec extends PlaySpec
     "throw a runtime exception" when {
       "copnnector did not return successfully" in {
         val sut = createSut
-        when(sut.personConnector.person(Matchers.eq(nino))(any())).thenReturn(Future.successful(TaiNotFoundResponse("downstream not found")))
+        when(personConnector.person(Matchers.eq(nino))(any())).thenReturn(Future.successful(TaiNotFoundResponse("downstream not found")))
 
         val thrown = the[RuntimeException] thrownBy Await.result(sut.personDetails(nino), testTimeout)
         thrown.getMessage must include("Failed to retrieve person details for nino")
@@ -71,9 +71,11 @@ class PersonServiceSpec extends PlaySpec
 
   def createSut = new PersonServiceTest
 
-  class PersonServiceTest extends PersonService {
-    override val taiClient: TaiConnector = mock[TaiConnector]
-    override val personConnector: PersonConnector = mock[PersonConnector]
-  }
+  val personConnector = mock[PersonConnector]
+
+  class PersonServiceTest extends PersonService(
+    mock[TaiConnector],
+    personConnector
+  )
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,39 +16,46 @@
 
 package controllers
 
+import com.google.inject.Inject
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.{FeatureTogglesConfig, TaiHtmlPartialRetriever}
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
 
-trait TaxFreeAmountController extends TaiBaseController
+class TaxFreeAmountController @Inject()(personService: PersonService,
+                                        codingComponentService: CodingComponentService,
+                                        employmentService: EmploymentService,
+                                        companyCarService: CompanyCarService,
+                                        val auditConnector: AuditConnector,
+                                        val delegationConnector: DelegationConnector,
+                                        val authConnector: AuthConnector,
+                                        override implicit val partialRetriever: FormPartialRetriever,
+                                        override implicit val templateRenderer: TemplateRenderer
+                                       ) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
   with FeatureTogglesConfig {
-
-  def personService: PersonService
-  def codingComponentService: CodingComponentService
-  def employmentService: EmploymentService
-  def companyCarService: CompanyCarService
 
   def taxFreeAmount: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-              taxFreeAmount()
+            taxFreeAmount()
           }
   }
 
@@ -64,16 +71,3 @@ trait TaxFreeAmountController extends TaiBaseController
     }
   }
 }
-// $COVERAGE-OFF$
-object TaxFreeAmountController extends TaxFreeAmountController with AuthenticationConnectors {
-  override val personService: PersonService = PersonService
-  override val codingComponentService: CodingComponentService = CodingComponentService
-  override val employmentService: EmploymentService = EmploymentService
-  override val companyCarService: CompanyCarService = CompanyCarService
-
-  override implicit def templateRenderer = LocalTemplateRenderer
-
-  override implicit def partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-}
-// $COVERAGE-ON$
-

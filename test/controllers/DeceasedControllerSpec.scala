@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -28,7 +28,6 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.Future
@@ -56,22 +55,20 @@ class DeceasedControllerSpec extends PlaySpec with FakeTaiPlayApplication with I
 
   def createSut = new SUT
 
-  class SUT extends DeceasedController {
-    override val personService: PersonService = mock[PersonService]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
+  val personService: PersonService = mock[PersonService]
 
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-
-    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
-
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
+  class SUT extends DeceasedController(
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
 
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
   }
-
 
 }

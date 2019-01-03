@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -172,18 +172,12 @@ class HistoricPayAsYouEarnViewModelSpec extends PlaySpec with FakeTaiPlayApplica
 
         sut.p800ServiceIsAvailable mustBe false
       }
-    }
-
-    "return false for p800ServiceIsAvailable" when {
       "the viewmodel is provided with a tax year earlier than CY-1 such as CY-3" in {
 
         val sut = createSut(cyMinusThreeTaxYear, Nil)
 
         sut.p800ServiceIsAvailable mustBe false
       }
-    }
-
-    "return false for p800ServiceIsAvailable" when {
       "the viewmodel is provided with a tax year earlier than CY-1 such as CY-4" in {
 
         val sut = createSut(cyMinusFourTaxYear, Nil)

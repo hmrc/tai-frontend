@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,13 @@ import builders.{AuthBuilder, RequestBuilder}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http._
@@ -35,7 +35,6 @@ import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
@@ -52,9 +51,18 @@ import scala.language.postfixOps
 import scala.util.Random
 
 
-class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar with I18nSupport with JsoupMatchers{
+class WhatDoYouWantToDoControllerSpec extends PlaySpec
+  with FakeTaiPlayApplication
+  with MockitoSugar
+  with I18nSupport
+  with JsoupMatchers
+  with BeforeAndAfterEach {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
+  override def beforeEach: Unit = {
+    Mockito.reset(auditService, employmentService)
+  }
 
   "Calling the What do you want to do page method" must {
     "call whatDoYouWantToDoPage() successfully with an authorised session" when {
@@ -63,9 +71,9 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
         val controller = createTestController(isCyPlusOneEnabled = true)
 
-        when(controller.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
-        when(controller.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(controller.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
@@ -80,9 +88,9 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "there has not been a tax code change" in {
         val testController = createTestController(isCyPlusOneEnabled = true)
 
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
-        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
@@ -98,9 +106,9 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "there has been a tax code change and cyPlusOne is enabled" in {
         val testController = createTestController(isCyPlusOneEnabled = true)
 
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
-        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
+        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
@@ -117,9 +125,9 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "cyPlusOne is disabled" in {
         val testController = createTestController(isCyPlusOneEnabled = false)
 
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
-        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
+        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
@@ -153,9 +161,9 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "mci indicator is true" in {
         val person = fakePerson(nino).copy(hasCorruptData = true)
         val testController = createTestController()
-        when(testController.personService.personDetails(any())(any()))
+        when(personService.personDetails(any())(any()))
           .thenReturn(Future.successful(person))
-        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe SEE_OTHER
@@ -173,7 +181,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "a deceased response is returned from nps tax account call" in {
         val testController = createTestController()
 
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDeceasedMsg)))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -184,9 +192,9 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "the deceased indicator is set on the retrieved Person" in {
         val person = fakePerson(nino).copy(isDeceased = true)
         val testController = createTestController()
-        when(testController.personService.personDetails(any())(any()))
+        when(personService.personDetails(any())(any()))
           .thenReturn(Future.successful(person))
-        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
@@ -194,11 +202,11 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       }
 
       "the deceased AND mci indicators are set on the retrived Person" in {
-        val person = fakePerson(nino).copy(isDeceased=true, hasCorruptData=true)
+        val person = fakePerson(nino).copy(isDeceased = true, hasCorruptData = true)
         val testController = createTestController()
-        when(testController.personService.personDetails(any())(any()))
+        when(personService.personDetails(any())(any()))
           .thenReturn(Future.successful(person))
-        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
@@ -210,12 +218,12 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
       "an internal server error is returned from any HOD call" in {
         val testController = createTestController()
-        when(testController.employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
+        when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.failed((new InternalServerException("something bad"))))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
-        val doc = Jsoup.parse( contentAsString(result) )
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Sorry, we are experiencing technical difficulties - 500")
         doc must haveHeadingWithText(Messages("tai.technical.error.heading"))
         doc must haveParagraphWithText(Messages("tai.technical.error.message"))
@@ -226,11 +234,11 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
       "a general bad request exception is returned from any HOD call" in {
         val testController = createTestController()
-        when(testController.employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new BadRequestException("bad request")))
+        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new BadRequestException("bad request")))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
-        val doc = Jsoup.parse( contentAsString(result) )
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Bad request - 400")
         doc must haveHeadingWithText(Messages("tai.errorMessage.heading"))
         doc must haveParagraphWithText(Messages("tai.errorMessage.frontend400.message1"))
@@ -241,17 +249,17 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "nps tax account hod call has returned a not found exception ('no tax account information found'), indicating no current year data is present, " +
         "and no previous year employment data is present" in {
         val testController = createTestController()
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountCYDataAbsentMsg)))
-        when(testController.employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
+        when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
-        when(testController.employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
+        when(employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
           .thenReturn(Future.failed((new NotFoundException("no data found"))))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
-        verify(testController.employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
-        val doc = Jsoup.parse( contentAsString(result) )
+        verify(employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Sorry, there is a problem so you can’t use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem2"))
@@ -260,29 +268,29 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "nps tax account hod call has returned a bad request exception, indicating absence of any tax account data whatsoever, " +
         "and no previous year employment data is present" in {
         val testController = createTestController()
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDataAbsentMsg)))
-        when(testController.employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
+        when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
-        when(testController.employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
+        when(employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
           .thenReturn(Future.failed((new NotFoundException("no data found"))))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
-        verify(testController.employmentService, times(1)).employments(any(),  Matchers.eq(TaxYear().prev))(any())
+        verify(employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
         redirectLocation(result).get mustBe routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().url
       }
 
       "nps tax account hod call has returned a bad request exception, indicating no employments recorded" in {
         val testController = createTestController()
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsNoEmploymentsRecorded)))
-        when(testController.employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
+        when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
-        val doc = Jsoup.parse( contentAsString(result) )
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Sorry, there is a problem so you can’t use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem2"))
@@ -291,17 +299,17 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "nps tax account hod call has returned a bad request exception, indicating no employments for current tax year," +
         "and no previous year employment data is present" in {
         val testController = createTestController()
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsNoEmploymentForCurrentTaxYear)))
-        when(testController.employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
+        when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
-        when(testController.employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
+        when(employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
           .thenReturn(Future.failed(new NotFoundException("no data found")))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe BAD_REQUEST
-        verify(testController.employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
-        val doc = Jsoup.parse( contentAsString(result) )
+        verify(employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include("Sorry, there is a problem so you can’t use this service")
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem1"))
         doc must haveListItemWithText(Messages("tai.noPrimary.reasonItem2"))
@@ -314,23 +322,23 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
         val testController = createTestController()
 
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountCYDataAbsentMsg)))
-        when(testController.employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
+        when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
-        when(testController.employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
+        when(employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
-        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
-        verify(testController.employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
-        val doc = Jsoup.parse( contentAsString(result) )
+        verify(employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("your.paye.income.tax.overview"))
       }
 
@@ -338,34 +346,34 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
         "but previous year employment data IS present" in {
         val testController = createTestController()
 
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any()))
+        when(taxAccountService.taxAccountSummary(any(), any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDataAbsentMsg)))
-        when(testController.employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
+        when(employmentService.employments(any(), Matchers.eq(TaxYear()))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
-        when(testController.employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
+        when(employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
           .thenReturn(Future.successful(fakeEmploymentData))
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
-        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
-        verify(testController.employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
-        val doc = Jsoup.parse( contentAsString(result) )
+        verify(employmentService, times(1)).employments(any(), Matchers.eq(TaxYear().prev))(any())
+        val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("your.paye.income.tax.overview"))
       }
 
       "cy plus one data is not available and cy plus one is enabled" in {
         val testController = createTestController(isCyPlusOneEnabled = true)
 
-        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
+        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiNotFoundResponse("Not found")
         ))
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         val doc = Jsoup.parse(contentAsString(result))
@@ -378,8 +386,8 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "cy plus one data is available and cy plus one is disabled" in {
         val testController = createTestController(isCyPlusOneEnabled = false)
 
-        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -393,8 +401,8 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       "cy plus one data is not available and cy plus one is disabled" in {
         val testController = createTestController(isCyPlusOneEnabled = false)
 
-        when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+        when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         val doc = Jsoup.parse(contentAsString(result))
@@ -410,40 +418,40 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     "landed to the page and get TaiSuccessResponseWithPayload" in {
       val testController = createTestController()
 
-      when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+      when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
-      when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
       val result = Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
 
       result.header.status mustBe OK
 
-      verify(testController.auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
+      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
     }
     "landed to the page and get TaiSuccessResponse" in {
       val testController = createTestController()
 
-      when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+      when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.successful(TaiSuccessResponse))
-      when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
 
       val result = Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
 
       result.header.status mustBe OK
 
-      verify(testController.auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
+      verify(auditService, times(1)).sendUserEntryAuditEvent(any(), any(), any(), any())(any())
     }
     "landed to the page and get failure from taxCodeIncomes" in {
       val testController = createTestController()
       val hasTaxCodeChanged = HasTaxCodeChanged(false, Some(TaxCodeMismatchFactory.matchedTaxCode))
 
-      when(testController.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-      when(testController.taxAccountService.taxCodeIncomes(any(), any())(any())).
+      when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.failed(new BadRequestException("bad request")))
-      when(testController.taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
+      when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
 
       val result = Await.result(testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
@@ -465,7 +473,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
     "supply an empty list in the event of a downstream failure" in {
       implicit val hc = HeaderCarrier()
       val testController = createTestController()
-      when(testController.employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
+      when(employmentService.employments(any(), Matchers.eq(TaxYear().prev))(any()))
         .thenReturn(Future.failed((new NotFoundException("no data found"))))
       val employments = Await.result(testController.previousYearEmployments(nino), 5 seconds)
       employments mustBe Nil
@@ -484,19 +492,28 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
 
   private def createTestController(isCyPlusOneEnabled: Boolean = true) = new WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled)
 
-  class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true) extends WhatDoYouWantToDoController {
-    override val personService: PersonService = mock[PersonService]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override val employmentService: EmploymentService = mock[EmploymentService]
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override val auditConnector: AuditConnector = mock[AuditConnector]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override val auditService: AuditService = mock[AuditService]
-    override val trackingService: TrackingService = mock[TrackingService]
+  val personService: PersonService = mock[PersonService]
+  val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
+  val trackingService = mock[TrackingService]
+  val auditService = mock[AuditService]
+  val employmentService = mock[EmploymentService]
+  val taxAccountService = mock[TaxAccountService]
+
+  class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true) extends WhatDoYouWantToDoController(
+    personService,
+    employmentService,
+    taxCodeChangeService,
+    taxAccountService,
+    trackingService,
+    auditService,
+    mock[AuditConnector],
+    mock[AuthConnector],
+    mock[DelegationConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
+
     override val cyPlusOneEnabled: Boolean = isCyPlusOneEnabled
-    override val taxAccountService: TaxAccountService = mock[TaxAccountService]
-    override val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
 
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
@@ -509,4 +526,5 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec with FakeTaiPlayApplicati
       Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary))
     )
   }
+
 }
