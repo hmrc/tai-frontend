@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.connectors.SessionConnector
 
 import scala.concurrent.Future
 
-class SessionService @Inject() (val sessionConnector: SessionConnector) {
+class SessionService @Inject() (sessionConnector: SessionConnector) {
 
   def invalidateCache()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     sessionConnector.invalidateCache()

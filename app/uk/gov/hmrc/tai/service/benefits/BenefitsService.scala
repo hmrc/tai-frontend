@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, EndedCompanyBenefit}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class BenefitsService  @Inject() (val benefitsConnector: BenefitsConnector) {
+class BenefitsService  @Inject() (benefitsConnector: BenefitsConnector) {
 
   def benefits(nino: Nino, taxYear: Int)(implicit hc: HeaderCarrier): Future[Benefits] = {
     benefitsConnector.benefits(nino, taxYear)
