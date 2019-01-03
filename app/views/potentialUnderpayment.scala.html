@@ -22,6 +22,7 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
 @(viewModel:uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -56,7 +57,7 @@
     user = Some(user),
     pageHeader = Some(header),
     gaCallsAdditionalJs = Some(gaCallsAdditionalJs),
-    gaDimensions = viewModel.gaDimensions,
+    gaSettings = GoogleAnalyticsSettings(gaDimensions = viewModel.gaDimensions),
     gaCustomTitle = None
 ){
     <div class="grid-row">
