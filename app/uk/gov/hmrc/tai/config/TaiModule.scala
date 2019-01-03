@@ -40,7 +40,6 @@ class TaiModule extends Module {
     bind[SessionConnector].toInstance(SessionConnector),
     bind[UserDetailsConnector].toInstance(UserDetailsConnector),
     bind[TaiConnector].toInstance(TaiConnector),
-    bind[TaxAccountConnector].toInstance(TaxAccountConnector),
     bind[TaxCodeChangeConnector].toInstance(TaxCodeChangeConnector),
     bind[TrackingConnector].toInstance(TrackingConnector),
     // Journey Cache Services
