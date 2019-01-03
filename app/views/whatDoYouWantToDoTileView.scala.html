@@ -50,10 +50,10 @@
     user = Some(user),
     gaCustomTitle = None,
     gaSettings = GoogleAnalyticsSettings(
-                                            gaCustomClientIdRequired = true,
-                                            gaCustomSessionIdRequired = true,
-                                            gaCustomHitStampRequired = true,
-                                            gaDimensions = Some(model.gaDimensions)
+                                            customClientIdRequired = true,
+                                            customSessionIdRequired = true,
+                                            customHitStampRequired = true,
+                                            dimensions = Some(model.gaDimensions)
                                         ),
     optimizelyAudience = optimizelyAudience
 ) {

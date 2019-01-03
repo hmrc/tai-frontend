@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-case class GoogleAnalyticsSettings(gaDimensions: Option[Map[String, String]] = None,
-                                   gaCustomClientIdRequired: Boolean = false,
-                                   gaCustomSessionIdRequired: Boolean = false,
-                                   gaCustomHitStampRequired: Boolean = false)
+case class GoogleAnalyticsSettings(dimensions: Option[Map[String, String]] = None,
+                                   customClientIdRequired: Boolean = false,
+                                   customSessionIdRequired: Boolean = false,
+                                   customHitStampRequired: Boolean = false)

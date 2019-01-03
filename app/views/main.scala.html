@@ -116,7 +116,7 @@
         "authProvider" -> authProvider
 
 
-    ) ++ gaSettings.gaDimensions.getOrElse(Map.empty)
+    ) ++ gaSettings.dimensions.getOrElse(Map.empty)
 }
 
 @gaCustomEvent = @{
@@ -126,9 +126,9 @@
     }
 
     val customTitle = gaCustomTitle.map(gaTitle => s"""ga('set', 'title', "${gaTitle} ${serviceSuffix}");""").getOrElse("")
-    val clientId = createGoogleAnalyticJavaScript(gaSettings.gaCustomClientIdRequired, s"""ga(function (tracker) { if (tracker) { ga('set', 'dimension66', tracker.get('clientId')); } });""")
-    val sessionId = createGoogleAnalyticJavaScript(gaSettings.gaCustomSessionIdRequired, s"""ga('set', 'dimension67', new Date().getTime() + '.' + Math.random().toString(36).substring(5));""")
-    val hitTimeStamp = createGoogleAnalyticJavaScript(gaSettings.gaCustomHitStampRequired, s"""ga('set', 'dimension68', new Date().toUTCString());""")
+    val clientId = createGoogleAnalyticJavaScript(gaSettings.customClientIdRequired, s"""ga(function (tracker) { if (tracker) { ga('set', 'dimension66', tracker.get('clientId')); } });""")
+    val sessionId = createGoogleAnalyticJavaScript(gaSettings.customSessionIdRequired, s"""ga('set', 'dimension67', new Date().getTime() + '.' + Math.random().toString(36).substring(5));""")
+    val hitTimeStamp = createGoogleAnalyticJavaScript(gaSettings.customHitStampRequired, s"""ga('set', 'dimension68', new Date().toUTCString());""")
 
     val combinedCustomDimensions = s"$customTitle $clientId $sessionId $hitTimeStamp"
 
