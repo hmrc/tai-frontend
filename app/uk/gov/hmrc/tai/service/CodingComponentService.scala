@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CodingComponentService @Inject()(val taxAccountConnector: TaxAccountConnector) {
+class CodingComponentService @Inject()(taxAccountConnector: TaxAccountConnector) {
 
   def taxFreeAmountComponents(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[CodingComponent]] = {
     taxAccountConnector.codingComponents(nino, year) map {
