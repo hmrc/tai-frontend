@@ -37,8 +37,6 @@ class TaiModule extends Module {
     bind[AuthConnector].toInstance(FrontendAuthConnector),
     bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
     bind[HttpHandler].toInstance(HttpHandler),
-    bind[PensionProviderConnector].toInstance(PensionProviderConnector),
-    bind[PersonConnector].toInstance(PersonConnector),
     bind[SessionConnector].toInstance(SessionConnector),
     bind[UserDetailsConnector].toInstance(UserDetailsConnector),
     bind[TaiConnector].toInstance(TaiConnector),
