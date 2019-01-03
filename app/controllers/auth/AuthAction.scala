@@ -32,9 +32,9 @@ import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class AuthenticatedRequest[A](request: Request[A], taiUser: TaiUserA) extends WrappedRequest[A](request)
+case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthActionedTaiUser) extends WrappedRequest[A](request)
 
-case class TaiUserA(name: String, rnino: String, utr: String) {
+case class AuthActionedTaiUser(name: String, rnino: String, utr: String) {
   def getDisplayName = name
   def getNino = rnino
   def getUTR = utr
@@ -55,8 +55,8 @@ class AuthActionImpl @Inject()(personService: PersonService,
           for {
             person <- personService.personDetails(Nino(nino))
             // TODO see if person is alive here
-            taiUserA <- getTaiUser(nino, "", person)
-            result <- block(AuthenticatedRequest(request, taiUserA))
+            taiUser <- getTaiUser(nino, "", person)
+            result <- block(AuthenticatedRequest(request, taiUser))
           } yield {
             result
           }
@@ -71,9 +71,9 @@ class AuthActionImpl @Inject()(personService: PersonService,
 
   }
 
-  def getTaiUser(nino: String, saUTR: String, person: Person): Future[TaiUserA] = {
+  def getTaiUser(nino: String, saUTR: String, person: Person): Future[AuthActionedTaiUser] = {
     val name = person.firstName + " " + person.surname
-    Future.successful(TaiUserA(name, nino, saUTR))
+    Future.successful(AuthActionedTaiUser(name, nino, saUTR))
   }
 }
 

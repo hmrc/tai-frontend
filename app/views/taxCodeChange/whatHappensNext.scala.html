@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.urls.Link
 
 
-@(user: controllers.auth.TaiUserA)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(user: controllers.auth.AuthActionedTaiUser)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"What happens next"}
 
@@ -35,7 +35,7 @@
     title = Messages("taxCode.change.whatHappensNext.title"),
     articleClasses = Some("full-width"),
     pageHeader = Some(header),
-    userA = Some(user),
+    authActionedTaiUser = Some(user),
     gaCustomTitle = None
 ){
 

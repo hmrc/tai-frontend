@@ -17,7 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import controllers.auth.{AuthAction, AuthenticatedRequest, TaiUserA}
+import controllers.auth.{AuthAction, AuthenticatedRequest, AuthActionedTaiUser}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -44,7 +44,7 @@ import scala.util.Random
 
 object FakeAuthAction extends AuthAction {
   override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[Result]): Future[Result] =
-    block(AuthenticatedRequest(request, TaiUserA("person name", "AN986715A", "utr")))
+    block(AuthenticatedRequest(request, AuthActionedTaiUser("person name", "AN986715A", "utr")))
 }
 
 class TaxCodeChangeControllerSpec extends PlaySpec

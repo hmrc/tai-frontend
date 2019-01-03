@@ -16,7 +16,7 @@
 
 package views.html.taxCodeChange
 
-import controllers.auth.TaiUserA
+import controllers.auth.AuthActionedTaiUser
 import controllers.routes
 import org.joda.time.LocalDate
 import org.scalatest.mock.MockitoSugar
@@ -211,7 +211,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec with MockitoSugar {
 
   val defaultViewModel: YourTaxFreeAmountViewModel = createViewModel()
 
-  def createView(viewModel: YourTaxFreeAmountViewModel = defaultViewModel) = views.html.taxCodeChange.yourTaxFreeAmount(viewModel, mock[TaiUserA])
+  def createView(viewModel: YourTaxFreeAmountViewModel = defaultViewModel) = views.html.taxCodeChange.yourTaxFreeAmount(viewModel, mock[AuthActionedTaiUser])
 
   override def view = createView()
 }

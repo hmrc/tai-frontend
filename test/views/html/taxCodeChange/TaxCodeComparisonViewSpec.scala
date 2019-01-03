@@ -16,7 +16,7 @@
 
 package views.html.taxCodeChange
 
-import controllers.auth.TaiUserA
+import controllers.auth.AuthActionedTaiUser
 import controllers.routes
 import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
@@ -35,7 +35,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec  with MockitoSugar {
   val taxCodeRecord3 = taxCodeRecord1.copy(taxCode = "BR", startDate = startDate.plusDays(3), endDate = TaxYearResolver.endOfCurrentTaxYear, pensionIndicator = false, payrollNumber = Some("Payroll Number"))
   val taxCodeChange: TaxCodeChange = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
   val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
-  override def view = views.html.taxCodeChange.taxCodeComparison(viewModel, mock[TaiUserA])
+  override def view = views.html.taxCodeChange.taxCodeComparison(viewModel, mock[AuthActionedTaiUser])
 
   def testTaxCodeRecordFormat(record: TaxCodeRecord) = {
     doc(view) must haveHeadingH3WithText(record.employerName)

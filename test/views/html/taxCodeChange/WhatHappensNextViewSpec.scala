@@ -16,7 +16,7 @@
 
 package views.html.taxCodeChange
 
-import controllers.auth.TaiUserA
+import controllers.auth.AuthActionedTaiUser
 import controllers.routes
 import org.scalatest.mock.MockitoSugar
 import play.twirl.api.Html
@@ -25,7 +25,7 @@ import uk.gov.hmrc.urls.Link
 
 class WhatHappensNextViewSpec extends TaiViewSpec with MockitoSugar {
 
-  override def view = views.html.taxCodeChange.whatHappensNext(mock[TaiUserA])
+  override def view = views.html.taxCodeChange.whatHappensNext(mock[AuthActionedTaiUser])
 
   "what happens next" should {
     behave like pageWithTitle(messages("taxCode.change.whatHappensNext.title"))
