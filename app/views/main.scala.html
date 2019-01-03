@@ -83,6 +83,20 @@
     }
 }
 
+@actingAttorneyBanner = @{
+    user.fold(HtmlFormat.empty) {
+        authContext =>
+            authContext.authContext.attorney.fold(HtmlFormat.empty) {
+                _ => layouts.attorney_banner(
+                authContext.authContext.principal.name,
+                authContext.authContext.attorney.get.returnLink.url,
+                standAlone,
+                Some(Messages("attorney.banner.link"))
+            )
+        }
+    }
+}
+
 @mainContentHeader = {
     @pageHeader.getOrElse(Html(""))
 }
@@ -100,9 +114,8 @@
     Map[String, Any](
         "trackingId" -> ApplicationConfig.analyticsToken,
         "cookieDomain" -> ApplicationConfig.analyticsHost,
-        "confidenceLevel" -> true,
+        "confidenceLevel" -> user.map(_.authContext.user.confidenceLevel.toString).getOrElse(false),
         "authProvider" -> authProvider
-
 
     ) ++ gaSettings.dimensions.getOrElse(Map.empty)
 }
