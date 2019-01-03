@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 case class AuthenticatedRequest[A](request: Request[A], taiUser: TaiUserA) extends WrappedRequest[A](request)
 
-case class TaiUserA(name: String, rnino: String, utr: String, person: Person) {
+case class TaiUserA(name: String, rnino: String, utr: String) {
   def getDisplayName = name
   def getNino = rnino
   def getUTR = utr
@@ -54,6 +54,7 @@ class AuthActionImpl @Inject()(personService: PersonService,
         case Some(nino) => {
           for {
             person <- personService.personDetails(Nino(nino))
+            // TODO see if person is alive here
             taiUserA <- getTaiUser(nino, "", person)
             result <- block(AuthenticatedRequest(request, taiUserA))
           } yield {
@@ -72,7 +73,7 @@ class AuthActionImpl @Inject()(personService: PersonService,
 
   def getTaiUser(nino: String, saUTR: String, person: Person): Future[TaiUserA] = {
     val name = person.firstName + " " + person.surname
-    Future.successful(TaiUserA(name, nino, saUTR, person))
+    Future.successful(TaiUserA(name, nino, saUTR))
   }
 }
 

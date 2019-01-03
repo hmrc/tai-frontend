@@ -16,18 +16,19 @@
 
 package views.html.taxCodeChange
 
+import controllers.auth.TaiUserA
 import controllers.routes
 import org.joda.time.LocalDate
+import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.tai.util.ViewModelHelper
-import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryRowViewModel, TaxFreeAmountSummaryViewModel}
+import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
+import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryRowViewModel, TaxFreeAmountSummaryViewModel}
+import uk.gov.hmrc.time.TaxYearResolver
 
-class YourTaxFreeAmountViewSpec extends TaiViewSpec {
+class YourTaxFreeAmountViewSpec extends TaiViewSpec with MockitoSugar {
 
   "your tax free amount" should {
     behave like pageWithBackLink
@@ -210,7 +211,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
   val defaultViewModel: YourTaxFreeAmountViewModel = createViewModel()
 
-  def createView(viewModel: YourTaxFreeAmountViewModel = defaultViewModel) = views.html.taxCodeChange.yourTaxFreeAmount(viewModel)
+  def createView(viewModel: YourTaxFreeAmountViewModel = defaultViewModel) = views.html.taxCodeChange.yourTaxFreeAmount(viewModel, mock[TaiUserA])
 
   override def view = createView()
 }

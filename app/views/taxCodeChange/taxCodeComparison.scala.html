@@ -25,7 +25,7 @@
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
-@(taxCodeChangeViewModel: TaxCodeChangeViewModel, user: controllers.auth.TaiUser)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(taxCodeChangeViewModel: TaxCodeChangeViewModel, user: controllers.auth.TaiUserA)(implicit request: Request[_], messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax code change"}
 @gaEventLabelString = @{Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}
@@ -43,7 +43,7 @@
 @main(
     title = Messages("taxCode.change.journey.preHeading"),
     pageHeader = Some(header),
-    user = Some(user),
+    userA = Some(user),
     gaCustomTitle = None,
     gaSettings = GoogleAnalyticsSettings(dimensions = Some(taxCodeChangeViewModel.gaDimensions))) {
 

@@ -16,8 +16,9 @@
 
 package views.html.taxCodeChange
 
+import controllers.auth.TaiUserA
 import controllers.routes
-import org.fluentlenium.core.filter.matcher.ContainsWordMatcher
+import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
@@ -26,7 +27,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
-class TaxCodeComparisonViewSpec extends TaiViewSpec {
+class TaxCodeComparisonViewSpec extends TaiViewSpec  with MockitoSugar {
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
   val taxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation, "Employer 1", true, Some("1234"), true)
@@ -34,8 +35,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
   val taxCodeRecord3 = taxCodeRecord1.copy(taxCode = "BR", startDate = startDate.plusDays(3), endDate = TaxYearResolver.endOfCurrentTaxYear, pensionIndicator = false, payrollNumber = Some("Payroll Number"))
   val taxCodeChange: TaxCodeChange = TaxCodeChange(Seq(taxCodeRecord1, taxCodeRecord3), Seq(taxCodeRecord2, taxCodeRecord3))
   val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
-
-  override def view = views.html.taxCodeChange.taxCodeComparison(viewModel)
+  override def view = views.html.taxCodeChange.taxCodeComparison(viewModel, mock[TaiUserA])
 
   def testTaxCodeRecordFormat(record: TaxCodeRecord) = {
     doc(view) must haveHeadingH3WithText(record.employerName)

@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
+import controllers.auth.{AuthAction, AuthenticatedRequest, TaiUserA}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -25,12 +26,11 @@ import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Request, Result}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
@@ -42,6 +42,10 @@ import uk.gov.hmrc.time.TaxYearResolver
 import scala.concurrent.Future
 import scala.util.Random
 
+object FakeAuthAction extends AuthAction {
+  override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[Result]): Future[Result] =
+    block(AuthenticatedRequest(request, TaiUserA("person name", "AN986715A", "utr")))
+}
 
 class TaxCodeChangeControllerSpec extends PlaySpec
   with MockitoSugar
@@ -163,9 +167,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     companyCarService,
     taxCodeChangeService,
     taxAccountService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
@@ -175,7 +177,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
     when(taxCodeChangeService.latestTaxCodeChangeDate(generateNino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
   }
