@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvide
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class PensionProviderService @Inject() (val pensionProviderConnector: PensionProviderConnector) {
+class PensionProviderService @Inject() (pensionProviderConnector: PensionProviderConnector) {
 
   def addPensionProvider(nino: Nino, pensionProvider: AddPensionProvider)(implicit hc:HeaderCarrier): Future[String] = {
     pensionProviderConnector.addPensionProvider(nino, pensionProvider) map {
