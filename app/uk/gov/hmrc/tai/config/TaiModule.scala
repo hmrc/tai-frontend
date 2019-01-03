@@ -37,10 +37,8 @@ class TaiModule extends Module {
     bind[AuthConnector].toInstance(FrontendAuthConnector),
     bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
     bind[HttpHandler].toInstance(HttpHandler),
-    bind[SessionConnector].toInstance(SessionConnector),
     bind[UserDetailsConnector].toInstance(UserDetailsConnector),
     bind[TaiConnector].toInstance(TaiConnector),
-    bind[TaxAccountConnector].toInstance(TaxAccountConnector),
     bind[TrackingConnector].toInstance(TrackingConnector),
     // Journey Cache Services
     bind[JourneyCacheService].qualifiedWith("Add Employment").to(classOf[AddEmploymentJourneyCacheService]),
