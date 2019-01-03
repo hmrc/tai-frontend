@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
     "fetch the company car details" when {
       "provided with valid nino" in {
         val sut = createSUT
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(benefitsJson))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(benefitsJson))
 
         val result = sut.benefits(generateNino, 2018)
         Await.result(result, 5 seconds) mustBe benefits
@@ -53,7 +53,7 @@ class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
       "benefit type is invalid" in {
         val sut = createSUT
         val nino = generateNino
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(invalidBenefitsJson))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(invalidBenefitsJson))
 
         val ex = the[RuntimeException] thrownBy Await.result(sut.benefits(nino, 2018), 5 seconds)
         ex.getMessage must include(s"Couldn't retrieve benefits for nino: $nino")
@@ -69,7 +69,7 @@ class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
       val nino = generateNino
       val endedCompanyBenefit = EndedCompanyBenefit("Accommodation",Messages("tai.noLongerGetBenefit"),"Before 6th April",Some("1000000"),"Yes",Some("0123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
-      when(sut.httpHandler.postToApi(Matchers.eq(s"${sut.serviceUrl}/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"), Matchers.eq(endedCompanyBenefit))
+      when(httpHandler.postToApi(Matchers.eq(s"${sut.serviceUrl}/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"), Matchers.eq(endedCompanyBenefit))
       (any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.endedCompanyBenefit(nino, employmentId, endedCompanyBenefit), 5.seconds)
@@ -138,10 +138,11 @@ class BenefitsConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
   def generateNino: Nino = new Generator(new Random).nextNino
 
   private def createSUT = new SUT
+  
+  val httpHandler = mock[HttpHandler]
 
-  private class SUT extends BenefitsConnector {
+  private class SUT extends BenefitsConnector (httpHandler) {
     override val serviceUrl: String = "mockUrl"
-    override val httpHandler: HttpHandler = mock[HttpHandler]
   }
 
 }

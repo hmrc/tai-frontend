@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,11 @@ import builders.{AuthBuilder, RequestBuilder}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -33,20 +32,25 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
+import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity, TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentsWithCarBenefits, TaxFreeInfo, YourTaxFreeAmount}
-import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
-import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 import uk.gov.hmrc.time.TaxYearResolver
-import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
 import scala.util.Random
+import org.mockito.Matchers
+import org.mockito.Mockito.{times, verify, when}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentsWithCarBenefits, TaxFreeInfo, YourTaxFreeAmount}
+import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
+import uk.gov.hmrc.urls.Link
 
 
 class TaxCodeChangeControllerSpec extends PlaySpec
@@ -105,15 +109,14 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         val employmentMap = Map.empty[Int, String]
         val companyCar = Seq.empty[CompanyCarBenefit]
 
-        when(SUT.codingComponentService.taxFreeAmountComparison(Matchers.eq(nino))(any())).thenReturn(Future.successful(taxFreeAmountComparison))
-
-        when(SUT.companyCarService.companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(previousCodingComponents))(any()))
+        when(codingComponentService.taxFreeAmountComparison(Matchers.eq(nino))(any())).thenReturn(Future.successful(taxFreeAmountComparison))
+        when(companyCarService.companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(previousCodingComponents))(any()))
           .thenReturn(Future.successful(companyCar))
-        when(SUT.companyCarService.companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(currentCodingComponents))(any()))
+        when(companyCarService.companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(currentCodingComponents))(any()))
           .thenReturn(Future.successful(companyCar))
 
-        when(SUT.employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(employmentMap))
-        when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+        when(employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(employmentMap))
+        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
@@ -121,8 +124,8 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         status(result) mustBe OK
 
-        verify(SUT.companyCarService, times(1)).companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(currentCodingComponents))(any())
-        verify(SUT.companyCarService, times(1)).companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(previousCodingComponents))(any())
+        verify(companyCarService, times(1)).companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(currentCodingComponents))(any())
+        verify(companyCarService, times(1)).companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(previousCodingComponents))(any())
       }
     }
 
@@ -147,8 +150,8 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
         val scottishRates = Map.empty[String, BigDecimal]
 
-        when(SUT.taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
-        when(SUT.taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(scottishRates))
+        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+        when(taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map[String, BigDecimal]()))
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
@@ -210,14 +213,18 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
   val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
+  val codingComponentService = mock[CodingComponentService]
+  val companyCarService = mock[CompanyCarService]
+  val employmentService = mock[EmploymentService]
+  val taxAccountService = mock[TaxAccountService]
 
   private class SUT(taxCodeChangeJourneyEnabled: Boolean, comparisonEnabled: Boolean) extends TaxCodeChangeController(
     personService,
-    mock[CodingComponentService],
-    mock[EmploymentService],
-    mock[CompanyCarService],
+    codingComponentService,
+    employmentService,
+    companyCarService,
     taxCodeChangeService,
-    mock[TaxAccountService],
+    taxAccountService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],

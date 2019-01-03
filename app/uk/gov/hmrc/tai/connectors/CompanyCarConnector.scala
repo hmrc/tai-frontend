@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import uk.gov.hmrc.tai.connectors.EmploymentsConnector.baseUrl
+import com.google.inject.Inject
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
@@ -25,13 +25,13 @@ import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCarBenefit, WithdrawCarAndF
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.util.control.NonFatal
 
-trait CompanyCarConnector {
+class CompanyCarConnector @Inject() (val httpHandler: HttpHandler) extends ServicesConfig {
 
-  val serviceUrl: String
-  def httpHandler: HttpHandler
+  val serviceUrl: String = baseUrl("tai")
 
   def companyCarEmploymentUrl(nino: Nino, empId: Int): String = s"$serviceUrl/tai/$nino/tax-account/tax-components/employments/$empId/benefits/company-car"
   def companyCarUrl(nino: Nino): String = s"$serviceUrl/tai/$nino/tax-account/tax-components/benefits/company-cars"
@@ -67,9 +67,3 @@ trait CompanyCarConnector {
   }
 
 }
-// $COVERAGE-OFF$
-object CompanyCarConnector extends CompanyCarConnector {
-  override lazy val serviceUrl = baseUrl("tai")
-  override def httpHandler: HttpHandler = HttpHandler
-}
-// $COVERAGE-ON$

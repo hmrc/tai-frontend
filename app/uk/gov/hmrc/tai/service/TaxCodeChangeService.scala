@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import com.google.inject.Inject
 import org.joda.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,9 +28,7 @@ import uk.gov.hmrc.tai.model.domain.{HasTaxCodeChanged, TaxCodeChange, TaxCodeMi
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait TaxCodeChangeService {
-
-  def taxCodeChangeConnector: TaxCodeChangeConnector
+class TaxCodeChangeService @Inject() (val taxCodeChangeConnector: TaxCodeChangeConnector) {
 
   def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] = {
 
@@ -87,8 +86,4 @@ trait TaxCodeChangeService {
       case _ => throw new RuntimeException("Could not fetch tax code change")
     }
   }
-}
-
-object TaxCodeChangeService extends TaxCodeChangeService {
-  override val taxCodeChangeConnector: TaxCodeChangeConnector = TaxCodeChangeConnector
 }

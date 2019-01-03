@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,13 +42,12 @@ import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 
-//noinspection ScalaStyle
-class WhatDoYouWantToDoController @Inject()(val personService: PersonService,
-                                            val employmentService: EmploymentService,
-                                            val taxCodeChangeService: TaxCodeChangeService,
-                                            val taxAccountService: TaxAccountService,
-                                            val trackingService: TrackingService,
-                                            val auditService: AuditService,
+class WhatDoYouWantToDoController @Inject()(personService: PersonService,
+                                            employmentService: EmploymentService,
+                                            taxCodeChangeService: TaxCodeChangeService,
+                                            taxAccountService: TaxAccountService,
+                                            trackingService: TrackingService,
+                                            auditService: AuditService,
                                             val auditConnector: AuditConnector,
                                             val authConnector: AuthConnector,
                                             val delegationConnector: DelegationConnector,

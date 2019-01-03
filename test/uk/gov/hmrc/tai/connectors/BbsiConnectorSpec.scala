@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,10 @@ package uk.gov.hmrc.tai.connectors
 
 import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
-import org.mockito.Matchers
+import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json._
@@ -33,7 +34,15 @@ import uk.gov.hmrc.tai.model.{AmountRequest, CloseAccountRequest}
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with ServicesConfig {
+class BbsiConnectorSpec extends PlaySpec
+  with MockitoSugar
+  with FakeTaiPlayApplication
+  with ServicesConfig
+  with BeforeAndAfterEach {
+
+  override def beforeEach: Unit = {
+    Mockito.reset(httpHandler)
+  }
 
   "BbsiConnector" should {
 
@@ -43,7 +52,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
 
         val sut = createSut("http://")
 
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(
           jsonBbsiDetails(Json.arr())
         ))
 
@@ -51,7 +60,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
 
         result mustBe Nil
 
-        verify(sut.httpHandler, times(1)).getFromApi(
+        verify(httpHandler, times(1)).getFromApi(
           Matchers.eq(s"http:///tai/$nino/tax-account/income/savings-investments/untaxed-interest/bank-accounts")
         )(any())
       }
@@ -63,7 +72,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
 
         val sut = createSut("http://")
 
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(
           jsonBbsiDetails(jsonSingleBankAccounts))
         )
 
@@ -71,7 +80,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
 
         result mustBe Seq(bankAccount1)
 
-        verify(sut.httpHandler, times(1)).getFromApi(
+        verify(httpHandler, times(1)).getFromApi(
           Matchers.eq(s"http:///tai/$nino/tax-account/income/savings-investments/untaxed-interest/bank-accounts")
         )(any())
       }
@@ -80,7 +89,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
 
         val sut = createSut("http://")
 
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(
           jsonBbsiDetails(jsonMultipleBankAccounts))
         )
 
@@ -88,7 +97,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
 
         result mustBe Seq(bankAccount1, bankAccount2)
 
-        verify(sut.httpHandler, times(1)).getFromApi(
+        verify(httpHandler, times(1)).getFromApi(
           Matchers.eq(s"http:///tai/$nino/tax-account/income/savings-investments/untaxed-interest/bank-accounts")
         )(any())
       }
@@ -100,13 +109,13 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
       "api returns untaxed interest json" in {
         val sut = createSut("http://")
 
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(jsonApiResponse(jsonUntaxedInterest)))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(jsonApiResponse(jsonUntaxedInterest)))
 
         val result = Await.result(sut.untaxedInterest(nino), 5.seconds)
 
         result mustBe Some(untaxedInterest)
 
-        verify(sut.httpHandler, times(1)).getFromApi(
+        verify(httpHandler, times(1)).getFromApi(
           Matchers.eq(s"http:///tai/$nino/tax-account/income/savings-investments/untaxed-interest")
         )(any())
       }
@@ -117,13 +126,13 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
       "api does not return untaxed interest" in {
         val sut = createSut("http://")
 
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(jsonApiResponse(Json.obj())))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(jsonApiResponse(Json.obj())))
 
         val result = Await.result(sut.untaxedInterest(nino), 5.seconds)
 
         result mustBe None
 
-        verify(sut.httpHandler, times(1)).getFromApi(
+        verify(httpHandler, times(1)).getFromApi(
           Matchers.eq(s"http:///tai/$nino/tax-account/income/savings-investments/untaxed-interest")
         )(any())
       }
@@ -136,7 +145,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
 
         val sut = createSut()
 
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(
           Json.obj("" -> "")
         ))
 
@@ -149,7 +158,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
 
         val sut = createSut()
 
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new NotFoundException("")))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new NotFoundException("")))
 
         val result = Await.result(sut.bankAccounts(nino), 5.seconds)
 
@@ -163,7 +172,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
       "a valid id is passed" in {
         val sut = createSut()
 
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(
           bankAccountJsonResponse))
 
         val result = Await.result(sut.bankAccount(nino, 1), 5.seconds)
@@ -177,7 +186,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
       "an invalid id is passed" in {
         val sut = createSut()
 
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new RuntimeException))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new RuntimeException))
 
         val result = Await.result(sut.bankAccount(nino, 1), 5.seconds)
 
@@ -187,7 +196,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
       "an unknown json object is returned" in {
         val sut = createSut()
 
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(JsString("Foo")))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(JsString("Foo")))
 
         val result = Await.result(sut.bankAccount(nino, 1), 5.seconds)
 
@@ -206,7 +215,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
 
         val json = Json.obj("data"-> "123-456-789")
 
-        when(sut.httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        when(httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
         val result = Await.result(sut.closeBankAccount(nino, 1, CloseAccountRequest(new LocalDate(2017, 8, 8), None)), 5.seconds)
 
@@ -221,7 +230,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
 
         val json = Json.obj("test"-> "123-456-789")
 
-        when(sut.httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        when(httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
         val result = Await.result(sut.closeBankAccount(nino, 1, CloseAccountRequest(new LocalDate(2017, 8, 8), None)), 5.seconds)
 
@@ -234,7 +243,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
     "return envelope id" in {
       val sut = createSut()
       val json = Json.obj("data"-> "123-456-789")
-      when(sut.httpHandler.deleteFromApi(any())(any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+      when(httpHandler.deleteFromApi(any())(any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.removeBankAccount(nino, 1), 5.seconds)
 
@@ -245,7 +254,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
       "json is  invalid" in {
         val sut = createSut()
         val json = Json.obj("test"-> "123-456-789")
-        when(sut.httpHandler.deleteFromApi(any())(any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        when(httpHandler.deleteFromApi(any())(any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
         val result = Await.result(sut.removeBankAccount(nino, 1), 5.seconds)
 
@@ -258,7 +267,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
     "return envelope id" in {
       val sut = createSut()
       val json = Json.obj("data"-> "123-456-789")
-      when(sut.httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+      when(httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.updateBankAccountInterest(nino, 1, amountRequest), 5.seconds)
 
@@ -269,7 +278,7 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
       "json is  invalid" in {
         val sut = createSut()
         val json = Json.obj("test"-> "123-456-789")
-        when(sut.httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
+        when(httpHandler.putToApi(any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
         val result = Await.result(sut.updateBankAccountInterest(nino, 1, amountRequest), 5.seconds)
 
@@ -319,10 +328,10 @@ class BbsiConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayAppli
   private val jsonUntaxedInterest = Json.toJson(untaxedInterest)
 
   def createSut(servUrl: String = "")  = new SUT(servUrl)
+  
+  val httpHandler = mock[HttpHandler]
 
-  class SUT(servUrl: String = "")  extends BbsiConnector {
-
+  class SUT(servUrl: String = "")  extends BbsiConnector (httpHandler) {
     override val serviceUrl: String = servUrl
-    override val httpHandler: HttpHandler = mock[HttpHandler]
   }
 }

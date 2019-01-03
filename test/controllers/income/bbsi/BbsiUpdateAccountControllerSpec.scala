@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,13 +28,14 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
-import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{BbsiService, PersonService}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -48,7 +49,7 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
       "valid details has been passed" in {
         val sut = createSut
 
-        when(sut.journeyCache.currentValue(any())(any())).thenReturn(Future.successful(None))
+        when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.captureInterest(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -62,7 +63,7 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
       "valid details has been passed and values have been previously cached" in {
         val sut = createSut
 
-        when(sut.journeyCache.currentValue(any())(any())).thenReturn(Future.successful(Some("10234")))
+        when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(Some("10234")))
 
         val result = sut.captureInterest(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -78,7 +79,7 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
       "details are invalid" in {
         val sut = createSut
 
-        when(sut.journeyCache.currentValue(any())(any())).thenReturn(Future.successful(None))
+        when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.captureInterest(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -91,7 +92,7 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
     "redirect to check your answers page" when {
       "form is valid" in {
         val sut = createSut
-        when(sut.journeyCache.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = sut.submitInterest(1)(RequestBuilder.buildFakeRequestWithAuth("POST").
           withFormUrlEncodedBody(("untaxedInterest", "100")))
@@ -115,7 +116,7 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
     "return Internal Server Error" when {
       "account doesn't exist" in {
         val sut = createSut
-        when(sut.journeyCache.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
 
         val result = sut.submitInterest(2)(RequestBuilder.buildFakeRequestWithAuth("POST").
           withFormUrlEncodedBody(("untaxedInterest", "100")))
@@ -129,7 +130,7 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
     "return OK" when {
       "details are valid" in {
         val sut = createSut
-        when(sut.journeyCache.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("1,000","TEST")))
+        when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("1,000", "TEST")))
 
         val result = sut.checkYourAnswers(1)(RequestBuilder.buildFakeInvalidRequestWithAuth("GET"))
 
@@ -141,16 +142,16 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
   "submit your answers" must {
     "redirect to confirmation page" in {
       val sut = createSut
-      when(sut.journeyCache.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("1,000","TEST")))
-      when(sut.bbsiService.updateBankAccountInterest(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
-      when(sut.journeyCache.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+      when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("1,000", "TEST")))
+      when(bbsiService.updateBankAccountInterest(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
+      when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
       val result = sut.submitYourAnswers(1)(RequestBuilder.buildFakeInvalidRequestWithAuth("POST"))
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe controllers.income.bbsi.routes.BbsiController.updateConfirmation().url
 
-      verify(sut.journeyCache, times(1)).flush()(any())
+      verify(journeyCacheService, times(1)).flush()(any())
     }
   }
 
@@ -158,15 +159,20 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
 
   private val nino = new Generator(new Random).nextNino
   private implicit val hc = HeaderCarrier()
+  val personService: PersonService = mock[PersonService]
+  val bbsiService = mock[BbsiService]
+  val journeyCacheService = mock[JourneyCacheService]
 
-  class SUT extends BbsiUpdateAccountController {
-    override val personService: PersonService = mock[PersonService]
-    override val bbsiService: BbsiService = mock[BbsiService]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = mock[FormPartialRetriever]
-    override protected val authConnector: AuthConnector = mock[AuthConnector]
-    override protected val delegationConnector: DelegationConnector = mock[DelegationConnector]
-    override val journeyCache: JourneyCacheService = mock[JourneyCacheService]
+  class SUT extends BbsiUpdateAccountController(
+    bbsiService,
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    journeyCacheService,
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
 
     val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
     when(authConnector.currentAuthority(any(), any())).thenReturn(ad)

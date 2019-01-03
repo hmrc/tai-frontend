@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     "fetch the company car details" when {
       "provided with valid nino" in {
         val sut = createSUT
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(companyCarForEmploymentJson))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(companyCarForEmploymentJson))
 
         val result = sut.companyCarBenefitForEmployment(generateNino, employmentId)
         Await.result(result, 5 seconds) mustBe Some(companyCar)
@@ -58,7 +58,7 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     "thrown exception" when {
       "tai sends an invalid json" in {
         val sut = createSUT
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(corruptJsonResponse))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(corruptJsonResponse))
 
         val ex = the[JsResultException] thrownBy Await.result(sut.companyCarBenefitForEmployment(generateNino, employmentId), 5 seconds)
         ex.getMessage must include("List(ValidationError(List(error.path.missing)")
@@ -77,7 +77,7 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       val withdrawCarAndFuel = WithdrawCarAndFuel(10, carWithdrawDate, fuelWithdrawDate)
       val url = s"${sut.companyCarEmploymentUrl(nino, employmentSeqNum)}/${carSeqNum}/withdrawn"
 
-      when(sut.httpHandler.putToApi(Matchers.eq(url), Matchers.eq(withdrawCarAndFuel))(any(), any(), any())).
+      when(httpHandler.putToApi(Matchers.eq(url), Matchers.eq(withdrawCarAndFuel))(any(), any(), any())).
         thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson("123456")))))
 
       val result = Await.result(sut.withdrawCompanyCarAndFuel(nino, employmentSeqNum, carSeqNum, withdrawCarAndFuel), 5 seconds)
@@ -90,7 +90,7 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     "return CompanyCarBenefit" when {
       "provided with valid nino" in {
         val sut = createSUT
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(companyCars))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(companyCars))
 
         val result = sut.companyCarsForCurrentYearEmployments(generateNino)
         Await.result(result, 5 seconds) mustBe Seq(companyCar)
@@ -100,7 +100,7 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     "return empty sequence of company car benefit" when {
       "company car service returns no car" in {
         val sut = createSUT
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(emptyCompanyCars))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(emptyCompanyCars))
 
         val result = sut.companyCarsForCurrentYearEmployments(generateNino)
         Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
@@ -108,7 +108,7 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
       "company car service returns a failure response" in {
         val sut = createSUT
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new HttpException("company car strange response", UNPROCESSABLE_ENTITY)))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new HttpException("company car strange response", UNPROCESSABLE_ENTITY)))
 
         val result = sut.companyCarsForCurrentYearEmployments(generateNino)
         Await.result(result, 5 seconds) mustBe Seq.empty[CompanyCarBenefit]
@@ -185,9 +185,10 @@ class CompanyCarConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
   private def createSUT = new SUT
 
-  private class SUT extends CompanyCarConnector {
+  val httpHandler: HttpHandler = mock[HttpHandler]
+
+  private class SUT extends CompanyCarConnector (httpHandler) {
     override val serviceUrl: String = "mockUrl"
-    override val httpHandler: HttpHandler = mock[HttpHandler]
   }
 
 }

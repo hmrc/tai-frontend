@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -29,7 +29,8 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.tai.config.WSHttpProxy
+import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.tai.config.{ApplicationConfig, WSHttpProxy}
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
@@ -37,9 +38,9 @@ import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import scala.concurrent.Future
 
 class HelpControllerSpec extends PlaySpec
-    with JsoupMatchers
-    with MockitoSugar
-    with OneServerPerSuite {
+  with JsoupMatchers
+  with MockitoSugar
+  with OneServerPerSuite {
 
   "show help page" must {
     "call getHelpPage() successfully with an authorized session" in {
@@ -54,7 +55,8 @@ class HelpControllerSpec extends PlaySpec
 
     "successfully receive valid eligibility status" in {
       val sut = createSut
-      val xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+      val xml =
+        """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
           <checkEligibility responseType="1"/>"""
       val response = HttpResponse(1, None, Map("a" -> List("1", "2", "3")), Some(xml.toString))
 
@@ -107,18 +109,21 @@ class HelpControllerSpec extends PlaySpec
 
   def createSut = new SUT
 
-  class SUT extends HelpController {
-    override val personService = mock[PersonService]
+  val personService: PersonService = mock[PersonService]
+  val mockWSHttpProxy: WSHttpProxy = mock[WSHttpProxy]
 
-    override val httpGet = mock[WSHttpProxy]
+  class SUT extends HelpController(
+    mock[ApplicationConfig],
+    mockWSHttpProxy,
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
+
     override val webChatURL = ""
-
-    override val auditConnector = mock[AuditConnector]
-    override val authConnector = mock[AuthConnector]
-    override val delegationConnector = mock[DelegationConnector]
-    
-    override implicit val templateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever = MockPartialRetriever
 
     val partialHttpGet: HttpGet = mock[HttpGet]
 
@@ -127,7 +132,7 @@ class HelpControllerSpec extends PlaySpec
     val fakePerson = Person(nino, "firstname", "surname", false, false)
 
     when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(
-      Some( AuthBuilder.createFakeAuthority(nino.nino))))
+      Some(AuthBuilder.createFakeAuthority(nino.nino))))
 
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson))
 

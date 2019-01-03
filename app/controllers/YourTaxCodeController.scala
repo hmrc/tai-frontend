@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,9 @@ import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYea
 
 import scala.concurrent.Future
 
-class YourTaxCodeController @Inject()(val personService: PersonService,
-                                      val taxAccountService: TaxAccountService,
-                                      val taxCodeChangeService: TaxCodeChangeService,
+class YourTaxCodeController @Inject()(personService: PersonService,
+                                      taxAccountService: TaxAccountService,
+                                      taxCodeChangeService: TaxCodeChangeService,
                                       val auditConnector: AuditConnector,
                                       val delegationConnector: DelegationConnector,
                                       val authConnector: AuthConnector,

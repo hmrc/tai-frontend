@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,28 @@
 
 package controllers.income.previousYears
 
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
-import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
+import controllers.{ServiceCheckLite, TaiBaseController}
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
 import uk.gov.hmrc.tai.forms.income.previousYears.{UpdateIncomeDetailsDecisionForm, UpdateIncomeDetailsForm}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
-import uk.gov.hmrc.tai.service.{AuditService, JourneyCacheService, PersonService, PreviousYearsIncomeService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{PersonService, PreviousYearsIncomeService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.income.previousYears.{UpdateHistoricIncomeDetailsViewModel, UpdateIncomeDetailsCheckYourAnswersViewModel}
@@ -42,19 +46,21 @@ import views.html.incomes.previousYears.CheckYourAnswers
 import scala.Function.tupled
 import scala.concurrent.Future
 
-trait UpdateIncomeDetailsController extends TaiBaseController
+class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: PreviousYearsIncomeService,
+                                              personService: PersonService,
+                                              val auditConnector: AuditConnector,
+                                              val delegationConnector: DelegationConnector,
+                                              val authConnector: AuthConnector,
+                                              @Named("Track Successful Journey") trackingJourneyCacheService: JourneyCacheService,
+                                              @Named("Update Previous Years Income") journeyCacheService: JourneyCacheService,
+                                              override implicit val partialRetriever: FormPartialRetriever,
+                                              override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
   with JourneyCacheConstants
   with AuditConstants
   with FormValuesConstants {
-
-  def personService: PersonService
-  def auditService: AuditService
-  def journeyCacheService: JourneyCacheService
-  def trackingJourneyCacheService: JourneyCacheService
-  def previousYearsIncomeService: PreviousYearsIncomeService
 
   def telephoneNumberViewModel(taxYear: Int)(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
     messages("tai.income.previousYears.journey.preHeader"),
@@ -81,7 +87,7 @@ trait UpdateIncomeDetailsController extends TaiBaseController
         implicit request =>
           UpdateIncomeDetailsDecisionForm.form.bindFromRequest.fold(
             formWithErrors => {
-              Future.successful(BadRequest(views.html.incomes.previousYears.UpdateIncomeDetailsDecision(formWithErrors,TaxYear().prev)))
+              Future.successful(BadRequest(views.html.incomes.previousYears.UpdateIncomeDetailsDecision(formWithErrors, TaxYear().prev)))
             },
             decision => {
               decision match {
@@ -112,8 +118,9 @@ trait UpdateIncomeDetailsController extends TaiBaseController
           UpdateIncomeDetailsForm.form.bindFromRequest.fold(
             formWithErrors => {
               journeyCacheService.currentCache map {
-                currentCache => BadRequest(views.html.incomes.previousYears.UpdateIncomeDetails(
-                  UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), formWithErrors))
+                currentCache =>
+                  BadRequest(views.html.incomes.previousYears.UpdateIncomeDetails(
+                    UpdateHistoricIncomeDetailsViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), formWithErrors))
               }
             },
             incomeDetails => {
@@ -173,12 +180,12 @@ trait UpdateIncomeDetailsController extends TaiBaseController
               Seq(
                 UpdatePreviousYearsIncome_TelephoneNumberKey
               )) map tupled { (mandatorySeq, optionalSeq) => {
-                  Ok(CheckYourAnswers(UpdateIncomeDetailsCheckYourAnswersViewModel(
-                  TaxYear(mandatorySeq.head.toInt),
-                  mandatorySeq(1),
-                  mandatorySeq(2),
-                  optionalSeq.head)))
-              }
+              Ok(CheckYourAnswers(UpdateIncomeDetailsCheckYourAnswersViewModel(
+                TaxYear(mandatorySeq.head.toInt),
+                mandatorySeq(1),
+                mandatorySeq(2),
+                optionalSeq.head)))
+            }
             }
           }
   }
@@ -205,19 +212,8 @@ trait UpdateIncomeDetailsController extends TaiBaseController
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-              Future.successful(Ok(views.html.incomes.previousYears.UpdateIncomeDetailsConfirmation()))
+            Future.successful(Ok(views.html.incomes.previousYears.UpdateIncomeDetailsConfirmation()))
           }
   }
 
 }
-// $COVERAGE-OFF$
-object UpdateIncomeDetailsController extends UpdateIncomeDetailsController with AuthenticationConnectors {
-  override val personService: PersonService = PersonService
-  override val auditService: AuditService = AuditService
-  override val journeyCacheService: JourneyCacheService = JourneyCacheService(UpdatePreviousYearsIncome_JourneyKey)
-  override val trackingJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
-  override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-  override def previousYearsIncomeService: PreviousYearsIncomeService = PreviousYearsIncomeService
-}
-// $COVERAGE-ON$

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,18 @@
 
 package uk.gov.hmrc.tai.service
 
-import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
-import play.api.Play.current
+import com.google.inject.Inject
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.tai.model._
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.connectors.{PersonConnector, TaiConnector}
+import uk.gov.hmrc.tai.model.domain.Person
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiNotFoundResponse, TaiSuccessResponseWithPayload}
-import uk.gov.hmrc.tai.model.domain.Person
 
-trait PersonService {
-
-  def taiClient: TaiConnector
-  def personConnector: PersonConnector
+class PersonService @Inject()(val taiConnector: TaiConnector,
+                              personConnector: PersonConnector) {
 
   def personDetails(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] = {
     personConnector.person(nino) map {
@@ -38,10 +35,4 @@ trait PersonService {
       case _ => throw new RuntimeException(s"Failed to retrieve person details for nino ${nino.nino}. Unable to proceed.")
     }
   }
-}
-
-
-object PersonService extends PersonService {
-  override val taiClient = TaiConnector
-  override lazy val personConnector = PersonConnector
 }

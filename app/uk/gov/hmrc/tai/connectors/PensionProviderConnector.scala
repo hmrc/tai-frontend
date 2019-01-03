@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.google.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -24,10 +25,9 @@ import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvide
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait PensionProviderConnector {
+class PensionProviderConnector @Inject() (val httpHandler: HttpHandler) extends ServicesConfig {
 
-  val serviceUrl: String
-  def httpHandler: HttpHandler
+  val serviceUrl: String = baseUrl("tai")
 
   def addPensionProvider(nino: Nino, pensionProvider: AddPensionProvider)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     httpHandler.postToApi[AddPensionProvider](addPensionProviderServiceUrl(nino), pensionProvider).map { response =>
@@ -45,9 +45,3 @@ trait PensionProviderConnector {
 
   def incorrectPensionProviderServiceUrl(nino: Nino, id: Int) = s"$serviceUrl/tai/$nino/pensionProvider/$id/reason"
 }
-// $COVERAGE-OFF$
-object PensionProviderConnector extends PensionProviderConnector with ServicesConfig {
-  override val serviceUrl: String = baseUrl("tai")
-  override def httpHandler: HttpHandler = HttpHandler
-}
-// $COVERAGE-ON$

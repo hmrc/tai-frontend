@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package uk.gov.hmrc.tai.connectors
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import uk.gov.hmrc.tai.connectors.PersonConnector.baseUrl
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 
@@ -47,7 +47,7 @@ trait TaxFreeAmountComparisonConnector {
 }
 
 
-object TaxFreeAmountComparisonConnector extends TaxFreeAmountComparisonConnector {
+object TaxFreeAmountComparisonConnector extends TaxFreeAmountComparisonConnector with ServicesConfig {
 
   override lazy val serviceUrl = baseUrl("tai")
 

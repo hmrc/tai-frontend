@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.service
+package uk.gov.hmrc.tai.service.journeyCache
 
+import com.google.inject.Inject
 import org.joda.time.LocalDate
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.JourneyCacheConnector
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait JourneyCacheService extends JourneyCacheConstants {
-
-  val journeyName: String
-
-  val journeyCacheConnector: JourneyCacheConnector
+class JourneyCacheService @Inject() (val journeyName: String,
+                                     val journeyCacheConnector: JourneyCacheConnector) {
 
 
   def currentValue(key: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
@@ -131,16 +128,4 @@ trait JourneyCacheService extends JourneyCacheConstants {
   def flush()(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     journeyCacheConnector.flush(journeyName)
   }
-
 }
-// $COVERAGE-OFF$
-object JourneyCacheService {
-
-  def apply(journey:String) : JourneyCacheService = {
-    new JourneyCacheService {
-      override val journeyName = journey
-      override lazy val journeyCacheConnector = JourneyCacheConnector
-    }
-  }
-}
-// $COVERAGE-ON$

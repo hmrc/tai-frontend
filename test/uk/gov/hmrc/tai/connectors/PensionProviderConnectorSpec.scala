@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ class PensionProviderConnectorSpec extends PlaySpec
       val sut = createSUT()
       val addPensionProvider = AddPensionProvider("testPension", new LocalDate(2017, 6, 6), "12345", "Yes", Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
-      when(sut.httpHandler.postToApi(Matchers.eq(sut.addPensionProviderServiceUrl(nino)),
+      when(httpHandler.postToApi(Matchers.eq(sut.addPensionProviderServiceUrl(nino)),
         Matchers.eq(addPensionProvider))(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.addPensionProvider(nino, addPensionProvider), 5.seconds)
@@ -59,7 +59,7 @@ class PensionProviderConnectorSpec extends PlaySpec
       val sut = createSUT()
       val incorrectPensionProvider = IncorrectPensionProvider(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
       val json = Json.obj("data" -> JsString("123-456-789"))
-      when(sut.httpHandler.postToApi(Matchers.eq(sut.incorrectPensionProviderServiceUrl(nino, 1)),
+      when(httpHandler.postToApi(Matchers.eq(sut.incorrectPensionProviderServiceUrl(nino, 1)),
         Matchers.eq(incorrectPensionProvider))(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200, Some(json))))
 
       val result = Await.result(sut.incorrectPensionProvider(nino, 1, incorrectPensionProvider), 5.seconds)
@@ -74,9 +74,10 @@ class PensionProviderConnectorSpec extends PlaySpec
 
   private def createSUT() = new PensionProviderConnectorTest()
 
-  private class PensionProviderConnectorTest() extends PensionProviderConnector {
+  val httpHandler: HttpHandler = mock[HttpHandler]
+
+  private class PensionProviderConnectorTest() extends PensionProviderConnector (httpHandler) {
     override val serviceUrl: String = "testUrl"
-    override val httpHandler: HttpHandler = mock[HttpHandler]
   }
 
 }

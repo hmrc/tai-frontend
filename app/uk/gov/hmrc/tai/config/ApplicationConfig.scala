@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import views.html.helper
 
-object ApplicationConfig extends ServicesConfig {
+class ApplicationConfig extends ServicesConfig {
 
   def statusRange = s"${TaxYear().prev.year}-${TaxYear().year}"
 
@@ -90,7 +90,9 @@ object ApplicationConfig extends ServicesConfig {
   }
 
   lazy val isTaiCy3Enabled = configuration.getBoolean("tai.cy3.enabled").getOrElse(false)
-  }
+}
+
+object ApplicationConfig extends ApplicationConfig
 
 trait FeatureTogglesConfig extends ServicesConfig {
   val cyPlusOneEnabled = configuration.getBoolean("tai.cyPlusOne.enabled").getOrElse(false)

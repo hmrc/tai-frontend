@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.google.inject.Inject
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -26,11 +27,9 @@ import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import scala.concurrent.Future
 
-trait PersonConnector {
+class PersonConnector @Inject() (val httpHandler: HttpHandler) extends ServicesConfig {
 
-  val serviceUrl: String
-
-  def httpHandler: HttpHandler
+  val serviceUrl: String = baseUrl("tai")
 
   def personUrl(nino: String): String = s"$serviceUrl/tai/$nino/person"
 
@@ -45,11 +44,4 @@ trait PersonConnector {
           TaiNotFoundResponse(e.getMessage)
       }
   }
-}
-
-object PersonConnector extends PersonConnector with ServicesConfig {
-
-  override val serviceUrl = baseUrl("tai")
-
-  override def httpHandler: HttpHandler = HttpHandler
 }
