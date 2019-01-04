@@ -39,7 +39,6 @@ class TaiModule extends Module {
     bind[HttpHandler].toInstance(HttpHandler),
     bind[UserDetailsConnector].toInstance(UserDetailsConnector),
     bind[TaiConnector].toInstance(TaiConnector),
-    bind[TaxCodeChangeConnector].toInstance(TaxCodeChangeConnector),
     // Journey Cache Services
     bind[JourneyCacheService].qualifiedWith("Add Employment").to(classOf[AddEmploymentJourneyCacheService]),
     bind[JourneyCacheService].qualifiedWith("Add Pension Provider").to(classOf[AddPensionProviderJourneyCacheService]),

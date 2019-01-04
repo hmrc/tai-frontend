@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.model.domain.{HasTaxCodeChanged, TaxCodeChange, TaxCodeMi
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class TaxCodeChangeService @Inject() (val taxCodeChangeConnector: TaxCodeChangeConnector) {
+class TaxCodeChangeService @Inject() (taxCodeChangeConnector: TaxCodeChangeConnector) {
 
   def taxCodeChange(nino: Nino)(implicit hc: HeaderCarrier): Future[TaxCodeChange] = {
 

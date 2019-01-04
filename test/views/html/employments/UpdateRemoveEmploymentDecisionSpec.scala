@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.forms.employments.UpdateRemoveEmploymentForm
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
-class update_remove_employment_decisionSpec extends TaiViewSpec with FormValuesConstants {
+class UpdateRemoveEmploymentDecisionSpec extends TaiViewSpec with FormValuesConstants {
   val employmentName = "Employment Name"
   val empId = 1
   val updateRemoveEmploymentForm: Form[Option[String]] = UpdateRemoveEmploymentForm.form.bind(
@@ -48,7 +48,7 @@ class update_remove_employment_decisionSpec extends TaiViewSpec with FormValuesC
       messages("tai.employment.decision.radio1"),
       messages("tai.employment.decision.radio2"))
 
-    behave like pageWithContinueButtonForm(controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove(empId).url)
+    behave like pageWithContinueButtonForm("/check-income-tax/update-remove-employment/decision/1")
 
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
   }
