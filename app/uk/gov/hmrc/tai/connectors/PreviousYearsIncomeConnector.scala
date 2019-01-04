@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model.domain.IncorrectIncome
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PreviousYearsIncomeConnector @Inject() (val httpHandler: HttpHandler) extends ServicesConfig {
+class PreviousYearsIncomeConnector @Inject() (httpHandler: HttpHandler) extends ServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 

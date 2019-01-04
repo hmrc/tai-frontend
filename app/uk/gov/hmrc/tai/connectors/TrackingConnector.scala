@@ -25,7 +25,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import uk.gov.hmrc.http.HeaderCarrier
 
-class TrackingConnector @Inject() (val httpHandler: HttpHandler) extends TrackedFormFormatters with ServicesConfig {
+class TrackingConnector @Inject() (httpHandler: HttpHandler) extends TrackedFormFormatters with ServicesConfig {
 
   lazy val serviceUrl: String = baseUrl("tracking")
 

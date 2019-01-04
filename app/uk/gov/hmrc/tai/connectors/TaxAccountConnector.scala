@@ -33,7 +33,7 @@ import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, UpdateTaxCodeIncomeReque
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class TaxAccountConnector @Inject() (val httpHandler: HttpHandler) extends CodingComponentFormatters with ServicesConfig {
+class TaxAccountConnector @Inject() (httpHandler: HttpHandler) extends CodingComponentFormatters with ServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 

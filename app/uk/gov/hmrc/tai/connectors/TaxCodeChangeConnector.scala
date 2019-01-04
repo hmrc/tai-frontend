@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeMismatch, TaxCodeReco
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class TaxCodeChangeConnector @Inject() (val httpHandler: HttpHandler) extends ServicesConfig {
+class TaxCodeChangeConnector @Inject() (httpHandler: HttpHandler) extends ServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 

@@ -18,14 +18,15 @@ package uk.gov.hmrc.tai.connectors
 
 import com.google.inject.Inject
 import play.api.Logger
-import uk.gov.hmrc.http.{CoreGet, HeaderCarrier}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.tai.config.WSHttp
 import uk.gov.hmrc.tai.model.UserDetails
 
 import scala.concurrent.Future
 
-class UserDetailsConnector @Inject()(val http: CoreGet) {
+class UserDetailsConnector @Inject()(val http: WSHttp) {
 
   def userDetails(userDetailsUri: String)(implicit hc: HeaderCarrier): Future[UserDetails] = {
     Logger.debug(s"Calling User Details with uri: $userDetailsUri")
