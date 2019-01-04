@@ -41,7 +41,7 @@ class EmploymentsConnectorSpec extends PlaySpec
   with ServicesConfig
   with FakeTaiPlayApplication {
 
-  "EmploymentsConnector" must {
+  "EmploymentsConnector employments" must {
     "return a blank the service url" when {
       "no service url is provided" in {
         val SUT = createSUT()
@@ -170,6 +170,95 @@ class EmploymentsConnectorSpec extends PlaySpec
     }
   }
 
+  "EmploymentsConnector ceasedEmployments" must {
+
+    "call the employments API with a URL containing a service URL" when {
+      "the service URL is supplied" in {
+        val SUT = createSUT("test/service")
+        when(SUT.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(oneEmployment)))
+
+        val responseFuture = SUT.ceasedEmployments(nino, year)
+
+        Await.result(responseFuture, 5 seconds)
+        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}/ceased"))(any())
+      }
+    }
+
+    "call the employments API with a URL containing a service URL" when {
+
+      "the service URL is not supplied" in {
+
+        val SUT = createSUT()
+
+        when(SUT.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(oneEmployment)))
+
+        val responseFuture = SUT.ceasedEmployments(nino, year)
+
+        Await.result(responseFuture, 5 seconds)
+
+        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"/tai/$nino/employments/years/${year.year}/ceased"))(any())
+      }
+    }
+
+    "return employments from the employments API" when {
+
+      "api provides one employments" in {
+
+        val SUT = createSUT("test/service")
+
+        when(SUT.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(oneEmployment)))
+
+        val responseFuture = SUT.ceasedEmployments(nino, year)
+
+        val result = Await.result(responseFuture, 5 seconds)
+
+        result mustBe oneEmploymentDetails
+
+        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}/ceased"))(any())
+      }
+
+      "api provides multiple employments" in {
+
+        val SUT = createSUT("test/service")
+
+        when(SUT.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(twoEmployments)))
+
+        val responseFuture = SUT.ceasedEmployments(nino, year)
+
+        val result = Await.result(responseFuture, 5 seconds)
+
+        result mustBe twoEmploymentsDetails
+
+        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}/ceased"))(any())
+      }
+    }
+
+    "return nil when api returns zero employments" in {
+      val SUT = createSUT("test/service")
+
+      when(SUT.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(zeroEmployments)))
+
+      val responseFuture = SUT.ceasedEmployments(nino, year)
+
+      val result = Await.result(responseFuture, 5 seconds)
+
+      result mustBe Nil
+
+      verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}/ceased"))(any())
+    }
+
+    "throw an exception" when {
+      "invalid json has returned by api" in {
+        val SUT = createSUT("test/service")
+
+        when(SUT.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse("""{"test":"test"}""")))
+
+        val ex = the[RuntimeException] thrownBy Await.result(SUT.ceasedEmployments(nino, year), 5 seconds)
+        ex.getMessage mustBe "Invalid employment json"
+      }
+    }
+  }
+
   "EmploymentsConnector employment" must {
 
     "return service url" in {
@@ -199,7 +288,6 @@ class EmploymentsConnectorSpec extends PlaySpec
       }
     }
   }
-
 
   "EmploymentsConnector endEmployment" must {
     "return an envelope" when {
