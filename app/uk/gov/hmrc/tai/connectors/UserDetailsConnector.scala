@@ -16,19 +16,16 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.google.inject.Inject
 import play.api.Logger
-import uk.gov.hmrc.http.CoreGet
+import uk.gov.hmrc.http.{CoreGet, HeaderCarrier}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-
-import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpGet}
-import uk.gov.hmrc.tai.config.WSHttp
 import uk.gov.hmrc.tai.model.UserDetails
 
-trait UserDetailsConnector {
+import scala.concurrent.Future
 
-  def http: CoreGet
+class UserDetailsConnector @Inject()(val http: CoreGet) {
 
   def userDetails(userDetailsUri: String)(implicit hc: HeaderCarrier): Future[UserDetails] = {
     Logger.debug(s"Calling User Details with uri: $userDetailsUri")
@@ -36,7 +33,7 @@ trait UserDetailsConnector {
   }
 
   def userDetails(authContext: AuthContext)(implicit hc: HeaderCarrier): Future[UserDetails] = {
-    authContext.userDetailsUri match{
+    authContext.userDetailsUri match {
       case Some(ud: String) =>
         userDetails(ud)
       case _ =>
@@ -45,9 +42,3 @@ trait UserDetailsConnector {
     }
   }
 }
-// $COVERAGE-OFF$
-object UserDetailsConnector extends UserDetailsConnector{
-  override def http = WSHttp
-}
-// $COVERAGE-ON$
-

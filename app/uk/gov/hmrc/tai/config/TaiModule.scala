@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.config
 
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
+import uk.gov.hmrc.http.CoreGet
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -32,12 +33,12 @@ class TaiModule extends Module {
     bind[FormPartialRetriever].toInstance(TaiHtmlPartialRetriever),
     bind[TemplateRenderer].toInstance(LocalTemplateRenderer),
     bind[WSHttpProxy].toInstance(WSHttpProxy),
+    bind[CoreGet].toInstance(WSHttp),
     // Connectors
     bind[AuditConnector].toInstance(AuditConnector),
     bind[AuthConnector].toInstance(FrontendAuthConnector),
     bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
     bind[HttpHandler].toInstance(HttpHandler),
-    bind[UserDetailsConnector].toInstance(UserDetailsConnector),
     bind[TaiConnector].toInstance(TaiConnector),
     // Journey Cache Services
     bind[JourneyCacheService].qualifiedWith("Add Employment").to(classOf[AddEmploymentJourneyCacheService]),
