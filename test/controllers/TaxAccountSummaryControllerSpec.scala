@@ -54,7 +54,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
 
     "display the income tax summary page" in {
       val sut = createSUT
-      when(sut.employmentService.employments(any(), any())(any())).thenReturn(
+      when(sut.employmentService.ceasedEmployments(any(), any())(any())).thenReturn(
         Future.successful(Seq(employment))
       )
 
@@ -91,7 +91,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
 
     "raise an audit event" in {
       val sut = createSUT
-      when(sut.employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
+      when(sut.employmentService.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
       when(sut.taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("pensions"), Matchers.eq("live"))(any[HeaderCarrier])).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[Seq[IncomeSource]](Seq.empty[IncomeSource]))
       )

@@ -82,7 +82,7 @@ class TaxAccountSummaryController @Inject()(val trackingService: TrackingService
       livePensionIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "pensions", "live")
       liveEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "employments", "live")
       ceasedEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "employments", "ceased")
-      nonMatchingCeasedEmployments <- employmentService.employments(nino, TaxYear()) //TODO Point to the new ceased employments endpoint
+      nonMatchingCeasedEmployments <- employmentService.ceasedEmployments(nino, TaxYear())
       nonTaxCodeIncome <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
       isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
     } yield {

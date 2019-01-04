@@ -33,6 +33,10 @@ trait EmploymentService {
     connector.employments(nino, year)
   }
 
+  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
+    connector.ceasedEmployments(nino, year)
+  }
+
   def employment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Employment]] = {
     connector.employment(nino, id.toString)
   }

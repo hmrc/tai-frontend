@@ -44,9 +44,20 @@ trait EmploymentsConnector {
     }
   }
 
+  def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
+    httpHandler.getFromApi(ceasedEmploymentServiceUrl(nino, year)) map {
+      json =>
+        if ((json \ "data" \ "employments").validate[Seq[Employment]].isSuccess) {
+          (json \ "data" \ "employments").as[Seq[Employment]]
+        } else {
+          throw new RuntimeException("Invalid employment json")
+        }
+    }
+  }
+
   def employment(nino: Nino, id: String)(implicit hc: HeaderCarrier): Future[Option[Employment]] =
     httpHandler.getFromApi(employmentUrl(nino, id)).map(
-      json => ((json \ "data").asOpt[Employment])
+      json => (json \ "data").asOpt[Employment]
     )
 
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] = {
@@ -77,6 +88,8 @@ trait EmploymentsConnector {
   def addEmploymentServiceUrl(nino: Nino) = s"$serviceUrl/tai/$nino/employments"
 
   def employmentServiceUrl(nino: Nino, year: TaxYear) = s"$serviceUrl/tai/$nino/employments/years/${year.year}"
+
+  def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear) = s"$serviceUrl/tai/$nino/employments/years/${year.year}/ceased"
 
   def incorrectEmploymentServiceUrl(nino: Nino, id: Int) = s"$serviceUrl/tai/$nino/employments/$id/reason"
 }
