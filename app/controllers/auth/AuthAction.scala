@@ -22,7 +22,6 @@ import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.auth.core
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -36,15 +35,19 @@ case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthActionedTai
 
 case class AuthActionedTaiUser(name: String, rnino: String, utr: String) {
   def getDisplayName = name
+
   def getNino = rnino
+
   def getUTR = utr
+
   def nino: Nino = Nino(getNino)
 }
 
 @Singleton
 class AuthActionImpl @Inject()(personService: PersonService,
                                override val authConnector: core.AuthConnector)
-                              (implicit ec: ExecutionContext) extends AuthAction with AuthorisedFunctions {
+                              (implicit ec: ExecutionContext) extends AuthAction
+  with AuthorisedFunctions {
 
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
@@ -66,9 +69,15 @@ class AuthActionImpl @Inject()(personService: PersonService,
         case _ => {
           Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
         }
+      } recoverWith {
+      //TODO specific error pages
+      case ex: UnsupportedAffinityGroup => {
+        Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
       }
-    //TODO redirect to failed auth page
-
+      case ex: InsufficientConfidenceLevel => {
+        Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
+      }
+    }
   }
 
   def getTaiUser(nino: String, saUTR: String, person: Person): Future[AuthActionedTaiUser] = {

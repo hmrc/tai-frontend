@@ -16,8 +16,7 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
-import controllers.auth.{AuthAction, AuthenticatedRequest, AuthActionedTaiUser}
+import controllers.auth.{AuthAction, AuthActionedTaiUser, AuthenticatedRequest}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -27,10 +26,10 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Request, Result}
+import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
@@ -53,12 +52,14 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  val fakeRequest = FakeRequest("GET", "/")
 
   "whatHappensNext" must {
     "show 'What happens next' page" when {
       "the request has an authorised session" in {
         val SUT = createSUT(true)
-        val result = SUT.whatHappensNext()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = SUT.whatHappensNext()(fakeRequest)
+
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -69,7 +70,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     "don't show 'What happens next' page if 'tax code change journey' is toggled off" when {
       "the request has an authorised session" in {
         val SUT = createSUT()
-        val result = SUT.whatHappensNext()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = SUT.whatHappensNext()(fakeRequest)
 
         status(result) mustBe OK
 
@@ -92,7 +93,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         when(employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(Map.empty[Int, String]))
         when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
 
-        val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = SUT.yourTaxFreeAmount()(fakeRequest)
 
         status(result) mustBe OK
       }
@@ -101,7 +102,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     "don't show 'Your tax-free amount' page if 'tax code change journey' is toggled off" when {
       "the request has an authorised session" in {
         val SUT = createSUT()
-        val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = SUT.yourTaxFreeAmount()(fakeRequest)
 
         status(result) mustBe OK
 
@@ -120,7 +121,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
         when(taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map[String, BigDecimal]()))
 
-        val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = SUT.taxCodeComparison()(fakeRequest)
 
         status(result) mustBe OK
       }
@@ -129,7 +130,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     "don't show 'Your tax code comparison' page if 'tax code change journey' is toggled off" when {
       "the request has an authorised session" in {
         val SUT = createSUT()
-        val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = SUT.taxCodeComparison()(fakeRequest)
 
         status(result) mustBe OK
 
@@ -175,9 +176,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     override val taxCodeChangeEnabled: Boolean = taxCodeChangeJourneyEnabled
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
-
-    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
     when(taxCodeChangeService.latestTaxCodeChangeDate(generateNino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
   }
 

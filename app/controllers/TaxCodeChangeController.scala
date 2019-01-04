@@ -58,15 +58,9 @@ class TaxCodeChangeController @Inject()(val personService: PersonService,
                                         val companyCarService: CompanyCarService,
                                         val taxCodeChangeService: TaxCodeChangeService,
                                         val taxAccountService: TaxAccountService,
-                                        // val auditConnector: AuditConnector,
-                                        //val delegationConnector: DelegationConnector,
-                                        //    val authConnector: AuthConnector,
                                         authenticate: AuthAction,
                                         override implicit val partialRetriever: FormPartialRetriever,
                                         override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  // with WithAuthorisedForTaiLite
-  //  with DelegationAwareActions
-  //with Auditable
   with FeatureTogglesConfig {
 
   def taxCodeComparison: Action[AnyContent] = (authenticate) {
