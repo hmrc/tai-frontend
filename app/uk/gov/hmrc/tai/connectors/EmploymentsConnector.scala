@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class EmploymentsConnector @Inject() (val httpHandler: HttpHandler) extends ServicesConfig {
+class EmploymentsConnector @Inject() (httpHandler: HttpHandler) extends ServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 

@@ -24,6 +24,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.http.{CoreGet, HeaderCarrier}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.tai.config.WSHttp
 import uk.gov.hmrc.tai.model.UserDetails
 
 import scala.concurrent.duration._
@@ -71,7 +72,7 @@ class UserDetailsConnectorSpec extends PlaySpec with MockitoSugar {
     }
   }
 
-  private lazy val mockHttp = mock[CoreGet]
+  private lazy val mockHttp = mock[WSHttp]
 
   val sut = new UserDetailsConnector(mockHttp)
   val userDetails = UserDetails("")

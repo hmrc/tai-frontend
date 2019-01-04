@@ -42,7 +42,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
         val SUT = createSUT
 
-        when(SUT.http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(SuccesfulGetResponseWithObject))
+        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(SuccesfulGetResponseWithObject))
 
         val responseFuture = SUT.getFromApi(testUrl)
 
@@ -50,7 +50,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
         response mustBe Json.toJson(responseBodyObject)
 
-        verify(SUT.http, times(1)).GET(Matchers.eq(testUrl))(any(), any(), any())
+        verify(http, times(1)).GET(Matchers.eq(testUrl))(any(), any(), any())
       }
     }
 
@@ -60,7 +60,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
         val SUT = createSUT
 
-        when(SUT.http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(BadRequestHttpResponse))
+        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(BadRequestHttpResponse))
 
         val responseFuture = SUT.getFromApi("")
 
@@ -76,7 +76,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
         val SUT = createSUT
 
-        when(SUT.http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(NotFoundHttpResponse))
+        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(NotFoundHttpResponse))
 
         val responseFuture = SUT.getFromApi("")
 
@@ -92,7 +92,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
         val SUT = createSUT
 
-        when(SUT.http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(InternalServerErrorHttpResponse))
+        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(InternalServerErrorHttpResponse))
 
         val responseFuture = SUT.getFromApi("")
 
@@ -108,7 +108,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
         val SUT = createSUT
 
-        when(SUT.http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(LockedHttpResponse))
+        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(LockedHttpResponse))
 
         val responseFuture = SUT.getFromApi("")
 
@@ -124,7 +124,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
         val SUT = createSUT
 
-        when(SUT.http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(UnknownErrorHttpResponse))
+        when(http.GET[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(UnknownErrorHttpResponse))
 
         val responseFuture = SUT.getFromApi("")
 
@@ -134,17 +134,12 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
       }
     }
 
-    "return httpGet" when {
-      "the companion object's httpGet is referenced" in {
-        HttpHandler.http mustBe WSHttp
-      }
-    }
   }
 
   "putToApi" should {
     "return OK" in {
       val sut = createSUT
-      when(sut.http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any())).
+      when(http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any())).
         thenReturn(Future.successful(HttpResponse(OK)))
 
       val result = Await.result(sut.putToApi[DateRequest]("", DateRequest(LocalDate.now())), 5.seconds)
@@ -155,7 +150,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
     "return Not Found exception" in {
       val sut = createSUT
-      when(sut.http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any())).
+      when(http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any())).
         thenReturn(Future.successful(HttpResponse(NOT_FOUND)))
 
       val result = the[NotFoundException] thrownBy Await.result(sut.putToApi[DateRequest]("", DateRequest(LocalDate.now())), 5.seconds)
@@ -165,7 +160,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
     "return Internal Server exception" in {
       val sut = createSUT
-      when(sut.http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any())).
+      when(http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any())).
         thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
 
       val result = the[InternalServerException] thrownBy Await.result(sut.putToApi[DateRequest]("", DateRequest(LocalDate.now())), 5.seconds)
@@ -175,7 +170,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
     "return Bad Request exception" in {
       val sut = createSUT
-      when(sut.http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any())).
+      when(http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any())).
         thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
 
       val result = the[BadRequestException] thrownBy Await.result(sut.putToApi[DateRequest]("", DateRequest(LocalDate.now())), 5.seconds)
@@ -185,7 +180,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
     "return Http exception" in {
       val sut = createSUT
-      when(sut.http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any())).
+      when(http.PUT[DateRequest, HttpResponse](any(), any())(any(), any(), any(), any())).
         thenReturn(Future.successful(HttpResponse(GATEWAY_TIMEOUT)))
 
       val result = the[HttpException] thrownBy Await.result(sut.putToApi[DateRequest]("", DateRequest(LocalDate.now())), 5.seconds)
@@ -200,7 +195,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
     "return json which is coming from http post call" in {
       val sut = createSUT
 
-      when(sut.http.POST[String, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
+      when(http.POST[String, HttpResponse](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(userInput)))))
         .thenReturn(Future.successful(HttpResponse(CREATED, Some(Json.toJson(userInput)))))
 
@@ -217,7 +212,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
     "return Http exception" when{
       "http response is NOT_FOUND"in {
         val sut = createSUT
-        when(sut.http.POST[String, HttpResponse](any(), any(), any())(any(), any(), any(), any())).
+        when(http.POST[String, HttpResponse](any(), any(), any())(any(), any(), any(), any())).
           thenReturn(Future.successful(HttpResponse(NOT_FOUND)))
 
         val result = the[HttpException] thrownBy Await.result(sut.postToApi[String](mockUrl, userInput), 5 seconds)
@@ -227,7 +222,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
 
       "http response is GATEWAY_TIMEOUT" in {
         val sut = createSUT
-        when(sut.http.POST[String, HttpResponse](any(), any(), any())(any(), any(), any(), any())).
+        when(http.POST[String, HttpResponse](any(), any(), any())(any(), any(), any(), any())).
           thenReturn(Future.successful(HttpResponse(GATEWAY_TIMEOUT)))
 
         val result = the[HttpException] thrownBy Await.result(sut.postToApi[String](mockUrl, userInput), 5 seconds)
@@ -242,7 +237,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
       "http DELETE returns OK" in {
 
         val sut = createSUT
-        when(sut.http.DELETE[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(OK)))
+        when(http.DELETE[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(OK)))
         val result = Await.result(sut.deleteFromApi(mockUrl), 5 seconds)
         result.status mustBe OK
       }
@@ -250,14 +245,14 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
       "http DELETE returns NO_CONTENT" in {
 
         val sut = createSUT
-        when(sut.http.DELETE[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(NO_CONTENT)))
+        when(http.DELETE[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(NO_CONTENT)))
         val result = Await.result(sut.deleteFromApi(mockUrl), 5 seconds)
         result.status mustBe NO_CONTENT
       }
 
       "http DELETE returns ACCEPTED" in {
         val sut = createSUT
-        when(sut.http.DELETE[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(ACCEPTED)))
+        when(http.DELETE[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(ACCEPTED)))
         val result = Await.result(sut.deleteFromApi(mockUrl), 5.seconds)
         result.status mustBe ACCEPTED
       }
@@ -266,7 +261,7 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
     "return Http exception" when {
       "http response is NOT OK" in {
         val sut = createSUT
-        when(sut.http.DELETE[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(GATEWAY_TIMEOUT)))
+        when(http.DELETE[HttpResponse](any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse(GATEWAY_TIMEOUT)))
 
         val result = the[HttpException] thrownBy Await.result(sut.deleteFromApi(mockUrl), 5 seconds)
 
@@ -290,10 +285,9 @@ class HttpHandlerSpec extends PlaySpec with MockitoSugar {
   private val UnknownErrorHttpResponse: HttpResponse = HttpResponse(418, Some(JsString("unknown response")), Map("ETag" -> Seq("34")))
 
   private def createSUT = new HttpHandlerTest()
-
-  private class HttpHandlerTest() extends HttpHandler {
-    override val http = mock[WSHttp]
-  }
+  val http = mock[WSHttp]
+  
+  private class HttpHandlerTest() extends HttpHandler(http)
 }
 
 case class DateRequest(date: LocalDate)

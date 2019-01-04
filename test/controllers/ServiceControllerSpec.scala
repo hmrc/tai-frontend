@@ -105,21 +105,6 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
     }
   }
 
-
-  //create TaxSummaryDetail from Json
-  class TestTaiConnector extends TaiConnector {
-    override def http = WSHttp
-
-    override def serviceUrl: String = "test/tai"
-
-    def get(key: String)(implicit hc: HeaderCarrier) =
-      Future.successful(Some(JsArray()))
-
-    def put(key: String, data: JsValue)(implicit hc: HeaderCarrier) =
-      Future.successful(())
-
-  }
-
   def createSut = new SUT
 
   val personService: PersonService = mock[PersonService]
