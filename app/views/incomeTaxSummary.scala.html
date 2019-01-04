@@ -20,10 +20,9 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
-@(viewModel: TaxAccountSummaryViewModel
-)(implicit request: Request[_],
+@(viewModel: TaxAccountSummaryViewModel)(implicit request: Request[_],
+  user: controllers.auth.AuthActionedTaiUser,
   messages: Messages,
-  user: controllers.auth.TaiUser,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -46,14 +45,14 @@
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.header,
-        preHeadingText = s"${user.person.firstName} ${user.person.surname}",
+        preHeadingText = s"${user.getDisplayName}",
         preHeadingAccessibleAnnouncement = "This section is the income tax summary for",
         customBackLinkContent = Some(backLinkToChooseTaxYear))
 }
 
 @main(
     title = viewModel.title,
-    user = Some(user),
+    authActionedTaiUser = Some(user),
     pageHeader = Some(header),
     articleClasses = Some("full-width")){
 

@@ -16,14 +16,13 @@
 
 package views.html
 
-import builders.UserBuilder
+import controllers.auth.AuthActionedTaiUser
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{IncomeSourceViewModel, TaxAccountSummaryViewModel}
 
 class IncomeTaxSummaryViewSpec extends TaiViewSpec {
-
   "Income tax summary page" must {
 
     behave like pageWithTitle("title")
@@ -299,6 +298,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   val vm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Seq(activeEmployment), Seq(pensionIncome), Seq(endedEmployment), false, true, Seq(otherIncomeSourceViewModel))
   val noSectionsVm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Nil, Nil, Nil, false, true, Seq(otherIncomeSourceViewModel))
 
-  override implicit val user = UserBuilder("Mr", "Firstname", "Surname")
+  implicit val authActionedTaiUser = AuthActionedTaiUser("Firstname Surname", "AN986715A")
   override def view: Html = views.html.incomeTaxSummary(vm)
 }

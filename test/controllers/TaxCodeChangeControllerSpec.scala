@@ -16,7 +16,6 @@
 
 package controllers
 
-import controllers.auth.{AuthAction, AuthActionedTaiUser, AuthenticatedRequest}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -25,7 +24,6 @@ import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Request, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
@@ -41,18 +39,12 @@ import uk.gov.hmrc.time.TaxYearResolver
 import scala.concurrent.Future
 import scala.util.Random
 
-object FakeAuthAction extends AuthAction {
-  override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[Result]): Future[Result] =
-    block(AuthenticatedRequest(request, AuthActionedTaiUser("person name", "AN986715A", "utr")))
-}
-
 class TaxCodeChangeControllerSpec extends PlaySpec
   with MockitoSugar
   with FakeTaiPlayApplication
   with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  val fakeRequest = FakeRequest("GET", "/")
 
   "whatHappensNext" must {
     "show 'What happens next' page" when {

@@ -23,21 +23,20 @@ import play.api.mvc._
 import uk.gov.hmrc.auth.core
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.retrieve.{Name, ~}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
-import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.{ExecutionContext, Future}
 
 case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthActionedTaiUser) extends WrappedRequest[A](request)
 
-case class AuthActionedTaiUser(name: String, rnino: String, utr: String) {
+case class AuthActionedTaiUser(name: String, validNino: String) {
   def getDisplayName = name
-  def getNino = rnino
-  def getUTR = utr
-  def nino: Nino = Nino(getNino)
+  def getNino = validNino
+  def nino: Nino = Nino(validNino)
 }
 
 @Singleton
@@ -50,12 +49,10 @@ class AuthActionImpl @Inject()(personService: PersonService,
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     authorised(ConfidenceLevel.L200 and AffinityGroup.Individual)
-      .retrieve(Retrievals.nino) {
-        case Some(nino) => {
+      .retrieve(Retrievals.nino and Retrievals.name) {
+        case nino ~ name => {
           for {
-            person <- personService.personDetails(Nino(nino))
-            // TODO see if person is alive here
-            taiUser <- getTaiUser(nino, "", person)
+            taiUser <- getTaiUser(name, nino)
             result <- block(AuthenticatedRequest(request, taiUser))
           } yield {
             result
@@ -68,18 +65,19 @@ class AuthActionImpl @Inject()(personService: PersonService,
         }
       } recoverWith {
       //TODO specific error pages
-      case ex: UnsupportedAffinityGroup => {
+      case _: UnsupportedAffinityGroup => {
         Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
       }
-      case ex: InsufficientConfidenceLevel => {
+      case _: InsufficientConfidenceLevel => {
         Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
       }
     }
   }
 
-  def getTaiUser(nino: String, saUTR: String, person: Person): Future[AuthActionedTaiUser] = {
-    val name = person.firstName + " " + person.surname
-    Future.successful(AuthActionedTaiUser(name, nino, saUTR))
+  def getTaiUser(name: Option[Name], nino: Option[String]): Future[AuthActionedTaiUser] = {
+    val validNino = nino.getOrElse("")
+    val validName = name.flatMap(_.name)
+    Future.successful(AuthActionedTaiUser(validName.getOrElse(""), validNino))
   }
 }
 

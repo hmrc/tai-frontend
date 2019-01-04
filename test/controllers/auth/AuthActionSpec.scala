@@ -44,8 +44,6 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
       Future.failed(exceptionToReturn)
   }
 
-  def fakeRequest = FakeRequest("", "")
-
   "Auth Action" when {
     "the user has insufficient confidence level" must {
       "redirect the user to an unauthorised page " in {
