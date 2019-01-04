@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
@@ -63,23 +63,21 @@ class TaxCodeChangeController @Inject()(val personService: PersonService,
                                         override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with FeatureTogglesConfig {
 
-  def taxCodeComparison: Action[AnyContent] = (authenticate) {
-    implicit request => Ok(notFoundView())
+  def taxCodeComparison: Action[AnyContent] = authenticate.async {
+    implicit request =>
+      if (taxCodeChangeEnabled) {
+        val nino = request.taiUser.nino
 
-    //    implicit request =>
-    //      if (taxCodeChangeEnabled) {
-    //        val nino = request.taiUser.nino
-    //
-    //        for {
-    //          taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
-    //          scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
-    //        } yield {
-    //          val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
-    //          Ok(views.html.taxCodeChange.taxCodeComparison(viewModel, request.taiUser))
-    //        }
-    //      } else {
-    //        Ok(notFoundView)
-    //      }
+        for {
+          taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
+          scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
+        } yield {
+          val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
+          Ok(views.html.taxCodeChange.taxCodeComparison(viewModel, request.taiUser))
+        }
+      } else {
+        Future.successful(Ok(notFoundView))
+      }
   }
 
   def yourTaxFreeAmount: Action[AnyContent] = authenticate.async {
@@ -101,7 +99,7 @@ class TaxCodeChangeController @Inject()(val personService: PersonService,
         }
 
       } else {
-        Future.successful(Ok(notFoundView("taxCodeChangeEnabled disabled")))
+        Future.successful(Ok(notFoundView))
       }
   }
 
@@ -127,12 +125,12 @@ class TaxCodeChangeController @Inject()(val personService: PersonService,
   }
 
 
-  private def notFoundView(message: String = "")(implicit request: Request[_])
+  private def notFoundView()(implicit request: Request[_])
   = views.html.error_template_noauth(Messages("global.error.pageNotFound404.title"),
     Messages("tai.errorMessage.heading"),
     Messages("tai.errorMessage.frontend404", Link.toInternalPage(
       url = routes.TaxAccountSummaryController.onPageLoad().url,
-      value = Some(Messages("tai.errorMessage.startAgain") + message)
+      value = Some(Messages("tai.errorMessage.startAgain"))
     ).toHtml))
 
 }

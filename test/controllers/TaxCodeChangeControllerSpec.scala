@@ -96,6 +96,9 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         val result = SUT.yourTaxFreeAmount()(fakeRequest)
 
         status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messagesApi("taxCode.change.yourTaxFreeAmount.title"))
       }
     }
 
@@ -124,6 +127,8 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         val result = SUT.taxCodeComparison()(fakeRequest)
 
         status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messagesApi("taxCode.change.journey.preHeading"))
       }
     }
 
