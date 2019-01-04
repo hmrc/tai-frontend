@@ -16,17 +16,17 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.google.inject.Inject
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, NotFoundException }
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 
-trait JourneyCacheConnector {
+class JourneyCacheConnector @Inject() (val httpHandler: HttpHandler) extends ServicesConfig {
 
-  val serviceUrl: String
-  val httpHandler: HttpHandler
+  val serviceUrl: String = baseUrl("tai")
 
   def cacheUrl(journeyName: String) = s"$serviceUrl/tai/journey-cache/$journeyName"
 
@@ -60,9 +60,3 @@ trait JourneyCacheConnector {
     httpHandler.deleteFromApi(cacheUrl(journeyName)).map(_ => TaiSuccessResponse)
   }
 }
-// $COVERAGE-OFF$
-object JourneyCacheConnector extends JourneyCacheConnector with ServicesConfig{
-  override val serviceUrl = baseUrl("tai")
-  val httpHandler: HttpHandler = HttpHandler
-}
-// $COVERAGE-ON$
