@@ -18,6 +18,7 @@ package controllers
 
 import com.google.inject.Inject
 import controllers.auth.AuthAction
+import controllers.auth.AuthActionedTaiUser
 import javax.inject.Singleton
 import play.api.Play.current
 import play.api.i18n.Messages
@@ -104,26 +105,14 @@ class TaxCodeChangeController @Inject()(val personService: PersonService,
   }
 
 
-  def whatHappensNext: Action[AnyContent] = (authenticate) {
+  def whatHappensNext: Action[AnyContent] = authenticate.async {
     implicit request =>
       if (taxCodeChangeEnabled) {
-        Ok(views.html.taxCodeChange.whatHappensNext(request.taiUser))
+        Future.successful(Ok(views.html.taxCodeChange.whatHappensNext(request.taiUser)))
       } else {
-        Ok(notFoundView())
+        Future.successful(Ok(notFoundView()))
       }
-    //    implicit request =>
-    //      if (taxCodeChangeEnabled) {
-    //        ServiceCheckLite.personDetailsCheck {
-    //          Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
-    //        }
-    //      }
-    //      else {
-    //        ServiceCheckLite.personDetailsCheck {
-    //          Future.successful(Ok(notFoundView))
-    //        }
-    //      }
   }
-
 
   private def notFoundView()(implicit request: Request[_])
   = views.html.error_template_noauth(Messages("global.error.pageNotFound404.title"),

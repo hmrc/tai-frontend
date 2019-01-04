@@ -35,11 +35,8 @@ case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthActionedTai
 
 case class AuthActionedTaiUser(name: String, rnino: String, utr: String) {
   def getDisplayName = name
-
   def getNino = rnino
-
   def getUTR = utr
-
   def nino: Nino = Nino(getNino)
 }
 
