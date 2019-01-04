@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,15 @@ import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.test.Helpers.{contentAsString, status, _}
-import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http.BadRequestException
+import play.api.test.Helpers._
+import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service._
@@ -53,16 +54,31 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
 
     "display the income tax summary page" in {
       val sut = createSUT
-      when(sut.employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
-      when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-        Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+      when(sut.employmentService.employments(any(), any())(any())).thenReturn(
+        Future.successful(Seq(employment))
+      )
+
+      when(sut.taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("pensions"), Matchers.eq("live"))(any[HeaderCarrier])).thenReturn(
+        Future.successful(TaiSuccessResponseWithPayload[Seq[IncomeSource]](Seq.empty[IncomeSource]))
+      )
+
+      when(sut.taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("employments"), Matchers.eq("live"))(any[HeaderCarrier])).thenReturn(
+        Future.successful(TaiSuccessResponseWithPayload[Seq[IncomeSource]](Seq.empty[IncomeSource]))
+      )
+
+      when(sut.taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("employments"), Matchers.eq("ceased"))(any[HeaderCarrier])).thenReturn(
+        Future.successful(TaiSuccessResponseWithPayload[Seq[IncomeSource]](Seq.empty[IncomeSource]))
+      )
+
       when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[NonTaxCodeIncome](nonTaxCodeIncome))
       )
       when(sut.taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
       )
-      when(sut.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
+      when(sut.trackingService.isAnyIFormInProgress(any())(any())).thenReturn(
+        Future.successful(true)
+      )
 
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -76,8 +92,17 @@ class TaxAccountSummaryControllerSpec extends PlaySpec with MockitoSugar with Fa
     "raise an audit event" in {
       val sut = createSUT
       when(sut.employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
-      when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-        Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+      when(sut.taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("pensions"), Matchers.eq("live"))(any[HeaderCarrier])).thenReturn(
+        Future.successful(TaiSuccessResponseWithPayload[Seq[IncomeSource]](Seq.empty[IncomeSource]))
+      )
+
+      when(sut.taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("employments"), Matchers.eq("live"))(any[HeaderCarrier])).thenReturn(
+        Future.successful(TaiSuccessResponseWithPayload[Seq[IncomeSource]](Seq.empty[IncomeSource]))
+      )
+
+      when(sut.taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("employments"), Matchers.eq("ceased"))(any[HeaderCarrier])).thenReturn(
+        Future.successful(TaiSuccessResponseWithPayload[Seq[IncomeSource]](Seq.empty[IncomeSource]))
+      )
       when(sut.taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[NonTaxCodeIncome](nonTaxCodeIncome))
       )

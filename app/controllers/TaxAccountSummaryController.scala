@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,8 @@ class TaxAccountSummaryController @Inject()(val trackingService: TrackingService
           }
   }
 
-  private def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(implicit hc: HeaderCarrier, messages: Messages) = {
+  private def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)
+                                        (implicit hc: HeaderCarrier, messages: Messages): Future[TaxAccountSummaryViewModel] =
     for {
       livePensionIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "pensions", "live")
       liveEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "employments", "live")
@@ -101,6 +102,5 @@ class TaxAccountSummaryController @Inject()(val trackingService: TrackingService
         case _ => throw new RuntimeException("Failed to fetch income details")
       }
     }
-  }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,19 +39,19 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
       "has header relating to current tax year" in {
         val expectedHeader = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRange
 
-        val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, true, nonTaxCodeIncome)
+        val sut = TaxAccountSummaryViewModel(taxAccountSummary, true, nonTaxCodeIncome, Seq(), Seq(), Seq(), Seq())
         sut.header mustBe expectedHeader
       }
 
       "has title relating to current tax year" in {
         val expectedTitle = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRange
-        val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, true, nonTaxCodeIncome)
+        val sut = TaxAccountSummaryViewModel(taxAccountSummary, true, nonTaxCodeIncome, Seq(), Seq(), Seq(), Seq())
         sut.title mustBe expectedTitle
       }
 
       "has correctly formatted positive tax free amount and estimated income" when {
         "taxAccountSummary has positive values" in {
-          val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, true, nonTaxCodeIncome)
+          val sut = TaxAccountSummaryViewModel(taxAccountSummary, true, nonTaxCodeIncome, Seq(), Seq(), Seq(), Seq())
           sut.taxFreeAmount mustBe "£2,222"
           sut.estimatedIncomeTaxAmount mustBe "£1,111"
         }
@@ -59,7 +59,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
       "has correctly formatted negative tax free amount and estimated income" when {
         "taxAccountSummary has a negative values" in {
-          val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, TaxAccountSummary(-54321, -12345, 333.32, 444.44, 111.11), true, nonTaxCodeIncome)
+          val sut = TaxAccountSummaryViewModel(TaxAccountSummary(-54321, -12345, 333.32, 444.44, 111.11), true, nonTaxCodeIncome, Seq(), Seq(), Seq(), Seq())
           sut.taxFreeAmount mustBe s"${encodedMinusSign}£12,345"
           sut.estimatedIncomeTaxAmount mustBe s"${encodedMinusSign}£54,321"
         }
@@ -67,7 +67,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
       "has correctly formatted zero tax free amount and estimated income" when {
         "taxAccountSummary has zero values" in {
-          val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, TaxAccountSummary(0, 0, 0, 0, 0), true, nonTaxCodeIncome)
+          val sut = TaxAccountSummaryViewModel(TaxAccountSummary(0, 0, 0, 0, 0), true, nonTaxCodeIncome, Seq(), Seq(), Seq(), Seq())
           sut.taxFreeAmount mustBe "£0"
           sut.estimatedIncomeTaxAmount mustBe "£0"
         }
@@ -75,13 +75,13 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
       "has correctly formatted lastTaxYearEnd" in {
         val expectedLastTaxYearEnd = TaxYearResolver.endOfCurrentTaxYear.minusYears(1).toString("d MMMM yyyy")
-        val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, true, nonTaxCodeIncome)
+        val sut = TaxAccountSummaryViewModel(taxAccountSummary, true, nonTaxCodeIncome, Seq(), Seq(), Seq(), Seq())
         sut.lastTaxYearEnd mustBe expectedLastTaxYearEnd
       }
 
       "has empty employments, pensions and ceasedEmployments list" when {
         "taxCodeIncomes and employments are empty" in {
-          val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, TaxAccountSummary(0, 0, 0, 0, 0), true, nonTaxCodeIncome)
+          val sut = TaxAccountSummaryViewModel(TaxAccountSummary(0, 0, 0, 0, 0), true, nonTaxCodeIncome, Seq(), Seq(), Seq(), Seq())
           sut.employments mustBe Seq.empty[IncomeSourceViewModel]
           sut.pensions mustBe Seq.empty[IncomeSourceViewModel]
           sut.ceasedEmployments mustBe Seq.empty[IncomeSourceViewModel]
@@ -89,14 +89,14 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
         "taxCodeIncomes doesn't have the corresponding element as employments, and none of the employments have an end date" in {
           val employmentsWithNoEndDate = employments.map(_.copy(endDate = None))
-          val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, employmentsWithNoEndDate, TaxAccountSummary(0, 0, 0, 0, 0), true, nonTaxCodeIncome)
+          val sut = TaxAccountSummaryViewModel(TaxAccountSummary(0, 0, 0, 0, 0), true, nonTaxCodeIncome, Seq(), Seq(), Seq(), Seq())
           sut.employments mustBe Seq.empty[IncomeSourceViewModel]
           sut.pensions mustBe Seq.empty[IncomeSourceViewModel]
           sut.ceasedEmployments mustBe Seq.empty[IncomeSourceViewModel]
         }
 
         "employments doesn't have the corresponding element as taxCodeIncomes" in {
-          val sut = TaxAccountSummaryViewModel(taxCodeIncomes, emptyEmployments, TaxAccountSummary(0, 0, 0, 0, 0), true, nonTaxCodeIncome)
+          val sut = TaxAccountSummaryViewModel(TaxAccountSummary(0, 0, 0, 0, 0), true, nonTaxCodeIncome, Seq(), Seq(), Seq(), Seq())
           sut.employments mustBe Seq.empty[IncomeSourceViewModel]
           sut.pensions mustBe Seq.empty[IncomeSourceViewModel]
           sut.ceasedEmployments mustBe Seq.empty[IncomeSourceViewModel]
@@ -105,7 +105,8 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
       }
       "has an employment list" when {
         "taxCodeIncomes and employments have matching employments" in {
-          val sut = TaxAccountSummaryViewModel(taxCodeIncomes, employments, TaxAccountSummary(0, 0, 0, 0, 0), true, nonTaxCodeIncome)
+          val sut = TaxAccountSummaryViewModel(TaxAccountSummary(0, 0, 0, 0, 0), isAnyFormInProgress = true, nonTaxCodeIncome,
+            livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources, Seq())
           sut.employments.size mustBe 2
           sut.employments.head.name mustBe "Employer name1"
           sut.employments(1).name mustBe "Employer name2"
@@ -113,7 +114,8 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
       }
       "has a pension list" when {
         "taxCodeIncomes and employments have matching pensions" in {
-          val sut = TaxAccountSummaryViewModel(taxCodeIncomes, employments, TaxAccountSummary(0, 0, 0, 0, 0), true, nonTaxCodeIncome)
+          val sut = TaxAccountSummaryViewModel(TaxAccountSummary(0, 0, 0, 0, 0), isAnyFormInProgress = true, nonTaxCodeIncome,
+            livePensionIncomeSources, liveEmploymentIncomeSources, ceasedEmploymentIncomeSources, Seq())
           sut.pensions.size mustBe 2
           sut.pensions.head.name mustBe "Pension name1"
           sut.pensions(1).name mustBe "Pension name2"
@@ -121,7 +123,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
       }
       "has a ceased employment list" when {
         "taxCodeIncomes and employments have matching ceased and potentially ceased employments" in {
-          val sut = TaxAccountSummaryViewModel(taxCodeIncomes, employments, TaxAccountSummary(0, 0, 0, 0, 0), true, nonTaxCodeIncome)
+          val sut = TaxAccountSummaryViewModel(TaxAccountSummary(0, 0, 0, 0, 0), true, nonTaxCodeIncome, Seq(), Seq(), ceasedEmploymentIncomeSources, Seq())
           sut.ceasedEmployments.size mustBe 2
           sut.ceasedEmployments.head.name mustBe "Employer name3"
           sut.ceasedEmployments(1).name mustBe "Employer name4"
@@ -129,15 +131,15 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
       }
       "has the iya banner boolean set to true" when {
         "tax account summary shows an in year adjustment value greater than zero" in {
-          val sut = TaxAccountSummaryViewModel(taxCodeIncomes, employments, TaxAccountSummary(0, 0, 0.01, 0.02, 0.01), true, nonTaxCodeIncome)
+          val sut = TaxAccountSummaryViewModel(TaxAccountSummary(0, 0, 0.01, 0.02, 0.01), true, nonTaxCodeIncome, Seq(), Seq(), Seq(), Seq())
           sut.displayIyaBanner mustBe true
         }
       }
       "has the iya banner boolean set to false" when {
         "tax account summary shows an in year adjsutment value of zero or less" in {
-          val sut = TaxAccountSummaryViewModel(taxCodeIncomes, employments, TaxAccountSummary(0, 0, 0, 0, 0), true, nonTaxCodeIncome)
+          val sut = TaxAccountSummaryViewModel(TaxAccountSummary(0, 0, 0, 0, 0), true, nonTaxCodeIncome, Seq(), Seq(), Seq(), Seq())
           sut.displayIyaBanner mustBe false
-          val sutNeg = TaxAccountSummaryViewModel(taxCodeIncomes, employments, TaxAccountSummary(0, 0, -0.01, 0, 0), true, nonTaxCodeIncome)
+          val sutNeg = TaxAccountSummaryViewModel(TaxAccountSummary(0, 0, -0.01, 0, 0), true, nonTaxCodeIncome, Seq(), Seq(), Seq(), Seq())
           sutNeg.displayIyaBanner mustBe false
         }
       }
@@ -150,7 +152,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
           val otherIncomeSourceViewModel2 = otherIncomeSourceViewModel.copy(name = "Profit", amount = "£100", detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url)
 
-          val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, true, nonTaxCodeIncome)
+          val sut = TaxAccountSummaryViewModel(taxAccountSummary, true, nonTaxCodeIncome, Seq(), Seq(), Seq(), Seq())
 
 
           sut.otherIncomeSources mustBe Seq(otherIncomeSourceViewModel1, otherIncomeSourceViewModel2)
@@ -169,7 +171,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
             OtherNonTaxCodeIncome(Profit, None, 100, "Profit")
           ))
 
-          val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, true, nonTaxCodeIncomeWithBankAccounts)
+          val sut = TaxAccountSummaryViewModel(taxAccountSummary, true, nonTaxCodeIncomeWithBankAccounts, Seq(), Seq(), Seq(), Seq())
 
 
           sut.otherIncomeSources mustBe Seq(otherIncomeSourceViewModel1, otherIncomeSourceViewModel2)
@@ -180,7 +182,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
           val otherIncomeSourceViewModel1 = otherIncomeSourceViewModel.copy(name = "Profit", amount = "£100", detailsLinkLabel = Messages("tai.updateOrRemove"),
             detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url)
 
-          val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, true, nonTaxCodeIncomeWithOutUntaxedInterest)
+          val sut = TaxAccountSummaryViewModel(taxAccountSummary, true, nonTaxCodeIncomeWithOutUntaxedInterest, Seq(), Seq(), Seq(), Seq())
 
 
           sut.otherIncomeSources mustBe Seq(otherIncomeSourceViewModel1)
@@ -209,7 +211,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
             OtherNonTaxCodeIncome(JobSeekersAllowance, None, 100, "JobSeekersAllowance")
           ))
 
-          val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, true, nonTaxCodeIncomeWithBankAccounts)
+          val sut = TaxAccountSummaryViewModel(taxAccountSummary, true, nonTaxCodeIncomeWithBankAccounts, Seq(), Seq(), Seq(), Seq())
 
 
           sut.otherIncomeSources mustBe Seq(otherIncomeSourceViewModel1, otherIncomeSourceViewModel2,otherIncomeSourceViewModel3,
@@ -219,11 +221,11 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         }
       }
 
-      "has not other income sources" when {
+      "has no other income sources" when {
         "there is no other income sources are available" in {
           val nonTaxCodeIncomeWithOutAnything = NonTaxCodeIncome(None, Seq.empty[OtherNonTaxCodeIncome])
 
-          val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, true, nonTaxCodeIncomeWithOutAnything)
+          val sut = TaxAccountSummaryViewModel(taxAccountSummary, true, nonTaxCodeIncomeWithOutAnything, Seq(), Seq(), Seq(), Seq())
 
 
           sut.otherIncomeSources mustBe Seq.empty[IncomeSourceViewModel]
@@ -232,7 +234,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
     }
 
     "return a view model instance for an end dated employment record that has no matching TaxCodeIncomeSource record" in {
-      val sut = TaxAccountSummaryViewModel(taxCodeIncomes, nonMatchedEmployments, TaxAccountSummary(0, 0, 0, 0, 0), true, nonTaxCodeIncome)
+      val sut = TaxAccountSummaryViewModel(TaxAccountSummary(0, 0, 0, 0, 0), isAnyFormInProgress = true, nonTaxCodeIncome, Seq(), Seq(), Seq(), Seq(ceasedEmployment.copy(sequenceNumber = 998)))
       sut.ceasedEmployments.size mustBe 1
       sut.ceasedEmployments(0) mustBe IncomeSourceViewModel(
         name = "Ceased employer name",
@@ -439,35 +441,64 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
     }
   }
 
-  val taxCodeIncomes = Seq(
-    TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live),
-    TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employment", "BR", "employer2", Week1Month1BasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(3), 3333, "employment", "1150L", "employer3", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOfOperation, Live),
+  val liveEmployment1 = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)
+  val liveEmployment2 = TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employment", "BR", "employer2", Week1Month1BasisOfOperation, Live)
+  val livePension3 = TaxCodeIncome(PensionIncome, Some(3), 3333, "employment", "1150L", "employer3", OtherBasisOfOperation, Live)
+  val livePension4 = TaxCodeIncome(PensionIncome, Some(4), 4444, "employment", "BR", "employer4", Week1Month1BasisOfOperation, Live)
+  val potentiallyCeasedEmployment9 = TaxCodeIncome(EmploymentIncome, Some(9), 1111, "employment", "1150L", "employer9", OtherBasisOfOperation, PotentiallyCeased)
+  val ceasedEmployment10 = TaxCodeIncome(EmploymentIncome, Some(10), 2222, "employment", "BR", "employer10", Week1Month1BasisOfOperation, Ceased)
+
+  val taxCodeIncomes: Seq[TaxCodeIncome] = Seq(
+    liveEmployment1,
+    liveEmployment2,
+    livePension3,
+    livePension4,
     TaxCodeIncome(JobSeekerAllowanceIncome, Some(5), 5555, "employment", "1150L", "employer5", OtherBasisOfOperation, Live),
     TaxCodeIncome(JobSeekerAllowanceIncome, Some(6), 6666, "employment", "BR", "employer6", Week1Month1BasisOfOperation, Live),
     TaxCodeIncome(OtherIncome, Some(7), 7777, "employment", "1150L", "employer7", OtherBasisOfOperation, Live),
     TaxCodeIncome(OtherIncome, Some(8), 8888, "employment", "BR", "employer8", Week1Month1BasisOfOperation, Live),
-    TaxCodeIncome(EmploymentIncome, Some(9), 1111, "employment", "1150L", "employer9", OtherBasisOfOperation, PotentiallyCeased),
-    TaxCodeIncome(EmploymentIncome, Some(10), 2222, "employment", "BR", "employer10", Week1Month1BasisOfOperation, Ceased),
+    potentiallyCeasedEmployment9,
+    ceasedEmployment10,
     TaxCodeIncome(PensionIncome, Some(11), 1111, "employment", "1150L", "employer11", OtherBasisOfOperation, PotentiallyCeased),
     TaxCodeIncome(PensionIncome, Some(12), 2222, "employment", "BR", "employer12", Week1Month1BasisOfOperation, Ceased),
     TaxCodeIncome(EmploymentIncome, None, 2222, "employment", "BR", "employer", Week1Month1BasisOfOperation, Live)
   )
 
-  val employments = Seq(
-    Employment("Employer name1", Some("1ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST1", "PAYE1", 1, None, false, false),
-    Employment("Employer name2", Some("1ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST2", "PAYE2", 2, None, false, false),
-    Employment("Pension name1", Some("3ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST3", "PAYE3", 3, None, false, false),
-    Employment("Pension name2", Some("4ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST4", "PAYE4", 4, None, false, false),
+  val empEmployment1 = Employment("Employer name1", Some("1ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST1", "PAYE1", 1, None, false, false)
+  val empEmployment2 = Employment("Employer name2", Some("1ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST2", "PAYE2", 2, None, false, false)
+  val pensionEmployment3 = Employment("Pension name1", Some("3ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST3", "PAYE3", 3, None, false, false)
+  val pensionEmployment4 = Employment("Pension name2", Some("4ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST4", "PAYE4", 4, None, false, false)
+  val empEmployment9 = Employment("Employer name3", Some("9ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST9", "PAYE9", 9, None, false, false)
+  val empEmployment10 = Employment("Employer name4", Some("10ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq.empty[AnnualAccount], "DIST10", "PAYE10", 10, None, false, false)
+
+  val employments: Seq[Employment] = Seq(
+    empEmployment1,
+    empEmployment2,
+    pensionEmployment3,
+    pensionEmployment4,
     Employment("JobSeekerAllowance name1", Some("5ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST5", "PAYE5", 5, None, false, false),
     Employment("JobSeekerAllowance name2", Some("6ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST6", "PAYE6", 6, None, false, false),
     Employment("OtherIncome name1", Some("7ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST7", "PAYE7", 7, None, false, false),
     Employment("OtherIncome name2", Some("8ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST8", "PAYE8", 8, None, false, false),
-    Employment("Employer name3", Some("9ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST9", "PAYE9", 9, None, false, false),
-    Employment("Employer name4", Some("10ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq.empty[AnnualAccount], "DIST10", "PAYE10", 10, None, false, false),
+    empEmployment9,
+    empEmployment10,
     Employment("Pension name3", Some("11ABC"), new LocalDate(2017, 3, 1), None, Seq.empty[AnnualAccount], "DIST11", "PAYE11", 11, None, false, false),
     Employment("Pension name4", Some("12ABC"), new LocalDate(2017, 3, 1), Some(new LocalDate(2018, 4, 21)), Seq.empty[AnnualAccount], "DIST12", "PAYE12", 12, None, false, false)
+  )
+
+  val livePensionIncomeSources: Seq[IncomeSource] = Seq(
+    IncomeSource(livePension3, pensionEmployment3),
+    IncomeSource(livePension4, pensionEmployment4)
+  )
+
+  val liveEmploymentIncomeSources: Seq[IncomeSource] = Seq(
+    IncomeSource(liveEmployment1, empEmployment1),
+    IncomeSource(liveEmployment2, empEmployment2)
+  )
+
+  val ceasedEmploymentIncomeSources: Seq[IncomeSource] = Seq(
+    IncomeSource(potentiallyCeasedEmployment9, empEmployment9),
+    IncomeSource(ceasedEmployment10, empEmployment10)
   )
 
   val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment", "1150L", "employer1", OtherBasisOfOperation, Live)

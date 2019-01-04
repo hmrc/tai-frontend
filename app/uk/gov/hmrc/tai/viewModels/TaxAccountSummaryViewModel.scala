@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,6 +146,36 @@ object IncomeSourceViewModel extends ViewModelHelper {
       incomeSource.employment.payrollNumber.isDefined,
       endDate.getOrElse(""),
       incomeSource.taxCodeIncome.status != Live && endDate.isDefined,
+      detailsLinkLabel,
+      incomeSourceSummaryUrl)
+  }
+
+  def apply(taxCodeIncome: TaxCodeIncome,
+            employment: Employment)(implicit messages: Messages): IncomeSourceViewModel = {
+
+    val endDate: Option[String] = employment.endDate.map( Dates.formatDate(_) )
+    val detailsLinkLabel = taxCodeIncome.componentType match {
+      case EmploymentIncome if taxCodeIncome.status == Live => messages("tai.incomeTaxSummary.employmentAndBenefits.link")
+      case EmploymentIncome if taxCodeIncome.status != Live => messages("tai.incomeTaxSummary.employment.link")
+      case PensionIncome => messages("tai.incomeTaxSummary.pension.link")
+      case _ => messages("tai.incomeTaxSummary.income.link")
+    }
+
+    val incomeSourceSummaryUrl =
+      if(taxCodeIncome.componentType == EmploymentIncome && taxCodeIncome.status != Live)
+        controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(employment.sequenceNumber).url
+      else
+        controllers.routes.IncomeSourceSummaryController.onPageLoad(employment.sequenceNumber).url
+
+    IncomeSourceViewModel(
+      employment.name,
+      withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0)),
+      taxCodeIncome.taxCodeWithEmergencySuffix,
+      taxCodeIncome.status == Live,
+      employment.payrollNumber.getOrElse(""),
+      employment.payrollNumber.isDefined,
+      endDate.getOrElse(""),
+      taxCodeIncome.status != Live && endDate.isDefined,
       detailsLinkLabel,
       incomeSourceSummaryUrl)
   }
