@@ -64,9 +64,7 @@
 
 @isSa = @{
     user.fold(false) {
-        user =>
-            true
-            // user.authContext.principal.accounts.sa.map(_.utr).isDefined
+        user => user.authContext.principal.accounts.sa.map(_.utr).isDefined
     }
 }
 

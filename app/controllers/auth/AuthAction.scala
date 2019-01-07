@@ -36,9 +36,7 @@ case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthActionedTai
 
 case class AuthActionedTaiUser(name: String, validNino: String) {
   def getDisplayName = name
-
   def getNino = validNino
-
   def nino: Nino = Nino(validNino)
 }
 
