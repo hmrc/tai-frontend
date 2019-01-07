@@ -18,10 +18,15 @@ package controllers
 
 import controllers.auth.{AuthAction, AuthActionedTaiUser, AuthenticatedRequest}
 import play.api.mvc.{Request, Result}
+import uk.gov.hmrc.domain.Generator
 
 import scala.concurrent.Future
+import scala.util.Random
 
 object FakeAuthAction extends AuthAction {
+
+  val nino = new Generator(new Random).nextNino
+
   override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[Result]): Future[Result] =
-    block(AuthenticatedRequest(request, AuthActionedTaiUser("person name", "AN986715A")))
+    block(AuthenticatedRequest(request, AuthActionedTaiUser("person name", nino.toString())))
 }

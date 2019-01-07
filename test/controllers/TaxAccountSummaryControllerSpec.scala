@@ -99,7 +99,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
       val result = sut.onPageLoad()(fakeRequest)
       status(result) mustBe OK
       verify(auditService, times(1)).
-        createAndSendAuditEvent(Matchers.eq(TaxAccountSummary_UserEntersSummaryPage), Matchers.eq(Map("nino" -> "AN986715A")))(Matchers.any(), Matchers.any())
+        createAndSendAuditEvent(Matchers.eq(TaxAccountSummary_UserEntersSummaryPage), Matchers.eq(Map("nino" -> FakeAuthAction.nino.toString())))(Matchers.any(), Matchers.any())
     }
 
     "display an error page" when {
@@ -216,8 +216,6 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-
-    // when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
   }
 
