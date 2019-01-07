@@ -263,3 +263,6 @@ GET         /incorrect-pension/success                                          
 GET         /tax-code-change/tax-code-comparison                                       @controllers.TaxCodeChangeController.taxCodeComparison
 GET         /tax-code-change/your-tax-free-amount                                      @controllers.TaxCodeChangeController.yourTaxFreeAmount
 GET         /tax-code-change/what-happens-next                                         @controllers.TaxCodeChangeController.whatHappensNext
+
+## Auth error page
+GET         /tax-code-change/unauthorised                                              @controllers.UnauthorisedController.onPageLoad

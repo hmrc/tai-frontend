@@ -18,7 +18,6 @@ package controllers
 
 import com.google.inject.Inject
 import controllers.auth.AuthAction
-import controllers.auth.AuthActionedTaiUser
 import javax.inject.Singleton
 import play.api.Play.current
 import play.api.i18n.Messages

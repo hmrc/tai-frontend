@@ -18,6 +18,7 @@ package controllers.auth
 
 import com.google.inject.{ImplementedBy, Inject, Singleton}
 import controllers.routes
+import play.Logger
 import play.api.mvc.Results.Redirect
 import play.api.mvc._
 import uk.gov.hmrc.auth.core
@@ -32,11 +33,14 @@ import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.{ExecutionContext, Future}
 
+
 case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthActionedTaiUser) extends WrappedRequest[A](request)
 
 case class AuthActionedTaiUser(name: String, validNino: String) {
   def getDisplayName = name
+
   def getNino = validNino
+
   def nino: Nino = Nino(validNino)
 }
 
@@ -81,21 +85,21 @@ class AuthActionImpl @Inject()(personService: PersonService,
         }
 
         case _ => {
-          Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
+          Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
         }
-      } recover {
-      case _: UnsupportedAffinityGroup => {
-        Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
-      }
-      case _: InsufficientConfidenceLevel => {
-        Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
-      }
-      case _: PersonDeceasedException => {
-        Redirect(routes.DeceasedController.deceased())
-      }
-      case _: PersonCorruptDataException => {
-        Redirect(routes.ServiceController.gateKeeper())
-      }
+      } recover handleFailure
+  }
+
+  private def handleFailure: PartialFunction[Throwable, Result] = {
+    case _: PersonDeceasedException => {
+      Redirect(routes.DeceasedController.deceased())
+    }
+    case _: PersonCorruptDataException => {
+      Redirect(routes.ServiceController.gateKeeper())
+    }
+    case ex => {
+      Logger.warn(s"<Exception returned during authorisation with exception: ${ex.getClass()}", ex)
+      Redirect(routes.UnauthorisedController.onPageLoad())
     }
   }
 

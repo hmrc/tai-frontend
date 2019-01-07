@@ -53,7 +53,7 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
         val result = controller.onPageLoad()(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().toString)
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().toString)
       }
     }
 
@@ -64,7 +64,7 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
         val result = controller.onPageLoad()(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().toString)
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().toString)
       }
     }
 
