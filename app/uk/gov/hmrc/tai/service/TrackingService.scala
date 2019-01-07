@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.util.control.NonFatal
 
-class TrackingService @Inject() (val trackingConnector: TrackingConnector,
+class TrackingService @Inject() (trackingConnector: TrackingConnector,
                                  @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService
                                 ) extends JourneyCacheConstants{
 

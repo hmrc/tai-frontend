@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model.domain.{AddPensionProvider, IncorrectPensionProvide
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PensionProviderConnector @Inject() (val httpHandler: HttpHandler) extends ServicesConfig {
+class PensionProviderConnector @Inject() (httpHandler: HttpHandler) extends ServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 

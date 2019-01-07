@@ -40,14 +40,11 @@ class TaiModule extends Module {
     bind[FormPartialRetriever].toInstance(TaiHtmlPartialRetriever),
     bind[TemplateRenderer].toInstance(LocalTemplateRenderer),
     bind[WSHttpProxy].toInstance(WSHttpProxy),
+    bind[WSHttp].toInstance(WSHttp),
     // Connectors
     bind[AuditConnector].toInstance(AuditConnector),
     bind[uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector].toInstance(FrontendAuthConnector),
     bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
-    bind[HttpHandler].toInstance(HttpHandler),
-    bind[UserDetailsConnector].toInstance(UserDetailsConnector),
-    bind[TaiConnector].toInstance(TaiConnector),
-    bind[TrackingConnector].toInstance(TrackingConnector),
     // Journey Cache Services
     bind[JourneyCacheService].qualifiedWith("Add Employment").to(classOf[AddEmploymentJourneyCacheService]),
     bind[JourneyCacheService].qualifiedWith("Add Pension Provider").to(classOf[AddPensionProviderJourneyCacheService]),

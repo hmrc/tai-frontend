@@ -72,9 +72,10 @@ class PersonServiceSpec extends PlaySpec
   def createSut = new PersonServiceTest
 
   val personConnector = mock[PersonConnector]
+  val taiConnector = mock[TaiConnector]
 
   class PersonServiceTest extends PersonService(
-    mock[TaiConnector],
+    taiConnector,
     personConnector
   )
 

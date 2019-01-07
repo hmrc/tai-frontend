@@ -22,26 +22,22 @@ import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.http.CoreGet
+import uk.gov.hmrc.http.{CoreGet, HeaderCarrier}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.tai.config.WSHttp
+import uk.gov.hmrc.tai.model.UserDetails
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
-import uk.gov.hmrc.http.{HeaderCarrier, HttpGet}
-import uk.gov.hmrc.tai.model.UserDetails
 
 class UserDetailsConnectorSpec extends PlaySpec with MockitoSugar {
 
   "userDetails with userDetailsUri as parameter" should {
     "return UserDetails from Http get" in {
-      val sut = new UserDetailsConnector {
-        override def http = mockHttp
-      }
-      implicit val hc = HeaderCarrier()
-      val userDetails = UserDetails("")
+
       val userDetailsUri = "user-details/user-details"
-      when(mockHttp.GET[UserDetails](any())(any(), any(), any())).thenReturn(Future.successful(userDetails))
+
 
       val result = Await.result(sut.userDetails(userDetailsUri), 5 seconds)
 
@@ -52,13 +48,8 @@ class UserDetailsConnectorSpec extends PlaySpec with MockitoSugar {
   "userDetails with authContext as parameter" should {
     "return UserDetails from Http get" when {
       "UserDetailsUri exists" in {
-        val sut = new UserDetailsConnector {
-          override def http = mockHttp
-        }
-        implicit val hc = HeaderCarrier()
-        val userDetails = UserDetails("")
+
         val authContext: AuthContext = UserBuilder().authContext
-        when(mockHttp.GET[UserDetails](any())(any(), any(), any())).thenReturn(Future.successful(userDetails))
 
         val result = Await.result(sut.userDetails(authContext), 5 seconds)
 
@@ -68,21 +59,25 @@ class UserDetailsConnectorSpec extends PlaySpec with MockitoSugar {
 
     "return failure" when {
       "UserDetailsUri does not exist" in {
-        val sut = new UserDetailsConnector {
-          override def http = mockHttp
-        }
+
         implicit val hc = HeaderCarrier()
         val userDetails = UserDetails("")
         val authContext: AuthContext = UserBuilder().authContext.copy(userDetailsUri = None)
 
         val result = sut.userDetails(authContext)
-        ScalaFutures.whenReady(result.failed){ e =>
+        ScalaFutures.whenReady(result.failed) { e =>
           e mustBe a[RuntimeException]
         }
       }
     }
   }
 
-  private lazy val mockHttp = mock[CoreGet]
+  private lazy val mockHttp = mock[WSHttp]
+
+  val sut = new UserDetailsConnector(mockHttp)
+  val userDetails = UserDetails("")
+  implicit val hc = HeaderCarrier()
+
+  when(mockHttp.GET[UserDetails](any())(any(), any(), any())).thenReturn(Future.successful(userDetails))
 
 }

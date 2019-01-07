@@ -16,20 +16,18 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.google.inject.Inject
 import play.Logger
 import play.api.http.Status._
-import play.api.libs.json.{JsValue, Json, Writes}
-import uk.gov.hmrc.http.{CoreDelete, CoreGet, CorePost, CorePut}
-import uk.gov.hmrc.play.http._
+import play.api.libs.json.{JsValue, Writes}
+import uk.gov.hmrc.http._
+import uk.gov.hmrc.tai.config.WSHttp
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpException, HttpReads, HttpResponse, InternalServerException, LockedException, NotFoundException}
-import uk.gov.hmrc.tai.config.WSHttp
 
-trait HttpHandler {
 
-  def http: CoreGet with CorePut with CorePost with CoreDelete
+class HttpHandler @Inject()(val http: WSHttp) {
 
   def getFromApi(url: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
 
@@ -118,9 +116,3 @@ trait HttpHandler {
   }
 
 }
-// $COVERAGE-OFF$
-object HttpHandler extends HttpHandler {
-  override val http = WSHttp
-}
-// $COVERAGE-ON$
-
