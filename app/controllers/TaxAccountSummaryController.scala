@@ -78,11 +78,17 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
   }
 
   private def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(implicit hc: HeaderCarrier, messages: Messages) = {
+
+    val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
+    val nonTaxCodeIncomeFuture = taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
+    val employmentsFuture = employmentService.employments(nino, TaxYear())
+    val isAnyFormInProgressFuture = trackingService.isAnyIFormInProgress(nino.nino)
+
     for {
-      taxCodeIncomes <- taxAccountService.taxCodeIncomes(nino, TaxYear())
-      nonTaxCodeIncome <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
-      employments <- employmentService.employments(nino, TaxYear())
-      isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
+      taxCodeIncomes <- taxCodeIncomesFuture
+      nonTaxCodeIncome <- nonTaxCodeIncomeFuture
+      employments <- employmentsFuture
+      isAnyFormInProgress <- isAnyFormInProgressFuture
     } yield {
       (taxCodeIncomes, nonTaxCodeIncome) match {
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
