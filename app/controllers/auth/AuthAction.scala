@@ -18,7 +18,7 @@ package controllers.auth
 
 import com.google.inject.{ImplementedBy, Inject, Singleton}
 import controllers.routes
-import play.api.mvc.Results._
+import play.api.mvc.Results.Redirect
 import play.api.mvc._
 import uk.gov.hmrc.auth.core
 import uk.gov.hmrc.auth.core._
@@ -27,6 +27,7 @@ import uk.gov.hmrc.auth.core.retrieve.{Name, ~}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.tai.model.domain.{Person, PersonCorruptDataException, PersonDeceasedException}
 import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,7 +36,9 @@ case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthActionedTai
 
 case class AuthActionedTaiUser(name: String, validNino: String) {
   def getDisplayName = name
+
   def getNino = validNino
+
   def nino: Nino = Nino(validNino)
 }
 
@@ -45,6 +48,26 @@ class AuthActionImpl @Inject()(personService: PersonService,
                               (implicit ec: ExecutionContext) extends AuthAction
   with AuthorisedFunctions {
 
+  def processBlock[A](person: Person,
+                      name: Option[Name],
+                      nino: Option[String],
+                      block: AuthenticatedRequest[A] => Future[Result],
+                      request: Request[A]): Future[Result] = {
+    if (person.isDeceased) {
+      throw new PersonDeceasedException
+    } else if (person.hasCorruptData) {
+      throw new PersonCorruptDataException
+    }
+    else {
+      for {
+        taiUser <- getTaiUser(name, nino)
+        result <- block(AuthenticatedRequest(request, taiUser))
+      } yield {
+        result
+      }
+    }
+  }
+
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
@@ -52,24 +75,28 @@ class AuthActionImpl @Inject()(personService: PersonService,
       .retrieve(Retrievals.nino and Retrievals.name) {
         case nino ~ name => {
           for {
-            taiUser <- getTaiUser(name, nino)
-            result <- block(AuthenticatedRequest(request, taiUser))
+            person <- personService.personDetails(Nino(nino.getOrElse("")))
+            result <- processBlock(person, name, nino, block, request)
           } yield {
             result
           }
         }
 
-        //TODO specific error pages
         case _ => {
           Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
         }
-      } recoverWith {
-      //TODO specific error pages
+      } recover {
       case _: UnsupportedAffinityGroup => {
-        Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
+        Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
       }
       case _: InsufficientConfidenceLevel => {
-        Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
+        Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage())
+      }
+      case _: PersonDeceasedException => {
+        Redirect(routes.DeceasedController.deceased())
+      }
+      case _: PersonCorruptDataException => {
+        Redirect(routes.ServiceController.gateKeeper())
       }
     }
   }

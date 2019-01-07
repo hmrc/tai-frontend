@@ -15,23 +15,24 @@
  */
 
 package controllers.auth
-import controllers.routes
-import controllers.FakeTaiPlayApplication
+
+import controllers.{FakeTaiPlayApplication, routes}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.mvc.Controller
-import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.auth.core.{AuthConnector, InsufficientConfidenceLevel, UnsupportedAffinityGroup}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.model.domain.{PersonCorruptDataException, PersonDeceasedException}
 import uk.gov.hmrc.tai.service.PersonService
-import play.api.test.Helpers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
+  private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   class Harness(authAction: AuthAction) extends Controller {
     def onPageLoad() = authAction { request => Ok }
@@ -61,11 +62,34 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
         val authAction = new AuthActionImpl(mock[PersonService], new FakeFailingAuthConnector(new UnsupportedAffinityGroup))
         val controller = new Harness(authAction)
         val result = controller.onPageLoad()(fakeRequest)
-        
+
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage().toString)
       }
     }
+
+    "the person is deceased" must {
+      "redirect the user to a deceased page " in {
+        val authAction = new AuthActionImpl(mock[PersonService], new FakeFailingAuthConnector(new PersonDeceasedException))
+        val controller = new Harness(authAction)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.DeceasedController.deceased().toString)
+      }
+    }
+
+    "the person data is corrupt" must {
+      "redirect the user to a gatekeeper page " in {
+        val authAction = new AuthActionImpl(mock[PersonService], new FakeFailingAuthConnector(new PersonCorruptDataException))
+        val controller = new Harness(authAction)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.ServiceController.gateKeeper().toString)
+      }
+    }
+
   }
 }
 
