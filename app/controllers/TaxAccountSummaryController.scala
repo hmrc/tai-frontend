@@ -19,6 +19,7 @@ package controllers
 import com.google.inject.Inject
 import controllers.audit.Auditable
 import controllers.auth.{AuthAction, WithAuthorisedForTaiLite}
+import play.Logger
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
@@ -64,7 +65,15 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
             implicit val user = request.taiUser
             Ok(views.html.incomeTaxSummary(vm))
           }
-        case _ => throw new RuntimeException("Failed to fetch tax account summary details")
+        case _ => {
+          Logger.warn("Failed to fetch tax account summary details")
+          Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
+        }
+      } recover {
+        case e => {
+          Logger.warn(s"Exception: ${e.getClass()}", e)
+          InternalServerError(error5xx(Messages("tai.technical.error.message")))
+        }
       }
   }
 

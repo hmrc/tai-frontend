@@ -103,7 +103,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
     }
 
     "display an error page" when {
-      "a downstream error has occurred in one of the TaiResponse responding service methods" ignore {
+      "a downstream error has occurred in one of the TaiResponse responding service methods" in {
         val sut = createSUT
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
@@ -117,7 +117,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
-      "a downstream error has occurred in the employment service (which does not reply with TaiResponse type)" ignore {
+      "a downstream error has occurred in the employment service (which does not reply with TaiResponse type)" in {
         val sut = createSUT
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
@@ -134,7 +134,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
       }
 
 
-      "a downstream error has occurred in the tax code income service (which does not reply with TaiResponse type)" ignore {
+      "a downstream error has occurred in the tax code income service (which does not reply with TaiResponse type)" in {
         val sut = createSUT
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
