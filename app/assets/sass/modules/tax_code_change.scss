@@ -32,3 +32,26 @@
     margin-bottom: 30px;
   }
 }
+
+.tax-free-amount-comparison-table.responsive-table {
+
+  margin-top: 20px;
+
+  tbody {
+    .table-heading {
+      font-weight: normal;
+    }
+  }
+
+  .tax-free-amount-comparison-row-title {
+    @media (max-width: 768px) {
+      font-weight: 700;
+    }
+  }
+
+  .tax-free-amount-comparison-row-heading {
+    @media (max-width: 768px) {
+      font-size: 19px;
+    }
+  }
+}
