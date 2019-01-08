@@ -16,12 +16,17 @@
 
 package views.html
 
+import controllers.auth.AuthActionedTaiUser
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{DescriptionListViewModel, TaxCodeViewModel}
 
 import scala.collection.immutable.ListMap
+import scala.util.Random
 
 class TaxCodeDetailsViewSpec extends TaiViewSpec {
+  def generateNino = new Generator(new Random).nextNino.toString()
+  implicit val authActionedTaiUser: AuthActionedTaiUser = AuthActionedTaiUser("Firstname Surname", generateNino, "utr")
 
   "Tax code view page" must {
     behave like pageWithTitle("main heading")
