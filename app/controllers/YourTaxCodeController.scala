@@ -17,14 +17,10 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.audit.Auditable
-import controllers.auth.WithAuthorisedForTaiLite
+import controllers.auth.AuthAction
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
@@ -39,54 +35,40 @@ import scala.concurrent.Future
 class YourTaxCodeController @Inject()(personService: PersonService,
                                       taxAccountService: TaxAccountService,
                                       taxCodeChangeService: TaxCodeChangeService,
-                                      val auditConnector: AuditConnector,
-                                      val delegationConnector: DelegationConnector,
-                                      val authConnector: AuthConnector,
+                                      authenticate: AuthAction,
                                       override implicit val partialRetriever: FormPartialRetriever,
                                       override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite
-  with Auditable
   with FeatureTogglesConfig {
 
-  def taxCodes(year: TaxYear = TaxYear()): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            val nino = user.person.nino
+  def taxCodes(year: TaxYear = TaxYear()): Action[AnyContent] = authenticate.async {
+    implicit request =>
+      val nino = request.taiUser.nino
 
-            for {
-              TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService.taxCodeIncomes(nino, year)
-              scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
-            } yield {
-              val taxCodeViewModel = TaxCodeViewModel.apply(taxCodeIncomes, scottishTaxRateBands)
-              Ok(views.html.taxCodeDetails(taxCodeViewModel))
-            }
-          }
+      for {
+        TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService.taxCodeIncomes(nino, year)
+        scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
+      } yield {
+        val taxCodeViewModel = TaxCodeViewModel.apply(taxCodeIncomes, scottishTaxRateBands)
+        implicit val user = request.taiUser
+        Ok(views.html.taxCodeDetails(taxCodeViewModel))
+      }
   }
 
-  def prevTaxCodes(year: TaxYear): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
+  def prevTaxCodes(year: TaxYear): Action[AnyContent] = authenticate.async {
+    implicit request =>
+      if (taxCodeChangeEnabled) {
+        val nino = request.taiUser.nino
 
-          if (taxCodeChangeEnabled) {
-            ServiceCheckLite.personDetailsCheck {
-              val nino = user.person.nino
-
-              for {
-                taxCodeRecords <- taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(nino, year)
-                scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeRecords.map(_.taxCode))
-              } yield {
-                val taxCodeViewModel = TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, year)
-                Ok(views.html.taxCodeDetailsPreviousYears(taxCodeViewModel))
-              }
-            }
-          } else {
-            ServiceCheckLite.personDetailsCheck {
-              Future.successful(NotFound)
-            }
-          }
+        for {
+          taxCodeRecords <- taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(nino, year)
+          scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeRecords.map(_.taxCode))
+        } yield {
+          val taxCodeViewModel = TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, year)
+          implicit val user = request.taiUser
+          Ok(views.html.taxCodeDetailsPreviousYears(taxCodeViewModel))
+        }
+      } else {
+        Future.successful(NotFound)
+      }
   }
 }

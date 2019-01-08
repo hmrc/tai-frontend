@@ -148,18 +148,11 @@ class YourTaxCodeControllerSpec extends PlaySpec
     personService,
     taxAccountService,
     taxCodeChangeService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-
     override val taxCodeChangeEnabled = true
-
-    when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino))))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-
   }
 
 }
