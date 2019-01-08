@@ -18,16 +18,10 @@ package controllers
 
 import com.google.inject.Inject
 import controllers.auth.AuthAction
-import javax.inject.Singleton
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request}
-import uk.gov.hmrc.auth.core.PlayAuthConnector
-import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.hooks.HttpHooks
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.ws._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
@@ -38,19 +32,6 @@ import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTax
 import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
-
-object ConnectorWithHttpValues {
-  val http = new WSGet with HttpGet with WSPut with HttpPut with WSPost with HttpPost with WSDelete with HttpDelete with WSPatch with HttpPatch with HttpHooks {
-    val hooks = NoneRequired
-  }
-}
-
-@Singleton
-class AuthClientAuthConnector extends PlayAuthConnector with ServicesConfig {
-  override val serviceUrl: String = baseUrl("auth")
-
-  override def http: CorePost = ConnectorWithHttpValues.http
-}
 
 class TaxCodeChangeController @Inject()(val personService: PersonService,
                                         val codingComponentService: CodingComponentService,
