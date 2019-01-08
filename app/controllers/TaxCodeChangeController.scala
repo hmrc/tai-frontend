@@ -17,7 +17,7 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.auth.AuthAction
+import controllers.auth.{AuthAction, AuthActionedTaiUser}
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
@@ -47,14 +47,16 @@ class TaxCodeChangeController @Inject()(val personService: PersonService,
   def taxCodeComparison: Action[AnyContent] = authenticate.async {
     implicit request =>
       if (taxCodeChangeEnabled) {
-        val nino = request.taiUser.nino
+        val taiUser = request.taiUser
+        val nino = taiUser.nino
 
         for {
           taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
           scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
         } yield {
           val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
-          Ok(views.html.taxCodeChange.taxCodeComparison(viewModel, request.taiUser))
+          implicit val user: AuthActionedTaiUser = taiUser
+          Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
         }
       } else {
         Future.successful(Ok(notFoundView))
@@ -76,7 +78,9 @@ class TaxCodeChangeController @Inject()(val personService: PersonService,
           companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
         } yield {
           val viewModel = YourTaxFreeAmountViewModel(taxCodeChange.mostRecentTaxCodeChangeDate, codingComponents, employmentNames, companyCarBenefits)
-          Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel, request.taiUser))
+          implicit val user: AuthActionedTaiUser = request.taiUser
+
+          Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
         }
 
       } else {
@@ -88,7 +92,8 @@ class TaxCodeChangeController @Inject()(val personService: PersonService,
   def whatHappensNext: Action[AnyContent] = authenticate.async {
     implicit request =>
       if (taxCodeChangeEnabled) {
-        Future.successful(Ok(views.html.taxCodeChange.whatHappensNext(request.taiUser)))
+        implicit val user: AuthActionedTaiUser = request.taiUser
+        Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
       } else {
         Future.successful(Ok(notFoundView()))
       }
