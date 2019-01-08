@@ -20,11 +20,9 @@ package uk.gov.hmrc.tai.viewModels.taxCodeChange
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import uk.gov.hmrc.tai.util.ViewModelHelper
-import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 
 case class YourTaxFreeAmountViewModel(previousTaxFreeInfo: TaxFreeInfo,
                                       currentTaxFreeInfo: TaxFreeInfo,
-                                      taxFreeAmountSummary: TaxFreeAmountSummaryViewModel,
                                       allowances: Seq[CodingComponentPairDescription],
                                       deductions: Seq[CodingComponentPairDescription]) {}
 
@@ -41,5 +39,21 @@ object YourTaxFreeAmountViewModel extends ViewModelHelper {
   def totalCurrent(sequence: Seq[CodingComponentPairDescription]): String = {
     val total = sequence.map(_.current).sum
     prettyPrint(total)
+  }
+
+  val additionsTranslationMap: Map[String, String] = {
+    Map(
+      "title" -> "tai.taxFreeAmount.table.additions.caption",
+      "totalTitle" -> "tai.taxFreeAmount.table.additions.total",
+      "noItems" -> "tai.taxFreeAmount.table.additions.noAddition"
+    )
+  }
+
+  val deductionsTranslationMap: Map[String, String] = {
+    Map(
+      "title" -> "tai.taxFreeAmount.table.deductions.caption",
+      "totalTitle" -> "tai.taxFreeAmount.table.deductions.total",
+      "noItems" -> "tai.taxFreeAmount.table.deductions.noDeduction"
+    )
   }
 }

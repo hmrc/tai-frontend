@@ -27,18 +27,22 @@
 @deductions = @{ currentTaxFreeAmount.deductions }
 
 <table class="tax-free-amount-comparison-table responsive-table">
-    <caption class="visuallyhidden">ADD A CAPTION</caption>
+    <caption class="visuallyhidden">@Messages("taxCode.change.yourTaxFreeAmount.summaryHeading")</caption>
     <thead>
         <tr role="row">
             <th scope="col"></th>
-            <th scope="col" class="numeric">Previous tax code</th>
-            <th scope="col" class="numeric">Current tax code</th>
+            <th scope="col" class="numeric tax-free-amount-comparison-table-header-cell">
+                @Messages("tai.taxFreeAmount.table.previous.taxCodes")
+            </th>
+            <th scope="col" class="numeric tax-free-amount-comparison-table-header-cell">
+                @Messages("tai.taxFreeAmount.table.current.taxCodes")
+            </th>
         </tr>
     </thead>
     <tbody>
         @personalAllowanceRow
-        @iabdBreakdownRows(allowances, "Additions", "Total Additions")
-        @iabdBreakdownRows(deductions, "Deductions", "Total Deductions")
+        @iabdBreakdownRows(allowances, YourTaxFreeAmountViewModel.additionsTranslationMap)
+        @iabdBreakdownRows(deductions, YourTaxFreeAmountViewModel.deductionsTranslationMap)
         @totalTaxFreeAmountRow
     </tbody>
 </table>
@@ -46,41 +50,47 @@
 
 @personalAllowanceRow = {
     <tr role="row">
-        <td class="tax-free-amount-comparison-row-title">Personal Allowance</td>
+        <td class="tax-free-amount-comparison-row-title">@Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "")</td>
         <td class="numeric">
-            <span aria-hidden="true" class="table-heading">Previous</span>
-            @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.personalAllowance)
+            <span aria-hidden="true" class="table-heading">@Messages("tai.taxFreeAmount.table.previous")</span>
+            <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.personalAllowance)</span>
+            <span class="visuallyhidden">
+                @Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "") @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.personalAllowance)
+            </span>
         </td>
         <td class="numeric">
-            <span aria-hidden="true" class="table-heading">Current</span>
-            @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.personalAllowance)
+            <span aria-hidden="true" class="table-heading">@Messages("tai.taxFreeAmount.table.current")</span>
+            <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.personalAllowance)</span>
+            <span class="visuallyhidden">
+                @Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "") @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.personalAllowance)
+            </span>
         </td>
     </tr>
 }
 
-@iabdBreakdownRows(sequence: Seq[CodingComponentPairDescription], title: String, totalTitle: String) = {
+@iabdBreakdownRows(sequence: Seq[CodingComponentPairDescription], translations: Map[String, String]) = {
 
-    <tr role="row">
-        <td colspan="3"><h3 class="tax-free-amount-comparison-row-heading">@title</h3></td>
+    <tr role="row" class="tax-free-amount-comparison-row-heading">
+        <td colspan="3" class="tax-free-amount-comparison-row-heading-cell"><h3 class="tax-free-amount-comparison-row-heading">@Messages(translations("title"))</h3></td>
     </tr>
 
     @if(sequence.isEmpty) {
         <tr role="row">
-            <td class="tax-free-amount-comparison-row-title">You do not have any @title</td>
-            <td class="numeric"><span aria-hidden="true" class="table-heading">Previous</span>£0</td>
-            <td class="numeric"><span aria-hidden="true" class="table-heading">Current</span>£0</td>
+            <td class="tax-free-amount-comparison-row-title">@Messages(translations("noItems"))</td>
+            <td class="numeric"><span aria-hidden="true" class="table-heading">@Messages("tai.taxFreeAmount.table.previous")</span>£0</td>
+            <td class="numeric"><span aria-hidden="true" class="table-heading">@Messages("tai.taxFreeAmount.table.current")</span>£0</td>
         </tr>
     } else {
         @for(pair <- sequence) {
             <tr role="row">
                 <td class="tax-free-amount-comparison-row-title">@pair.description</td>
                 <td class="numeric">
-                    <span aria-hidden="true" class="table-heading">Previous</span>
+                    <span aria-hidden="true" class="table-heading">@Messages("tai.taxFreeAmount.table.previous")</span>
                     <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(pair.previous)</span>
                     <span class="visuallyhidden">@pair.description @YourTaxFreeAmountViewModel.prettyPrint(pair.previous)</span>
                 </td>
                 <td class="numeric">
-                    <span aria-hidden="true" class="table-heading">Current</span>
+                    <span aria-hidden="true" class="table-heading">@Messages("tai.taxFreeAmount.table.current")</span>
                     <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(pair.current)</span>
                     <span class="visuallyhidden">@pair.description @YourTaxFreeAmountViewModel.prettyPrint(pair.current)</span>
                 </td>
@@ -88,31 +98,31 @@
         }
 
         <tr role="row">
-            <td class="tax-free-amount-comparison-row-title">@totalTitle</td>
+            <td class="tax-free-amount-comparison-row-title">@Messages(translations("totalTitle"))</td>
             <td class="numeric">
-                <span aria-hidden="true" class="table-heading carr">Previous</span>
+                <span aria-hidden="true" class="table-heading carr">@Messages("tai.taxFreeAmount.table.previous")</span>
                 <span aria-hidden="true">@YourTaxFreeAmountViewModel.totalPrevious(sequence)</span>
-                <span class="visuallyhidden">@totalTitle @YourTaxFreeAmountViewModel.totalPrevious(sequence)</span>
+                <span class="visuallyhidden">@Messages(translations("totalTitle")) @YourTaxFreeAmountViewModel.totalPrevious(sequence)</span>
             </td>
             <td class="numeric">
-                <span aria-hidden="true" class="table-heading">Current</span>
+                <span aria-hidden="true" class="table-heading">@Messages("tai.taxFreeAmount.table.current")</span>
                 <span aria-hidden="true">@YourTaxFreeAmountViewModel.totalCurrent(sequence)</span>
-                <span class="visuallyhidden">@totalTitle @YourTaxFreeAmountViewModel.totalCurrent(sequence)</span>
+                <span class="visuallyhidden">@Messages(translations("totalTitle")) @YourTaxFreeAmountViewModel.totalCurrent(sequence)</span>
             </td>
         </tr>
     }
 }
 
 @totalTaxFreeAmountRow = {
-    <tr  class="highlight" role="row">
-        <td><h3>Your total tax-free amount</h3></td>
+    <tr class="tax-free-amount-comparison-total highlight" role="row">
+        <td><h3 class="tax-free-amount-comparison-row-heading tax-free-amount-comparison-row-summary">@Messages("tai.taxFreeAmount.table.totals.label")</h3></td>
         <td class="numeric">
-            <span aria-hidden="true" class="table-heading">Previous</span>
+            <span aria-hidden="true" class="table-heading">@Messages("tai.taxFreeAmount.table.previous")</span>
             <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.annualTaxFreeAmount)</span>
             <span class="visuallyhidden">Your total tax-free amount @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.annualTaxFreeAmount)</span>
         </td>
         <td class="numeric">
-            <span aria-hidden="true" class="table-heading">Current</span>
+            <span aria-hidden="true" class="table-heading">@Messages("tai.taxFreeAmount.table.current")</span>
             <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.annualTaxFreeAmount)</span>
             <span class="visuallyhidden">Your total tax-free amount @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.annualTaxFreeAmount)</span>
         </td>

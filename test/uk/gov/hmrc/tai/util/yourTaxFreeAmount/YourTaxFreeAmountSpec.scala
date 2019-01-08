@@ -40,14 +40,13 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
 
     val formattedPreviousDate = Dates.formatDate(previousDate)
     val formattedCurrentDate = createFormattedDate(currentDate)
-    val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(Seq.empty, Map.empty, Seq.empty, 0)
 
     YourTaxFreeAmountViewModel(
       TaxFreeInfo(formattedPreviousDate, 0, 0),
       TaxFreeInfo(formattedCurrentDate, 0, 0),
-      taxFreeAmountSummary,
       Seq.empty,
-      Seq.empty)
+      Seq.empty
+    )
   }
 
   def createFormattedDate(date: LocalDate): String = {

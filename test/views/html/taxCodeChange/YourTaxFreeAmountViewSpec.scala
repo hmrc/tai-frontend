@@ -66,59 +66,26 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
     "display a detail section" which {
 
-      "contains one section for each category" in {
-        doc.select(".govuk-check-your-answers").size() mustBe 4
-        doc must haveElementWithId("summaryTable1")
-        doc must haveElementWithId("summaryTable2")
-        doc must haveElementWithId("summaryTable3")
-        doc must haveElementWithId("summaryTable4")
-      }
-
       "contains a heading for the addition section" in {
-        doc must haveElementAtPathWithText("h3#summaryTable2Caption", Messages("tai.taxFreeAmount.table.additions.caption"))
+        doc must haveElementAtPathWithText("h3.tax-free-amount-comparison-row-heading", Messages("tai.taxFreeAmount.table.additions.caption"))
       }
 
       "contains a heading for the deduction section" in {
-        doc must haveElementAtPathWithText("h3#summaryTable3Caption", Messages("tai.taxFreeAmount.table.deductions.caption"))
+        doc must haveElementAtPathWithText("h3.tax-free-amount-comparison-row-heading", Messages("tai.taxFreeAmount.table.deductions.caption"))
       }
 
-      "does not contain a stand alone heading for the personal allowance and total groups (which are of length 1)" in {
-        doc must not(haveElementAtPathWithId("h3", "summaryTable1Caption"))
-        doc must not(haveElementAtPathWithId("h3", "summaryTable4Caption"))
+      "contains heading for the personal allowance category" in {
+        doc must haveElementAtPathWithText(".tax-free-amount-comparison-row-title", Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""))
       }
 
-      "contains heading for the personal allowance catergory" in {
-        doc must haveElementAtPathWithText("h3#summaryTable1Row1-header", Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""))
-      }
-
-      "contains heading for the total catergory" in {
-        doc must haveElementAtPathWithText("h3#summaryTable4Row1-header", Messages("tai.taxFreeAmount.table.totals.label"))
-      }
-
-      "displays a group with multiple rows as an unordered list of items" in {
-        doc must haveElementAtPathWithId("#yourTaxFreeAmount ul", "summaryTable2Body")
-      }
-
-      "displays a group with a single row as a plain div" in {
-
-        val emptyRowTaxFreeAmountSummary = createTaxFreeAmountSummaryViewModel(emptyAdditionRows, emptyDeductionsRows, "£1150")
-
-        val emptyRowViewModel = createViewModel(taxFreeAmountSummary = emptyRowTaxFreeAmountSummary)
-
-        val emptyRowView = createView(emptyRowViewModel)
-
-        doc(emptyRowView) must not(haveElementAtPathWithId("#yourTaxFreeAmount ul", "summaryTable3Body"))
-        doc(emptyRowView) must haveElementAtPathWithId("#yourTaxFreeAmount div", "summaryTable3Body")
-      }
-
-      "excludes a link cell from table rows, where instructed by the view model" in {
-        doc must not(haveElementWithId("summaryTable2Row3ChangeLinkCell"))
+      "contains heading for the total category" in {
+        doc must haveElementAtPathWithText("h3.tax-free-amount-comparison-row-heading", Messages("tai.taxFreeAmount.table.totals.label"))
       }
 
       "visually formats the final table" when {
         "the corresponding final summary item view model contains only a single row" in {
-          doc.select("#summaryTable4 .cya-question").size() mustBe 1
-          doc must haveElementAtPathWithClass("#summaryTable4 .govuk-check-your-answers", "highlight")
+          doc.select(".tax-free-amount-comparison-total").size() mustBe 1
+          doc must haveElementAtPathWithClass("tr", "tax-free-amount-comparison-total highlight")
         }
       }
     }
@@ -129,7 +96,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     }
   }
 
-  val personalAllowanceCatergory = TaxFreeAmountSummaryCategoryViewModel(
+  val personalAllowanceCategory = TaxFreeAmountSummaryCategoryViewModel(
                                       Messages("tai.taxFreeAmount.table.columnOneHeader"),
                                       Messages("tai.taxFreeAmount.table.columnTwoHeader"),
                                       hideHeaders = false,
@@ -166,7 +133,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
     TaxFreeAmountSummaryRowViewModel(Messages("tai.taxFreeAmount.table.taxComponent.DividendTax"), "£100", ChangeLinkViewModel(false, "", ""))
   )
 
-  def createDeductionsCatergory(deductionRows: Seq[TaxFreeAmountSummaryRowViewModel]) = TaxFreeAmountSummaryCategoryViewModel(
+  def createDeductionsCategory(deductionRows: Seq[TaxFreeAmountSummaryRowViewModel]) = TaxFreeAmountSummaryCategoryViewModel(
                                 Messages("tai.taxFreeAmount.table.columnOneHeader"),
                                 Messages("tai.taxFreeAmount.table.columnTwoHeader"),
                                 hideHeaders = true,
@@ -174,7 +141,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
                                 Messages("tai.taxFreeAmount.table.deductions.caption"),
                                 deductionRows)
 
-  def createTotalCatergory(totalAmountFormatted: String) = TaxFreeAmountSummaryCategoryViewModel(
+  def createTotalCategory(totalAmountFormatted: String) = TaxFreeAmountSummaryCategoryViewModel(
                            Messages("tai.taxFreeAmount.table.columnOneHeader"),
                            Messages("tai.taxFreeAmount.table.columnTwoHeader"),
                            hideHeaders = true,
@@ -192,10 +159,10 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
                                           totalFormattedAmount: String = "£1250") = {
 
                                               TaxFreeAmountSummaryViewModel(Seq(
-                                                  personalAllowanceCatergory,
+                                                  personalAllowanceCategory,
                                                   createAdditionsCatetgory(additionRows),
-                                                  createDeductionsCatergory(deductionRows),
-                                                  createTotalCatergory(totalFormattedAmount)
+                                                  createDeductionsCategory(deductionRows),
+                                                  createTotalCategory(totalFormattedAmount)
                                               ))
 
   }
@@ -203,13 +170,12 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
   val taxFreeAmountSummaryViewModel: TaxFreeAmountSummaryViewModel = createTaxFreeAmountSummaryViewModel()
 
   private def createViewModel(taxCodeDateRange: String = "",
-                              annualTaxFreeAmount: BigDecimal = 1150,
-                              taxFreeAmountSummary: TaxFreeAmountSummaryViewModel = taxFreeAmountSummaryViewModel): YourTaxFreeAmountViewModel = {
+                              annualTaxFreeAmount: BigDecimal = 1150
+                             ): YourTaxFreeAmountViewModel = {
 
     YourTaxFreeAmountViewModel(
       TaxFreeInfo(taxCodeDateRange, 0, 0),
       TaxFreeInfo(taxCodeDateRange, annualTaxFreeAmount, 0),
-      taxFreeAmountSummary,
       Seq.empty,
       Seq.empty)
   }

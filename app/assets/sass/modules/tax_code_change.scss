@@ -37,6 +37,12 @@
 
   margin-top: 20px;
 
+  .tax-free-amount-comparison-table-header-cell {
+    @media (min-width: 768px) {
+      width: 30%;
+    }
+  }
+
   tbody {
     .table-heading {
       font-weight: normal;
@@ -44,14 +50,30 @@
   }
 
   .tax-free-amount-comparison-row-title {
-    @media (max-width: 768px) {
+    @media (max-width: 767px) {
       font-weight: 700;
     }
   }
 
+  h3 {
+    margin: 0;
+
+    &.tax-free-amount-comparison-row-summary {
+      margin: 10px 0;
+    }
+  }
+
   .tax-free-amount-comparison-row-heading {
-    @media (max-width: 768px) {
+    @media (max-width: 767px) {
+      font-size: 22px;
+    }
+
+    @media (max-width: 641px) {
       font-size: 19px;
     }
+  }
+
+  .tax-free-amount-comparison-row-heading {
+    margin-bottom: 0;
   }
 }

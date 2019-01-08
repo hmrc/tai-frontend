@@ -192,7 +192,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     YourTaxFreeAmountViewModel(
       TaxFreeInfo("previousTaxDate", 0, 0),
       TaxFreeInfo("currentTaxDate", 0, 0),
-      TaxFreeAmountSummaryViewModel(Seq.empty),
       Seq.empty,
       Seq.empty)
 

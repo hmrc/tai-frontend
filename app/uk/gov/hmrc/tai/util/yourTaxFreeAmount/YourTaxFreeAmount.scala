@@ -35,9 +35,6 @@ trait YourTaxFreeAmount {
                         (implicit messages: Messages): YourTaxFreeAmountViewModel = {
     val taxAccountCalculator: TaxAccountCalculator = new TaxAccountCalculatorImpl
 
-    val removeMeTaxFreeAmountSummary =
-      TaxFreeAmountSummaryViewModel(current.codingComponents, employmentIds, current.companyCarBenefits, taxAccountCalculator.taxFreeAmount(current.codingComponents))
-
     val previousTaxFreeInfo = {
       val previousTaxCodeDateRange = Dates.formatDate(previous.date)
       TaxFreeInfo(previousTaxCodeDateRange, previous.codingComponents, taxAccountCalculator)
@@ -60,7 +57,6 @@ trait YourTaxFreeAmount {
     YourTaxFreeAmountViewModel(
       previousTaxFreeInfo,
       currentTaxFreeInfo,
-      removeMeTaxFreeAmountSummary,
       allowancesDescription,
       deductionsDescription)
   }
