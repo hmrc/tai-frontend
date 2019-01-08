@@ -211,7 +211,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec with MockitoSugar {
 
   val defaultViewModel: YourTaxFreeAmountViewModel = createViewModel()
 
-  def createView(viewModel: YourTaxFreeAmountViewModel = defaultViewModel) = views.html.taxCodeChange.yourTaxFreeAmount(viewModel, mock[AuthActionedTaiUser])
+  def createView(viewModel: YourTaxFreeAmountViewModel = defaultViewModel) = views.html.taxCodeChange.yourTaxFreeAmount(viewModel)
 
   override def view = createView()
 }

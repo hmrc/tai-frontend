@@ -52,9 +52,6 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
   val vm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Seq(activeEmployment), Seq(pensionIncome), Seq(endedEmployment), false, true, Seq(otherIncomeSourceViewModel))
   val noSectionsVm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Nil, Nil, Nil, false, true, Seq(otherIncomeSourceViewModel))
 
-  def generateNino = new Generator(new Random).nextNino.toString()
-  implicit val authActionedTaiUser: AuthActionedTaiUser = AuthActionedTaiUser("Firstname Surname", generateNino, "utr")
-
   override def view: Html = views.html.incomeTaxSummary(vm)
 
   "Income tax summary page" must {
