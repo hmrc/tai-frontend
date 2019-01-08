@@ -33,15 +33,26 @@ import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.{ExecutionContext, Future}
 
-
 case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthActionedTaiUser) extends WrappedRequest[A](request)
 
-case class AuthActionedTaiUser(name: String, validNino: String) {
+case class AuthActionedTaiUser(name: String, validNino: String, utr: String) {
   def getDisplayName = name
 
   def getNino = validNino
 
   def nino: Nino = Nino(validNino)
+
+  def getUTR = utr
+}
+
+case class AuthActionedTaiUserFactory(name: Option[Name], nino: Option[String], saUtr: Option[String]) {
+  def createTaiUser(): Future[AuthActionedTaiUser] = {
+    val validNino = nino.getOrElse("")
+    val validName = name.flatMap(_.name).getOrElse("")
+    val validUtr = saUtr.getOrElse("")
+
+    Future.successful(AuthActionedTaiUser(validName, validNino, validUtr))
+  }
 }
 
 @Singleton
@@ -51,8 +62,7 @@ class AuthActionImpl @Inject()(personService: PersonService,
   with AuthorisedFunctions {
 
   def processBlock[A](person: Person,
-                      name: Option[Name],
-                      nino: Option[String],
+                      taiUserFactory: AuthActionedTaiUserFactory,
                       block: AuthenticatedRequest[A] => Future[Result],
                       request: Request[A]): Future[Result] = {
     if (person.isDeceased) {
@@ -62,7 +72,7 @@ class AuthActionImpl @Inject()(personService: PersonService,
     }
     else {
       for {
-        taiUser <- getTaiUser(name, nino)
+        taiUser <- taiUserFactory.createTaiUser()
         result <- block(AuthenticatedRequest(request, taiUser))
       } yield {
         result
@@ -74,11 +84,13 @@ class AuthActionImpl @Inject()(personService: PersonService,
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     authorised(ConfidenceLevel.L200 and AffinityGroup.Individual)
-      .retrieve(Retrievals.nino and Retrievals.name) {
-        case nino ~ name => {
+      .retrieve(Retrievals.nino and Retrievals.name and Retrievals.saUtr) {
+        case nino ~ name ~ saUtr => {
+          val factory = AuthActionedTaiUserFactory(name, nino, saUtr)
+
           for {
             person <- personService.personDetails(Nino(nino.getOrElse("")))
-            result <- processBlock(person, name, nino, block, request)
+            result <- processBlock(person, factory, block, request)
           } yield {
             result
           }
@@ -101,12 +113,6 @@ class AuthActionImpl @Inject()(personService: PersonService,
       Logger.warn(s"<Exception returned during authorisation with exception: ${ex.getClass()}", ex)
       Redirect(routes.UnauthorisedController.onPageLoad())
     }
-  }
-
-  def getTaiUser(name: Option[Name], nino: Option[String]): Future[AuthActionedTaiUser] = {
-    val validNino = nino.getOrElse("")
-    val validName = name.flatMap(_.name)
-    Future.successful(AuthActionedTaiUser(validName.getOrElse(""), validNino))
   }
 }
 

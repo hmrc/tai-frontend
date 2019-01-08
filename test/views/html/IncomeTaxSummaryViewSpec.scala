@@ -18,7 +18,7 @@ package views.html
 
 import controllers.auth.AuthActionedTaiUser
 import play.twirl.api.Html
-import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{IncomeSourceViewModel, TaxAccountSummaryViewModel}
@@ -26,6 +26,37 @@ import uk.gov.hmrc.tai.viewModels.{IncomeSourceViewModel, TaxAccountSummaryViewM
 import scala.util.Random
 
 class IncomeTaxSummaryViewSpec extends TaiViewSpec {
+
+  val activeEmployment =
+    IncomeSourceViewModel("Company1", "£23,000", "1150L", true, "123456", true, "", false, "view employment details", "fake/active/url")
+  val endedEmployment =
+    IncomeSourceViewModel("Company2", "£25,000", "1150L", true, "", false, "31 July 2017", true, "view income details", "fake/ended/url")
+  val pensionIncome =
+    IncomeSourceViewModel("PensionProvider1", "£14,000", "", false, "", false, "", false, "view pension details", "fake/pension/url")
+  val employments = Seq(IncomeSourceViewModel("Company1", "£23,000", "1150L", true, "123456", true, "", false, "view income details", "fake/url"))
+
+  val otherIncomeSourceViewModel = IncomeSourceViewModel(
+    "State Pension",
+    "£123",
+    "",
+    displayTaxCode = false,
+    "",
+    displayPayrollNumber = false,
+    "",
+    displayEndDate = false,
+    "",
+    "",
+    displayDetailsLink = false
+  )
+
+  val vm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Seq(activeEmployment), Seq(pensionIncome), Seq(endedEmployment), false, true, Seq(otherIncomeSourceViewModel))
+  val noSectionsVm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Nil, Nil, Nil, false, true, Seq(otherIncomeSourceViewModel))
+
+  def generateNino = new Generator(new Random).nextNino.toString()
+  implicit val authActionedTaiUser: AuthActionedTaiUser = AuthActionedTaiUser("Firstname Surname", generateNino, "utr")
+
+  override def view: Html = views.html.incomeTaxSummary(vm)
+
   "Income tax summary page" must {
 
     behave like pageWithTitle("title")
@@ -274,35 +305,4 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithAttribute("#addMissingIncomeSourceSection a", "href", ApplicationConfig.otherIncomeLinkUrl)
     }
   }
-
-
-  val activeEmployment =
-    IncomeSourceViewModel("Company1", "£23,000", "1150L", true, "123456", true, "", false, "view employment details", "fake/active/url")
-  val endedEmployment =
-    IncomeSourceViewModel("Company2", "£25,000", "1150L", true, "", false, "31 July 2017", true, "view income details", "fake/ended/url")
-  val pensionIncome =
-    IncomeSourceViewModel("PensionProvider1", "£14,000", "", false, "", false, "", false, "view pension details", "fake/pension/url")
-  val employments = Seq(IncomeSourceViewModel("Company1", "£23,000", "1150L", true, "123456", true, "", false, "view income details", "fake/url"))
-
-  val otherIncomeSourceViewModel = IncomeSourceViewModel(
-    "State Pension",
-    "£123",
-    "",
-    displayTaxCode = false,
-    "",
-    displayPayrollNumber = false,
-    "",
-    displayEndDate = false,
-    "",
-    "",
-    displayDetailsLink = false
-  )
-
-  val vm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Seq(activeEmployment), Seq(pensionIncome), Seq(endedEmployment), false, true, Seq(otherIncomeSourceViewModel))
-  val noSectionsVm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Nil, Nil, Nil, false, true, Seq(otherIncomeSourceViewModel))
-
-  def generateNino = new Generator(new Random).nextNino.toString()
-
-  implicit val authActionedTaiUser = AuthActionedTaiUser("Firstname Surname", generateNino)
-  override def view: Html = views.html.incomeTaxSummary(vm)
 }

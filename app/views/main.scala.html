@@ -63,8 +63,8 @@
 }
 
 @isSa = @{
-    user.fold(false) {
-        user => user.authContext.principal.accounts.sa.map(_.utr).isDefined
+    authActionedTaiUser.fold(false) {
+        _.getUTR != ""
     }
 }
 
