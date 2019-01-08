@@ -19,9 +19,20 @@ package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 
 object CompanyCarMakeModel {
-  def description(employmentId: Int, companyCarBenefits: Seq[CompanyCarBenefit]): Option[String] =
+  def description(employmentId: Int, companyCarBenefits: Seq[CompanyCarBenefit]): Option[String] = {
+    def modelFromBenefits(employersCarBenefits: CompanyCarBenefit): Option[String] = {
+      if(employersCarBenefits.companyCars.size > 1){
+        Some("Car Benefit")
+      }else{
+        employersCarBenefits.companyCars.headOption.map(_.makeModel)
+      }
+    }
+
     for {
-      carBenefits <- companyCarBenefits.find(_.employmentSeqNo == employmentId)
-      model <- carBenefits.companyCars.headOption.map(_.makeModel)
+      carBenefits: CompanyCarBenefit <- companyCarBenefits.find(_.employmentSeqNo == employmentId)
+      model <- modelFromBenefits(carBenefits)
     } yield model
+
+  }
 }
+

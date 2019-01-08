@@ -23,21 +23,38 @@ class CompanyCarMakeModelSpec extends PlaySpec {
 
   val companyCarBenefit10 = CompanyCarBenefit(10, 1000, List(CompanyCar(10,"Make Model1", true, None, None, None)), Some(1))
   val companyCarBenefit12 = CompanyCarBenefit(12, 1000, List(CompanyCar(10,"Make Model2", true, None, None, None)), Some(1))
-  val companyCarBenefits = Seq(companyCarBenefit10, companyCarBenefit12)
+  val companyCarBenefitTwoCars = CompanyCarBenefit(1, 1000, List(CompanyCar(10,"Make Model1", true, None, None, None), CompanyCar(12,"Make Model1", true, None, None, None)), Some(1))
+  val companyBenefitNoCars = CompanyCarBenefit(2, 1000, List(),Some(1))
+  val companyCarBenefits = Seq(companyCarBenefit10, companyCarBenefit12, companyCarBenefitTwoCars, companyBenefitNoCars)
 
     "CompanyCarMakeModel" must {
       "return company car model from list of company car benefits" when {
         "provided with employment id with company car benefit" in {
           val result = CompanyCarMakeModel.description(10, companyCarBenefits)
-          result.contains("Make Model1")
+          result mustBe Some("Make Model1")
+        }
+      }
+
+      "return generic car benefit message" when{
+        "provided the same employment has more than one company cars" in {
+          val result = CompanyCarMakeModel.description(1,companyCarBenefits)
+          result mustBe Some("Car Benefit")
         }
       }
 
       "return None" when {
-        "employment id do not have any associated company car" in {
+        "employment id do not have any associated company car benefit" in {
           val result = CompanyCarMakeModel.description(16, companyCarBenefits)
           result mustBe None
         }
+
+        "employment id do not have any company cars associated with their car benefit" in {
+          val result = CompanyCarMakeModel.description(2, companyCarBenefits )
+          result mustBe None
+        }
       }
+
+
+
    }
 }
