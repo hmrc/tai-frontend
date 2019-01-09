@@ -173,7 +173,8 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     override val taxCodeChangeEnabled: Boolean = taxCodeChangeJourneyEnabled
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(taxCodeChangeService.latestTaxCodeChangeDate(generateNino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
+    when(taxCodeChangeService.latestTaxCodeChangeDate(generateNino))
+      .thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
   }
 
 }
