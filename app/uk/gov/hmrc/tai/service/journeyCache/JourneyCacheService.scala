@@ -26,7 +26,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class JourneyCacheService @Inject() (val journeyName: String,
-                                     val journeyCacheConnector: JourneyCacheConnector) {
+                                     journeyCacheConnector: JourneyCacheConnector) {
 
 
   def currentValue(key: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {

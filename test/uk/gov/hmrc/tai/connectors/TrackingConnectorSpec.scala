@@ -18,7 +18,9 @@ package uk.gov.hmrc.tai.connectors
 
 import controllers.FakeTaiPlayApplication
 import org.mockito.Matchers.any
+import org.mockito.Mockito
 import org.mockito.Mockito.when
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsResultException, Json}
@@ -29,7 +31,14 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import uk.gov.hmrc.http.HeaderCarrier
 
-class TrackedFormConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication{
+class TrackingConnectorSpec extends PlaySpec
+  with MockitoSugar
+  with FakeTaiPlayApplication
+  with BeforeAndAfterEach {
+
+  override def beforeEach: Unit = {
+    Mockito.reset(httpHandler)
+  }
 
   "Tracking Url" should {
     "fetch the correct service url" when {
@@ -45,7 +54,7 @@ class TrackedFormConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPl
     "fetch the user tracking details" when {
       "provided with id and idType" in {
         val sut = createSUT()
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(trackedFormSeqJson)))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse(trackedFormSeqJson)))
 
         val result = sut.getUserTracking(nino)
         Await.result(result, 50 seconds) mustBe trackedFormSeq
@@ -55,7 +64,7 @@ class TrackedFormConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPl
     "throw exception" when {
       "json is not valid" in {
         val sut = createSUT()
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse("""{}""")))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(Json.parse("""{}""")))
 
         val result = sut.getUserTracking(nino)
         the[JsResultException] thrownBy Await.result(result, 5 seconds)
@@ -89,9 +98,10 @@ class TrackedFormConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
   private def createSUT() = new SUT
 
-  private class SUT extends TrackingConnector {
-    override val serviceUrl: String = "mockUrl"
-    override val httpHandler: HttpHandler = mock[HttpHandler]
+  val httpHandler: HttpHandler = mock[HttpHandler]
+  
+  private class SUT extends TrackingConnector(httpHandler) {
+    override lazy val serviceUrl: String = "mockUrl"
   }
 
 }

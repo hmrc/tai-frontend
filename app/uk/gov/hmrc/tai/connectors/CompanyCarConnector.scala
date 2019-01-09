@@ -29,7 +29,7 @@ import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.util.control.NonFatal
 
-class CompanyCarConnector @Inject() (val httpHandler: HttpHandler) extends ServicesConfig {
+class CompanyCarConnector @Inject() (httpHandler: HttpHandler) extends ServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 

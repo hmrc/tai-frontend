@@ -23,7 +23,6 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors._
-import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache._
 
 class TaiModule extends Module {
@@ -32,17 +31,11 @@ class TaiModule extends Module {
     bind[FormPartialRetriever].toInstance(TaiHtmlPartialRetriever),
     bind[TemplateRenderer].toInstance(LocalTemplateRenderer),
     bind[WSHttpProxy].toInstance(WSHttpProxy),
+    bind[WSHttp].toInstance(WSHttp),
     // Connectors
     bind[AuditConnector].toInstance(AuditConnector),
     bind[AuthConnector].toInstance(FrontendAuthConnector),
     bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
-    bind[HttpHandler].toInstance(HttpHandler),
-    bind[SessionConnector].toInstance(SessionConnector),
-    bind[UserDetailsConnector].toInstance(UserDetailsConnector),
-    bind[TaiConnector].toInstance(TaiConnector),
-    bind[TaxAccountConnector].toInstance(TaxAccountConnector),
-    bind[TaxCodeChangeConnector].toInstance(TaxCodeChangeConnector),
-    bind[TrackingConnector].toInstance(TrackingConnector),
     // Journey Cache Services
     bind[JourneyCacheService].qualifiedWith("Add Employment").to(classOf[AddEmploymentJourneyCacheService]),
     bind[JourneyCacheService].qualifiedWith("Add Pension Provider").to(classOf[AddPensionProviderJourneyCacheService]),

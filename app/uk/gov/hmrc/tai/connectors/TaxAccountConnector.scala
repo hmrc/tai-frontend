@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.google.inject.Inject
 import play.api.Logger
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
@@ -32,11 +33,9 @@ import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, UpdateTaxCodeIncomeReque
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait TaxAccountConnector extends CodingComponentFormatters {
+class TaxAccountConnector @Inject() (httpHandler: HttpHandler) extends CodingComponentFormatters with ServicesConfig {
 
-  val serviceUrl: String
-
-  def httpHandler: HttpHandler
+  val serviceUrl: String = baseUrl("tai")
 
   def taxAccountUrl(nino: String, year: TaxYear): String = s"$serviceUrl/tai/$nino/tax-account/${year.year}/income/tax-code-incomes"
 
@@ -117,11 +116,3 @@ trait TaxAccountConnector extends CodingComponentFormatters {
   }
 
 }
-// $COVERAGE-OFF$
-object TaxAccountConnector extends TaxAccountConnector with ServicesConfig {
-  override lazy val serviceUrl = baseUrl("tai")
-
-  override def httpHandler: HttpHandler = HttpHandler
-}
-// $COVERAGE-ON$
-

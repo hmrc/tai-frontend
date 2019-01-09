@@ -27,7 +27,7 @@ import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import scala.concurrent.Future
 
-class PersonConnector @Inject() (val httpHandler: HttpHandler) extends ServicesConfig {
+class PersonConnector @Inject() (httpHandler: HttpHandler) extends ServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 

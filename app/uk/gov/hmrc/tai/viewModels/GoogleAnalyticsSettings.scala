@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.service
+package uk.gov.hmrc.tai.viewModels
 
-import com.google.inject.Inject
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.tai.connectors.SessionConnector
-
-import scala.concurrent.Future
-
-class SessionService @Inject() (sessionConnector: SessionConnector) {
-
-  def invalidateCache()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    sessionConnector.invalidateCache()
-  }
-
-}
+case class GoogleAnalyticsSettings(dimensions: Option[Map[String, String]] = None,
+                                   customClientIdRequired: Boolean = false,
+                                   customSessionIdRequired: Boolean = false,
+                                   customHitStampRequired: Boolean = false)

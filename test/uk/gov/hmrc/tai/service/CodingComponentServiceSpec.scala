@@ -70,8 +70,7 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
     "return exception" when {
       "error is received from TAI" in {
         val service = createSut
-        when(service.taxAccountConnector.codingComponents(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("could not fetch coding components")))
-
+        when(taxAccountConnector.codingComponents(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("could not fetch coding components")))
 
         val exceptionThrown = the[RuntimeException] thrownBy Await.result(service.taxFreeAmountComponents(generateNino, currentTaxYear), 5 seconds)
         exceptionThrown.getMessage must include("could not fetch coding components")
@@ -96,7 +95,7 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
 
       val taxFreeAmountComparison = TaxFreeAmountComparison(Seq(codingComponent1), Seq(codingComponent2))
 
-      when(service.taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
+      when(taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxFreeAmountComparison)))
 
       val result = service.taxFreeAmountComparison(generateNino)
@@ -112,7 +111,7 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
 
       val taxFreeAmountComparison = TaxFreeAmountComparison(Seq(codingComponent1), Seq(codingComponent2))
 
-      when(service.taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
+      when(taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
         .thenReturn(Future.successful(TaiSuccessResponseWithPayload(taxFreeAmountComparison)))
 
       val result = service.taxFreeAmountComparison(generateNino)
@@ -124,7 +123,7 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
       "a TaiTaxAccountFailureResponse is received" in {
         val service = createSut
 
-        when(service.taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
+        when(taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
           .thenReturn(Future.successful(TaiTaxAccountFailureResponse("Help")))
 
         val exceptionThrown = the[RuntimeException] thrownBy Await.result(service.taxFreeAmountComparison(generateNino), 5.seconds)
@@ -134,7 +133,7 @@ class CodingComponentServiceSpec extends PlaySpec with MockitoSugar with FakeTai
       "a unknown exception is received" in {
         val service = createSut
 
-        when(service.taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
+        when(taxFreeAmountComparisonConnector.taxFreeAmountComparison(any())(any()))
           .thenReturn(Future.successful(null))
 
         val exceptionThrown = the[RuntimeException] thrownBy Await.result(service.taxFreeAmountComparison(generateNino), 5.seconds)

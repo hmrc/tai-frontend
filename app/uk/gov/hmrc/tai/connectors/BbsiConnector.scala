@@ -29,7 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 
-class BbsiConnector @Inject() (val httpHandler: HttpHandler) extends ServicesConfig {
+class BbsiConnector @Inject() (httpHandler: HttpHandler) extends ServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 
