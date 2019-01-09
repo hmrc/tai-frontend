@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.util.viewHelpers
 
-import builders.UserBuilder
+import builders.{AuthActionedUserBuilder, UserBuilder}
 import controllers.FakeTaiPlayApplication
 import controllers.auth.AuthActionedTaiUser
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
@@ -39,8 +39,7 @@ trait TaiViewSpec extends PlaySpec
   implicit val templateRenderer = MockTemplateRenderer
   implicit val partialRetriever = MockPartialRetriever
   implicit val user = UserBuilder()
-  def generateNino = new Generator(new Random).nextNino.toString()
-  implicit val authActionedTaiUser: AuthActionedTaiUser = AuthActionedTaiUser("Firstname Surname", generateNino, "utr")
+  implicit val authActionedTaiUser: AuthActionedTaiUser = AuthActionedUserBuilder()
 
   def view: Html
 
