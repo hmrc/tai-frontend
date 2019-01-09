@@ -23,6 +23,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.config.WSHttp
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.{CarBenefit, TaxFreeAmountComparison}
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -112,7 +113,7 @@ class TaxFreeAmountComparisonConnectorSpec extends PlaySpec with MockitoSugar wi
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  val httpHandler: HttpHandler = HttpHandler
+  val httpHandler: HttpHandler = new HttpHandler(WSHttp)
 
   private class TestTaxFreeAmountComparisonConnector extends TaxFreeAmountComparisonConnector(httpHandler) {
     override val serviceUrl: String = s"http://localhost:${server.port()}"
