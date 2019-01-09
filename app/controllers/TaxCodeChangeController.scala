@@ -17,17 +17,11 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.auth.AuthAction
-import javax.inject.Singleton
+import controllers.auth.{AuthAction, AuthActionedTaiUser}
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request}
-import uk.gov.hmrc.auth.core.PlayAuthConnector
-import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.hooks.HttpHooks
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.ws._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
@@ -39,21 +33,7 @@ import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
 
-object ConnectorWithHttpValues {
-  val http = new WSGet with HttpGet with WSPut with HttpPut with WSPost with HttpPost with WSDelete with HttpDelete with WSPatch with HttpPatch with HttpHooks {
-    val hooks = NoneRequired
-  }
-}
-
-@Singleton
-class AuthClientAuthConnector extends PlayAuthConnector with ServicesConfig {
-  override val serviceUrl: String = baseUrl("auth")
-
-  override def http: CorePost = ConnectorWithHttpValues.http
-}
-
-class TaxCodeChangeController @Inject()(val personService: PersonService,
-                                        val codingComponentService: CodingComponentService,
+class TaxCodeChangeController @Inject()(val codingComponentService: CodingComponentService,
                                         val employmentService: EmploymentService,
                                         val companyCarService: CompanyCarService,
                                         val taxCodeChangeService: TaxCodeChangeService,
@@ -66,14 +46,16 @@ class TaxCodeChangeController @Inject()(val personService: PersonService,
   def taxCodeComparison: Action[AnyContent] = authenticate.async {
     implicit request =>
       if (taxCodeChangeEnabled) {
-        val nino = request.taiUser.nino
+        val taiUser = request.taiUser
+        val nino = taiUser.nino
 
         for {
           taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
           scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
         } yield {
           val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
-          Ok(views.html.taxCodeChange.taxCodeComparison(viewModel, request.taiUser))
+          implicit val user: AuthActionedTaiUser = taiUser
+          Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
         }
       } else {
         Future.successful(Ok(notFoundView))
@@ -95,7 +77,9 @@ class TaxCodeChangeController @Inject()(val personService: PersonService,
           companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
         } yield {
           val viewModel = YourTaxFreeAmountViewModel(taxCodeChange.mostRecentTaxCodeChangeDate, codingComponents, employmentNames, companyCarBenefits)
-          Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel, request.taiUser))
+          implicit val user: AuthActionedTaiUser = request.taiUser
+
+          Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
         }
 
       } else {
@@ -107,7 +91,8 @@ class TaxCodeChangeController @Inject()(val personService: PersonService,
   def whatHappensNext: Action[AnyContent] = authenticate.async {
     implicit request =>
       if (taxCodeChangeEnabled) {
-        Future.successful(Ok(views.html.taxCodeChange.whatHappensNext(request.taiUser)))
+        implicit val user: AuthActionedTaiUser = request.taiUser
+        Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
       } else {
         Future.successful(Ok(notFoundView()))
       }

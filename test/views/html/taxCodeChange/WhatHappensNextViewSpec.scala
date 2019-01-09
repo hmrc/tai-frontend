@@ -25,7 +25,7 @@ import uk.gov.hmrc.urls.Link
 
 class WhatHappensNextViewSpec extends TaiViewSpec with MockitoSugar {
 
-  override def view = views.html.taxCodeChange.whatHappensNext(mock[AuthActionedTaiUser])
+  override def view = views.html.taxCodeChange.whatHappensNext()
 
   "what happens next" should {
     behave like pageWithTitle(messages("taxCode.change.whatHappensNext.title"))

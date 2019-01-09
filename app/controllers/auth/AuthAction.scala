@@ -45,13 +45,13 @@ case class AuthActionedTaiUser(name: String, validNino: String, utr: String) {
   def getUTR = utr
 }
 
-case class AuthActionedTaiUserFactory(name: Option[Name], nino: Option[String], saUtr: Option[String]) {
-  def createTaiUser(): Future[AuthActionedTaiUser] = {
+object AuthActionedTaiUser {
+  def apply(name: Option[Name], nino: Option[String], saUtr: Option[String]): AuthActionedTaiUser = {
     val validNino = nino.getOrElse("")
     val validName = name.flatMap(_.name).getOrElse("")
     val validUtr = saUtr.getOrElse("")
 
-    Future.successful(AuthActionedTaiUser(validName, validNino, validUtr))
+    AuthActionedTaiUser(validName, validNino, validUtr)
   }
 }
 
@@ -62,7 +62,7 @@ class AuthActionImpl @Inject()(personService: PersonService,
   with AuthorisedFunctions {
 
   def processBlock[A](person: Person,
-                      taiUserFactory: AuthActionedTaiUserFactory,
+                      taiUser: AuthActionedTaiUser,
                       block: AuthenticatedRequest[A] => Future[Result],
                       request: Request[A]): Future[Result] = {
     if (person.isDeceased) {
@@ -72,7 +72,6 @@ class AuthActionImpl @Inject()(personService: PersonService,
     }
     else {
       for {
-        taiUser <- taiUserFactory.createTaiUser()
         result <- block(AuthenticatedRequest(request, taiUser))
       } yield {
         result
@@ -86,11 +85,11 @@ class AuthActionImpl @Inject()(personService: PersonService,
     authorised(ConfidenceLevel.L200 and AffinityGroup.Individual)
       .retrieve(Retrievals.nino and Retrievals.name and Retrievals.saUtr) {
         case nino ~ name ~ saUtr => {
-          val factory = AuthActionedTaiUserFactory(name, nino, saUtr)
+          val taiUser = AuthActionedTaiUser(name, nino, saUtr)
 
           for {
             person <- personService.personDetails(Nino(nino.getOrElse("")))
-            result <- processBlock(person, factory, block, request)
+            result <- processBlock(person, taiUser, block, request)
           } yield {
             result
           }
