@@ -41,68 +41,6 @@
         @messages("tai.incomeTaxComparison.incomeTax.fromEmployer.description")
     </p>
 
-    <table class="table--font-reset flush--bottom" id="incomeSummaryComparisonTable">
-        <caption class="visually-hidden">@{incomeSummaryHeading}</caption>
-        <thead id="incomeSummeryComparisonTableHeader">
-        <tr class="text--right">
-
-            <th scope="col"><span class="visuallyhidden">@messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")</span></th>
-            <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="text--right">
-                @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
-                @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))))
-            </th>
-            <th scope="col" id="taxCodeComparisonTableTableHeaderCol2" scope="col" class="text--right">
-                @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))
-                @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYearResolver.startOfNextTaxYear))))
-            </th>
-            <th scope="col"></th>
-        </tr>
-        </thead>
-
-        <tbody id="incomeSummaryComparisonTableBody">
-            @for(employmentIncomeSourceDetail <- incomeSourceViewModel.employmentIncomeSourceDetail) {
-
-                <tr>
-                    <th scope="row">@employmentIncomeSourceDetail.name</th>
-                    <td class="text--right">@employmentIncomeSourceDetail.amountCY</td>
-                    <td class="text--right">@employmentIncomeSourceDetail.amountCYPlusOne</td>
-                    <td width="20%" class="text--right">
-                        <a id="estimated-income-link-@employmentIncomeSourceDetail.empId"
-                           href="/check-income-tax/update-income/next-year/income/@employmentIncomeSourceDetail.empId/start"
-                           data-journey-click='link - click:@gaEventActionString:@messages("tai.incomeTaxComparison.incomeTax.updateEstimated")'
-                        >
-                            @messages("tai.incomeTaxComparison.incomeTax.updateEstimated")
-                            <span class="visuallyhidden">
-                                @messages("tai.incomeTaxComparison.incomeTax.forEmployer", employmentIncomeSourceDetail.name)
-                            </span>
-                        </a>
-                    </td>
-                </tr>
-            }
-
-            @for(pensionIncomeSourceDetail <- incomeSourceViewModel.pensionIncomeSourceDetail) {
-            <tr>
-
-                <th scope="row">@pensionIncomeSourceDetail.name</th>
-                <td class="text--right">@pensionIncomeSourceDetail.amountCY</td>
-                <td class="text--right">@pensionIncomeSourceDetail.amountCYPlusOne</td>
-                <td width="20%" class="text--right">
-                    <a id="estimated-income-link-@pensionIncomeSourceDetail.empId"
-                       href="/check-income-tax/update-income/next-year/income/@pensionIncomeSourceDetail.empId/start"
-                       data-journey-click='link - click:@gaEventActionString:@messages("tai.incomeTaxComparison.incomeTax.updateEstimated")'
-                    >
-                        @messages("tai.incomeTaxComparison.incomeTax.updateEstimated")
-                        <span class="visuallyhidden">
-                                @messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)
-                        </span>
-                    </a>
-                </td>
-            </tr>
-            }
-        </tbody>
-
-    </table>
-
     <table class="table--font-reset flush--bottom responsive-table" id="incomeSummaryComparisonTable" role="grid">
         <caption class="visually-hidden">@{incomeSummaryHeading}</caption>
         <thead id="incomeSummeryComparisonTableHeader">
@@ -162,8 +100,4 @@
         }
         </tbody>
     </table>
-}
-
-@tableRows(incomeDetail: IncomeSourceComparisonDetail) = {
-
 }

@@ -46,14 +46,14 @@ class TaxFreeAmountSpec extends TaiViewSpec {
     }
 
     "display  personal allowance table" in {
-      doc must haveThWithText(messages("tai.income.personalAllowance"))
+      doc must haveTdWithText(messages("tai.income.personalAllowance"))
       doc must haveTdWithText("£11,500")
       doc must haveTdWithText("£11,850")
     }
 
     "display additions table" in {
       doc must haveCaptionWithText(messages("tai.incomeTaxComparison.taxFreeAmount.additions.caption"))
-      doc must haveThWithText(messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"))
+      doc must haveTdWithText(messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"))
       doc must haveTdWithText("£1,000")
       doc must haveTdWithText("£1,100")
 
@@ -68,7 +68,7 @@ class TaxFreeAmountSpec extends TaiViewSpec {
 
     "display deductions table" in {
       doc must haveCaptionWithText(messages("tai.incomeTaxComparison.taxFreeAmount.deductions.caption"))
-      doc must haveThWithText(messages("tai.taxFreeAmount.table.taxComponent.OtherEarnings"))
+      doc must haveTdWithText(messages("tai.taxFreeAmount.table.taxComponent.OtherEarnings"))
       doc must haveTdWithText("£1,000")
       doc must haveTdWithText("£1,100")
 
@@ -92,7 +92,7 @@ class TaxFreeAmountSpec extends TaiViewSpec {
       "there are no additions" in {
         val docWithOutAdditions = doc(viewWithoutAdditionAndDeductions)
 
-        docWithOutAdditions must haveThWithText(messages("tai.incomeTaxComparison.taxFreeAmount.noAdditions"))
+        docWithOutAdditions must haveTdWithText(messages("tai.incomeTaxComparison.taxFreeAmount.noAdditions"))
         docWithOutAdditions must haveTdWithText("£0")
 
       }
@@ -102,7 +102,7 @@ class TaxFreeAmountSpec extends TaiViewSpec {
       "there are no deductions" in {
         val docWithOutDeductions = doc(viewWithoutAdditionAndDeductions)
 
-        docWithOutDeductions must haveThWithText(messages("tai.incomeTaxComparison.taxFreeAmount.noDeductions"))
+        docWithOutDeductions must haveTdWithText(messages("tai.incomeTaxComparison.taxFreeAmount.noDeductions"))
         docWithOutDeductions must haveTdWithText("£0")
       }
     }
