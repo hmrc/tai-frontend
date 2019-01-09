@@ -34,10 +34,9 @@ class AuditController @Inject()(auditService: AuditService,
       val taiUser = request.taiUser
 
 
-      val test = auditService.sendAuditEventAndGetRedirectUri(taiUser.nino, iformName) map { redirectUri =>
+      auditService.sendAuditEventAndGetRedirectUri(taiUser.nino, iformName) map { redirectUri =>
         Redirect(redirectUri)
       }
-      test
     }
   }
 
