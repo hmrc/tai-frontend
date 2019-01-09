@@ -16,14 +16,10 @@
 
 package views.html
 
-import controllers.auth.AuthActionedTaiUser
 import play.twirl.api.Html
-import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{IncomeSourceViewModel, TaxAccountSummaryViewModel}
-
-import scala.util.Random
 
 class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
@@ -60,7 +56,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
     behave like pageWithCombinedHeader(
       preHeaderAnnouncementText=Some("This section is the income tax summary for"),
-      preHeaderText ="Firstname Surname",
+      preHeaderText ="Jjj Bbb",
       mainHeaderText = "main heading")
 
     "display a link to return to choose tax year page" in {
