@@ -17,7 +17,8 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
+import controllers.auth.{AuthAction, AuthActionedTaiUser, TaiUser, WithAuthorisedForTaiLite}
+import play.Logger
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, Request, Result}
@@ -41,32 +42,27 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
                                                 employmentService: EmploymentService,
                                                 val delegationConnector: DelegationConnector,
                                                 val authConnector: AuthConnector,
+                                                authenticate: AuthAction,
                                                 override implicit val partialRetriever: FormPartialRetriever,
                                                 override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
 
-  def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            implicit val messages = Messages.Implicits.applicationMessages
-            incomeCalculationPage(empId, false)
-          }
+  def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authenticate.async {
+    implicit request =>
+      implicit val messages = Messages.Implicits.applicationMessages
+      implicit val user = request.taiUser
+      incomeCalculationPage(empId, printPage = false)
   }
 
-  def printYourIncomeCalculationPage(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            implicit val messages = Messages.Implicits.applicationMessages
-            incomeCalculationPage(empId, true)
-          }
+  def printYourIncomeCalculationPage(empId: Int): Action[AnyContent] = authenticate.async {
+    implicit request =>
+      implicit val messages = Messages.Implicits.applicationMessages
+      implicit val user = request.taiUser
+      incomeCalculationPage(empId, printPage = true)
   }
 
-  private def incomeCalculationPage(empId: Int, printPage: Boolean)(implicit request: Request[AnyContent], user: TaiUser, person: Person, messages: Messages) = {
+  private def incomeCalculationPage(empId: Int, printPage: Boolean)(implicit request: Request[AnyContent], user: AuthActionedTaiUser, messages: Messages) = {
     val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
     val employmentFuture = employmentService.employment(Nino(user.getNino), empId)
 
@@ -82,7 +78,10 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
           } else {
             Ok(views.html.incomes.yourIncomeCalculation(model))
           }
-        case _ => throw new RuntimeException("Error while fetching RTI details")
+        case _ => {
+          Logger.warn("Error while fetching RTI details")
+          InternalServerError(error5xx(Messages("tai.technical.error.message")))
+        }
       }
     }
   }

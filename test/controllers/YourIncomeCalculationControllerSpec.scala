@@ -227,6 +227,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
     employmentService,
     mock[DelegationConnector],
     mock[AuthConnector],
+    FakeAuthAction,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
