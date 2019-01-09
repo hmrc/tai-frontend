@@ -85,7 +85,7 @@ class YourTaxCodeControllerSpec extends PlaySpec
 
     "display any error" in {
       val testController = createTestController
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.failed(new InternalError("error occurred")))
+       when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.failed(new InternalError("error occurred")))
       val result = testController.taxCodes()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
       status(result) mustBe INTERNAL_SERVER_ERROR
@@ -140,12 +140,10 @@ class YourTaxCodeControllerSpec extends PlaySpec
 
   private def createTestController = new TestController
 
-  val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val taxAccountService = mock[TaxAccountService]
 
   private class TestController extends YourTaxCodeController(
-    personService,
     taxAccountService,
     taxCodeChangeService,
     FakeAuthAction,
