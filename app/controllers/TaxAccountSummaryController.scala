@@ -17,8 +17,7 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.audit.Auditable
-import controllers.auth.{AuthAction, WithAuthorisedForTaiLite}
+import controllers.auth.AuthAction
 import play.Logger
 import play.api.Play.current
 import play.api.i18n.Messages
@@ -26,9 +25,6 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
