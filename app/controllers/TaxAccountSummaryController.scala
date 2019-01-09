@@ -45,7 +45,6 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
                                             employmentService: EmploymentService,
                                             taxAccountService: TaxAccountService,
                                             auditService: AuditService,
-                                            personService: PersonService,
                                             authenticate: AuthAction,
                                             override implicit val partialRetriever: FormPartialRetriever,
                                             override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
