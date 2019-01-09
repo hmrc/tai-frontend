@@ -151,7 +151,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
-  val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val codingComponentService = mock[CodingComponentService]
   val companyCarService = mock[CompanyCarService]
@@ -159,7 +158,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val taxAccountService = mock[TaxAccountService]
 
   private class SUT(taxCodeChangeJourneyEnabled: Boolean) extends TaxCodeChangeController(
-    personService,
     codingComponentService,
     employmentService,
     companyCarService,

@@ -33,8 +33,7 @@ import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
 
-class TaxCodeChangeController @Inject()(val personService: PersonService,
-                                        val codingComponentService: CodingComponentService,
+class TaxCodeChangeController @Inject()(val codingComponentService: CodingComponentService,
                                         val employmentService: EmploymentService,
                                         val companyCarService: CompanyCarService,
                                         val taxCodeChangeService: TaxCodeChangeService,
