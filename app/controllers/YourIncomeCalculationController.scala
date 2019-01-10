@@ -17,20 +17,19 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.auth.{AuthAction, AuthActionedTaiUser, TaiUser, WithAuthorisedForTaiLite}
+import controllers.auth.{AuthAction, AuthActionedTaiUser, WithAuthorisedForTaiLite}
 import play.Logger
 import play.api.Play.current
 import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits.applicationMessages
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
@@ -50,19 +49,17 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
 
   def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authenticate.async {
     implicit request =>
-      implicit val messages = Messages.Implicits.applicationMessages
       implicit val user = request.taiUser
       incomeCalculationPage(empId, printPage = false)
   }
 
   def printYourIncomeCalculationPage(empId: Int): Action[AnyContent] = authenticate.async {
     implicit request =>
-      implicit val messages = Messages.Implicits.applicationMessages
       implicit val user = request.taiUser
       incomeCalculationPage(empId, printPage = true)
   }
 
-  private def incomeCalculationPage(empId: Int, printPage: Boolean)(implicit request: Request[AnyContent], user: AuthActionedTaiUser, messages: Messages) = {
+  private def incomeCalculationPage(empId: Int, printPage: Boolean)(implicit request: Request[AnyContent], user: AuthActionedTaiUser) = {
     val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
     val employmentFuture = employmentService.employment(Nino(user.getNino), empId)
 
@@ -72,7 +69,7 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-          val model = YourIncomeCalculationViewModel(taxCodeIncomes.find(_.employmentId.contains(empId)), employment)(messages)
+          val model = YourIncomeCalculationViewModel(taxCodeIncomes.find(_.employmentId.contains(empId)), employment)
           if (printPage) {
             Ok(views.html.print.yourIncomeCalculation(model))
           } else {
@@ -88,7 +85,6 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
 
   def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authenticate.async {
     implicit request => {
-      implicit val messages = Messages.Implicits.applicationMessages
       implicit val user = request.taiUser
 
       if (year <= TaxYear().prev) {
@@ -102,7 +98,6 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
 
   def printYourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authenticate.async {
     implicit request => {
-      implicit val messages = Messages.Implicits.applicationMessages
       implicit val user = request.taiUser
 
       if (year <= TaxYear().prev) {
@@ -115,7 +110,7 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
   }
 
   private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean = false, year: TaxYear)
-                                           (implicit request: Request[AnyContent], user: AuthActionedTaiUser, messages: Messages): Future[Result] = {
+                                           (implicit request: Request[AnyContent], user: AuthActionedTaiUser): Future[Result] = {
     for {
       employment <- employmentService.employments(nino, year)
     } yield {
