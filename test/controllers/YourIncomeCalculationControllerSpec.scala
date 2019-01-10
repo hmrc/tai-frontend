@@ -52,7 +52,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.yourIncomeCalculationPage(1)(fakeRequest)
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -68,7 +68,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
-        val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.yourIncomeCalculationPage(1)(fakeRequest)
         status(result) mustBe INTERNAL_SERVER_ERROR
 
       }
@@ -79,7 +79,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
           Future.successful(TaiTaxAccountFailureResponse("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.yourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.yourIncomeCalculationPage(1)(fakeRequest)
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
@@ -90,7 +90,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
           Future.successful(TaiTaxAccountFailureResponse("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.yourIncomeCalculationPage(3)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.yourIncomeCalculationPage(3)(fakeRequest)
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
@@ -101,7 +101,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
       "historic data has been passed" in {
         val sut = createSUT
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
-        val result = sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.yourIncomeCalculationHistoricYears(TaxYear().prev, 1)(fakeRequest)
 
         status(result) mustBe OK
 
@@ -116,7 +116,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
       "next year has been passed" in {
         val sut = createSUT
 
-        val result = sut.yourIncomeCalculationHistoricYears(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.yourIncomeCalculationHistoricYears(TaxYear().next, 1)(fakeRequest)
 
         status(result) mustBe INTERNAL_SERVER_ERROR
 
@@ -132,7 +132,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
       "historic data has been passed" in {
         val sut = createSUT
         when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(sampleEmployment))
-        val result = sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.printYourIncomeCalculationHistoricYears(TaxYear().prev, 1)(fakeRequest)
 
         status(result) mustBe OK
 
@@ -147,7 +147,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
       "next year has been passed" in {
         val sut = createSUT
 
-        val result = sut.printYourIncomeCalculationHistoricYears(TaxYear().next, 1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.printYourIncomeCalculationHistoricYears(TaxYear().next, 1)(fakeRequest)
 
         status(result) mustBe INTERNAL_SERVER_ERROR
 
@@ -164,7 +164,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.printYourIncomeCalculationPage(1)(fakeRequest)
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -180,7 +180,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
-        val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.printYourIncomeCalculationPage(1)(fakeRequest)
         status(result) mustBe INTERNAL_SERVER_ERROR
 
       }
@@ -191,7 +191,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
           Future.successful(TaiTaxAccountFailureResponse("Error")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.printYourIncomeCalculationPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.printYourIncomeCalculationPage(1)(fakeRequest)
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
