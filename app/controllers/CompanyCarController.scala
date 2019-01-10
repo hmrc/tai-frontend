@@ -20,7 +20,7 @@ import com.google.inject.Inject
 import com.google.inject.name.Named
 import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiSuccessResponseWithPayload}
 import controllers.audit.Auditable
-import controllers.auth.WithAuthorisedForTaiLite
+import controllers.auth.{AuthAction, WithAuthorisedForTaiLite}
 import uk.gov.hmrc.tai.forms.UpdateOrRemoveCarForm
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyCarChoiceViewModel
 import play.api.Play.current
@@ -40,54 +40,44 @@ import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.Future
 
-class CompanyCarController @Inject()(personService: PersonService,
-                                     companyCarService: CompanyCarService,
+class CompanyCarController @Inject()(companyCarService: CompanyCarService,
                                      @Named("Company Car") journeyCacheService: JourneyCacheService,
                                      sessionService: SessionService,
-                                     val auditConnector: AuditConnector,
-                                     val delegationConnector: DelegationConnector,
-                                     val authConnector: AuthConnector,
+                                     authenticate: AuthAction,
                                      override implicit val partialRetriever: FormPartialRetriever,
                                      override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite
-  with Auditable
   with JourneyCacheConstants
   with FeatureTogglesConfig {
 
-  def redirectCompanyCarSelection(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
+  def redirectCompanyCarSelection(employmentId: Int): Action[AnyContent] = authenticate.async {
         implicit request =>
-          ServiceCheckLite.personDetailsCheck {
             journeyCacheService.cache(CompanyCar_EmployerIdKey, employmentId.toString) map {
              _ => Redirect(controllers.routes.CompanyCarController.getCompanyCarDetails())
             }
-          }
   }
 
-  def getCompanyCarDetails: Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
+  def getCompanyCarDetails: Action[AnyContent] = authenticate.async {
         implicit request =>
-          ServiceCheckLite.personDetailsCheck {
             for {
               empId <- companyCarService.companyCarEmploymentId
-              response <- companyCarService.beginJourney(Nino(user.getNino), empId)
-            } yield response match {
-              case TaiSuccessResponseWithPayload(x: Map[String, String]) => Ok(views.html.benefits.updateCompanyCar(UpdateOrRemoveCarForm.createForm, CompanyCarChoiceViewModel(x)))
-              case TaiNoCompanyCarFoundResponse(_) => Redirect(ApplicationConfig.companyCarServiceUrl)
+              response <- companyCarService.beginJourney(request.taiUser.nino, empId)
+            } yield {
+              implicit val user = request.taiUser
+              response match {
+                case TaiSuccessResponseWithPayload(x: Map[String, String]) =>
+                  Ok(views.html.benefits.updateCompanyCar(UpdateOrRemoveCarForm.createForm, CompanyCarChoiceViewModel(x)))
+                case TaiNoCompanyCarFoundResponse(_) =>
+                  Redirect(ApplicationConfig.companyCarServiceUrl)
+              }
             }
-          }
   }
 
-  def handleUserJourneyChoice: Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
+  def handleUserJourneyChoice: Action[AnyContent] = authenticate.async {
         implicit request =>
           UpdateOrRemoveCarForm.createForm.bindFromRequest.fold(
             formWithErrors => {
               journeyCacheService.mandatoryValues(CompanyCar_CarModelKey, CompanyCar_CarProviderKey) flatMap { seq =>
+                implicit val user = request.taiUser
                 Future.successful(BadRequest(views.html.benefits.updateCompanyCar(formWithErrors, CompanyCarChoiceViewModel(seq(0), seq(1)))))
               }
             },

@@ -176,19 +176,14 @@ class CompanyCarControllerSpec extends PlaySpec
   val journeyCacheService = mock[JourneyCacheService]
 
   class SUT(isCompanyCarForceRedirectEnabled: Boolean) extends CompanyCarController(
-    personService,
     companyCarService,
     journeyCacheService,
     sessionService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
     MockPartialRetriever,
     MockTemplateRenderer){
     override val companyCarForceRedirectEnabled: Boolean = isCompanyCarForceRedirectEnabled
 
-    when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(fakeNino)))
   }
 
   override def messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

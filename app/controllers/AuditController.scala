@@ -21,7 +21,7 @@ import controllers.auth.AuthAction
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.service.{AuditService, PersonService}
+import uk.gov.hmrc.tai.service.AuditService
 
 class AuditController @Inject()(auditService: AuditService,
                                 authenticate: AuthAction,

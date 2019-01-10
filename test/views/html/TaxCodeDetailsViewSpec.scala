@@ -25,6 +25,7 @@ import scala.collection.immutable.ListMap
 import scala.util.Random
 
 class TaxCodeDetailsViewSpec extends TaiViewSpec {
+
   "Tax code view page" must {
     behave like pageWithTitle("main heading")
     behave like pageWithCombinedHeader(messages("tai.taxCode.preHeader"),"main heading")
