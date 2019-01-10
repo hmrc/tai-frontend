@@ -17,19 +17,19 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
+import controllers.auth.{AuthAction, AuthActionedTaiUser, WithAuthorisedForTaiLite}
+import play.Logger
 import play.api.Play.current
 import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits.applicationMessages
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
@@ -41,32 +41,25 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
                                                 employmentService: EmploymentService,
                                                 val delegationConnector: DelegationConnector,
                                                 val authConnector: AuthConnector,
+                                                authenticate: AuthAction,
                                                 override implicit val partialRetriever: FormPartialRetriever,
                                                 override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite {
 
-  def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            implicit val messages = Messages.Implicits.applicationMessages
-            incomeCalculationPage(empId, false)
-          }
+  def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authenticate.async {
+    implicit request =>
+      implicit val user = request.taiUser
+      incomeCalculationPage(empId, printPage = false)
   }
 
-  def printYourIncomeCalculationPage(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            implicit val messages = Messages.Implicits.applicationMessages
-            incomeCalculationPage(empId, true)
-          }
+  def printYourIncomeCalculationPage(empId: Int): Action[AnyContent] = authenticate.async {
+    implicit request =>
+      implicit val user = request.taiUser
+      incomeCalculationPage(empId, printPage = true)
   }
 
-  private def incomeCalculationPage(empId: Int, printPage: Boolean)(implicit request: Request[AnyContent], user: TaiUser, person: Person, messages: Messages) = {
+  private def incomeCalculationPage(empId: Int, printPage: Boolean)(implicit request: Request[AnyContent], user: AuthActionedTaiUser) = {
     val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
     val employmentFuture = employmentService.employment(Nino(user.getNino), empId)
 
@@ -76,49 +69,48 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
     } yield {
       (taxCodeIncomeDetails, employmentDetails) match {
         case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-          val model = YourIncomeCalculationViewModel(taxCodeIncomes.find(_.employmentId.contains(empId)), employment)(messages)
+          val model = YourIncomeCalculationViewModel(taxCodeIncomes.find(_.employmentId.contains(empId)), employment)
           if (printPage) {
             Ok(views.html.print.yourIncomeCalculation(model))
           } else {
             Ok(views.html.incomes.yourIncomeCalculation(model))
           }
-        case _ => throw new RuntimeException("Error while fetching RTI details")
+        case _ => {
+          Logger.warn("Error while fetching RTI details")
+          InternalServerError(error5xx(Messages("tai.technical.error.message")))
+        }
       }
     }
   }
 
-  def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request => {
-          ServiceCheckLite.personDetailsCheck {
-            implicit val messages = Messages.Implicits.applicationMessages
-            if (year <= TaxYear().prev) {
-              showHistoricIncomeCalculation(Nino(user.getNino), empId, year = year)
-            } else {
-              Future.failed(throw new BadRequestException(s"Doesn't support year $year"))
-            }
-          }
-        }
+  def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authenticate.async {
+    implicit request => {
+      implicit val user = request.taiUser
+
+      if (year <= TaxYear().prev) {
+        showHistoricIncomeCalculation(Nino(request.taiUser.getNino), empId, year = year)
+      } else {
+        Logger.warn(s"Doesn't support year $year")
+        Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
+      }
+    }
   }
 
-  def printYourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request => {
-          ServiceCheckLite.personDetailsCheck {
-            implicit val messages = Messages.Implicits.applicationMessages
-            if (year <= TaxYear().prev) {
-              showHistoricIncomeCalculation(Nino(user.getNino), empId, printPage = true, year = year)
-            } else {
-              Future.failed(throw new BadRequestException(s"Doesn't support year $year"))
-            }
-          }
-        }
+  def printYourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authenticate.async {
+    implicit request => {
+      implicit val user = request.taiUser
+
+      if (year <= TaxYear().prev) {
+        showHistoricIncomeCalculation(Nino(request.taiUser.getNino), empId, printPage = true, year = year)
+      } else {
+        Logger.warn(s"Doesn't support year $year")
+        Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
+      }
+    }
   }
 
   private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean = false, year: TaxYear)
-                                           (implicit request: Request[AnyContent], user: TaiUser, person: Person, messages: Messages): Future[Result] = {
+                                           (implicit request: Request[AnyContent], user: AuthActionedTaiUser): Future[Result] = {
     for {
       employment <- employmentService.employments(nino, year)
     } yield {
