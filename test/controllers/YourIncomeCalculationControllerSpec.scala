@@ -217,24 +217,16 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
 
   def createSUT = new SUT
 
-  val personService: PersonService = mock[PersonService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
 
   class SUT extends YourIncomeCalculationController(
-    personService,
     taxAccountService,
     employmentService,
-    mock[DelegationConnector],
-    mock[AuthConnector],
     FakeAuthAction,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
-
   }
 
 

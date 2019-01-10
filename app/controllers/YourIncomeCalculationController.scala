@@ -24,28 +24,21 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits.applicationMessages
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncomeCalculationViewModel}
 
 import scala.concurrent.Future
 
-class YourIncomeCalculationController @Inject()(personService: PersonService,
-                                                taxAccountService: TaxAccountService,
+class YourIncomeCalculationController @Inject()(taxAccountService: TaxAccountService,
                                                 employmentService: EmploymentService,
-                                                val delegationConnector: DelegationConnector,
-                                                val authConnector: AuthConnector,
                                                 authenticate: AuthAction,
                                                 override implicit val partialRetriever: FormPartialRetriever,
-                                                override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite {
+                                                override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
 
   def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authenticate.async {
     implicit request =>
