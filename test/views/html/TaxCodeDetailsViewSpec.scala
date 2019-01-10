@@ -25,8 +25,8 @@ import scala.collection.immutable.ListMap
 import scala.util.Random
 
 class TaxCodeDetailsViewSpec extends TaiViewSpec {
-  def generateNino = new Generator(new Random).nextNino.toString()
-  implicit val authActionedTaiUser: AuthActionedTaiUser = AuthActionedTaiUser("Firstname Surname", generateNino, "utr")
+  override def generateNino = new Generator(new Random).nextNino.toString()
+  override implicit val authActionedTaiUser: AuthActionedTaiUser = AuthActionedTaiUser("Firstname Surname", generateNino, "utr")
 
   "Tax code view page" must {
     behave like pageWithTitle("main heading")
