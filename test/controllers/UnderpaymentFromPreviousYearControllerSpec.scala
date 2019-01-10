@@ -26,10 +26,11 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
@@ -37,7 +38,7 @@ import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
+class UnderpaymentFromPreviousYearControllerSpec extends PlaySpec
   with OneAppPerSuite
   with MockitoSugar
   with FakeTaiPlayApplication {
@@ -69,6 +70,19 @@ class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
 
         status(res) mustEqual SEE_OTHER
         redirectLocation(res).get must include("/gg/sign-in")
+      }
+    }
+
+    "respond with INTERNAL_SERVER_ERROR and redirect to the technical difficulties page" when {
+      "taxAccountService fails to obtain the total tax" in {
+        val controller = new SUT
+
+        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("could not get total tax")))
+
+        val result = controller.underpaymentExplanation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+        contentAsString(result) must include("Sorry, we are experiencing technical difficulties - 500")
       }
     }
   }
