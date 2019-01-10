@@ -86,38 +86,36 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
     }
   }
 
-  def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request => {
-          ServiceCheckLite.personDetailsCheck {
-            implicit val messages = Messages.Implicits.applicationMessages
-            if (year <= TaxYear().prev) {
-              showHistoricIncomeCalculation(Nino(user.getNino), empId, year = year)
-            } else {
-              Future.failed(throw new BadRequestException(s"Doesn't support year $year"))
-            }
-          }
-        }
+  def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authenticate.async {
+    implicit request => {
+      implicit val messages = Messages.Implicits.applicationMessages
+      implicit val user = request.taiUser
+
+      if (year <= TaxYear().prev) {
+        showHistoricIncomeCalculation(Nino(request.taiUser.getNino), empId, year = year)
+      } else {
+        Logger.warn(s"Doesn't support year $year")
+        Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
+      }
+    }
   }
 
-  def printYourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request => {
-          ServiceCheckLite.personDetailsCheck {
-            implicit val messages = Messages.Implicits.applicationMessages
-            if (year <= TaxYear().prev) {
-              showHistoricIncomeCalculation(Nino(user.getNino), empId, printPage = true, year = year)
-            } else {
-              Future.failed(throw new BadRequestException(s"Doesn't support year $year"))
-            }
-          }
-        }
+  def printYourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authenticate.async {
+    implicit request => {
+      implicit val messages = Messages.Implicits.applicationMessages
+      implicit val user = request.taiUser
+
+      if (year <= TaxYear().prev) {
+        showHistoricIncomeCalculation(Nino(request.taiUser.getNino), empId, printPage = true, year = year)
+      } else {
+        Logger.warn(s"Doesn't support year $year")
+        Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
+      }
+    }
   }
 
   private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean = false, year: TaxYear)
-                                           (implicit request: Request[AnyContent], user: TaiUser, person: Person, messages: Messages): Future[Result] = {
+                                           (implicit request: Request[AnyContent], user: AuthActionedTaiUser, messages: Messages): Future[Result] = {
     for {
       employment <- employmentService.employments(nino, year)
     } yield {
