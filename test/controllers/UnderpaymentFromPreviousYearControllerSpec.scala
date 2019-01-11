@@ -16,20 +16,16 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
 import mocks.MockTemplateRenderer
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
+import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
@@ -37,7 +33,7 @@ import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
+class UnderpaymentFromPreviousYearControllerSpec extends PlaySpec
   with OneAppPerSuite
   with MockitoSugar
   with FakeTaiPlayApplication {
@@ -56,43 +52,62 @@ class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
     "respond with OK" when {
       "underpaymentExplanation is called" in {
         val controller = new SUT
-        val result = controller.underpaymentExplanation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = controller.underpaymentExplanation()(fakeRequest)
         status(result) mustBe OK
         contentAsString(result) must include("What is a previous year underpayment?")
       }
     }
 
-    "respond with UNAUTHORIZED and redirect to unauthorised page" when {
-      "not authorized" in {
+    "respond with INTERNAL_SERVER_ERROR and redirect to the technical difficulties page" when {
+      "employmentService fails to obtain the total tax" in {
         val controller = new SUT
-        val res = controller.underpaymentExplanation()(FakeRequest(method = "GET", path = ""))
 
-        status(res) mustEqual SEE_OTHER
-        redirectLocation(res).get must include("/gg/sign-in")
+        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new Exception("could not get employments")))
+
+        val result = controller.underpaymentExplanation()(fakeRequest)
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+        contentAsString(result) must include("Sorry, we are experiencing technical difficulties - 500")
+      }
+
+      "taxAccountService fails to obtain the total tax" in {
+        val controller = new SUT
+
+        when(taxAccountService.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("could not get total tax")))
+
+        val result = controller.underpaymentExplanation()(fakeRequest)
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+        contentAsString(result) must include("Sorry, we are experiencing technical difficulties - 500")
+      }
+
+      "codingComponentService fails to obtain the taxFreeAmountComponents" in {
+        val controller = new SUT
+
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.failed(new Exception("could not get tax free amounts")))
+
+        val result = controller.underpaymentExplanation()(fakeRequest)
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+        contentAsString(result) must include("Sorry, we are experiencing technical difficulties - 500")
       }
     }
   }
 
-  val personService: PersonService = mock[PersonService]
   val codingComponentService = mock[CodingComponentService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
 
   private class SUT() extends UnderpaymentFromPreviousYearController(
-    personService,
     codingComponentService,
     employmentService,
     mock[CompanyCarService],
     taxAccountService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
 
-    when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
     when(taxAccountService.totalTax(any(), any())(any())).thenReturn(Future(TaiSuccessResponseWithPayload(totalTax)))
     when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
