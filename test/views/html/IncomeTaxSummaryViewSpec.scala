@@ -16,6 +16,7 @@
 
 package views.html
 
+import builders.UserBuilder
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
@@ -23,40 +24,13 @@ import uk.gov.hmrc.tai.viewModels.{IncomeSourceViewModel, TaxAccountSummaryViewM
 
 class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
-  val activeEmployment =
-    IncomeSourceViewModel("Company1", "£23,000", "1150L", true, "123456", true, "", false, "view employment details", "fake/active/url")
-  val endedEmployment =
-    IncomeSourceViewModel("Company2", "£25,000", "1150L", true, "", false, "31 July 2017", true, "view income details", "fake/ended/url")
-  val pensionIncome =
-    IncomeSourceViewModel("PensionProvider1", "£14,000", "", false, "", false, "", false, "view pension details", "fake/pension/url")
-  val employments = Seq(IncomeSourceViewModel("Company1", "£23,000", "1150L", true, "123456", true, "", false, "view income details", "fake/url"))
-
-  val otherIncomeSourceViewModel = IncomeSourceViewModel(
-    "State Pension",
-    "£123",
-    "",
-    displayTaxCode = false,
-    "",
-    displayPayrollNumber = false,
-    "",
-    displayEndDate = false,
-    "",
-    "",
-    displayDetailsLink = false
-  )
-
-  val vm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Seq(activeEmployment), Seq(pensionIncome), Seq(endedEmployment), false, true, Seq(otherIncomeSourceViewModel))
-  val noSectionsVm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Nil, Nil, Nil, false, true, Seq(otherIncomeSourceViewModel))
-
-  override def view: Html = views.html.incomeTaxSummary(vm)
-
   "Income tax summary page" must {
 
     behave like pageWithTitle("title")
 
     behave like pageWithCombinedHeader(
       preHeaderAnnouncementText=Some("This section is the income tax summary for"),
-      preHeaderText ="Jjj Bbb",
+      preHeaderText ="Firstname Surname",
       mainHeaderText = "main heading")
 
     "display a link to return to choose tax year page" in {
@@ -298,4 +272,33 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithAttribute("#addMissingIncomeSourceSection a", "href", ApplicationConfig.otherIncomeLinkUrl)
     }
   }
+
+
+  val activeEmployment =
+    IncomeSourceViewModel("Company1", "£23,000", "1150L", true, "123456", true, "", false, "view employment details", "fake/active/url")
+  val endedEmployment =
+    IncomeSourceViewModel("Company2", "£25,000", "1150L", true, "", false, "31 July 2017", true, "view income details", "fake/ended/url")
+  val pensionIncome =
+    IncomeSourceViewModel("PensionProvider1", "£14,000", "", false, "", false, "", false, "view pension details", "fake/pension/url")
+  val employments = Seq(IncomeSourceViewModel("Company1", "£23,000", "1150L", true, "123456", true, "", false, "view income details", "fake/url"))
+
+  val otherIncomeSourceViewModel = IncomeSourceViewModel(
+    "State Pension",
+    "£123",
+    "",
+    displayTaxCode = false,
+    "",
+    displayPayrollNumber = false,
+    "",
+    displayEndDate = false,
+    "",
+    "",
+    displayDetailsLink = false
+  )
+
+  val vm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Seq(activeEmployment), Seq(pensionIncome), Seq(endedEmployment), false, true, Seq(otherIncomeSourceViewModel))
+  val noSectionsVm = TaxAccountSummaryViewModel("main heading", "title", "£15,000", "£12,320", "5 April 2017", Nil, Nil, Nil, false, true, Seq(otherIncomeSourceViewModel))
+
+  override implicit val user = UserBuilder("Mr", "Firstname", "Surname")
+  override def view: Html = views.html.incomeTaxSummary(vm)
 }
