@@ -21,8 +21,7 @@ import controllers.routes
 import play.Logger
 import play.api.mvc.Results.Redirect
 import play.api.mvc._
-import uk.gov.hmrc.auth.core
-import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.{AffinityGroup, AuthConnector, AuthorisedFunctions, ConfidenceLevel}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{Name, ~}
 import uk.gov.hmrc.domain.Nino
@@ -57,7 +56,7 @@ object AuthActionedTaiUser {
 
 @Singleton
 class AuthActionImpl @Inject()(personService: PersonService,
-                               override val authConnector: core.AuthConnector)
+                               override val authConnector: AuthConnector)
                               (implicit ec: ExecutionContext) extends AuthAction
   with AuthorisedFunctions {
 
