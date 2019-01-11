@@ -17,14 +17,11 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.audit.Auditable
-import controllers.auth.WithAuthorisedForTaiLite
+import controllers.auth.AuthAction
+import play.Logger
 import play.api.Play.current
+import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
@@ -32,48 +29,48 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
 import views.html.previousYearUnderpayment
 
+import scala.concurrent.Future
+import scala.util.control.NonFatal
 
-class UnderpaymentFromPreviousYearController @Inject()(personService: PersonService,
-                                                       codingComponentService: CodingComponentService,
+
+class UnderpaymentFromPreviousYearController @Inject()(codingComponentService: CodingComponentService,
                                                        employmentService: EmploymentService,
                                                        companyCarService: CompanyCarService,
                                                        taxAccountService: TaxAccountService,
-                                                       val auditConnector: AuditConnector,
-                                                       val delegationConnector: DelegationConnector,
-                                                       val authConnector: AuthConnector,
+                                                       authenticate: AuthAction,
                                                        override implicit val partialRetriever: FormPartialRetriever,
-                                                       override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite
-  with Auditable
-  with AuditConstants {
+                                                       override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
 
-  def underpaymentExplanation = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
+  def underpaymentExplanation = authenticate.async {
+    implicit request =>
 
-          val nino = Nino(user.getNino)
-          val year = TaxYear()
-          val totalTaxFuture = taxAccountService.totalTax(nino, year)
-          val employmentsFuture = employmentService.employments(nino, year.prev)
-          val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, year)
+      val nino = request.taiUser.nino
+      val year = TaxYear()
+      val totalTaxFuture = taxAccountService.totalTax(nino, year)
+      val employmentsFuture = employmentService.employments(nino, year.prev)
+      val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, year)
 
-          for {
-            employments <- employmentsFuture
-            codingComponents <- codingComponentsFuture
-            totalTax <- totalTaxFuture
-          } yield {
-            totalTax match {
-              case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
-                Ok(previousYearUnderpayment(PreviousYearUnderpaymentViewModel(codingComponents, employments, totalTax)))
-              case _ => throw new RuntimeException("Failed to fetch total tax details")
-            }
-          }
+      val view = for {
+        employments <- employmentsFuture
+        codingComponents <- codingComponentsFuture
+        totalTax <- totalTaxFuture
+      } yield {
+        totalTax match {
+          case TaiSuccessResponseWithPayload(totalTax: TotalTax) =>
+            implicit val user = request.taiUser
+            Ok(previousYearUnderpayment(PreviousYearUnderpaymentViewModel(codingComponents, employments, totalTax)))
+          case _ => throw new RuntimeException("Failed to fetch total tax details")
+        }
+      }
 
+      view.recoverWith {
+        case NonFatal(e) => {
+          Logger.warn(s"Exception: ${e.getClass()}", e)
+          Future.successful(InternalServerError(error5xx(Messages("tai.technical.error.message"))))
+        }
+      }
   }
 }
