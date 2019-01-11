@@ -117,5 +117,5 @@ class MainSpec extends TaiViewSpec {
   private lazy val incomeTaxComparisonViewModel = IncomeTaxComparisonViewModel("USERNAME", estimatedIncomeTaxComparisonViewModel,
     TaxCodeComparisonViewModel(Nil), TaxFreeAmountComparisonViewModel(Nil, Nil),IncomeSourceComparisonViewModel(Nil,Nil))
 
-  override def view: Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModel)
+  override def view: Html = views.html.incomeTaxComparison.Main(incomeTaxComparisonViewModel, true)
 }
