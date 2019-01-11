@@ -66,6 +66,38 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
     "display a detail section" which {
 
+      "contains 3 columns when previous is present" in {
+        doc.select("th").size() mustBe 3
+      }
+
+      "contains no header when previous is not present" in {
+        doc(currentOnlyView).select("thead").size() mustBe 0
+      }
+
+      "contains 3 cells for personal allowance" in {
+        doc.select(".tax-free-amount-comparison-personal-allowance td").size() mustBe 3
+      }
+
+      "contains 2 cells for personal allowance when previous is not present" in {
+        doc(currentOnlyView).select(".tax-free-amount-comparison-personal-allowance td").size() mustBe 2
+      }
+
+      "contains 3 cells for each addition and deduction" in {
+        doc.select(".tax-free-amount-comparison-blank-row td").size() mustBe 6
+      }
+
+      "contains 2 cells for each addition and deduction when previous is not present" in {
+        doc(currentOnlyView).select(".tax-free-amount-comparison-blank-row td").size() mustBe 4
+      }
+
+      "contains 3 cells for total tax free amount" in {
+        doc.select(".tax-free-amount-comparison-total td").size() mustBe 3
+      }
+
+      "contains 2 cells for total tax free amount is not present" in {
+        doc(currentOnlyView).select(".tax-free-amount-comparison-total td").size() mustBe 2
+      }
+
       "contains a heading for the addition section" in {
         doc must haveElementAtPathWithText("h3.tax-free-amount-comparison-row-heading", Messages("tai.taxFreeAmount.table.additions.caption"))
       }
@@ -170,22 +202,30 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
   val taxFreeAmountSummaryViewModel: TaxFreeAmountSummaryViewModel = createTaxFreeAmountSummaryViewModel()
 
   private def createViewModel(taxCodeDateRange: String = "",
-                              annualTaxFreeAmount: BigDecimal = 1150
+                              annualTaxFreeAmount: BigDecimal = 1150,
+                              showPreviousTaxFreeInfo: Boolean = true
                              ): YourTaxFreeAmountViewModel = {
 
+    val previous = if (showPreviousTaxFreeInfo) {
+      Some(TaxFreeInfo(taxCodeDateRange, 0, 0))
+    } else {
+      None
+    }
+
     YourTaxFreeAmountViewModel(
-      TaxFreeInfo(taxCodeDateRange, 0, 0),
+      previous,
       TaxFreeInfo(taxCodeDateRange, annualTaxFreeAmount, 0),
       Seq.empty,
       Seq.empty)
   }
 
-  val currentTaxFreeAmount: YourTaxFreeAmountViewModel = createViewModel()
+  val taxFreeAmount: YourTaxFreeAmountViewModel = createViewModel()
+  val currentOnlyTaxFreeAmount: YourTaxFreeAmountViewModel = createViewModel(showPreviousTaxFreeInfo = false)
 
-
-  def createView(viewModel: YourTaxFreeAmountViewModel = currentTaxFreeAmount) =
+  def createView(viewModel: YourTaxFreeAmountViewModel = taxFreeAmount) =
     views.html.taxCodeChange.yourTaxFreeAmount(viewModel)
 
   override def view = createView()
+  private lazy val currentOnlyView = createView(viewModel = currentOnlyTaxFreeAmount)
 }
 

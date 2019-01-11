@@ -42,7 +42,7 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
     val formattedCurrentDate = createFormattedDate(currentDate)
 
     YourTaxFreeAmountViewModel(
-      TaxFreeInfo(formattedPreviousDate, 0, 0),
+      Some(TaxFreeInfo(formattedPreviousDate, 0, 0)),
       TaxFreeInfo(formattedCurrentDate, 0, 0),
       Seq.empty,
       Seq.empty
@@ -59,7 +59,7 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
 
       val previous = CodingComponentsWithCarBenefits(previousDate, Seq.empty, Seq.empty)
       val current = CodingComponentsWithCarBenefits(currentDate, Seq.empty, Seq.empty)
-       buildTaxFreeAmount(previous, current, Map.empty) mustBe expected
+       buildTaxFreeAmount(Some(previous), current, Map.empty) mustBe expected
     }
   }
 }

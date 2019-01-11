@@ -21,10 +21,20 @@ import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import uk.gov.hmrc.tai.util.ViewModelHelper
 
-case class YourTaxFreeAmountViewModel(previousTaxFreeInfo: TaxFreeInfo,
+case class YourTaxFreeAmountViewModel(previousTaxFreeInfo: Option[TaxFreeInfo],
                                       currentTaxFreeInfo: TaxFreeInfo,
                                       allowances: Seq[CodingComponentPairDescription],
-                                      deductions: Seq[CodingComponentPairDescription]) {}
+                                      deductions: Seq[CodingComponentPairDescription]) {
+
+  val showPreviousColumn: Boolean = previousTaxFreeInfo.isDefined
+  val columns: Int = {
+    if (previousTaxFreeInfo.isDefined) {
+      3
+    } else {
+      2
+    }
+  }
+}
 
 object YourTaxFreeAmountViewModel extends ViewModelHelper {
   def prettyPrint(value: BigDecimal) : String = {
