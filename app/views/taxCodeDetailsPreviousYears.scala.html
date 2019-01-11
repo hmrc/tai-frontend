@@ -21,57 +21,57 @@
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 
-@(taxCodeViewModel: TaxCodeViewModelPreviousYears)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthActionedTaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(taxCodeViewModel: TaxCodeViewModelPreviousYears)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax codes"}
 
 @header = @{
-    ptaHeader(
-    displayBackLink = true,
-    backLinkGaEventAction = Some(gaEventActionString),
-    mainHeadingText = taxCodeViewModel.mainHeading,
-    preHeadingText = taxCodeViewModel.preHeader)
+ptaHeader(
+displayBackLink = true,
+backLinkGaEventAction = Some(gaEventActionString),
+mainHeadingText = taxCodeViewModel.mainHeading,
+preHeadingText = taxCodeViewModel.preHeader)
 }
 
 @main(
-    title = taxCodeViewModel.title,
-    gaCustomTitle = Some(taxCodeViewModel.title),
-    authActionedTaiUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = Some("full-width")){
+title = taxCodeViewModel.title,
+gaCustomTitle = Some(taxCodeViewModel.title),
+user = Some(user),
+pageHeader = Some(header),
+articleClasses = Some("full-width")){
 
-    <div class="grid-row">
-        <div class="grid grid-2-3">
-            <div class="inner-block">
+<div class="grid-row">
+    <div class="grid grid-2-3">
+        <div class="inner-block">
 
-                @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
+            @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
 
-                <section class="section" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
+            <section class="section" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
 
-                    <h2 class="break-word-only" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
+                <h2 class="break-word-only" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
 
-                    <ul role="list" id="taxCodeList@{listIdx.toString}" class="tai-description-list flush" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
+                <ul role="list" id="taxCodeList@{listIdx.toString}" class="tai-description-list flush" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
 
-                        @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (Stream from 1)) {
-                        <li role="listitem">
-                            <div class="bold-large" id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
-                                <span class="visuallyhidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
-                                <span aria-hidden="true">@taxCodeTerm</span>
-                            </div>
-                            <div class="fixed-small" id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
-                                <span class="visuallyhidden">@messages("tai.taxCode.definition.announce") </span>
-                                @Html(taxCodeList.descriptionItems(taxCodeTerm))
-                            </div>
-                        </li>
-                        }
-                    </ul>
+                    @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (Stream from 1)) {
+                    <li role="listitem">
+                        <div class="bold-large" id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
+                            <span class="visuallyhidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
+                            <span aria-hidden="true">@taxCodeTerm</span>
+                        </div>
+                        <div class="fixed-small" id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
+                            <span class="visuallyhidden">@messages("tai.taxCode.definition.announce") </span>
+                            @Html(taxCodeList.descriptionItems(taxCodeTerm))
+                        </div>
+                    </li>
+                    }
+                </ul>
 
-                </section>
-                }
+            </section>
+            }
 
-            </div>
         </div>
-
     </div>
+
+</div>
 
 }

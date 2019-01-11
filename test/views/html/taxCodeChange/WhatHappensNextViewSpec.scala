@@ -16,16 +16,12 @@
 
 package views.html.taxCodeChange
 
-import controllers.auth.AuthActionedTaiUser
 import controllers.routes
-import org.scalatest.mock.MockitoSugar
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.urls.Link
 
-class WhatHappensNextViewSpec extends TaiViewSpec with MockitoSugar {
-
-  override def view = views.html.taxCodeChange.whatHappensNext()
+class WhatHappensNextViewSpec extends TaiViewSpec {
 
   "what happens next" should {
     behave like pageWithTitle(messages("taxCode.change.whatHappensNext.title"))
@@ -55,4 +51,7 @@ class WhatHappensNextViewSpec extends TaiViewSpec with MockitoSugar {
     }
 
   }
+
+  override def view = views.html.taxCodeChange.whatHappensNext()
+
 }

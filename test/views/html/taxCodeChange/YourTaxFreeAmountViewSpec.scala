@@ -16,19 +16,18 @@
 
 package views.html.taxCodeChange
 
-import controllers.auth.AuthActionedTaiUser
 import controllers.routes
 import org.joda.time.LocalDate
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
-import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryRowViewModel, TaxFreeAmountSummaryViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.viewModels.{ChangeLinkViewModel, TaxFreeAmountSummaryCategoryViewModel, TaxFreeAmountSummaryRowViewModel, TaxFreeAmountSummaryViewModel}
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
-class YourTaxFreeAmountViewSpec extends TaiViewSpec with MockitoSugar {
+class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
   "your tax free amount" should {
     behave like pageWithBackLink
@@ -131,32 +130,32 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec with MockitoSugar {
   }
 
   val personalAllowanceCatergory = TaxFreeAmountSummaryCategoryViewModel(
-                                      Messages("tai.taxFreeAmount.table.columnOneHeader"),
-                                      Messages("tai.taxFreeAmount.table.columnTwoHeader"),
-                                      hideHeaders = false,
-                                      hideCaption = true,
-                                      Messages("tai.taxFreeAmount.table.allowances.caption"),
-                                      Seq(TaxFreeAmountSummaryRowViewModel(
-                                        Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
-                                        "£1150",
-                                        ChangeLinkViewModel(false, "", "")
-                                      )))
+    Messages("tai.taxFreeAmount.table.columnOneHeader"),
+    Messages("tai.taxFreeAmount.table.columnTwoHeader"),
+    hideHeaders = false,
+    hideCaption = true,
+    Messages("tai.taxFreeAmount.table.allowances.caption"),
+    Seq(TaxFreeAmountSummaryRowViewModel(
+      Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", ""),
+      "£1150",
+      ChangeLinkViewModel(false, "", "")
+    )))
 
   val emptyAdditionRows = Seq(TaxFreeAmountSummaryRowViewModel(
     Messages("tai.taxFreeAmount.table.additions.noAddition"), "£0", ChangeLinkViewModel(false, "", "")
   ))
 
   val nonEmptyAdditionRows = Seq(
-      TaxFreeAmountSummaryRowViewModel(Messages("tai.taxFreeAmount.table.taxComponent.MarriageAllowanceReceived"), "£200", ChangeLinkViewModel(false, "", "")),
-      TaxFreeAmountSummaryRowViewModel(Messages("tai.taxFreeAmount.table.additions.total"), "£200", ChangeLinkViewModel(false, "", "")))
+    TaxFreeAmountSummaryRowViewModel(Messages("tai.taxFreeAmount.table.taxComponent.MarriageAllowanceReceived"), "£200", ChangeLinkViewModel(false, "", "")),
+    TaxFreeAmountSummaryRowViewModel(Messages("tai.taxFreeAmount.table.additions.total"), "£200", ChangeLinkViewModel(false, "", "")))
 
   def createAdditionsCatetgory(additionRows: Seq[TaxFreeAmountSummaryRowViewModel]) = TaxFreeAmountSummaryCategoryViewModel(
-                                Messages("tai.taxFreeAmount.table.columnOneHeader"),
-                                Messages("tai.taxFreeAmount.table.columnTwoHeader"),
-                                hideHeaders = true,
-                                hideCaption = false,
-                                Messages("tai.taxFreeAmount.table.additions.caption"),
-                                additionRows)
+    Messages("tai.taxFreeAmount.table.columnOneHeader"),
+    Messages("tai.taxFreeAmount.table.columnTwoHeader"),
+    hideHeaders = true,
+    hideCaption = false,
+    Messages("tai.taxFreeAmount.table.additions.caption"),
+    additionRows)
 
   val emptyDeductionsRows = Seq(TaxFreeAmountSummaryRowViewModel(
     Messages("tai.taxFreeAmount.table.deductions.noDeduction"), "£0", ChangeLinkViewModel(false, "", "")
@@ -168,36 +167,36 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec with MockitoSugar {
   )
 
   def createDeductionsCatergory(deductionRows: Seq[TaxFreeAmountSummaryRowViewModel]) = TaxFreeAmountSummaryCategoryViewModel(
-                                Messages("tai.taxFreeAmount.table.columnOneHeader"),
-                                Messages("tai.taxFreeAmount.table.columnTwoHeader"),
-                                hideHeaders = true,
-                                hideCaption = false,
-                                Messages("tai.taxFreeAmount.table.deductions.caption"),
-                                deductionRows)
+    Messages("tai.taxFreeAmount.table.columnOneHeader"),
+    Messages("tai.taxFreeAmount.table.columnTwoHeader"),
+    hideHeaders = true,
+    hideCaption = false,
+    Messages("tai.taxFreeAmount.table.deductions.caption"),
+    deductionRows)
 
   def createTotalCatergory(totalAmountFormatted: String) = TaxFreeAmountSummaryCategoryViewModel(
-                           Messages("tai.taxFreeAmount.table.columnOneHeader"),
-                           Messages("tai.taxFreeAmount.table.columnTwoHeader"),
-                           hideHeaders = true,
-                           hideCaption = true,
-                           Messages("tai.taxFreeAmount.table.totals.caption"),
-                           Seq(TaxFreeAmountSummaryRowViewModel(
-                             Messages("tai.taxFreeAmount.table.totals.label"),
-                             totalAmountFormatted,
-                             ChangeLinkViewModel(false, "", "")
-                           )))
+    Messages("tai.taxFreeAmount.table.columnOneHeader"),
+    Messages("tai.taxFreeAmount.table.columnTwoHeader"),
+    hideHeaders = true,
+    hideCaption = true,
+    Messages("tai.taxFreeAmount.table.totals.caption"),
+    Seq(TaxFreeAmountSummaryRowViewModel(
+      Messages("tai.taxFreeAmount.table.totals.label"),
+      totalAmountFormatted,
+      ChangeLinkViewModel(false, "", "")
+    )))
 
 
   def createTaxFreeAmountSummaryViewModel(additionRows: Seq[TaxFreeAmountSummaryRowViewModel] = nonEmptyAdditionRows,
                                           deductionRows: Seq[TaxFreeAmountSummaryRowViewModel] = nonEmptyDeductionRows,
                                           totalFormattedAmount: String = "£1250") = {
 
-                                              TaxFreeAmountSummaryViewModel(Seq(
-                                                  personalAllowanceCatergory,
-                                                  createAdditionsCatetgory(additionRows),
-                                                  createDeductionsCatergory(deductionRows),
-                                                  createTotalCatergory(totalFormattedAmount)
-                                              ))
+    TaxFreeAmountSummaryViewModel(Seq(
+      personalAllowanceCatergory,
+      createAdditionsCatetgory(additionRows),
+      createDeductionsCatergory(deductionRows),
+      createTotalCatergory(totalFormattedAmount)
+    ))
 
   }
 
