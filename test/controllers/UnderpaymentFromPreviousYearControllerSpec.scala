@@ -74,10 +74,32 @@ class UnderpaymentFromPreviousYearControllerSpec extends PlaySpec
     }
 
     "respond with INTERNAL_SERVER_ERROR and redirect to the technical difficulties page" when {
+      "employmentService fails to obtain the total tax" in {
+        val controller = new SUT
+
+        when(employmentService.employments(any(), any())(any())).thenReturn(Future.failed(new Exception("could not get employments")))
+
+        val result = controller.underpaymentExplanation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+        contentAsString(result) must include("Sorry, we are experiencing technical difficulties - 500")
+      }
+
       "taxAccountService fails to obtain the total tax" in {
         val controller = new SUT
 
         when(taxAccountService.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiTaxAccountFailureResponse("could not get total tax")))
+
+        val result = controller.underpaymentExplanation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+        contentAsString(result) must include("Sorry, we are experiencing technical difficulties - 500")
+      }
+
+      "codingComponentService fails to obtain the taxFreeAmountComponents" in {
+        val controller = new SUT
+
+        when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.failed(new Exception("could not get tax free amounts")))
 
         val result = controller.underpaymentExplanation()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
