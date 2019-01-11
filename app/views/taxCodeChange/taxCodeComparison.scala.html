@@ -31,60 +31,60 @@
 @gaEventLabelString = @{Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}
 
 @header = @{
-ptaHeader(
-formForErrorSummary = None,
-displayBackLink = true,
-backLinkGaEventAction = Some(gaEventActionString),
-mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeChangeViewModel.changeDate)),
-preHeadingText = Messages("taxCode.change.journey.preHeading")
-)
+    ptaHeader(
+        formForErrorSummary = None,
+        displayBackLink = true,
+        backLinkGaEventAction = Some(gaEventActionString),
+        mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeChangeViewModel.changeDate)),
+        preHeadingText = Messages("taxCode.change.journey.preHeading")
+    )
 }
 
 @main(
-title = Messages("taxCode.change.journey.preHeading"),
-pageHeader = Some(header),
-user = Some(user),
-gaCustomTitle = None,
-gaSettings = GoogleAnalyticsSettings(dimensions = Some(taxCodeChangeViewModel.gaDimensions))) {
+    title = Messages("taxCode.change.journey.preHeading"),
+    pageHeader = Some(header),
+    user = Some(user),
+    gaCustomTitle = None,
+    gaSettings = GoogleAnalyticsSettings(dimensions = Some(taxCodeChangeViewModel.gaDimensions))) {
 
-<div class="column-two-thirds">
-    <div class="grid-row">
-        <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
+    <div class="column-two-thirds">
+        <div class="grid-row">
+            <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
+        </div>
+        <div class="grid-row tax-code-change margin-bottom-xlarge">
+            @taxCodePairs(taxCodeChangeViewModel.pairs)
+        </div>
+        <div class="grid-row">
+            @Link.toInternalPage(
+            id=Some("check-your-tax-button"),
+            url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,
+            value=Some(Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")),
+            cssClasses=Some("button"),
+            dataAttributes=Some(Map("journey-click"->s"button - click:${gaEventActionString}:${Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}"))).toHtml
+        </div>
     </div>
-    <div class="grid-row tax-code-change margin-bottom-xlarge">
-        @taxCodePairs(taxCodeChangeViewModel.pairs)
-    </div>
-    <div class="grid-row">
-        @Link.toInternalPage(
-        id=Some("check-your-tax-button"),
-        url=routes.TaxCodeChangeController.yourTaxFreeAmount().url,
-        value=Some(Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")),
-        cssClasses=Some("button"),
-        dataAttributes=Some(Map("journey-click"->s"button - click:${gaEventActionString}:${Messages("taxCode.change.yourTaxCodeChanged.checkYourTaxButton")}"))).toHtml
-    </div>
-</div>
 }
 
 
 @taxCodeRecordPod(taxCodeRecord: Option[TaxCodeRecord], identifier: String) = {
-@{taxCodeRecord match {
-case Some(taxCodeRecord) => formattedTaxCodeForComparison(taxCodeRecord, identifier, taxCodeChangeViewModel.scottishTaxRateBands)
-case _ => None
-}}
+    @{taxCodeRecord match {
+        case Some(taxCodeRecord) => formattedTaxCodeForComparison(taxCodeRecord, identifier, taxCodeChangeViewModel.scottishTaxRateBands)
+        case _ => None
+    }}
 }
 
 @taxCodePairs(taxCodePairs: TaxCodePairs) = {
-<div class="column-half tax-code-change__previous">
-    <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes")</h2>
-    @for((pair) <- taxCodePairs.pairs) {
-    @taxCodeRecordPod(pair.previous, "previous")
-    }
-</div>
+    <div class="column-half tax-code-change__previous">
+        <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes")</h2>
+        @for((pair) <- taxCodePairs.pairs) {
+            @taxCodeRecordPod(pair.previous, "previous")
+        }
+    </div>
 
-<div class="column-half tax-code-change__current">
-    <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.currentTaxCodes")</h2>
-    @for((pair) <- taxCodePairs.pairs) {
-    @taxCodeRecordPod(pair.current, "current")
-    }
-</div>
+    <div class="column-half tax-code-change__current">
+        <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.currentTaxCodes")</h2>
+        @for((pair) <- taxCodePairs.pairs) {
+            @taxCodeRecordPod(pair.current, "current")
+        }
+    </div>
 }

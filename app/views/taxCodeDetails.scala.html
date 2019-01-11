@@ -26,82 +26,82 @@
 @gaEventActionString = @{"Your tax codes"}
 
 @header = @{
-ptaHeader(
-displayBackLink = true,
-backLinkGaEventAction = Some(gaEventActionString),
-mainHeadingText = taxCodeViewModel.mainHeading,
-preHeadingText = taxCodeViewModel.preHeader)
+    ptaHeader(
+    displayBackLink = true,
+    backLinkGaEventAction = Some(gaEventActionString),
+    mainHeadingText = taxCodeViewModel.mainHeading,
+    preHeadingText = taxCodeViewModel.preHeader)
 }
 
 @main(
-title = taxCodeViewModel.title,
-gaCustomTitle = Some(taxCodeViewModel.title),
-user = Some(user),
-pageHeader = Some(header),
-articleClasses = Some("full-width")){
+    title = taxCodeViewModel.title,
+    gaCustomTitle = Some(taxCodeViewModel.title),
+    user = Some(user),
+    pageHeader = Some(header),
+    articleClasses = Some("full-width")){
 
-<div class="grid-row">
-    <div class="grid grid-2-3">
-        <div class="inner-block">
+    <div class="grid-row">
+        <div class="grid grid-2-3">
+            <div class="inner-block">
 
-            <div class="section flush--bottom">
-                <p id="ledeMessage">
-                    <span class="lede">@taxCodeViewModel.ledeMessage</span>
-                </p>
-            </div>
-
-            @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
-
-            <section class="section" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
-
-                <h2 class="break-word-only" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
-
-                <ul role="list" id="taxCodeList@{listIdx.toString}" class="tai-description-list flush" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
-
-                    @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (Stream from 1)) {
-                    <li role="listitem">
-                        <div class="bold-large" id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
-                            <span class="visuallyhidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
-                            <span aria-hidden="true">@taxCodeTerm</span>
-                        </div>
-                        <div class="fixed-small" id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
-                            <span class="visuallyhidden">@messages("tai.taxCode.definition.announce") </span>
-                            @Html(taxCodeList.descriptionItems(taxCodeTerm))
-                        </div>
-                    </li>
-                    }
-                </ul>
-
-            </section>
-            }
-
-        </div>
-    </div>
-
-    <div class="grid grid-1-3">
-        <div class="inner-block">
-            <nav class="section">
-                <h2 class="heading-section">@messages("tai.taxCode.sideBar.heading")</h2>
-
-                <div class="link-list">
-                    @Link.toInternalPage(
-                    id=Some("taxFreeAmountLink"),
-                    url=routes.TaxFreeAmountController.taxFreeAmount.url,
-                    value=Some(Messages("check.your.tax.free.amount")),
-                    cssClasses=Some("link-list__item"),
-                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("check.your.tax.free.amount")}"))).toHtml
-
-                    @Link.toInternalPage(
-                    id=Some("taxableIncomeLink"),
-                    url=routes.TaxAccountSummaryController.onPageLoad.url,
-                    value=Some(Messages("tai.incomeTaxSummary.link")),
-                    cssClasses=Some("link-list__item"),
-                    dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxCode.taxableIncome.link")}"))).toHtml
+                <div class="section flush--bottom">
+                    <p id="ledeMessage">
+                        <span class="lede">@taxCodeViewModel.ledeMessage</span>
+                    </p>
                 </div>
-            </nav>
-        </div>
-    </div>
 
-</div>
+                @for((taxCodeList, listIdx) <- taxCodeViewModel.taxCodeDetails zip (Stream from 1)) {
+
+                <section class="section" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
+
+                    <h2 class="break-word-only" id="taxCodeList@{listIdx.toString}Heading">@taxCodeList.heading</h2>
+
+                    <ul role="list" id="taxCodeList@{listIdx.toString}" class="tai-description-list flush" aria-labelledby="taxCodeList@{listIdx.toString}Heading">
+
+                        @for((taxCodeTerm, termIdx) <- taxCodeList.descriptionItems.keySet zip (Stream from 1)) {
+                        <li role="listitem">
+                            <div class="bold-large" id="taxCodeTerm_@{listIdx.toString}_@{termIdx.toString}">
+                                <span class="visuallyhidden">@messages("tai.taxCode.part.announce", taxCodeTerm) </span>
+                                <span aria-hidden="true">@taxCodeTerm</span>
+                            </div>
+                            <div class="fixed-small" id="taxCodeDescription_@{listIdx.toString}_@{termIdx.toString}">
+                                <span class="visuallyhidden">@messages("tai.taxCode.definition.announce") </span>
+                                @Html(taxCodeList.descriptionItems(taxCodeTerm))
+                            </div>
+                        </li>
+                        }
+                    </ul>
+
+                </section>
+                }
+
+            </div>
+        </div>
+
+        <div class="grid grid-1-3">
+            <div class="inner-block">
+                <nav class="section">
+                    <h2 class="heading-section">@messages("tai.taxCode.sideBar.heading")</h2>
+
+                    <div class="link-list">
+                        @Link.toInternalPage(
+                            id=Some("taxFreeAmountLink"),
+                            url=routes.TaxFreeAmountController.taxFreeAmount.url,
+                            value=Some(Messages("check.your.tax.free.amount")),
+                            cssClasses=Some("link-list__item"),
+                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("check.your.tax.free.amount")}"))).toHtml
+
+                        @Link.toInternalPage(
+                            id=Some("taxableIncomeLink"),
+                            url=routes.TaxAccountSummaryController.onPageLoad.url,
+                            value=Some(Messages("tai.incomeTaxSummary.link")),
+                            cssClasses=Some("link-list__item"),
+                            dataAttributes=Some(Map("journey-click"->s"link - click:${gaEventActionString}:${Messages("tai.taxCode.taxableIncome.link")}"))).toHtml
+                    </div>
+                </nav>
+            </div>
+        </div>
+
+    </div>
 
 }

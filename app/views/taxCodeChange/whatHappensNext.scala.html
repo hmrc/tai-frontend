@@ -23,20 +23,20 @@
 @gaEventActionString = @{"What happens next"}
 
 @header = @{
-ptaHeader(
-formForErrorSummary = None,
-displayBackLink = true,
-backLinkGaEventAction = Some(gaEventActionString),
-mainHeadingText = Messages("taxCode.change.whatHappensNext.title"),
-preHeadingText = Messages("taxCode.change.journey.preHeading"))
+    ptaHeader(
+    formForErrorSummary = None,
+    displayBackLink = true,
+    backLinkGaEventAction = Some(gaEventActionString),
+    mainHeadingText = Messages("taxCode.change.whatHappensNext.title"),
+    preHeadingText = Messages("taxCode.change.journey.preHeading"))
 }
 
 @main(
-title = Messages("taxCode.change.whatHappensNext.title"),
-articleClasses = Some("full-width"),
-pageHeader = Some(header),
-user = Some(user),
-gaCustomTitle = None
+    title = Messages("taxCode.change.whatHappensNext.title"),
+    articleClasses = Some("full-width"),
+    pageHeader = Some(header),
+    user = Some(user),
+    gaCustomTitle = None
 ){
 
 <div class="grid-row">

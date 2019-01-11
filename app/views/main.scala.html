@@ -25,120 +25,120 @@
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
 @(title: String,
-sidebarLinks: Option[Html] = None,
-sidebarClass: Option[String] = None,
-articleClasses: Option[String] = Some("full-width"),
-user: Option[controllers.auth.TaiUser] = None,
-employerName: Option[String] = None,
-includeGridWrapper: Boolean = false,
-webChat: Boolean = false,
-clickWebChat: Boolean = false,
-gaCallsAdditionalJs: Option[Html] = None,
-gaSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(),
-gaCustomTitle: Option[String] = None,
-optimizelyAudience: Option[String] = None,
-pageHeader: Option[Html] = None
+  sidebarLinks: Option[Html] = None,
+  sidebarClass: Option[String] = None,
+  articleClasses: Option[String] = Some("full-width"),
+  user: Option[controllers.auth.TaiUser] = None,
+  employerName: Option[String] = None,
+  includeGridWrapper: Boolean = false,
+  webChat: Boolean = false,
+  clickWebChat: Boolean = false,
+  gaCallsAdditionalJs: Option[Html] = None,
+  gaSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(),
+  gaCustomTitle: Option[String] = None,
+  optimizelyAudience: Option[String] = None,
+  pageHeader: Option[Html] = None
 )(mainContent: Html
 )(implicit request: Request[_],
-messages: Messages,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+  messages: Messages,
+  templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+  partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 
 @serviceSuffix = @{
-s"- ${Messages("tai.service.navTitle")} - GOV.UK"
+    s"- ${Messages("tai.service.navTitle")} - GOV.UK"
 }
 
 @mustacheCheck(str: String) = @{
-if(str.trim == "") false else str
+    if(str.trim == "") false else str
 }
 
 @authProvider = @{
-request.session.get(SessionKeys.authProvider)
+    request.session.get(SessionKeys.authProvider)
 }
 
 @isGG = @{
-authProvider.contains("GGW")
+    authProvider.contains("GGW")
 }
 
 @isSa = @{
-user.fold(false) {
-user =>
-user.authContext.principal.accounts.sa.map(_.utr).isDefined
-}
+    user.fold(false) {
+        user =>
+            user.authContext.principal.accounts.sa.map(_.utr).isDefined
+    }
 }
 
 @isVerify = @{
-authProvider.contains("IDA")
+    authProvider.contains("IDA")
 }
 
 @signOutUrl = @{
-mustacheCheck{
-user.fold("") {
-user =>
-routes.ServiceController.serviceSignout().url
-}
-}
+    mustacheCheck{
+        user.fold("") {
+            user =>
+                routes.ServiceController.serviceSignout().url
+        }
+    }
 }
 
 @actingAttorneyBanner = @{
-user.fold(HtmlFormat.empty) {
-authContext =>
-authContext.authContext.attorney.fold(HtmlFormat.empty) {
-_ => layouts.attorney_banner(
-authContext.authContext.principal.name,
-authContext.authContext.attorney.get.returnLink.url,
-standAlone,
-Some(Messages("attorney.banner.link"))
-)
-}
-}
+    user.fold(HtmlFormat.empty) {
+        authContext =>
+            authContext.authContext.attorney.fold(HtmlFormat.empty) {
+                _ => layouts.attorney_banner(
+                    authContext.authContext.principal.name,
+                    authContext.authContext.attorney.get.returnLink.url,
+                    standAlone,
+                    Some(Messages("attorney.banner.link"))
+                )
+            }
+    }
 }
 
 @mainContentHeader = {
-@pageHeader.getOrElse(Html(""))
+    @pageHeader.getOrElse(Html(""))
 }
 
 @sidebar = @{
-sidebarLinks.map { sidebarLinksValue =>
-layouts.sidebar(sidebarLinksValue, sidebarClass)
-}
+    sidebarLinks.map { sidebarLinksValue =>
+        layouts.sidebar(sidebarLinksValue, sidebarClass)
+    }
 }
 
 @helpForm = @{partialRetriever.getPartialContent(ApplicationConfig.reportAProblemPartialUrl)}
 
 
 @googleAnalytics = @{
-Map[String, Any](
-"trackingId" -> ApplicationConfig.analyticsToken,
-"cookieDomain" -> ApplicationConfig.analyticsHost,
-"confidenceLevel" -> user.map(_.authContext.user.confidenceLevel.toString).getOrElse(false),
-"authProvider" -> authProvider
+    Map[String, Any](
+        "trackingId" -> ApplicationConfig.analyticsToken,
+        "cookieDomain" -> ApplicationConfig.analyticsHost,
+        "confidenceLevel" -> user.map(_.authContext.user.confidenceLevel.toString).getOrElse(false),
+        "authProvider" -> authProvider
 
 
-) ++ gaSettings.dimensions.getOrElse(Map.empty)
+    ) ++ gaSettings.dimensions.getOrElse(Map.empty)
 }
 
 @gaCustomEvent = @{
 
-def createGoogleAnalyticJavaScript(dimensionFlag:Boolean, gaJavaScript:String) = {
-if(dimensionFlag) gaJavaScript else ""
-}
+    def createGoogleAnalyticJavaScript(dimensionFlag:Boolean, gaJavaScript:String) = {
+        if(dimensionFlag) gaJavaScript else ""
+    }
 
-val customTitle = gaCustomTitle.map(gaTitle => s"""ga('set', 'title', "${gaTitle} ${serviceSuffix}");""").getOrElse("")
-val clientId = createGoogleAnalyticJavaScript(gaSettings.customClientIdRequired, s"""ga(function (tracker) { if (tracker) { ga('set', 'dimension66', tracker.get('clientId')); } });""")
-val sessionId = createGoogleAnalyticJavaScript(gaSettings.customSessionIdRequired, s"""ga('set', 'dimension67', new Date().getTime() + '.' + Math.random().toString(36).substring(5));""")
-val hitTimeStamp = createGoogleAnalyticJavaScript(gaSettings.customHitStampRequired, s"""ga('set', 'dimension68', new Date().toUTCString());""")
+    val customTitle = gaCustomTitle.map(gaTitle => s"""ga('set', 'title', "${gaTitle} ${serviceSuffix}");""").getOrElse("")
+    val clientId = createGoogleAnalyticJavaScript(gaSettings.customClientIdRequired, s"""ga(function (tracker) { if (tracker) { ga('set', 'dimension66', tracker.get('clientId')); } });""")
+    val sessionId = createGoogleAnalyticJavaScript(gaSettings.customSessionIdRequired, s"""ga('set', 'dimension67', new Date().getTime() + '.' + Math.random().toString(36).substring(5));""")
+    val hitTimeStamp = createGoogleAnalyticJavaScript(gaSettings.customHitStampRequired, s"""ga('set', 'dimension68', new Date().toUTCString());""")
 
-val combinedCustomDimensions = s"$customTitle $clientId $sessionId $hitTimeStamp"
+    val combinedCustomDimensions = s"$customTitle $clientId $sessionId $hitTimeStamp"
 
-if(combinedCustomDimensions.nonEmpty) combinedCustomDimensions else false
+    if(combinedCustomDimensions.nonEmpty) combinedCustomDimensions else false
 
 }
 
 @inlineScript = {
-@if(webChat){
-<script type="text/javascript">
+    @if(webChat){
+        <script type="text/javascript">
             var EG_ACT_ID = "@Play.configuration.getString("webchat.id")";
             (function(e, f) {
                 var d, c, b, a = e.createElement("iframe");
@@ -165,70 +165,70 @@ if(combinedCustomDimensions.nonEmpty) combinedCustomDimensions else false
                 c.close()
             })(document, "//analytics.analytics-egain.com/onetag/" + EG_ACT_ID);
         </script>
-}
+    }
 
-@if(clickWebChat){
-@uk.gov.hmrc.csp.WebchatClient.webchatClickToChatScriptPartial(ApplicationConfig.webchatEntryPoint, ApplicationConfig.webchatTemplate)
-}
+    @if(clickWebChat){
+        @uk.gov.hmrc.csp.WebchatClient.webchatClickToChatScriptPartial(ApplicationConfig.webchatEntryPoint, ApplicationConfig.webchatTemplate)
+    }
 
-@if(gaCallsAdditionalJs.isDefined && gaCallsAdditionalJs.get.toString.trim != ""){
-<script type="text/javascript">@gaCallsAdditionalJs.get</script>
-}
+    @if(gaCallsAdditionalJs.isDefined && gaCallsAdditionalJs.get.toString.trim != ""){
+        <script type="text/javascript">@gaCallsAdditionalJs.get</script>
+    }
 }
 
 
 @isWelshEnabled = @{
-FeatureTogglesConfig.welshLanguageEnabled
+    FeatureTogglesConfig.welshLanguageEnabled
 }
 
 @isWelshActive = @{
-LanguageUtils.getCurrentLang == Lang("cy")
+    LanguageUtils.getCurrentLang == Lang("cy")
 }
 
 @mustacheMap = @{
-Map[String, Any](
-"pageTitle" -> s"${title} ${serviceSuffix}",
-"linkElems" -> Map(
-"url" -> controllers.routes.AssetsController.versioned("stylesheets/tai05102018.min.css")
-),
-"navTitle" -> Messages("tai.service.navTitle"),
-"hasNavLinks" -> true,
-"navLinks" -> Map(
-"url" -> signOutUrl,
-"text" -> "Sign out"
-),
-"isGovernmentGateway" -> isGG,
-"isSa" -> isSa,
-"isVerify" -> isVerify,
-"signOutUrl" -> signOutUrl,
-"actingAttorneyBanner" -> actingAttorneyBanner,
-"mainContentHeader" -> mainContentHeader,
-"sidebar" -> sidebar,
-"getHelpForm" -> helpForm,
-"betaBanner" -> true,
-"feedbackIdentifier" -> TaiConstants.SERVICE_IDENTIFIER,
-"googleAnalytics" -> googleAnalytics,
-"gaCustomEvent" -> gaCustomEvent,
-"scriptElems" -> Seq(
-Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai-new.js")),
-Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai-backlink.js")),
-Map("url" -> controllers.routes.AssetsController.versioned("javascript/char-count.js")),
-Map("url" -> controllers.routes.AssetsController.versioned("javascript/card.js")),
-Map("url" -> controllers.routes.AssetsController.versioned("javascript/tax-code-change.js"))
-),
-"inlineScript" -> inlineScript,
-"showPropositionLinks" -> isWelshEnabled,
-"langSelector" -> isWelshEnabled,
-"enUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("english"),
-"cyUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("cymraeg"),
-"isWelsh" -> isWelshActive,
-"optimizely" -> Map(
-"audience" -> optimizelyAudience.getOrElse("Other user"),
-"projectId" -> "8461600066"
-)
-)
+    Map[String, Any](
+        "pageTitle" -> s"${title} ${serviceSuffix}",
+        "linkElems" -> Map(
+            "url" -> controllers.routes.AssetsController.versioned("stylesheets/tai05102018.min.css")
+        ),
+        "navTitle" -> Messages("tai.service.navTitle"),
+        "hasNavLinks" -> true,
+        "navLinks" -> Map(
+            "url" -> signOutUrl,
+            "text" -> "Sign out"
+        ),
+        "isGovernmentGateway" -> isGG,
+        "isSa" -> isSa,
+        "isVerify" -> isVerify,
+        "signOutUrl" -> signOutUrl,
+        "actingAttorneyBanner" -> actingAttorneyBanner,
+        "mainContentHeader" -> mainContentHeader,
+        "sidebar" -> sidebar,
+        "getHelpForm" -> helpForm,
+        "betaBanner" -> true,
+        "feedbackIdentifier" -> TaiConstants.SERVICE_IDENTIFIER,
+        "googleAnalytics" -> googleAnalytics,
+        "gaCustomEvent" -> gaCustomEvent,
+        "scriptElems" -> Seq(
+            Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai-new.js")),
+            Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai-backlink.js")),
+            Map("url" -> controllers.routes.AssetsController.versioned("javascript/char-count.js")),
+            Map("url" -> controllers.routes.AssetsController.versioned("javascript/card.js")),
+            Map("url" -> controllers.routes.AssetsController.versioned("javascript/tax-code-change.js"))
+        ),
+        "inlineScript" -> inlineScript,
+        "showPropositionLinks" -> isWelshEnabled,
+        "langSelector" -> isWelshEnabled,
+        "enUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("english"),
+        "cyUrl" -> controllers.i18n.routes.TaiLanguageController.switchToLanguage("cymraeg"),
+        "isWelsh" -> isWelshActive,
+        "optimizely" -> Map(
+            "audience" -> optimizelyAudience.getOrElse("Other user"),
+            "projectId" -> "8461600066"
+        )
+    )
 }
 
 @{
-templateRenderer.renderDefaultTemplate(ApplicationConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), mustacheMap)
+    templateRenderer.renderDefaultTemplate(ApplicationConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), mustacheMap)
 }
