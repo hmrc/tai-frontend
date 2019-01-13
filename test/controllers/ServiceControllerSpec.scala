@@ -65,7 +65,7 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
     "redirect to company auth frontend if it is a GG user" in {
       val sut = createSut
 
-      when(sut.userDetailsConnector.userDetails(any[AuthContext](any()))).thenReturn(Future.successful(UserDetails("GovernmentGateway")))
+      when(userDetailsConnector.userDetails(any[AuthContext](any()))).thenReturn(Future.successful(UserDetails("GovernmentGateway")))
 
 
       val result = sut.serviceSignout()(authorisedRequest)
@@ -76,7 +76,7 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
     "redirect to citizen auth frontend if it is a Verify user" in {
       val sut = createSut
 
-      when(sut.userDetailsConnector.userDetails(any[AuthContext])(any()))
+      when(userDetailsConnector.userDetails(any[AuthContext])(any()))
         .thenReturn(Future.successful(UserDetails("Verify")))
 
       val result = sut.serviceSignout()(authorisedRequest)
@@ -88,7 +88,7 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
     "return 500 when userDetails returns failed" in {
       val request = RequestBuilder.buildFakeRequestWithAuth("GET")
       val sut = createSut
-      when(sut.userDetailsConnector.userDetails(any[AuthContext])(any())).thenReturn(Future.failed(new RuntimeException))
+      when(userDetailsConnector.userDetails(any[AuthContext])(any())).thenReturn(Future.failed(new RuntimeException))
       val result = sut.serviceSignout()(request)
       status(result) shouldBe 500
     }
@@ -105,27 +105,13 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
     }
   }
 
-
-  //create TaxSummaryDetail from Json
-  class TestTaiConnector extends TaiConnector {
-    override def http = WSHttp
-
-    override def serviceUrl: String = "test/tai"
-
-    def get(key: String)(implicit hc: HeaderCarrier) =
-      Future.successful(Some(JsArray()))
-
-    def put(key: String, data: JsValue)(implicit hc: HeaderCarrier) =
-      Future.successful(())
-
-  }
-
   def createSut = new SUT
 
   val personService: PersonService = mock[PersonService]
+  val userDetailsConnector = mock[UserDetailsConnector]
 
   class SUT extends ServiceController(
-    mock[UserDetailsConnector],
+    userDetailsConnector,
     personService,
     mock[AuditConnector],
     mock[DelegationConnector],

@@ -23,6 +23,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsArray, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.config.WSHttp
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
@@ -278,8 +279,9 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
 
   private def generateNino: Nino = new Generator(new Random).nextNino
 
-  private class testTaxCodeChangeConnector extends TaxCodeChangeConnector {
+  val httpHandler: HttpHandler = new HttpHandler(WSHttp)
+
+  private class testTaxCodeChangeConnector extends TaxCodeChangeConnector(httpHandler) {
     override val serviceUrl: String = s"http://localhost:${server.port()}"
-    override val httpHandler: HttpHandler = HttpHandler
   }
 }

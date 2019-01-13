@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.model.domain.Person
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class PersonService @Inject()(val taiConnector: TaiConnector,
+class PersonService @Inject()(taiConnector: TaiConnector,
                               personConnector: PersonConnector) {
 
   def personDetails(nino: Nino)(implicit hc: HeaderCarrier): Future[Person] = {

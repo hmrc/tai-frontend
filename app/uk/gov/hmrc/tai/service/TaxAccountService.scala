@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class TaxAccountService @Inject() (val taxAccountConnector: TaxAccountConnector) {
+class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector) {
 
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     taxAccountConnector.taxCodeIncomes(nino, year)

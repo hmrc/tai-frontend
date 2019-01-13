@@ -26,7 +26,7 @@ import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, EndedCompanyBenefit}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class BenefitsConnector @Inject() (val httpHandler: HttpHandler) extends ServicesConfig {
+class BenefitsConnector @Inject() (httpHandler: HttpHandler) extends ServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 
