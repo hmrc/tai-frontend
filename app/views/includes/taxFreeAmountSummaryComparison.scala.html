@@ -59,7 +59,9 @@
 
 @personalAllowanceRow = {
     <tr class="tax-free-amount-comparison-personal-allowance" role="row">
-        <td class="tax-free-amount-comparison-row-title">@Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "")</td>
+        <td class="tax-free-amount-comparison-row-title">
+            <h3 class="tax-free-amount-comparison-row-heading">@Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "")</h3>
+        </td>
 
         @if(showPreviousColumn) {
             <td class="numeric">
@@ -84,14 +86,21 @@
 @iabdBreakdownRows(sequence: Seq[CodingComponentPairDescription], translations: Map[String, String]) = {
 
     <tr role="row" class="tax-free-amount-comparison-row-heading">
-        <td colspan="@taxFreeAmount.columns" class="tax-free-amount-comparison-row-heading-cell"><h3 class="tax-free-amount-comparison-row-heading">@Messages(translations("title"))</h3></td>
+        <td colspan="@taxFreeAmount.columns" class="tax-free-amount-comparison-row-heading-cell">
+            <h3 class="tax-free-amount-comparison-row-heading">@Messages(translations("title"))</h3>
+        </td>
     </tr>
 
     @if(sequence.isEmpty) {
         <tr class="tax-free-amount-comparison-blank-row" role="row">
             <td class="tax-free-amount-comparison-row-title">@Messages(translations("noItems"))</td>
             @if(showPreviousColumn) {
-                <td class="numeric"><span aria-hidden="true" class="table-heading">@Messages("tai.taxFreeAmount.table.previous")</span>£0</td>
+                <td class="numeric">
+                    <span aria-hidden="true" class="table-heading">
+                        @Messages("tai.taxFreeAmount.table.previous")
+                    </span>
+                    £0
+                </td>
             }
             <td class="numeric">@{ responsiveCurrentHeading }£0</td>
         </tr>
@@ -104,7 +113,7 @@
                     <td class="numeric">
                         <span aria-hidden="true" class="table-heading">@Messages("tai.taxFreeAmount.table.previous")</span>
                         <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(pair.previous)</span>
-                        <span class="visuallyhidden">@pair.description @YourTaxFreeAmountViewModel.prettyPrint(pair.previous)</span>
+                        <span class="visuallyhidden" >@pair.description @YourTaxFreeAmountViewModel.prettyPrint(pair.previous)</span>
                     </td>
                 }
 
