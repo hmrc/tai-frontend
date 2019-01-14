@@ -18,9 +18,10 @@ package controllers
 
 import com.google.inject.Inject
 import com.google.inject.name.Named
+import controllers.actions.DeceasedActionFilter
 import uk.gov.hmrc.tai.connectors.responses.{TaiNoCompanyCarFoundResponse, TaiSuccessResponseWithPayload}
 import controllers.audit.Auditable
-import controllers.auth.{AuthAction, WithAuthorisedForTaiLite}
+import controllers.auth.{AuthAction, AuthenticatedRequest, WithAuthorisedForTaiLite}
 import uk.gov.hmrc.tai.forms.UpdateOrRemoveCarForm
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyCarChoiceViewModel
 import play.api.Play.current
@@ -44,6 +45,7 @@ class CompanyCarController @Inject()(companyCarService: CompanyCarService,
                                      @Named("Company Car") journeyCacheService: JourneyCacheService,
                                      sessionService: SessionService,
                                      authenticate: AuthAction,
+                                     filterDeceased: DeceasedActionFilter,
                                      override implicit val partialRetriever: FormPartialRetriever,
                                      override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with JourneyCacheConstants
@@ -56,8 +58,8 @@ class CompanyCarController @Inject()(companyCarService: CompanyCarService,
             }
   }
 
-  def getCompanyCarDetails: Action[AnyContent] = authenticate.async {
-        implicit request =>
+  def getCompanyCarDetails: Action[AnyContent] = (authenticate andThen filterDeceased).async {
+        implicit request: AuthenticatedRequest[AnyContent] =>
             for {
               empId <- companyCarService.companyCarEmploymentId
               response <- companyCarService.beginJourney(request.taiUser.nino, empId)
