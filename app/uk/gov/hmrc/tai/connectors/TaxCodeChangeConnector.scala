@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWith
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeMismatch, TaxCodeRecord}
 
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class TaxCodeChangeConnector @Inject() (httpHandler: HttpHandler) extends ServicesConfig {

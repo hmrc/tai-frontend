@@ -20,6 +20,26 @@ import org.joda.time.LocalDate
 import play.api.libs.json.{Format, JsSuccess, JsValue, Json}
 import uk.gov.hmrc.tai.model.domain._
 
+case class CompanyCar(carSeqNo: Int,
+                      makeModel: String,
+                      hasActiveFuelBenefit: Boolean,
+                      dateMadeAvailable: Option[LocalDate],
+                      dateActiveFuelBenefitMadeAvailable: Option[LocalDate],
+                      dateWithdrawn: Option[LocalDate])
+
+object CompanyCar {
+  implicit val formats = Json.format[CompanyCar]
+}
+
+case class CompanyCarBenefit(employmentSeqNo: Int,
+                             grossAmount: BigDecimal,
+                             companyCars: Seq[CompanyCar],
+                             version: Option[Int] = None)
+
+object CompanyCarBenefit {
+  implicit val formats = Json.format[CompanyCarBenefit]
+}
+
 case class GenericBenefit(benefitType: BenefitComponentType, employmentId: Option[Int], amount: BigDecimal)
 
 object GenericBenefit {
