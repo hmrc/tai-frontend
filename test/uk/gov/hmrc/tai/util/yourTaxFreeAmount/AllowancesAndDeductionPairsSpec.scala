@@ -21,16 +21,16 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain._
 
 
-class AllowancesAndDeductionsSpec extends PlaySpec {
+class AllowancesAndDeductionPairsSpec extends PlaySpec {
 
   private def createCodingComponent(allowance: TaxComponentType, employmentId: Option[Int], allowanceAmount: BigDecimal): CodingComponent = {
     CodingComponent(allowance, employmentId, allowanceAmount, allowance.toString)
   }
 
   "#fromCodingComponents" should {
-    "return a AllowancesAndDeductions" in {
-      val expected = AllowancesAndDeductions.fromCodingComponents(Seq.empty, Seq.empty)
-      val actual = AllowancesAndDeductions.fromCodingComponents(Seq.empty[CodingComponent], Seq.empty[CodingComponent])
+    "return a AllowancesAndDeductionPairs" in {
+      val expected = AllowancesAndDeductionPairs(Seq.empty[CodingComponentPair], Seq.empty[CodingComponentPair])
+      val actual = AllowancesAndDeductionPairs.fromCodingComponents(Seq.empty[CodingComponent], Seq.empty[CodingComponent])
 
       expected mustBe actual
     }
@@ -40,7 +40,7 @@ class AllowancesAndDeductionsSpec extends PlaySpec {
         val currentCodingComponents = Seq(createCodingComponent(MarriageAllowanceReceived, Some(123), 5885))
         val pairs = Seq(CodingComponentPair(MarriageAllowanceReceived, Some(123), 0, 5885))
 
-        val actual = AllowancesAndDeductions.fromCodingComponents(Seq.empty, currentCodingComponents)
+        val actual = AllowancesAndDeductionPairs.fromCodingComponents(Seq.empty, currentCodingComponents)
 
         pairs mustBe actual.allowances
       }
@@ -51,7 +51,7 @@ class AllowancesAndDeductionsSpec extends PlaySpec {
 
         val pairs = Seq(CodingComponentPair(MarriageAllowanceReceived, Some(123), 1000, 2000))
 
-        val actual = AllowancesAndDeductions.fromCodingComponents(previousCodingComponents, currentCodingComponents)
+        val actual = AllowancesAndDeductionPairs.fromCodingComponents(previousCodingComponents, currentCodingComponents)
 
         pairs mustBe actual.allowances
       }
@@ -62,7 +62,7 @@ class AllowancesAndDeductionsSpec extends PlaySpec {
 
         val pairs = Seq(CodingComponentPair(MarriageAllowanceReceived, None, 1000, 2000))
 
-        val actual = AllowancesAndDeductions.fromCodingComponents(previousCodingComponents, currentCodingComponents)
+        val actual = AllowancesAndDeductionPairs.fromCodingComponents(previousCodingComponents, currentCodingComponents)
 
         pairs mustBe actual.allowances
       }
@@ -76,7 +76,7 @@ class AllowancesAndDeductionsSpec extends PlaySpec {
           CodingComponentPair(JobExpenses, Some(123), 1000, 0)
         )
 
-        val actual = AllowancesAndDeductions.fromCodingComponents(previousCodingComponents, currentCodingComponents)
+        val actual = AllowancesAndDeductionPairs.fromCodingComponents(previousCodingComponents, currentCodingComponents)
 
         pairs mustBe actual.allowances
       }
@@ -90,7 +90,7 @@ class AllowancesAndDeductionsSpec extends PlaySpec {
           CodingComponentPair(MarriageAllowanceReceived, Some(456), 1000, 0)
         )
 
-        val actual = AllowancesAndDeductions.fromCodingComponents(previousCodingComponents, currentCodingComponents)
+        val actual = AllowancesAndDeductionPairs.fromCodingComponents(previousCodingComponents, currentCodingComponents)
 
         pairs mustBe actual.allowances
       }
@@ -115,7 +115,7 @@ class AllowancesAndDeductionsSpec extends PlaySpec {
           CodingComponentPair(OutstandingDebt, Some(456), 0, 1000)
         )
 
-        val actual = AllowancesAndDeductions.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)
+        val actual = AllowancesAndDeductionPairs.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)
 
         allowancePairs mustBe actual.allowances
         deductionPairs mustBe actual.deductions
@@ -134,7 +134,7 @@ class AllowancesAndDeductionsSpec extends PlaySpec {
         CodingComponentPair(JobExpenses, None, 0, 1000)
       )
 
-      val actual = AllowancesAndDeductions.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)
+      val actual = AllowancesAndDeductionPairs.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)
 
       pairs mustBe actual.allowances
     }
@@ -151,7 +151,7 @@ class AllowancesAndDeductionsSpec extends PlaySpec {
         CodingComponentPair(GiftAidPayments, None, 0, 1000)
       )
 
-      val actual = AllowancesAndDeductions.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)
+      val actual = AllowancesAndDeductionPairs.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)
 
       pairs mustBe actual.allowances
     }

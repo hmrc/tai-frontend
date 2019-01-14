@@ -46,7 +46,7 @@ trait YourTaxFreeAmount {
     val previousCodingComponents: Seq[CodingComponent] = previous.fold(Seq.empty[CodingComponent])(_.codingComponents)
     val previousCompanyCarBenefit: Seq[CompanyCarBenefit] = previous.fold(Seq.empty[CompanyCarBenefit])(_.companyCarBenefits)
 
-    val allowancesAndDeductions = AllowancesAndDeductions.fromCodingComponents(previousCodingComponents, current.codingComponents)
+    val allowancesAndDeductions = AllowancesAndDeductionPairs.fromCodingComponents(previousCodingComponents, current.codingComponents)
     val allowancesDescription = for (
       allowance <- allowancesAndDeductions.allowances
     ) yield CodingComponentPairDescription(allowance, employmentIds, previousCompanyCarBenefit ++ current.companyCarBenefits)

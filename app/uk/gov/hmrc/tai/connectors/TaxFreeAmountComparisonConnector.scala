@@ -26,6 +26,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWith
 import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 @Singleton
 class TaxFreeAmountComparisonConnector @Inject()(val httpHandler: HttpHandler) extends ServicesConfig {
@@ -39,7 +40,7 @@ class TaxFreeAmountComparisonConnector @Inject()(val httpHandler: HttpHandler) e
       json =>
         TaiSuccessResponseWithPayload((json \ "data").as[TaxFreeAmountComparison])
       ) recover {
-      case e: Exception =>
+      case NonFatal(e) =>
         Logger.warn(s"Couldn't retrieve taxFreeAmountComparison for $nino with exception:${e.getMessage}")
         TaiTaxAccountFailureResponse(e.getMessage)
     }

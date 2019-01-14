@@ -19,22 +19,20 @@ package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
-case class AllowancesAndDeductions(allowances: Seq[CodingComponentPair], deductions: Seq[CodingComponentPair]) {
+case class AllowancesAndDeductionPairs(allowances: Seq[CodingComponentPair], deductions: Seq[CodingComponentPair]) {
   def totalAllowances: (BigDecimal, BigDecimal) = {
     (allowances.map(_.previous).sum, allowances.map(_.current).sum)
   }
 }
 
-object AllowancesAndDeductions {
+object AllowancesAndDeductionPairs {
 
-  def fromCodingComponents(previousCodingComponents: Seq[CodingComponent],
-                           currentCodingComponents: Seq[CodingComponent]): AllowancesAndDeductions = {
-
+  def fromCodingComponents(previousCodingComponents: Seq[CodingComponent], currentCodingComponents: Seq[CodingComponent]): AllowancesAndDeductionPairs = {
     val pairs = pairCodingComponents(previousCodingComponents, currentCodingComponents)
     val allowances = getAllowances(pairs)
     val deductions = getDeductions(pairs)
 
-    AllowancesAndDeductions(allowances, deductions)
+    AllowancesAndDeductionPairs(allowances, deductions)
   }
 
   private def pairCodingComponents(previous: Seq[CodingComponent], current: Seq[CodingComponent]): Seq[CodingComponentPair] = {
