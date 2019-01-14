@@ -86,7 +86,7 @@ class PayeControllerHistoricSpec extends PlaySpec
 
       val viewModel = HistoricPayAsYouEarnViewModel(cyMinusOneTaxYear, Seq.empty[Employment], true)
 
-      result rendersTheSameViewAs historicPayAsYouEarn(viewModel, 3, true)
+      result rendersTheSameViewAs historicPayAsYouEarn(viewModel, 3)
     }
 
     "Redirect to the paye controller" when {

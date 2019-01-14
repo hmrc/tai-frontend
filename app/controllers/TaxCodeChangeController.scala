@@ -51,28 +51,21 @@ class TaxCodeChangeController @Inject()(personService: PersonService,
                                         override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with WithAuthorisedForTaiLite
   with DelegationAwareActions
-  with Auditable
-  with FeatureTogglesConfig {
+  with Auditable {
 
   def taxCodeComparison: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
-          if (taxCodeChangeEnabled) {
-            ServiceCheckLite.personDetailsCheck {
-              val nino: Nino = Nino(user.getNino)
+          ServiceCheckLite.personDetailsCheck {
+            val nino: Nino = Nino(user.getNino)
 
-              for {
-                taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
-                scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
-              } yield {
-                val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
-                Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
-              }
-            }
-          } else {
-            ServiceCheckLite.personDetailsCheck {
-              Future.successful(Ok(notFoundView))
+            for {
+              taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
+              scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
+            } yield {
+              val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
+              Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
             }
           }
   }
@@ -81,28 +74,22 @@ class TaxCodeChangeController @Inject()(personService: PersonService,
     implicit user =>
       implicit person =>
         implicit request =>
-          if (taxCodeChangeEnabled) {
-            ServiceCheckLite.personDetailsCheck {
-              val nino = Nino(user.getNino)
+          ServiceCheckLite.personDetailsCheck {
+            val nino = Nino(user.getNino)
 
-              val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
-              val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
-              val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
+            val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
+            val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
+            val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
 
-              for {
-                employmentNames <- employmentNameFuture
-                taxCodeChange <- taxCodeChangeFuture
-                codingComponents <- codingComponentsFuture
-                companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
+            for {
+              employmentNames <- employmentNameFuture
+              taxCodeChange <- taxCodeChangeFuture
+              codingComponents <- codingComponentsFuture
+              companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
 
-              } yield {
-                val viewModel = YourTaxFreeAmountViewModel(taxCodeChange.mostRecentTaxCodeChangeDate, codingComponents, employmentNames, companyCarBenefits)
-                Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
-              }
-            }
-          } else {
-            ServiceCheckLite.personDetailsCheck {
-              Future.successful(Ok(notFoundView))
+            } yield {
+              val viewModel = YourTaxFreeAmountViewModel(taxCodeChange.mostRecentTaxCodeChangeDate, codingComponents, employmentNames, companyCarBenefits)
+              Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
             }
           }
   }
@@ -111,15 +98,8 @@ class TaxCodeChangeController @Inject()(personService: PersonService,
     implicit user =>
       implicit person =>
         implicit request =>
-          if (taxCodeChangeEnabled) {
-            ServiceCheckLite.personDetailsCheck {
-              Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
-            }
-          }
-          else {
-            ServiceCheckLite.personDetailsCheck {
-              Future.successful(Ok(notFoundView))
-            }
+          ServiceCheckLite.personDetailsCheck {
+            Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
           }
   }
 
