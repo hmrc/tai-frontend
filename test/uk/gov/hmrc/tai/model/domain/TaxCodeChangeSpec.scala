@@ -21,7 +21,7 @@ import play.api.libs.json.{JsNull, JsResultException, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.time.TaxYearResolver
-import org.joda.time.LocalDate
+
 import scala.util.Random
 
 class TaxCodeChangeSpec extends PlaySpec{
@@ -43,7 +43,7 @@ class TaxCodeChangeSpec extends PlaySpec{
       }
     }
 
-    "mostRecentTaxCodeChangeDate" should {
+    "calling mostRecentTaxCodeChangeDate" should {
       "return the latest tax code change date from a sequence of tax code records" in {
         val model = TaxCodeChange(Seq(previousTaxCodeRecord1, fullYearTaxCode), Seq(currentTaxCodeRecord1, fullYearTaxCode))
 
@@ -51,16 +51,7 @@ class TaxCodeChangeSpec extends PlaySpec{
       }
     }
 
-
-    "mostRecentPreviousTaxCodeChangeDate" should {
-      "return the latest tax code change date from a sequence of tax code records" in {
-        val model = TaxCodeChange(Seq(previousTaxCodeRecord1, fullYearTaxCode), Seq(currentTaxCodeRecord1, fullYearTaxCode))
-
-        model.mostRecentPreviousTaxCodeChangeDate mustEqual startDate
-      }
-    }
-
-    "uniqueTaxCodes" should {
+    "calling uniqueTaxCodes" should {
       "return a seq of unique tax codes found in the previous and current lists" in {
         val model = TaxCodeChange(Seq(previousTaxCodeRecord1, fullYearTaxCode), Seq(currentTaxCodeRecord1, fullYearTaxCode))
 
