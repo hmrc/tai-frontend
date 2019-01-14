@@ -16,32 +16,33 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import com.google.inject.Inject
+import com.google.inject.{Inject, Singleton}
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.tai.connectors.responses._
-import uk.gov.hmrc.tai.model.domain.Person
-
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import scala.concurrent.Future
+import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 
-class PersonConnector @Inject() (httpHandler: HttpHandler) extends ServicesConfig {
+import scala.concurrent.Future
+import scala.util.control.NonFatal
+
+@Singleton
+class TaxFreeAmountComparisonConnector @Inject()(val httpHandler: HttpHandler) extends ServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 
-  def personUrl(nino: String): String = s"$serviceUrl/tai/$nino/person"
+  def taxFreeAmountComparisonUrl(nino: String) = s"$serviceUrl/tai/$nino/tax-account/tax-free-amount-comparison"
 
-  def person(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
-
-    httpHandler.getFromApi(personUrl(nino.nino)) map (
+  def taxFreeAmountComparison(nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
+    httpHandler.getFromApi(taxFreeAmountComparisonUrl(nino.nino)) map (
       json =>
-        TaiSuccessResponseWithPayload((json \ "data").as[Person])
+        TaiSuccessResponseWithPayload((json \ "data").as[TaxFreeAmountComparison])
       ) recover {
-        case e: Exception =>
-          Logger.warn(s"Couldn't retrieve person details for $nino with exception:${e.getMessage}", e)
-          TaiNotFoundResponse(e.getMessage)
-      }
+      case NonFatal(e) =>
+        Logger.warn(s"Couldn't retrieve taxFreeAmountComparison for $nino with exception:${e.getMessage}")
+        TaiTaxAccountFailureResponse(e.getMessage)
+    }
   }
 }
