@@ -66,19 +66,13 @@
         @if(showPreviousColumn) {
             <td class="numeric">
                 <span aria-hidden="true" class="table-heading">@Messages("tai.taxFreeAmount.table.previous")</span>
-                <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.get.personalAllowance)</span>
-                <span class="visuallyhidden">
-                    @Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "") @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.get.personalAllowance)
-                </span>
+                @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.get.personalAllowance)
             </td>
         }
 
         <td class="numeric">
             @responsiveCurrentHeading
-            <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.personalAllowance)</span>
-            <span class="visuallyhidden">
-                @Messages("tai.taxFreeAmount.table.taxComponent.PersonalAllowancePA").replace(" (PA)", "") @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.personalAllowance)
-            </span>
+            @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.personalAllowance)
         </td>
     </tr>
 }
@@ -96,13 +90,14 @@
             <td class="tax-free-amount-comparison-row-title">@Messages(translations("noItems"))</td>
             @if(showPreviousColumn) {
                 <td class="numeric">
-                    <span aria-hidden="true" class="table-heading">
-                        @Messages("tai.taxFreeAmount.table.previous")
-                    </span>
-                    £0
+                    <span aria-hidden="true" class="table-heading">@Messages("tai.taxFreeAmount.table.previous")</span>
+                    @YourTaxFreeAmountViewModel.prettyPrint(0)
                 </td>
             }
-            <td class="numeric">@{ responsiveCurrentHeading }£0</td>
+            <td class="numeric">
+                @{ responsiveCurrentHeading }
+                @YourTaxFreeAmountViewModel.prettyPrint(0)
+            </td>
         </tr>
     } else {
         @for(pair <- sequence) {
@@ -112,15 +107,13 @@
                 @if(showPreviousColumn) {
                     <td class="numeric">
                         <span aria-hidden="true" class="table-heading">@Messages("tai.taxFreeAmount.table.previous")</span>
-                        <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(pair.previous)</span>
-                        <span class="visuallyhidden" >@pair.description @YourTaxFreeAmountViewModel.prettyPrint(pair.previous)</span>
+                        @YourTaxFreeAmountViewModel.prettyPrint(pair.previous)
                     </td>
                 }
 
                 <td class="numeric">
                     @responsiveCurrentHeading
-                    <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(pair.current)</span>
-                    <span class="visuallyhidden">@pair.description @YourTaxFreeAmountViewModel.prettyPrint(pair.current)</span>
+                    @YourTaxFreeAmountViewModel.prettyPrint(pair.current)
                 </td>
             </tr>
         }
@@ -131,15 +124,13 @@
             @if(showPreviousColumn) {
                 <td class="numeric">
                     <span aria-hidden="true" class="table-heading carr">@Messages("tai.taxFreeAmount.table.previous")</span>
-                    <span aria-hidden="true">@YourTaxFreeAmountViewModel.totalPrevious(sequence)</span>
-                    <span class="visuallyhidden">@Messages(translations("totalTitle")) @YourTaxFreeAmountViewModel.totalPrevious(sequence)</span>
+                    @YourTaxFreeAmountViewModel.totalPrevious(sequence)
                 </td>
             }
 
             <td class="numeric">
                 @responsiveCurrentHeading
-                <span aria-hidden="true">@YourTaxFreeAmountViewModel.totalCurrent(sequence)</span>
-                <span class="visuallyhidden">@Messages(translations("totalTitle")) @YourTaxFreeAmountViewModel.totalCurrent(sequence)</span>
+                @YourTaxFreeAmountViewModel.totalCurrent(sequence)
             </td>
         </tr>
     }
@@ -152,19 +143,13 @@
         @if(showPreviousColumn) {
             <td class="numeric">
                 <span aria-hidden="true" class="table-heading">@Messages("tai.taxFreeAmount.table.previous")</span>
-                <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.get.annualTaxFreeAmount)</span>
-                <span class="visuallyhidden">
-                    Your total tax-free amount @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.get.annualTaxFreeAmount)
-                </span>
+                @YourTaxFreeAmountViewModel.prettyPrint(previousTaxFreeInfo.get.annualTaxFreeAmount)
             </td>
         }
 
         <td class="numeric">
             @responsiveCurrentHeading
-            <span aria-hidden="true">@YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.annualTaxFreeAmount)</span>
-            <span class="visuallyhidden">
-                Your total tax-free amount @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.annualTaxFreeAmount)
-            </span>
+            @YourTaxFreeAmountViewModel.prettyPrint(currentTaxFreeInfo.annualTaxFreeAmount)
         </td>
     </tr>
 }
