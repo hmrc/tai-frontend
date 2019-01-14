@@ -105,7 +105,7 @@
                             {Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))}
                             {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))))}
                             </span>
-                            {addition.map(value => pounds(value)).getOrElse(messages("tai.incomeTaxComparison.taxFreeAmount.NA"))}
+                            {model.prettyPrint(addition)}
                             </td>
 
                         case 2 =>
@@ -114,7 +114,7 @@
                             {Html(model.htmlNonBroken(messages("tai.NextTaxYear")))}
                             {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYearResolver.startOfNextTaxYear))))}
                             </span>
-                            {addition.map(value => value).getOrElse(messages("tai.incomeTaxComparison.taxFreeAmount.NA"))}
+                                {model.prettyPrint(addition)}
                             </td>
                         case _ => None
                     }}
@@ -178,7 +178,7 @@
                             {Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))}
                             {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))))}
                             </span>
-                            {deduction.map(value => pounds(value)).getOrElse(messages("tai.incomeTaxComparison.taxFreeAmount.NA"))}
+                            {model.prettyPrint(deduction)}
                             </td>
 
                         case 2 =>
@@ -187,7 +187,7 @@
                             {Html(model.htmlNonBroken(messages("tai.NextTaxYear")))}
                             {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYearResolver.startOfNextTaxYear))))}
                             </span>
-                            {deduction.map(value => value).getOrElse(messages("tai.incomeTaxComparison.taxFreeAmount.NA"))}
+                            {model.prettyPrint(deduction)}
                             </td>
                         case _ => None
                     }}

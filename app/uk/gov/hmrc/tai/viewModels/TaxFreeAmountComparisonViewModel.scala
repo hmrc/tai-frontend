@@ -29,7 +29,7 @@ case class TaxFreeAmountComparisonViewModel(
                                               personalAllowance: PersonalAllowance,
                                               additions: Additions,
                                               deductions: Deductions,
-                                              footer: Footer) extends ViewModelHelper {
+                                              footer: Footer)(implicit messages: Messages) extends ViewModelHelper {
   def currentTaxYearHeader(implicit messages: Messages): String = currentTaxYearHeaderHtmlNonBreak
   def nextTaxYearHeader(implicit messages: Messages): String = nextTaxYearHeaderHtmlNonBreak
   val hasAdditions: Boolean = additions.additions.nonEmpty
@@ -48,6 +48,10 @@ case class TaxFreeAmountComparisonViewModel(
       } else {
         None
       }
+  }
+
+  def prettyPrint(number: Option[BigDecimal]): String = {
+    number.map(x => withPoundPrefixAndSign(MoneyPounds(x))).getOrElse(Messages("tai.incomeTaxComparison.taxFreeAmount.NA"))
   }
 }
 
