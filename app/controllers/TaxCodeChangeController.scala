@@ -33,6 +33,7 @@ import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentsWithCarBenefits, YourTaxFreeAmount}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.urls.Link
 
@@ -52,7 +53,8 @@ class TaxCodeChangeController @Inject()(personService: PersonService,
   with WithAuthorisedForTaiLite
   with DelegationAwareActions
   with Auditable
-  with FeatureTogglesConfig {
+  with FeatureTogglesConfig
+  with YourTaxFreeAmount {
 
   def taxCodeComparison: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -72,7 +74,7 @@ class TaxCodeChangeController @Inject()(personService: PersonService,
             }
           } else {
             ServiceCheckLite.personDetailsCheck {
-              Future.successful(Ok(notFoundView))
+              Future.successful(NotFound(notFoundView))
             }
           }
   }
@@ -85,24 +87,19 @@ class TaxCodeChangeController @Inject()(personService: PersonService,
             ServiceCheckLite.personDetailsCheck {
               val nino = Nino(user.getNino)
 
-              val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
-              val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
-              val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-
-              for {
-                employmentNames <- employmentNameFuture
-                taxCodeChange <- taxCodeChangeFuture
-                codingComponents <- codingComponentsFuture
-                companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
-
-              } yield {
-                val viewModel = YourTaxFreeAmountViewModel(taxCodeChange.mostRecentTaxCodeChangeDate, codingComponents, employmentNames, companyCarBenefits)
-                Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
+              val taxFreeAmountViewModel = if(taxFreeAmountComparisonEnabled) {
+                taxFreeAmountWithPrevious(nino)
+              } else {
+                taxFreeAmount(nino)
               }
+
+              taxFreeAmountViewModel.map(viewModel => {
+                Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
+              })
             }
           } else {
             ServiceCheckLite.personDetailsCheck {
-              Future.successful(Ok(notFoundView))
+              Future.successful(NotFound(notFoundView))
             }
           }
   }
@@ -118,16 +115,67 @@ class TaxCodeChangeController @Inject()(personService: PersonService,
           }
           else {
             ServiceCheckLite.personDetailsCheck {
-              Future.successful(Ok(notFoundView))
+              Future.successful(NotFound(notFoundView))
             }
           }
   }
 
-  private def notFoundView(implicit request: Request[_]) = views.html.error_template_noauth(Messages("global.error.pageNotFound404.title"),
+  private def taxFreeAmountWithPrevious(nino: Nino)(implicit request: Request[AnyContent]): Future[YourTaxFreeAmountViewModel] = {
+
+    val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
+    val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
+    val taxFreeAmountComparisonFuture = codingComponentService.taxFreeAmountComparison(nino)
+
+    for {
+      employmentNames <- employmentNameFuture
+      taxCodeChange <- taxCodeChangeFuture
+      taxFreeAmountComparison <- taxFreeAmountComparisonFuture
+      currentCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, taxFreeAmountComparison.current)
+      previousCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, taxFreeAmountComparison.previous)
+    } yield {
+      buildTaxFreeAmount(
+        Some(CodingComponentsWithCarBenefits(
+          taxCodeChange.mostRecentPreviousTaxCodeChangeDate,
+          taxFreeAmountComparison.previous,
+          previousCompanyCarBenefits
+        )),
+        CodingComponentsWithCarBenefits(
+          taxCodeChange.mostRecentTaxCodeChangeDate,
+          taxFreeAmountComparison.current,
+          currentCompanyCarBenefits
+        ),
+        employmentNames)
+    }
+  }
+
+  private def taxFreeAmount(nino: Nino)(implicit request: Request[AnyContent]): Future[YourTaxFreeAmountViewModel] = {
+
+    val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
+    val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
+    val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
+
+    for {
+      employmentNames <- employmentNameFuture
+      taxCodeChange <- taxCodeChangeFuture
+      currentCodingComponents <- codingComponentsFuture
+      currentCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, currentCodingComponents)
+    } yield {
+      buildTaxFreeAmount(
+        None,
+        CodingComponentsWithCarBenefits(
+          taxCodeChange.mostRecentTaxCodeChangeDate,
+          currentCodingComponents,
+          currentCompanyCarBenefits
+        ),
+        employmentNames)
+    }
+  }
+
+  private def notFoundView(implicit request: Request[_]) = views.html.error_template_noauth(
+    Messages("global.error.pageNotFound404.title"),
     Messages("tai.errorMessage.heading"),
     Messages("tai.errorMessage.frontend404", Link.toInternalPage(
       url = routes.TaxAccountSummaryController.onPageLoad().url,
       value = Some(Messages("tai.errorMessage.startAgain"))
     ).toHtml))
-
 }

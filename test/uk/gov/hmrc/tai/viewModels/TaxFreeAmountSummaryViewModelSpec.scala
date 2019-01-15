@@ -135,8 +135,7 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
         val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(ForeignDividendIncome, Some(1), 111, "ForeignDividendIncome"),
           employmentNames, companyCarBenefits)
         row.label.value mustBe
-          s"""${Messages("tai.taxFreeAmount.table.taxComponent.ForeignDividendIncome")}
-             |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentNames(1))}""".stripMargin
+          s"${Messages("tai.taxFreeAmount.table.taxComponent.ForeignDividendIncome")} ${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentNames(1))}"
       }
 
       "employment id is not available in employment name map" in {
@@ -165,29 +164,10 @@ class TaxFreeAmountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplica
 
       "employment id does not exist in company car benefits" in {
         val row = TaxFreeAmountSummaryRowViewModel(CodingComponent(CarBenefit, Some(1), 11500, "CarBenefit"), employmentNames, companyCarBenefits)
-        row.label.value mustBe s"""${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit", "Car benefit")}
-                            |${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentNames(1))}""".stripMargin
+        row.label.value mustBe s"${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit", "Car benefit")} ${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentNames(1))}"
       }
     }
   }
-
-  "companyCarForEmployment" must {
-    "return company car model from list of company car benefits" when {
-      "provided with employment id with company car benefit" in {
-        val result = TaxFreeAmountSummaryRowViewModel.companyCarForEmployment(10, companyCarBenefits)
-        result.contains("Make Model1")
-      }
-    }
-
-    "return None" when {
-      "employment id do not have any associated company car" in {
-        val result = TaxFreeAmountSummaryRowViewModel.companyCarForEmployment(16, companyCarBenefits)
-        result mustBe None
-      }
-    }
-  }
-
-
 
   val employmentNames = Map(1 -> "Employer1", 2 -> "Employer2", 3 -> "Employer3")
 
