@@ -25,13 +25,11 @@ import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.auth.core.{AuthConnector, InsufficientConfidenceLevel, UnsupportedAffinityGroup}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.domain.{PersonCorruptDataException, PersonDeceasedException}
+import uk.gov.hmrc.tai.model.domain.PersonCorruptDataException
 import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
-import org.mockito.Matchers._
-import org.mockito.Mockito.when
 
 class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
   private implicit val hc: HeaderCarrier = HeaderCarrier()

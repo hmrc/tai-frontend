@@ -177,7 +177,6 @@ class CompanyCarControllerSpec extends PlaySpec
   val companyCarService = mock[CompanyCarService]
   val personService = mock[PersonService]
   val journeyCacheService = mock[JourneyCacheService]
-  val deceasedActionFilter = mock[DeceasedActionFilter]
 
   class SUT(isCompanyCarForceRedirectEnabled: Boolean) extends CompanyCarController(
     companyCarService,
