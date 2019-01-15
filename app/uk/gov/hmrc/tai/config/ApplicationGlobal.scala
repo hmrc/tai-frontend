@@ -43,7 +43,8 @@ object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
 
   override def onStart(app: Application) {
     super.onStart(app)
-    ApplicationCrypto.verifyConfiguration()
+    val applicationCrypto = new ApplicationCrypto(app.configuration.underlying)
+    applicationCrypto.verifyConfiguration()
   }
 
   // TODO: tidy up and use config mechanism
