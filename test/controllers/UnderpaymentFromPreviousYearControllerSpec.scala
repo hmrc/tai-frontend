@@ -16,6 +16,7 @@
 
 package controllers
 
+import controllers.actions.FakeDeceasedActionFilter
 import mocks.MockTemplateRenderer
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -104,6 +105,7 @@ class UnderpaymentFromPreviousYearControllerSpec extends PlaySpec
     mock[CompanyCarService],
     taxAccountService,
     FakeAuthAction,
+    FakeDeceasedActionFilter,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {

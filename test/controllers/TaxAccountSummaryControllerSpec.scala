@@ -16,6 +16,7 @@
 
 package controllers
 
+import controllers.actions.FakeDeceasedActionFilter
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -192,6 +193,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
     taxAccountService,
     auditService,
     FakeAuthAction,
+    FakeDeceasedActionFilter,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   )

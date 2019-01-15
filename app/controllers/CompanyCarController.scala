@@ -51,7 +51,7 @@ class CompanyCarController @Inject()(companyCarService: CompanyCarService,
   with JourneyCacheConstants
   with FeatureTogglesConfig {
 
-  def redirectCompanyCarSelection(employmentId: Int): Action[AnyContent] = authenticate.async {
+  def redirectCompanyCarSelection(employmentId: Int): Action[AnyContent] = (authenticate andThen filterDeceased).async {
         implicit request =>
             journeyCacheService.cache(CompanyCar_EmployerIdKey, employmentId.toString) map {
              _ => Redirect(controllers.routes.CompanyCarController.getCompanyCarDetails())
@@ -74,7 +74,7 @@ class CompanyCarController @Inject()(companyCarService: CompanyCarService,
             }
   }
 
-  def handleUserJourneyChoice: Action[AnyContent] = authenticate.async {
+  def handleUserJourneyChoice: Action[AnyContent] = (authenticate andThen filterDeceased).async {
         implicit request =>
           UpdateOrRemoveCarForm.createForm.bindFromRequest.fold(
             formWithErrors => {

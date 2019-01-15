@@ -17,6 +17,7 @@
 package controllers
 
 import com.google.inject.Inject
+import controllers.actions.DeceasedActionFilter
 import controllers.auth.{AuthAction, AuthActionedTaiUser}
 import play.api.Play.current
 import play.api.i18n.Messages
@@ -39,11 +40,12 @@ class TaxCodeChangeController @Inject()(val codingComponentService: CodingCompon
                                         val taxCodeChangeService: TaxCodeChangeService,
                                         val taxAccountService: TaxAccountService,
                                         authenticate: AuthAction,
+                                        filterDeceased: DeceasedActionFilter,
                                         override implicit val partialRetriever: FormPartialRetriever,
                                         override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with FeatureTogglesConfig {
 
-  def taxCodeComparison: Action[AnyContent] = authenticate.async {
+  def taxCodeComparison: Action[AnyContent] = (authenticate andThen filterDeceased).async {
     implicit request =>
       if (taxCodeChangeEnabled) {
         val taiUser = request.taiUser
@@ -62,7 +64,7 @@ class TaxCodeChangeController @Inject()(val codingComponentService: CodingCompon
       }
   }
 
-  def yourTaxFreeAmount: Action[AnyContent] = authenticate.async {
+  def yourTaxFreeAmount: Action[AnyContent] = (authenticate andThen filterDeceased).async {
     implicit request =>
       if (taxCodeChangeEnabled) {
         val nino = request.taiUser.nino
@@ -88,7 +90,7 @@ class TaxCodeChangeController @Inject()(val codingComponentService: CodingCompon
   }
 
 
-  def whatHappensNext: Action[AnyContent] = authenticate.async {
+  def whatHappensNext: Action[AnyContent] = (authenticate andThen filterDeceased).async {
     implicit request =>
       if (taxCodeChangeEnabled) {
         implicit val user: AuthActionedTaiUser = request.taiUser
