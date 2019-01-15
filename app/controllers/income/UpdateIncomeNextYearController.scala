@@ -20,6 +20,7 @@ import com.google.inject.Inject
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import controllers.{ServiceCheckLite, TaiBaseController}
+import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
@@ -29,6 +30,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
@@ -36,6 +38,9 @@ import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.Person
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
+import uk.gov.hmrc.tai.util.{MapForGoogleAnalytics, MonetaryUtil}
+import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
+import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 
 import scala.concurrent.Future
@@ -102,22 +107,31 @@ class UpdateIncomeNextYearController @Inject()(updateNextYearsIncomeService: Upd
           }
   }
 
+  def gaSettings(currentAmount: Int, newAmount: Int): GoogleAnalyticsSettings = {
+    val poundedCurrentAmount = MonetaryUtil.withPoundPrefix(MoneyPounds(currentAmount, decimalPlaces = 0))
+    val poundedNewAmount = MonetaryUtil.withPoundPrefix(MoneyPounds(newAmount, decimalPlaces = 0))
+
+    val amounts = Map("currentAmount" -> poundedCurrentAmount, "newAmount" -> poundedNewAmount)
+
+    val dimensions: Option[Map[String, String]] = Some(Map(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome -> MapForGoogleAnalytics.format(amounts)))
+    GoogleAnalyticsSettings(dimensions = dimensions)
+  }
+
   def confirm(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
           preAction {
             updateNextYearsIncomeService.get(employmentId, user.nino).map {
-              case UpdateNextYearsIncomeCacheModel(employmentName, _, _, _, Some(estimatedAmount)) => {
+              case UpdateNextYearsIncomeCacheModel(employmentName, _, _, currentValue, Some(estimatedAmount)) => {
                 val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentId, employmentName, estimatedAmount)
-                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm))
+                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm, gaSettings(currentValue, estimatedAmount)))
               }
               case UpdateNextYearsIncomeCacheModel(_, _, _, _, None) => {
                 throw new RuntimeException("[UpdateIncomeNextYear] Estimated income for next year not found for user.")
               }
             }
           }
-
   }
 
   def handleConfirm(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {

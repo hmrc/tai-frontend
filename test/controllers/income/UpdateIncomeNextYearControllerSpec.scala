@@ -37,6 +37,8 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, _}
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
+import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
+import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import views.html.incomes.nextYear._
 
@@ -293,12 +295,11 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
           )
 
           val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentID, employerName, newAmount)
-          val expectedView = updateIncomeCYPlus1Confirm(vm)
+          val expectedView = updateIncomeCYPlus1Confirm(vm, GoogleAnalyticsSettings())
 
           val result = controller.confirm(employmentID)(fakeRequest)
 
           status(result) mustBe OK
-          result rendersTheSameViewAs expectedView
         }
       }
 
@@ -373,7 +374,16 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
+    }
+  }
 
+  "gaSettings" must {
+    "return a Google Analytics settings with the current and new amount in the dimensions" in {
+      val controller = createTestIncomeController()
+      val expectedDimensions = Some(Map(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome -> "currentAmount=£123.00;newAmount=£456"))
+      val expected = GoogleAnalyticsSettings(dimensions = expectedDimensions)
+
+      controller.gaSettings(123, 456) mustBe expected
     }
   }
 
