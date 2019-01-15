@@ -41,7 +41,7 @@
         @messages("tai.incomeTaxComparison.incomeTax.fromEmployer.description")
     </p>
 
-    <table class="table--font-reset flush--bottom responsive-table" id="incomeSummaryComparisonTable" role="grid">
+    <table class="table--font-reset flush--bottom responsive" id="incomeSummaryComparisonTable" role="grid">
         <caption class="visually-hidden">@{incomeSummaryHeading}</caption>
         <thead id="incomeSummeryComparisonTableHeader">
             <tr role="row">
@@ -62,8 +62,8 @@
         @for(employmentIncomeSourceDetail <- incomeSourceViewModel.employmentIncomeSourceDetail) {
 
             <tr>
-                <td scope="row" role="gridcell">
-                    <span class="table-heading" aria-hidden="true">
+                <td scope="row" role="gridcell" class="table-title">
+                    <span class="table-title" aria-hidden="true">
                         @messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")
                     </span>
                     @employmentIncomeSourceDetail.name

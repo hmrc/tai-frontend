@@ -96,7 +96,7 @@
     <tbody>
         @for(row <- model.additions.additions) {
             <tr>
-                <td scope="row" role="gridcell">@messages("tai.taxFreeAmount.table.taxComponent." + row.label)</td>
+                <td scope="row" role="gridcell" class="table-title">@messages("tai.taxFreeAmount.table.taxComponent." + row.label)</td>
                 @for((addition, itemIndex) <- row.values zip (Stream from 1)) {
                     @{itemIndex match {
                         case 1 =>
@@ -124,7 +124,7 @@
 
         @if(!model.hasAdditions) {
             <tr>
-                <td scope="row" role="gridcell" class="tax-free-amount-table-title">
+                <td scope="row" role="gridcell" class="table-title">
                     <span aria-hidden="true">
                     @messages("tai.incomeTaxComparison.taxFreeAmount.noAdditions")
                     </span>
@@ -169,7 +169,7 @@
     <tbody>
         @for(row <- model.deductions.deductions) {
             <tr>
-                <td scope="row" role="gridcell" class="tax-free-amount-table-title">@messages("tai.taxFreeAmount.table.taxComponent." + row.label)</td>
+                <td scope="row" role="gridcell" class="table-title">@messages("tai.taxFreeAmount.table.taxComponent." + row.label)</td>
                 @for((deduction, itemIndex) <- row.values zip (Stream from 1)) {
                     @{itemIndex match {
                         case 1 =>
@@ -198,8 +198,8 @@
 
         @if(!model.hasDeductions) {
             <tr>
-                <td scope="row" role="gridcell" class="tax-free-amount-table-title">
-                    <span aria-hidden="true" class=".tax-free-amount-table-title">
+                <td scope="row" role="gridcell" class="table-title">
+                    <span aria-hidden="true" class=".table-title">
                     @messages("tai.incomeTaxComparison.taxFreeAmount.noDeductions")
                     </span>
                 </td>
