@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.util
+package uk.gov.hmrc.tai.model.domain
 
-import uk.gov.hmrc.tai.model.domain.AllowanceComponentType
+import play.api.libs.json.{JsPath, Json, Reads}
+import play.api.libs.functional.syntax._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.model.domain.formatters.CodingComponentFormatters
 
-trait TaxAccountCalculator {
-  def taxFreeAmount(codingComponents: Seq[CodingComponent]): BigDecimal
-}
+case class TaxFreeAmountComparison(previous: Seq[CodingComponent], current: Seq[CodingComponent])
 
-class TaxAccountCalculatorImpl extends TaxAccountCalculator {
-  override def taxFreeAmount(codingComponents: Seq[CodingComponent]): BigDecimal = {
-    codingComponents.foldLeft(BigDecimal(0))((total: BigDecimal, component: CodingComponent) =>
-      component.componentType match {
-        case _: AllowanceComponentType => total + component.amount
-        case _ => total - component.amount
-      })
-  }
+object TaxFreeAmountComparison extends CodingComponentFormatters {
+
+  implicit lazy val reads: Reads[TaxFreeAmountComparison] = (
+
+    (JsPath \ "previous").read(Reads.seq[CodingComponent](codingComponentReads)) and
+      (JsPath \ "current").read(Reads.seq[CodingComponent](codingComponentReads))
+
+    )(TaxFreeAmountComparison.apply _)
 }

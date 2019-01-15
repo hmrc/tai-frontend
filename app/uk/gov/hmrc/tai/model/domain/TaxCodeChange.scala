@@ -25,6 +25,7 @@ case class TaxCodeChange(previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecor
   require(current.length > 0, "No current records for Tax Code Change. Current date cannot be determined.")
 
   val mostRecentTaxCodeChangeDate: LocalDate = DateHelper.mostRecentDate(current.map(_.startDate))
+  val mostRecentPreviousTaxCodeChangeDate: LocalDate = DateHelper.mostRecentDate(previous.map(_.startDate))
 
   lazy val uniqueTaxCodes: Seq[String] = (previous ++ current).map(_.taxCode).distinct
 }
