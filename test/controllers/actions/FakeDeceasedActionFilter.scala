@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.domain
+package controllers.actions
+import controllers.auth.AuthenticatedRequest
+import play.api.mvc.Result
 
-import play.api.libs.json.{Format, Json}
-import uk.gov.hmrc.domain.Nino
+import scala.concurrent.Future
 
-class PersonCorruptDataException extends Exception
-
-case class Person(nino: Nino,
-                  firstName: String,
-                  surname: String,
-                  isDeceased: Boolean,
-                  hasCorruptData: Boolean)
-
-object Person {
-  implicit val personFormat: Format[Person] = Json.format[Person]
+object FakeDeceasedActionFilter extends DeceasedActionFilter {
+  override protected def filter[A](request: AuthenticatedRequest[A]): Future[Option[Result]] = {
+    Future.successful(None)
+  }
 }

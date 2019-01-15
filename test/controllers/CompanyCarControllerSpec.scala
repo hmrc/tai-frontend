@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
+import controllers.actions.{DeceasedActionFilter, FakeDeceasedActionFilter}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -82,6 +83,7 @@ class CompanyCarControllerSpec extends PlaySpec
           TaiNoCompanyCarFoundResponse("A car with date withdrawn found!")))
 
         val result = sut.getCompanyCarDetails()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe ApplicationConfig.companyCarServiceUrl
       }
@@ -96,6 +98,7 @@ class CompanyCarControllerSpec extends PlaySpec
           when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
 
           val result = sut.handleUserJourneyChoice()(request)
+
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result).get mustBe ApplicationConfig.companyCarDetailsUrl
@@ -180,6 +183,7 @@ class CompanyCarControllerSpec extends PlaySpec
     journeyCacheService,
     sessionService,
     FakeAuthAction,
+    FakeDeceasedActionFilter,
     MockPartialRetriever,
     MockTemplateRenderer){
     override val companyCarForceRedirectEnabled: Boolean = isCompanyCarForceRedirectEnabled
