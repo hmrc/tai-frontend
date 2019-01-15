@@ -17,6 +17,7 @@
 package controllers
 
 import com.google.inject.Inject
+import controllers.actions.DeceasedActionFilter
 import controllers.auth.AuthAction
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -25,10 +26,11 @@ import uk.gov.hmrc.tai.service.AuditService
 
 class AuditController @Inject()(auditService: AuditService,
                                 authenticate: AuthAction,
+                                filterDeceased: DeceasedActionFilter,
                                 override implicit val partialRetriever: FormPartialRetriever,
                                 override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
 
-  def auditLinksToIForm(iformName: String): Action[AnyContent] = authenticate.async {
+  def auditLinksToIForm(iformName: String): Action[AnyContent] = (authenticate andThen filterDeceased).async {
     implicit request => {
 
       val taiUser = request.taiUser

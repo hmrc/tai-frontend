@@ -17,6 +17,7 @@
 package controllers
 
 import builders.RequestBuilder
+import controllers.actions.FakeDeceasedActionFilter
 import mocks.MockTemplateRenderer
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -57,6 +58,7 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
   class TestAuditController extends AuditController(
     auditService,
     FakeAuthAction,
+    FakeDeceasedActionFilter,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
