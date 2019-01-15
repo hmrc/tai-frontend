@@ -16,16 +16,68 @@
 
 package controllers.actions
 
+import controllers.{FakeAuthAction, FakeTaiPlayApplication, routes}
+import org.mockito.Matchers._
+import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.mvc.Controller
+import play.api.test.Helpers._
+import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.model.domain.Person
+import uk.gov.hmrc.tai.service.PersonService
 
-class DeceasedActionFilterSpec extends PlaySpec with MockitoSugar {
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.util.Random
 
-  "food food food" in {
+class DeceasedActionFilterSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
+
+  private implicit val hc = HeaderCarrier()
 
 
+  "DeceasedActionFilter" when {
+    "the person is deceased" must {
+      "redirect the user to a deceased page " in {
 
+        when(personService.personDetails(any())(any()))
+          .thenReturn(Future.successful(Person(personNino, "firstName", "Surname", true, false)))
+
+        val deceasedFilter = new DeceasedActionFilterImpl(personService)
+
+        val controller = new Harness(deceasedFilter)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.DeceasedController.deceased().toString)
+
+      }
+    }
+
+    "the person is alive" must {
+      "not redirect the user to a deceased page " in {
+
+        when(personService.personDetails(any())(any()))
+          .thenReturn(Future.successful(Person(personNino, "firstName", "Surname", false, false)))
+
+        val deceasedFilter = new DeceasedActionFilterImpl(personService)
+
+        val controller = new Harness(deceasedFilter)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        status(result) mustBe OK
+
+      }
+    }
   }
 
+  class Harness(deceased: DeceasedActionFilterImpl) extends Controller {
+    def onPageLoad() = (FakeAuthAction andThen deceased) { request => Ok }
+  }
+
+  val personService = mock[PersonService]
+
+  val personNino = new Generator(new Random).nextNino
 
 }
