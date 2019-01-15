@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
+import controllers.actions.FakeDeceasedActionFilter
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -224,6 +225,7 @@ class YourIncomeCalculationControllerSpec extends PlaySpec
     taxAccountService,
     employmentService,
     FakeAuthAction,
+    FakeDeceasedActionFilter,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {

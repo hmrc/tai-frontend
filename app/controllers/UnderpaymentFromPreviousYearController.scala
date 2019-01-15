@@ -17,6 +17,7 @@
 package controllers
 
 import com.google.inject.Inject
+import controllers.actions.DeceasedActionFilter
 import controllers.auth.AuthAction
 import play.Logger
 import play.api.Play.current
@@ -41,10 +42,11 @@ class UnderpaymentFromPreviousYearController @Inject()(codingComponentService: C
                                                        companyCarService: CompanyCarService,
                                                        taxAccountService: TaxAccountService,
                                                        authenticate: AuthAction,
+                                                       filterDeceased: DeceasedActionFilter,
                                                        override implicit val partialRetriever: FormPartialRetriever,
                                                        override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
 
-  def underpaymentExplanation = authenticate.async {
+  def underpaymentExplanation = (authenticate andThen filterDeceased).async {
     implicit request =>
 
       val nino = request.taiUser.nino

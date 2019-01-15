@@ -17,6 +17,7 @@
 package controllers
 
 import com.google.inject.Inject
+import controllers.actions.DeceasedActionFilter
 import controllers.auth.AuthAction
 import play.Logger
 import play.api.Play.current
@@ -38,11 +39,12 @@ import scala.util.control.NonFatal
 class YourTaxCodeController @Inject()(taxAccountService: TaxAccountService,
                                       taxCodeChangeService: TaxCodeChangeService,
                                       authenticate: AuthAction,
+                                      filterDeceased: DeceasedActionFilter,
                                       override implicit val partialRetriever: FormPartialRetriever,
                                       override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with FeatureTogglesConfig {
 
-  def taxCodes(year: TaxYear = TaxYear()): Action[AnyContent] = authenticate.async {
+  def taxCodes(year: TaxYear = TaxYear()): Action[AnyContent] = (authenticate andThen filterDeceased).async {
     implicit request =>
       val nino = request.taiUser.nino
 
@@ -61,7 +63,7 @@ class YourTaxCodeController @Inject()(taxAccountService: TaxAccountService,
       }
   }
 
-  def prevTaxCodes(year: TaxYear): Action[AnyContent] = authenticate.async {
+  def prevTaxCodes(year: TaxYear): Action[AnyContent] = (authenticate andThen filterDeceased).async {
     implicit request =>
       if (taxCodeChangeEnabled) {
 

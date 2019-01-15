@@ -17,6 +17,7 @@
 package controllers
 
 import com.google.inject.Inject
+import controllers.actions.DeceasedActionFilter
 import controllers.auth.AuthAction
 import play.Logger
 import play.api.Play.current
@@ -42,11 +43,12 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
                                             taxAccountService: TaxAccountService,
                                             auditService: AuditService,
                                             authenticate: AuthAction,
+                                            filterDeceased: DeceasedActionFilter,
                                             override implicit val partialRetriever: FormPartialRetriever,
                                             override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with AuditConstants {
 
-  def onPageLoad: Action[AnyContent] = authenticate.async {
+  def onPageLoad: Action[AnyContent] = (authenticate andThen filterDeceased).async {
     implicit request =>
       val nino = request.taiUser.nino
 

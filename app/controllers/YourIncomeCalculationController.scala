@@ -17,6 +17,7 @@
 package controllers
 
 import com.google.inject.Inject
+import controllers.actions.DeceasedActionFilter
 import controllers.auth.{AuthAction, AuthActionedTaiUser, WithAuthorisedForTaiLite}
 import play.Logger
 import play.api.Play.current
@@ -37,16 +38,17 @@ import scala.concurrent.Future
 class YourIncomeCalculationController @Inject()(taxAccountService: TaxAccountService,
                                                 employmentService: EmploymentService,
                                                 authenticate: AuthAction,
+                                                filterDeceased: DeceasedActionFilter,
                                                 override implicit val partialRetriever: FormPartialRetriever,
                                                 override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
 
-  def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = authenticate.async {
+  def yourIncomeCalculationPage(empId: Int): Action[AnyContent] = (authenticate andThen filterDeceased).async {
     implicit request =>
       implicit val user = request.taiUser
       incomeCalculationPage(empId, printPage = false)
   }
 
-  def printYourIncomeCalculationPage(empId: Int): Action[AnyContent] = authenticate.async {
+  def printYourIncomeCalculationPage(empId: Int): Action[AnyContent] = (authenticate andThen filterDeceased).async {
     implicit request =>
       implicit val user = request.taiUser
       incomeCalculationPage(empId, printPage = true)
@@ -76,7 +78,7 @@ class YourIncomeCalculationController @Inject()(taxAccountService: TaxAccountSer
     }
   }
 
-  def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authenticate.async {
+  def yourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = (authenticate andThen filterDeceased).async {
     implicit request => {
       implicit val user = request.taiUser
 
@@ -89,7 +91,7 @@ class YourIncomeCalculationController @Inject()(taxAccountService: TaxAccountSer
     }
   }
 
-  def printYourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = authenticate.async {
+  def printYourIncomeCalculationHistoricYears(year: TaxYear, empId: Int): Action[AnyContent] = (authenticate andThen filterDeceased).async {
     implicit request => {
       implicit val user = request.taiUser
 

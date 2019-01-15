@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
+import controllers.actions.FakeDeceasedActionFilter
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
@@ -147,6 +148,7 @@ class YourTaxCodeControllerSpec extends PlaySpec
     taxAccountService,
     taxCodeChangeService,
     FakeAuthAction,
+    FakeDeceasedActionFilter,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {

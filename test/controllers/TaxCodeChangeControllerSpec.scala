@@ -16,6 +16,7 @@
 
 package controllers
 
+import controllers.actions.FakeDeceasedActionFilter
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -164,6 +165,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     taxCodeChangeService,
     taxAccountService,
     FakeAuthAction,
+    FakeDeceasedActionFilter,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
