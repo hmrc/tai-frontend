@@ -28,7 +28,7 @@ import uk.gov.hmrc.auth.core.retrieve.{Name, ~}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
-import uk.gov.hmrc.tai.model.domain.{Person, PersonCorruptDataException, PersonDeceasedException}
+import uk.gov.hmrc.tai.model.domain.{Person, PersonCorruptDataException}
 import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.{ExecutionContext, Future}

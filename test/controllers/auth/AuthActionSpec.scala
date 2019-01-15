@@ -30,6 +30,8 @@ import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
+import org.mockito.Matchers._
+import org.mockito.Mockito.when
 
 class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
   private implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -65,17 +67,6 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().toString)
-      }
-    }
-
-    "the person is deceased" must {
-      "redirect the user to a deceased page " in {
-        val authAction = new AuthActionImpl(mock[PersonService], new FakeFailingAuthConnector(new PersonDeceasedException))
-        val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.DeceasedController.deceased().toString)
       }
     }
 
