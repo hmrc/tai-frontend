@@ -40,9 +40,9 @@ class DeceasedControllerSpec extends PlaySpec with FakeTaiPlayApplication with I
     "load the deceased page" when {
       "triggered from any page" which {
         "the user is authorised" in {
-          val sut = createSut
+          val testController = new TestController
 
-          val result = sut.deceased()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+          val result = testController.deceased()(RequestBuilder.buildFakeRequestWithAuth("GET"))
           status(result) mustBe OK
           val doc = Jsoup.parse(contentAsString(result))
           doc.title() must include(Messages("tai.deceased.title"))
@@ -51,24 +51,12 @@ class DeceasedControllerSpec extends PlaySpec with FakeTaiPlayApplication with I
     }
   }
 
-  private val nino = AuthBuilder.nino
-
-  def createSut = new SUT
-
-  val personService: PersonService = mock[PersonService]
-
-  class SUT extends DeceasedController(
-    personService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+  class TestController extends DeceasedController(
+    FakeAuthAction,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-
-    when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
   }
 
 }
