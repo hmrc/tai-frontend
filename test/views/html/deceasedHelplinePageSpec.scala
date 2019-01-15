@@ -27,12 +27,12 @@ class deceasedHelplinePageSpec extends TaiViewSpec {
 
   "Deceased helpline page" should {
     behave like pageWithTitle(messages("tai.deceased.title"))
-    behave like pageWithHeader(messages("tai.deceased.heading", user.getDisplayName))
+    behave like pageWithHeader(messages("tai.deceased.heading", authActionedTaiUser.getDisplayName))
   }
 
   "the paragraph" should {
     "show information about deceased user" in {
-      assertParagraph(messages("tai.deceased.information.p1", user.getDisplayName))
+      assertParagraph(messages("tai.deceased.information.p1", authActionedTaiUser.getDisplayName))
       assertParagraph(messages("tai.deceased.information.p2"))
     }
   }
