@@ -51,7 +51,7 @@ case class TaxFreeAmountComparisonViewModel(
   }
 
   def prettyPrint(number: Option[BigDecimal]): String = {
-    number.map(x => withPoundPrefixAndSign(MoneyPounds(x))).getOrElse(Messages("tai.incomeTaxComparison.taxFreeAmount.NA"))
+    number.map(x => withPoundPrefixAndSign(MoneyPounds(x,0))).getOrElse(Messages("tai.incomeTaxComparison.taxFreeAmount.NA"))
   }
 }
 
