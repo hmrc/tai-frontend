@@ -108,8 +108,8 @@ class UpdateIncomeNextYearController @Inject()(updateNextYearsIncomeService: Upd
   }
 
   def gaSettings(currentAmount: Int, newAmount: Int): GoogleAnalyticsSettings = {
-    val poundedCurrentAmount = MonetaryUtil.withPoundPrefix(MoneyPounds(currentAmount, decimalPlaces = 0))
-    val poundedNewAmount = MonetaryUtil.withPoundPrefix(MoneyPounds(newAmount, decimalPlaces = 0))
+    val poundedCurrentAmount = MonetaryUtil.withPoundPrefix(currentAmount)
+    val poundedNewAmount = MonetaryUtil.withPoundPrefix(newAmount)
 
     val amounts = Map("currentAmount" -> poundedCurrentAmount, "newAmount" -> poundedNewAmount)
 

@@ -380,7 +380,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
   "gaSettings" must {
     "return a Google Analytics settings with the current and new amount in the dimensions" in {
       val controller = createTestIncomeController()
-      val expectedDimensions = Some(Map(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome -> "currentAmount=£123.00;newAmount=£456"))
+      val expectedDimensions = Some(Map(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome -> "currentAmount=£123;newAmount=£456"))
       val expected = GoogleAnalyticsSettings(dimensions = expectedDimensions)
 
       controller.gaSettings(123, 456) mustBe expected
