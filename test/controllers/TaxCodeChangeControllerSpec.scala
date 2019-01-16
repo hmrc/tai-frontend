@@ -65,35 +65,13 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   "whatHappensNext" must {
     "show 'What happens next' page" when {
       "the request has an authorised session" in {
-        val SUT = createSUT(true)
-
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-        val result = SUT.whatHappensNext()(request)
+        val result = controller.whatHappensNext()(request)
+
         status(result) mustBe OK
 
         result rendersTheSameViewAs views.html.taxCodeChange.whatHappensNext()
-      }
-    }
-
-    "don't show 'What happens next' page if 'tax code change journey' is toggled off" when {
-      "the request has an authorised session" in {
-        val SUT = createSUT()
-
-        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
-
-        val result = SUT.whatHappensNext()(request)
-
-        status(result) mustBe NOT_FOUND
-
-        result rendersTheSameViewAs views.html.error_template_noauth(
-          Messages("global.error.pageNotFound404.title"),
-          Messages("tai.errorMessage.heading"),
-          Messages("tai.errorMessage.frontend404", Link.toInternalPage(
-            url = routes.TaxAccountSummaryController.onPageLoad().url,
-            value = Some(Messages("tai.errorMessage.startAgain"))
-          ).toHtml)
-        )
       }
     }
   }
@@ -101,7 +79,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   "yourTaxFreeAmount" must {
     "show 'Your tax-free amount' page with previous benefits" when {
       "taxFreeAmountComparison is enabled and the request has an authorised session" in {
-        val SUT = createSUT(true, comparisonEnabled = true)
+        val SUT = createSUT(true, companyCarService)
 
         val previousCodingComponents = Seq(codingComponent1)
         val currentCodingComponents = Seq(codingComponent2)
@@ -119,9 +97,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         when(employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(employmentMap))
         when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
 
-        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
-
-        val result = SUT.yourTaxFreeAmount()(request)
+        val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -134,7 +110,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       "taxFreeAmountComparison is disabled and the request has a authorised session" in {
         val companyCarService = mock[CompanyCarService]
 
-        val SUT = createSUT(true, false, companyCarService)
+        val SUT = createSUT(false, companyCarService)
 
         val currentCodingComponents = Seq(codingComponent2)
 
@@ -160,24 +136,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         verify(companyCarService, times(1)).companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(currentCodingComponents))(any())
       }
     }
-
-    "don't show 'Your tax-free amount' page if 'tax code change journey' is toggled off" when {
-      "the request has an authorised session" in {
-        val SUT = createSUT()
-        val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-         status(result) mustBe NOT_FOUND
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messagesApi("global.error.pageNotFound404.title"))
-      }
-    }
   }
 
   "taxCodeComparison" must {
     "show 'Your tax code comparison' page" when {
       "the request has an authorised session" in {
-        val SUT = createSUT(true)
+        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
         val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
         val scottishRates = Map.empty[String, BigDecimal]
@@ -185,9 +149,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
         when(taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map[String, BigDecimal]()))
 
-        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
-
-        val result = SUT.taxCodeComparison()(request)
+        val result = controller.taxCodeComparison()(request)
 
         val taxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates)
 
@@ -195,20 +157,9 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(taxCodeChangeViewModel)
       }
     }
-
-    "don't show 'Your tax code comparison' page if 'tax code change journey' is toggled off" when {
-      "the request has an authorised session" in {
-        val SUT = createSUT()
-        val result = SUT.taxCodeComparison()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe NOT_FOUND
-
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messagesApi("global.error.pageNotFound404.title"))
-      }
-    }
   }
 
+  private def controller = createSUT()
 
   trait YourTaxFreeAmountMock {
     this: YourTaxFreeAmount =>
@@ -227,8 +178,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       Seq.empty,
       Seq.empty)
 
-  private def createSUT(taxCodeChangeJourneyEnabled: Boolean = false, comparisonEnabled: Boolean = false, companyCarMockService: CompanyCarService = companyCarService) = new SUT(taxCodeChangeJourneyEnabled, comparisonEnabled, companyCarMockService)
-
   val nino: Nino = new Generator(new Random).nextNino
 
   val giftAmount = 1000
@@ -241,7 +190,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
 
-
   val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val codingComponentService = mock[CodingComponentService]
@@ -249,7 +197,9 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
 
-  private class SUT(taxCodeChangeJourneyEnabled: Boolean, comparisonEnabled: Boolean, companyCarMockService: CompanyCarService) extends TaxCodeChangeController(
+  private def createSUT(comparisonEnabled: Boolean = false, companyCarMockService: CompanyCarService = companyCarService) = new SUT(comparisonEnabled, companyCarMockService)
+
+  private class SUT(comparisonEnabled: Boolean, companyCarMockService: CompanyCarService) extends TaxCodeChangeController(
     personService,
     codingComponentService,
     employmentService,
@@ -263,7 +213,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     MockTemplateRenderer
   ) {
 
-    override val taxCodeChangeEnabled: Boolean = taxCodeChangeJourneyEnabled
     override val taxFreeAmountComparisonEnabled: Boolean = comparisonEnabled
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
