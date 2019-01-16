@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
-import javax.inject.Singleton
+import com.google.inject.Singleton
 import uk.gov.hmrc.auth.core.PlayAuthConnector
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.hooks.HttpHooks
@@ -33,7 +33,7 @@ object ConnectorWithHttpValues {
 
 @Singleton
 class AuthClientAuthConnector extends PlayAuthConnector with ServicesConfig {
-  override val serviceUrl: String = baseUrl("auth")
+  override lazy val serviceUrl: String = baseUrl("auth")
 
   override def http: CorePost = ConnectorWithHttpValues.http
 }
