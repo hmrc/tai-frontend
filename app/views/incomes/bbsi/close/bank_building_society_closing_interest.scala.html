@@ -20,6 +20,7 @@
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 @import uk.gov.hmrc.tai.forms.income.bbsi.BankAccountClosingInterestForm
 @import includes.forms.inputRadioGroupStyling
+@import uk.gov.hmrc.tai.model.TaxYear
 
 @(id: Int, closingInterestForm: Form[BankAccountClosingInterestForm])(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
 

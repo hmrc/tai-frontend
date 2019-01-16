@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.IncomeSourceComparisonViewModel
-@import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 @(incomeSourceViewModel:IncomeSourceComparisonViewModel)(implicit messages: Messages)
@@ -49,11 +49,11 @@
             <th scope="col"><span class="visuallyhidden">@messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")</span></th>
             <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="text--right">
                 @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
-                @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))))
+                @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().next.end))))
             </th>
             <th scope="col" id="taxCodeComparisonTableTableHeaderCol2" scope="col" class="text--right">
                 @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))
-                @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYearResolver.startOfNextTaxYear))))
+                @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
             </th>
             <th scope="col"></th>
         </tr>

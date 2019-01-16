@@ -34,14 +34,13 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.DateForm
 import uk.gov.hmrc.tai.forms.income.bbsi.BankAccountClosingInterestForm
-import uk.gov.hmrc.tai.model.CloseAccountRequest
+import uk.gov.hmrc.tai.model.{CloseAccountRequest, TaxYear}
 import uk.gov.hmrc.tai.model.domain.BankAccount
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{BbsiService, PersonService}
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import uk.gov.hmrc.tai.viewModels.income.BbsiClosedCheckYourAnswersViewModel
-import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 
@@ -99,7 +98,7 @@ class BbsiCloseAccountController @Inject()(bbsiService: BbsiService,
                   },
                   date => {
                     journeyCacheService.cache(Map(CloseBankAccountDateKey -> date.toString, CloseBankAccountNameKey -> bankName)).map(_ =>
-                      if (TaxYearResolver.fallsInThisTaxYear(date)) {
+                      if (TaxYear().withinTaxYear(date)) {
                         Redirect(controllers.income.bbsi.routes.BbsiCloseAccountController.captureClosingInterest(id))
                       } else {
                         Redirect(controllers.income.bbsi.routes.BbsiCloseAccountController.checkYourAnswers(id))

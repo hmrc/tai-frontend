@@ -22,9 +22,9 @@ import controllers.FakeTaiPlayApplication
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{times, verify, when}
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -37,8 +37,8 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
@@ -46,7 +46,6 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
-import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -519,7 +518,7 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
 
   def generateNino: Nino = new Generator(new Random).nextNino
 
-  val startOfTaxYear = Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)
+  val startOfTaxYear = Dates.formatDate(TaxYear().start)
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 

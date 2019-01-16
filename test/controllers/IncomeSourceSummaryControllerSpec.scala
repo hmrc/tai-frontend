@@ -31,12 +31,12 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
-import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -63,8 +63,8 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.employment.income.details.mainHeading.gaTitle",
-          TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy"),
-          TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")))
+          TaxYear().start.toString("d MMMM yyyy"),
+          TaxYear().next.end.toString("d MMMM yyyy")))
       }
 
       "asked for pension details" in {
@@ -80,8 +80,8 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.pension.income.details.mainHeading.gaTitle",
-          TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy"),
-          TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")))
+          TaxYear().start.toString("d MMMM yyyy"),
+          TaxYear().next.end.toString("d MMMM yyyy")))
       }
     }
 

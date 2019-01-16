@@ -17,8 +17,9 @@
 package views.html.estimatedIncomeTax
 
 import uk.gov.hmrc.play.views.formatting.Dates
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 
 class noCurrentIncomeSpec extends TaiViewSpec {
@@ -28,8 +29,8 @@ class noCurrentIncomeSpec extends TaiViewSpec {
 
     behave like pageWithCombinedHeader(
       messages("tai.taxYear",
-        Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear).replace(" ", "\u00A0"),
-        Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear).replace(" ", "\u00A0")
+        Dates.formatDate(TaxYear().start).replace(" ", "\u00A0"),
+        Dates.formatDate(TaxYear().next.end).replace(" ", "\u00A0")
       ),
       messages("tai.estimatedIncome.title"),
       Some(messages("tai.estimatedIncome.accessiblePreHeading"))

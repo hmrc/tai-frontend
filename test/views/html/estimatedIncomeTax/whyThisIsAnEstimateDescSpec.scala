@@ -18,8 +18,9 @@ package views.html.estimatedIncomeTax
 
 import play.twirl.api.Html
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 class whyThisIsAnEstimateDescSpec extends TaiViewSpec {
 
@@ -28,7 +29,7 @@ class whyThisIsAnEstimateDescSpec extends TaiViewSpec {
     doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.whyEstimate.link"))
 
     doc(view) must haveParagraphWithText(Html(
-      messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))).body)
+      messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYear().next.end))).body)
 
   }
 

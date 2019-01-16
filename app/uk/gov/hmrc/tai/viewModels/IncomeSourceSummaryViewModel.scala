@@ -16,16 +16,16 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import play.api.Play.current
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.config.ApplicationConfig
-import uk.gov.hmrc.tai.model.domain.{CarFuelBenefit, _}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.util.constants.TaiConstants
+import uk.gov.hmrc.tai.model.domain.{CarFuelBenefit, _}
 import uk.gov.hmrc.tai.util.ViewModelHelper
-import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.util.constants.TaiConstants
+
 
 case class IncomeSourceSummaryViewModel(empId: Int,
                                         displayName: String,
@@ -37,9 +37,9 @@ case class IncomeSourceSummaryViewModel(empId: Int,
                                         isPension: Boolean,
                                         benefits: Seq[CompanyBenefitViewModel] = Seq.empty[CompanyBenefitViewModel],
                                         displayAddCompanyCarLink: Boolean = true) extends ViewModelHelper {
-  def startOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)
+  def startOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().start)
 
-  def endOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)
+  def endOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().next.end)
 }
 
 object IncomeSourceSummaryViewModel {

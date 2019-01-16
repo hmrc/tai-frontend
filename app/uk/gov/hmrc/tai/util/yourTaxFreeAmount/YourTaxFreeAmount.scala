@@ -19,12 +19,12 @@ package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.{TaxAccountCalculator, TaxAccountCalculatorImpl, TaxYearRangeUtil}
-import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 case class CodingComponentsWithCarBenefits(date: LocalDate, codingComponents: Seq[CodingComponent], companyCarBenefits: Seq[CompanyCarBenefit])
 
@@ -39,7 +39,7 @@ trait YourTaxFreeAmount {
     val previousTaxFreeInfo: Option[TaxFreeInfo] = extractPreviousTaxFreeInfo(previous, taxAccountCalculator)
 
     val currentTaxFreeInfo = {
-      val currentTaxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(current.date, TaxYearResolver.endOfCurrentTaxYear)
+      val currentTaxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(current.date, TaxYear().next.end)
       TaxFreeInfo(currentTaxCodeDateRange, current.codingComponents, taxAccountCalculator)
     }
 

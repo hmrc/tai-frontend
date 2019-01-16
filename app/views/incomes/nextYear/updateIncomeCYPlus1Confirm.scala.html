@@ -16,7 +16,7 @@
 
 @import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 @import uk.gov.hmrc.tai.util.DateHelper.toDisplayFormat
-@import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.tai.model.TaxYear
 
 @(viewModel: ConfirmAmountEnteredViewModel
 )(implicit request: Request[_],
@@ -45,7 +45,7 @@
 
     <div class="margin-bottom-large">
         <p>
-            @messages("tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom", toDisplayFormat(Some(TaxYearResolver.startOfNextTaxYear)))
+            @messages("tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom", toDisplayFormat(Some(TaxYear().next.start)))
         </p>
     </div>
 

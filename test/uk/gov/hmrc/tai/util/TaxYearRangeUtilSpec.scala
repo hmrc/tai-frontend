@@ -20,7 +20,7 @@ import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.time.TaxYearResolver
+
 import play.api.i18n.Messages.Implicits._
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.tai.model.TaxYear
@@ -34,47 +34,47 @@ class TaxYearRangeUtilSpec extends PlaySpec with FakeTaiPlayApplication {
 
     "return the current tax year as a range delimited with the word 'to' " in {
       val expectedTaxYear = messages("tai.taxYear",
-        HtmlFormatter.htmlNonBroken(TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")),
-        HtmlFormatter.htmlNonBroken(TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")))
+        HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
+        HtmlFormatter.htmlNonBroken(TaxYear().next.end.toString("d MMMM yyyy")))
 
       TaxYearRangeUtil.currentTaxYearRange mustBe expectedTaxYear
     }
 
     "return the current tax year as a range delimited with the word 'to' formatted on one line " in {
       val expectedTaxYear = HtmlFormatter.htmlNonBroken(messages("tai.taxYear",
-        HtmlFormatter.htmlNonBroken(TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")),
-        HtmlFormatter.htmlNonBroken(TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))))
+        HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
+        HtmlFormatter.htmlNonBroken(TaxYear().next.end.toString("d MMMM yyyy"))))
 
       TaxYearRangeUtil.currentTaxYearRangeSingleLine mustBe expectedTaxYear
     }
 
     "return the current tax year as a range delimited with the word 'and' " in {
       val expectedTaxYear = messages("tai.taxYear.between",
-        HtmlFormatter.htmlNonBroken(TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")),
-        HtmlFormatter.htmlNonBroken(TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")))
+        HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
+        HtmlFormatter.htmlNonBroken(TaxYear().next.end.toString("d MMMM yyyy")))
 
       TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited mustBe expectedTaxYear
     }
 
     "return the current tax year as a range delimited with the word 'and' formatted on one line" in {
       val expectedTaxYear = HtmlFormatter.htmlNonBroken(messages("tai.taxYear.between",
-        HtmlFormatter.htmlNonBroken(TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")),
-        HtmlFormatter.htmlNonBroken(TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy"))))
+        HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
+        HtmlFormatter.htmlNonBroken(TaxYear().next.end.toString("d MMMM yyyy"))))
 
       TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited mustBe expectedTaxYear
     }
 
     "return the current tax year as a range that only contains the year" in {
       val expectedTaxYear = messages("tai.taxYear",
-        TaxYearResolver.startOfCurrentTaxYear.toString("yyyy"),
-        TaxYearResolver.endOfCurrentTaxYear.toString("yyyy"))
+        TaxYear().start.toString("yyyy"),
+        TaxYear().next.end.toString("yyyy"))
 
       TaxYearRangeUtil.currentTaxYearRangeYearOnly mustBe expectedTaxYear
     }
 
     "given two dates return a formatted string" in {
       val now = new LocalDate()
-      val endOfTaxYear = TaxYearResolver.endOfCurrentTaxYear
+      val endOfTaxYear = TaxYear().next.end
       val expectedNow = HtmlFormatter.htmlNonBroken(Dates.formatDate(now))
       val expectedEnd = HtmlFormatter.htmlNonBroken(Dates.formatDate(endOfTaxYear))
 

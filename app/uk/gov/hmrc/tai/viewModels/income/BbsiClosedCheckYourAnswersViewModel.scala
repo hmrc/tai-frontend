@@ -25,7 +25,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.formatting.Money
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 case class BbsiClosedCheckYourAnswersViewModel(id: Int, closeBankAccountDate: String, closeBankAccountName: Option[String], closeBankAccountInterest: Option[String]) {
 
@@ -51,6 +51,6 @@ case class BbsiClosedCheckYourAnswersViewModel(id: Int, closeBankAccountDate: St
     else confirmationLines
   }
 
-  val bankAccountClosedInCurrentTaxYear: Boolean = TaxYearResolver.fallsInThisTaxYear(LocalDate.parse(closeBankAccountDate))
+  val bankAccountClosedInCurrentTaxYear: Boolean = TaxYear().withinTaxYear(LocalDate.parse(closeBankAccountDate))
 
 }

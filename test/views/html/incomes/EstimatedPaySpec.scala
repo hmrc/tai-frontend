@@ -20,10 +20,11 @@ import org.joda.time.LocalDate
 import org.scalatest.mock.MockitoSugar
 import play.api.mvc.Call
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.EstimatedPayViewModel
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 class EstimatedPaySpec extends TaiViewSpec with MockitoSugar{
 
@@ -56,7 +57,7 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar{
 
     "contain summary with text and a hidden text" when {
       "the gross pay is apportioned" in {
-        val employmentStartDate = TaxYearResolver.startOfCurrentTaxYear.plusMonths(2)
+        val employmentStartDate = TaxYear().start.plusMonths(2)
 
         val detailedSummaryView = views.html.incomes.estimatedPay(createViewModel(Some(employmentStartDate)))
 

@@ -140,7 +140,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
         val sut = createSUT
 
-        val date = TaxYearResolver.startOfCurrentTaxYear.minusDays(1)
+        val date = TaxYear().start.minusDays(1)
 
         val validFormData = Json.obj(
           sut.closeBankAccountDateForm.DateFormDay -> date.getDayOfMonth,
@@ -164,7 +164,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
         val sut = createSUT
 
-        val date = TaxYearResolver.startOfCurrentTaxYear
+        val date = TaxYear().start
 
         val validFormData = Json.obj(
           sut.closeBankAccountDateForm.DateFormDay -> date.getDayOfMonth,
@@ -188,7 +188,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
         val sut = createSUT
 
-        val date = TaxYearResolver.endOfCurrentTaxYear.plusDays(1)
+        val date = TaxYear().next.end.plusDays(1)
 
         val validFormData = Json.obj(
           sut.closeBankAccountDateForm.DateFormDay -> date.getDayOfMonth,

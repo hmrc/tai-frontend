@@ -16,16 +16,14 @@
 
 package views.html.incomes
 
-import controllers.routes
 import org.joda.time.LocalDate
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.util.DateHelper
-import uk.gov.hmrc.tai.util.constants.TaiConstants._
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{LatestPayment, PaymentDetailsViewModel, YourIncomeCalculationViewModel}
-import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 
 class yourIncomeCalculationSpec extends TaiViewSpec {
@@ -45,8 +43,8 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
         def potentiallyCeasedView = views.html.incomes.yourIncomeCalculation(model)
 
         doc(potentiallyCeasedView) must haveH2HeadingWithText(
-          messages("tai.income.calculation.heading", s"${TaxYearResolver.startOfCurrentTaxYear.toString(dateFormatPattern)}",
-            s"${TaxYearResolver.endOfCurrentTaxYear.toString(dateFormatPattern)}")
+          messages("tai.income.calculation.heading", s"${TaxYear().start.toString(dateFormatPattern)}",
+            s"${TaxYear().next.end.toString(dateFormatPattern)}")
         )
       }
 
@@ -71,8 +69,8 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
         def ceasedView = views.html.incomes.yourIncomeCalculation(model)
 
         doc(ceasedView) must haveH2HeadingWithText(
-          messages("tai.income.calculation.heading", s"${TaxYearResolver.startOfCurrentTaxYear.toString(dateFormatPattern)}",
-            s"${TaxYearResolver.endOfCurrentTaxYear.toString(dateFormatPattern)}")
+          messages("tai.income.calculation.heading", s"${TaxYear().start.toString(dateFormatPattern)}",
+            s"${TaxYear().next.end.toString(dateFormatPattern)}")
         )
       }
 
@@ -97,8 +95,8 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
         def liveView = views.html.incomes.yourIncomeCalculation(model)
 
         doc(liveView) must haveH2HeadingWithText(
-          messages("tai.income.calculation.heading", s"${TaxYearResolver.startOfCurrentTaxYear.toString(dateFormatPattern)}",
-            s"${TaxYearResolver.endOfCurrentTaxYear.toString(dateFormatPattern)}")
+          messages("tai.income.calculation.heading", s"${TaxYear().start.toString(dateFormatPattern)}",
+            s"${TaxYear().next.end.toString(dateFormatPattern)}")
         )
       }
 

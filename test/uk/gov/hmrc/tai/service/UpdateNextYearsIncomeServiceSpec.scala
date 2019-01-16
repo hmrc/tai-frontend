@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
-import uk.gov.hmrc.time.TaxYearResolver
+
 import utils.WireMockHelper
 
 import scala.concurrent.duration._
@@ -198,7 +198,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
     Employment(
       name = name,
       payrollNumber = None,
-      startDate = TaxYearResolver.startOfCurrentTaxYear,
+      startDate = TaxYear().start,
       endDate = None,
       annualAccounts = Seq.empty,
       taxDistrictNumber = "123",

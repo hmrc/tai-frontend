@@ -17,14 +17,13 @@
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 import controllers.FakeTaiPlayApplication
-import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{OtherBasisOfOperation, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
-import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.collection.immutable.ListMap
 
@@ -35,8 +34,8 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
-  val endOfTaxYear = TaxYearResolver.endOfCurrentTaxYear
-  val startDate = TaxYearResolver.startOfCurrentTaxYear
+  val endOfTaxYear = TaxYear().next.end
+  val startDate = TaxYear().start
   val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation,"A Employer 1", false, Some("1234"), false)
   val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = endOfTaxYear)
   val fullYearTaxCode = TaxCodeRecord("1185L", startDate, endOfTaxYear, Week1Month1BasisOfOperation, "B Employer 1", false, Some("12345"), false)
@@ -70,7 +69,7 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
       "be No" when {
         "when it does not occur in current or previous" in {
-          val startDate = TaxYearResolver.startOfCurrentTaxYear
+          val startDate = TaxYear().start
           val endDate = startDate.plusMonths(1)
           val changeDate = startDate.plusMonths(1).plusDays(1)
           
@@ -95,7 +94,7 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
       "be Yes" when {
         "there are multiple for current" in {
 
-          val startDate = TaxYearResolver.startOfCurrentTaxYear
+          val startDate = TaxYear().start
           val endDate = startDate.plusMonths(1)
           val changeDate = startDate.plusMonths(1).plusDays(1)
 
@@ -121,7 +120,7 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
         }
 
         "there are multiple for previous" in {
-          val startDate = TaxYearResolver.startOfCurrentTaxYear
+          val startDate = TaxYear().start
           val endDate = startDate.plusMonths(1)
           val changeDate = startDate.plusMonths(1).plusDays(1)
 

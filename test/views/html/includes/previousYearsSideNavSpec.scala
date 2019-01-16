@@ -62,7 +62,7 @@ class previousYearsSideNavSpec extends TaiViewSpec {
 
   }
 
-  private val currentYear = TaxYear()
+  private val currentYear = TaxYear().year
 
   override def view: Html = views.html.includes.previousYearsSideNav(TaxYear().prev, 3)
 

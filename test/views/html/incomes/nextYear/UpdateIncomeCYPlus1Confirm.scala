@@ -18,11 +18,12 @@ package views.html.incomes.nextYear
 
 import org.scalatest.mock.MockitoSugar
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.util.DateHelper.toDisplayFormat
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
-import uk.gov.hmrc.tai.util.DateHelper.toDisplayFormat
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 class UpdateIncomeCYPlus1Confirm extends TaiViewSpec with MockitoSugar {
 
@@ -48,7 +49,7 @@ class UpdateIncomeCYPlus1Confirm extends TaiViewSpec with MockitoSugar {
     "display a message explaining when change will take effect" in {
       doc(view) must haveParagraphWithText(
         messages("tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom",
-                 toDisplayFormat(Some(TaxYearResolver.startOfNextTaxYear)))
+                 toDisplayFormat(Some(TaxYear().next.start)))
       )
     }
 

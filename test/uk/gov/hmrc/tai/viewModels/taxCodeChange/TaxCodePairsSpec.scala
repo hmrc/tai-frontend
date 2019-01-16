@@ -16,16 +16,14 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
+import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
-import uk.gov.hmrc.tai.viewModels.taxCodeChange._
-import uk.gov.hmrc.time.TaxYearResolver
-import org.scalatest.prop.TableDrivenPropertyChecks._
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 
 import scala.util.Random
-import scala.util.Random.shuffle
 
 class TaxCodePairsSpec extends PlaySpec{
 
@@ -93,8 +91,8 @@ class TaxCodePairsSpec extends PlaySpec{
       val dateOfTaxCodeChange = startDate.plusMonths(1)
       val secondaryEmployer1Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 1", false, Some("A-1234"), false)
       val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 2", false, Some("A-1234"), false)
-      val secondaryEmployer1After = secondaryEmployer1Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-      val secondaryEmployer2After = secondaryEmployer2Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+      val secondaryEmployer1After = secondaryEmployer1Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYear().next.end)
+      val secondaryEmployer2After = secondaryEmployer2Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYear().next.end)
 
       val model = TaxCodePairs(
         Seq(primaryFullYearTaxCode, secondaryEmployer1Before, secondaryEmployer2Before),
@@ -113,8 +111,8 @@ class TaxCodePairsSpec extends PlaySpec{
       val dateOfTaxCodeChange = startDate.plusMonths(1)
       val secondaryEmployer1Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation, "Employer 1", false, None, false)
       val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 2", false, None, false)
-      val secondaryEmployer1After = secondaryEmployer1Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-      val secondaryEmployer2After = secondaryEmployer2Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+      val secondaryEmployer1After = secondaryEmployer1Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYear().next.end)
+      val secondaryEmployer2After = secondaryEmployer2Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYear().next.end)
 
       val model = TaxCodePairs(
         Seq(primaryFullYearTaxCode, secondaryEmployer1Before, secondaryEmployer2Before),
@@ -133,8 +131,8 @@ class TaxCodePairsSpec extends PlaySpec{
       val dateOfTaxCodeChange = startDate.plusMonths(1)
       val secondaryEmployer1Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 1", false, None, false)
       val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 2", false, None, false)
-      val secondaryEmployer3After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear, OtherBasisOfOperation,"Employer 3", false, None, false)
-      val secondaryEmployer4After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear, OtherBasisOfOperation,"Employer 4", false, None, false)
+      val secondaryEmployer3After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYear().next.end, OtherBasisOfOperation,"Employer 3", false, None, false)
+      val secondaryEmployer4After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYear().next.end, OtherBasisOfOperation,"Employer 4", false, None, false)
 
       val model = TaxCodePairs(
         Seq(primaryFullYearTaxCode, secondaryEmployer1Before, secondaryEmployer2Before),
@@ -156,8 +154,8 @@ class TaxCodePairsSpec extends PlaySpec{
       val primaryEmployer1Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 1", false, None, true)
       val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 1", false, None, false)
 
-      val primaryEmployer1After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear, OtherBasisOfOperation,"Employer 1", false, None, true)
-      val secondaryEmployer2After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear, OtherBasisOfOperation,"Employer 1", false, None, false)
+      val primaryEmployer1After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYear().next.end, OtherBasisOfOperation,"Employer 1", false, None, true)
+      val secondaryEmployer2After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYear().next.end, OtherBasisOfOperation,"Employer 1", false, None, false)
 
       val model = TaxCodePairs(
         Seq(primaryEmployer1Before, secondaryEmployer2Before),
@@ -176,8 +174,8 @@ class TaxCodePairsSpec extends PlaySpec{
       val secondaryEmployer1ABefore = TaxCodeRecord("code 1a", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 1", false, None, false)
       val secondaryEmployer1BBefore = TaxCodeRecord("code 1b", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 1", false, None, false)
 
-      val secondaryEmployer1AAfter = TaxCodeRecord("code 1a - after", dateOfTaxCodeChange, TaxYearResolver.endOfCurrentTaxYear, OtherBasisOfOperation, "Employer 1", false, None, false)
-      val secondaryEmployer1BAfter = TaxCodeRecord("code 1b - after", dateOfTaxCodeChange, TaxYearResolver.endOfCurrentTaxYear, OtherBasisOfOperation, "Employer 1", false, None, false)
+      val secondaryEmployer1AAfter = TaxCodeRecord("code 1a - after", dateOfTaxCodeChange, TaxYear().next.end, OtherBasisOfOperation, "Employer 1", false, None, false)
+      val secondaryEmployer1BAfter = TaxCodeRecord("code 1b - after", dateOfTaxCodeChange, TaxYear().next.end, OtherBasisOfOperation, "Employer 1", false, None, false)
 
       val orderings = Table(
         ("previous", "current"),
@@ -217,13 +215,13 @@ class TaxCodePairsSpec extends PlaySpec{
   }
 
   val nino = generateNino
-  val startDate = TaxYearResolver.startOfCurrentTaxYear
+  val startDate = TaxYear().start
   val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1), OtherBasisOfOperation,"A Employer 1", false, Some("A-1234"), false)
-  val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
-  val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYearResolver.endOfCurrentTaxYear, OtherBasisOfOperation, "B Employer 1", false, Some("B-1234"), false)
+  val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYear().next.end)
+  val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYear().next.end, OtherBasisOfOperation, "B Employer 1", false, Some("B-1234"), false)
   val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", payrollNumber = Some("C-1234"), primary = true)
   val unmatchedPreviousTaxCode = TaxCodeRecord("Unmatched Previous", startDate, startDate.plusMonths(1), OtherBasisOfOperation,"D", false, Some("D Payroll Id"), false)
-  val unmatchedCurrentTaxCode = TaxCodeRecord("Unmatched Current", startDate.plusMonths(1), TaxYearResolver.endOfCurrentTaxYear, OtherBasisOfOperation,"E", false,Some("E Payroll id"), false)
+  val unmatchedCurrentTaxCode = TaxCodeRecord("Unmatched Current", startDate.plusMonths(1), TaxYear().next.end, OtherBasisOfOperation,"E", false,Some("E Payroll id"), false)
 
   private def generateNino: Nino = new Generator(new Random).nextNino
 }

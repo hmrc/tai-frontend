@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 import scala.concurrent.Future
 

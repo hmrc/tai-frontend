@@ -20,6 +20,7 @@ import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
@@ -28,7 +29,6 @@ import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{AdditionalTaxDetailRow, DetailedIncomeTaxEstimateViewModel, ReductionTaxRow}
 import uk.gov.hmrc.tai.viewModels.{HelpLink, Label}
-import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.urls.Link
 
 class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants {
@@ -43,8 +43,8 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
     "show correct header content" in {
 
       val expectedTaxYearString = Messages("tai.taxYear",
-        nonBreakable(Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)),
-        nonBreakable(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)))
+        nonBreakable(Dates.formatDate(TaxYear().start)),
+        nonBreakable(Dates.formatDate(TaxYear().next.end)))
 
       val accessiblePreHeading = doc.select("""header span[class="visuallyhidden"]""")
       accessiblePreHeading.text mustBe Messages("tai.estimatedIncome.accessiblePreHeading")

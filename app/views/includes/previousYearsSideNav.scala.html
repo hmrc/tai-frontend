@@ -28,8 +28,7 @@
 
     <nav id="previousYearsSideNav">
         <ul>
-            @for(year <- (TaxYear().prev) to (TaxYear() -
-            noOfPreviousYearsToShow) by -1) {
+            @for(year <- (TaxYear().prev.year) to (TaxYear().year - noOfPreviousYearsToShow) by -1) {
             <li>
                 @if(selectedYear.year != year){
                 <p id="@{year}NavItem" class="inline-block">

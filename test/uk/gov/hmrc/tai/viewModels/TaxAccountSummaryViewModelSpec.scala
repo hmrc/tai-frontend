@@ -20,11 +20,12 @@ import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.util.HtmlFormatter
-import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform, encodedMinusSign}
-import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.util.constants.TaiConstants._
+
 
 class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -33,8 +34,8 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
     "return a view model" which {
 
       val currentTaxYearRange = Messages("tai.heading.taxYear.interval",
-        HtmlFormatter.htmlNonBroken(TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")),
-        HtmlFormatter.htmlNonBroken(TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")))
+        HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
+        HtmlFormatter.htmlNonBroken(TaxYear().next.end.toString("d MMMM yyyy")))
 
       "has header relating to current tax year" in {
         val expectedHeader = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRange
@@ -74,7 +75,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
       }
 
       "has correctly formatted lastTaxYearEnd" in {
-        val expectedLastTaxYearEnd = TaxYearResolver.endOfCurrentTaxYear.minusYears(1).toString("d MMMM yyyy")
+        val expectedLastTaxYearEnd = TaxYear().next.end.minusYears(1).toString("d MMMM yyyy")
         val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, true, nonTaxCodeIncome)
         sut.lastTaxYearEnd mustBe expectedLastTaxYearEnd
       }

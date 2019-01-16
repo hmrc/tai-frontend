@@ -16,15 +16,14 @@
 
 package uk.gov.hmrc.tai.util
 
-import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
 import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
-import play.api.i18n.Messages
-import uk.gov.hmrc.time.TaxYearResolver
+import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
 
 class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlayApplication {
 
@@ -63,13 +62,13 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlay
 
   "currentTaxYearHeaderHtmlNonBreak" must {
     "return the date in passed format" in {
-      currentTaxYearHeaderHtmlNonBreak mustBe TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM y").replace(" ", "\u00A0")
+      currentTaxYearHeaderHtmlNonBreak mustBe TaxYear().next.end.toString("d MMMM y").replace(" ", "\u00A0")
     }
   }
 
   "nextTaxYearHeaderHtmlNonBreak" must {
     "return the date in passed format" in {
-      nextTaxYearHeaderHtmlNonBreak mustBe TaxYearResolver.startOfNextTaxYear.toString("d MMMM y").replace(" ", "\u00A0")
+      nextTaxYearHeaderHtmlNonBreak mustBe TaxYear().next.start.toString("d MMMM y").replace(" ", "\u00A0")
     }
   }
 
@@ -96,7 +95,7 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlay
   "dynamicDateRangeHtmlNonBreak " must {
     "given two dates return a formatted string" in {
       val now = new LocalDate()
-      val endOfTaxYear = TaxYearResolver.endOfCurrentTaxYear
+      val endOfTaxYear = TaxYear().next.end
       val expectedNow = htmlNonBroken(Dates.formatDate(now))
       val expectedEnd = htmlNonBroken(Dates.formatDate(endOfTaxYear))
 

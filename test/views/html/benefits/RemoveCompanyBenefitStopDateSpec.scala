@@ -21,8 +21,9 @@ import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm
 import uk.gov.hmrc.tai.forms.benefits.RemoveCompanyBenefitStopDateForm.StopDateChoice
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 class RemoveCompanyBenefitStopDateSpec extends TaiViewSpec{
 
@@ -60,8 +61,8 @@ class RemoveCompanyBenefitStopDateSpec extends TaiViewSpec{
 
   private val idBeforeTaxYearEnd = "stopDateChoice-beforetaxyearend"
   private val idOnOrAfterTaxYearEnd= "stopDateChoice-onoraftertaxyearend"
-  private val startOfCurrentTaxYear = TaxYearResolver.startOfCurrentTaxYear.toString("d MMMM yyyy")
-  private val endOfCurrentTaxYear = TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM YYYY")
+  private val startOfCurrentTaxYear = TaxYear().start.toString("d MMMM yyyy")
+  private val endOfCurrentTaxYear = TaxYear().next.end.toString("d MMMM YYYY")
   private lazy val benefitType = "Expenses"
   private lazy val empName = "EmployerA"
 
