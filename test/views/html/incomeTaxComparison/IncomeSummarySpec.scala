@@ -172,7 +172,7 @@ class IncomeSummarySpec extends TaiViewSpec {
   )
 
   private val showEstimatedPay = true
-  private val hideEstimatedPay = true
+  private val hideEstimatedPay = !showEstimatedPay
 
   override def view: Html = views.html.incomeTaxComparison.IncomeSummary(employmentIncomeSourceComparisonViewModel, showEstimatedPay)
   def viewPensionsOnly: Html = views.html.incomeTaxComparison.IncomeSummary(pensionIncomeSourceComparisonViewModel, showEstimatedPay)
