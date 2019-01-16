@@ -493,8 +493,8 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
       tags = Map("clientIP" -> trueClientIp.getOrElse("-"),
         "path" -> path.getOrElse("NA"), "X-Session-ID" -> sessionId.getOrElse("-"),
         "Akamai-Reputation" -> "-", "X-Request-ID" -> requestId.getOrElse("-"),
-        "deviceID" -> deviceId.getOrElse("-"), "ipAddress" -> ipAddress.getOrElse("-"),
-        "token" -> "-", "clientPort" -> clientPort.getOrElse("-"), "Authorization" -> authorization.getOrElse("-"),
+        "deviceID" -> deviceId.getOrElse("-"),
+        "clientPort" -> clientPort.getOrElse("-"),
         "transactionName" -> auditType), detail = detail
 
     )
