@@ -31,7 +31,7 @@
         <h1 id="gatekeeper-title" class="flush--bottom">@Messages("tai.gatekeeper.heading")</h1>
     </header>
 
-    <h2 class="heading--underlined">@Messages("tai.taxYear",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().next.end)}")</h2>
+    <h2 class="heading--underlined">@Messages("tai.taxYear",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</h2>
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
@@ -39,7 +39,7 @@
                     <p>@Messages("tai.gateKeeper.description.p1", s"${Dates.formatDate(TaxYear().start)}")</p>
                     <p>@Messages("tai.gateKeeper.description.p2")</p>
                     <ul class="bullets">
-                        <li>@Messages("tai.gateKeeper.description.p2.1", s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().next.end)}")</li>
+                        <li>@Messages("tai.gateKeeper.description.p2.1", s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</li>
                     </ul>
                     <p>@Messages("tai.gatekeeper.contact")</p>
                     <ul class="bullets">
