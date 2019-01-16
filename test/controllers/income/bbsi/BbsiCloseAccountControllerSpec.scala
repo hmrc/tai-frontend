@@ -21,9 +21,9 @@ import controllers.FakeTaiPlayApplication
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -38,12 +38,11 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.DateForm
-import uk.gov.hmrc.tai.model.CloseAccountRequest
 import uk.gov.hmrc.tai.model.domain.BankAccount
+import uk.gov.hmrc.tai.model.{CloseAccountRequest, TaxYear}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{BbsiService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{BankAccountClosingInterestConstants, FormValuesConstants, JourneyCacheConstants}
-import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -259,7 +258,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.heading", TaxYearResolver.currentTaxYear.toString))
+        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.heading", TaxYear().toString))
       }
       "the request contains a valid bank account id and we have some saved data in the form" in {
 
@@ -276,7 +275,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.heading", TaxYearResolver.currentTaxYear.toString))
+        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.heading", TaxYear().toString))
       }
     }
 
@@ -388,7 +387,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.heading", TaxYearResolver.currentTaxYear.toString))
+        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.heading", TaxYear().toString))
       }
     }
   }

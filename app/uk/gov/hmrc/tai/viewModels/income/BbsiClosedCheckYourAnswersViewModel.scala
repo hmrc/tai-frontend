@@ -24,6 +24,7 @@ import play.api.Play.current
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.formatting.Money
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.time.TaxYearResolver
 
 case class BbsiClosedCheckYourAnswersViewModel(id: Int, closeBankAccountDate: String, closeBankAccountName: Option[String], closeBankAccountInterest: Option[String]) {
@@ -41,7 +42,7 @@ case class BbsiClosedCheckYourAnswersViewModel(id: Int, closeBankAccountDate: St
 
     if (bankAccountClosedInCurrentTaxYear) {
       confirmationLines :+ CheckYourAnswersConfirmationLine(
-        Messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYearResolver.currentTaxYear.toString),
+        Messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().toString),
         closeBankAccountInterest
           .map(interest => Money.pounds(BigDecimal(interest)).toString().trim.replace("&pound;", "\u00A3"))
           .getOrElse(Messages("tai.closeBankAccount.closingInterest.notKnown")),

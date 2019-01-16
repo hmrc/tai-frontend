@@ -18,7 +18,6 @@
 @import includes.forms.{submit, input}
 @import uk.gov.hmrc.play.views.html.helpers.{form}
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
-@import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.tai.forms.income.bbsi.BankAccountClosingInterestForm
 @import includes.forms.inputRadioGroupStyling
 
@@ -31,13 +30,13 @@
         formForErrorSummary = Some(closingInterestForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.closeBankAccount.closingInterest.heading", TaxYearResolver.currentTaxYear.toString),
+        mainHeadingText = Messages("tai.closeBankAccount.closingInterest.heading", TaxYear().toString),
         preHeadingText = Messages("account.closed")
     )
 }
 
 @main(
-    title = Messages("tai.closeBankAccount.closingInterest.heading", TaxYearResolver.currentTaxYear.toString),
+    title = Messages("tai.closeBankAccount.closingInterest.heading", TaxYear().toString),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = None,

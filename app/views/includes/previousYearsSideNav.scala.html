@@ -16,7 +16,6 @@
 
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.util.constants.TaiConstants
-@import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 @import uk.gov.hmrc.tai.model.TaxYear
 @import controllers.routes
@@ -29,7 +28,7 @@
 
     <nav id="previousYearsSideNav">
         <ul>
-            @for(year <- (TaxYearResolver.currentTaxYear - 1) to (TaxYearResolver.currentTaxYear -
+            @for(year <- (TaxYear().prev) to (TaxYear() -
             noOfPreviousYearsToShow) by -1) {
             <li>
                 @if(selectedYear.year != year){
