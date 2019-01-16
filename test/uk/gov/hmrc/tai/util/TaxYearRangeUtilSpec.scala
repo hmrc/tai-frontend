@@ -67,7 +67,7 @@ class TaxYearRangeUtilSpec extends PlaySpec with FakeTaiPlayApplication {
     "return the current tax year as a range that only contains the year" in {
       val expectedTaxYear = messages("tai.taxYear",
         TaxYear().start.toString("yyyy"),
-        TaxYear().next.end.toString("yyyy"))
+        TaxYear().end.toString("yyyy"))
 
       TaxYearRangeUtil.currentTaxYearRangeYearOnly mustBe expectedTaxYear
     }
