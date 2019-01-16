@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.model.domain
+package controllers
 
-import play.api.libs.json.{Format, Json}
-import uk.gov.hmrc.domain.Nino
+import controllers.auth.{AuthAction, AuthActionedTaiUser, AuthenticatedRequest}
+import play.api.mvc.{Request, Result}
+import uk.gov.hmrc.domain.Generator
 
-class PersonDeceasedException extends Exception
-class PersonCorruptDataException extends Exception
+import scala.concurrent.Future
+import scala.util.Random
 
-case class Person(nino: Nino,
-                  firstName: String,
-                  surname: String,
-                  isDeceased: Boolean,
-                  hasCorruptData: Boolean)
+object FakeAuthAction extends AuthAction {
 
-object Person {
-  implicit val personFormat: Format[Person] = Json.format[Person]
+  val nino = new Generator(new Random).nextNino
+
+  override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[Result]): Future[Result] =
+    block(AuthenticatedRequest(request, AuthActionedTaiUser("person name", nino.toString(), "utr")))
 }

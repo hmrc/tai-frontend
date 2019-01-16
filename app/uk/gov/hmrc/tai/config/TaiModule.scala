@@ -16,14 +16,22 @@
 
 package uk.gov.hmrc.tai.config
 
+import com.google.inject.AbstractModule
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
+import uk.gov.hmrc.auth.core
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import uk.gov.hmrc.play.frontend.auth.connectors.DelegationConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors._
 import uk.gov.hmrc.tai.service.journeyCache._
+
+class TaiAuthModule extends AbstractModule {
+  override def configure(): Unit = {
+    bind(classOf[core.AuthConnector]).to(classOf[AuthClientAuthConnector])
+  }
+}
 
 class TaiModule extends Module {
 
@@ -34,7 +42,7 @@ class TaiModule extends Module {
     bind[WSHttp].toInstance(WSHttp),
     // Connectors
     bind[AuditConnector].toInstance(AuditConnector),
-    bind[AuthConnector].toInstance(FrontendAuthConnector),
+    bind[uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector].toInstance(FrontendAuthConnector),
     bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
     // Journey Cache Services
     bind[JourneyCacheService].qualifiedWith("Add Employment").to(classOf[AddEmploymentJourneyCacheService]),
