@@ -46,8 +46,7 @@ class YourTaxCodeController @Inject()(personService: PersonService,
                                       override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
-  with Auditable
-  with FeatureTogglesConfig {
+  with Auditable {
 
   def taxCodes(year: TaxYear = TaxYear()): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -70,22 +69,15 @@ class YourTaxCodeController @Inject()(personService: PersonService,
     implicit user =>
       implicit person =>
         implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            val nino = user.person.nino
 
-          if (taxCodeChangeEnabled) {
-            ServiceCheckLite.personDetailsCheck {
-              val nino = user.person.nino
-
-              for {
-                taxCodeRecords <- taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(nino, year)
-                scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeRecords.map(_.taxCode))
-              } yield {
-                val taxCodeViewModel = TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, year)
-                Ok(views.html.taxCodeDetailsPreviousYears(taxCodeViewModel))
-              }
-            }
-          } else {
-            ServiceCheckLite.personDetailsCheck {
-              Future.successful(NotFound)
+            for {
+              taxCodeRecords <- taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(nino, year)
+              scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeRecords.map(_.taxCode))
+            } yield {
+              val taxCodeViewModel = TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, year)
+              Ok(views.html.taxCodeDetailsPreviousYears(taxCodeViewModel))
             }
           }
   }
