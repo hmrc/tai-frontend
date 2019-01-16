@@ -26,8 +26,8 @@ import uk.gov.hmrc.tai.util.HtmlFormatter
 object TaxPeriodLabelService {
 
   def taxPeriodLabel(year: Int)(implicit messages: Messages) : String = {
-    HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().start) + " " + messages("language.to") + " " +
-      HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().end)))
+    s"${HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear(year).start))} ${messages("language.to")} " +
+      s"${HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear(year).end))}"
   }
 
 }
