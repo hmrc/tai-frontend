@@ -52,7 +52,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     "fetch the tax codes" when {
       "provided with valid nino" in {
         val sut = createSUT
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(taxCodeIncomeJson))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(taxCodeIncomeJson))
         val result = sut.taxCodeIncomes(generateNino, currentTaxYear)
         Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(Seq(taxCodeIncome))
       }
@@ -61,7 +61,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     "thrown exception" when {
       "tai sends an invalid json" in {
         val sut = createSUT
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(corruptJsonResponse))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(corruptJsonResponse))
 
         val ex = Await.result(sut.taxCodeIncomes(generateNino, currentTaxYear), 5 seconds)
         ex mustBe a[TaiTaxAccountFailureResponse]
@@ -73,7 +73,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     "fetch the coding components" when {
       "provided with valid nino" in {
         val sut = createSUT
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(codingComponentSampleJson))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(codingComponentSampleJson))
         val result = sut.codingComponents(generateNino, currentTaxYear)
 
         Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(codingComponentSeq)
@@ -97,7 +97,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
           ),
           "links" -> Json.arr())
 
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(taxAccountSummaryJson))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(taxAccountSummaryJson))
         val result = sut.taxAccountSummary(generateNino, currentTaxYear)
         Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(TaxAccountSummary(111,222, 1111.11, 2222.23, 1111.12, 100, 200))
       }
@@ -112,7 +112,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
             "taxFreeAmount11" -> 222
           ),
           "links" -> Json.arr())
-        when(sut.httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(corruptTaxAccountSummaryJson))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(corruptTaxAccountSummaryJson))
 
         val ex = Await.result(sut.taxAccountSummary(generateNino, currentTaxYear), 5 seconds)
         ex mustBe a[TaiTaxAccountFailureResponse]
@@ -125,7 +125,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       "provided with valid nino" in {
         val sut = createSUT
         val nino = generateNino
-        when(sut.httpHandler.getFromApi(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/income"))(any())).
+        when(httpHandler.getFromApi(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/income"))(any())).
           thenReturn(Future.successful(incomeJson))
 
         val result = sut.nonTaxCodeIncomes(nino, currentTaxYear)
@@ -138,7 +138,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       "tai sends an invalid json" in {
         val sut = createSUT
         val nino = generateNino
-        when(sut.httpHandler.getFromApi(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/income"))(any())).
+        when(httpHandler.getFromApi(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/income"))(any())).
           thenReturn(Future.successful(corruptJsonResponse))
 
         val ex = Await.result(sut.nonTaxCodeIncomes(nino, currentTaxYear), 5 seconds)
@@ -152,7 +152,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       "update tax code income returns 200" in {
         val sut = createSUT
         val nino = generateNino
-        when(sut.httpHandler.putToApi(Matchers.eq(sut.updateTaxCodeIncome(nino.nino, TaxYear(), 1)),
+        when(httpHandler.putToApi(Matchers.eq(sut.updateTaxCodeIncome(nino.nino, TaxYear(), 1)),
           Matchers.eq(UpdateTaxCodeIncomeRequest(100)))(any(), any(), any())).thenReturn(Future.successful(HttpResponse(200)))
 
         val response = Await.result(sut.updateEstimatedIncome(nino, TaxYear(), 100, 1), 5 seconds)
@@ -165,7 +165,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       "update tax code income returns 500" in {
         val sut = createSUT
         val nino = generateNino
-        when(sut.httpHandler.putToApi(Matchers.eq(sut.updateTaxCodeIncome(nino.nino, TaxYear(), 1)),
+        when(httpHandler.putToApi(Matchers.eq(sut.updateTaxCodeIncome(nino.nino, TaxYear(), 1)),
           Matchers.eq(UpdateTaxCodeIncomeRequest(100)))(any(), any(), any())).thenReturn(Future.failed(new InternalServerException("Failed")))
 
         val response = Await.result(sut.updateEstimatedIncome(nino, TaxYear(), 100, 1), 5 seconds)
@@ -187,7 +187,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
           Some(tax.TaxAdjustment(100, List(TaxAdjustmentComponent(ExcessGiftAidTax, 100)))),
           Some(tax.TaxAdjustment(100, List(TaxAdjustmentComponent(TaxOnBankBSInterest, 100)))))
 
-        when(sut.httpHandler.getFromApi(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/total-tax"))(any())).
+        when(httpHandler.getFromApi(Matchers.eq(s"mockUrl/tai/$nino/tax-account/${currentTaxYear.year}/total-tax"))(any())).
           thenReturn(Future.successful(totalTaxJson))
 
         val result = sut.totalTax(nino, currentTaxYear)
@@ -330,9 +330,10 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
   private def createSUT = new SUT
 
-  private class SUT extends TaxAccountConnector {
+  val httpHandler: HttpHandler = mock[HttpHandler]
+  
+  private class SUT extends TaxAccountConnector(httpHandler) {
     override val serviceUrl: String = "mockUrl"
-    override val httpHandler: HttpHandler = mock[HttpHandler]
   }
 
 }

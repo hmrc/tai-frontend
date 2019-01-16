@@ -20,8 +20,11 @@ import uk.gov.hmrc.tai.model.domain.AllowanceComponentType
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
 trait TaxAccountCalculator {
+  def taxFreeAmount(codingComponents: Seq[CodingComponent]): BigDecimal
+}
 
-  def taxFreeAmount(codingComponents: Seq[CodingComponent]): BigDecimal = {
+class TaxAccountCalculatorImpl extends TaxAccountCalculator {
+  override def taxFreeAmount(codingComponents: Seq[CodingComponent]): BigDecimal = {
     codingComponents.foldLeft(BigDecimal(0))((total: BigDecimal, component: CodingComponent) =>
       component.componentType match {
         case _: AllowanceComponentType => total + component.amount

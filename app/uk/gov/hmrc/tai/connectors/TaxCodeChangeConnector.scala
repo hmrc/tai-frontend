@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.google.inject.Inject
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -24,14 +25,12 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWith
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeMismatch, TaxCodeRecord}
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import scala.concurrent.Future
 
-trait TaxCodeChangeConnector extends ServicesConfig {
+class TaxCodeChangeConnector @Inject() (httpHandler: HttpHandler) extends ServicesConfig {
 
-  val serviceUrl: String
-
-  def httpHandler: HttpHandler
+  val serviceUrl: String = baseUrl("tai")
 
   def baseTaxAccountUrl(nino: String) = s"$serviceUrl/tai/$nino/tax-account/"
 
@@ -86,10 +85,4 @@ trait TaxCodeChangeConnector extends ServicesConfig {
     }
   }
 
-}
-
-object TaxCodeChangeConnector extends TaxCodeChangeConnector {
-  override lazy val serviceUrl = baseUrl("tai")
-
-  override def httpHandler: HttpHandler = HttpHandler
 }
