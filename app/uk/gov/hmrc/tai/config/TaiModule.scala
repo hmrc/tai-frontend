@@ -27,12 +27,6 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors._
 import uk.gov.hmrc.tai.service.journeyCache._
 
-class TaiAuthModule extends AbstractModule {
-  override def configure(): Unit = {
-    bind(classOf[core.AuthConnector]).to(classOf[AuthClientAuthConnector])
-  }
-}
-
 class TaiModule extends Module {
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = Seq(
@@ -41,6 +35,7 @@ class TaiModule extends Module {
     bind[WSHttpProxy].toInstance(WSHttpProxy),
     bind[WSHttp].toInstance(WSHttp),
     // Connectors
+    bind(classOf[core.AuthConnector]).to(classOf[AuthClientAuthConnector]),
     bind[AuditConnector].toInstance(AuditConnector),
     bind[uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector].toInstance(FrontendAuthConnector),
     bind[DelegationConnector].toInstance(FrontEndDelegationConnector),
