@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
-@(viewModel: ConfirmAmountEnteredViewModel, gaSettingsForEditIncome: GoogleAnalyticsSettings
+@(viewModel: ConfirmAmountEnteredViewModel
 )(implicit request: Request[_],
   messages: Messages,
   user: controllers.auth.TaiUser,
@@ -36,7 +36,7 @@
     title = messages("tai.irregular.title"),
     heading = messages("tai.irregular.confirm.mainHeading", viewModel.yearRange),
     showCancel = false,
-    gaSettings = gaSettingsForEditIncome
+    gaSettings = viewModel.gaSettings
 ){
 
     <p>@viewModel.mainText</p>

@@ -68,5 +68,5 @@ class UpdateIncomeCYPlus1Confirm extends TaiViewSpec with MockitoSugar {
   }
 
   val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, employerName, estimatedAmount)
-  override lazy val view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm, GoogleAnalyticsSettings())
+  override lazy val view: Html = views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm)
 }

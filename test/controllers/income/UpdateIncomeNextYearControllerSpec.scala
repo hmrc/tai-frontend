@@ -286,6 +286,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
           val controller = createTestIncomeController()
 
           val newAmount = 123
+          val currentAmount = 1
 
           val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, false, 1, Some(newAmount))
           when(
@@ -294,8 +295,8 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
             Future.successful(serviceResponse)
           )
 
-          val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentID, employerName, newAmount)
-          val expectedView = updateIncomeCYPlus1Confirm(vm, GoogleAnalyticsSettings())
+          val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentID, employerName, currentAmount, newAmount)
+          val expectedView = updateIncomeCYPlus1Confirm(vm)
 
           val result = controller.confirm(employmentID)(fakeRequest)
 
@@ -374,16 +375,6 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
-    }
-  }
-
-  "gaSettings" must {
-    "return a Google Analytics settings with the current and new amount in the dimensions" in {
-      val controller = createTestIncomeController()
-      val expectedDimensions = Some(Map(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome -> "currentAmount=£123;newAmount=£456"))
-      val expected = GoogleAnalyticsSettings(dimensions = expectedDimensions)
-
-      controller.gaSettings(123, 456) mustBe expected
     }
   }
 

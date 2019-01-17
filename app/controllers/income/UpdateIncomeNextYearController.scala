@@ -107,16 +107,6 @@ class UpdateIncomeNextYearController @Inject()(updateNextYearsIncomeService: Upd
           }
   }
 
-  def gaSettings(currentAmount: Int, newAmount: Int): GoogleAnalyticsSettings = {
-    val poundedCurrentAmount = MonetaryUtil.withPoundPrefix(currentAmount)
-    val poundedNewAmount = MonetaryUtil.withPoundPrefix(newAmount)
-
-    val amounts = Map("currentAmount" -> poundedCurrentAmount, "newAmount" -> poundedNewAmount)
-
-    val dimensions: Option[Map[String, String]] = Some(Map(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome -> MapForGoogleAnalytics.format(amounts)))
-    GoogleAnalyticsSettings(dimensions = dimensions)
-  }
-
   def confirm(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
@@ -124,8 +114,8 @@ class UpdateIncomeNextYearController @Inject()(updateNextYearsIncomeService: Upd
           preAction {
             updateNextYearsIncomeService.get(employmentId, user.nino).map {
               case UpdateNextYearsIncomeCacheModel(employmentName, _, _, currentValue, Some(estimatedAmount)) => {
-                val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentId, employmentName, estimatedAmount)
-                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm, gaSettings(currentValue, estimatedAmount)))
+                val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentId, employmentName, currentValue, estimatedAmount)
+                Ok(views.html.incomes.nextYear.updateIncomeCYPlus1Confirm(vm))
               }
               case UpdateNextYearsIncomeCacheModel(_, _, _, _, None) => {
                 throw new RuntimeException("[UpdateIncomeNextYear] Estimated income for next year not found for user.")
