@@ -17,7 +17,7 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.actions.DeceasedActionFilter
+import controllers.actions.ValidatePerson
 import controllers.auth.{AuthAction, AuthActionedTaiUser}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -28,11 +28,11 @@ import play.api.i18n.Messages.Implicits._
 import scala.concurrent.Future
 
 class TestAuthController @Inject()(authenticate: AuthAction,
-                                   filterDeceased: DeceasedActionFilter,
+                                   validatePerson: ValidatePerson,
                                    override implicit val partialRetriever: FormPartialRetriever,
                                    override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
 
-  def authCheckAction: Action[AnyContent] = (authenticate andThen filterDeceased).async {
+  def authCheckAction: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user: AuthActionedTaiUser = request.taiUser
       Future.successful(Ok(views.html.authCheck()))

@@ -48,21 +48,28 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Random
 
-class DeceasedActionFilterSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
+class ValidatePersonSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
 
-  private implicit val hc = HeaderCarrier()
+  implicit val hc = HeaderCarrier()
+  val personService = mock[PersonService]
+  val personNino = new Generator(new Random).nextNino
+  val personDeceased = true
+  val personAlive = !personDeceased
 
+  class Harness(deceased: ValidatePerson) extends Controller {
+    def onPageLoad() = (FakeAuthAction andThen deceased) { request => Ok }
+  }
 
   "DeceasedActionFilter" when {
     "the person is deceased" must {
       "redirect the user to a deceased page " in {
 
         when(personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(Person(personNino, "firstName", "Surname", true, false)))
+          .thenReturn(Future.successful(Person(personNino, "firstName", "Surname", personDeceased, false)))
 
-        val deceasedFilter = new DeceasedActionFilterImpl(personService)
+        val validatePerson = new ValidatePersonImpl(personService)
 
-        val controller = new Harness(deceasedFilter)
+        val controller = new Harness(validatePerson)
         val result = controller.onPageLoad()(fakeRequest)
 
         status(result) mustBe SEE_OTHER
@@ -75,25 +82,29 @@ class DeceasedActionFilterSpec extends PlaySpec with FakeTaiPlayApplication with
       "not redirect the user to a deceased page " in {
 
         when(personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(Person(personNino, "firstName", "Surname", false, false)))
+          .thenReturn(Future.successful(Person(personNino, "firstName", "Surname", personAlive, false)))
 
-        val deceasedFilter = new DeceasedActionFilterImpl(personService)
+        val validatePerson = new ValidatePersonImpl(personService)
 
-        val controller = new Harness(deceasedFilter)
+        val controller = new Harness(validatePerson)
         val result = controller.onPageLoad()(fakeRequest)
 
         status(result) mustBe OK
 
       }
+
+      "redirect to a corrupt page if user has corrupt data " in {
+        when(personService.personDetails(any())(any()))
+          .thenReturn(Future.successful(Person(personNino, "firstName", "Surname", personAlive, hasCorruptData = true)))
+
+        val validatePerson = new ValidatePersonImpl(personService)
+
+        val controller = new Harness(validatePerson)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.ServiceController.gateKeeper().toString)
+      }
     }
   }
-
-  class Harness(deceased: DeceasedActionFilterImpl) extends Controller {
-    def onPageLoad() = (FakeAuthAction andThen deceased) { request => Ok }
-  }
-
-  val personService = mock[PersonService]
-
-  val personNino = new Generator(new Random).nextNino
-
 }

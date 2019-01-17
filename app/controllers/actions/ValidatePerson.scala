@@ -28,8 +28,8 @@ import uk.gov.hmrc.play.HeaderCarrierConverter
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeceasedActionFilterImpl @Inject()(personService: PersonService)
-                                        (implicit ec: ExecutionContext) extends DeceasedActionFilter {
+class ValidatePersonImpl @Inject()(personService: PersonService)
+                           (implicit ec: ExecutionContext) extends ValidatePerson {
 
 
   override protected def filter[A](request: AuthenticatedRequest[A]): Future[Option[Result]] = {
@@ -39,8 +39,11 @@ class DeceasedActionFilterImpl @Inject()(personService: PersonService)
     val person = personService.personDetails(personNino)
 
     person.map(p =>
-      if(p.isDeceased) {
+      if (p.isDeceased) {
         Some(Redirect(routes.DeceasedController.deceased()))
+      }
+      else if (p.hasCorruptData) {
+        Some(Redirect(routes.ServiceController.gateKeeper()))
       } else {
         None
       }
@@ -49,5 +52,5 @@ class DeceasedActionFilterImpl @Inject()(personService: PersonService)
 
 }
 
-@ImplementedBy(classOf[DeceasedActionFilterImpl])
-trait DeceasedActionFilter extends ActionFilter[AuthenticatedRequest]
+@ImplementedBy(classOf[ValidatePersonImpl])
+trait ValidatePerson extends ActionFilter[AuthenticatedRequest]
