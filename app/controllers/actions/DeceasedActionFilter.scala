@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class DeceasedActionFilterImpl @Inject()(personService: PersonService)
-                                        (implicit ec: ExecutionContext) extends ActionFilter[AuthenticatedRequest] {
+                                        (implicit ec: ExecutionContext) extends DeceasedActionFilter {
 
 
   override protected def filter[A](request: AuthenticatedRequest[A]): Future[Option[Result]] = {
