@@ -38,16 +38,11 @@ class ValidatePersonImpl @Inject()(personService: PersonService)
     val personNino = request.taiUser.nino
     val person = personService.personDetails(personNino)
 
-    person.map(p =>
-      if (p.isDeceased) {
-        Some(Redirect(routes.DeceasedController.deceased()))
-      }
-      else if (p.hasCorruptData) {
-        Some(Redirect(routes.ServiceController.gateKeeper()))
-      } else {
-        None
-      }
-    )
+    person map({
+      case p if p.isDeceased => Some(Redirect(routes.DeceasedController.deceased()))
+      case p if p.hasCorruptData => Some(Redirect(routes.ServiceController.gateKeeper()))
+      case _ => None
+    })
   }
 
 }
