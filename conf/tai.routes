@@ -266,3 +266,6 @@ GET         /tax-code-change/what-happens-next                                  
 
 ## Auth error page
 GET         /tax-code-change/unauthorised                                              @controllers.UnauthorisedController.onPageLoad
+
+## Test New Auth
+GET         /test-page                                                                 @controllers.TestAuthController.authCheckAction
