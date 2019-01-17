@@ -18,11 +18,10 @@ package controllers.auth
 
 import builders.RequestBuilder
 import controllers.FakeTaiPlayApplication
-import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.test.Helpers._
 
-class TaiAuthenticationProviderSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
+class TaiAuthenticationProviderSpec extends PlaySpec with FakeTaiPlayApplication {
 
   "TaiAuthenticationProvider" should {
     "call ggwAuthenticationProvider" when {
@@ -65,7 +64,7 @@ class TaiAuthenticationProviderSpec extends PlaySpec with FakeTaiPlayApplication
       }
     }
 
-    "get runtime unused exception for login" when {
+    "get runtime unused exception for login" in {
       val SUT = createSUT
       val result = the[RuntimeException] thrownBy SUT.login
       result.getMessage mustBe "Unused"

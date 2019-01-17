@@ -167,7 +167,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
     "display the appropriate content with a specific company benefit list entry" in {
       val testDoc = Jsoup.parse(views.html.IncomeSourceSummary(modelWithCompanyBenefits).toString)
       testDoc must haveElementAtPathWithText("#companyBenefitTerm1", s"${messages("tai.income.details.benefit.name.announce")} ben1")
-      testDoc must haveElementAtPathWithText("#companyBenefitDescription1 span", s"${messages("tai.income.details.benefit.amount.announce")} £100 .")
+      testDoc must haveElementAtPathWithText("#companyBenefitDescription1 span", s"${messages("tai.income.details.benefit.amount.announce")} £100.")
       testDoc must haveElementAtPathWithText("#companyBenefitDescription1 span", "£100")
       testDoc must haveElementAtPathWithText("#companyBenefitChangeLinkDescription1 a span", s"${messages("tai.updateOrRemove")} ben1")
       testDoc must haveLinkWithUrlWithID("changeCompanyBenefitLink1", "url1")

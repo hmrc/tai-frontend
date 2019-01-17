@@ -64,7 +64,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.employment.income.details.mainHeading.gaTitle",
           TaxYear().start.toString("d MMMM yyyy"),
-          TaxYear().next.end.toString("d MMMM yyyy")))
+          TaxYear().end.toString("d MMMM yyyy")))
       }
 
       "asked for pension details" in {
@@ -81,7 +81,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.pension.income.details.mainHeading.gaTitle",
           TaxYear().start.toString("d MMMM yyyy"),
-          TaxYear().next.end.toString("d MMMM yyyy")))
+          TaxYear().end.toString("d MMMM yyyy")))
       }
     }
 

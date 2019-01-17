@@ -31,7 +31,7 @@ private object AppDependencies {
     "uk.gov.hmrc"  %%  "frontend-bootstrap"           %  "11.3.0",
     "uk.gov.hmrc"  %%  "url-builder"                  %  "2.1.0",
     "uk.gov.hmrc"  %%  "play-partials"                %  "6.3.0",
-    "uk.gov.hmrc"  %%  "csp-client"                   %  "3.1.0",
+    "uk.gov.hmrc"  %%  "csp-client"                   %  "3.2.0-SNAPSHOT",
     "uk.gov.hmrc"  %%  "play-language"                %  "3.4.0",
     "uk.gov.hmrc"  %%  "local-template-renderer"      %  "2.0.0"
   )
@@ -44,9 +44,8 @@ private object AppDependencies {
   object Test {
     def apply() = new TestDependencies {
       override lazy val test = Seq(
-        "org.scalatest"     %%    "scalatest"  %  "2.2.6"  % scope,
-        "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % scope,
-        "uk.gov.hmrc"       %%    "hmrctest"   %  "2.3.0"  % scope,
+        "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % scope,
+        "uk.gov.hmrc"       %%    "hmrctest"   %  "3.3.0"  % scope,
         "org.pegdown"        %    "pegdown"    %  "1.6.0"  % scope,
         "org.jsoup"          %    "jsoup"      %  "1.8.3"  % scope,
         "org.mockito"      % "mockito-all" % "1.9.5" % scope,
@@ -62,9 +61,8 @@ private object AppDependencies {
     def apply() = new TestDependencies {
       override lazy val scope: String = "it"
       override lazy val test = Seq(
-        "uk.gov.hmrc" %% "hmrctest" % "2.3.0" % scope,
-        "org.scalatest" %% "scalatest" % "2.2.6" % scope,
-        "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % scope,
+        "uk.gov.hmrc" %% "hmrctest" % "3.3.0" % scope,
+        "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % scope,
         "org.pegdown" % "pegdown" % "1.6.0" % scope,
         "org.jsoup"          %    "jsoup"      %  "1.8.3"  % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope

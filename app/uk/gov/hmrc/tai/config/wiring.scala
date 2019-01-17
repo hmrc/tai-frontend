@@ -17,7 +17,6 @@
 package uk.gov.hmrc.tai.config
 
 import play.api.Play
-import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.hooks.HttpHooks
 import uk.gov.hmrc.http.{HttpDelete, HttpGet, HttpPost, HttpPut}
 import uk.gov.hmrc.play.audit.http.HttpAuditing

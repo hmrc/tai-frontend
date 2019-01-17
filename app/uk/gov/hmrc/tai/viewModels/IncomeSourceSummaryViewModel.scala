@@ -39,7 +39,7 @@ case class IncomeSourceSummaryViewModel(empId: Int,
                                         displayAddCompanyCarLink: Boolean = true) extends ViewModelHelper {
   def startOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().start)
 
-  def endOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().next.end)
+  def endOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().end)
 }
 
 object IncomeSourceSummaryViewModel {
