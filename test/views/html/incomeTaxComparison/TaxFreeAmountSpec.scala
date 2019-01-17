@@ -77,9 +77,9 @@ class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper{
     }
 
     "display total table" in {
-      doc must haveThWithText(messages("tai.incomeTaxComparison.taxFreeAmount.totalTFA"))
-      doc must haveTdWithText("£3,000")
-      doc must haveTdWithText("£3,300")
+      doc must haveTdWithText(messages("tai.incomeTaxComparison.taxFreeAmount.totalTFA"))
+      doc must haveTdWithText("Current tax year £3,000")
+      doc must haveTdWithText("Next tax year £3,300")
     }
 
     "display no additions details" when {

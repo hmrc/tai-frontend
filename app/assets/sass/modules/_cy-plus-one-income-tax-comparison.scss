@@ -48,7 +48,6 @@
       display: flex;
       justify-content: space-between;
       vertical-align: middle;
-
       @media (min-width: $mobile) {
         display: table-cell;
       }
@@ -57,26 +56,9 @@
         padding-right: 0;
       }
 
-      &.#employerName,.#pensionName {
+      &#employerName,.#pensionName {
         @media(max-width: $mobile){
           font-weight: 700;
-        }
-      }
-
-      &.table-title{
-        font-weight: normal;
-        @media (max-width:$mobile) {
-          font-weight: 700;
-        }
-      }
-
-      &.table-title-mobile{
-        font-weight: 700;
-        text-align: left;
-        padding-right: 1em;
-        display: block;
-        @media (min-width: $mobile) {
-          display: none;
         }
       }
     }
@@ -146,14 +128,6 @@
         }
       }
     }
-
-    //tr > td:last-of-type {
-    //  @media (min-width: $mobile) {
-    //    text-align: right;
-    //    width: 27.5%;
-    //  }
-    //}
-
     .total {
       @media (max-width: $mobile) {
         display: block;
@@ -161,7 +135,6 @@
     }
   }
 }
-
 
 
 .tax-free-amount-dates{
@@ -172,7 +145,6 @@
   font-size: 19px;
 }
 
-
 .table-foot {
   border-bottom: 1px solid #bfc1c3;
   display: flex;
@@ -180,6 +152,7 @@
   justify-content: space-between;
   padding: 1em 0 0.75em;
 }
+
 
 
 
