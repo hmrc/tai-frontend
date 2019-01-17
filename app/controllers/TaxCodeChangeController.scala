@@ -20,9 +20,8 @@ import com.google.inject.Inject
 import controllers.audit.Auditable
 import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
-import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
@@ -31,20 +30,16 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentsWithCarBenefits, YourTaxFreeAmount}
-import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
-import uk.gov.hmrc.urls.Link
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.YourTaxFreeAmount
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
 
 import scala.concurrent.Future
 
 class TaxCodeChangeController @Inject()(personService: PersonService,
-                                        codingComponentService: CodingComponentService,
-                                        employmentService: EmploymentService,
-                                        companyCarService: CompanyCarService,
                                         taxCodeChangeService: TaxCodeChangeService,
                                         taxAccountService: TaxAccountService,
+                                        yourTaxFreeAmountService: YourTaxFreeAmountService,
                                         val auditConnector: AuditConnector,
                                         val delegationConnector: DelegationConnector,
                                         val authConnector: AuthConnector,
@@ -63,12 +58,16 @@ class TaxCodeChangeController @Inject()(personService: PersonService,
           ServiceCheckLite.personDetailsCheck {
             val nino: Nino = Nino(user.getNino)
 
+//            val taxFreeAmountFuture = yourTaxFreeAmountService.taxFreeAmountComparison(nino)
+
             for {
               taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
+//              taxFreeAmountViewModel <- taxFreeAmountFuture
               scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
             } yield {
-              val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
-              Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
+              val taxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
+//              val taxCodeChangeDynamicTextViewModel = TaxCodeChangeDynamicTextViewModel(taxFreeAmountViewModel)
+              Ok(views.html.taxCodeChange.taxCodeComparison(taxCodeChangeViewModel))
             }
           }
   }
@@ -81,9 +80,9 @@ class TaxCodeChangeController @Inject()(personService: PersonService,
             val nino = Nino(user.getNino)
 
             val taxFreeAmountViewModel = if(taxFreeAmountComparisonEnabled) {
-              taxFreeAmountWithPrevious(nino)
+              yourTaxFreeAmountService.taxFreeAmountComparison(nino)
             } else {
-              taxFreeAmount(nino)
+              yourTaxFreeAmountService.taxFreeAmount(nino)
             }
 
             taxFreeAmountViewModel.map(viewModel => {
@@ -100,63 +99,4 @@ class TaxCodeChangeController @Inject()(personService: PersonService,
             Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
           }
   }
-
-  private def taxFreeAmountWithPrevious(nino: Nino)(implicit request: Request[AnyContent]): Future[YourTaxFreeAmountViewModel] = {
-
-    val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
-    val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
-    val taxFreeAmountComparisonFuture = codingComponentService.taxFreeAmountComparison(nino)
-
-    for {
-      employmentNames <- employmentNameFuture
-      taxCodeChange <- taxCodeChangeFuture
-      taxFreeAmountComparison <- taxFreeAmountComparisonFuture
-      currentCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, taxFreeAmountComparison.current)
-      previousCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, taxFreeAmountComparison.previous)
-    } yield {
-      buildTaxFreeAmount(
-        Some(CodingComponentsWithCarBenefits(
-          taxCodeChange.mostRecentPreviousTaxCodeChangeDate,
-          taxFreeAmountComparison.previous,
-          previousCompanyCarBenefits
-        )),
-        CodingComponentsWithCarBenefits(
-          taxCodeChange.mostRecentTaxCodeChangeDate,
-          taxFreeAmountComparison.current,
-          currentCompanyCarBenefits
-        ),
-        employmentNames)
-    }
-  }
-
-  private def taxFreeAmount(nino: Nino)(implicit request: Request[AnyContent]): Future[YourTaxFreeAmountViewModel] = {
-
-    val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
-    val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
-    val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-
-    for {
-      employmentNames <- employmentNameFuture
-      taxCodeChange <- taxCodeChangeFuture
-      currentCodingComponents <- codingComponentsFuture
-      currentCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, currentCodingComponents)
-    } yield {
-      buildTaxFreeAmount(
-        None,
-        CodingComponentsWithCarBenefits(
-          taxCodeChange.mostRecentTaxCodeChangeDate,
-          currentCodingComponents,
-          currentCompanyCarBenefits
-        ),
-        employmentNames)
-    }
-  }
-
-  private def notFoundView(implicit request: Request[_]) = views.html.error_template_noauth(
-    Messages("global.error.pageNotFound404.title"),
-    Messages("tai.errorMessage.heading"),
-    Messages("tai.errorMessage.frontend404", Link.toInternalPage(
-      url = routes.TaxAccountSummaryController.onPageLoad().url,
-      value = Some(Messages("tai.errorMessage.startAgain"))
-    ).toHtml))
 }

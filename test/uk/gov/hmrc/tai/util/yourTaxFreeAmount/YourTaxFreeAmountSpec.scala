@@ -36,16 +36,17 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
   val previousDate = new LocalDate(2017, 12, 12)
   val currentDate = new LocalDate(2018, 6, 5)
 
-  def createYourTaxFreeAmountViewModel(): YourTaxFreeAmountViewModel = {
+  def createYourTaxFreeAmountComparison(): YourTaxFreeAmountComparison = {
 
     val formattedPreviousDate = Dates.formatDate(previousDate)
     val formattedCurrentDate = createFormattedDate(currentDate)
 
-    YourTaxFreeAmountViewModel(
+    val allowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq.empty, Seq.empty)
+
+    YourTaxFreeAmountComparison(
       Some(TaxFreeInfo(formattedPreviousDate, 0, 0)),
       TaxFreeInfo(formattedCurrentDate, 0, 0),
-      Seq.empty,
-      Seq.empty
+      allowancesAndDeductionPairs
     )
   }
 
@@ -55,7 +56,7 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
 
   "buildTaxFreeAmount" should {
     "have the correct date formatting" in {
-      val expected = createYourTaxFreeAmountViewModel()
+      val expected = createYourTaxFreeAmountComparison()
 
       val previous = CodingComponentsWithCarBenefits(previousDate, Seq.empty, Seq.empty)
       val current = CodingComponentsWithCarBenefits(currentDate, Seq.empty, Seq.empty)

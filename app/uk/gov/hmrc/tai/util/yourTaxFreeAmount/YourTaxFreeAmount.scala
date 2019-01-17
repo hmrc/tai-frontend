@@ -28,11 +28,14 @@ import uk.gov.hmrc.time.TaxYearResolver
 
 case class CodingComponentsWithCarBenefits(date: LocalDate, codingComponents: Seq[CodingComponent], companyCarBenefits: Seq[CompanyCarBenefit])
 
+case class YourTaxFreeAmountComparison(previousTaxFreeInfo: Option[TaxFreeInfo], currentTaxFreeInfo: TaxFreeInfo, iabdPairs: AllowancesAndDeductionPairs)
+
 trait YourTaxFreeAmount {
+
+  // TODO: Remove Car Benefit
   def buildTaxFreeAmount(previous: Option[CodingComponentsWithCarBenefits],
-                         current: CodingComponentsWithCarBenefits,
-                         employmentIds: Map[Int, String])
-                        (implicit messages: Messages): YourTaxFreeAmountViewModel = {
+                         current: CodingComponentsWithCarBenefits)
+                        (implicit messages: Messages): YourTaxFreeAmountComparison = {
 
     val taxAccountCalculator: TaxAccountCalculator = new TaxAccountCalculatorImpl
 
@@ -44,22 +47,18 @@ trait YourTaxFreeAmount {
     }
 
     val previousCodingComponents: Seq[CodingComponent] = previous.fold(Seq.empty[CodingComponent])(_.codingComponents)
-    val previousCompanyCarBenefit: Seq[CompanyCarBenefit] = previous.fold(Seq.empty[CompanyCarBenefit])(_.companyCarBenefits)
 
-    val allowancesAndDeductions = AllowancesAndDeductionPairs.fromCodingComponents(previousCodingComponents, current.codingComponents)
-    val allowancesDescription = for (
-      allowance <- allowancesAndDeductions.allowances
-    ) yield CodingComponentPairDescription(allowance, employmentIds, previousCompanyCarBenefit ++ current.companyCarBenefits)
+    val allowancesAndDeductions = buildAllowancesAndDeductionPairs(previousCodingComponents, current.codingComponents)
 
-    val deductionsDescription = for (
-      deduction <- allowancesAndDeductions.deductions
-    ) yield CodingComponentPairDescription(deduction, employmentIds, previousCompanyCarBenefit ++ current.companyCarBenefits)
-
-    YourTaxFreeAmountViewModel(
+    YourTaxFreeAmountComparison(
       previousTaxFreeInfo,
       currentTaxFreeInfo,
-      allowancesDescription,
-      deductionsDescription)
+      allowancesAndDeductions
+    )
+  }
+
+  def buildAllowancesAndDeductionPairs(previous: Seq[CodingComponent], current: Seq[CodingComponent]): AllowancesAndDeductionPairs = {
+    AllowancesAndDeductionPairs.fromCodingComponents(previous, current)
   }
 
   private def extractPreviousTaxFreeInfo(previous: Option[CodingComponentsWithCarBenefits], taxAccountCalculator: TaxAccountCalculator)

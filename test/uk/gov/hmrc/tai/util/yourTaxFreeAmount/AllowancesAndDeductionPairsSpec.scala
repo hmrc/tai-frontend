@@ -38,7 +38,7 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
     "create coding component pairs" when {
       "a single current component type is passed" in {
         val currentCodingComponents = Seq(createCodingComponent(MarriageAllowanceReceived, Some(123), 5885))
-        val pairs = Seq(CodingComponentPair(MarriageAllowanceReceived, Some(123), 0, 5885))
+        val pairs = Seq(CodingComponentPair(MarriageAllowanceReceived, Some(123), None, Some(5885)))
 
         val actual = AllowancesAndDeductionPairs.fromCodingComponents(Seq.empty, currentCodingComponents)
 
@@ -49,7 +49,7 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
         val currentCodingComponents = Seq(createCodingComponent(MarriageAllowanceReceived, Some(123), 2000))
         val previousCodingComponents = Seq(createCodingComponent(MarriageAllowanceReceived, Some(123), 1000))
 
-        val pairs = Seq(CodingComponentPair(MarriageAllowanceReceived, Some(123), 1000, 2000))
+        val pairs = Seq(CodingComponentPair(MarriageAllowanceReceived, Some(123), Some(1000), Some(2000)))
 
         val actual = AllowancesAndDeductionPairs.fromCodingComponents(previousCodingComponents, currentCodingComponents)
 
@@ -60,7 +60,7 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
         val currentCodingComponents = Seq(createCodingComponent(MarriageAllowanceReceived, None, 2000))
         val previousCodingComponents = Seq(createCodingComponent(MarriageAllowanceReceived, None, 1000))
 
-        val pairs = Seq(CodingComponentPair(MarriageAllowanceReceived, None, 1000, 2000))
+        val pairs = Seq(CodingComponentPair(MarriageAllowanceReceived, None, Some(1000), Some(2000)))
 
         val actual = AllowancesAndDeductionPairs.fromCodingComponents(previousCodingComponents, currentCodingComponents)
 
@@ -72,8 +72,8 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
         val previousCodingComponents = Seq(createCodingComponent(JobExpenses, Some(123), 1000))
 
         val pairs = Seq(
-          CodingComponentPair(MarriageAllowanceReceived, Some(123), 0, 2000),
-          CodingComponentPair(JobExpenses, Some(123), 1000, 0)
+          CodingComponentPair(MarriageAllowanceReceived, Some(123), None, Some(2000)),
+          CodingComponentPair(JobExpenses, Some(123), Some(1000), None)
         )
 
         val actual = AllowancesAndDeductionPairs.fromCodingComponents(previousCodingComponents, currentCodingComponents)
@@ -86,8 +86,8 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
         val previousCodingComponents = Seq(createCodingComponent(MarriageAllowanceReceived, Some(456), 1000))
 
         val pairs = Seq(
-          CodingComponentPair(MarriageAllowanceReceived, Some(123), 0, 2000),
-          CodingComponentPair(MarriageAllowanceReceived, Some(456), 1000, 0)
+          CodingComponentPair(MarriageAllowanceReceived, Some(123), None, Some(2000)),
+          CodingComponentPair(MarriageAllowanceReceived, Some(456), Some(1000), None)
         )
 
         val actual = AllowancesAndDeductionPairs.fromCodingComponents(previousCodingComponents, currentCodingComponents)
@@ -106,13 +106,13 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
         )
 
         val allowancePairs = Seq(
-          CodingComponentPair(MarriageAllowanceReceived, Some(123), 0, 5885),
-          CodingComponentPair(JobExpenses, Some(456), 0, 1000)
+          CodingComponentPair(MarriageAllowanceReceived, Some(123), None, Some(5885)),
+          CodingComponentPair(JobExpenses, Some(456), None, Some(1000))
         )
 
         val deductionPairs = Seq(
-          CodingComponentPair(ChildBenefit, Some(123), 0, 5885),
-          CodingComponentPair(OutstandingDebt, Some(456), 0, 1000)
+          CodingComponentPair(ChildBenefit, Some(123), None, Some(5885)),
+          CodingComponentPair(OutstandingDebt, Some(456), None, Some(1000))
         )
 
         val actual = AllowancesAndDeductionPairs.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)
@@ -131,7 +131,7 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
       )
 
       val pairs = Seq(
-        CodingComponentPair(JobExpenses, None, 0, 1000)
+        CodingComponentPair(JobExpenses, None, None, Some(1000))
       )
 
       val actual = AllowancesAndDeductionPairs.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)
@@ -148,7 +148,7 @@ class AllowancesAndDeductionPairsSpec extends PlaySpec {
       )
 
       val pairs = Seq(
-        CodingComponentPair(GiftAidPayments, None, 0, 1000)
+        CodingComponentPair(GiftAidPayments, None, None, Some(1000))
       )
 
       val actual = AllowancesAndDeductionPairs.fromCodingComponents(Seq.empty[CodingComponent], currentCodingComponents)

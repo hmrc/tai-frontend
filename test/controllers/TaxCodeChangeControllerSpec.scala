@@ -77,63 +77,46 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   }
 
   "yourTaxFreeAmount" must {
-    "show 'Your tax-free amount' page with previous benefits" when {
+    "show 'Your tax-free amount' page with comparison" when {
       "taxFreeAmountComparison is enabled and the request has an authorised session" in {
-        val SUT = createSUT(true, companyCarService)
 
-        val previousCodingComponents = Seq(codingComponent1)
-        val currentCodingComponents = Seq(codingComponent2)
-        val taxFreeAmountComparison = TaxFreeAmountComparison(previousCodingComponents, currentCodingComponents)
-        val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
-        val employmentMap = Map.empty[Int, String]
-        val companyCar = Seq.empty[CompanyCarBenefit]
+        val expectedViewModel: YourTaxFreeAmountViewModel =
+          YourTaxFreeAmountViewModel(
+            Some(TaxFreeInfo("previousTaxDate", 0, 0)),
+            TaxFreeInfo("currentTaxDate", 0, 0),
+            Seq.empty,
+            Seq.empty
+          )
 
-        when(codingComponentService.taxFreeAmountComparison(Matchers.eq(nino))(any())).thenReturn(Future.successful(taxFreeAmountComparison))
-        when(companyCarService.companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(previousCodingComponents))(any()))
-          .thenReturn(Future.successful(companyCar))
-        when(companyCarService.companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(currentCodingComponents))(any()))
-          .thenReturn(Future.successful(companyCar))
+        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-        when(employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(employmentMap))
-        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+        val SUT = createSUT(true)
+
+        when(yourTaxFreeAmountService.taxFreeAmountComparison(Matchers.eq(nino))(any(), any()))
+          .thenReturn(Future.successful(expectedViewModel))
 
         val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
-        verify(companyCarService, times(1)).companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(currentCodingComponents))(any())
-        verify(companyCarService, times(1)).companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(previousCodingComponents))(any())
+        result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel)
       }
     }
 
-    "show 'Your tax-free amount' page without previous benefits"when {
+    "show 'Your tax-free amount' page without comparison"when {
       "taxFreeAmountComparison is disabled and the request has a authorised session" in {
-        val companyCarService = mock[CompanyCarService]
+        val expectedViewModel = YourTaxFreeAmountViewModel(None, TaxFreeInfo("currentTaxDate", 0, 0), Seq.empty, Seq.empty)
 
-        val SUT = createSUT(false, companyCarService)
+        val SUT = createSUT(false)
 
-        val currentCodingComponents = Seq(codingComponent2)
-
-        val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
-        val employmentMap = Map.empty[Int, String]
-        val companyCar = Seq.empty[CompanyCarBenefit]
-
-        when(codingComponentService.taxFreeAmountComponents(Matchers.eq(nino), Matchers.eq(TaxYear()))(any()))
-          .thenReturn(Future.successful(currentCodingComponents))
-
-        when(companyCarService.companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(currentCodingComponents))(any()))
-          .thenReturn(Future.successful(companyCar))
-
-        when(employmentService.employmentNames(any(), any())(any())).thenReturn(Future.successful(employmentMap))
-        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+        when(yourTaxFreeAmountService.taxFreeAmount(Matchers.eq(nino))(any(), any()))
+          .thenReturn(Future.successful(expectedViewModel))
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
         val result = SUT.yourTaxFreeAmount()(request)
 
         status(result) mustBe OK
-
-        verify(companyCarService, times(1)).companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(currentCodingComponents))(any())
       }
     }
   }
@@ -161,30 +144,9 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
   private def controller = createSUT()
 
-  trait YourTaxFreeAmountMock {
-    this: YourTaxFreeAmount =>
-    override def buildTaxFreeAmount(unused1: Option[CodingComponentsWithCarBenefits],
-                                    unused2: CodingComponentsWithCarBenefits,
-                                    unused3: Map[Int, String])
-                                   (implicit messages: Messages): YourTaxFreeAmountViewModel = {
-      expectedViewModel
-    }
-  }
-
-  val expectedViewModel: YourTaxFreeAmountViewModel =
-    YourTaxFreeAmountViewModel(
-      Some(TaxFreeInfo("previousTaxDate", 0, 0)),
-      TaxFreeInfo("currentTaxDate", 0, 0),
-      Seq.empty,
-      Seq.empty)
-
   val nino: Nino = new Generator(new Random).nextNino
 
   val giftAmount = 1000
-
-  private val codingComponent1 = CodingComponent(GiftAidPayments, None, giftAmount, "GiftAidPayments description")
-  private val codingComponent2 = CodingComponent(GiftsSharesCharity, None, giftAmount, "GiftsSharesCharity description")
-  val codingComponents = Seq(codingComponent1, codingComponent2)
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
   val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
@@ -192,20 +154,16 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
   val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-  val codingComponentService = mock[CodingComponentService]
-  val companyCarService = mock[CompanyCarService]
-  val employmentService = mock[EmploymentService]
-  val taxAccountService = mock[TaxAccountService]
+  val taxAccountService: TaxAccountService = mock[TaxAccountService]
+  val yourTaxFreeAmountService: YourTaxFreeAmountService = mock[YourTaxFreeAmountService]
 
-  private def createSUT(comparisonEnabled: Boolean = false, companyCarMockService: CompanyCarService = companyCarService) = new SUT(comparisonEnabled, companyCarMockService)
+  private def createSUT(comparisonEnabled: Boolean = false) = new SUT(comparisonEnabled)
 
-  private class SUT(comparisonEnabled: Boolean, companyCarMockService: CompanyCarService) extends TaxCodeChangeController(
+  private class SUT(comparisonEnabled: Boolean) extends TaxCodeChangeController(
     personService,
-    codingComponentService,
-    employmentService,
-    companyCarMockService,
     taxCodeChangeService,
     taxAccountService,
+    yourTaxFreeAmountService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],

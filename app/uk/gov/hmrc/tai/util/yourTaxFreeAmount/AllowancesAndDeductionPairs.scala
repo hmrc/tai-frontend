@@ -21,7 +21,7 @@ import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 
 case class AllowancesAndDeductionPairs(allowances: Seq[CodingComponentPair], deductions: Seq[CodingComponentPair]) {
   def totalAllowances: (BigDecimal, BigDecimal) = {
-    (allowances.map(_.previous).sum, allowances.map(_.current).sum)
+    (allowances.flatMap(_.previous).sum, allowances.flatMap(_.current).sum)
   }
 }
 
@@ -45,8 +45,8 @@ object AllowancesAndDeductionPairs {
   private def findPairs(previous: Seq[CodingComponent], current: Seq[CodingComponent]): Seq[CodingComponentPair] = {
     current.map( addition => {
       previous.find(matchingCodingComponents(_, addition)) match {
-        case Some(previousMatched) => CodingComponentPair(addition.componentType, addition.employmentId, previousMatched.amount, addition.amount)
-        case None => CodingComponentPair(addition.componentType, addition.employmentId, 0, addition.amount)
+        case Some(previousMatched) => CodingComponentPair(addition.componentType, addition.employmentId, Some(previousMatched.amount), Some(addition.amount))
+        case None => CodingComponentPair(addition.componentType, addition.employmentId, None, Some(addition.amount))
       }
     })
   }
@@ -55,7 +55,7 @@ object AllowancesAndDeductionPairs {
     rest.flatMap(addition => {
       pairs.find(matchingCodingComponents(_, addition)) match {
         case Some(_) => None
-        case None => Some(CodingComponentPair(addition.componentType, addition.employmentId, addition.amount, 0))
+        case None => Some(CodingComponentPair(addition.componentType, addition.employmentId, Some(addition.amount), None))
       }
     })
   }
