@@ -25,7 +25,6 @@ import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.auth.core.{AuthConnector, InsufficientConfidenceLevel, UnsupportedAffinityGroup}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.domain.{PersonCorruptDataException, PersonDeceasedException}
 import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -65,28 +64,6 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().toString)
-      }
-    }
-
-    "the person is deceased" must {
-      "redirect the user to a deceased page " in {
-        val authAction = new AuthActionImpl(mock[PersonService], new FakeFailingAuthConnector(new PersonDeceasedException))
-        val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.DeceasedController.deceased().toString)
-      }
-    }
-
-    "the person data is corrupt" must {
-      "redirect the user to a gatekeeper page " in {
-        val authAction = new AuthActionImpl(mock[PersonService], new FakeFailingAuthConnector(new PersonCorruptDataException))
-        val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.ServiceController.gateKeeper().toString)
       }
     }
 
