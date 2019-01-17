@@ -42,15 +42,31 @@ class MonetaryUtilSpec extends PlaySpec {
   }
 
   "withPoundPrefix" must {
-    "return the string representation of the provided MoneyPounds with a pound symbol prefix" when {
-      "the value is zero" in {
-        MonetaryUtil.withPoundPrefix(MoneyPounds(0)) mustBe "£0.00"
+    "using MoneyPounds" when {
+      "return the string representation of the provided MoneyPounds with a pound symbol prefix" when {
+        "the value is zero" in {
+          MonetaryUtil.withPoundPrefix(MoneyPounds(0)) mustBe "£0.00"
+        }
+        "the value is positive" in {
+          MonetaryUtil.withPoundPrefix(MoneyPounds(1000)) mustBe "£1,000.00"
+        }
+        "the value is negative" in {
+          MonetaryUtil.withPoundPrefix(MoneyPounds(-1000)) mustBe "£1,000.00"
+        }
       }
-      "the value is positive" in {
-        MonetaryUtil.withPoundPrefix(MoneyPounds(1000)) mustBe "£1,000.00"
-      }
-      "the value is negative" in {
-        MonetaryUtil.withPoundPrefix(MoneyPounds(-1000)) mustBe "£1,000.00"
+    }
+
+    "using an int" when {
+      "return the string representation of the provided amount with a pound symbol prefix and no decimal places" when {
+        "the value is zero" in {
+          MonetaryUtil.withPoundPrefix(0) mustBe "£0"
+        }
+        "the value is positive" in {
+          MonetaryUtil.withPoundPrefix(1000) mustBe "£1,000"
+        }
+        "the value is negative" in {
+          MonetaryUtil.withPoundPrefix(-1000) mustBe "£1,000"
+        }
       }
     }
   }
