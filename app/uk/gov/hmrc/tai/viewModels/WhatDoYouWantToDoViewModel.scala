@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.viewModels
 
 import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
+import uk.gov.hmrc.tai.util.MapForGoogleAnalytics
 import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
 
 import scala.collection.immutable.ListMap
@@ -42,7 +43,7 @@ case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean,
       GoogleAnalyticsConstants.taiLandingPageCY1Key -> isCyPlusOneEnabled.toString
     )
 
-    Map(GoogleAnalyticsConstants.taiLandingPageInformation -> formatMapForGA(enabledMap))
+    Map(GoogleAnalyticsConstants.taiLandingPageInformation -> MapForGoogleAnalytics.format(enabledMap))
   }
 
   private def taxCodeChangeDimensions: ListMap[String, String] = {
@@ -57,10 +58,6 @@ case class WhatDoYouWantToDoViewModel(isAnyIFormInProgress: Boolean,
       }
       case _ => ListMap(GoogleAnalyticsConstants.taiLandingPageTCCKey -> hasTaxCodeChanged.toString)
     }
-  }
-
-  private def formatMapForGA(map: Map[String, String]): String = {
-    map.mkString(";").replace(" -> ", "=")
   }
 
   private def formatSeqToString(seq: Seq[String]): String = {

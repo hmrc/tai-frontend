@@ -16,19 +16,8 @@
 
 package uk.gov.hmrc.tai.util
 
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
-
-object MonetaryUtil {
-
-  def withPoundPrefixAndSign(moneyPounds: MoneyPounds): String = {
-    val sign = if (moneyPounds.isNegative) encodedMinusSign else ""
-    s"${sign}£${moneyPounds.quantity}"
-  }
-
-  def withPoundPrefix(moneyPounds: MoneyPounds): String = s"£${moneyPounds.quantity}"
-
-  def withPoundPrefix(amount: Int, decimalplaces: Int = 0): String = {
-    withPoundPrefix(MoneyPounds(amount, decimalplaces))
+object MapForGoogleAnalytics {
+  def format(map: Map[String, String]): String = {
+    map.mkString(";").replace(" -> ", "=")
   }
 }
