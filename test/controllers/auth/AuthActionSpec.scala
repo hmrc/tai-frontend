@@ -57,17 +57,6 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
       }
     }
 
-    "the user has an unsupported affinity group" must {
-      "redirect the user to an unauthorised page " in {
-        val authAction = new AuthActionImpl(mock[PersonService], new FakeFailingAuthConnector(new UnsupportedAffinityGroup))
-        val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().toString)
-      }
-    }
-
     "the person is deceased" must {
       "redirect the user to a deceased page " in {
         val authAction = new AuthActionImpl(mock[PersonService], new FakeFailingAuthConnector(new PersonDeceasedException))

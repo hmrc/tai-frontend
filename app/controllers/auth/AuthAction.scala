@@ -81,7 +81,7 @@ class AuthActionImpl @Inject()(personService: PersonService,
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
-    authorised(ConfidenceLevel.L200 and AffinityGroup.Individual)
+    authorised(ConfidenceLevel.L200)
       .retrieve(Retrievals.nino and Retrievals.name and Retrievals.saUtr) {
         case nino ~ name ~ saUtr => {
           val taiUser = AuthActionedTaiUser(name, nino, saUtr)
