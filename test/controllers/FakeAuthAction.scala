@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.util
+package controllers
 
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
+import controllers.auth.{AuthAction, AuthActionedTaiUser, AuthenticatedRequest}
+import play.api.mvc.{Request, Result}
+import uk.gov.hmrc.domain.Generator
 
-object MonetaryUtil {
+import scala.concurrent.Future
+import scala.util.Random
 
-  def withPoundPrefixAndSign(moneyPounds: MoneyPounds): String = {
-    val sign = if (moneyPounds.isNegative) encodedMinusSign else ""
-    s"${sign}£${moneyPounds.quantity}"
-  }
+object FakeAuthAction extends AuthAction {
 
-  def withPoundPrefix(moneyPounds: MoneyPounds): String = s"£${moneyPounds.quantity}"
+  val nino = new Generator(new Random).nextNino
 
-  def withPoundPrefix(amount: Int, decimalplaces: Int = 0): String = {
-    withPoundPrefix(MoneyPounds(amount, decimalplaces))
-  }
+  override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[Result]): Future[Result] =
+    block(AuthenticatedRequest(request, AuthActionedTaiUser("person name", nino.toString(), "utr")))
 }

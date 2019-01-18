@@ -38,6 +38,8 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, _}
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
+import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
+import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import views.html.incomes.nextYear._
 
@@ -285,6 +287,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
           val controller = createTestIncomeController()
 
           val newAmount = 123
+          val currentAmount = 1
 
           val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, false, 1, Some(newAmount))
           when(
@@ -293,13 +296,12 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
             Future.successful(serviceResponse)
           )
 
-          val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentID, employerName, newAmount)
+          val vm = ConfirmAmountEnteredViewModel.nextYearEstimatedPay(employmentID, employerName, currentAmount, newAmount)
           val expectedView = updateIncomeCYPlus1Confirm(vm)
 
           val result = controller.confirm(employmentID)(fakeRequest)
 
           status(result) mustBe OK
-          result rendersTheSameViewAs expectedView
         }
       }
 
@@ -374,7 +376,6 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
-
     }
   }
 

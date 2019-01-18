@@ -9,8 +9,8 @@ object FrontendBuild extends Build with MicroService {
 
   val appName = "tai-frontend"
   override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
-  lazy val plugins : Seq[Plugins] = Seq(play.sbt.PlayScala, SbtWeb)
-  override lazy val playSettings : Seq[Setting[_]] = Seq(
+  lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala, SbtWeb)
+  override lazy val playSettings: Seq[Setting[_]] = Seq(
     dependencyOverrides += "uk.gov.hmrc" %% "play-config" % "4.3.0",
     routesImport ++= Seq(
       "uk.gov.hmrc.domain._",
@@ -33,12 +33,13 @@ private object AppDependencies {
     "uk.gov.hmrc"  %%  "play-partials"                %  "6.3.0",
     "uk.gov.hmrc"  %%  "csp-client"                   %  "3.1.0",
     "uk.gov.hmrc"  %%  "play-language"                %  "3.4.0",
-    "uk.gov.hmrc"  %%  "local-template-renderer"      %  "2.0.0"
+    "uk.gov.hmrc"  %%  "local-template-renderer"      %  "2.0.0",
+    "uk.gov.hmrc"  %% "auth-client" % "2.17.0-play-25"
   )
 
   trait TestDependencies {
     lazy val scope: String = "test"
-    lazy val test : Seq[ModuleID] = Seq.empty
+    lazy val test: Seq[ModuleID] = Seq.empty
   }
 
   object Test {
@@ -64,7 +65,7 @@ private object AppDependencies {
         "uk.gov.hmrc" %% "hmrctest" % "3.3.0" % scope,
         "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % scope,
         "org.pegdown" % "pegdown" % "1.6.0" % scope,
-        "org.jsoup"          %    "jsoup"      %  "1.8.3"  % scope,
+        "org.jsoup" % "jsoup" % "1.8.3" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope
       )
     }.test

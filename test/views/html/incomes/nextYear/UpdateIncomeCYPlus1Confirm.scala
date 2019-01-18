@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.util.DateHelper.toDisplayFormat
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
-
+import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
 class UpdateIncomeCYPlus1Confirm extends TaiViewSpec with MockitoSugar {
 

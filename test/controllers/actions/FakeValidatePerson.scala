@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.util
+package controllers.actions
+import controllers.auth.AuthenticatedRequest
+import play.api.mvc.Result
 
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.constants.TaiConstants.encodedMinusSign
+import scala.concurrent.Future
 
-object MonetaryUtil {
-
-  def withPoundPrefixAndSign(moneyPounds: MoneyPounds): String = {
-    val sign = if (moneyPounds.isNegative) encodedMinusSign else ""
-    s"${sign}£${moneyPounds.quantity}"
-  }
-
-  def withPoundPrefix(moneyPounds: MoneyPounds): String = s"£${moneyPounds.quantity}"
-
-  def withPoundPrefix(amount: Int, decimalplaces: Int = 0): String = {
-    withPoundPrefix(MoneyPounds(amount, decimalplaces))
+object FakeValidatePerson extends ValidatePerson {
+  override protected def filter[A](request: AuthenticatedRequest[A]): Future[Option[Result]] = {
+    Future.successful(None)
   }
 }

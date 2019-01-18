@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
-@(incomeSourceViewModel:IncomeSourceComparisonViewModel)(implicit messages: Messages)
+@(incomeSourceViewModel:IncomeSourceComparisonViewModel, estimatedPayEnabled: Boolean)(implicit messages: Messages)
 
 
 @incomeSummaryHeading = @{
@@ -55,7 +55,9 @@
                 @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))
                 @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
             </th>
-            <th scope="col"></th>
+            @if(estimatedPayEnabled) {
+                <th scope="col"></th>
+            }
         </tr>
         </thead>
 
@@ -66,17 +68,20 @@
                     <th scope="row">@employmentIncomeSourceDetail.name</th>
                     <td class="text--right">@employmentIncomeSourceDetail.amountCY</td>
                     <td class="text--right">@employmentIncomeSourceDetail.amountCYPlusOne</td>
-                    <td width="20%" class="text--right">
-                        <a id="estimated-income-link-@employmentIncomeSourceDetail.empId"
-                           href="/check-income-tax/update-income/next-year/income/@employmentIncomeSourceDetail.empId/start"
-                           data-journey-click='link - click:@gaEventActionString:@messages("tai.incomeTaxComparison.incomeTax.updateEstimated")'
-                        >
-                            @messages("tai.incomeTaxComparison.incomeTax.updateEstimated")
-                            <span class="visuallyhidden">
+
+                    @if(estimatedPayEnabled) {
+                        <td width="20%" class="text--right">
+                            <a id="estimated-income-link-@employmentIncomeSourceDetail.empId"
+                            href="/check-income-tax/update-income/next-year/income/@employmentIncomeSourceDetail.empId/start"
+                            data-journey-click='link - click:@gaEventActionString:@messages("tai.incomeTaxComparison.incomeTax.updateEstimated")'
+                            >
+                                @messages("tai.incomeTaxComparison.incomeTax.updateEstimated")
+                                <span class="visuallyhidden">
                                 @messages("tai.incomeTaxComparison.incomeTax.forEmployer", employmentIncomeSourceDetail.name)
-                            </span>
-                        </a>
-                    </td>
+                                </span>
+                            </a>
+                        </td>
+                    }
                 </tr>
             }
 
@@ -86,17 +91,20 @@
                 <th scope="row">@pensionIncomeSourceDetail.name</th>
                 <td class="text--right">@pensionIncomeSourceDetail.amountCY</td>
                 <td class="text--right">@pensionIncomeSourceDetail.amountCYPlusOne</td>
-                <td width="20%" class="text--right">
-                    <a id="estimated-income-link-@pensionIncomeSourceDetail.empId"
-                       href="/check-income-tax/update-income/next-year/income/@pensionIncomeSourceDetail.empId/start"
-                       data-journey-click='link - click:@gaEventActionString:@messages("tai.incomeTaxComparison.incomeTax.updateEstimated")'
-                    >
-                        @messages("tai.incomeTaxComparison.incomeTax.updateEstimated")
-                        <span class="visuallyhidden">
-                                @messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)
-                        </span>
-                    </a>
-                </td>
+
+                @if(estimatedPayEnabled) {
+                    <td width="20%" class="text--right">
+                        <a id="estimated-income-link-@pensionIncomeSourceDetail.empId"
+                        href="/check-income-tax/update-income/next-year/income/@pensionIncomeSourceDetail.empId/start"
+                        data-journey-click='link - click:@gaEventActionString:@messages("tai.incomeTaxComparison.incomeTax.updateEstimated")'
+                        >
+                            @messages("tai.incomeTaxComparison.incomeTax.updateEstimated")
+                            <span class="visuallyhidden">
+                            @messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)
+                            </span>
+                        </a>
+                    </td>
+                }
             </tr>
             }
         </tbody>
