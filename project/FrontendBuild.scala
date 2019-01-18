@@ -52,7 +52,7 @@ private object AppDependencies {
         "org.mockito" % "mockito-core" % "1.9.0" % scope,
         "com.github.tomakehurst" % "wiremock" % "2.15.0" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
-        "org.scalacheck" %% "scalacheck" % "1.12.6" % scope
+        "org.scalacheck" %% "scalacheck" % "1.13.4" % scope
       )
     }.test
   }

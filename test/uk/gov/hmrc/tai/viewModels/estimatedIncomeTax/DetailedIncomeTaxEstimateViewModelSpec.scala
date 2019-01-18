@@ -32,7 +32,7 @@ import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 import uk.gov.hmrc.tai.viewModels.{HelpLink, Label}
 import uk.gov.hmrc.urls.Link
 
-class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayApplication with BandTypesConstants with I18nSupport {
+class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayApplication with BandTypesConstants with I18nSupport with PropertyChecks {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -147,30 +147,30 @@ class DetailedIncomeTaxEstimateViewModelSpec extends PlaySpec with FakeTaiPlayAp
           rate      <- Gen.chooseNum(0, 100000).map(BigDecimal(_))
         } yield TaxBand(bandType, code, income, tax, lowerBand, upperBand, rate)
 
-//        "return true when the sequence contains HSR1 or HSR2" in {
-//
-//          val gen: Gen[Seq[TaxBand]] = for {
-//            higherBands <- Gen.nonEmptyListOf(higherTaxBandGen)
-//            nonHigherBands <- Gen.listOf(nonHigherTaxBandGen)
-//          } yield higherBands ++ nonHigherBands
-//
-//          forAll(gen) {
-//            taxBands =>
-//              DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(taxBands) mustEqual true
-//          }
-//        }
-//
-//        "return false when the sequence does not contain HSR1 or HSR2" in {
-//
-//          val gen: Gen[Seq[TaxBand]] =
-//            Gen.listOf[TaxBand](nonHigherTaxBandGen)
-//
-//          forAll(gen) {
-//            taxBands =>
-//
-//              DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(taxBands) mustEqual false
-//          }
-//        }
+        "return true when the sequence contains HSR1 or HSR2" in {
+
+          val gen: Gen[Seq[TaxBand]] = for {
+            higherBands <- Gen.nonEmptyListOf(higherTaxBandGen)
+            nonHigherBands <- Gen.listOf(nonHigherTaxBandGen)
+          } yield higherBands ++ nonHigherBands
+
+          forAll(gen) {
+            taxBands =>
+              DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(taxBands) mustEqual true
+          }
+        }
+
+        "return false when the sequence does not contain HSR1 or HSR2" in {
+
+          val gen: Gen[Seq[TaxBand]] =
+            Gen.listOf[TaxBand](nonHigherTaxBandGen)
+
+          forAll(gen) {
+            taxBands =>
+
+              DetailedIncomeTaxEstimateViewModel.containsHRS1orHRS2(taxBands) mustEqual false
+          }
+        }
       }
 
     }
