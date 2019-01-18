@@ -38,7 +38,7 @@ class IncomeSummarySpec extends TaiViewSpec {
     "display employment income summary information" in{
 
       doc(view) must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
-        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYear().next.end.toString("d MMMM YYYY")))}")
+        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYear().end.toString("d MMMM YYYY")))}")
 
       doc(view) must haveThWithText(s"${nonBreakable(messages("tai.NextTaxYear"))} " +
         s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column2",TaxYear().next.start.toString("d MMMM YYYY")))}")
@@ -63,7 +63,7 @@ class IncomeSummarySpec extends TaiViewSpec {
     "display pensions income summary information" in{
 
       doc(view) must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
-        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYear().next.end.toString("d MMMM YYYY")))}")
+        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYear().end.toString("d MMMM YYYY")))}")
 
       doc(view) must haveThWithText(s"${nonBreakable(messages("tai.NextTaxYear"))} " +
         s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column2",TaxYear().next.start.toString("d MMMM YYYY")))}")
@@ -87,7 +87,7 @@ class IncomeSummarySpec extends TaiViewSpec {
     "display combined employment and private pensions income summary information" in{
 
       doc(view) must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
-        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYear().next.end.toString("d MMMM YYYY")))}")
+        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYear().end.toString("d MMMM YYYY")))}")
 
       doc(view) must haveThWithText(s"${nonBreakable(messages("tai.NextTaxYear"))} " +
         s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column2",TaxYear().next.start.toString("d MMMM YYYY")))}")

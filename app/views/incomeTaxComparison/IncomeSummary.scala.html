@@ -49,7 +49,7 @@
             <th scope="col"><span class="visuallyhidden">@messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")</span></th>
             <th id="taxCodeComparisonTableHeaderCol1" scope="col" class="text--right">
                 @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
-                @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().next.end))))
+                @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
             </th>
             <th scope="col" id="taxCodeComparisonTableTableHeaderCol2" scope="col" class="text--right">
                 @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))

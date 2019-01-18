@@ -239,7 +239,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
   val startDate = TaxYear().start
   val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
-  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().next.end)
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
 
 
   val personService: PersonService = mock[PersonService]

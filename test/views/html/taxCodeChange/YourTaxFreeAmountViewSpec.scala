@@ -42,7 +42,7 @@ class YourTaxFreeAmountViewSpec extends TaiViewSpec {
 
     "have h2 heading showing the date period for tax-free amount" in {
       val fromDate = new LocalDate()
-      val toDate = TaxYear().next.end
+      val toDate = TaxYear().end
       val expectedDateRange = ViewModelHelper.dynamicDateRangeHtmlNonBreak(fromDate, toDate)
       val expectedMessage = Messages("taxCode.change.yourTaxFreeAmount.dates", expectedDateRange)
 

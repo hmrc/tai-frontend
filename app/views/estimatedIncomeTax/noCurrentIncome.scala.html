@@ -37,7 +37,7 @@ partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 @taxYearRangeString = @{
     messages("tai.taxYear",
     htmlNonBroken( Dates.formatDate(TaxYear().start) ),
-    htmlNonBroken( Dates.formatDate(TaxYear().next.end) ))
+    htmlNonBroken( Dates.formatDate(TaxYear().end) ))
 }
 
 @header = @{

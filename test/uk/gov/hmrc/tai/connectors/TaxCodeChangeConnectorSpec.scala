@@ -60,7 +60,7 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
 
           val startDate = TaxYear().start
           val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
-          val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYear().next.end)
+          val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYear().end)
 
           val json = Json.obj(
             "data" -> Json.obj(
@@ -80,7 +80,7 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
                 Json.obj(
                   "taxCode" -> "code",
                   "startDate" -> startDate.plusDays(2),
-                  "endDate" -> TaxYear().next.end,
+                  "endDate" -> TaxYear().end,
                   "basisOfOperation" -> "Cumulative",
                   "employerName" -> "Employer 1",
                   "pensionIndicator" -> false,

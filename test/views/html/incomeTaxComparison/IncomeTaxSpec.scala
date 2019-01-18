@@ -83,7 +83,7 @@ class IncomeTaxSpec extends TaiViewSpec {
       "a view model is supplied to the view with appropriate data" in {
 
         doc must haveThWithText(s"${messages("tai.CurrentTaxYear")} ${messages("tai.incomeTaxComparison.incomeTax.column1",
-          TaxYear().next.end.toString("d MMMM"))}")
+          TaxYear().end.toString("d MMMM"))}")
 
         doc must haveThWithText(s"${messages("tai.NextTaxYear")} ${messages("tai.incomeTaxComparison.incomeTax.column2",
           TaxYear().next.start.toString("d MMMM yyyy"))}")

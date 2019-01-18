@@ -95,6 +95,6 @@ class BbsiClosedCheckYourAnswersViewModelSpec extends PlaySpec
     }
   }
 
-  val dateBeforeCurrentTaxYear = TaxYear().start.minusDays(1)
+  val dateBeforeCurrentTaxYear = TaxYear().endPrev
   val dateWithinCurrentTaxYear = TaxYear().start
 }

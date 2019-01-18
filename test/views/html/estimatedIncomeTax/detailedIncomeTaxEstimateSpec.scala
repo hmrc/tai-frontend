@@ -44,7 +44,7 @@ class detailedIncomeTaxEstimateSpec extends TaiViewSpec with BandTypesConstants 
 
       val expectedTaxYearString = Messages("tai.taxYear",
         nonBreakable(Dates.formatDate(TaxYear().start)),
-        nonBreakable(Dates.formatDate(TaxYear().next.end)))
+        nonBreakable(Dates.formatDate(TaxYear().end)))
 
       val accessiblePreHeading = doc.select("""header span[class="visuallyhidden"]""")
       accessiblePreHeading.text mustBe Messages("tai.estimatedIncome.accessiblePreHeading")

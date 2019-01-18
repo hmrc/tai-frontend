@@ -39,7 +39,7 @@ trait YourTaxFreeAmount {
     val previousTaxFreeInfo: Option[TaxFreeInfo] = extractPreviousTaxFreeInfo(previous, taxAccountCalculator)
 
     val currentTaxFreeInfo = {
-      val currentTaxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(current.date, TaxYear().next.end)
+      val currentTaxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(current.date, TaxYear().end)
       TaxFreeInfo(currentTaxCodeDateRange, current.codingComponents, taxAccountCalculator)
     }
 

@@ -529,7 +529,7 @@ class TaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication wi
   val expectedHeader, expectedTitle = Messages("tai.taxFreeAmount.heading.pt1") + " " +
     Messages("tai.taxYear",
       HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
-      HtmlFormatter.htmlNonBroken(TaxYear().next.end.toString("d MMMM yyyy")))
+      HtmlFormatter.htmlNonBroken(TaxYear().end.toString("d MMMM yyyy")))
 
   val employmentNames = Map.empty[Int, String]
   val companyCarBenefits = Seq.empty[CompanyCarBenefit]

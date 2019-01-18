@@ -62,7 +62,7 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlay
 
   "currentTaxYearHeaderHtmlNonBreak" must {
     "return the date in passed format" in {
-      currentTaxYearHeaderHtmlNonBreak mustBe TaxYear().next.end.toString("d MMMM y").replace(" ", "\u00A0")
+      currentTaxYearHeaderHtmlNonBreak mustBe TaxYear().end.toString("d MMMM y").replace(" ", "\u00A0")
     }
   }
 
@@ -95,7 +95,7 @@ class ViewModelHelperSpec extends PlaySpec with ViewModelHelper with FakeTaiPlay
   "dynamicDateRangeHtmlNonBreak " must {
     "given two dates return a formatted string" in {
       val now = new LocalDate()
-      val endOfTaxYear = TaxYear().next.end
+      val endOfTaxYear = TaxYear().end
       val expectedNow = htmlNonBroken(Dates.formatDate(now))
       val expectedEnd = htmlNonBroken(Dates.formatDate(endOfTaxYear))
 

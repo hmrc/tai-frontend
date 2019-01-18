@@ -53,7 +53,7 @@ class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
     }
     "contain summary with text and a hidden text" in {
       doc must haveSummaryWithText(Messages("tai.remove.company.benefit.total.value.whatHappens.link"))
-      doc must haveSpanWithText(Messages("tai.remove.company.benefit.total.value.whatHappens.desc", TaxYear().start.toString("yyyy"),TaxYear().next.end.toString("yyyy"), TaxYear().next.end.toString("d MMMM yyyy")))
+      doc must haveSpanWithText(Messages("tai.remove.company.benefit.total.value.whatHappens.desc", TaxYear().start.toString("yyyy"),TaxYear().end.toString("yyyy"), TaxYear().end.toString("d MMMM yyyy")))
     }
     "contain an input field with pound symbol appended" in {
       doc must haveElementAtPathWithId("input", "totalValue")

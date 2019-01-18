@@ -35,7 +35,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
 
       val currentTaxYearRange = Messages("tai.heading.taxYear.interval",
         HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
-        HtmlFormatter.htmlNonBroken(TaxYear().next.end.toString("d MMMM yyyy")))
+        HtmlFormatter.htmlNonBroken(TaxYear().end.toString("d MMMM yyyy")))
 
       "has header relating to current tax year" in {
         val expectedHeader = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRange
@@ -75,7 +75,7 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
       }
 
       "has correctly formatted lastTaxYearEnd" in {
-        val expectedLastTaxYearEnd = TaxYear().next.end.minusYears(1).toString("d MMMM yyyy")
+        val expectedLastTaxYearEnd = TaxYear().end.minusYears(1).toString("d MMMM yyyy")
         val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, true, nonTaxCodeIncome)
         sut.lastTaxYearEnd mustBe expectedLastTaxYearEnd
       }

@@ -35,7 +35,7 @@ class TaxYearRangeUtilSpec extends PlaySpec with FakeTaiPlayApplication {
     "return the current tax year as a range delimited with the word 'to' " in {
       val expectedTaxYear = messages("tai.taxYear",
         HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
-        HtmlFormatter.htmlNonBroken(TaxYear().next.end.toString("d MMMM yyyy")))
+        HtmlFormatter.htmlNonBroken(TaxYear().end.toString("d MMMM yyyy")))
 
       TaxYearRangeUtil.currentTaxYearRange mustBe expectedTaxYear
     }
@@ -43,7 +43,7 @@ class TaxYearRangeUtilSpec extends PlaySpec with FakeTaiPlayApplication {
     "return the current tax year as a range delimited with the word 'to' formatted on one line " in {
       val expectedTaxYear = HtmlFormatter.htmlNonBroken(messages("tai.taxYear",
         HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
-        HtmlFormatter.htmlNonBroken(TaxYear().next.end.toString("d MMMM yyyy"))))
+        HtmlFormatter.htmlNonBroken(TaxYear().end.toString("d MMMM yyyy"))))
 
       TaxYearRangeUtil.currentTaxYearRangeSingleLine mustBe expectedTaxYear
     }
@@ -51,7 +51,7 @@ class TaxYearRangeUtilSpec extends PlaySpec with FakeTaiPlayApplication {
     "return the current tax year as a range delimited with the word 'and' " in {
       val expectedTaxYear = messages("tai.taxYear.between",
         HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
-        HtmlFormatter.htmlNonBroken(TaxYear().next.end.toString("d MMMM yyyy")))
+        HtmlFormatter.htmlNonBroken(TaxYear().end.toString("d MMMM yyyy")))
 
       TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited mustBe expectedTaxYear
     }
@@ -59,7 +59,7 @@ class TaxYearRangeUtilSpec extends PlaySpec with FakeTaiPlayApplication {
     "return the current tax year as a range delimited with the word 'and' formatted on one line" in {
       val expectedTaxYear = HtmlFormatter.htmlNonBroken(messages("tai.taxYear.between",
         HtmlFormatter.htmlNonBroken(TaxYear().start.toString("d MMMM yyyy")),
-        HtmlFormatter.htmlNonBroken(TaxYear().next.end.toString("d MMMM yyyy"))))
+        HtmlFormatter.htmlNonBroken(TaxYear().end.toString("d MMMM yyyy"))))
 
       TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited mustBe expectedTaxYear
     }
@@ -74,7 +74,7 @@ class TaxYearRangeUtilSpec extends PlaySpec with FakeTaiPlayApplication {
 
     "given two dates return a formatted string" in {
       val now = new LocalDate()
-      val endOfTaxYear = TaxYear().next.end
+      val endOfTaxYear = TaxYear().end
       val expectedNow = HtmlFormatter.htmlNonBroken(Dates.formatDate(now))
       val expectedEnd = HtmlFormatter.htmlNonBroken(Dates.formatDate(endOfTaxYear))
 

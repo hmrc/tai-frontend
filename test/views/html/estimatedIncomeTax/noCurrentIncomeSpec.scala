@@ -30,7 +30,7 @@ class noCurrentIncomeSpec extends TaiViewSpec {
     behave like pageWithCombinedHeader(
       messages("tai.taxYear",
         Dates.formatDate(TaxYear().start).replace(" ", "\u00A0"),
-        Dates.formatDate(TaxYear().next.end).replace(" ", "\u00A0")
+        Dates.formatDate(TaxYear().end).replace(" ", "\u00A0")
       ),
       messages("tai.estimatedIncome.title"),
       Some(messages("tai.estimatedIncome.accessiblePreHeading"))

@@ -46,7 +46,7 @@ class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
       "links to the BBSI end date form page" when {
         "the account is closed before the current tax year" in {
 
-          val date = TaxYear().start.minusDays(1)
+          val date = TaxYear().endPrev
           val formattedDate = date.toString("yyyy-MM-dd")
 
           val viewModel = BbsiClosedCheckYourAnswersViewModel(0, formattedDate, Some(account), Some("123.45"))

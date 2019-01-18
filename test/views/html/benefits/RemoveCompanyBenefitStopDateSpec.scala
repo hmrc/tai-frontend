@@ -62,7 +62,7 @@ class RemoveCompanyBenefitStopDateSpec extends TaiViewSpec{
   private val idBeforeTaxYearEnd = "stopDateChoice-beforetaxyearend"
   private val idOnOrAfterTaxYearEnd= "stopDateChoice-onoraftertaxyearend"
   private val startOfCurrentTaxYear = TaxYear().start.toString("d MMMM yyyy")
-  private val endOfCurrentTaxYear = TaxYear().next.end.toString("d MMMM YYYY")
+  private val endOfCurrentTaxYear = TaxYear().end.toString("d MMMM YYYY")
   private lazy val benefitType = "Expenses"
   private lazy val empName = "EmployerA"
 

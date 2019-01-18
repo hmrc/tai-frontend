@@ -44,7 +44,7 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
 
         doc(potentiallyCeasedView) must haveH2HeadingWithText(
           messages("tai.income.calculation.heading", s"${TaxYear().start.toString(dateFormatPattern)}",
-            s"${TaxYear().next.end.toString(dateFormatPattern)}")
+            s"${TaxYear().end.toString(dateFormatPattern)}")
         )
       }
 
@@ -70,7 +70,7 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
 
         doc(ceasedView) must haveH2HeadingWithText(
           messages("tai.income.calculation.heading", s"${TaxYear().start.toString(dateFormatPattern)}",
-            s"${TaxYear().next.end.toString(dateFormatPattern)}")
+            s"${TaxYear().end.toString(dateFormatPattern)}")
         )
       }
 
@@ -96,7 +96,7 @@ class yourIncomeCalculationSpec extends TaiViewSpec {
 
         doc(liveView) must haveH2HeadingWithText(
           messages("tai.income.calculation.heading", s"${TaxYear().start.toString(dateFormatPattern)}",
-            s"${TaxYear().next.end.toString(dateFormatPattern)}")
+            s"${TaxYear().end.toString(dateFormatPattern)}")
         )
       }
 

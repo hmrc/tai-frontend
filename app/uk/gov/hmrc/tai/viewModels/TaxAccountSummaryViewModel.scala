@@ -65,7 +65,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with TaxAccountFilter 
       viewModelsFromMatchingIncomeSources(ceasedEmploymentTaxCodeIncomes, employments) ++
       viewModelsFromNonMatchingCeasedEmployments(taxCodeIncomes, employments)
 
-    val lastTaxYearEnd = Dates.formatDate(TaxYear().next.end.minusYears(1))
+    val lastTaxYearEnd = Dates.formatDate(TaxYear().prev.end)
 
     TaxAccountSummaryViewModel(
       header,

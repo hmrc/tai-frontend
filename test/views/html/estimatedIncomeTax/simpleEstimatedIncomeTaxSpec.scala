@@ -36,7 +36,7 @@ class simpleEstimatedIncomeTaxSpec extends TaiViewSpec {
       messages(
         "tai.taxYear",
         Dates.formatDate(TaxYear().start).replace(" ", "\u00A0"),
-        Dates.formatDate(TaxYear().next.end).replace(" ", "\u00A0")),
+        Dates.formatDate(TaxYear().end).replace(" ", "\u00A0")),
       messages("tai.estimatedIncome.title"),
       Some(messages("tai.estimatedIncome.accessiblePreHeading")
       )
@@ -58,7 +58,7 @@ class simpleEstimatedIncomeTaxSpec extends TaiViewSpec {
       doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.howYouPay.heading"))
 
       doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.whyEstimate.desc",
-        Dates.formatDate(TaxYear().next.end))).body)
+        Dates.formatDate(TaxYear().end))).body)
 
       doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.howYouPay.desc",
         messages("tai.estimatedIncome.taxCodes.link"))).body)

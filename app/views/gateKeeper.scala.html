@@ -22,7 +22,7 @@
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 @main(
-    title = Messages("tai.gatekeeper.heading", s"${Dates.formatDate(TaxYear().start)}", s"${Dates.formatDate(TaxYear().next.end)}"),
+    title = Messages("tai.gatekeeper.heading", s"${Dates.formatDate(TaxYear().start)}", s"${Dates.formatDate(TaxYear().end)}"),
     articleClasses = Some("full-width"),
     user = Some(user),
     gaCustomTitle = None

@@ -47,7 +47,7 @@ class YourTaxFreeAmountSpec extends PlaySpec with MockitoSugar with FakeTaiPlayA
   }
 
   def createFormattedDate(date: LocalDate): String = {
-    TaxYearRangeUtil.dynamicDateRange(date, TaxYear().next.end)
+    TaxYearRangeUtil.dynamicDateRange(date, TaxYear().end)
   }
 
   "buildTaxFreeAmount" should {
