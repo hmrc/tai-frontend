@@ -16,7 +16,7 @@
 
 package views.html.incomes.nextYear
 
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.DateHelper.toDisplayFormat

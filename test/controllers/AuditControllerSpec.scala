@@ -21,7 +21,7 @@ import mocks.MockTemplateRenderer
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}

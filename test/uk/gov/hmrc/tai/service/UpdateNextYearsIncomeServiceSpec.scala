@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.service
 import org.mockito.Matchers
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.Matchers.{any, eq => Meq}
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier

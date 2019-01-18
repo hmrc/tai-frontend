@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, serverError, urlEqualTo}
 import controllers.FakeTaiPlayApplication
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsArray, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}

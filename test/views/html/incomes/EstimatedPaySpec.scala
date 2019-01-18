@@ -17,7 +17,7 @@
 package views.html.incomes
 
 import org.joda.time.LocalDate
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear

@@ -17,7 +17,7 @@
 package controllers.auth
 
 import builders.UserBuilder
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.play.frontend.auth.Link
 
