@@ -87,3 +87,17 @@ hr {
   -moz-hyphens: none;
   hyphens: none;
 }
+
+h1>span.small{
+  @media(max-width: 668px){
+    font-size: 38px;
+  }
+  @media(max-width: 410px){
+    font-size: 28px;
+  }
+
+  @media(max-width: 212px){
+    font-size: 24px;
+  }
+
+}

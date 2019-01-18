@@ -56,10 +56,27 @@
     }
 
     <header class="page-heading soft--top">
-      <h1 class="heading-xlarge">@{mainHeadingText}</h1>
+      <h1 class="heading-xlarge ">@{carryOver(mainHeadingText)}</h1>
       <p class="heading-secondary"><span class="visuallyhidden">@preHeadingHidden </span>@{preHeadingText}</p>
     </header>
 
  </div>
 </div>
+
+    @carryOver(incomeName: String) ={
+        @if({isNameTooLong(incomeName)}){
+            <span class="carry-over small">@incomeName</span>
+        }else{
+            @incomeName
+        }
+    }
+
+    @isNameTooLong(incomeName: String) = @{
+        incomeName.split("\\s").exists(x => x.length > 12)
+    }
+
+
+
+
+
 
