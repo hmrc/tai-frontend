@@ -35,7 +35,7 @@ trait ViewModelHelper {
   def withPoundPrefix(moneyPounds: MoneyPounds): String = MonetaryUtil.withPoundPrefix(moneyPounds)
 
   def currentTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
-    htmlNonBroken( Dates.formatDate(TaxYear().next.end) )
+    htmlNonBroken( Dates.formatDate(TaxYear().end) )
   }
 
   def nextTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
