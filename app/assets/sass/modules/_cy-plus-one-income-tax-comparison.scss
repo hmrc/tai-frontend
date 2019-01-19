@@ -56,9 +56,20 @@
         padding-right: 0;
       }
 
-      &#employerName,.#pensionName {
-        @media(max-width: $mobile){
+      &.table-title{
+        font-weight: normal;
+        @media (max-width:$mobile) {
           font-weight: 700;
+        }
+      }
+
+      &.table-title-mobile{
+        font-weight: 700;
+        text-align: left;
+        padding-right: 1em;
+        display: block;
+        @media (min-width: $mobile) {
+          display: none;
         }
       }
     }
@@ -78,6 +89,12 @@
 
       @media (min-width: $mobile) {
         display: none;
+      }
+
+      &#employerName{
+        @media (max-width: $mobile) {
+          font-weight: 700;
+        }
       }
     }
 
@@ -124,6 +141,17 @@
           }
           @media (max-width: $mobile-small) {
             font-size: 19px;
+          }
+        }
+
+        &.link-update{
+          @media (min-width: $mobile) {
+            padding: 10px 10px 0 20px;
+            width: 20%;
+          }
+          & a{
+            @media (min-width: $mobile) {
+            }
           }
         }
       }

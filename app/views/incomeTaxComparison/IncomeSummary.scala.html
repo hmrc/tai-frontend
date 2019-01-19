@@ -62,7 +62,7 @@
         @for(employmentIncomeSourceDetail <- incomeSourceViewModel.employmentIncomeSourceDetail) {
 
             <tr>
-                <td scope="row" role="gridcell" >
+                <td scope="row" role="gridcell" class="table-title">
                     <span class="table-heading" aria-hidden="true" id="employerName">
                         @messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")
                     </span>
@@ -85,7 +85,7 @@
                     @employmentIncomeSourceDetail.amountCYPlusOne
                 </td>
 
-                <td class="update-link">
+                <td class="link-update">
                     <a id="estimated-income-link-@employmentIncomeSourceDetail.empId"
                        href="/check-income-tax/update-income/next-year/income/@employmentIncomeSourceDetail.empId/start"
                     >
@@ -103,8 +103,8 @@
             @for(pensionIncomeSourceDetail <- incomeSourceViewModel.pensionIncomeSourceDetail) {
 
                 <tr>
-                    <td scope="row" role="gridcell" >
-                        <span class="table-heading" aria-hidden="true" id="pensionName">
+                    <td scope="row" role="gridcell" class="table-title">
+                        <span class="table-heading" aria-hidden="true" id="employerName">
                         @messages("tai.incomeTaxComparison.taxCodes.table.pensionsReaderText")
                         </span>
                         @pensionIncomeSourceDetail.name
@@ -125,7 +125,7 @@
                         @pensionIncomeSourceDetail.amountCYPlusOne
                     </td>
 
-                    <td class="update-link">
+                    <td class="link-update">
                         <a id="estimated-income-link-@pensionIncomeSourceDetail.empId"
                         href="/check-income-tax/update-income/next-year/income/@pensionIncomeSourceDetail.empId/start"
                         >
