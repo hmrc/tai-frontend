@@ -42,7 +42,7 @@ case class BbsiClosedCheckYourAnswersViewModel(id: Int, closeBankAccountDate: St
 
     if (bankAccountClosedInCurrentTaxYear) {
       confirmationLines :+ CheckYourAnswersConfirmationLine(
-        Messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().toString),
+        Messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().year.toString),
         closeBankAccountInterest
           .map(interest => Money.pounds(BigDecimal(interest)).toString().trim.replace("&pound;", "\u00A3"))
           .getOrElse(Messages("tai.closeBankAccount.closingInterest.notKnown")),
@@ -51,6 +51,6 @@ case class BbsiClosedCheckYourAnswersViewModel(id: Int, closeBankAccountDate: St
     else confirmationLines
   }
 
-  val bankAccountClosedInCurrentTaxYear: Boolean = TaxYear().withinTaxYear(LocalDate.parse(closeBankAccountDate))
+  val bankAccountClosedInCurrentTaxYear: Boolean = TaxYear().within(LocalDate.parse(closeBankAccountDate))
 
 }

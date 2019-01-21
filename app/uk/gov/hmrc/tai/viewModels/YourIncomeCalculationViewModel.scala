@@ -163,7 +163,7 @@ object YourIncomeCalculationViewModel {
   def sameIncomeCalculationMessage(employment: Employment, amount: BigDecimal, amountYearToDate: BigDecimal,
                                    pensionOrEmployment: String, paymentDate: Option[LocalDate])(implicit messages: Messages): Option[String] = {
 
-    val startDate = if (TaxYear().withinTaxYear(employment.startDate)) employment.startDate else TaxYear().start
+    val startDate = if (TaxYear().within(employment.startDate)) employment.startDate else TaxYear().start
 
     if (amount == amountYearToDate) {
       Some(messages(s"tai.income.calculation.rti.$pensionOrEmployment.same", Dates.formatDate(startDate),

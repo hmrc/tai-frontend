@@ -76,7 +76,7 @@ class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
         val viewModel = BbsiClosedCheckYourAnswersViewModel(0, formattedDate, Some(account), Some("123"))
         def view: Html = views.html.incomes.bbsi.close.bank_building_society_check_your_answers(viewModel)
 
-        doc(view) must haveCheckYourAnswersSummaryLine(3, messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().toString))
+        doc(view) must haveCheckYourAnswersSummaryLine(3, messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().year.toString))
         doc(view) must haveCheckYourAnswersSummaryLineAnswer(3, "£123")
         doc(view) must haveCheckYourAnswersSummaryLineChangeLink(3, controllers.income.bbsi.routes.BbsiCloseAccountController.captureClosingInterest(0).url)
       }
@@ -88,7 +88,7 @@ class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
         val viewModel = BbsiClosedCheckYourAnswersViewModel(0, formattedDate, Some(account), None)
         def view: Html = views.html.incomes.bbsi.close.bank_building_society_check_your_answers(viewModel)
 
-        doc(view) must haveCheckYourAnswersSummaryLine(3, messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().toString))
+        doc(view) must haveCheckYourAnswersSummaryLine(3, messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().year.toString))
         doc(view) must haveCheckYourAnswersSummaryLineAnswer(3, messages("tai.closeBankAccount.closingInterest.notKnown"))
         doc(view) must haveCheckYourAnswersSummaryLineChangeLink(3, controllers.income.bbsi.routes.BbsiCloseAccountController.captureClosingInterest(0).url)
       }

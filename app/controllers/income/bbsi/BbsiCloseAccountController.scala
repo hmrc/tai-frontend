@@ -98,7 +98,7 @@ class BbsiCloseAccountController @Inject()(bbsiService: BbsiService,
                   },
                   date => {
                     journeyCacheService.cache(Map(CloseBankAccountDateKey -> date.toString, CloseBankAccountNameKey -> bankName)).map(_ =>
-                      if (TaxYear().withinTaxYear(date)) {
+                      if (TaxYear().within(date)) {
                         Redirect(controllers.income.bbsi.routes.BbsiCloseAccountController.captureClosingInterest(id))
                       } else {
                         Redirect(controllers.income.bbsi.routes.BbsiCloseAccountController.checkYourAnswers(id))

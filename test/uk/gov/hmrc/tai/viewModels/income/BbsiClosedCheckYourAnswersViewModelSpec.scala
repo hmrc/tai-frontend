@@ -68,7 +68,7 @@ class BbsiClosedCheckYourAnswersViewModelSpec extends PlaySpec
           "/check-income-tax/income/bank-building-society-savings/0/close/date")
 
         result.journeyConfirmationLines(applicationMessages)(2) mustBe CheckYourAnswersConfirmationLine(
-          Messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().toString),
+          Messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().year.toString),
           "£123,456",
           "/check-income-tax/income/bank-building-society-savings/0/close/interest")
       }

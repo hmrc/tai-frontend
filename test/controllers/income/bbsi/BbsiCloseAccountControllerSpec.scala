@@ -258,7 +258,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.heading", TaxYear().toString))
+        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.heading", TaxYear().year.toString))
       }
       "the request contains a valid bank account id and we have some saved data in the form" in {
 
@@ -275,7 +275,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.heading", TaxYear().toString))
+        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.heading", TaxYear().year.toString))
       }
     }
 
@@ -387,7 +387,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.heading", TaxYear().toString))
+        doc.title() must include(Messages("tai.closeBankAccount.closingInterest.heading", TaxYear().year.toString))
       }
     }
   }

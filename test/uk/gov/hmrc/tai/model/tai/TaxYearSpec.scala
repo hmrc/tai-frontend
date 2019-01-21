@@ -62,25 +62,25 @@ class TaxYearSpec extends PlaySpec {
       }
     }
 
-    "withinTaxYear" should {
+    "within" should {
 
       "return true when given a date of the start of the current tax year" in {
-        TaxYear().withinTaxYear(TaxYear().start) mustBe true
+        TaxYear().within(TaxYear().start) mustBe true
       }
 
       "return true when given a date after the start of the current tax year but before the end of the tax year" in {
-        TaxYear().withinTaxYear(TaxYear().start.plusDays(1)) mustBe true
+        TaxYear().within(TaxYear().start.plusDays(1)) mustBe true
       }
 
       "return true when given a date on the end of the current tax year" in {
-        TaxYear().withinTaxYear(TaxYear().end) mustBe true
+        TaxYear().within(TaxYear().end) mustBe true
       }
 
       "return false when given a date before the start of the current tax year" in {
-        TaxYear().withinTaxYear(TaxYear().prev.end) mustBe false
+        TaxYear().within(TaxYear().prev.end) mustBe false
       }
       "return false when given a date after the end of the current tax year" in {
-        TaxYear().withinTaxYear(TaxYear().next.start) mustBe false
+        TaxYear().within(TaxYear().next.start) mustBe false
       }
 
     }

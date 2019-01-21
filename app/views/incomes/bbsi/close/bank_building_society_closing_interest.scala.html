@@ -31,13 +31,13 @@
         formForErrorSummary = Some(closingInterestForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.closeBankAccount.closingInterest.heading", TaxYear().toString),
+        mainHeadingText = Messages("tai.closeBankAccount.closingInterest.heading", TaxYear().year.toString),
         preHeadingText = Messages("account.closed")
     )
 }
 
 @main(
-    title = Messages("tai.closeBankAccount.closingInterest.heading", TaxYear().toString),
+    title = Messages("tai.closeBankAccount.closingInterest.heading", TaxYear().year.toString),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
