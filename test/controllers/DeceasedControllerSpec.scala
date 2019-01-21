@@ -51,24 +51,12 @@ class DeceasedControllerSpec extends PlaySpec with FakeTaiPlayApplication with I
     }
   }
 
-  private val nino = AuthBuilder.nino
-
   def createSut = new SUT
 
-  val personService: PersonService = mock[PersonService]
-
   class SUT extends DeceasedController(
-    personService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
     mock[FormPartialRetriever],
     MockTemplateRenderer
-  ) {
-
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-
-    when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
-  }
+  )
 
 }
