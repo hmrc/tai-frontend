@@ -14,14 +14,14 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@()(implicit request: Request[_], user: controllers.auth.AuthActionedTaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.urls.Link
 
 @main(
     title = Messages("tai.deceased.title"),
     articleClasses = Some("full-width"),
-    user = Some(user),
+    authActionedTaiUser = Some(user),
     gaCustomTitle = None
 ){
 
