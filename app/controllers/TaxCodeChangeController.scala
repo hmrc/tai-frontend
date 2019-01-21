@@ -60,21 +60,15 @@ class TaxCodeChangeController @Inject()(personService: PersonService,
     implicit user =>
       implicit person =>
         implicit request =>
-          if (taxCodeChangeEnabled) {
-            ServiceCheckLite.personDetailsCheck {
-              val nino: Nino = Nino(user.getNino)
+          ServiceCheckLite.personDetailsCheck {
+            val nino: Nino = Nino(user.getNino)
 
-              for {
-                taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
-                scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
-              } yield {
-                val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
-                Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
-              }
-            }
-          } else {
-            ServiceCheckLite.personDetailsCheck {
-              Future.successful(NotFound(notFoundView))
+            for {
+              taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
+              scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
+            } yield {
+              val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
+              Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
             }
           }
   }
@@ -83,24 +77,18 @@ class TaxCodeChangeController @Inject()(personService: PersonService,
     implicit user =>
       implicit person =>
         implicit request =>
-          if (taxCodeChangeEnabled) {
-            ServiceCheckLite.personDetailsCheck {
-              val nino = Nino(user.getNino)
+          ServiceCheckLite.personDetailsCheck {
+            val nino = Nino(user.getNino)
 
-              val taxFreeAmountViewModel = if(taxFreeAmountComparisonEnabled) {
-                taxFreeAmountWithPrevious(nino)
-              } else {
-                taxFreeAmount(nino)
-              }
+            val taxFreeAmountViewModel = if(taxFreeAmountComparisonEnabled) {
+              taxFreeAmountWithPrevious(nino)
+            } else {
+              taxFreeAmount(nino)
+            }
 
-              taxFreeAmountViewModel.map(viewModel => {
-                Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
-              })
-            }
-          } else {
-            ServiceCheckLite.personDetailsCheck {
-              Future.successful(NotFound(notFoundView))
-            }
+            taxFreeAmountViewModel.map(viewModel => {
+              Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
+            })
           }
   }
 
@@ -108,15 +96,8 @@ class TaxCodeChangeController @Inject()(personService: PersonService,
     implicit user =>
       implicit person =>
         implicit request =>
-          if (taxCodeChangeEnabled) {
-            ServiceCheckLite.personDetailsCheck {
-              Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
-            }
-          }
-          else {
-            ServiceCheckLite.personDetailsCheck {
-              Future.successful(NotFound(notFoundView))
-            }
+          ServiceCheckLite.personDetailsCheck {
+            Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
           }
   }
 

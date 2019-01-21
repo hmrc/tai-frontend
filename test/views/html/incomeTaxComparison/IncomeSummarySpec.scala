@@ -17,11 +17,11 @@
 package views.html.incomeTaxComparison
 
 import play.twirl.api.Html
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonDetail, IncomeSourceComparisonViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 class IncomeSummarySpec extends TaiViewSpec {
 
@@ -116,12 +116,30 @@ class IncomeSummarySpec extends TaiViewSpec {
     }
 
     "display no content when no CY or CY+1 details are available" in{
+      val viewNoDetails: Html = views.html.incomeTaxComparison.IncomeSummary(IncomeSourceComparisonViewModel(Nil,Nil), showEstimatedPay)
+      val document = doc(viewNoDetails)
+      document mustNot haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment"))
+      document mustNot haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromPrivatePensions"))
+      document mustNot haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions"))
 
-      doc(viewNoDetails) mustNot haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment"))
-      doc(viewNoDetails) mustNot haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromPrivatePensions"))
-      doc(viewNoDetails) mustNot haveH2HeadingWithText(messages("tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions"))
+      document mustNot haveElementWithId("incomeSummaryComparisonTable")
+    }
+  }
 
-      doc(viewNoDetails) mustNot haveElementWithId("incomeSummaryComparisonTable")
+  "not display estimated income link" when {
+    "feature flag is false" in {
+      val noEstimatedPayView: Html = views.html.incomeTaxComparison.IncomeSummary(employmentIncomeSourceComparisonViewModel, hideEstimatedPay)
+      val document = doc(noEstimatedPayView)
+
+      document must haveTdWithText(employerNameHeading + employmentOneIncomeSourceDetail.name)
+      document must haveTdWithText(taxYearEnds + employmentOneIncomeSourceDetail.amountCY)
+      document must haveTdWithText(taxYearStarts + employmentOneIncomeSourceDetail.amountCYPlusOne)
+      document mustNot haveElementWithId(s"estimated-income-link-${employmentOneIncomeSourceDetail.empId}")
+
+      document must haveTdWithText(employerNameHeading +employmentTwoIncomeSourceDetail.name)
+      document must haveTdWithText(taxYearEnds + employmentTwoIncomeSourceDetail.amountCY)
+      document must haveTdWithText(taxYearStarts + employmentTwoIncomeSourceDetail.amountCYPlusOne)
+      document mustNot haveElementWithId(s"estimated-income-link-${employmentTwoIncomeSourceDetail.empId}")
     }
   }
 
@@ -146,11 +164,15 @@ class IncomeSummarySpec extends TaiViewSpec {
 
   private val employmentIncomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(Seq(employmentOneIncomeSourceDetail,employmentTwoIncomeSourceDetail),Nil)
   private val pensionIncomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(Nil,Seq(pensionOneIncomeSourceDetail,pensionTwoIncomeSourceDetail))
-  private val combinedIncomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(Seq(employmentOneIncomeSourceDetail,employmentTwoIncomeSourceDetail)
-                                                                                          ,Seq(pensionOneIncomeSourceDetail,pensionTwoIncomeSourceDetail))
+  private val combinedIncomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(
+    Seq(employmentOneIncomeSourceDetail,employmentTwoIncomeSourceDetail),
+    Seq(pensionOneIncomeSourceDetail,pensionTwoIncomeSourceDetail)
+  )
 
-  override def view: Html = views.html.incomeTaxComparison.IncomeSummary(employmentIncomeSourceComparisonViewModel)
-  def viewPensionsOnly: Html = views.html.incomeTaxComparison.IncomeSummary(pensionIncomeSourceComparisonViewModel)
-  def viewCombined: Html = views.html.incomeTaxComparison.IncomeSummary(combinedIncomeSourceComparisonViewModel)
-  def viewNoDetails: Html = views.html.incomeTaxComparison.IncomeSummary(IncomeSourceComparisonViewModel(Nil,Nil))
+  private val showEstimatedPay = true
+  private val hideEstimatedPay = !showEstimatedPay
+
+  override def view: Html = views.html.incomeTaxComparison.IncomeSummary(employmentIncomeSourceComparisonViewModel, showEstimatedPay)
+  def viewPensionsOnly: Html = views.html.incomeTaxComparison.IncomeSummary(pensionIncomeSourceComparisonViewModel, showEstimatedPay)
+  def viewCombined: Html = views.html.incomeTaxComparison.IncomeSummary(combinedIncomeSourceComparisonViewModel, showEstimatedPay)
 }

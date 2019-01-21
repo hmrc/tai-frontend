@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
-@(incomeSourceViewModel:IncomeSourceComparisonViewModel)(implicit messages: Messages)
+@(incomeSourceViewModel:IncomeSourceComparisonViewModel, estimatedPayEnabled: Boolean)(implicit messages: Messages)
 
 
 @incomeSummaryHeading = @{
@@ -54,7 +54,9 @@
                     @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))
                     @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYearResolver.startOfNextTaxYear))))
                 </th>
-                <th scope="col"></th>
+                @if(estimatedPayEnabled) {
+                    <th scope="col"></th>
+                }
             </tr>
         </thead>
         <tbody>
@@ -84,17 +86,18 @@
                     </span>
                     @employmentIncomeSourceDetail.amountCYPlusOne
                 </td>
-
-                <td class="link-update">
-                    <a id="estimated-income-link-@employmentIncomeSourceDetail.empId"
-                       href="/check-income-tax/update-income/next-year/income/@employmentIncomeSourceDetail.empId/start"
-                    >
-                        @messages("tai.incomeTaxComparison.incomeTax.updateEstimated")
-                        <span class="visuallyhidden">
+                @if(estimatedPayEnabled) {
+                    <td class="link-update">
+                        <a id="estimated-income-link-@employmentIncomeSourceDetail.empId"
+                        href="/check-income-tax/update-income/next-year/income/@employmentIncomeSourceDetail.empId/start"
+                        >
+                            @messages("tai.incomeTaxComparison.incomeTax.updateEstimated")
+                            <span class="visuallyhidden">
                             @messages("tai.incomeTaxComparison.incomeTax.forEmployer", employmentIncomeSourceDetail.name)
-                        </span>
-                    </a>
-                </td>
+                            </span>
+                        </a>
+                    </td>
+                }
             </tr>
 
         }
@@ -124,19 +127,21 @@
                         </span>
                         @pensionIncomeSourceDetail.amountCYPlusOne
                     </td>
-
-                    <td class="link-update">
-                        <a id="estimated-income-link-@pensionIncomeSourceDetail.empId"
-                        href="/check-income-tax/update-income/next-year/income/@pensionIncomeSourceDetail.empId/start"
-                        >
-                            @messages("tai.incomeTaxComparison.incomeTax.updateEstimated")
-                        <span class="visuallyhidden">
-                        @messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)
-                        </span>
-                        </a>
-                    </td>
+                    @if(estimatedPayEnabled) {
+                        <td class="link-update">
+                            <a id="estimated-income-link-@pensionIncomeSourceDetail.empId"
+                            href="/check-income-tax/update-income/next-year/income/@pensionIncomeSourceDetail.empId/start"
+                            >
+                                @messages("tai.incomeTaxComparison.incomeTax.updateEstimated")
+                                <span class="visuallyhidden">
+                                @messages("tai.incomeTaxComparison.incomeTax.forEmployer", pensionIncomeSourceDetail.name)
+                                </span>
+                            </a>
+                        </td>
+                    }
                 </tr>
             }
         </tbody>
+
     </table>
 }
