@@ -265,7 +265,7 @@ GET         /tax-code-change/your-tax-free-amount                               
 GET         /tax-code-change/what-happens-next                                         @controllers.TaxCodeChangeController.whatHappensNext
 
 ## Auth error page
-GET         /tax-code-change/unauthorised                                              @controllers.UnauthorisedController.onPageLoad
+GET         /unauthorised                                                              @controllers.UnauthorisedController.onPageLoad
 
 
 ### Update Income CY + 1
