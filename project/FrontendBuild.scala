@@ -9,8 +9,8 @@ object FrontendBuild extends Build with MicroService {
 
   val appName = "tai-frontend"
   override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
-  lazy val plugins : Seq[Plugins] = Seq(play.sbt.PlayScala, SbtWeb)
-  override lazy val playSettings : Seq[Setting[_]] = Seq(
+  lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala, SbtWeb)
+  override lazy val playSettings: Seq[Setting[_]] = Seq(
     dependencyOverrides += "uk.gov.hmrc" %% "play-config" % "4.3.0",
     routesImport ++= Seq(
       "uk.gov.hmrc.domain._",
@@ -27,29 +27,30 @@ private object AppDependencies {
 
   val compile = Seq(
     filters,
-    "uk.gov.hmrc"  %% "play-conditional-form-mapping" %  "0.2.0",
-    "uk.gov.hmrc"  %%  "frontend-bootstrap"           %  "8.24.0",
-    "uk.gov.hmrc"  %%  "url-builder"                  %  "2.1.0",
-    "uk.gov.hmrc"  %%  "play-partials"                %  "6.1.0",
-    "uk.gov.hmrc"  %%  "csp-client"                   %  "3.1.0",
-    "uk.gov.hmrc"  %%  "play-language"                %  "3.4.0",
-    "uk.gov.hmrc"  %%  "local-template-renderer"      %  "2.0.0"
+    "uk.gov.hmrc" %% "play-conditional-form-mapping" % "0.2.0",
+    "uk.gov.hmrc" %% "frontend-bootstrap" % "8.24.0",
+    "uk.gov.hmrc" %% "url-builder" % "2.1.0",
+    "uk.gov.hmrc" %% "play-partials" % "6.1.0",
+    "uk.gov.hmrc" %% "csp-client" % "3.1.0",
+    "uk.gov.hmrc" %% "play-language" % "3.4.0",
+    "uk.gov.hmrc" %% "local-template-renderer" % "2.0.0",
+    "uk.gov.hmrc" %% "auth-client" % "2.17.0-play-25"
   )
 
   trait TestDependencies {
     lazy val scope: String = "test"
-    lazy val test : Seq[ModuleID] = Seq.empty
+    lazy val test: Seq[ModuleID] = Seq.empty
   }
 
   object Test {
     def apply() = new TestDependencies {
       override lazy val test = Seq(
-        "org.scalatest"     %%    "scalatest"  %  "2.2.6"  % scope,
+        "org.scalatest" %% "scalatest" % "2.2.6" % scope,
         "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % scope,
-        "uk.gov.hmrc"       %%    "hmrctest"   %  "2.3.0"  % scope,
-        "org.pegdown"        %    "pegdown"    %  "1.6.0"  % scope,
-        "org.jsoup"          %    "jsoup"      %  "1.8.3"  % scope,
-        "org.mockito"      % "mockito-all" % "1.9.5" % scope,
+        "uk.gov.hmrc" %% "hmrctest" % "2.3.0" % scope,
+        "org.pegdown" % "pegdown" % "1.6.0" % scope,
+        "org.jsoup" % "jsoup" % "1.8.3" % scope,
+        "org.mockito" % "mockito-all" % "1.9.5" % scope,
         "org.mockito" % "mockito-core" % "1.9.0" % scope,
         "com.github.tomakehurst" % "wiremock" % "2.15.0" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
@@ -66,7 +67,7 @@ private object AppDependencies {
         "org.scalatest" %% "scalatest" % "2.2.6" % scope,
         "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % scope,
         "org.pegdown" % "pegdown" % "1.6.0" % scope,
-        "org.jsoup"          %    "jsoup"      %  "1.8.3"  % scope,
+        "org.jsoup" % "jsoup" % "1.8.3" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope
       )
     }.test

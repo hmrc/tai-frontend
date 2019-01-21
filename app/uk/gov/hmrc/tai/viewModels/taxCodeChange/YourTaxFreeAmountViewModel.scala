@@ -16,38 +16,54 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
-import org.joda.time.LocalDate
-import org.joda.time.format.DateTimeFormat
-import play.api.i18n.Messages
+
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
-import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
-import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
-import uk.gov.hmrc.tai.util.{TaxAccountCalculator, ViewModelHelper}
-import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
-import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
+import uk.gov.hmrc.tai.util.ViewModelHelper
 
-/**
-  * Created by digital032748 on 25/07/18.
-  */
-case class YourTaxFreeAmountViewModel(taxCodeDateRange: String, annualTaxFreeAmount:String, taxFreeAmountSummary: TaxFreeAmountSummaryViewModel){}
+case class YourTaxFreeAmountViewModel(previousTaxFreeInfo: Option[TaxFreeInfo],
+                                      currentTaxFreeInfo: TaxFreeInfo,
+                                      allowances: Seq[CodingComponentPairDescription],
+                                      deductions: Seq[CodingComponentPairDescription]) {
 
-object YourTaxFreeAmountViewModel extends ViewModelHelper with TaxAccountCalculator {
-
-  def apply(p2IssuedDate: LocalDate,
-            codingComponents: Seq[CodingComponent],
-            employmentName: Map[Int, String],
-            companyCarBenefits: Seq[CompanyCarBenefit])
-           (implicit messages: Messages): YourTaxFreeAmountViewModel = {
-
-    val taxCodeDateRange = dynamicDateRangeHtmlNonBreak(p2IssuedDate,
-    TaxYearResolver.endOfCurrentTaxYear)
-    val annualTaxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxFreeAmount(codingComponents), 0))
-    val taxFreeAmountTotal: BigDecimal = taxFreeAmount(codingComponents)
-    val taxFreeAmountSummary = TaxFreeAmountSummaryViewModel(codingComponents, employmentName, companyCarBenefits, taxFreeAmountTotal)
-
-    YourTaxFreeAmountViewModel(taxCodeDateRange, annualTaxFreeAmount, taxFreeAmountSummary)
+  val showPreviousColumn: Boolean = previousTaxFreeInfo.isDefined
+  val columns: Int = {
+    if (previousTaxFreeInfo.isDefined) {
+      3
+    } else {
+      2
+    }
   }
 }
 
+object YourTaxFreeAmountViewModel extends ViewModelHelper {
+  def prettyPrint(value: BigDecimal) : String = {
+    withPoundPrefixAndSign(MoneyPounds(value, 0))
+  }
 
+  def totalPrevious(sequence: Seq[CodingComponentPairDescription]): String = {
+    val total = sequence.map(_.previous).sum
+    prettyPrint(total)
+  }
+
+  def totalCurrent(sequence: Seq[CodingComponentPairDescription]): String = {
+    val total = sequence.map(_.current).sum
+    prettyPrint(total)
+  }
+
+  val additionsTranslationMap: Map[String, String] = {
+    Map(
+      "title" -> "tai.taxFreeAmount.table.additions.caption",
+      "totalTitle" -> "tai.taxFreeAmount.table.additions.total",
+      "noItems" -> "tai.taxFreeAmount.table.additions.noAddition"
+    )
+  }
+
+  val deductionsTranslationMap: Map[String, String] = {
+    Map(
+      "title" -> "tai.taxFreeAmount.table.deductions.caption",
+      "totalTitle" -> "tai.taxFreeAmount.table.deductions.total",
+      "noItems" -> "tai.taxFreeAmount.table.deductions.noDeduction"
+    )
+  }
+}

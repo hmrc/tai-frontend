@@ -35,4 +35,6 @@ object GoogleAnalyticsConstants {
   val taiLandingPageConfirmedKey = "CONFIRMED"
   val taiLandingPageUnconfirmedKey = "UNCONFIRMED"
   val taiLandingPageMismatchValue = "mismatch"
+
+  val taiCYPlusOneEstimatedIncome = "taiCYPlusOneEstimatedIncome"
 }

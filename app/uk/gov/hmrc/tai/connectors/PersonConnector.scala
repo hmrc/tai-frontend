@@ -24,7 +24,7 @@ import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.tai.connectors.responses._
 import uk.gov.hmrc.tai.model.domain.Person
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import scala.concurrent.Future
 
 class PersonConnector @Inject() (httpHandler: HttpHandler) extends ServicesConfig {
