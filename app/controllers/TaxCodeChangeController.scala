@@ -31,14 +31,16 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.YourTaxFreeAmount
-import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
+import uk.gov.hmrc.tai.service.yourTaxFreeAmount.DescribedYourTaxFreeAmountService
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{YourTaxFreeAmount, YourTaxFreeAmountComparison}
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 
 import scala.concurrent.Future
 
 class TaxCodeChangeController @Inject()(personService: PersonService,
                                         taxCodeChangeService: TaxCodeChangeService,
                                         taxAccountService: TaxAccountService,
+                                        describedYourTaxFreeAmountService: DescribedYourTaxFreeAmountService,
                                         yourTaxFreeAmountService: YourTaxFreeAmountService,
                                         val auditConnector: AuditConnector,
                                         val delegationConnector: DelegationConnector,
@@ -80,9 +82,9 @@ class TaxCodeChangeController @Inject()(personService: PersonService,
             val nino = Nino(user.getNino)
 
             val taxFreeAmountViewModel = if(taxFreeAmountComparisonEnabled) {
-              yourTaxFreeAmountService.taxFreeAmountComparison(nino)
+              describedYourTaxFreeAmountService.taxFreeAmountComparison(nino)
             } else {
-              yourTaxFreeAmountService.taxFreeAmount(nino)
+              describedYourTaxFreeAmountService.taxFreeAmount(nino)
             }
 
             taxFreeAmountViewModel.map(viewModel => {

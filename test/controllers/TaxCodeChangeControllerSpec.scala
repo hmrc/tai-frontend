@@ -19,7 +19,7 @@ package controllers
 import builders.{AuthBuilder, RequestBuilder}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
-import org.jsoup.Jsoup
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
@@ -32,26 +32,16 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
-import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity, TaxCodeChange, TaxCodeRecord}
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
+import uk.gov.hmrc.tai.service.yourTaxFreeAmount.DescribedYourTaxFreeAmountService
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxFreeInfo
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 import scala.util.Random
-import org.mockito.Matchers
-import org.mockito.Mockito.{times, verify, when}
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentsWithCarBenefits, TaxFreeInfo, YourTaxFreeAmount}
-import uk.gov.hmrc.tai.viewModels.TaxFreeAmountSummaryViewModel
-import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
-import uk.gov.hmrc.urls.Link
 
 
 class TaxCodeChangeControllerSpec extends PlaySpec
@@ -92,7 +82,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         val SUT = createSUT(true)
 
-        when(yourTaxFreeAmountService.taxFreeAmountComparison(Matchers.eq(nino))(any(), any()))
+        when(describedYourTaxFreeAmountService.taxFreeAmountComparison(Matchers.eq(nino))(any(), any()))
           .thenReturn(Future.successful(expectedViewModel))
 
         val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -109,7 +99,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         val SUT = createSUT(false)
 
-        when(yourTaxFreeAmountService.taxFreeAmount(Matchers.eq(nino))(any(), any()))
+        when(describedYourTaxFreeAmountService.taxFreeAmount(Matchers.eq(nino))(any(), any()))
           .thenReturn(Future.successful(expectedViewModel))
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
@@ -156,6 +146,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val taxAccountService: TaxAccountService = mock[TaxAccountService]
   val yourTaxFreeAmountService: YourTaxFreeAmountService = mock[YourTaxFreeAmountService]
+  val describedYourTaxFreeAmountService: DescribedYourTaxFreeAmountService = mock[DescribedYourTaxFreeAmountService]
 
   private def createSUT(comparisonEnabled: Boolean = false) = new SUT(comparisonEnabled)
 
@@ -163,6 +154,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     personService,
     taxCodeChangeService,
     taxAccountService,
+    describedYourTaxFreeAmountService,
     yourTaxFreeAmountService,
     mock[AuditConnector],
     mock[DelegationConnector],

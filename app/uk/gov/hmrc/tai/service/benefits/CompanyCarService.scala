@@ -40,9 +40,13 @@ class CompanyCarService @Inject() (carConnector: CompanyCarConnector,
 
   def companyCarOnCodingComponents(nino: Nino, codingComponents: Seq[CodingComponent])(implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] = {
     if (codingComponents.exists(_.componentType == CarBenefit))
-      carConnector.companyCarsForCurrentYearEmployments(nino).map(_.filterNot(isCompanyCarDateWithdrawn))
+      companyCars(nino)
     else
       Future.successful(Seq.empty[CompanyCarBenefit])
+  }
+
+  def companyCars(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[CompanyCarBenefit]] = {
+    carConnector.companyCarsForCurrentYearEmployments(nino).map(_.filterNot(isCompanyCarDateWithdrawn))
   }
 
   def isCompanyCarDateWithdrawn(companyCarBenefit: CompanyCarBenefit): Boolean = {

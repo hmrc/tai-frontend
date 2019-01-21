@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.service
 
 import builders.RequestBuilder
 import controllers.FakeTaiPlayApplication
+import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -27,13 +28,10 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
-import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
-import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.duration._
@@ -45,50 +43,36 @@ class YourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar with FakeT
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
   "taxFreeAmountComparison" must {
-    "return a TaxFreeAmountViewModel with a previous and current" in {
-
-      val companyCar = Seq.empty[CompanyCarBenefit]
+    "return a TaxFreeAmountComparison with a previous and current" in {
       val previousCodingComponents = Seq(codingComponent1)
       val currentCodingComponents = Seq(codingComponent2)
       val taxFreeAmountComparison = TaxFreeAmountComparison(previousCodingComponents, currentCodingComponents)
 
-      when(employmentService.employmentNames(Matchers.eq(nino), Matchers.eq(TaxYear()))(any()))
-        .thenReturn(Future.successful(Map.empty[Int, String]))
       when(codingComponentService.taxFreeAmountComparison(Matchers.eq(nino))(any())).thenReturn(Future.successful(taxFreeAmountComparison))
-      when(companyCarService.companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(previousCodingComponents))(any()))
-        .thenReturn(Future.successful(companyCar))
-      when(companyCarService.companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(currentCodingComponents))(any()))
-        .thenReturn(Future.successful(companyCar))
       when(taxCodeChangeService.taxCodeChange(Matchers.eq(nino))(any()))
         .thenReturn(Future.successful(taxCodeChange))
 
-      val expectedViewModel: YourTaxFreeAmountViewModel =
-        YourTaxFreeAmountViewModel(
+      val expectedModel: YourTaxFreeAmountComparison =
+        YourTaxFreeAmountComparison(
           Some(TaxFreeInfo("previousTaxDate", 0, 0)),
           TaxFreeInfo("currentTaxDate", 0, 0),
-          Seq.empty, Seq.empty)
+          AllowancesAndDeductionPairs(Seq.empty, Seq.empty)
+        )
 
       val service = createTestService
       implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
       val result = service.taxFreeAmountComparison(nino)
 
-      Await.result(result, 5.seconds) mustBe expectedViewModel
+      Await.result(result, 5.seconds) mustBe expectedModel
     }
   }
 
   "taxFreeAmount" must {
     "return a TaxFreeAmountViewModel with only current" in {
-      val companyCar = Seq.empty[CompanyCarBenefit]
       val currentCodingComponents = Seq(codingComponent2)
-
-      when(employmentService.employmentNames(Matchers.eq(nino), Matchers.eq(TaxYear()))(any()))
-        .thenReturn(Future.successful(Map.empty[Int, String]))
 
       when(codingComponentService.taxFreeAmountComponents(Matchers.eq(nino), Matchers.eq(TaxYear()))(any()))
         .thenReturn(Future.successful(currentCodingComponents))
-
-      when(companyCarService.companyCarOnCodingComponents(Matchers.eq(nino), Matchers.eq(currentCodingComponents))(any()))
-        .thenReturn(Future.successful(companyCar))
 
       when(taxCodeChangeService.taxCodeChange(Matchers.eq(nino))(any()))
         .thenReturn(Future.successful(taxCodeChange))
@@ -97,21 +81,22 @@ class YourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar with FakeT
       implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
       val result = service.taxFreeAmount(nino)
 
-      val expectedViewModel: YourTaxFreeAmountViewModel =
-        YourTaxFreeAmountViewModel(
+      val expectedModel: YourTaxFreeAmountComparison =
+        YourTaxFreeAmountComparison(
           None,
           TaxFreeInfo("currentTaxDate", 0, 0),
-          Seq.empty, Seq.empty)
+          AllowancesAndDeductionPairs(Seq.empty, Seq.empty)
+        )
 
-      Await.result(result, 5.seconds) mustBe expectedViewModel
+      Await.result(result, 5.seconds) mustBe expectedModel
     }
   }
 
   trait YourTaxFreeAmountMock {
     this: YourTaxFreeAmount =>
-    override def buildTaxFreeAmount(previous: Option[CodingComponentsWithCarBenefits],
-                                    unused2: CodingComponentsWithCarBenefits,
-                                    unused3: Map[Int, String])
+    override def buildTaxFreeAmount(unused1: LocalDate,
+                                    previous: Option[Seq[CodingComponent]],
+                                    unused3: Seq[CodingComponent])
                                    (implicit messages: Messages): YourTaxFreeAmountComparison = {
 
       val previousTaxFreeInfo = previous.map(_ => TaxFreeInfo("previousTaxDate", 0, 0))
@@ -119,7 +104,8 @@ class YourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar with FakeT
       YourTaxFreeAmountComparison(
         previousTaxFreeInfo,
         TaxFreeInfo("currentTaxDate", 0, 0),
-        AllowancesAndDeductionPairs(Seq.empty, Seq.empty))
+        AllowancesAndDeductionPairs(Seq.empty, Seq.empty)
+      )
     }
   }
 
@@ -127,10 +113,8 @@ class YourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar with FakeT
   private val nino: Nino = new Generator(new Random).nextNino
   private def createTestService = new TestService
 
-  private val employmentService: EmploymentService = mock[EmploymentService]
   private val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   private val codingComponentService: CodingComponentService = mock[CodingComponentService]
-  private val companyCarService: CompanyCarService = mock[CompanyCarService]
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
   val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
@@ -141,8 +125,6 @@ class YourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar with FakeT
   private val codingComponent2 = CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description")
 
   private class TestService extends YourTaxFreeAmountService(
-    employmentService: EmploymentService,
     taxCodeChangeService: TaxCodeChangeService,
-    codingComponentService: CodingComponentService,
-    companyCarService: CompanyCarService) with YourTaxFreeAmountMock
+    codingComponentService: CodingComponentService) with YourTaxFreeAmountMock
 }
