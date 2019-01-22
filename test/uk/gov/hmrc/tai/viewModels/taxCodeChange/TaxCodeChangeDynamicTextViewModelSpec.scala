@@ -16,20 +16,24 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
+import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentPairDescription, TaxFreeInfo}
+import uk.gov.hmrc.tai.model.domain.{CarBenefit, JobExpenses, TaxCodeChange}
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 
-class TaxCodeChangeDynamicTextViewModelSpec extends PlaySpec {
+class TaxCodeChangeDynamicTextViewModelSpec extends PlaySpec with MockitoSugar {
 
   private val taxFreeInfo = TaxFreeInfo("12-12-2015", 2000, 1000)
-  private val jobExpensesIncrease: CodingComponentPairDescription = CodingComponentPairDescription("Job Expense from Sainsburys", 50, 100)
-  private val carBenefitIncrease: CodingComponentPairDescription = CodingComponentPairDescription("Car Benefit from TESCO", 1000, 2000)
+  private val jobExpensesIncrease: CodingComponentPair = CodingComponentPair(JobExpenses, Some(2), Some(50), Some(100))
+  private val carBenefitIncrease: CodingComponentPair = CodingComponentPair(CarBenefit, Some(1), Some(1000), Some(2000))
+  private val taxCodeChange: TaxCodeChange = mock[TaxCodeChange]
 
   "TaxCodeChangeDynamicTextViewModel apply method" must {
     "translate a YourTaxFreeAmountViewModel to a seq of dynamic text" in {
-      val taxFreeAmount = YourTaxFreeAmountViewModel(None, taxFreeInfo, Seq(jobExpensesIncrease), Seq(carBenefitIncrease))
+      val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq(jobExpensesIncrease), Seq(carBenefitIncrease))
+      val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
 
-      val model = TaxCodeChangeDynamicTextViewModel(taxFreeAmount)
+      val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
 
       model.dynamicText mustBe Seq(
         "Job Expense from Sainsburys has increased from 50 to 100",
@@ -38,37 +42,41 @@ class TaxCodeChangeDynamicTextViewModelSpec extends PlaySpec {
     }
 
     "translate a allowance increase to a text" in {
-      val taxFreeAmount = YourTaxFreeAmountViewModel(None, taxFreeInfo, Seq(jobExpensesIncrease), Seq.empty)
+      val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq(jobExpensesIncrease), Seq.empty)
+      val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
 
-      val model = TaxCodeChangeDynamicTextViewModel(taxFreeAmount)
+      val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
 
       model.dynamicText mustBe Seq("Job Expense from Sainsburys has increased from 50 to 100")
     }
 
     "translate a allowance decrease to text" in {
-      val jobExpensesDecrease = CodingComponentPairDescription("Job Expense from Sainsburys", 100, 50)
+      val jobExpensesDecrease = CodingComponentPair(JobExpenses, Some(2), Some(100), Some(50))
 
-      val taxFreeAmount = YourTaxFreeAmountViewModel(None, taxFreeInfo, Seq(jobExpensesDecrease), Seq.empty)
+      val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq(jobExpensesDecrease), Seq.empty)
+      val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
 
-      val model = TaxCodeChangeDynamicTextViewModel(taxFreeAmount)
+      val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
 
       model.dynamicText mustBe Seq("Job Expense from Sainsburys has decreased from 100 to 50")
     }
 
     "translate a deduction increase to a text" in {
-      val taxFreeAmount = YourTaxFreeAmountViewModel(None, taxFreeInfo, Seq(carBenefitIncrease), Seq.empty)
+      val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq.empty, Seq(carBenefitIncrease))
+      val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
 
-      val model = TaxCodeChangeDynamicTextViewModel(taxFreeAmount)
+      val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
 
       model.dynamicText mustBe Seq("Car Benefit from TESCO has increased from 1000 to 2000")
     }
 
     "translate a deduction decrease to text" in {
-      val carBenefitDecrease = CodingComponentPairDescription("Car Benefit from TESCO", 2000, 1000)
+      val carBenefitDecrease = CodingComponentPair(CarBenefit, Some(1), Some(2000), Some(1000))
 
-      val taxFreeAmount = YourTaxFreeAmountViewModel(None, taxFreeInfo, Seq(carBenefitDecrease), Seq.empty)
+      val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq.empty, Seq(carBenefitDecrease))
+      val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
 
-      val model = TaxCodeChangeDynamicTextViewModel(taxFreeAmount)
+      val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
 
       model.dynamicText mustBe Seq("Car Benefit from TESCO has decreased from 2000 to 1000")
     }

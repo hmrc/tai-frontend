@@ -24,6 +24,7 @@ import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{HasTaxCodeChanged, TaxCodeChange, TaxCodeMismatch, TaxCodeRecord}
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.YourTaxFreeAmountComparison
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

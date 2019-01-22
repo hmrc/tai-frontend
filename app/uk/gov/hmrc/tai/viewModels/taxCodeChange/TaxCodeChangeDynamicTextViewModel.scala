@@ -16,32 +16,51 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.CodingComponentPairDescription
+import uk.gov.hmrc.tai.model.domain.TaxCodeChange
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentPair, YourTaxFreeAmountComparison}
 
 case class TaxCodeChangeDynamicTextViewModel(dynamicText: Seq[String])
 
 object TaxCodeChangeDynamicTextViewModel {
-  def apply(taxFreeAmountViewModel: YourTaxFreeAmountViewModel): TaxCodeChangeDynamicTextViewModel = {
+  def apply(taxCodeChange: TaxCodeChange, taxFreeAmountComparison: YourTaxFreeAmountComparison): TaxCodeChangeDynamicTextViewModel = {
 
-    val allowancesChange: Seq[String] = translatePairsToDynamicText(taxFreeAmountViewModel.allowances)
-    val deductionsChange: Seq[String] = translatePairsToDynamicText(taxFreeAmountViewModel.deductions)
+    val allowancesChange: Seq[String] = translatePairsToDynamicText(taxFreeAmountComparison.iabdPairs.allowances)
+    val deductionsChange: Seq[String] = translatePairsToDynamicText(taxFreeAmountComparison.iabdPairs.deductions)
 
     val reasons = allowancesChange ++ deductionsChange
 
     TaxCodeChangeDynamicTextViewModel(reasons)
   }
 
-  private def translatePairsToDynamicText(pairs: Seq[CodingComponentPairDescription]): Seq[String] = {
-    pairs.flatMap(translateCodingComponentPair)
+  private def translatePairsToDynamicText(pairs: Seq[CodingComponentPair]): Seq[String] = {
+//    val removedCodingComponentPairs = pairs.filter(pair => pair.previous.isDefined && pair.current.isEmpty)
+//    val addedCodingComponentPairs = pairs.filter(pair => pair.previous.isEmpty && pair.current.isDefined)
+    val changedPairs = pairs.filter(pair => pair.previous.isDefined && pair.current.isDefined)
+
+    val describedChangedPairs = changedPairs.flatMap(translateChangedCodingComponentPair)
+//    val describedAddedPairs = addedCodingComponentPairs.flatMap(translateAddedCodingComponentPair)
+//    val describedRemovedPairs = removedCodingComponentPairs.flatMap(translateRemovedCodingComponentPair)
+
+    describedChangedPairs
   }
 
-  private def translateCodingComponentPair(pair: CodingComponentPairDescription): Option[String] = {
-    if (pair.current > pair.previous) {
-      Some(s"${pair.description} has increased from ${pair.previous} to ${pair.current}")
-    } else if (pair.previous > pair.current) {
-      Some(s"${pair.description} has decreased from ${pair.previous} to ${pair.current}")
-    } else {
-      None
+  private def translateRemovedCodingComponentPair(pair: CodingComponentPair): Option[String] = {
+    None
+  }
+
+  private def translateAddedCodingComponentPair(pair: CodingComponentPair): Option[String] = {
+    None
+  }
+
+  private def translateChangedCodingComponentPair(pair: CodingComponentPair): Option[String] = {
+    val direction: Option[String] = pair match {
+      case CodingComponentPair(_, _, p: Some[BigDecimal], c: Some[BigDecimal]) if c.x > p.x => Some("increased")
+      case CodingComponentPair(_, _, p: Some[BigDecimal], c: Some[BigDecimal]) if c.x < p.x => Some("decreased")
+      case _ => None
     }
+
+    direction.map(d => {
+      s"${pair.componentType} for ${pair.employmentId} has $d from ${pair.previous} to ${pair.current}"
+    })
   }
 }
