@@ -26,6 +26,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
@@ -34,16 +35,17 @@ import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, Perso
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 
-class IncomeTaxComparisonController @Inject()(val personService: PersonService,
+class IncomeTaxComparisonController @Inject()(personService: PersonService,
                                               val auditConnector: AuditConnector,
                                               val delegationConnector: DelegationConnector,
                                               val authConnector: AuthConnector,
-                                              val taxAccountService: TaxAccountService,
-                                              val employmentService: EmploymentService,
-                                              val codingComponentService: CodingComponentService,
+                                              taxAccountService: TaxAccountService,
+                                              employmentService: EmploymentService,
+                                              codingComponentService: CodingComponentService,
                                               override implicit val partialRetriever: FormPartialRetriever,
                                               override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with WithAuthorisedForTaiLite {
+  with WithAuthorisedForTaiLite
+  with FeatureTogglesConfig {
 
   def onPageLoad(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
@@ -98,7 +100,7 @@ class IncomeTaxComparisonController @Inject()(val personService: PersonService,
 
                   val model = IncomeTaxComparisonViewModel(user.getDisplayName, estimatedIncomeTaxComparisonViewModel,
                     taxCodeComparisonModel, taxFreeAmountComparisonModel, employmentViewModel)
-                  Ok(views.html.incomeTaxComparison.Main(model))
+                  Ok(views.html.incomeTaxComparison.Main(model, cyPlus1EstimatedPayEnabled))
                 }
                 case _ => throw new RuntimeException("Not able to fetch income tax comparision details")
               }

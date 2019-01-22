@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.google.inject.Inject
 import uk.gov.hmrc.tai.model.domain.tracking.TrackedForm
 import uk.gov.hmrc.tai.model.domain.tracking.formatter.TrackedFormFormatters
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -24,10 +25,10 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import uk.gov.hmrc.http.HeaderCarrier
 
-trait TrackingConnector extends TrackedFormFormatters{
+class TrackingConnector @Inject() (httpHandler: HttpHandler) extends TrackedFormFormatters with ServicesConfig {
 
-  val serviceUrl: String
-  def httpHandler: HttpHandler
+  lazy val serviceUrl: String = baseUrl("tracking")
+
   private val IdType = "nino"
 
   def trackingUrl(id: String) = s"$serviceUrl/tracking-data/user/$IdType/$id"
@@ -38,10 +39,3 @@ trait TrackingConnector extends TrackedFormFormatters{
   }
 
 }
-// $COVERAGE-OFF$
-object TrackingConnector extends TrackingConnector with ServicesConfig {
-  override val serviceUrl = baseUrl("tracking")
-  override def httpHandler: HttpHandler = HttpHandler
-
-}
-// $COVERAGE-ON$

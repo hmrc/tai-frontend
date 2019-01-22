@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import com.google.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
@@ -25,35 +26,33 @@ import uk.gov.hmrc.tai.model.TaxYear
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait EmploymentService {
-
-  def connector: EmploymentsConnector
+class EmploymentService @Inject() (employmentsConnector: EmploymentsConnector) {
 
   def employments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
-    connector.employments(nino, year)
+    employmentsConnector.employments(nino, year)
   }
 
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
-    connector.ceasedEmployments(nino, year)
+    employmentsConnector.ceasedEmployments(nino, year)
   }
 
   def employment(nino: Nino, id: Int)(implicit hc: HeaderCarrier): Future[Option[Employment]] = {
-    connector.employment(nino, id.toString)
+    employmentsConnector.employment(nino, id.toString)
   }
 
   def endEmployment(nino: Nino, id: Int, endEmploymentData: EndEmployment)(implicit hc: HeaderCarrier): Future[String] = {
-    connector.endEmployment(nino, id, endEmploymentData)
+    employmentsConnector.endEmployment(nino, id, endEmploymentData)
   }
 
   def addEmployment(nino: Nino, employment: AddEmployment)(implicit hc:HeaderCarrier): Future[String] = {
-    connector.addEmployment(nino, employment) map {
+    employmentsConnector.addEmployment(nino, employment) map {
       case Some(envId) => envId
       case _ => throw new RuntimeException(s"No envelope id was generated when adding the new employment for ${nino.nino}")
     }
   }
 
   def incorrectEmployment(nino: Nino, id: Int, incorrectEmployment: IncorrectIncome)(implicit hc: HeaderCarrier): Future[String] = {
-    connector.incorrectEmployment(nino, id, incorrectEmployment) map {
+    employmentsConnector.incorrectEmployment(nino, id, incorrectEmployment) map {
       case Some(envId) => envId
       case _ => throw new RuntimeException(s"No envelope id was generated when sending incorrect employment details for ${nino.nino}")
     }
@@ -67,9 +66,3 @@ trait EmploymentService {
      }
   }
 }
-// $COVERAGE-OFF$
-object EmploymentService extends EmploymentService{
-  override lazy val connector: EmploymentsConnector = EmploymentsConnector
-}
-// $COVERAGE-ON$
-

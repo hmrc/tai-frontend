@@ -18,7 +18,7 @@ package controllers.i18n
 
 import builders.{AuthBuilder, RequestBuilder}
 import controllers.FakeTaiPlayApplication
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
+import mocks.MockTemplateRenderer
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
@@ -28,11 +28,10 @@ import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.service.PersonService
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 import scala.util.Random
 
 class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with MockitoSugar {
@@ -93,13 +92,16 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
   }
 
   private val nino = new Generator(new Random).nextNino
+  val personService: PersonService = mock[PersonService]
 
-  private class SUT(welshEnabled: Boolean = true) extends TaiLanguageController {
-    override val personService: PersonService = mock[PersonService]
-    override implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
-    override implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
-    override val authConnector: AuthConnector = mock[AuthConnector]
-    override val delegationConnector: DelegationConnector = mock[DelegationConnector]
+  private class SUT(welshEnabled: Boolean = true) extends TaiLanguageController(
+    personService,
+    mock[DelegationConnector],
+    mock[AuthConnector],
+    mock[FormPartialRetriever],
+    MockTemplateRenderer
+  ) {
+
     override val isWelshEnabled = welshEnabled
 
     val authority = AuthBuilder.createFakeAuthData

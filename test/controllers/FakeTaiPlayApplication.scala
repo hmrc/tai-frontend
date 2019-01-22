@@ -21,6 +21,7 @@ import org.scalatest.concurrent.PatienceConfiguration
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.tai.model.domain.Person
 
@@ -53,5 +54,5 @@ trait FakeTaiPlayApplication extends OneServerPerSuite with PatienceConfiguratio
     .setLevel(ch.qos.logback.classic.Level.WARN)
 
   def fakePerson(nino:Nino) = Person(nino, "firstname", "surname", false, false)
-
+  val fakeRequest = FakeRequest("GET", "/")
 }

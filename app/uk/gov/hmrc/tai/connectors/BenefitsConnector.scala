@@ -16,19 +16,19 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.google.inject.Inject
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.connectors.EmploymentsConnector.baseUrl
+import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, EndedCompanyBenefit}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait BenefitsConnector {
+class BenefitsConnector @Inject() (httpHandler: HttpHandler) extends ServicesConfig {
 
-  val serviceUrl: String
-  def httpHandler: HttpHandler
+  val serviceUrl: String = baseUrl("tai")
 
   def benefitsUrl(nino: String, taxYear: Int): String = s"$serviceUrl/tai/$nino/tax-account/$taxYear/benefits"
   def endedCompanyBenefitUrl (nino: String, employmentId: Int) = s"$serviceUrl/tai/$nino/tax-account/tax-component/employments/$employmentId/benefits/ended-benefit"
@@ -52,9 +52,3 @@ trait BenefitsConnector {
   }
 
 }
-// $COVERAGE-OFF$
-object BenefitsConnector extends BenefitsConnector {
-  override lazy val serviceUrl: String = baseUrl("tai")
-  override def httpHandler: HttpHandler = HttpHandler
-}
-// $COVERAGE-ON$

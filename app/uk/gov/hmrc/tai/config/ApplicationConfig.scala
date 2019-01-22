@@ -98,7 +98,9 @@ trait FeatureTogglesConfig extends ServicesConfig {
   val cyPlusOneEnabled = configuration.getBoolean("tai.cyPlusOne.enabled").getOrElse(false)
   val welshLanguageEnabled =  configuration.getBoolean("tai.feature.welshLanguage.enabled").getOrElse(false)
   val companyCarForceRedirectEnabled = configuration.getBoolean("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
-  val taxCodeChangeEnabled = configuration.getBoolean("tai.taxCodeChange.enabled").getOrElse(false)
+  val taxFreeAmountComparisonEnabled = configuration.getBoolean("tai.taxFreeAmountComparison.enabled").getOrElse(false)
+  val cyPlus1EstimatedPayEnabled = configuration.getBoolean("tai.cyPlus1EstimatedPay.enabled").getOrElse(false)
+
 }
 
 object FeatureTogglesConfig extends FeatureTogglesConfig

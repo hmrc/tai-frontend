@@ -52,10 +52,10 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
     "display the income details page" when {
       "asked for employment details" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(sut.benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
 
         val result = sut.onPageLoad(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -69,10 +69,10 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
 
       "asked for pension details" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
-        when(sut.benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
 
         val result = sut.onPageLoad(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -88,9 +88,9 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
     "throw error" when {
       "failed to read tax code incomes" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiTaxAccountFailureResponse("FAILED")))
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
         val result = sut.onPageLoad(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -99,9 +99,9 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
 
       "failed to read employment details" in {
         val sut = createSUT
-        when(sut.taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(sut.employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.onPageLoad(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -129,15 +129,18 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
   def createSUT = new SUT
 
   val personService: PersonService = mock[PersonService]
+  val benefitsService = mock[BenefitsService]
+  val employmentService = mock[EmploymentService]
+  val taxAccountService = mock[TaxAccountService]
 
   class SUT extends IncomeSourceSummaryController(
     personService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],
-    mock[TaxAccountService],
-    mock[EmploymentService],
-    mock[BenefitsService],
+    taxAccountService,
+    employmentService,
+    benefitsService,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {

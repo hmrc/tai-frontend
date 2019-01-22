@@ -16,21 +16,18 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
-import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import play.api.test.Helpers._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.model.domain.Person
-import uk.gov.hmrc.tai.service.{AuditService, PersonService}
+import uk.gov.hmrc.tai.service.AuditService
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
 
@@ -38,40 +35,35 @@ class AuditControllerSpec extends PlaySpec with FakeTaiPlayApplication with Mock
     "send specific audit event and redirect" when {
       "triggered from any page" which {
         "redirects to appropriate url " in {
-          val sut = createSut
-          when(sut.auditService.sendAuditEventAndGetRedirectUri(any(), any())(any(), any())).thenReturn(Future.successful(redirectUri))
+          val testAuditController = new TestAuditController
 
-          val result = Await.result(sut.auditLinksToIForm("any-iform")(RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" ->
-            redirectUri)), 5.seconds)
+          val result = testAuditController.auditLinksToIForm("any-iform")(RequestBuilder.buildFakeRequestWithAuth("GET")
+            .withHeaders("Referer" ->
+              redirectUri))
 
-          result.header.status mustBe 303
-          verify(sut.auditService, times(1)).sendAuditEventAndGetRedirectUri(Matchers.eq(Nino(nino)),
-            Matchers.eq("any-iform"))(any(), any())
+          status(result) mustBe SEE_OTHER
+          verify(auditService, times(1))
+            .sendAuditEventAndGetRedirectUri(any(), any())(any(), any())
+          redirectLocation(result) mustEqual Some(redirectUri)
         }
       }
     }
   }
 
-  private val nino = AuthBuilder.nino.nino
-  private val person = Person(Nino(nino), "firstname", "surname", false, false)
   private val redirectUri = "redirectUri"
 
-  def createSut = new SUT
+  val auditService = mock[AuditService]
 
-  val personService: PersonService = mock[PersonService]
-
-  class SUT extends AuditController(
-    personService,
-    mock[AuditService],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+  class TestAuditController extends AuditController(
+    auditService,
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(person))
-
-    when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
+    when(auditService.sendAuditEventAndGetRedirectUri(any(), any())(any(), any()))
+      .thenReturn(Future.successful(redirectUri))
   }
 
 }

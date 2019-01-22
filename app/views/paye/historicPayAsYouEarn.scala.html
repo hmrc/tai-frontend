@@ -23,7 +23,7 @@
 @import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
 
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, noOfPreviousYearsToShow: Int, taxCodeChangeEnabled: Boolean)(implicit request: Request[_], user: controllers.auth.TaiUser,
+@(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, noOfPreviousYearsToShow: Int)(implicit request: Request[_], user: controllers.auth.TaiUser,
 messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your Pay As You Earn Income Tax"}
@@ -136,6 +136,14 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
                     <p class="flush--top">
                         <span class="heading-36 faded-text-dark">@withPoundPrefix(MoneyPounds(employment.taxablePayYTD))</span>
                     </p>
+
+                    @if(viewModel.showTaxCodeDescriptionLink) {
+                        @Link.toInternalPage(
+                            url=routes.YourTaxCodeController.prevTaxCodes(viewModel.taxYear).toString(),
+                            value=Some(messages("tai.taxCode.description.link")),
+                            id=Some("taxCodeDescription")
+                        ).toHtml
+                    }
 
                     <p>
                         @employment.payrollNumber.map{ payrollNumber =>

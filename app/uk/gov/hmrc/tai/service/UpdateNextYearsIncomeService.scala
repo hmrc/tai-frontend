@@ -16,25 +16,24 @@
 
 package uk.gov.hmrc.tai.service
 
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 import uk.gov.hmrc.tai.connectors.responses.TaiResponse
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
 import uk.gov.hmrc.tai.model.domain.PensionIncome
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper.convertCurrencyToInt
+import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
 
 import scala.concurrent.Future
-import scala.util.Try
 
-class UpdateNextYearsIncomeService {
-
-  lazy val journeyCacheService: JourneyCacheService = JourneyCacheService(UpdateNextYearsIncomeConstants.JOURNEY_KEY)
-  lazy val employmentService: EmploymentService = EmploymentService
-  lazy val taxAccountService: TaxAccountService = TaxAccountService
+class UpdateNextYearsIncomeService @Inject()(@Named("Update Next Years Income") journeyCacheService: JourneyCacheService,
+                                             employmentService: EmploymentService,
+                                             taxAccountService: TaxAccountService) {
 
   def reset(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     journeyCacheService.flush()

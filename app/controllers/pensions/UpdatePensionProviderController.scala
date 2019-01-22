@@ -16,8 +16,10 @@
 
 package controllers.pensions
 
+import com.google.inject.Inject
+import com.google.inject.name.Named
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
-import controllers.{AuthenticationConnectors, ServiceCheckLite, TaiBaseController}
+import controllers.{ServiceCheckLite, TaiBaseController}
 import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
@@ -26,16 +28,18 @@ import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.pensions.{UpdateRemovePensionForm, WhatDoYouWantToTellUsForm}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.{IncorrectIncome, IncorrectPensionProvider, PensionIncome}
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
-import uk.gov.hmrc.tai.service.{JourneyCacheService, PensionProviderService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.model.domain.{IncorrectPensionProvider, PensionIncome}
+import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.pensions.PensionProviderViewModel
@@ -44,21 +48,20 @@ import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersV
 import scala.Function.tupled
 import scala.concurrent.Future
 
-trait UpdatePensionProviderController extends TaiBaseController
+class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountService,
+                                                pensionProviderService: PensionProviderService,
+                                                auditService: AuditService,
+                                                personService: PersonService,
+                                                val delegationConnector: DelegationConnector,
+                                                val authConnector: AuthConnector,
+                                                @Named("Update Pension Provider") journeyCacheService: JourneyCacheService,
+                                                @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
+                                                override implicit val partialRetriever: FormPartialRetriever,
+                                                override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with JourneyCacheConstants
   with FormValuesConstants {
-
-  def personService: PersonService
-
-  def taxAccountService: TaxAccountService
-
-  def journeyCacheService: JourneyCacheService
-
-  def successfulJourneyCacheService: JourneyCacheService
-
-  def pensionProviderService: PensionProviderService
 
   def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
     Constraint[String]((textContent: String) => textContent match {
@@ -129,11 +132,11 @@ trait UpdatePensionProviderController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          for{
+          for {
             (mandatoryValues, optionalValues) <- journeyCacheService.collectedValues(Seq(UpdatePensionProvider_NameKey), Seq(UpdatePensionProvider_DetailsKey))
-          }yield {
-             Ok(views.html.pensions.update.whatDoYouWantToTellUs(mandatoryValues(0),
-               WhatDoYouWantToTellUsForm.form.fill(optionalValues(0).getOrElse(""))))
+          } yield {
+            Ok(views.html.pensions.update.whatDoYouWantToTellUs(mandatoryValues(0),
+              WhatDoYouWantToTellUsForm.form.fill(optionalValues(0).getOrElse(""))))
           }
         }
   }
@@ -159,10 +162,10 @@ trait UpdatePensionProviderController extends TaiBaseController
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          for{
+          for {
             pensionId <- journeyCacheService.mandatoryValueAsInt(UpdatePensionProvider_IdKey)
-            telephoneCache <- journeyCacheService.optionalValues(UpdatePensionProvider_TelephoneQuestionKey,UpdatePensionProvider_TelephoneNumberKey )
-          }yield{
+            telephoneCache <- journeyCacheService.optionalValues(UpdatePensionProvider_TelephoneQuestionKey, UpdatePensionProvider_TelephoneNumberKey)
+          } yield {
             Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel(pensionId),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
           }
@@ -208,14 +211,14 @@ trait UpdatePensionProviderController extends TaiBaseController
                 UpdatePensionProvider_TelephoneQuestionKey),
               Seq(UpdatePensionProvider_TelephoneNumberKey)
             ) map tupled { (mandatorySeq, optionalSeq) => {
-                Ok(views.html.pensions.update.updatePensionCheckYourAnswers(UpdatePensionCheckYourAnswersViewModel(
-                  mandatorySeq.head.toInt,
-                  mandatorySeq(1),
-                  mandatorySeq(2),
-                  mandatorySeq(3),
-                  mandatorySeq(4),
-                  optionalSeq.head)))
-              }
+              Ok(views.html.pensions.update.updatePensionCheckYourAnswers(UpdatePensionCheckYourAnswersViewModel(
+                mandatorySeq.head.toInt,
+                mandatorySeq(1),
+                mandatorySeq(2),
+                mandatorySeq(3),
+                mandatorySeq(4),
+                optionalSeq.head)))
+            }
             }
           }
   }
@@ -231,7 +234,7 @@ trait UpdatePensionProviderController extends TaiBaseController
                   UpdatePensionProvider_IdKey,
                   UpdatePensionProvider_DetailsKey,
                   UpdatePensionProvider_TelephoneQuestionKey),
-                Seq(UpdatePensionProvider_TelephoneNumberKey))
+                  Seq(UpdatePensionProvider_TelephoneNumberKey))
               model = IncorrectPensionProvider(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
               _ <- pensionProviderService.incorrectPensionProvider(Nino(user.getNino), mandatoryCacheSeq.head.toInt, model)
               _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourney_UpdatePensionKey, true.toString)
@@ -249,15 +252,3 @@ trait UpdatePensionProviderController extends TaiBaseController
           }
   }
 }
-// $COVERAGE-OFF$
-object UpdatePensionProviderController extends UpdatePensionProviderController with AuthenticationConnectors {
-  override val personService: PersonService = PersonService
-  override implicit val templateRenderer = LocalTemplateRenderer
-  override implicit val partialRetriever: FormPartialRetriever = TaiHtmlPartialRetriever
-  override val journeyCacheService = JourneyCacheService(UpdatePensionProvider_JourneyKey)
-  override val taxAccountService: TaxAccountService = TaxAccountService
-  override val successfulJourneyCacheService: JourneyCacheService = JourneyCacheService(TrackSuccessfulJourney_JourneyKey)
-  override val pensionProviderService: PensionProviderService = PensionProviderService
-}
-// $COVERAGE-ON$
-

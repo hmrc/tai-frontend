@@ -33,13 +33,13 @@ import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 
-class IncomeSourceSummaryController @Inject()(val personService: PersonService,
+class IncomeSourceSummaryController @Inject()(personService: PersonService,
                                               val auditConnector: AuditConnector,
                                               val delegationConnector: DelegationConnector,
                                               val authConnector: AuthConnector,
-                                              val taxAccountService: TaxAccountService,
-                                              val employmentService: EmploymentService,
-                                              val benefitsService: BenefitsService,
+                                              taxAccountService: TaxAccountService,
+                                              employmentService: EmploymentService,
+                                              benefitsService: BenefitsService,
                                               override implicit val partialRetriever: FormPartialRetriever,
                                               override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with WithAuthorisedForTaiLite {

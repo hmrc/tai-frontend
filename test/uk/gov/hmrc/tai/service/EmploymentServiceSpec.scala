@@ -37,7 +37,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
     "return one employment" when {
       "connector gives one employment" in {
         val sut = createSUT
-        when(sut.connector.employments(any(), any())(any())).thenReturn(Future.successful(oneEmploymentDetails))
+        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(oneEmploymentDetails))
 
         val data = Await.result(sut.employments(nino, year), 5.seconds)
 
@@ -48,7 +48,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
     "return multiple employments" when {
       "connector gives multiple employments" in {
         val sut = createSUT
-        when(sut.connector.employments(any(), any())(any())).thenReturn(Future.successful(twoEmploymentsDetails))
+        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(twoEmploymentsDetails))
 
         val data = Await.result(sut.employments(nino, year), 5.seconds)
 
@@ -59,7 +59,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
     "return nil" when {
       "connector gives nil" in {
         val sut = createSUT
-        when(sut.connector.employments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
+        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
 
         val data = Await.result(sut.employments(nino, year), 5.seconds)
 
@@ -72,7 +72,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
     "return one employment" when {
       "connector gives one employment" in {
         val sut = createSUT
-        when(sut.connector.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(oneEmploymentDetails))
+        when(employmentsConnector.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(oneEmploymentDetails))
 
         val data = Await.result(sut.ceasedEmployments(nino, year), 5.seconds)
 
@@ -83,7 +83,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
     "return multiple employments" when {
       "connector gives multiple employments" in {
         val sut = createSUT
-        when(sut.connector.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(twoEmploymentsDetails))
+        when(employmentsConnector.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(twoEmploymentsDetails))
 
         val data = Await.result(sut.ceasedEmployments(nino, year), 5.seconds)
 
@@ -94,7 +94,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
     "return nil" when {
       "connector gives nil" in {
         val sut = createSUT
-        when(sut.connector.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
+        when(employmentsConnector.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
 
         val data = Await.result(sut.ceasedEmployments(nino, year), 5.seconds)
 
@@ -107,7 +107,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
     "return a map of employment id and employment name" when {
       "connector returns one employment" in {
         val sut = createSUT
-        when(sut.connector.employments(any(), any())(any())).thenReturn(Future.successful(oneEmploymentDetails))
+        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(oneEmploymentDetails))
 
         val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
 
@@ -121,7 +121,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
         val employment2 = Employment("company name 2", Some("123"), new LocalDate("2016-05-26"),
           Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false)
 
-        when(sut.connector.employments(any(), any())(any())).thenReturn(Future.successful(List(employment1, employment2)))
+        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(List(employment1, employment2)))
 
         val employmentNames = Await.result(sut.employmentNames(nino, year), 5.seconds)
 
@@ -130,7 +130,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
 
       "connector does not return any employment" in {
         val sut = createSUT
-        when(sut.connector.employments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
+        when(employmentsConnector.employments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
 
         val data = Await.result(sut.employmentNames(nino, year), 5.seconds)
 
@@ -144,7 +144,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
       "the connector returns one" in {
         val sut = createSUT
 
-        when(sut.connector.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment1)))
+        when(employmentsConnector.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment1)))
 
         val data = Await.result(sut.employment(nino, 8), 5 seconds)
 
@@ -155,7 +155,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
       "the connector does not return an employment" in {
         val sut = createSUT
 
-        when(sut.connector.employment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(employmentsConnector.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val data = Await.result(sut.employment(nino, 8), 5 seconds)
 
@@ -167,7 +167,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
   "end employment" must {
     "return envelope id" in {
       val sut = createSUT
-      when(sut.connector.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
+      when(employmentsConnector.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
 
       val endEmploymentData = EndEmployment(new LocalDate(2017, 10, 15),"YES", Some("EXT-TEST"))
 
@@ -181,7 +181,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
     "return an envelope id" in {
       val sut = createSUT
       val model = AddEmployment(employerName = "testEmployment", payrollNumber = "12345", startDate = new LocalDate(2017, 6, 6), telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-      when(sut.connector.addEmployment(Matchers.eq(nino), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
+      when(employmentsConnector.addEmployment(Matchers.eq(nino), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.addEmployment(nino, model), 5.seconds)
 
@@ -191,7 +191,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
       "no envelope id was returned from the connector layer" in {
         val sut = createSUT
         val model = AddEmployment(employerName = "testEmployment", payrollNumber = "12345", startDate = new LocalDate(2017, 6, 6), telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-        when(sut.connector.addEmployment(Matchers.eq(nino), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
+        when(employmentsConnector.addEmployment(Matchers.eq(nino), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy(Await.result(sut.addEmployment(nino, model), 5.seconds))
         rte.getMessage mustBe s"No envelope id was generated when adding the new employment for ${nino.nino}"
@@ -203,7 +203,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
     "return an envelope id" in {
       val sut = createSUT
       val model = IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-      when(sut.connector.incorrectEmployment(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
+      when(employmentsConnector.incorrectEmployment(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
 
@@ -214,7 +214,7 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
       "no envelope id was returned from the connector layer" in {
         val sut = createSUT
         val model = IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-        when(sut.connector.incorrectEmployment(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
+        when(employmentsConnector.incorrectEmployment(Matchers.eq(nino), Matchers.eq(1), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectEmployment(nino, 1, model), 5.seconds)
         rte.getMessage mustBe s"No envelope id was generated when sending incorrect employment details for ${nino.nino}"
@@ -232,8 +232,10 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
 
   private def createSUT = new EmploymentServiceTest
 
-  private class EmploymentServiceTest extends EmploymentService {
-    override val connector: EmploymentsConnector = mock[EmploymentsConnector]
-  }
+  val employmentsConnector = mock[EmploymentsConnector]
+
+  private class EmploymentServiceTest extends EmploymentService(
+    employmentsConnector
+  )
 
 }

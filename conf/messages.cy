@@ -633,7 +633,14 @@ tai.incomeTaxComparison.sidebar.subHeading=Ewch i''r flwyddyn dreth bresennol
 tai.incomeTaxComparison.taxCodes.description=Defnyddir eich codau treth i gyfrifo faint o Dreth Incwm i''w chymryd o''ch cyflog neu''ch pensiwn.
 tai.incomeTaxComparison.taxCodes.scottishInfo=Bydd eich cod treth ar gyfer y flwyddyn nesaf yn dechrau gydag ''S'' oherwydd y byddwch yn drethdalwr yn yr Alban. {0}
 tai.incomeTaxComparison.taxCodes.subHeading=Codau treth
+
 tai.incomeTaxComparison.taxCodes.table.employmentsReaderText=Enw''r cyflogwr
+tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Enw pensiwn
+
+
+
+
+
 tai.incomeTaxComparison.taxFreeAmount.NA=ddim yn gymwys
 tai.incomeTaxComparison.taxFreeAmount.PA.information1=Mae’r Lwfans Personol safonol yn cynyddu i {0} o {1} ymlaen.
 tai.incomeTaxComparison.taxFreeAmount.PA.information2=Gall eich Lwfans Personol fod yn wahanol, yn dibynnu ar eich amgylchiadau.
@@ -1011,6 +1018,10 @@ tai.taxFreeAmount.table.columnTwoHeader=Swm
 tai.taxFreeAmount.table.deductions.caption=Didyniadau
 tai.taxFreeAmount.table.deductions.noDeduction=Nid oes gennych unrhyw ddidyniadau
 tai.taxFreeAmount.table.deductions.total=Cyfanswm y didyniadau
+tai.taxFreeAmount.table.previous=Blaenorol
+tai.taxFreeAmount.table.current=Cyflogwr
+tai.taxFreeAmount.table.previous.taxCodes=Cod treth presennol
+tai.taxFreeAmount.table.current.taxCodes=Cod treth blaenorol
 tai.taxFreeAmount.table.taxComponent.Accommodation=Llety
 tai.taxFreeAmount.table.taxComponent.AdjustmentToRateBand=Addasiad i''r haen cyfradd
 tai.taxFreeAmount.table.taxComponent.AssetTransfer=Asedion sydd wedi''u trosglwyddo

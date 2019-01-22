@@ -22,18 +22,20 @@
 @import uk.gov.hmrc.tai.util.constants.TaiConstants
 @import uk.gov.hmrc.tai.config.{ApplicationConfig, FeatureTogglesConfig}
 @import uk.gov.hmrc.play.language.LanguageUtils
+@import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
 @(title: String,
   sidebarLinks: Option[Html] = None,
   sidebarClass: Option[String] = None,
   articleClasses: Option[String] = Some("full-width"),
   user: Option[controllers.auth.TaiUser] = None,
+  authActionedTaiUser: Option[controllers.auth.AuthActionedTaiUser] = None,
   employerName: Option[String] = None,
   includeGridWrapper: Boolean = false,
   webChat: Boolean = false,
   clickWebChat: Boolean = false,
   gaCallsAdditionalJs: Option[Html] = None,
-  gaDimensions: Option[Map[String, String]] = None,
+  gaSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings(),
   gaCustomTitle: Option[String] = None,
   optimizelyAudience: Option[String] = None,
   pageHeader: Option[Html] = None
@@ -42,6 +44,7 @@
   messages: Messages,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
 
 @serviceSuffix = @{
     s"- ${Messages("tai.service.navTitle")} - GOV.UK"
@@ -63,6 +66,8 @@
     user.fold(false) {
         user =>
             user.authContext.principal.accounts.sa.map(_.utr).isDefined
+    } || authActionedTaiUser.fold(false) {
+        _.getUTR != ""
     }
 }
 
@@ -114,11 +119,24 @@
         "authProvider" -> authProvider
 
 
-    ) ++ gaDimensions.getOrElse(Map.empty)
+    ) ++ gaSettings.dimensions.getOrElse(Map.empty)
 }
 
 @gaCustomEvent = @{
-    gaCustomTitle.map(gaTitle => s"""ga('set', 'title', "${gaTitle} ${serviceSuffix}")""").getOrElse(false)
+
+    def createGoogleAnalyticJavaScript(dimensionFlag:Boolean, gaJavaScript:String) = {
+        if(dimensionFlag) gaJavaScript else ""
+    }
+
+    val customTitle = gaCustomTitle.map(gaTitle => s"""ga('set', 'title', "${gaTitle} ${serviceSuffix}");""").getOrElse("")
+    val clientId = createGoogleAnalyticJavaScript(gaSettings.customClientIdRequired, s"""ga(function (tracker) { if (tracker) { ga('set', 'dimension66', tracker.get('clientId')); } });""")
+    val sessionId = createGoogleAnalyticJavaScript(gaSettings.customSessionIdRequired, s"""ga('set', 'dimension67', new Date().getTime() + '.' + Math.random().toString(36).substring(5));""")
+    val hitTimeStamp = createGoogleAnalyticJavaScript(gaSettings.customHitStampRequired, s"""ga('set', 'dimension68', new Date().toUTCString());""")
+
+    val combinedCustomDimensions = s"$customTitle $clientId $sessionId $hitTimeStamp"
+
+    if(combinedCustomDimensions.nonEmpty) combinedCustomDimensions else false
+
 }
 
 @inlineScript = {

@@ -38,7 +38,7 @@ class PreviousYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
     "return an envelope id" in {
       val sut = createSUT
       val model = IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-      when(sut.connector.incorrectIncome(Matchers.eq(nino), Matchers.eq(2016), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
+      when(previousYearsIncomeConnector.incorrectIncome(Matchers.eq(nino), Matchers.eq(2016), Matchers.eq(model))(any())).thenReturn(Future.successful(Some("123-456-789")))
 
       val envId = Await.result(sut.incorrectIncome(nino, 2016, model), 5.seconds)
 
@@ -49,7 +49,7 @@ class PreviousYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
       "no envelope id was returned from the connector layer" in {
         val sut = createSUT
         val model = IncorrectIncome(whatYouToldUs = "TEST", telephoneContactAllowed = "Yes", telephoneNumber = Some("123456789"))
-        when(sut.connector.incorrectIncome(Matchers.eq(nino), Matchers.eq(2016), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
+        when(previousYearsIncomeConnector.incorrectIncome(Matchers.eq(nino), Matchers.eq(2016), Matchers.eq(model))(any())).thenReturn(Future.successful(None))
 
         val rte = the[RuntimeException] thrownBy Await.result(sut.incorrectIncome(nino, 2016, model), 5.seconds)
         rte.getMessage mustBe s"No envelope id was generated when sending previous years income details for ${nino.nino}"
@@ -61,11 +61,11 @@ class PreviousYearsIncomeServiceSpec extends PlaySpec with MockitoSugar {
   private val nino: Nino = new Generator(new Random).nextNino
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
+  val previousYearsIncomeConnector = mock[PreviousYearsIncomeConnector]
+
   private def createSUT = new PreviousYearsIncomeDetailsServiceTest
 
-  private class PreviousYearsIncomeDetailsServiceTest extends PreviousYearsIncomeService {
-    override val connector: PreviousYearsIncomeConnector = mock[PreviousYearsIncomeConnector]
-  }
-
-
+  private class PreviousYearsIncomeDetailsServiceTest extends PreviousYearsIncomeService(
+    previousYearsIncomeConnector
+  )
 }

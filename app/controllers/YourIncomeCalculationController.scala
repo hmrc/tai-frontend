@@ -36,9 +36,9 @@ import uk.gov.hmrc.tai.viewModels.{HistoricIncomeCalculationViewModel, YourIncom
 
 import scala.concurrent.Future
 
-class YourIncomeCalculationController @Inject()(val personService: PersonService,
-                                                val taxAccountService: TaxAccountService,
-                                                val employmentService: EmploymentService,
+class YourIncomeCalculationController @Inject()(personService: PersonService,
+                                                taxAccountService: TaxAccountService,
+                                                employmentService: EmploymentService,
                                                 val delegationConnector: DelegationConnector,
                                                 val authConnector: AuthConnector,
                                                 override implicit val partialRetriever: FormPartialRetriever,

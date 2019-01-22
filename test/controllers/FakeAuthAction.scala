@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package testServices
+package controllers
 
-import play.api.mvc.RequestHeader
-import play.twirl.api.Html
-import uk.gov.hmrc.tai.service.HasFormPartialService
-import uk.gov.hmrc.play.partials.HtmlPartial
+import controllers.auth.{AuthAction, AuthActionedTaiUser, AuthenticatedRequest}
+import play.api.mvc.{Request, Result}
+import uk.gov.hmrc.domain.Generator
 
 import scala.concurrent.Future
+import scala.util.Random
 
-class FakeHasFormPartialService extends HasFormPartialService {
+object FakeAuthAction extends AuthAction {
 
-  override def getIncomeTaxPartial(implicit request: RequestHeader): Future[HtmlPartial] = {
-    Future.successful[HtmlPartial](HtmlPartial.Success(Some("title"), Html("<title/>")))
-  }
+  val nino = new Generator(new Random).nextNino
 
+  override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[Result]): Future[Result] =
+    block(AuthenticatedRequest(request, AuthActionedTaiUser("person name", nino.toString(), "utr")))
 }
-
-object FakeHasFormPartialService extends FakeHasFormPartialService

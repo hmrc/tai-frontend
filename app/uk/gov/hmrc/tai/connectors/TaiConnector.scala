@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.tai.connectors
 
+import com.google.inject.Inject
 import play.api.libs.json.Reads
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{CoreDelete, CoreGet, CorePost, CorePut, _}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.tai.config.WSHttp
 import uk.gov.hmrc.tai.model._
@@ -26,10 +26,9 @@ import uk.gov.hmrc.tai.model._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait TaiConnector extends RawResponseReads{
-  def http: CoreGet with CorePost with CorePut with CoreDelete
+class TaiConnector @Inject()(val http: WSHttp) extends RawResponseReads with ServicesConfig {
 
-  def serviceUrl: String
+  val serviceUrl = baseUrl("tai")
 
   def url(path: String) = s"$serviceUrl$path"
 
@@ -38,15 +37,8 @@ trait TaiConnector extends RawResponseReads{
   val STATUS_OK = 200
   val STATUS_EMAIL_RESPONSE = 201
 
-  def calculateEstimatedPay(payDetails : PayDetails)(implicit hc: HeaderCarrier): Future[CalculatedPay] = {
+  def calculateEstimatedPay(payDetails: PayDetails)(implicit hc: HeaderCarrier): Future[CalculatedPay] = {
     val postUrl = url(s"/tai/calculator/calculate-estimated-pay")
     http.POST(postUrl, payDetails).map(responseTo[CalculatedPay](postUrl))
   }
 }
-// $COVERAGE-OFF$
-object TaiConnector extends TaiConnector with ServicesConfig {
-
-  lazy val serviceUrl = baseUrl("tai")
-  override def http = WSHttp
-}
-// $COVERAGE-ON$

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.service
 
+import com.google.inject.Inject
 import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
@@ -32,13 +33,9 @@ import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait IncomeService extends JourneyCacheConstants {
-
-  def taxAccountService: TaxAccountService
-
-  def employmentService: EmploymentService
-
-  def taiConnector: TaiConnector
+class IncomeService @Inject() (taxAccountService: TaxAccountService,
+                               employmentService: EmploymentService,
+                               taiConnector: TaiConnector) extends JourneyCacheConstants {
 
   def employmentAmount(nino: Nino, id: Int)(implicit hc: HeaderCarrier, messages: Messages): Future[EmploymentAmount] = {
     for {
@@ -117,10 +114,3 @@ trait IncomeService extends JourneyCacheConstants {
   }
 
 }
-// $COVERAGE-OFF$
-object IncomeService extends IncomeService {
-  override val taxAccountService: TaxAccountService = TaxAccountService
-  override val employmentService: EmploymentService = EmploymentService
-  override val taiConnector: TaiConnector = TaiConnector
-}
-// $COVERAGE-ON$

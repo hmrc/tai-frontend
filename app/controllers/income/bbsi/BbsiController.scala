@@ -32,19 +32,20 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.income.bbsi.{BankAccountsDecisionForm, BankAccountsDecisionFormData}
 import uk.gov.hmrc.tai.model.domain.BankAccount
-import uk.gov.hmrc.tai.service.{BbsiService, JourneyCacheService, PersonService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.{BbsiService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{BankAccountDecisionConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.income.BbsiAccountsDecisionViewModel
 
 import scala.concurrent.Future
 
 
-class BbsiController @Inject()(val bbsiService: BbsiService,
-                               val personService: PersonService,
+class BbsiController @Inject()(bbsiService: BbsiService,
+                               personService: PersonService,
                                val auditConnector: AuditConnector,
                                val delegationConnector: DelegationConnector,
                                val authConnector: AuthConnector,
-                               @Named("Update Bank Account Choice") val journeyCacheService: JourneyCacheService,
+                               @Named("Update Bank Account Choice") journeyCacheService: JourneyCacheService,
                                override implicit val partialRetriever: FormPartialRetriever,
                                override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions

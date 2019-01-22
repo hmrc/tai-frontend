@@ -19,13 +19,16 @@ package views.html.incomeTaxComparison
 import play.twirl.api.Html
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.{HtmlFormatter, MonetaryUtil}
+import uk.gov.hmrc.tai.util.{HtmlFormatter, MonetaryUtil, ViewModelHelper}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels._
 import uk.gov.hmrc.time.TaxYearResolver
 
-class TaxFreeAmountSpec extends TaiViewSpec {
+class TaxFreeAmountSpec extends TaiViewSpec with ViewModelHelper{
   "Tax free amount comparision view" must {
+
+    val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))
+    val taxYearStarts = "Next tax year from " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfNextTaxYear))
 
     "display heading" in {
       doc must haveHeadingH2WithText(messages("tai.incomeTaxComparison.taxFreeAmount.subHeading"))
@@ -46,54 +49,46 @@ class TaxFreeAmountSpec extends TaiViewSpec {
     }
 
     "display  personal allowance table" in {
-      doc must haveThWithText(messages("tai.income.personalAllowance"))
-      doc must haveTdWithText("£11,500")
-      doc must haveTdWithText("£11,850")
+      doc must haveTdWithText(messages("tai.income.personalAllowance"))
+      doc must haveTdWithText(taxYearEnds + " £11,500")
+      doc must haveTdWithText(taxYearStarts + " £11,850")
     }
 
     "display additions table" in {
       doc must haveCaptionWithText(messages("tai.incomeTaxComparison.taxFreeAmount.additions.caption"))
-      doc must haveThWithText(messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"))
-      doc must haveTdWithText("£1,000")
-      doc must haveTdWithText("£1,100")
+      doc must haveTdWithText(messages("tai.taxFreeAmount.table.taxComponent.GiftAidPayments"))
+      doc must haveTdWithText(taxYearEnds + " £1,000")
+      doc must haveTdWithText(taxYearStarts + " £1,100")
 
-      doc must haveThWithText(messages("tai.taxFreeAmount.table.taxComponent.PartTimeEarnings"))
-      doc must haveTdWithText("£1,000")
-      doc must haveTdWithText(messages("tai.incomeTaxComparison.taxFreeAmount.NA"))
-
-      doc must haveThWithText(messages("tai.incomeTaxComparison.taxFreeAmount.totalAdditions"))
-      doc must haveTdWithText("£2,000")
-      doc must haveTdWithText("£1,100")
+      doc must haveTdWithText(messages("tai.taxFreeAmount.table.taxComponent.PartTimeEarnings"))
+      doc must haveTdWithText(taxYearStarts + " not applicable")
     }
 
     "display deductions table" in {
       doc must haveCaptionWithText(messages("tai.incomeTaxComparison.taxFreeAmount.deductions.caption"))
-      doc must haveThWithText(messages("tai.taxFreeAmount.table.taxComponent.OtherEarnings"))
-      doc must haveTdWithText("£1,000")
-      doc must haveTdWithText("£1,100")
+      doc must haveTdWithText(messages("tai.taxFreeAmount.table.taxComponent.OtherEarnings"))
+      doc must haveTdWithText(taxYearEnds + " £1,000")
+      doc must haveTdWithText(taxYearStarts + " £1,100")
 
-      doc must haveThWithText(messages("tai.taxFreeAmount.table.taxComponent.CasualEarnings"))
-      doc must haveTdWithText(messages("tai.incomeTaxComparison.taxFreeAmount.NA"))
-      doc must haveTdWithText("£1,100")
-
-      doc must haveThWithText(messages("tai.incomeTaxComparison.taxFreeAmount.totalDeductions"))
-      doc must haveTdWithText("£1,000")
-      doc must haveTdWithText("£2,200")
+      doc must haveTdWithText(messages("tai.taxFreeAmount.table.taxComponent.CasualEarnings"))
+      doc must haveTdWithText(taxYearEnds + " not applicable")
+      doc must haveTdWithText(taxYearStarts + " £1,100")
 
     }
 
     "display total table" in {
-      doc must haveThWithText(messages("tai.incomeTaxComparison.taxFreeAmount.totalTFA"))
-      doc must haveTdWithText("£3,000")
-      doc must haveTdWithText("£3,300")
+      doc must haveTdWithText(messages("tai.incomeTaxComparison.taxFreeAmount.totalTFA"))
+      doc must haveTdWithText("Current tax year £3,000")
+      doc must haveTdWithText("Next tax year £3,300")
     }
 
     "display no additions details" when {
       "there are no additions" in {
         val docWithOutAdditions = doc(viewWithoutAdditionAndDeductions)
 
-        docWithOutAdditions must haveThWithText(messages("tai.incomeTaxComparison.taxFreeAmount.noAdditions"))
-        docWithOutAdditions must haveTdWithText("£0")
+        docWithOutAdditions must haveTdWithText(messages("tai.incomeTaxComparison.taxFreeAmount.noAdditions"))
+        docWithOutAdditions must haveTdWithText(taxYearEnds + " £0")
+        docWithOutAdditions must haveTdWithText(taxYearStarts + " £0")
 
       }
     }
@@ -102,8 +97,9 @@ class TaxFreeAmountSpec extends TaiViewSpec {
       "there are no deductions" in {
         val docWithOutDeductions = doc(viewWithoutAdditionAndDeductions)
 
-        docWithOutDeductions must haveThWithText(messages("tai.incomeTaxComparison.taxFreeAmount.noDeductions"))
-        docWithOutDeductions must haveTdWithText("£0")
+        docWithOutDeductions must haveTdWithText(messages("tai.incomeTaxComparison.taxFreeAmount.noDeductions"))
+        docWithOutDeductions must haveTdWithText(taxYearEnds + " £0")
+        docWithOutDeductions must haveTdWithText(taxYearStarts + " £0")
       }
     }
   }

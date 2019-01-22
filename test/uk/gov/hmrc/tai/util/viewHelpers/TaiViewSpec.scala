@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.tai.util.viewHelpers
 
-import builders.UserBuilder
+import builders.{AuthActionedUserBuilder, UserBuilder}
 import controllers.FakeTaiPlayApplication
+import controllers.auth.AuthActionedTaiUser
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -26,6 +27,9 @@ import play.api.i18n.Messages
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.twirl.api.Html
+import uk.gov.hmrc.domain.Generator
+
+import scala.util.Random
 
 trait TaiViewSpec extends PlaySpec
   with JsoupMatchers
@@ -35,6 +39,7 @@ trait TaiViewSpec extends PlaySpec
   implicit val templateRenderer = MockTemplateRenderer
   implicit val partialRetriever = MockPartialRetriever
   implicit val user = UserBuilder()
+  implicit val authActionedTaiUser: AuthActionedTaiUser = AuthActionedUserBuilder()
 
   def view: Html
 

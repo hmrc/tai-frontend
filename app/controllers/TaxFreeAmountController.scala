@@ -35,10 +35,10 @@ import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
 
-class TaxFreeAmountController @Inject()(val personService: PersonService,
-                                        val codingComponentService: CodingComponentService,
-                                        val employmentService: EmploymentService,
-                                        val companyCarService: CompanyCarService,
+class TaxFreeAmountController @Inject()(personService: PersonService,
+                                        codingComponentService: CodingComponentService,
+                                        employmentService: EmploymentService,
+                                        companyCarService: CompanyCarService,
                                         val auditConnector: AuditConnector,
                                         val delegationConnector: DelegationConnector,
                                         val authConnector: AuthConnector,

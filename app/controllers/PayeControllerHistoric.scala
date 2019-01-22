@@ -38,9 +38,9 @@ import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 import scala.concurrent.Future
 
 class PayeControllerHistoric @Inject()(val config: ApplicationConfig,
-                                       val taxCodeChangeService: TaxCodeChangeService,
-                                       val employmentService: EmploymentService,
-                                       val personService: PersonService,
+                                       taxCodeChangeService: TaxCodeChangeService,
+                                       employmentService: EmploymentService,
+                                       personService: PersonService,
                                        val auditConnector: AuditConnector,
                                        val delegationConnector: DelegationConnector,
                                        val authConnector: AuthConnector,
@@ -48,8 +48,7 @@ class PayeControllerHistoric @Inject()(val config: ApplicationConfig,
                                        override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
-  with Auditable
-  with FeatureTogglesConfig {
+  with Auditable {
 
   val numberOfPreviousYearsToShow: Int = Play.configuration.getInt("tai.numberOfPreviousYearsToShow").getOrElse(3)
 
@@ -85,7 +84,7 @@ class PayeControllerHistoric @Inject()(val config: ApplicationConfig,
         checkedAgainstPersonDetails(
           person,
           Ok(views.html.paye.historicPayAsYouEarn(HistoricPayAsYouEarnViewModel(
-            taxYear, employments, hasTaxCodeRecordsInYearPerEmployment), numberOfPreviousYearsToShow, taxCodeChangeEnabled))
+            taxYear, employments, hasTaxCodeRecordsInYearPerEmployment), numberOfPreviousYearsToShow))
         )
       }
     }
