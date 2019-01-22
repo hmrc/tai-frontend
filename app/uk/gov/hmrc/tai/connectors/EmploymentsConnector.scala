@@ -89,7 +89,7 @@ trait EmploymentsConnector {
 
   def employmentServiceUrl(nino: Nino, year: TaxYear) = s"$serviceUrl/tai/$nino/employments/years/${year.year}"
 
-  def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear) = s"$serviceUrl/tai/$nino/employments/years/${year.year}/ceased"
+  def ceasedEmploymentServiceUrl(nino: Nino, year: TaxYear) = s"$serviceUrl/tai/$nino/employments/year/${year.year}/status/ceased"
 
   def incorrectEmploymentServiceUrl(nino: Nino, id: Int) = s"$serviceUrl/tai/$nino/employments/$id/reason"
 }

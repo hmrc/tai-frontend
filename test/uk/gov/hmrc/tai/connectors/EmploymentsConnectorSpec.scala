@@ -180,7 +180,7 @@ class EmploymentsConnectorSpec extends PlaySpec
         val responseFuture = SUT.ceasedEmployments(nino, year)
 
         Await.result(responseFuture, 5 seconds)
-        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}/ceased"))(any())
+        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
       }
     }
 
@@ -196,7 +196,7 @@ class EmploymentsConnectorSpec extends PlaySpec
 
         Await.result(responseFuture, 5 seconds)
 
-        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"/tai/$nino/employments/years/${year.year}/ceased"))(any())
+        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
       }
     }
 
@@ -214,7 +214,7 @@ class EmploymentsConnectorSpec extends PlaySpec
 
         result mustBe oneEmploymentDetails
 
-        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}/ceased"))(any())
+        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
       }
 
       "api provides multiple employments" in {
@@ -229,7 +229,7 @@ class EmploymentsConnectorSpec extends PlaySpec
 
         result mustBe twoEmploymentsDetails
 
-        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}/ceased"))(any())
+        verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
       }
     }
 
@@ -244,7 +244,7 @@ class EmploymentsConnectorSpec extends PlaySpec
 
       result mustBe Nil
 
-      verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/years/${year.year}/ceased"))(any())
+      verify(SUT.httpHandler).getFromApi(Matchers.eq(s"test/service/tai/$nino/employments/year/${year.year}/status/ceased"))(any())
     }
 
     "throw an exception" when {

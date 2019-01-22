@@ -40,7 +40,8 @@ trait TaxAccountConnector extends CodingComponentFormatters {
 
   def taxAccountUrl(nino: String, year: TaxYear): String = s"$serviceUrl/tai/$nino/tax-account/${year.year}/income/tax-code-incomes"
 
-  def incomeSourceUrl(nino: String, year: TaxYear, incomeType: String, status: String): String = s"$serviceUrl/tai/$nino/tax-account/${year.year}/incomeSource/$incomeType/$status"
+  def incomeSourceUrl(nino: String, year: TaxYear, incomeType: String, status: String): String =
+    s"$serviceUrl/tai/$nino/tax-account/year/${year.year}/income/$incomeType/status/$status"
 
   def nonTaxCodeIncomeUrl(nino: String, year: TaxYear): String = s"$serviceUrl/tai/$nino/tax-account/${year.year}/income"
 
