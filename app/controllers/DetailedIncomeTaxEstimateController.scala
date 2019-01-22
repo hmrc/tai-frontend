@@ -17,14 +17,13 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.auth.WithAuthorisedForTaiLite
+import controllers.actions.ValidatePerson
+import controllers.auth.AuthAction
+import play.Logger
 import play.api.Play.current
+import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
@@ -32,53 +31,54 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.model.domain.income.{NonTaxCodeIncome, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.tax.TotalTax
-import uk.gov.hmrc.tai.service.{CodingComponentService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
 
 class DetailedIncomeTaxEstimateController @Inject()(taxAccountService: TaxAccountService,
                                                     codingComponentService: CodingComponentService,
-                                                    personService: PersonService,
-                                                    val auditConnector: AuditConnector,
-                                                    val delegationConnector: DelegationConnector,
-                                                    val authConnector: AuthConnector,
+                                                    authenticate: AuthAction,
+                                                    validatePerson: ValidatePerson,
                                                     override implicit val partialRetriever: FormPartialRetriever,
-                                                    override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite {
+                                                    override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
 
-  def taxExplanationPage(): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
+  def taxExplanationPage(): Action[AnyContent] = authenticate.async {
+    implicit request =>
 
-            val nino = Nino(user.getNino)
-            val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
-            val taxCodeIncomeFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
-            val taxSummaryFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
-            val codingComponentFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-            val nonTaxCodeIncomeFuture = taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
+      val nino = request.taiUser.nino
+      val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
+      val taxCodeIncomeFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
+      val taxSummaryFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
+      val codingComponentFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
+      val nonTaxCodeIncomeFuture = taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
 
-            for {
-              totalTax <- totalTaxFuture
-              taxCodeIncomes <- taxCodeIncomeFuture
-              taxSummary <- taxSummaryFuture
-              codingComponents <- codingComponentFuture
-              nonTaxCode <- nonTaxCodeIncomeFuture
-            } yield {
-              (totalTax, taxCodeIncomes, taxSummary, nonTaxCode) match {
-                case (
-                  TaiSuccessResponseWithPayload(totalTax: TotalTax),
-                  TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
-                  TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
-                  TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)
-                  ) =>
-                  val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxAccountSummary, codingComponents, nonTaxCodeIncome)
-                  Ok(views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model))
-                case _ => throw new RuntimeException("Failed to fetch total tax details")
-              }
-            }
+      (for {
+        totalTax <- totalTaxFuture
+        taxCodeIncomes <- taxCodeIncomeFuture
+        taxSummary <- taxSummaryFuture
+        codingComponents <- codingComponentFuture
+        nonTaxCode <- nonTaxCodeIncomeFuture
+      } yield {
+        (totalTax, taxCodeIncomes, taxSummary, nonTaxCode) match {
+          case (
+            TaiSuccessResponseWithPayload(totalTax: TotalTax),
+            TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]),
+            TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary),
+            TaiSuccessResponseWithPayload(nonTaxCodeIncome: NonTaxCodeIncome)
+            ) =>
+            implicit val user = request.taiUser
+            val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxAccountSummary, codingComponents, nonTaxCodeIncome)
+            Ok(views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model))
+          case _ => {
+            handleError
           }
+        }
+      }).recover {
+        case _ => handleError
+      }
   }
 
+  private def handleError(implicit request: Request[_]) = {
+    Logger.warn("Failed to fetch total tax details")
+    InternalServerError(error5xx(Messages("tai.technical.error.message")))
+  }
 }

@@ -17,9 +17,11 @@
 package views.html.incomeTaxComparison
 
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonDetail, IncomeSourceComparisonViewModel}
 import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 class IncomeSummarySpec extends TaiViewSpec {
 
@@ -35,23 +37,22 @@ class IncomeSummarySpec extends TaiViewSpec {
 
 
     "display employment income summary information" in{
-      val document = doc(view)
 
-      document must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
+      doc(view) must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
         s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM YYYY")))}")
 
-      document must haveThWithText(s"${nonBreakable(messages("tai.NextTaxYear"))} " +
+      doc(view) must haveThWithText(s"${nonBreakable(messages("tai.NextTaxYear"))} " +
         s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column2",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))}")
 
 
-      document must haveThWithText(employmentOneIncomeSourceDetail.name)
-      document must haveTdWithText(employmentOneIncomeSourceDetail.amountCY)
-      document must haveTdWithText(employmentOneIncomeSourceDetail.amountCYPlusOne)
+      doc(view) must haveTdWithText(employerNameHeading + employmentOneIncomeSourceDetail.name)
+      doc(view) must haveTdWithText(taxYearEnds + employmentOneIncomeSourceDetail.amountCY)
+      doc(view) must haveTdWithText(taxYearStarts + employmentOneIncomeSourceDetail.amountCYPlusOne)
       hasEstimatedIncomeLink(view, employmentTwoIncomeSourceDetail)
 
-      document must haveThWithText(employmentTwoIncomeSourceDetail.name)
-      document must haveTdWithText(employmentTwoIncomeSourceDetail.amountCY)
-      document must haveTdWithText(employmentTwoIncomeSourceDetail.amountCYPlusOne)
+      doc(view) must haveTdWithText(employerNameHeading + employmentTwoIncomeSourceDetail.name)
+      doc(view) must haveTdWithText(taxYearEnds + employmentTwoIncomeSourceDetail.amountCY)
+      doc(view) must haveTdWithText(taxYearStarts + employmentTwoIncomeSourceDetail.amountCYPlusOne)
       hasEstimatedIncomeLink(view, employmentTwoIncomeSourceDetail)
     }
 
@@ -61,22 +62,21 @@ class IncomeSummarySpec extends TaiViewSpec {
 
 
     "display pensions income summary information" in{
-      val document = doc(viewPensionsOnly)
 
-      document must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
+      doc(view) must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
         s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM YYYY")))}")
 
-      document must haveThWithText(s"${nonBreakable(messages("tai.NextTaxYear"))} " +
+      doc(view) must haveThWithText(s"${nonBreakable(messages("tai.NextTaxYear"))} " +
         s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column2",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))}")
 
-      document must haveThWithText(pensionOneIncomeSourceDetail.name)
-      document must haveTdWithText(pensionOneIncomeSourceDetail.amountCY)
-      document must haveTdWithText(pensionOneIncomeSourceDetail.amountCYPlusOne)
+      doc(viewPensionsOnly) must haveTdWithText(pensionNameHeading + pensionOneIncomeSourceDetail.name)
+      doc(viewPensionsOnly) must haveTdWithText(taxYearEnds + pensionOneIncomeSourceDetail.amountCY)
+      doc(viewPensionsOnly) must haveTdWithText(taxYearStarts + pensionOneIncomeSourceDetail.amountCYPlusOne)
       hasEstimatedIncomeLink(viewPensionsOnly, pensionOneIncomeSourceDetail)
 
-      document must haveThWithText(pensionTwoIncomeSourceDetail.name)
-      document must haveTdWithText(pensionTwoIncomeSourceDetail.amountCY)
-      document must haveTdWithText(pensionTwoIncomeSourceDetail.amountCYPlusOne)
+      doc(viewPensionsOnly) must haveTdWithText(pensionNameHeading + pensionTwoIncomeSourceDetail.name)
+      doc(viewPensionsOnly) must haveTdWithText(taxYearEnds + pensionTwoIncomeSourceDetail.amountCY)
+      doc(viewPensionsOnly) must haveTdWithText(taxYearStarts + pensionTwoIncomeSourceDetail.amountCYPlusOne)
       hasEstimatedIncomeLink(viewPensionsOnly, pensionTwoIncomeSourceDetail)
 
     }
@@ -86,32 +86,31 @@ class IncomeSummarySpec extends TaiViewSpec {
     }
 
     "display combined employment and private pensions income summary information" in{
-      val document = doc(viewCombined)
 
-      document must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
+      doc(view) must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
         s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM YYYY")))}")
 
-      document must haveThWithText(s"${nonBreakable(messages("tai.NextTaxYear"))} " +
+      doc(view) must haveThWithText(s"${nonBreakable(messages("tai.NextTaxYear"))} " +
         s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column2",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))}")
 
-      document must haveThWithText(employmentOneIncomeSourceDetail.name)
-      document must haveTdWithText(employmentOneIncomeSourceDetail.amountCY)
-      document must haveTdWithText(employmentOneIncomeSourceDetail.amountCYPlusOne)
+      doc(viewCombined) must haveTdWithText(employerNameHeading + employmentOneIncomeSourceDetail.name)
+      doc(viewCombined) must haveTdWithText(taxYearEnds + employmentOneIncomeSourceDetail.amountCY)
+      doc(viewCombined) must haveTdWithText(taxYearStarts + employmentOneIncomeSourceDetail.amountCYPlusOne)
       hasEstimatedIncomeLink(viewCombined, employmentOneIncomeSourceDetail)
 
-      document must haveThWithText(employmentTwoIncomeSourceDetail.name)
-      document must haveTdWithText(employmentTwoIncomeSourceDetail.amountCY)
-      document must haveTdWithText(employmentTwoIncomeSourceDetail.amountCYPlusOne)
+      doc(viewCombined) must haveTdWithText(employerNameHeading + employmentTwoIncomeSourceDetail.name)
+      doc(viewCombined) must haveTdWithText(taxYearEnds + employmentTwoIncomeSourceDetail.amountCY)
+      doc(viewCombined) must haveTdWithText(taxYearStarts + employmentTwoIncomeSourceDetail.amountCYPlusOne)
       hasEstimatedIncomeLink(viewCombined, employmentTwoIncomeSourceDetail)
 
-      document must haveThWithText(pensionOneIncomeSourceDetail.name)
-      document must haveTdWithText(pensionOneIncomeSourceDetail.amountCY)
-      document must haveTdWithText(pensionOneIncomeSourceDetail.amountCYPlusOne)
+      doc(viewCombined) must haveTdWithText(pensionNameHeading + pensionOneIncomeSourceDetail.name)
+      doc(viewCombined) must haveTdWithText(taxYearEnds + pensionOneIncomeSourceDetail.amountCY)
+      doc(viewCombined) must haveTdWithText(taxYearStarts + pensionOneIncomeSourceDetail.amountCYPlusOne)
       hasEstimatedIncomeLink(viewCombined, pensionOneIncomeSourceDetail)
 
-      document must haveThWithText(pensionTwoIncomeSourceDetail.name)
-      document must haveTdWithText(pensionTwoIncomeSourceDetail.amountCY)
-      document must haveTdWithText(pensionTwoIncomeSourceDetail.amountCYPlusOne)
+      doc(viewCombined) must haveTdWithText(pensionNameHeading + pensionTwoIncomeSourceDetail.name)
+      doc(viewCombined) must haveTdWithText(taxYearEnds + pensionTwoIncomeSourceDetail.amountCY)
+      doc(viewCombined) must haveTdWithText(taxYearStarts + pensionTwoIncomeSourceDetail.amountCYPlusOne)
       hasEstimatedIncomeLink(viewCombined, pensionTwoIncomeSourceDetail)
 
     }
@@ -132,31 +131,30 @@ class IncomeSummarySpec extends TaiViewSpec {
       val noEstimatedPayView: Html = views.html.incomeTaxComparison.IncomeSummary(employmentIncomeSourceComparisonViewModel, hideEstimatedPay)
       val document = doc(noEstimatedPayView)
 
-      document must haveThWithText(s"${nonBreakable(messages("tai.CurrentTaxYear"))} " +
-        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column1",TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM YYYY")))}")
-
-      document must haveThWithText(s"${nonBreakable(messages("tai.NextTaxYear"))} " +
-        s"${nonBreakable(messages("tai.incomeTaxComparison.incomeTax.column2",TaxYearResolver.startOfNextTaxYear.toString("d MMMM YYYY")))}")
-
-      document must haveThWithText(employmentOneIncomeSourceDetail.name)
-      document must haveTdWithText(employmentOneIncomeSourceDetail.amountCY)
-      document must haveTdWithText(employmentOneIncomeSourceDetail.amountCYPlusOne)
+      document must haveTdWithText(employerNameHeading + employmentOneIncomeSourceDetail.name)
+      document must haveTdWithText(taxYearEnds + employmentOneIncomeSourceDetail.amountCY)
+      document must haveTdWithText(taxYearStarts + employmentOneIncomeSourceDetail.amountCYPlusOne)
       document mustNot haveElementWithId(s"estimated-income-link-${employmentOneIncomeSourceDetail.empId}")
 
-      document must haveThWithText(employmentTwoIncomeSourceDetail.name)
-      document must haveTdWithText(employmentTwoIncomeSourceDetail.amountCY)
-      document must haveTdWithText(employmentTwoIncomeSourceDetail.amountCYPlusOne)
+      document must haveTdWithText(employerNameHeading +employmentTwoIncomeSourceDetail.name)
+      document must haveTdWithText(taxYearEnds + employmentTwoIncomeSourceDetail.amountCY)
+      document must haveTdWithText(taxYearStarts + employmentTwoIncomeSourceDetail.amountCYPlusOne)
       document mustNot haveElementWithId(s"estimated-income-link-${employmentTwoIncomeSourceDetail.empId}")
     }
   }
 
-  private def hasEstimatedIncomeLink(passedView: Html, income: IncomeSourceComparisonDetail) = {
-    doc(passedView) must haveLinkElement(
+  private def hasEstimatedIncomeLink(view: Html, income: IncomeSourceComparisonDetail) = {
+    doc(view) must haveLinkElement(
       s"estimated-income-link-${income.empId}",
       s"/check-income-tax/update-income/next-year/income/${income.empId}/start",
       s"Update estimated income for ${income.name}"
     )
   }
+
+  private lazy val employerNameHeading = "Employer name "
+  private lazy val pensionNameHeading = "Pension name "
+  private lazy val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)) + " "
+  private lazy val taxYearStarts = "Next tax year from " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfNextTaxYear)) + " "
 
   private lazy val employmentOneIncomeSourceDetail = IncomeSourceComparisonDetail(1, "Company1","£15,000","£15,500")
   private lazy val employmentTwoIncomeSourceDetail = IncomeSourceComparisonDetail(2, "Company2","£16,000","£16,500")
