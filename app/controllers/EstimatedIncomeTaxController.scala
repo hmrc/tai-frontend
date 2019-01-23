@@ -89,8 +89,7 @@ class EstimatedIncomeTaxController @Inject()(codingComponentService: CodingCompo
               }
             }
           case _ => {
-            Logger.warn("Failed to get tax summary details")
-            InternalServerError(error5xx(Messages("tai.technical.error.message")))
+            internalServerError("Failed to get estimated income tax")
           }
         }
       }

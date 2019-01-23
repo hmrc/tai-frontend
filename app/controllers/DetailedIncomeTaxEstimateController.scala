@@ -41,7 +41,7 @@ class DetailedIncomeTaxEstimateController @Inject()(taxAccountService: TaxAccoun
                                                     override implicit val partialRetriever: FormPartialRetriever,
                                                     override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
 
-  def taxExplanationPage(): Action[AnyContent] = authenticate.async {
+  def taxExplanationPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
 
       val nino = request.taiUser.nino
