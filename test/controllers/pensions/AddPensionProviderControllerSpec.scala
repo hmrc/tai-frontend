@@ -690,9 +690,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         )
 
         val result = sut.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        val ex = the[RuntimeException] thrownBy Await.result(sut.checkYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
-        ex.getMessage mustBe mockedJCExceptionMsg
+        status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
   }

@@ -42,6 +42,7 @@ import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNu
 import scala.Function.tupled
 import scala.concurrent.Future
 import scala.language.postfixOps
+import scala.util.control.NonFatal
 
 class AddPensionProviderController @Inject()(pensionProviderService: PensionProviderService,
                                              auditService: AuditService,
@@ -100,27 +101,27 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
 
 
   def submitFirstPay(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-      implicit request =>
-        implicit val user = request.taiUser
+    implicit request =>
+      implicit val user = request.taiUser
 
-        AddPensionProviderFirstPayForm.form.bindFromRequest().fold(
-          formWithErrors => {
-            journeyCacheService.mandatoryValue(AddPensionProvider_NameKey).map { pensionProviderName =>
-              BadRequest(views.html.pensions.addPensionReceivedFirstPay(formWithErrors, pensionProviderName))
-            }
-          },
-          yesNo => {
-            journeyCacheService.cache(AddPensionProvider_FirstPaymentKey, yesNo.getOrElse("")) map { _ =>
-              yesNo match {
-                case Some(YesValue) => {
-                  journeyCacheService.cache("", "")
-                  Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate())
-                }
-                case _ => Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension())
+      AddPensionProviderFirstPayForm.form.bindFromRequest().fold(
+        formWithErrors => {
+          journeyCacheService.mandatoryValue(AddPensionProvider_NameKey).map { pensionProviderName =>
+            BadRequest(views.html.pensions.addPensionReceivedFirstPay(formWithErrors, pensionProviderName))
+          }
+        },
+        yesNo => {
+          journeyCacheService.cache(AddPensionProvider_FirstPaymentKey, yesNo.getOrElse("")) map { _ =>
+            yesNo match {
+              case Some(YesValue) => {
+                journeyCacheService.cache("", "")
+                Redirect(controllers.pensions.routes.AddPensionProviderController.addPensionProviderStartDate())
               }
+              case _ => Redirect(controllers.pensions.routes.AddPensionProviderController.cantAddPension())
             }
           }
-        )
+        }
+      )
   }
 
   def cantAddPension(): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -226,48 +227,50 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
 
 
   def submitTelephoneNumber(): Action[AnyContent] = (authenticate andThen validatePerson).async {
-      implicit request =>
-        implicit val user = request.taiUser
+    implicit request =>
+      implicit val user = request.taiUser
 
-        YesNoTextEntryForm.form(
-          Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
-          Messages("tai.canWeContactByPhone.telephone.empty"),
-          Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
-          formWithErrors => {
-            Future.successful(BadRequest(views.html.can_we_contact_by_phone(contactPhonePensionProvider, formWithErrors)))
-          },
-          form => {
-            val mandatoryData = Map(AddPensionProvider_TelephoneQuestionKey -> Messages(s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))
-            val dataForCache = form.yesNoChoice match {
-              case Some(yn) if yn == YesValue => mandatoryData ++ Map(AddPensionProvider_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
-              case _ => mandatoryData ++ Map(AddPensionProvider_TelephoneNumberKey -> "")
-            }
-            journeyCacheService.cache(dataForCache) map { _ =>
-              Redirect(controllers.pensions.routes.AddPensionProviderController.checkYourAnswers())
-            }
+      YesNoTextEntryForm.form(
+        Messages("tai.canWeContactByPhone.YesNoChoice.empty"),
+        Messages("tai.canWeContactByPhone.telephone.empty"),
+        Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
+        formWithErrors => {
+          Future.successful(BadRequest(views.html.can_we_contact_by_phone(contactPhonePensionProvider, formWithErrors)))
+        },
+        form => {
+          val mandatoryData = Map(AddPensionProvider_TelephoneQuestionKey -> Messages(s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))
+          val dataForCache = form.yesNoChoice match {
+            case Some(yn) if yn == YesValue => mandatoryData ++ Map(AddPensionProvider_TelephoneNumberKey -> form.yesNoTextEntry.getOrElse(""))
+            case _ => mandatoryData ++ Map(AddPensionProvider_TelephoneNumberKey -> "")
           }
-        )
+          journeyCacheService.cache(dataForCache) map { _ =>
+            Redirect(controllers.pensions.routes.AddPensionProviderController.checkYourAnswers())
+          }
+        }
+      )
   }
 
   def checkYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
 
-      (journeyCacheService.collectedValues(
-        Seq(AddPensionProvider_NameKey, AddPensionProvider_StartDateKey, AddPensionProvider_PayrollNumberKey, AddPensionProvider_TelephoneQuestionKey),
-        Seq(AddPensionProvider_TelephoneNumberKey)
-      ) map tupled { (mandatoryVals, optionalVals) =>
+      try {
+        journeyCacheService.collectedValues(
+          Seq(AddPensionProvider_NameKey, AddPensionProvider_StartDateKey, AddPensionProvider_PayrollNumberKey, AddPensionProvider_TelephoneQuestionKey),
+          Seq(AddPensionProvider_TelephoneNumberKey)
+        ) map tupled { (mandatoryVals, optionalVals) =>
 
-        val model = CheckYourAnswersViewModel(
-          mandatoryVals.head,
-          mandatoryVals(1),
-          mandatoryVals(2),
-          mandatoryVals(3),
-          optionalVals.head
-        )
-        Ok(views.html.pensions.addPensionCheckYourAnswers(model))
-      }).recover {
-        case e: Exception => internalServerError(e.getMessage)
+          val model = CheckYourAnswersViewModel(
+            mandatoryVals.head,
+            mandatoryVals(1),
+            mandatoryVals(2),
+            mandatoryVals(3),
+            optionalVals.head
+          )
+          Ok(views.html.pensions.addPensionCheckYourAnswers(model))
+        }
+      } catch {
+        case NonFatal(e) => Future.successful(internalServerError(e.getMessage))
       }
   }
 
