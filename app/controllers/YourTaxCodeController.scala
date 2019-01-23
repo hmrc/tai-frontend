@@ -30,6 +30,8 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYears}
 
+import scala.util.control.NonFatal
+
 class YourTaxCodeController @Inject()(taxAccountService: TaxAccountService,
                                       taxCodeChangeService: TaxCodeChangeService,
                                       authenticate: AuthAction,
@@ -49,7 +51,9 @@ class YourTaxCodeController @Inject()(taxAccountService: TaxAccountService,
         implicit val user = request.taiUser
         Ok(views.html.taxCodeDetails(taxCodeViewModel))
       }) recover {
-        case _ => internalServerError(s"Unable eto fetch taxCodes for ${year.year}")
+        case NonFatal(e) => {
+          internalServerError(s"Exception: ${e.getClass()}")
+        }
       }
   }
 
@@ -65,7 +69,9 @@ class YourTaxCodeController @Inject()(taxAccountService: TaxAccountService,
         implicit val user = request.taiUser
         Ok(views.html.taxCodeDetailsPreviousYears(taxCodeViewModel))
       }) recover {
-      case _ => internalServerError(s"Unable eto fetch taxCodes for ${year.year}")
-    }
+        case NonFatal(e) => {
+          internalServerError(s"Exception: ${e.getClass()}")
+        }
+      }
   }
 }

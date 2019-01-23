@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiT
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, TaxCodeRecord}
-import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, TaxCodeChangeService}
+import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
@@ -134,6 +134,7 @@ class YourTaxCodeControllerSpec extends PlaySpec
       status(result) mustBe INTERNAL_SERVER_ERROR
     }
   }
+
 
   val nino = new Generator(new Random).nextNino
 
