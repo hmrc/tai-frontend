@@ -16,13 +16,14 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -32,7 +33,6 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain._
@@ -153,7 +153,6 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
       "a downstream error has occurred in one of the TaiResponse responding service methods due to no found primary employment information" in {
         val sut = createSUT
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
-        when(sut.authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
         when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDataAbsentMsg.toLowerCase)))
@@ -166,7 +165,6 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
       "a downstream error has occurred in one of the TaiResponse responding service methods due to no employments recorded for current tax year" in {
         val sut = createSUT
         when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(true))
-        when(sut.authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
         when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
 
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future(TaiTaxAccountFailureResponse(TaiConstants.NpsNoEmploymentForCurrentTaxYear.toLowerCase)))
@@ -177,11 +175,9 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
 
       }
     }
-
   }
 
-
-  val nino = new Generator(new Random).nextNino
+  val nino = FakeAuthAction.nino
 
   val employment = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
 
@@ -209,16 +205,11 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
     employmentService,
     taxAccountService,
     auditService,
-    personService,
     mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
-  ) {
-
-    when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-  }
+  )
 
 }
