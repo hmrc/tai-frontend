@@ -21,7 +21,7 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.formatting.Money._
 
-@(viewModel: DetailedIncomeTaxEstimateViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: DetailedIncomeTaxEstimateViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthActionedTaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{Messages("tai.estimatedIncome.detailedEstimate.title")}
 
@@ -43,7 +43,7 @@
     title = Messages("tai.estimatedIncome.detailedEstimate.title"),
     articleClasses = Some("full-width"),
     pageHeader = Some(header),
-    user = Some(user),
+    authActionedTaiUser = Some(user),
     gaCustomTitle = None
 ){
     <div class="grid-row">

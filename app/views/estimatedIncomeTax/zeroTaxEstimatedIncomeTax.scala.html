@@ -26,7 +26,7 @@
 
 
 @(viewModel: uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.ZeroTaxEstimatedIncomeTaxViewModel, iFormLinks: Html)(implicit
-request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+request: Request[_], messages: Messages, user: controllers.auth.AuthActionedTaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{Messages("tai.estimatedIncome.title")}
 
@@ -48,7 +48,7 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
     title = Messages("tai.estimatedIncome.title"),
     pageHeader = Some(header),
     articleClasses = Some("full-width"),
-    user = Some(user),
+    authActionedTaiUser = Some(user),
     webChat = true,
     gaCustomTitle = None){
 

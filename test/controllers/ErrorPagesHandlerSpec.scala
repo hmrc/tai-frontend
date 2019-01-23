@@ -32,6 +32,8 @@ import uk.gov.hmrc.tai.connectors.responses.TaiTaxAccountFailureResponse
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 
+import scala.concurrent.Future
+
 
 class ErrorPagesHandlerSpec extends PlaySpec
     with FakeTaiPlayApplication
@@ -39,6 +41,14 @@ class ErrorPagesHandlerSpec extends PlaySpec
     with MockitoSugar {
 
   "ErrorPagesHandler" must {
+    "handle an internal server error" in {
+      val controller = createSut
+      implicit val request = FakeRequest("GET", "/")
+      val result = Future.successful(controller.internalServerError("bad"))
+
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+
     "return the correct service unavailable page for 400" in  {
 
       val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("POST", "/"), UserBuilder())

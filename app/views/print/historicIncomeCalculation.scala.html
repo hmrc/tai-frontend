@@ -32,7 +32,7 @@
 
 
 @(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel
-)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser)
+)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthActionedTaiUser)
 
 @printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
 

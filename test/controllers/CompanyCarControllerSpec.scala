@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
+import controllers.actions.FakeValidatePerson
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -172,23 +173,17 @@ class CompanyCarControllerSpec extends PlaySpec
 
   val sessionService = mock[SessionService]
   val companyCarService = mock[CompanyCarService]
-  val personService = mock[PersonService]
   val journeyCacheService = mock[JourneyCacheService]
 
   class SUT(isCompanyCarForceRedirectEnabled: Boolean) extends CompanyCarController(
-    personService,
     companyCarService,
     journeyCacheService,
     sessionService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     MockPartialRetriever,
     MockTemplateRenderer){
     override val companyCarForceRedirectEnabled: Boolean = isCompanyCarForceRedirectEnabled
-
-    when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(fakeNino)))
   }
 
   override def messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

@@ -265,7 +265,19 @@ GET         /tax-code-change/your-tax-free-amount                               
 GET         /tax-code-change/what-happens-next                                         @controllers.TaxCodeChangeController.whatHappensNext
 
 ## Auth error page
-GET         /tax-code-change/unauthorised                                              @controllers.UnauthorisedController.onPageLoad
+GET         /unauthorised                                                              @controllers.UnauthorisedController.onPageLoad
+
+
+### Update Income CY + 1
+
+GET         /update-income/next-year/income/:empId/start                               @controllers.income.UpdateIncomeNextYearController.start(empId: Int)
+GET         /update-income/next-year/income/:empId/edit                                @controllers.income.UpdateIncomeNextYearController.edit(empId: Int)
+POST        /update-income/next-year/income/:empId/edit                                @controllers.income.UpdateIncomeNextYearController.update(empId: Int)
+GET         /update-income/next-year/income/:empId/no-change                           @controllers.income.UpdateIncomeNextYearController.same(empId: Int)
+GET         /update-income/next-year/income/:empId/confirmed                           @controllers.income.UpdateIncomeNextYearController.handleConfirm(empId: Int)
+GET         /update-income/next-year/income/:empId/confirm                             @controllers.income.UpdateIncomeNextYearController.confirm(empId: Int)
+GET         /update-income/next-year/income/:empId/success                             @controllers.income.UpdateIncomeNextYearController.success(empId: Int)
+
 
 ## Test New Auth
 GET         /test-page                                                                 @controllers.TestAuthController.authCheckAction

@@ -253,5 +253,9 @@ trait ErrorPagesHandler {
     }
   }
 
+ def internalServerError(logMessage: String)(implicit request: Request[_], messages: Messages): Result = {
+    Logger.warn(logMessage)
+    InternalServerError(error5xx(Messages("tai.technical.error.message")))
+  }
 }
 
