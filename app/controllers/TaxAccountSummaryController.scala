@@ -69,7 +69,7 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
             implicit val user = request.taiUser
             Ok(views.html.incomeTaxSummary(vm))
           }
-        case NonFatal(e) => Future.successful(internalServerError("Failed to fetch tax account summary details", Some(e)))
+        case _ => Future.successful(internalServerError("Failed to fetch tax account summary details"))
       }) recover {
         case NonFatal(e) => internalServerError("Failed to fetch tax account summary from tax service", Some(e))
       }
