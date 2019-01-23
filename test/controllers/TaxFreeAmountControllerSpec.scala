@@ -16,7 +16,8 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
@@ -26,13 +27,11 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity}
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 import scala.concurrent.Future
@@ -67,36 +66,24 @@ class TaxFreeAmountControllerSpec extends PlaySpec with FakeTaiPlayApplication w
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
-
   }
 
-  private def createSUT(newPageEnabled: Boolean = true) = new SUT()
+  private def createSUT() = new SUT()
 
-  private val nino = new Generator(new Random).nextNino
-
-  val codingComponents = Seq(CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
+  val codingComponents: Seq[CodingComponent] = Seq(CodingComponent(GiftAidPayments, None, 1000, "GiftAidPayments description"),
     CodingComponent(GiftsSharesCharity, None, 1000, "GiftsSharesCharity description"))
 
-  val personService: PersonService = mock[PersonService]
   val codingComponentService = mock[CodingComponentService]
   val companyCarService = mock[CompanyCarService]
   val employmentService = mock[EmploymentService]
 
   private class SUT() extends TaxFreeAmountController(
-    personService,
     codingComponentService,
     employmentService,
     companyCarService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector], mock[FormPartialRetriever],
+    FakeAuthAction,
+    FakeValidatePerson,
+    mock[FormPartialRetriever],
     MockTemplateRenderer
-  ) {
-
-    val ad = AuthBuilder.createFakeAuthData
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-  }
-
+  )
 }
