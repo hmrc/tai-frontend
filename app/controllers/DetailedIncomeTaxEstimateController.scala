@@ -23,7 +23,7 @@ import play.Logger
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
@@ -69,16 +69,11 @@ class DetailedIncomeTaxEstimateController @Inject()(taxAccountService: TaxAccoun
             val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxAccountSummary, codingComponents, nonTaxCodeIncome)
             Ok(views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model))
           case _ => {
-            handleError
+            internalServerError("Failed to fetch total tax details")
           }
         }
       }).recover {
-        case _ => handleError
+        case _ => internalServerError("Failed to fetch total tax details")
       }
-  }
-
-  private def handleError(implicit request: Request[_]) = {
-    Logger.warn("Failed to fetch total tax details")
-    InternalServerError(error5xx(Messages("tai.technical.error.message")))
   }
 }
