@@ -32,8 +32,7 @@ import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYea
 
 import scala.util.control.NonFatal
 
-class YourTaxCodeController @Inject()(personService: PersonService,
-                                      taxAccountService: TaxAccountService,
+class YourTaxCodeController @Inject()(taxAccountService: TaxAccountService,
                                       taxCodeChangeService: TaxCodeChangeService,
                                       authenticate: AuthAction,
                                       validatePerson: ValidatePerson,

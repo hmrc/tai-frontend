@@ -16,7 +16,7 @@
 
 package views.html
 
-import builders.UserBuilder
+import builders.AuthActionedUserBuilder
 import controllers.FakeTaiPlayApplication
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
@@ -31,7 +31,7 @@ class getHelpPageSpec extends PlaySpec
   with JsoupMatchers{
 
   implicit val request = FakeRequest("GET", "")
-  implicit val user = UserBuilder.apply()
+  implicit val user = AuthActionedUserBuilder()
   implicit val templateRenderer = MockTemplateRenderer
   implicit val partialRetriever = MockPartialRetriever
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
