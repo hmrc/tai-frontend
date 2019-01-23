@@ -16,7 +16,8 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
@@ -29,8 +30,6 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -136,6 +135,7 @@ class YourTaxCodeControllerSpec extends PlaySpec
     }
   }
 
+
   val nino = new Generator(new Random).nextNino
 
   private def createTestController = new TestController
@@ -148,15 +148,12 @@ class YourTaxCodeControllerSpec extends PlaySpec
     personService,
     taxAccountService,
     taxCodeChangeService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-    when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino))))
     when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-
   }
 
 }
