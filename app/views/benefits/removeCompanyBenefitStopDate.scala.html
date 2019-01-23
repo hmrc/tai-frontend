@@ -22,7 +22,7 @@
 @import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
-@(stopDateForm: Form[Option[String]],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(stopDateForm: Form[Option[String]],benefitType:String, empName:String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthActionedTaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Remove Company Benefits Stop Date"}
 @startOfCurrentTaxYear = @{Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}
@@ -40,7 +40,7 @@
 
 @main(
 title = Messages("tai.benefits.ended.stopDate.heading", benefitType, empName),
-user = Some(user),
+authActionedTaiUser = Some(user),
 pageHeader = Some(header),
 articleClasses = None,
 gaCustomTitle = Some(Messages("tai.benefits.ended.stopDate.customGaTitle"))){

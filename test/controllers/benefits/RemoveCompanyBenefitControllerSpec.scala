@@ -18,7 +18,8 @@ package controllers.benefits
 
 
 import builders.{AuthBuilder, RequestBuilder}
-import controllers.FakeTaiPlayApplication
+import controllers.actions.FakeValidatePerson
+import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -526,25 +527,15 @@ class RemoveCompanyBenefitControllerSpec extends PlaySpec
   def createSUT = new SUT
 
   val benefitsService = mock[BenefitsService]
-  val personService = mock[PersonService]
   val removeCompanyBenefitJourneyCacheService = mock[JourneyCacheService]
   val trackSuccessJourneyCacheService = mock[JourneyCacheService]
 
   class SUT extends RemoveCompanyBenefitController(
-    personService,
-    mock[AuditService],
     removeCompanyBenefitJourneyCacheService,
     trackSuccessJourneyCacheService,
     benefitsService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     MockTemplateRenderer,
-    mock[FormPartialRetriever]) {
-
-    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
-  }
-
+    mock[FormPartialRetriever])
 }

@@ -17,7 +17,8 @@
 package controllers.employments
 
 import builders.{AuthBuilder, RequestBuilder}
-import controllers.FakeTaiPlayApplication
+import controllers.actions.FakeValidatePerson
+import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -83,20 +84,6 @@ class EndEmploymentControllerSpec
       val endEmploymentTest = createEndEmploymentTest
       Await.result(endEmploymentTest.employmentUpdateRemove(1)(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
       verify(employmentService, times(1)).employment(any(), any())(any())
-    }
-
-    "redirect to GG login" when {
-      "user is not authorised" in {
-        val endEmploymentTest = createEndEmploymentTest
-        val result = endEmploymentTest.employmentUpdateRemove(1)(RequestBuilder.buildFakeRequestWithoutAuth("GET"))
-        status(result) mustBe 303
-
-        val nextUrl = redirectLocation(result) match {
-          case Some(s: String) => s
-          case _ => "" + ""
-        }
-        nextUrl.contains("/gg/sign-in") mustBe true
-      }
     }
   }
 
@@ -226,20 +213,6 @@ class EndEmploymentControllerSpec
         status(result) mustBe BAD_REQUEST
       }
     }
-
-    "redirect to GG login" when {
-      "user is not authorised" in {
-        val endEmploymentTest = createEndEmploymentTest
-        val result = endEmploymentTest.handleEmploymentUpdateRemove(1)(RequestBuilder.buildFakeRequestWithoutAuth("POST"))
-        status(result) mustBe 303
-
-        val nextUrl = redirectLocation(result) match {
-          case Some(s: String) => s
-          case _ => "" + ""
-        }
-        nextUrl.contains("/gg/sign-in") mustBe true
-      }
-    }
   }
 
   "tell us about employment error page" must {
@@ -328,21 +301,7 @@ class EndEmploymentControllerSpec
       when(employmentService.employment(any(), any())(any()))
         .thenReturn(Future.successful(None))
       val result = endEmploymentTest.endEmploymentPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-     status(result) mustBe INTERNAL_SERVER_ERROR
-    }
-
-    "redirect to GG login" when {
-      "user is not authorised" in {
-        val endEmploymentTest = createEndEmploymentTest
-        val result = endEmploymentTest.endEmploymentPage(1)(RequestBuilder.buildFakeRequestWithoutAuth("GET"))
-        status(result) mustBe 303
-
-        val nextUrl = redirectLocation(result) match {
-          case Some(s: String) => s
-          case _ => "" + ""
-        }
-          nextUrl.contains("/gg/sign-in") mustBe true
-      }
+      status(result) mustBe INTERNAL_SERVER_ERROR
     }
   }
 
@@ -622,30 +581,22 @@ class EndEmploymentControllerSpec
 
   val auditService = mock[AuditService]
   val employmentService = mock[EmploymentService]
-  val personService = mock[PersonService]
   val endEmploymentJourneyCacheService = mock[JourneyCacheService]
   val trackSuccessJourneyCacheService = mock[JourneyCacheService]
 
   private class EndEmploymentTest extends EndEmploymentController(
-    personService,
     auditService,
     employmentService,
     endEmploymentJourneyCacheService,
     trackSuccessJourneyCacheService,
-    mock[DelegationConnector],
-    mock[AuthConnector],
-
-    mock[AuditConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     MockTemplateRenderer,
     mock[FormPartialRetriever]) {
 
     val employmentEndDateForm = EmploymentEndDateForm("employer")
 
     def generateNino: Nino = new Generator().nextNino
-    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
 
     when(employmentService.employment(any(), any())(any()))
       .thenReturn(Future.successful(Some(Employment(employerName, None, new LocalDate(), None, Nil, "", "", 1, None, false, false))))
