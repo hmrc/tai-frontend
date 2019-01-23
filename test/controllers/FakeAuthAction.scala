@@ -28,5 +28,5 @@ object FakeAuthAction extends AuthAction {
   val nino = new Generator(new Random).nextNino
 
   override def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[Result]): Future[Result] =
-    block(AuthenticatedRequest(request, AuthActionedTaiUser("person name", nino.toString(), "utr")))
+    block(AuthenticatedRequest(request, AuthActionedTaiUser("person name", nino.toString(), "utr", "userDetailsUri")))
 }

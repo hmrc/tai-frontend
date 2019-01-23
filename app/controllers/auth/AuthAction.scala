@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthActionedTaiUser) extends WrappedRequest[A](request)
 
-case class AuthActionedTaiUser(name: String, validNino: String, utr: String) {
+case class AuthActionedTaiUser(name: String, validNino: String, utr: String, userDetailsUri: String) {
   def getDisplayName = name
 
   def getNino = validNino
@@ -44,12 +44,13 @@ case class AuthActionedTaiUser(name: String, validNino: String, utr: String) {
 }
 
 object AuthActionedTaiUser {
-  def apply(name: Option[Name], nino: Option[String], saUtr: Option[String]): AuthActionedTaiUser = {
+  def apply(name: Option[Name], nino: Option[String], saUtr: Option[String], userDetailsUri: Option[String]): AuthActionedTaiUser = {
     val validNino = nino.getOrElse("")
     val validName = name.flatMap(_.name).getOrElse("")
     val validUtr = saUtr.getOrElse("")
+    val validUserDetailsUri = userDetailsUri.getOrElse("")
 
-    AuthActionedTaiUser(validName, validNino, validUtr)
+    AuthActionedTaiUser(validName, validNino, validUtr, validUserDetailsUri)
   }
 }
 
@@ -63,9 +64,9 @@ class AuthActionImpl @Inject()(personService: PersonService,
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     authorised(ConfidenceLevel.L200)
-      .retrieve(Retrievals.nino and Retrievals.name and Retrievals.saUtr) {
-        case nino ~ name ~ saUtr => {
-          val taiUser = AuthActionedTaiUser(name, nino, saUtr)
+      .retrieve(Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.userDetailsUri) {
+        case nino ~ name ~ saUtr ~ userDetailsUri => {
+          val taiUser = AuthActionedTaiUser(name, nino, saUtr, userDetailsUri)
 
           for {
             result <- block(AuthenticatedRequest(request, taiUser))

@@ -17,63 +17,55 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.audit.Auditable
-import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
+import controllers.actions.ValidatePerson
+import controllers.auth.{AuthAction, TaiUser}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.frontend.controller.UnauthorisedAction
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.UserDetailsConnector
 import uk.gov.hmrc.tai.model.domain.Person
-import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 class ServiceController @Inject()(userDetailsConnector: UserDetailsConnector,
-                                  personService: PersonService,
-                                  val auditConnector: AuditConnector,
-                                  val delegationConnector: DelegationConnector,
-                                  val authConnector: AuthConnector,
+                                  authenticate: AuthAction,
+                                  validatePerson: ValidatePerson,
                                   override implicit val partialRetriever: FormPartialRetriever,
-                                  override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite
-  with Auditable {
+                                  override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
 
   def timeoutPage() = UnauthorisedAction.async {
     implicit request => Future.successful(Ok(views.html.timeout()))
   }
 
-  def serviceSignout = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          userDetailsConnector.userDetails(user.authContext).map { x =>
-            if (x.hasVerifyAuthProvider) {
-              Redirect(ApplicationConfig.citizenAuthFrontendSignOutUrl).
-                withSession(TaiConstants.SessionPostLogoutPage -> ApplicationConfig.feedbackSurveyUrl)
-            } else {
-              Redirect(ApplicationConfig.companyAuthFrontendSignOutUrl)
-            }
-          }
+  def serviceSignout = (authenticate andThen validatePerson).async {
+    implicit request =>
+      val userDetails: String = request.taiUser.userDetailsUri
+
+      userDetailsConnector.userDetails(userDetails).map { x =>
+        if (x.hasVerifyAuthProvider) {
+          Redirect(ApplicationConfig.citizenAuthFrontendSignOutUrl).
+            withSession(TaiConstants.SessionPostLogoutPage -> ApplicationConfig.feedbackSurveyUrl)
+        } else {
+          Redirect(ApplicationConfig.companyAuthFrontendSignOutUrl)
+        }
+      } recover {
+        case NonFatal(e) => internalServerError("", Some(e))
+      }
   }
 
-  def gateKeeper() = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          getGateKeeper(Nino(user.getNino.toString))
+  def gateKeeper() = (authenticate andThen validatePerson).async {
+    implicit request =>
+      getGateKeeper(request.taiUser.nino)
   }
 
-  def getGateKeeper(nino: Nino)(implicit request: Request[AnyContent], user: TaiUser, person: Person): Future[Result] = {
+  def getGateKeeper(nino: Nino)(implicit request: Request[AnyContent]): Future[Result] = {
     Future.successful(Ok(views.html.manualCorrespondence()))
   } recoverWith handleErrorResponse("getServiceUnavailable", nino)
 
