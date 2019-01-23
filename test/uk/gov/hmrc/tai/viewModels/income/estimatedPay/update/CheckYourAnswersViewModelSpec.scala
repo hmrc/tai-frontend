@@ -24,7 +24,7 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with ViewModelHelper
   with PropertyChecks {

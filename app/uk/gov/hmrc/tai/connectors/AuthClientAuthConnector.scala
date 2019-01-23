@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.connectors
 
 import com.google.inject.Singleton
+import play.api.Play
 import uk.gov.hmrc.auth.core.PlayAuthConnector
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.hooks.HttpHooks
@@ -28,6 +29,7 @@ import uk.gov.hmrc.play.http.ws._
 object ConnectorWithHttpValues {
   val http = new WSGet with HttpGet with WSPut with HttpPut with WSPost with HttpPost with WSDelete with HttpDelete with WSPatch with HttpPatch with HttpHooks {
     val hooks = NoneRequired
+    override lazy val configuration = Some(Play.current.configuration.underlying)
   }
 }
 

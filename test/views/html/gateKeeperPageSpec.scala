@@ -16,8 +16,6 @@
 
 package views.html
 
-import play.api.mvc.Call
-import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 

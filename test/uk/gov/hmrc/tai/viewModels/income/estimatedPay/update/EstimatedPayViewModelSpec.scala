@@ -17,7 +17,8 @@
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import org.scalatestplus.play.PlaySpec
-import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.model.TaxYear
+
 
 class EstimatedPayViewModelSpec extends PlaySpec{
 
@@ -37,7 +38,7 @@ class EstimatedPayViewModelSpec extends PlaySpec{
       val grossAnnualPay = 20000
       val netAnnualPay = 18000
       val annualSalary = 25000
-      val employmentStartDate = TaxYearResolver.startOfCurrentTaxYear.plusMonths(2)
+      val employmentStartDate = TaxYear().start.plusMonths(2)
 
       val viewModel = EstimatedPayViewModel(Some(grossAnnualPay), Some(netAnnualPay), 1, false, Some(annualSalary), Some(employmentStartDate),"employer1")
 

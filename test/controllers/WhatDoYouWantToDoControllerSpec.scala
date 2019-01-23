@@ -25,7 +25,7 @@ import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{contentAsString, status, _}
@@ -42,7 +42,6 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
-import uk.gov.hmrc.time.TaxYearResolver
 import utils.factories.TaxCodeMismatchFactory
 
 import scala.concurrent.duration._
@@ -481,9 +480,9 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
   }
 
   private val fakeEmploymentData = Seq(Employment("TEST", Some("12345"), LocalDate.now(), None,
-    List(AnnualAccount("", TaxYear(TaxYearResolver.currentTaxYear), Available, Nil, Nil)), "", "", 2, None, false, false),
+    List(AnnualAccount("", TaxYear(), Available, Nil, Nil)), "", "", 2, None, false, false),
     Employment("TEST1", Some("123456"), LocalDate.now(), None,
-      List(AnnualAccount("", TaxYear(TaxYearResolver.currentTaxYear), Unavailable, Nil, Nil)), "", "", 2, None, false, false))
+      List(AnnualAccount("", TaxYear(), Unavailable, Nil, Nil)), "", "", 2, None, false, false))
 
   private val nino = new Generator(new Random).nextNino
   private val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)

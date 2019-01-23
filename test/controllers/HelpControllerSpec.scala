@@ -22,7 +22,7 @@ import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.i18n.MessagesApi
 import play.api.test.Helpers._

@@ -24,7 +24,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{status, _}
@@ -36,7 +36,6 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, TaxCodeRecord}
 import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
-import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -100,7 +99,7 @@ class YourTaxCodeControllerSpec extends PlaySpec
       when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
-      val startDate = TaxYearResolver.startOfCurrentTaxYear
+      val startDate = TaxYear().start
       val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation, "A Employer 1", false, Some("1234"), false)
 
       val taxCodeRecords = Seq(previousTaxCodeRecord1)

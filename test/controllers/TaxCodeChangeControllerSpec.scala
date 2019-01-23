@@ -22,7 +22,7 @@ import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{status, _}
@@ -38,7 +38,7 @@ import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity, TaxCod
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -186,9 +186,9 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   private val codingComponent2 = CodingComponent(GiftsSharesCharity, None, giftAmount, "GiftsSharesCharity description")
   val codingComponents = Seq(codingComponent1, codingComponent2)
 
-  val startDate = TaxYearResolver.startOfCurrentTaxYear
+  val startDate = TaxYear().start
   val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
-  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
 
   val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]

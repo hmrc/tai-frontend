@@ -35,6 +35,7 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.benefits.{CompanyBenefitTotalValueForm, RemoveCompanyBenefitStopDateForm}
 import uk.gov.hmrc.tai.forms.constaints.TelephoneNumberConstraint.telephoneNumberSizeConstraint
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.benefits.EndedCompanyBenefit
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
@@ -43,7 +44,6 @@ import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants, RemoveCompanyBenefitStopDateConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.benefit.{BenefitViewModel, RemoveCompanyBenefitCheckYourAnswersViewModel}
-import uk.gov.hmrc.time.TaxYearResolver
 import views.html.benefits.removeCompanyBenefitCheckYourAnswers
 
 import scala.Function.tupled
@@ -87,7 +87,7 @@ class RemoveCompanyBenefitController @Inject()(personService: PersonService,
       implicit person =>
         implicit request =>
 
-          val startOfTaxYear = Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)
+          val startOfTaxYear = Dates.formatDate(TaxYear().start)
 
           RemoveCompanyBenefitStopDateForm.form.bindFromRequest.fold(
             formWithErrors => {

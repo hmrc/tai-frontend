@@ -17,12 +17,12 @@
 package uk.gov.hmrc.tai.viewModels.income
 
 import controllers.FakeTaiPlayApplication
-import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{Messages, MessagesApi}
+import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
-import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 
 class BbsiClosedCheckYourAnswersViewModelSpec extends PlaySpec
@@ -68,7 +68,7 @@ class BbsiClosedCheckYourAnswersViewModelSpec extends PlaySpec
           "/check-income-tax/income/bank-building-society-savings/0/close/date")
 
         result.journeyConfirmationLines(applicationMessages)(2) mustBe CheckYourAnswersConfirmationLine(
-          Messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYearResolver.currentTaxYear.toString),
+          Messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().year.toString),
           "£123,456",
           "/check-income-tax/income/bank-building-society-savings/0/close/interest")
       }
@@ -95,6 +95,6 @@ class BbsiClosedCheckYourAnswersViewModelSpec extends PlaySpec
     }
   }
 
-  val dateBeforeCurrentTaxYear = TaxYearResolver.startOfCurrentTaxYear.minusDays(1)
-  val dateWithinCurrentTaxYear = TaxYearResolver.startOfCurrentTaxYear
+  val dateBeforeCurrentTaxYear = TaxYear().endPrev
+  val dateWithinCurrentTaxYear = TaxYear().start
 }

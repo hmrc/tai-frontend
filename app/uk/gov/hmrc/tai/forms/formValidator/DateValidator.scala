@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.tai.forms.formValidator
 
-import play.api.data.Mapping
 import org.joda.time.LocalDate
 import play.api.data.Forms._
-import DateFields._
-import uk.gov.hmrc.time.TaxYearResolver
+import play.api.data.Mapping
+import uk.gov.hmrc.tai.forms.formValidator.DateFields._
+import uk.gov.hmrc.tai.model.TaxYear
+
 import scala.util.Try
 
 /**
@@ -50,7 +51,7 @@ trait DateValidator {
   }).verifying("error.invalid.date.past", data => {
     (data._1, data._2, data._3) match {
       case (Some(y), Some(m), Some(d)) =>
-        Try(!TaxYearResolver.startOfCurrentTaxYear.isAfter(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))).getOrElse(true)
+        Try(!TaxYear().start.isAfter(new LocalDate(y.trim.toInt, m.trim.toInt, d.trim.toInt))).getOrElse(true)
       case _ => true
     }
   }).transform({

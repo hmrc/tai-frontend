@@ -22,7 +22,7 @@ import controllers.i18n.TaiLanguageController
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mock.MockitoSugar._
+import org.scalatest.mockito.MockitoSugar._
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Lang, Messages, MessagesApi}
 import uk.gov.hmrc.domain.Generator
