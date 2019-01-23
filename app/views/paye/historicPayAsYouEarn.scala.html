@@ -23,7 +23,7 @@
 @import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel.EmploymentViewModel
 
 
-@(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, noOfPreviousYearsToShow: Int)(implicit request: Request[_], user: controllers.auth.TaiUser,
+@(viewModel: uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel, noOfPreviousYearsToShow: Int)(implicit request: Request[_], user: controllers.auth.AuthActionedTaiUser,
 messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your Pay As You Earn Income Tax"}
@@ -55,7 +55,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
 @main(
     title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
     articleClasses = Some("full-width"),
-    user = Some(user),
+    authActionedTaiUser = Some(user),
     pageHeader = Some(header),
     gaCustomTitle = None
 ){
