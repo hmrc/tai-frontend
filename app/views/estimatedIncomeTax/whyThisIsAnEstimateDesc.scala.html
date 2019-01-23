@@ -14,12 +14,12 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.tai.model.TaxYear
 
 @()(implicit messages: Messages)
 
 <h2 class="heading-section">
  @Messages("tai.estimatedIncome.whyEstimate.link")
 </h2>
-<p id="whyEstimateDesc">@Messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))</p>
+<p id="whyEstimateDesc">@Messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYear().end))</p>

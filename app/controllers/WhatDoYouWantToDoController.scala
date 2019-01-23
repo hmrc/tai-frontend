@@ -17,8 +17,9 @@
 package controllers
 
 import com.google.inject.Inject
+import controllers.actions.ValidatePerson
 import controllers.audit.Auditable
-import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
+import controllers.auth.{AuthAction, AuthActionedTaiUser}
 import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
@@ -26,8 +27,6 @@ import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
@@ -38,57 +37,53 @@ import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
-import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 
-class WhatDoYouWantToDoController @Inject()(personService: PersonService,
-                                            employmentService: EmploymentService,
+class WhatDoYouWantToDoController @Inject()(employmentService: EmploymentService,
                                             taxCodeChangeService: TaxCodeChangeService,
                                             taxAccountService: TaxAccountService,
                                             trackingService: TrackingService,
-                                            auditService: AuditService,
                                             val auditConnector: AuditConnector,
-                                            val authConnector: AuthConnector,
-                                            val delegationConnector: DelegationConnector,
+                                            auditService: AuditService,
+                                            authenticate: AuthAction,
+                                            validatePerson: ValidatePerson,
                                             override implicit val partialRetriever: FormPartialRetriever,
                                             override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite
   with Auditable
   with FeatureTogglesConfig {
 
   implicit val recoveryLocation: RecoveryLocation = classOf[WhatDoYouWantToDoController]
 
-  def whatDoYouWantToDoPage(): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            val possibleRedirectFuture =
-              for {
-                taxAccountSummary <- taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear())
-                _ <- employmentService.employments(Nino(user.getNino), TaxYear())
-                prevYearEmployments <- previousYearEmployments(Nino(user.getNino))
-              } yield {
-                val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
-                  npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments) orElse
-                    npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments) orElse
-                    npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments) orElse
-                    npsNoEmploymentResult orElse
-                    npsTaxAccountDeceasedResult orElse { case _ => None }
+  def whatDoYouWantToDoPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+        implicit request => {
+          implicit val user = request.taiUser
+          val nino = request.taiUser.nino
+          val possibleRedirectFuture =
+            for {
+              taxAccountSummary <- taxAccountService.taxAccountSummary(nino, TaxYear())
+              _ <- employmentService.employments(nino, TaxYear())
+              prevYearEmployments <- previousYearEmployments(nino)
+            } yield {
 
-                npsFailureHandlingPf(taxAccountSummary)
-              }
+              val npsFailureHandlingPf: PartialFunction[TaiResponse, Option[Result]] =
+                npsTaxAccountAbsentResult_withEmployCheck(prevYearEmployments) orElse
+                  npsTaxAccountCYAbsentResult_withEmployCheck(prevYearEmployments) orElse
+                  npsNoEmploymentForCYResult_withEmployCheck(prevYearEmployments) orElse
+                  npsNoEmploymentResult orElse
+                  npsTaxAccountDeceasedResult orElse { case _ => None }
 
-            possibleRedirectFuture.flatMap(
-              _.map(Future.successful).getOrElse(allowWhatDoYouWantToDo)
-            )
+              npsFailureHandlingPf(taxAccountSummary)
+            }
 
-          } recoverWith (hodBadRequestResult orElse hodInternalErrorResult)
+          possibleRedirectFuture.flatMap(
+            _.map(Future.successful).getOrElse(allowWhatDoYouWantToDo)
+          )
+
+        } recoverWith (hodBadRequestResult orElse hodInternalErrorResult)
   }
 
-  private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: TaiUser): Future[Result] = {
+  private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthActionedTaiUser): Future[Result] = {
 
     val nino = Nino(user.getNino)
 
@@ -125,8 +120,7 @@ class WhatDoYouWantToDoController @Inject()(personService: PersonService,
   }
 
   private def auditNumberOfTaxCodesReturned(nino: Nino)
-                                           (implicit request: Request[AnyContent],
-                                            user: TaiUser) = {
+                                           (implicit request: Request[AnyContent]) = {
 
     val currentTaxYearEmployments: Future[Seq[Employment]] = employmentService.employments(nino, TaxYear())
     val currentTaxYearTaxCodes: Future[TaiResponse] = taxAccountService.taxCodeIncomes(nino, TaxYear())
@@ -141,18 +135,18 @@ class WhatDoYouWantToDoController @Inject()(personService: PersonService,
       }
       auditService.sendUserEntryAuditEvent(nino, request.headers.get("Referer").getOrElse("NA"), employments, noOfTaxCodes)
     }).recover {
-      auditError
+      auditError(nino)
     }
   }
 
 
-  private def auditError(implicit request: Request[AnyContent], user: TaiUser): PartialFunction[Throwable, Unit] = {
+  private def auditError(nino: Nino)(implicit request: Request[AnyContent]): PartialFunction[Throwable, Unit] = {
     case e =>
-      Logger.warn(s"<Send audit event failed to get either taxCodeIncomes or employments for nino ${user.getNino}  with exception: ${e.getClass()}", e)
+      Logger.warn(s"<Send audit event failed to get either taxCodeIncomes or employments for nino ${nino}  with exception: ${e.getClass()}", e)
   }
 
   private[controllers] def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
-    employmentService.employments(nino, TaxYear(TaxYearResolver.currentTaxYear - 1)) recover {
+    employmentService.employments(nino, TaxYear().prev) recover {
       case _ => Nil
     }
   }

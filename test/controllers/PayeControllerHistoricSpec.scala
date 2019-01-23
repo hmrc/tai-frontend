@@ -16,26 +16,25 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.{AuthActionedUserBuilder, AuthBuilder, RequestBuilder}
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
 import org.mockito.Mockito
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{BadRequestException, HttpException, InternalServerException, NotFoundException}
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService, TaxCodeChangeService, TaxPeriodLabelService}
+import uk.gov.hmrc.tai.service.{EmploymentService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 import uk.gov.hmrc.tai.viewModels.HistoricPayAsYouEarnViewModel
 import views.html.paye.historicPayAsYouEarn
@@ -60,6 +59,7 @@ class PayeControllerHistoricSpec extends PlaySpec
 
   private val currentYear: Int = TaxYear().year
   private val cyMinusOneTaxYear: TaxYear = TaxYear(currentYear - 1)
+  implicit val authActionedTaiUser = AuthActionedUserBuilder()
 
   "Calling the payePage method with an authorised session" must {
 
@@ -114,30 +114,6 @@ class PayeControllerHistoricSpec extends PlaySpec
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
       }
-    }
-
-    "redirect to mci page when mci indicator is true" in {
-      val testController = createTestController()
-      when(personService.personDetails(any())(any())).thenReturn(Future.successful(personMci))
-
-      val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-      status(result) mustBe SEE_OTHER
-      val redirectUrl = redirectLocation(result) match {
-        case Some(s: String) => s
-        case _ => ""
-      }
-      redirectUrl mustBe "/check-income-tax/tax-estimate-unavailable"
-    }
-
-    "redirect to deceased page when deceased indicator is true" in {
-      val testController = createTestController()
-      when(personService.personDetails(any())(any())).thenReturn(Future.successful(person.copy(isDeceased = true)))
-
-      val result = testController.payePage(TaxYear().prev)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some("/check-income-tax/deceased")
     }
 
     "display an error page" when {
@@ -220,14 +196,10 @@ class PayeControllerHistoricSpec extends PlaySpec
 
   val fakeAuthority = AuthBuilder.createFakeAuthority(fakeNino.nino)
 
-  val person = fakePerson(fakeNino)
-  val personMci = person.copy(hasCorruptData = true)
-
   def createTestController(employments: Seq[Employment] = Nil, previousYears: Int = 3, showTaxCodeDescriptionLink: Boolean = false) = {
     new PayeControllerHistoricTest(employments, previousYears, showTaxCodeDescriptionLink)
   }
 
-  val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val employmentService = mock[EmploymentService]
 
@@ -237,18 +209,13 @@ class PayeControllerHistoricSpec extends PlaySpec
     mock[ApplicationConfig],
     taxCodeChangeService,
     employmentService,
-    personService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-    
     override val numberOfPreviousYearsToShow: Int = previousYears
 
-    when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(person))
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(employments))
     when(taxCodeChangeService.hasTaxCodeRecordsInYearPerEmployment(any(), any())(any())).thenReturn(Future.successful(showTaxCodeDescriptionLink))
   }

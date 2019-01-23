@@ -18,7 +18,8 @@ package views.html.incomes
 
 import uk.gov.hmrc.tai.viewModels.income.BbsiClosedCheckYourAnswersViewModel
 import play.twirl.api.Html
-import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.model.TaxYear
+
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
@@ -45,7 +46,7 @@ class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
       "links to the BBSI end date form page" when {
         "the account is closed before the current tax year" in {
 
-          val date = TaxYearResolver.startOfCurrentTaxYear.minusDays(1)
+          val date = TaxYear().endPrev
           val formattedDate = date.toString("yyyy-MM-dd")
 
           val viewModel = BbsiClosedCheckYourAnswersViewModel(0, formattedDate, Some(account), Some("123.45"))
@@ -75,7 +76,7 @@ class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
         val viewModel = BbsiClosedCheckYourAnswersViewModel(0, formattedDate, Some(account), Some("123"))
         def view: Html = views.html.incomes.bbsi.close.bank_building_society_check_your_answers(viewModel)
 
-        doc(view) must haveCheckYourAnswersSummaryLine(3, messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYearResolver.currentTaxYear.toString))
+        doc(view) must haveCheckYourAnswersSummaryLine(3, messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().year.toString))
         doc(view) must haveCheckYourAnswersSummaryLineAnswer(3, "£123")
         doc(view) must haveCheckYourAnswersSummaryLineChangeLink(3, controllers.income.bbsi.routes.BbsiCloseAccountController.captureClosingInterest(0).url)
       }
@@ -87,7 +88,7 @@ class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
         val viewModel = BbsiClosedCheckYourAnswersViewModel(0, formattedDate, Some(account), None)
         def view: Html = views.html.incomes.bbsi.close.bank_building_society_check_your_answers(viewModel)
 
-        doc(view) must haveCheckYourAnswersSummaryLine(3, messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYearResolver.currentTaxYear.toString))
+        doc(view) must haveCheckYourAnswersSummaryLine(3, messages("tai.bbsi.end.checkYourAnswers.rowThree.question", TaxYear().year.toString))
         doc(view) must haveCheckYourAnswersSummaryLineAnswer(3, messages("tai.closeBankAccount.closingInterest.notKnown"))
         doc(view) must haveCheckYourAnswersSummaryLineChangeLink(3, controllers.income.bbsi.routes.BbsiCloseAccountController.captureClosingInterest(0).url)
       }
@@ -106,7 +107,7 @@ class BankBuildingSocietyCheckYourAnswersSpec extends TaiViewSpec {
 
   val account = "bbsiAccount"
 
-  val date = TaxYearResolver.startOfCurrentTaxYear
+  val date = TaxYear().start
   val formattedDate = date.toString("yyyy-MM-dd")
   val displayedDate = date.toString("d MMMM yyyy")
 

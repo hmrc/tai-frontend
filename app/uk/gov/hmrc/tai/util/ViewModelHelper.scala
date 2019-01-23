@@ -22,7 +22,7 @@ import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.model.TaxYear
 
 import scala.util.Try
 
@@ -35,11 +35,11 @@ trait ViewModelHelper {
   def withPoundPrefix(moneyPounds: MoneyPounds): String = MonetaryUtil.withPoundPrefix(moneyPounds)
 
   def currentTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
-    htmlNonBroken( Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear) )
+    htmlNonBroken( Dates.formatDate(TaxYear().end) )
   }
 
   def nextTaxYearHeaderHtmlNonBreak(implicit messages: Messages): String = {
-    htmlNonBroken( Dates.formatDate(TaxYearResolver.startOfNextTaxYear) )
+    htmlNonBroken( Dates.formatDate(TaxYear().next.start) )
   }
 
   @deprecated("Use TaxYearRangeUtil.currentTaxYearRange")

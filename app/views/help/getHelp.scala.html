@@ -15,7 +15,7 @@
  *@
 
 @(status : Option[String] = None)(implicit request: Request[_], messages: Messages,
-user: controllers.auth.TaiUser,
+user: controllers.auth.AuthActionedTaiUser,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import uk.gov.hmrc.urls.Link
@@ -23,7 +23,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
 @main(
     title = Messages("tai.getHelp.h1"),
     articleClasses = Some("full-width"),
-    user = Some(user),
+    authActionedTaiUser = Some(user),
     clickWebChat = true,
     gaCustomTitle = None
 ){

@@ -34,7 +34,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 import scala.concurrent.Future
 
@@ -66,7 +66,7 @@ class NoCYIncomeTaxErrorController @Inject()(personService: PersonService,
   }
 
   private def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
-    employmentService.employments(nino, TaxYear(TaxYearResolver.currentTaxYear - 1)) recover {
+    employmentService.employments(nino, TaxYear().prev) recover {
       case _ => Nil
     }
   }

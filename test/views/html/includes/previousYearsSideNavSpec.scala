@@ -21,7 +21,6 @@ import org.jsoup.Jsoup
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service.TaxPeriodLabelService
-import uk.gov.hmrc.time.TaxYearResolver
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class previousYearsSideNavSpec extends TaiViewSpec {
@@ -63,8 +62,8 @@ class previousYearsSideNavSpec extends TaiViewSpec {
 
   }
 
-  private val currentYear = TaxYearResolver.currentTaxYear
+  private val currentYear = TaxYear().year
 
-  override def view: Html = views.html.includes.previousYearsSideNav(TaxYear(currentYear - 1), 3)
+  override def view: Html = views.html.includes.previousYearsSideNav(TaxYear().prev, 3)
 
 }
