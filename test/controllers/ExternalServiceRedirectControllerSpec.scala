@@ -16,7 +16,8 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.{AuthActionedUserBuilder, RequestBuilder}
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -26,9 +27,8 @@ import org.scalatestplus.play.PlaySpec
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.tai.service.{AuditService, PersonService, SessionService}
+import uk.gov.hmrc.tai.service.{AuditService, SessionService}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -39,11 +39,13 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
     "redirect to external url" when {
       "a valid service and i-form name has been passed" in {
         val sut = createSut
-        when(auditService.sendAuditEventAndGetRedirectUri(Matchers.eq(nino), Matchers.eq("Test"))(any(), any())).thenReturn(Future.successful(redirectUri))
+
+        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" -> redirectUri)
+
+        when(auditService.sendAuditEventAndGetRedirectUri(any(), Matchers.eq("Test"))(any(), any())).thenReturn(Future.successful(redirectUri))
         when(sessionService.invalidateCache()(any())).thenReturn(Future.successful(HttpResponse(OK)))
 
-        val result = sut.auditInvalidateCacheAndRedirectService("Test")(RequestBuilder.buildFakeRequestWithAuth("GET").withHeaders("Referer" ->
-          redirectUri))
+        val result = sut.auditInvalidateCacheAndRedirectService("Test")(request)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe redirectUri
@@ -54,28 +56,18 @@ class ExternalServiceRedirectControllerSpec extends PlaySpec with MockitoSugar w
 
   private val redirectUri = "redirectUri"
   private implicit val hc = HeaderCarrier()
-  private val nino = new Generator(new Random).nextNino
 
   def createSut = new SUT
 
-  val personService: PersonService = mock[PersonService]
   val sessionService = mock[SessionService]
   val auditService = mock[AuditService]
 
   class SUT extends ExternalServiceRedirectController(
     sessionService,
-    personService,
     auditService,
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
-  ) {
-
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-
-    when(authConnector.currentAuthority(any(), any())).thenReturn(
-      Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino))))
-  }
-
+  )
 }

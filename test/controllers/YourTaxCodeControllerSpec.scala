@@ -35,8 +35,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiT
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, TaxCodeRecord}
-import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, TaxCodeChangeService}
-
+import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -140,20 +139,15 @@ class YourTaxCodeControllerSpec extends PlaySpec
 
   private def createTestController = new TestController
 
-  val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val taxAccountService = mock[TaxAccountService]
 
   private class TestController extends YourTaxCodeController(
-    personService,
     taxAccountService,
     taxCodeChangeService,
     FakeAuthAction,
     FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
-  ) {
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-  }
-
+  )
 }

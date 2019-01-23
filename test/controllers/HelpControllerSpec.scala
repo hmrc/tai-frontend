@@ -16,7 +16,8 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
@@ -27,12 +28,9 @@ import play.api.i18n.MessagesApi
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.config.{ApplicationConfig, WSHttpProxy}
 import uk.gov.hmrc.tai.model.domain.Person
-import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
 import scala.concurrent.Future
@@ -109,16 +107,13 @@ class HelpControllerSpec extends PlaySpec
 
   def createSut = new SUT
 
-  val personService: PersonService = mock[PersonService]
   val mockWSHttpProxy: WSHttpProxy = mock[WSHttpProxy]
 
   class SUT extends HelpController(
     mock[ApplicationConfig],
     mockWSHttpProxy,
-    personService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
@@ -130,11 +125,6 @@ class HelpControllerSpec extends PlaySpec
     val nino: Nino = new Generator().nextNino
 
     val fakePerson = Person(nino, "firstname", "surname", false, false)
-
-    when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(
-      Some(AuthBuilder.createFakeAuthority(nino.nino))))
-
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson))
 
     val response = HttpResponse(1, None, Map("a" -> List("1", "2", "3")), None)
 
