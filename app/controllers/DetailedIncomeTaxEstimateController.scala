@@ -34,6 +34,8 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.{CodingComponentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
 
+import scala.util.control.NonFatal
+
 class DetailedIncomeTaxEstimateController @Inject()(taxAccountService: TaxAccountService,
                                                     codingComponentService: CodingComponentService,
                                                     authenticate: AuthAction,
@@ -73,7 +75,7 @@ class DetailedIncomeTaxEstimateController @Inject()(taxAccountService: TaxAccoun
           }
         }
       }).recover {
-        case _ => internalServerError("Failed to fetch total tax details")
+        case NonFatal(e) => internalServerError("Failed to fetch total tax details", Some(e))
       }
   }
 }
