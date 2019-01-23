@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
+@import uk.gov.hmrc.tai.model.TaxYear
 @(model: TaxFreeAmountComparisonViewModel)(implicit messages: Messages)
 
 <h2 class="heading-large" id="taxFreeAmountHeading">@messages("tai.incomeTaxComparison.taxFreeAmount.subHeading")</h2>
@@ -60,12 +61,12 @@
                     @if(itemIndex == 1){
                         <span class="table-heading" aria-hidden="true">
                             @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
-                            @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))))
+                            @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
                         </span>
                         }else{
                         <span class="table-heading" aria-hidden="true">
                             @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
-                            @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYearResolver.startOfNextTaxYear))))
+                            @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
                         </span>
                         }
                 @pounds(personalAllowance)</td>
@@ -102,7 +103,7 @@
                             <td scope="row" role="gridcell" class="numeric">
                             <span class="table-heading" aria-hidden="true">
                             {Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))}
-                            {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))))}
+                            {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))}
                             </span>
                             {model.prettyPrint(addition)}
                             </td>
@@ -111,7 +112,7 @@
                             <td scope="row" role="gridcell" class="numeric">
                             <span class="table-heading" aria-hidden="true">
                             {Html(model.htmlNonBroken(messages("tai.NextTaxYear")))}
-                            {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYearResolver.startOfNextTaxYear))))}
+                            {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))}
                             </span>
                                 {model.prettyPrint(addition)}
                             </td>
@@ -131,14 +132,14 @@
                 <td scope="row" role="gridcell" class="numeric">
                     <span class="table-heading" aria-hidden="true">
                         @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
-                        @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))))
+                        @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
                     </span>
                     @pounds(0)
                 </td>
                 <td scope="row" role="gridcell" class="numeric">
                     <span class="table-heading" aria-hidden="true">
                         @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
-                        @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYearResolver.startOfNextTaxYear))))
+                        @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
                     </span>
                     @pounds(0)
                 </td>
@@ -175,7 +176,7 @@
                             <td scope="row" role="gridcell" class="numeric">
                             <span class="table-heading" aria-hidden="true">
                             {Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))}
-                            {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))))}
+                            {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))}
                             </span>
                             {model.prettyPrint(deduction)}
                             </td>
@@ -184,7 +185,7 @@
                             <td scope="row" role="gridcell" class="numeric">
                             <span class="table-heading" aria-hidden="true">
                             {Html(model.htmlNonBroken(messages("tai.NextTaxYear")))}
-                            {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYearResolver.startOfNextTaxYear))))}
+                            {Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))}
                             </span>
                             {model.prettyPrint(deduction)}
                             </td>
@@ -205,14 +206,14 @@
                 <td scope="row" role="gridcell" class="numeric">
                     <span class="table-heading" aria-hidden="true">
                         @Html(model.htmlNonBroken(messages("tai.CurrentTaxYear")))
-                        @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))))
+                        @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
                     </span>
                     @pounds(0)
                 </td>
                 <td scope="row" role="gridcell" class="numeric">
                     <span class="table-heading" aria-hidden="true">
                         @Html(model.htmlNonBroken(messages("tai.NextTaxYear")))
-                        @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYearResolver.startOfNextTaxYear))))
+                        @Html(model.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
                     </span>
                     @pounds(0)
                 </td>
