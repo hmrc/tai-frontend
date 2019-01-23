@@ -18,9 +18,10 @@ package uk.gov.hmrc.tai.connectors
 
 import com.google.inject.Inject
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.tai.model.domain.{AddEmployment, Employment, EndEmployment, IncorrectIncome}
 import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -44,13 +45,15 @@ class EmploymentsConnector @Inject() (httpHandler: HttpHandler) extends Services
   }
 
   def ceasedEmployments(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
-    httpHandler.getFromApi(ceasedEmploymentServiceUrl(nino, year)) map {
+    httpHandler.getFromApi(ceasedEmploymentServiceUrl(nino, year)).map {
       json =>
         if ((json \ "data" \ "employments").validate[Seq[Employment]].isSuccess) {
           (json \ "data" \ "employments").as[Seq[Employment]]
         } else {
           throw new RuntimeException("Invalid employment json")
         }
+    }.recover {
+      case _: NotFoundException => Seq.empty[Employment]
     }
   }
 
