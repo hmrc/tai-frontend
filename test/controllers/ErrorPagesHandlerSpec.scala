@@ -16,13 +16,16 @@
 
 package controllers
 
-import builders.UserBuilder
+import controllers.auth.AuthActionedTaiUser
+import controllers.auth.AuthenticatedRequest
+import builders.{AuthActionedUserBuilder, UserBuilder}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.mvc.AnyContent
 import play.api.mvc.Results.{BadRequest, Redirect}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -39,6 +42,8 @@ class ErrorPagesHandlerSpec extends PlaySpec
     with FakeTaiPlayApplication
     with I18nSupport
     with MockitoSugar {
+
+  implicit val authActionedTaiUser: AuthActionedTaiUser = AuthActionedUserBuilder()
 
   "ErrorPagesHandler" must {
     "handle an internal server error" in {
@@ -275,8 +280,8 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "there is hod internal server error" in {
         val exceptionController = createSut
-        implicit val request = FakeRequest("GET", "/")
-        implicit val user = UserBuilder()
+
+        implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authActionedTaiUser)
         implicit val rl = exceptionController.recoveryLocation
 
         val partialErrorFunction = exceptionController.hodInternalErrorResult
@@ -286,8 +291,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "there is hod bad request exception" in {
         val exceptionController = createSut
-        implicit val request = FakeRequest("GET", "/")
-        implicit val user = UserBuilder()
+        implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authActionedTaiUser)
         implicit val rl = exceptionController.recoveryLocation
 
         val partialErrorFunction = exceptionController.hodBadRequestResult
@@ -297,8 +301,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "there is any kind of exception" in {
         val exceptionController = createSut
-        implicit val request = FakeRequest("GET", "/")
-        implicit val user = UserBuilder()
+        implicit val request = AuthenticatedRequest[AnyContent](FakeRequest("GET", "/"), authActionedTaiUser)
         implicit val rl = exceptionController.recoveryLocation
 
         val partialErrorFunction = exceptionController.hodAnyErrorResult
