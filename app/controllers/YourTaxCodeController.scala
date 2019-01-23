@@ -30,6 +30,8 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, TaxCodeChangeService}
 import uk.gov.hmrc.tai.viewModels.{TaxCodeViewModel, TaxCodeViewModelPreviousYears}
 
+import scala.util.control.NonFatal
+
 class YourTaxCodeController @Inject()(personService: PersonService,
                                       taxAccountService: TaxAccountService,
                                       taxCodeChangeService: TaxCodeChangeService,
@@ -42,13 +44,17 @@ class YourTaxCodeController @Inject()(personService: PersonService,
     implicit request =>
       val nino = request.taiUser.nino
 
-      for {
+      (for {
         TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]) <- taxAccountService.taxCodeIncomes(nino, year)
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeIncomes.map(_.taxCode))
       } yield {
         val taxCodeViewModel = TaxCodeViewModel.apply(taxCodeIncomes, scottishTaxRateBands)
         implicit val user = request.taiUser
         Ok(views.html.taxCodeDetails(taxCodeViewModel))
+      }) recover {
+        case NonFatal(e) => {
+          internalServerError(s"Exception: ${e.getClass()}")
+        }
       }
   }
 
@@ -56,13 +62,17 @@ class YourTaxCodeController @Inject()(personService: PersonService,
     implicit request =>
       val nino = request.taiUser.nino
 
-      for {
+      (for {
         taxCodeRecords <- taxCodeChangeService.lastTaxCodeRecordsInYearPerEmployment(nino, year)
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, year, taxCodeRecords.map(_.taxCode))
       } yield {
         val taxCodeViewModel = TaxCodeViewModelPreviousYears(taxCodeRecords, scottishTaxRateBands, year)
         implicit val user = request.taiUser
         Ok(views.html.taxCodeDetailsPreviousYears(taxCodeViewModel))
+      }) recover {
+        case NonFatal(e) => {
+          internalServerError(s"Exception: ${e.getClass()}")
+        }
       }
   }
 }
