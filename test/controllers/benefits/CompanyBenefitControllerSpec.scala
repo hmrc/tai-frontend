@@ -119,12 +119,12 @@ class CompanyBenefitControllerSpec extends PlaySpec
           EndCompanyBenefit_BenefitTypeKey -> "type",
           EndCompanyBenefit_RefererKey -> "referrer")
 
-        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
         when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
+        when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
-        val exception = the[RuntimeException] thrownBy Await.result(SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5.seconds)
+        val result = SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        exception.getMessage mustBe "No employment found"
+        status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
   }

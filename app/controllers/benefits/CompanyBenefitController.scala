@@ -35,6 +35,7 @@ import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants, Upda
 import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 class CompanyBenefitController @Inject()(employmentService: EmploymentService,
                                          @Named("End Company Benefit") journeyCacheService: JourneyCacheService,
@@ -88,7 +89,9 @@ class CompanyBenefitController @Inject()(employmentService: EmploymentService,
             }
           case None => throw new RuntimeException("No employment found")
         }
-      }).flatMap(identity)
+      }).flatMap(identity) recover {
+        case NonFatal(e) => internalServerError("shit")
+      }
   }
 
 
