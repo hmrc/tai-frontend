@@ -17,7 +17,8 @@
 package controllers.employments
 
 import builders.{AuthBuilder, RequestBuilder}
-import controllers.FakeTaiPlayApplication
+import controllers.actions.FakeValidatePerson
+import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -58,7 +59,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   override def beforeEach: Unit = {
-    Mockito.reset(journeyCacheService, successfulJourneyCacheService, personService)
+    Mockito.reset(journeyCacheService, successfulJourneyCacheService)
   }
 
   "employmentDetailsUpdate" must {
@@ -116,6 +117,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
     "throw exception" when {
       "employment not found" in {
         val sut = createSUT
+        when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(None))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.updateEmploymentDetails(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -387,27 +389,18 @@ class UpdateEmploymentControllerSpec extends PlaySpec
 
   private def createSUT = new SUT
 
-  val personService: PersonService = mock[PersonService]
   val journeyCacheService = mock[JourneyCacheService]
   val successfulJourneyCacheService = mock[JourneyCacheService]
   val employmentService = mock[EmploymentService]
 
   private class SUT extends UpdateEmploymentController(
     employmentService,
-    personService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     journeyCacheService,
     successfulJourneyCacheService,
     mock[FormPartialRetriever],
     MockTemplateRenderer
-  ) {
-
-    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
-  }
+  )
 
 }

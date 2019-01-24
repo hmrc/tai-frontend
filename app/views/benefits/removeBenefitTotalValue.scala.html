@@ -26,7 +26,7 @@
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 
-@(vm: BenefitViewModel, companyBenefitTotalValueForm: Form[String])(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(vm: BenefitViewModel, companyBenefitTotalValueForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthActionedTaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"What was the total value of the benefit"}
 
@@ -44,7 +44,7 @@
 
 @main(
     title = Messages("tai.remove.company.benefit.total.value.heading", vm.benefitName, vm.employerName),
-    user = Some(user),
+    authActionedTaiUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
     gaCustomTitle = Some(Messages("tai.remove.company.benefit.total.value.customGaTitle"))) {

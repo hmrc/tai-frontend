@@ -23,7 +23,7 @@
 @import play.api.mvc.Call
 @import includes.forms.inputRadioGroupStyling
 
-@(viewModel: CanWeContactByPhoneViewModel, yesNoForm: Form[YesNoTextEntryForm])(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
+@(viewModel: CanWeContactByPhoneViewModel, yesNoForm: Form[YesNoTextEntryForm])(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthActionedTaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
 
 @gaEventActionString = @{"Can we contact you by phone?"}
 
@@ -37,7 +37,7 @@
 
 @main(
     title = viewModel.mainHeading,
-    user = Some(user),
+    authActionedTaiUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
     gaCustomTitle = None) {
