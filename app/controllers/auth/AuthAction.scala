@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthActionedTaiUser) extends WrappedRequest[A](request)
 
-case class AuthActionedTaiUser(name: String, validNino: String, utr: String, userDetailsUri: String) {
+case class AuthActionedTaiUser(name: String, validNino: String, utr: String, userDetailsUri: String, confidenceLevel: String) {
   def getDisplayName = name
 
   def getNino = validNino
@@ -44,13 +44,13 @@ case class AuthActionedTaiUser(name: String, validNino: String, utr: String, use
 }
 
 object AuthActionedTaiUser {
-  def apply(name: Option[Name], nino: Option[String], saUtr: Option[String], userDetailsUri: Option[String]): AuthActionedTaiUser = {
+  def apply(name: Option[Name], nino: Option[String], saUtr: Option[String], userDetailsUri: Option[String], confidenceLevel: ConfidenceLevel): AuthActionedTaiUser = {
     val validNino = nino.getOrElse("")
     val validName = name.flatMap(_.name).getOrElse("")
     val validUtr = saUtr.getOrElse("")
     val validUserDetailsUri = userDetailsUri.getOrElse("")
 
-    AuthActionedTaiUser(validName, validNino, validUtr, validUserDetailsUri)
+    AuthActionedTaiUser(validName, validNino, validUtr, validUserDetailsUri, confidenceLevel.toString)
   }
 }
 
@@ -64,9 +64,9 @@ class AuthActionImpl @Inject()(personService: PersonService,
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     authorised(ConfidenceLevel.L200)
-      .retrieve(Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.userDetailsUri) {
-        case nino ~ name ~ saUtr ~ userDetailsUri => {
-          val taiUser = AuthActionedTaiUser(name, nino, saUtr, userDetailsUri)
+      .retrieve(Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.userDetailsUri and Retrievals.confidenceLevel) {
+        case nino ~ name ~ saUtr ~ userDetailsUri ~ confidenceLevel => {
+          val taiUser = AuthActionedTaiUser(name, nino, saUtr, userDetailsUri, confidenceLevel)
 
           for {
             result <- block(AuthenticatedRequest(request, taiUser))

@@ -84,18 +84,22 @@
     }
 }
 
+
 @actingAttorneyBanner = @{
-    user.fold(HtmlFormat.empty) {
-        authContext =>
-            authContext.authContext.attorney.fold(HtmlFormat.empty) {
-                _ => layouts.attorney_banner(
-                    authContext.authContext.principal.name,
-                    authContext.authContext.attorney.get.returnLink.url,
-                    standAlone,
-                    Some(Messages("attorney.banner.link"))
-                )
-            }
-    }
+    HtmlFormat.empty
+
+// TODO currently not supported in auth: https://jira.tools.tax.service.gov.uk/browse/AIV-540
+//    user.fold(HtmlFormat.empty) {
+//        authContext =>
+//            authContext.authContext.attorney.fold(HtmlFormat.empty) {
+//                _ => layouts.attorney_banner(
+//                    authContext.authContext.principal.name,
+//                    authContext.authContext.attorney.get.returnLink.url,
+//                    standAlone,
+//                    Some(Messages("attorney.banner.link"))
+//                )
+//            }
+//    }
 }
 
 @mainContentHeader = {
@@ -112,10 +116,11 @@
 
 
 @googleAnalytics = @{
+
     Map[String, Any](
         "trackingId" -> ApplicationConfig.analyticsToken,
         "cookieDomain" -> ApplicationConfig.analyticsHost,
-        "confidenceLevel" -> user.map(_.authContext.user.confidenceLevel.toString).getOrElse(false),
+        "confidenceLevel" -> authActionedTaiUser.map(_.confidenceLevel).getOrElse(false),
         "authProvider" -> authProvider
 
 
