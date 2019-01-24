@@ -24,7 +24,7 @@
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 
-@(interest: BigDecimal)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
+@(interest: BigDecimal)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthActionedTaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
 
 @header = @{
     ptaHeader(
@@ -36,7 +36,7 @@
 
 @main(
     title = Messages("tai.bbsi.overview.heading"),
-    user = Some(user),
+    authActionedTaiUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
     gaCustomTitle = None

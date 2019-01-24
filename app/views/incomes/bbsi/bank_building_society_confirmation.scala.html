@@ -18,11 +18,11 @@
 @import includes.confirmation_summary
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 
-@()(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
+@()(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthActionedTaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
 
 @main(
     title = Messages("tai.bbsi.confirmation.heading"),
-    user = Some(user),
+    authActionedTaiUser = Some(user),
     articleClasses = None,
     gaCustomTitle = None
     ) {
