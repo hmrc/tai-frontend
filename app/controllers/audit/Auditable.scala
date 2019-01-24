@@ -16,7 +16,7 @@
 
 package controllers.audit
 
-import controllers.auth.TaiUser
+import controllers.auth.{AuthActionedTaiUser, TaiUser}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.DataEvent
 
@@ -27,7 +27,7 @@ trait Auditable {
 
   def auditConnector: AuditConnector
 
-  def sendActingAttorneyAuditEvent(auditType : String)(implicit hc: HeaderCarrier, user: TaiUser) = {
+  def legacySendActingAttorneyAuditEvent(auditType : String)(implicit hc: HeaderCarrier, user: TaiUser) = {
 
     if(user.authContext.isDelegating) {
       val auditEvent = DataEvent(
@@ -42,6 +42,24 @@ trait Auditable {
       )
       val auditResponse = auditConnector.sendEvent(auditEvent)
     }
+
+  }
+
+  def sendActingAttorneyAuditEvent(auditType : String)(implicit hc: HeaderCarrier, user: AuthActionedTaiUser) = {
+
+//    if(user.authContext.isDelegating) {
+//      val auditEvent = DataEvent(
+//        auditSource = "tai-frontend",
+//        auditType = auditType,
+//        tags = hc.headers.toMap,
+//        detail = Map(
+//          "attorneyName" -> user.authContext.attorney.fold("")(_.name),
+//          "nino" ->  user.getNino,
+//          "utr" -> user.getUTR
+//        )
+//      )
+//      val auditResponse = auditConnector.sendEvent(auditEvent)
+//    }
 
   }
 }

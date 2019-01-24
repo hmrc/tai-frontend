@@ -136,7 +136,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def handleChooseHowToUpdate: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("processChooseHowToUpdate")
+        legacySendActingAttorneyAuditEvent("processChooseHowToUpdate")
         HowToUpdateForm.createForm().bindFromRequest().fold(
           formWithErrors => {
             for {
@@ -158,7 +158,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def workingHoursPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("getWorkingHours")
+        legacySendActingAttorneyAuditEvent("getWorkingHours")
         for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
@@ -170,7 +170,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def handleWorkingHours: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("processWorkedHours")
+        legacySendActingAttorneyAuditEvent("processWorkedHours")
         HoursWorkedForm.createForm().bindFromRequest().fold(
           formWithErrors => {
             for {
@@ -281,7 +281,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def payPeriodPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("getPayPeriodPage")
+        legacySendActingAttorneyAuditEvent("getPayPeriodPage")
         for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
@@ -293,7 +293,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def handlePayPeriod: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("processPayPeriod")
+        legacySendActingAttorneyAuditEvent("processPayPeriod")
         val payPeriod: Option[String] = request.body.asFormUrlEncoded.flatMap(m => m.get("payPeriod").flatMap(_.headOption))
 
         PayPeriodForm.createForm(None, payPeriod).bindFromRequest().fold(
@@ -323,7 +323,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def payslipAmountPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("getPayslipAmountPage")
+        legacySendActingAttorneyAuditEvent("getPayslipAmountPage")
         for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
@@ -336,7 +336,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def handlePayslipAmount: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("processPayslipAmount")
+        legacySendActingAttorneyAuditEvent("processPayslipAmount")
         PayslipForm.createForm().bindFromRequest().fold(
           formWithErrors => {
             for {
@@ -361,7 +361,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def taxablePayslipAmountPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("getTaxablePayslipAmountPage")
+        legacySendActingAttorneyAuditEvent("getTaxablePayslipAmountPage")
         for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
@@ -374,7 +374,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def handleTaxablePayslipAmount: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("processTaxablePayslipAmount")
+        legacySendActingAttorneyAuditEvent("processTaxablePayslipAmount")
 
         journeyCacheService.currentValue(UpdateIncome_TotalSalaryKey) flatMap { cacheTotalSalary =>
           val totalSalary = FormHelper.stripNumber(cacheTotalSalary)
@@ -403,7 +403,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def payslipDeductionsPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("getPayslipDeductionsPage")
+        legacySendActingAttorneyAuditEvent("getPayslipDeductionsPage")
         for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
@@ -415,7 +415,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def handlePayslipDeductions: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("processPayslipDeductions")
+        legacySendActingAttorneyAuditEvent("processPayslipDeductions")
 
         PayslipDeductionsForm.createForm().bindFromRequest().fold(
           formWithErrors => {
@@ -447,7 +447,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def bonusPaymentsPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("getBonusPaymentsPage")
+        legacySendActingAttorneyAuditEvent("getBonusPaymentsPage")
         journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
           mandatoryValues =>
             Ok(views.html.incomes.bonusPayments(BonusPaymentsForm.createForm, mandatoryValues(0).toInt, mandatoryValues(1)))
@@ -457,7 +457,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def handleBonusPayments: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("processBonusPayments")
+        legacySendActingAttorneyAuditEvent("processBonusPayments")
         BonusPaymentsForm.createForm.bindFromRequest().fold(
           formWithErrors => {
             journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
@@ -493,7 +493,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def handleBonusOvertimeAmount: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("processBonusOvertimeAmount")
+        legacySendActingAttorneyAuditEvent("processBonusOvertimeAmount")
         BonusOvertimeAmountForm.createForm().bindFromRequest().fold(
           formWithErrors => {
             journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NameKey) map {
@@ -541,7 +541,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def estimatedPayPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("getEstimatedPayPage")
+        legacySendActingAttorneyAuditEvent("getEstimatedPayPage")
 
         val result = for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
@@ -578,7 +578,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   def handleCalculationResult: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
-        sendActingAttorneyAuditEvent("processCalculationResult")
+        legacySendActingAttorneyAuditEvent("processCalculationResult")
         for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           income <- incomeService.employmentAmount(Nino(user.getNino), id)

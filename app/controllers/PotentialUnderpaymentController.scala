@@ -17,8 +17,9 @@
 package controllers
 
 import com.google.inject.Inject
+import controllers.actions.ValidatePerson
 import controllers.audit.Auditable
-import controllers.auth.WithAuthorisedForTaiLite
+import controllers.auth.{AuthAction, WithAuthorisedForTaiLite}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
@@ -40,33 +41,30 @@ class PotentialUnderpaymentController @Inject()(taxAccountService: TaxAccountSer
                                                 auditService: AuditService,
                                                 personService: PersonService,
                                                 val auditConnector: AuditConnector,
-                                                val delegationConnector: DelegationConnector,
-                                                val authConnector: AuthConnector,
+                                                authenticate: AuthAction,
+                                                validatePerson: ValidatePerson,
                                                 override implicit val partialRetriever: FormPartialRetriever,
                                                 override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite
   with Auditable
   with AuditConstants {
 
-  def potentialUnderpaymentPage(): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
+  def potentialUnderpaymentPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request => {
+      implicit val user = request.taiUser
+      val nino = request.taiUser.nino
 
-            sendActingAttorneyAuditEvent("getPotentialUnderpaymentPage")
-            val tasFuture = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear())
-            val ccFuture = codingComponentService.taxFreeAmountComponents(Nino(user.getNino), TaxYear())
+      sendActingAttorneyAuditEvent("getPotentialUnderpaymentPage")
+      val tasFuture = taxAccountService.taxAccountSummary(nino, TaxYear())
+      val ccFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
 
-            for {
-              TaiSuccessResponseWithPayload(tas: TaxAccountSummary) <- tasFuture
-              ccs <- ccFuture
-            } yield {
-              auditService.createAndSendAuditEvent(PotentialUnderpayment_InYearAdjustment, Map("nino" -> user.getNino))
-              val vm = PotentialUnderpaymentViewModel(tas, ccs)
-              Ok(views.html.potentialUnderpayment(vm))
-            }
-          } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", Nino(user.getNino))
+      for {
+        TaiSuccessResponseWithPayload(tas: TaxAccountSummary) <- tasFuture
+        ccs <- ccFuture
+      } yield {
+        auditService.createAndSendAuditEvent(PotentialUnderpayment_InYearAdjustment, Map("nino" -> nino.toString()))
+        val vm = PotentialUnderpaymentViewModel(tas, ccs)
+        Ok(views.html.potentialUnderpayment(vm))
+      }
+    } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", request.taiUser.nino)
   }
 }

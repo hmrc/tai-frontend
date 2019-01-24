@@ -84,7 +84,7 @@ class IncomeController @Inject()(personService: PersonService,
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          sendActingAttorneyAuditEvent("handleRegularIncomeUpdateForEdit")
+          legacySendActingAttorneyAuditEvent("handleRegularIncomeUpdateForEdit")
 
           journeyCacheService.collectedValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey), Seq(UpdateIncome_DateKey)) flatMap tupled {
             (mandatorySeq, optionalSeq) => {
@@ -113,7 +113,7 @@ class IncomeController @Inject()(personService: PersonService,
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          sendActingAttorneyAuditEvent("confirmRegularIncome")
+          legacySendActingAttorneyAuditEvent("confirmRegularIncome")
           for {
             cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey)
             id = cachedData.head.toInt
@@ -185,7 +185,7 @@ class IncomeController @Inject()(personService: PersonService,
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          sendActingAttorneyAuditEvent("handlePensionIncomeUpdateForEdit")
+          legacySendActingAttorneyAuditEvent("handlePensionIncomeUpdateForEdit")
 
           journeyCacheService.collectedValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey), Seq(UpdateIncome_DateKey)) flatMap tupled {
             (mandatorySeq, optionalSeq) => {
@@ -214,7 +214,7 @@ class IncomeController @Inject()(personService: PersonService,
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
-          sendActingAttorneyAuditEvent("confirmIncomeUpdatesForEdit")
+          legacySendActingAttorneyAuditEvent("confirmIncomeUpdatesForEdit")
           for {
             cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey)
             id = cachedData.head.toInt

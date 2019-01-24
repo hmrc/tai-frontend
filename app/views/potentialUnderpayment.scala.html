@@ -24,7 +24,7 @@
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
-@(viewModel:uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel:uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthActionedTaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaCallsAdditionalJs = {
     @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount <= 0){
@@ -54,7 +54,7 @@
 @main(
     title = viewModel.pageTitle,
     articleClasses = Some("full-width"),
-    user = Some(user),
+    authActionedTaiUser = Some(user),
     pageHeader = Some(header),
     gaCallsAdditionalJs = Some(gaCallsAdditionalJs),
     gaSettings = GoogleAnalyticsSettings(dimensions = viewModel.gaDimensions),
