@@ -54,14 +54,15 @@ class TaxAccountConnector @Inject() (httpHandler: HttpHandler) extends CodingCom
   def totalTaxUrl(nino: String, year: TaxYear): String = s"$serviceUrl/tai/$nino/tax-account/${year.year}/total-tax"
 
   def incomeSources(nino: Nino, year: TaxYear, incomeType: String, status: String)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
-    httpHandler.getFromApi(incomeSourceUrl(nino.nino, year, incomeType, status)) map (
+    httpHandler.getFromApi(incomeSourceUrl(nino.nino, year, incomeType, status)).map (
       json =>
         TaiSuccessResponseWithPayload((json \ "data").as[Seq[IncomeSource]])
       ) recover {
       case _: NotFoundException =>
         TaiSuccessResponseWithPayload(Seq.empty[IncomeSource])
       case e: Exception =>
-        Logger.warn(s"Couldn't retrieve $status $incomeType income sources for $nino with exception:${e.getMessage}")
+        Logger.warn(s"Couldn't retrieve $status $incomeType income sources for $nino with exception:${e.getMessage}",e)
+
         TaiTaxAccountFailureResponse(e.getMessage)
     }
   }

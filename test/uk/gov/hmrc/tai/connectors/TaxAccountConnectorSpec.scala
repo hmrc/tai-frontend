@@ -25,7 +25,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json._
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, NotFoundException}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -75,10 +75,22 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       "provided with valid nino" in {
         val sut = createSUT
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(incomeSourceJson))
-        val result = sut.incomeSources(generateNino, currentTaxYear, "Employment", "Live")
-        Await.result(result, 5 seconds) mustBe TaiSuccessResponseWithPayload(Seq(incomeSource))
+
+        val result = Await.result(sut.incomeSources(generateNino, currentTaxYear, "Employment", "Live"), 10 seconds)
+        result mustBe TaiSuccessResponseWithPayload(Seq(incomeSource))
       }
     }
+
+    "fetch empty seq" when {
+      "provided with nino that is not found" in {
+        val sut = createSUT
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new NotFoundException("Not Found")))
+
+        val result = Await.result(sut.incomeSources(generateNino, currentTaxYear, "Employment", "Live"), 10 seconds)
+        result mustBe TaiSuccessResponseWithPayload(Seq.empty[IncomeSource])
+      }
+    }
+
 
     "thrown exception" when {
       "tai sends an invalid json" in {
@@ -224,7 +236,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
 
   def generateNino: Nino = new Generator(new Random).nextNino
 
-  val taxCodeIncomeJson: JsObject = Json.obj(
+  val taxCodeIncomeJson: JsValue = Json.obj(
     "data" -> JsArray(Seq(Json.obj(
       "componentType" -> "EmploymentIncome",
       "employmentId" -> 1,
@@ -237,47 +249,39 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     ))),
     "links" -> JsArray(Seq()))
 
-  val incomeSourceJson = Json.parse(
-    """
-      |{
-      |    "data":[
-      |       {
-      |          "taxCodeIncome":{
-      |             "componentType":"EmploymentIncome",
-      |             "employmentId":1,
-      |             "amount":1100,
-      |             "description":"employment",
-      |             "taxCode":"1150L",
-      |             "name":"Employer1",
-      |             "basisOperation":"OtherBasisOfOperation",
-      |             "status":"Live",
-      |             "inYearAdjustmentIntoCY":0,
-      |             "totalInYearAdjustment":0,
-      |             "inYearAdjustmentIntoCYPlusOne":0
-      |          },
-      |          "employment":{
-      |             "name":"company name",
-      |             "payrollNumber":"888",
-      |             "startDate":"2019-05-26",
-      |             "annualAccounts":[
-      |
-      |             ],
-      |             "taxDistrictNumber":"",
-      |             "payeNumber":"",
-      |             "sequenceNumber":1,
-      |             "cessationPay":100,
-      |             "hasPayrolledBenefit":false,
-      |             "receivingOccupationalPension":true
-      |          }
-      |       }
-      |    ],
-      |    "links":[
-      |
-      |    ]
-      | }
-    """.stripMargin)
+  val incomeSourceJson: JsValue = Json.obj(
+    "data" -> Json.arr(
+      Json.obj(
+        "taxCodeIncome" -> Json.obj(
+          "componentType" -> "EmploymentIncome",
+          "employmentId" -> 1,
+          "amount" -> 1111,
+          "description" -> "employment",
+          "taxCode" -> "1150L",
+          "name" -> "Employer1",
+          "basisOperation" -> "OtherBasisOperation",
+          "status" -> "Live",
+          "inYearAdjustmentIntoCY" -> 0,
+          "totalInYearAdjustment" -> 0,
+          "inYearAdjustmentIntoCYPlusOne" -> 0
+        ),
+        "employment" -> Json.obj(
+          "name" -> "company name",
+          "payrollNumber" -> "888",
+          "startDate" -> "2019-05-26",
+          "annualAccounts" -> Json.arr(),
+          "taxDistrictNumber" -> "",
+          "payeNumber" -> "",
+          "sequenceNumber" -> 1,
+          "cessationPay" -> 100,
+          "hasPayrolledBenefit" -> false,
+          "receivingOccupationalPension" -> true
+        )
+      )
+    )
+  )
 
-  val codingComponentSampleJson = Json.obj(
+  val codingComponentSampleJson: JsValue = Json.obj(
     "data" -> Json.arr(
       Json.obj(
         "componentType" -> "EmployerProvidedServices",
@@ -294,7 +298,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
       )),
     "links" -> Json.arr())
 
-  val corruptJsonResponse = Json.obj(
+  val corruptJsonResponse: JsValue = Json.obj(
     "data" -> JsArray(Seq(Json.obj(
       "employmentId" -> 1,
       "amount" -> 1111,
@@ -305,7 +309,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     ))),
     "links" -> JsArray(Seq()))
 
-  val incomeJson = Json.obj(
+  val incomeJson: JsValue = Json.obj(
     "data" -> Json.obj(
       "taxCodeIncomes" -> JsArray(),
       "nonTaxCodeIncomes" -> Json.obj(
