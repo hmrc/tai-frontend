@@ -635,7 +635,7 @@ tai.incomeTaxComparison.taxCodes.scottishInfo=Bydd eich cod treth ar gyfer y flw
 tai.incomeTaxComparison.taxCodes.subHeading=Codau treth
 
 tai.incomeTaxComparison.taxCodes.table.employmentsReaderText=Enw''r cyflogwr
-tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Enw pensiwn
+tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Enw''r pensiwn
 
 
 
@@ -1020,8 +1020,8 @@ tai.taxFreeAmount.table.deductions.noDeduction=Nid oes gennych unrhyw ddidyniada
 tai.taxFreeAmount.table.deductions.total=Cyfanswm y didyniadau
 tai.taxFreeAmount.table.previous=Blaenorol
 tai.taxFreeAmount.table.current=Cyflogwr
-tai.taxFreeAmount.table.previous.taxCodes=Cod treth presennol
-tai.taxFreeAmount.table.current.taxCodes=Cod treth blaenorol
+tai.taxFreeAmount.table.previous.taxCodes=Cod treth blaenorol
+tai.taxFreeAmount.table.current.taxCodes=Cod treth presennol
 tai.taxFreeAmount.table.taxComponent.Accommodation=Llety
 tai.taxFreeAmount.table.taxComponent.AdjustmentToRateBand=Addasiad i''r haen cyfradd
 tai.taxFreeAmount.table.taxComponent.AssetTransfer=Asedion sydd wedi''u trosglwyddo
