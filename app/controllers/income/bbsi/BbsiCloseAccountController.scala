@@ -100,8 +100,8 @@ class BbsiCloseAccountController @Inject()(bbsiService: BbsiService,
                   })
               }
             )
-        case Some(_) => throw new RuntimeException(s"Bank account does not contain name, number or sortcode for nino: [${user.getNino}] and id: [$id]")
-        case None => throw new RuntimeException(s"Bank account not found for nino: [${user.getNino}] and id: [$id]")
+        case Some(_) => Future.successful(internalServerError(s"Bank account does not contain name, number or sortcode for nino: [${user.getNino}] and id: [$id]"))
+        case None => Future.successful(internalServerError(s"Bank account not found for nino: [${user.getNino}] and id: [$id]"))
       }
   }
 

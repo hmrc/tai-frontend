@@ -357,7 +357,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
 
         val mapWithClosingInterest = Map(CloseBankAccountInterestKey -> closingInterest)
 
-        when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(mapWithClosingInterest))
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(mapWithClosingInterest))
 
         Await.result(sut.submitClosingInterest(bankAccountId)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           ClosingInterestChoice -> NoValue, ClosingInterestEntry -> "")), 5 seconds)
@@ -411,10 +411,11 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         sut.closeBankAccountDateForm.DateFormYear -> "2017"
       )
 
-      when(bbsiService.bankAccount(any(), any())(any()))
-        .thenReturn(Future.successful(Some(bankAccount1)))
+      when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount1)))
+      when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
-      val result = Await.result(sut.submitCloseDate(2)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData)), 5 seconds)
+
+      val result = Await.result(sut.submitCloseDate(2)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData)), 5.seconds)
 
       verify(journeyCacheService, times(1)).cache(Matchers.eq(Map(CloseBankAccountDateKey -> "2017-02-01", CloseBankAccountNameKey -> "Test Bank account name")))(any())
     }
@@ -468,8 +469,7 @@ class BbsiCloseAccountControllerSpec extends PlaySpec
         sut.closeBankAccountDateForm.DateFormMonth -> year,
         sut.closeBankAccountDateForm.DateFormYear -> year
       )
-      when(bbsiService.bankAccount(any(), any())(any()))
-        .thenReturn(Future.successful(Some(bankAccount2)))
+      when(bbsiService.bankAccount(any(), any())(any())).thenReturn(Future.successful(Some(bankAccount2)))
 
       val result = sut.submitCloseDate(1)(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
