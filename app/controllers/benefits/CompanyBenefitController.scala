@@ -90,7 +90,7 @@ class CompanyBenefitController @Inject()(employmentService: EmploymentService,
           case None => throw new RuntimeException("No employment found")
         }
       }).flatMap(identity) recover {
-        case NonFatal(e) => internalServerError("shit")
+        case NonFatal(e) => internalServerError(e.getMessage)
       }
   }
 
