@@ -73,7 +73,6 @@
 
     @isNameTooLong(incomeName: String) = @{
         incomeName.replace('\u00A0',' ').split("\\s").exists(x => x.length > 12)
-
     }
 
 

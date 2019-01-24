@@ -77,7 +77,13 @@ hr {
 }
 
 .carry-over{
-  -ms-word-break: break-all;
+  @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    display: inline-block;
+  }
+
+  @supports (-ms-accelerator:true) {
+    display: inline-block;
+  }
 
   word-break: break-word;
   word-wrap: break-word;
