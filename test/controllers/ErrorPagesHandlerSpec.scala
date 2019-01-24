@@ -56,7 +56,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
     "return the correct service unavailable page for 400" in  {
 
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("POST", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("POST", "/"))
 
       val e = new BadRequestException(message = "appStatusMessage=Version number incorrect")
       val result = sut(e)
@@ -75,7 +75,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     }
 
     "return the correct service unavailable page for  primary data" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
       val e = new BadRequestException(message = "appStatusMessage=Primary") {override val responseCode = 400}
       val result = sut(e)
 
@@ -84,7 +84,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     }
 
     "return the correct service unavailable page for no data" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
       val e = new BadRequestException(message = "appStatusMessage=")
       val result = sut(e)
 
@@ -101,7 +101,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     }
 
     "return the correct service unavailable page for 404" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
 
       val e = new Upstream4xxResponse("NotFoundException", 404, 404)
 
@@ -122,7 +122,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
 
     "return the correct service unavailable page for 500" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
 
       val e = new Upstream5xxResponse("Upstream5xxResponse", 500, 500)
 
@@ -142,7 +142,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     }
 
     "return the correct page where the user has no primary employments" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
       val e = new BadRequestException(message="appStatusMessage=Cannot complete a Coding Calculation without a Primary Employment") {override val responseCode = 400}
       val result = sut(e)
 
@@ -151,7 +151,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     }
 
     "return the correct service unavailable page for not found with npm" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
 
       val e = new NotFoundException("appStatusMessage")
 
@@ -171,7 +171,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     }
 
     "return the correct service unavailable page for not found without npm" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
 
       val result = sut(new NotFoundException(""))
       status(result) mustBe 404
@@ -188,7 +188,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     }
 
     "return the correct service unavailable page for internal server error" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
 
       val e = new InternalServerException("Internal Server Error")
 

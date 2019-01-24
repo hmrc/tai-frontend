@@ -19,6 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.{AuthBuilder, RequestBuilder}
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers._
@@ -65,18 +66,18 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
     "redirect to company auth frontend if it is a GG user" in {
       val sut = createSut
 
-      when(userDetailsConnector.userDetails(any[AuthContext](any()))).thenReturn(Future.successful(UserDetails("GovernmentGateway")))
-
+      when(userDetailsConnector.userDetails(any[String](any()))).thenReturn(Future.successful(UserDetails("GovernmentGateway")))
 
       val result = sut.serviceSignout()(authorisedRequest)
 
       status(result) shouldBe 303
       redirectLocation(result) shouldBe Some(ApplicationConfig.companyAuthFrontendSignOutUrl)
     }
+
     "redirect to citizen auth frontend if it is a Verify user" in {
       val sut = createSut
 
-      when(userDetailsConnector.userDetails(any[AuthContext])(any()))
+      when(userDetailsConnector.userDetails(any[String])(any()))
         .thenReturn(Future.successful(UserDetails("Verify")))
 
       val result = sut.serviceSignout()(authorisedRequest)
@@ -85,10 +86,11 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
       redirectLocation(result) shouldBe Some(ApplicationConfig.citizenAuthFrontendSignOutUrl)
       session(result).get(TaiConstants.SessionPostLogoutPage) shouldBe Some(ApplicationConfig.feedbackSurveyUrl)
     }
+
     "return 500 when userDetails returns failed" in {
       val request = RequestBuilder.buildFakeRequestWithAuth("GET")
       val sut = createSut
-      when(userDetailsConnector.userDetails(any[AuthContext])(any())).thenReturn(Future.failed(new RuntimeException))
+      when(userDetailsConnector.userDetails(any[String])(any())).thenReturn(Future.failed(new RuntimeException))
       val result = sut.serviceSignout()(request)
       status(result) shouldBe 500
     }
@@ -107,24 +109,15 @@ class ServiceControllerSpec extends UnitSpec with FakeTaiPlayApplication with I1
 
   def createSut = new SUT
 
-  val personService: PersonService = mock[PersonService]
   val userDetailsConnector = mock[UserDetailsConnector]
 
   class SUT extends ServiceController(
     userDetailsConnector,
-    personService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
-  ) {
-
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(Nino(nino))))
-
-    when(authConnector.currentAuthority(any(), any())).thenReturn(
-      Future.successful(Some(AuthBuilder.createFakeAuthority(nino))))
-  }
+  )
 
   private val nino = new Generator().nextNino.nino
 

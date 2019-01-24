@@ -39,6 +39,7 @@ import scala.concurrent.Future
 trait ErrorPagesHandler {
 
   implicit def templateRenderer: TemplateRenderer
+
   implicit def partialRetriever: FormPartialRetriever
 
   type RecoveryLocation = Class[_]
@@ -64,7 +65,7 @@ trait ErrorPagesHandler {
   }
 
   def error4xxFromNps(pageTitle: String)
-                     (implicit request: Request[_], messages: Messages)= {
+                     (implicit request: Request[_], messages: Messages) = {
     views.html.error_template_noauth(
       pageTitle,
       Messages("tai.errorMessage.heading.nps"),
@@ -73,7 +74,7 @@ trait ErrorPagesHandler {
   }
 
   def error5xx(pageBody: String)
-              (implicit request: Request[_], messages: Messages)= {
+              (implicit request: Request[_], messages: Messages) = {
     views.html.error_template_noauth(
       Messages("global.error.InternalServerError500.title"),
       Messages("tai.technical.error.heading"),
@@ -82,8 +83,7 @@ trait ErrorPagesHandler {
 
   @deprecated("Prefer chaining of named partial functions for clarity", "Introduction of new WDYWTD page")
   def handleErrorResponse(methodName: String, nino: Nino)
-                         (implicit request: Request[_],
-                          user: TaiUser):
+                         (implicit request: Request[_]):
 
   PartialFunction[Throwable, Future[Result]] = PartialFunction[Throwable, Future[Result]] {
     throwable: Throwable =>
@@ -111,16 +111,16 @@ trait ErrorPagesHandler {
             case true =>
               Logger.warn(s"<Incorrect Version Number> - $methodName nino $nino")
               Future.successful(BadRequest(badRequestPageWrongVersion))
-            case _    =>  e.getMessage().contains("appStatusMessage") match {
+            case _ => e.getMessage().contains("appStatusMessage") match {
               case true =>
-                if(noPrimary) {
+                if (noPrimary) {
                   Logger.warn(s"<Cannot complete a coding calculation without Primary Employment> - $methodName nino $nino")
                   Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
                 } else {
                   Future.successful(BadRequest(error4xxFromNps(
                     Messages("global.error.badRequest400.title"))))
                 }
-              case _ =>  Future.successful(BadRequest(error4xxPageWithLink(
+              case _ => Future.successful(BadRequest(error4xxPageWithLink(
                 Messages("global.error.badRequest400.title"))))
             }
           }
@@ -168,14 +168,14 @@ trait ErrorPagesHandler {
   }
 
   def npsEmploymentAbsentResult(implicit request: AuthenticatedRequest[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
-    case e:NotFoundException if e.getMessage.toLowerCase.contains(NpsAppStatusMsg) =>
+    case e: NotFoundException if e.getMessage.toLowerCase.contains(NpsAppStatusMsg) =>
       val nino = request.taiUser.nino
       Logger.warn(s"<Not found response received from NPS> - for nino ${nino} @${rl.getName}")
       Future.successful(NotFound(error4xxFromNps(Messages("global.error.pageNotFound404.title"))))
   }
 
   def rtiEmploymentAbsentResult(implicit request: AuthenticatedRequest[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
-    case e:NotFoundException =>
+    case e: NotFoundException =>
       val nino = request.taiUser.nino
       Logger.warn(s"<Not found response received from rti> - for nino ${nino} @${rl.getName}")
       Future.successful(NotFound(error4xxPageWithLink(Messages("global.error.pageNotFound404.title"))))
@@ -189,7 +189,7 @@ trait ErrorPagesHandler {
   }
 
   def hodBadRequestResult(implicit request: AuthenticatedRequest[AnyContent], messages: Messages, rl: RecoveryLocation): PartialFunction[Throwable, Future[Result]] = {
-    case e:BadRequestException =>
+    case e: BadRequestException =>
       val nino = request.taiUser.nino
       Logger.warn(s"<Bad request exception returned from HOD call for nino ${nino} @${rl.getName} with exception: ${e.getClass}", e)
       Future.successful(BadRequest(error4xxPageWithLink(Messages("global.error.badRequest400.title"))))

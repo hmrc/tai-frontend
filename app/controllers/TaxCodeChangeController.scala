@@ -17,88 +17,70 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.audit.Auditable
-import controllers.auth.WithAuthorisedForTaiLite
+import controllers.actions.ValidatePerson
+import controllers.auth.AuthAction
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentsWithCarBenefits, YourTaxFreeAmount}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 import uk.gov.hmrc.urls.Link
 
 import scala.concurrent.Future
 
-class TaxCodeChangeController @Inject()(personService: PersonService,
-                                        codingComponentService: CodingComponentService,
+class TaxCodeChangeController @Inject()(codingComponentService: CodingComponentService,
                                         employmentService: EmploymentService,
                                         companyCarService: CompanyCarService,
                                         taxCodeChangeService: TaxCodeChangeService,
                                         taxAccountService: TaxAccountService,
-                                        val auditConnector: AuditConnector,
-                                        val delegationConnector: DelegationConnector,
-                                        val authConnector: AuthConnector,
+                                        authenticate: AuthAction,
+                                        validatePerson: ValidatePerson,
                                         override implicit val partialRetriever: FormPartialRetriever,
                                         override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with WithAuthorisedForTaiLite
-  with DelegationAwareActions
-  with Auditable
   with FeatureTogglesConfig
   with YourTaxFreeAmount {
 
-  def taxCodeComparison: Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            val nino: Nino = Nino(user.getNino)
-
-            for {
-              taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
-              scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
-            } yield {
-              val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
-              Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
-            }
-          }
+  def taxCodeComparison: Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      val nino: Nino = request.taiUser.nino
+      for {
+        taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
+        scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
+      } yield {
+        val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
+        implicit val user = request.taiUser
+        Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
+      }
   }
 
-  def yourTaxFreeAmount: Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            val nino = Nino(user.getNino)
+  def yourTaxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      val nino: Nino = request.taiUser.nino
+      val taxFreeAmountViewModel =
+        if (taxFreeAmountComparisonEnabled) {
+          taxFreeAmountWithPrevious(nino)
+        } else {
+          taxFreeAmount(nino)
+        }
 
-            val taxFreeAmountViewModel = if(taxFreeAmountComparisonEnabled) {
-              taxFreeAmountWithPrevious(nino)
-            } else {
-              taxFreeAmount(nino)
-            }
-
-            taxFreeAmountViewModel.map(viewModel => {
-              Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
-            })
-          }
+      implicit val user = request.taiUser
+      taxFreeAmountViewModel.map(viewModel => {
+        Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
+      })
   }
 
-  def whatHappensNext: Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
-          }
+  def whatHappensNext: Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user = request.taiUser
+      Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
   }
 
   private def taxFreeAmountWithPrevious(nino: Nino)(implicit request: Request[AnyContent]): Future[YourTaxFreeAmountViewModel] = {
@@ -151,12 +133,4 @@ class TaxCodeChangeController @Inject()(personService: PersonService,
         employmentNames)
     }
   }
-
-  private def notFoundView(implicit request: Request[_]) = views.html.error_template_noauth(
-    Messages("global.error.pageNotFound404.title"),
-    Messages("tai.errorMessage.heading"),
-    Messages("tai.errorMessage.frontend404", Link.toInternalPage(
-      url = routes.TaxAccountSummaryController.onPageLoad().url,
-      value = Some(Messages("tai.errorMessage.startAgain"))
-    ).toHtml))
 }

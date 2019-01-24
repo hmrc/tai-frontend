@@ -59,7 +59,6 @@ class PayeControllerHistoricSpec extends PlaySpec
 
   private val currentYear: Int = TaxYear().year
   private val cyMinusOneTaxYear: TaxYear = TaxYear(currentYear - 1)
-  implicit val authActionedTaiUser = AuthActionedUserBuilder()
 
   "Calling the payePage method with an authorised session" must {
 
