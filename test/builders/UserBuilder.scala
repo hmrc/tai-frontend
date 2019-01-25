@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model.domain.Person
 object AuthActionedUserBuilder {
   val nino: Nino = new Generator().nextNino
   def apply(firstName: String = "Jjj", lastName: String = "Bbb", utr: String = "utr") = {
-    AuthedUser(firstName + " " + lastName, nino.toString(), utr, "userDetails")  }
+    AuthedUser(firstName + " " + lastName, nino.toString(), utr, "userDetails", "200")  }
 }
 
 object UserBuilder {
