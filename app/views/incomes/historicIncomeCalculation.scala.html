@@ -23,7 +23,7 @@
 
 
 @(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel
-)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your Income Tax"}
 
@@ -48,7 +48,7 @@
 
 @main(
     title = messages("tai.yourIncome.heading"),
-    user = Some(user),
+    authedUser = Some(user),
     pageHeader = Some(header),
     employerName = historicIncomeCalculationViewModel.employerName,
     gaCustomTitle = Some(messages("tai.yourIncome.heading"))

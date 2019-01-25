@@ -29,6 +29,7 @@
   sidebarClass: Option[String] = None,
   articleClasses: Option[String] = Some("full-width"),
   user: Option[controllers.auth.TaiUser] = None,
+  authedUser: Option[controllers.auth.AuthedUser] = None,
   employerName: Option[String] = None,
   includeGridWrapper: Boolean = false,
   webChat: Boolean = false,
@@ -65,6 +66,8 @@
     user.fold(false) {
         user =>
             user.authContext.principal.accounts.sa.map(_.utr).isDefined
+    } || authedUser.fold(false) {
+        _.getUTR != ""
     }
 }
 

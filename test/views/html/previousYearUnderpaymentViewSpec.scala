@@ -22,7 +22,7 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.PreviousYearUnderpaymentViewModel
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 
 class previousYearUnderpaymentViewSpec extends TaiViewSpec {
@@ -62,7 +62,7 @@ class previousYearUnderpaymentViewSpec extends TaiViewSpec {
   val amountDue = 100
   val previousTaxYear = TaxYear(2016)
 
-  val test = Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)
+  val test = Dates.formatDate(TaxYear().start)
 
   override def view = previousYearUnderpayment(PreviousYearUnderpaymentViewModel(shouldHavePaid, actuallyPaid, allowanceReducedBy, amountDue, previousTaxYear))
 

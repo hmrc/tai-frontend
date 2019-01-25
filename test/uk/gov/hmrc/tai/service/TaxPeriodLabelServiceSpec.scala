@@ -21,15 +21,15 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.util.HtmlFormatter
 
-import scala.util.matching.Regex
-
 class TaxPeriodLabelServiceSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport{
 
   "TaxPeriodLabelService " should {
 
     "generate tax period label" in {
-      TaxPeriodLabelService.taxPeriodLabel(2017) mustBe HtmlFormatter.htmlNonBroken("6 April 2017") + " to " + HtmlFormatter.htmlNonBroken("5 April 2018")
-      TaxPeriodLabelService.taxPeriodLabel(2016) mustBe HtmlFormatter.htmlNonBroken("6 April 2016") + " to " + HtmlFormatter.htmlNonBroken("5 April 2017")
+      TaxPeriodLabelService.taxPeriodLabel(2017) mustBe s"${HtmlFormatter.htmlNonBroken("6 April 2017")} " +
+        s"${messagesApi("language.to")} ${HtmlFormatter.htmlNonBroken("5 April 2018")}"
+      TaxPeriodLabelService.taxPeriodLabel(2016) mustBe s"${HtmlFormatter.htmlNonBroken("6 April 2016")} " +
+        s"${messagesApi("language.to")} ${HtmlFormatter.htmlNonBroken("5 April 2017")}"
     }
   }
 

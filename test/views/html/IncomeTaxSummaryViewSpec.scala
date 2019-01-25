@@ -30,7 +30,7 @@ class IncomeTaxSummaryViewSpec extends TaiViewSpec {
 
     behave like pageWithCombinedHeader(
       preHeaderAnnouncementText=Some("This section is the income tax summary for"),
-      preHeaderText ="Firstname Surname",
+      preHeaderText ="Jjj Bbb",
       mainHeaderText = "main heading")
 
     "display a link to return to choose tax year page" in {

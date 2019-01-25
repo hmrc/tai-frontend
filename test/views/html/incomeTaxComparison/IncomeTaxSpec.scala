@@ -18,8 +18,11 @@ package views.html.incomeTaxComparison
 
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel}
 import play.twirl.api.Html
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import uk.gov.hmrc.time.TaxYearResolver
 
 class IncomeTaxSpec extends TaiViewSpec {
 
@@ -73,9 +76,9 @@ class IncomeTaxSpec extends TaiViewSpec {
 
     "display the comparison table with correct row values for cy and cy+1" when {
       "a view model is supplied to the view with appropriate data" in {
-
-        doc must haveTdWithText("£100")
-        doc must haveTdWithText("£100")
+        doc must haveTdWithText(yourPAYEIncomeTaxEstimate)
+        doc must haveTdWithText(taxYearEnds + "£100")
+        doc must haveTdWithText(taxYearStarts + "£100")
       }
     }
 
@@ -83,14 +86,17 @@ class IncomeTaxSpec extends TaiViewSpec {
       "a view model is supplied to the view with appropriate data" in {
 
         doc must haveThWithText(s"${messages("tai.CurrentTaxYear")} ${messages("tai.incomeTaxComparison.incomeTax.column1",
-          uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM"))}")
+          TaxYear().end.toString("d MMMM"))}")
 
         doc must haveThWithText(s"${messages("tai.NextTaxYear")} ${messages("tai.incomeTaxComparison.incomeTax.column2",
-          uk.gov.hmrc.time.TaxYearResolver.startOfNextTaxYear.toString("d MMMM yyyy"))}")
+          TaxYear().next.start.toString("d MMMM yyyy"))}")
       }
     }
   }
 
+  private val yourPAYEIncomeTaxEstimate = "Your PAYE Income Tax estimate"
+  val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)) + " "
+  val taxYearStarts = "Next tax year from " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfNextTaxYear)) + " "
   private val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(),100.83)
   private val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next,100.83)
 

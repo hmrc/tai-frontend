@@ -16,7 +16,7 @@
 
 package controllers.auth
 
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, PayeAccount}
 import org.mockito.Mockito._

@@ -18,14 +18,17 @@ package uk.gov.hmrc.tai.viewModels.income
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+import uk.gov.hmrc.tai.util.{MapForGoogleAnalytics, MonetaryUtil, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefix
+import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
+import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
 case class ConfirmAmountEnteredViewModel(yearRange: String,
                                          employerName: String,
                                          mainText: String,
                                          onConfirm: String,
-                                         onCancel: String)
+                                         onCancel: String,
+                                         gaSettings: GoogleAnalyticsSettings)
 
 object ConfirmAmountEnteredViewModel {
 
@@ -37,17 +40,17 @@ object ConfirmAmountEnteredViewModel {
     val confirmUrl = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId).url.toString
     val onCancelUrl = controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url
 
-
     ConfirmAmountEnteredViewModel(
       employerName = employerName,
       yearRange = currentYear,
       mainText = mainParagraphText,
       onConfirm = confirmUrl,
-      onCancel = onCancelUrl
+      onCancel = onCancelUrl,
+      gaSettings = GoogleAnalyticsSettings()
     )
   }
 
-  def nextYearEstimatedPay(employmentId: Int, employerName: String, estimatedIncome: Int)(implicit messages: Messages): ConfirmAmountEnteredViewModel = {
+  def nextYearEstimatedPay(employmentId: Int, employerName: String, currentAmount: Int, estimatedIncome: Int)(implicit messages: Messages): ConfirmAmountEnteredViewModel = {
     val nextYearRange: String = TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1)
     val mainParagraphText = messages("tai.updateIncome.CYPlus1.confirm.paragraph", withPoundPrefix(estimatedIncome))
     val confirmUrl = controllers.income.routes.UpdateIncomeNextYearController.handleConfirm(employmentId).url
@@ -58,7 +61,18 @@ object ConfirmAmountEnteredViewModel {
       yearRange = nextYearRange,
       mainText = mainParagraphText,
       onConfirm = confirmUrl,
-      onCancel = onCancelUrl
+      onCancel = onCancelUrl,
+      gaSettings = gaSettings(currentAmount, estimatedIncome)
     )
+  }
+
+  private def gaSettings(currentAmount: Int, newAmount: Int): GoogleAnalyticsSettings = {
+    val poundedCurrentAmount = MonetaryUtil.withPoundPrefix(currentAmount)
+    val poundedNewAmount = MonetaryUtil.withPoundPrefix(newAmount)
+
+    val amounts = Map("currentAmount" -> poundedCurrentAmount, "newAmount" -> poundedNewAmount)
+
+    val dimensions: Option[Map[String, String]] = Some(Map(GoogleAnalyticsConstants.taiCYPlusOneEstimatedIncome -> MapForGoogleAnalytics.format(amounts)))
+    GoogleAnalyticsSettings(dimensions = dimensions)
   }
 }

@@ -24,7 +24,7 @@
 @import uk.gov.hmrc.tai.viewModels.benefit.BenefitViewModel
 @import uk.gov.hmrc.tai.forms.benefits.CompanyBenefitTotalValueForm
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
-@import uk.gov.hmrc.time.TaxYearResolver
+
 
 @(vm: BenefitViewModel, companyBenefitTotalValueForm: Form[String])(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -56,7 +56,7 @@
 
         <summary>
             @includes.details_summary(Messages("tai.remove.company.benefit.total.value.whatHappens.link")){
-            <span>@Messages("tai.remove.company.benefit.total.value.whatHappens.desc", TaxYearResolver.startOfCurrentTaxYear.toString("yyyy"),TaxYearResolver.endOfCurrentTaxYear.toString("yyyy"), Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))</span>
+            <span>@Messages("tai.remove.company.benefit.total.value.whatHappens.desc", TaxYear().start.toString("yyyy"),TaxYear().end.toString("yyyy"), Dates.formatDate(TaxYear().end))</span>
         }
         </summary>
 

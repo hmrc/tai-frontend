@@ -28,4 +28,7 @@ object MonetaryUtil {
 
   def withPoundPrefix(moneyPounds: MoneyPounds): String = s"£${moneyPounds.quantity}"
 
+  def withPoundPrefix(amount: Int, decimalplaces: Int = 0): String = {
+    withPoundPrefix(MoneyPounds(amount, decimalplaces))
+  }
 }

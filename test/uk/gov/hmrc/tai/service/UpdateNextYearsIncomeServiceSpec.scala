@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.service
 import org.mockito.Matchers
 import org.mockito.Mockito.{times, verify, when}
 import org.mockito.Matchers.{any, eq => Meq}
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.{Employment, EmploymentIncome}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstants
-import uk.gov.hmrc.time.TaxYearResolver
+
 import utils.WireMockHelper
 
 import scala.concurrent.duration._
@@ -198,7 +198,7 @@ class UpdateNextYearsIncomeServiceSpec extends PlaySpec with MockitoSugar with W
     Employment(
       name = name,
       payrollNumber = None,
-      startDate = TaxYearResolver.startOfCurrentTaxYear,
+      startDate = TaxYear().start,
       endDate = None,
       annualAccounts = Seq.empty,
       taxDistrictNumber = "123",
