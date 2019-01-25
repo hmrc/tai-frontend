@@ -20,7 +20,7 @@
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 
-@(model: WithinSixWeeksViewModel)(implicit request: Request[_], user: controllers.auth.AuthActionedTaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(model: WithinSixWeeksViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"You can not update this employment yet"}
 
@@ -34,7 +34,7 @@
 
 @main(
     title = Messages("tai.endEmploymentWithinSixWeeksError.heading", model.earliestUpdateDateInHtml),
-    authActionedTaiUser = Some(user),
+    user = Some(user),
     pageHeader = Some(header),
     gaCustomTitle = None
 ) {

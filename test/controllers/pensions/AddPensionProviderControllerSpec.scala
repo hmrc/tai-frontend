@@ -17,8 +17,7 @@
 package controllers.pensions
 
 import builders.{AuthBuilder, RequestBuilder}
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
-import controllers.actions.FakeValidatePerson
+import controllers.FakeTaiPlayApplication
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -236,7 +235,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
         Await.result(sut.cantAddPension()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           AddPensionProviderFirstPayForm.FirstPayChoice -> NoValue)), 5 seconds)
 
-        verify(auditService, times(1)).createAndSendAuditEvent(Matchers.eq(AddPension_CantAddPensionProvider), Matchers.eq(Map("nino" -> FakeAuthAction.nino.nino)))(Matchers.any(), Matchers.any())
+        verify(auditService, times(1)).createAndSendAuditEvent(Matchers.eq(AddPension_CantAddPensionProvider), Matchers.eq(Map("nino" -> nino)))(Matchers.any(), Matchers.any())
       }
     }
   }
@@ -273,8 +272,6 @@ class AddPensionProviderControllerSpec extends PlaySpec
     "return error" when {
       "cache doesn't return data" in {
         val sut = createSUT
-        when(addPensionProviderJourneyCacheService.collectedValues(any(), any())(any()))
-          .thenReturn(Future.successful(Seq.empty, Seq.empty))
         when(addPensionProviderJourneyCacheService.currentValueAs[String](any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.addPensionProviderStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -683,7 +680,7 @@ class AddPensionProviderControllerSpec extends PlaySpec
 
     "result in an error response" when {
       "mandatory values are absent from the journey cache" in {
-        val mockedJCExceptionMsg = "The mandatory value under key <some key> was not found in the journey cache for add-pension-provider"
+        val mockedJCExceptionMsg = "The mandatory value under key <some key> was not found in the journey cache for add-pension-provider   BBBB"
         val sut = createSUT
         when(addPensionProviderJourneyCacheService.collectedValues(any(), any())(any())).thenThrow(
           new RuntimeException(mockedJCExceptionMsg)
@@ -742,14 +739,22 @@ class AddPensionProviderControllerSpec extends PlaySpec
   private class SUT extends AddPensionProviderController(
     pensionProviderService,
     auditService,
-    FakeAuthAction,
-    FakeValidatePerson,
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
     addPensionProviderJourneyCacheService,
     trackSuccessJourneyCacheService,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
+
     val pensionStartDateForm = PensionAddDateForm("pension provider")
+
+    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
+    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
+
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
   }
 
 }

@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.tai.forms.employments.AddEmploymentFirstPayForm
 @import includes.forms.inputRadioGroupStyling
 
-@(firstPayForm: Form[Option[String]], employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthActionedTaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(firstPayForm: Form[Option[String]], employerName: String)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Have you received your first pay from?"}
 
@@ -35,7 +35,7 @@
 
 @main(
 title = Messages("tai.addEmployment.employmentFirstPay.title", employerName),
-authActionedTaiUser = Some(user),
+user = Some(user),
 pageHeader = Some(header),
 articleClasses = None,
 gaCustomTitle = Some(Messages("tai.addEmployment.employmentFirstPay.customGaTitle"))

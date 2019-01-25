@@ -17,8 +17,7 @@
 package controllers.benefits
 
 import builders.{AuthBuilder, RequestBuilder}
-import controllers.actions.FakeValidatePerson
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
+import controllers.FakeTaiPlayApplication
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -26,7 +25,7 @@ import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{contentAsString, status, _}
@@ -42,8 +41,7 @@ import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{FormValuesConstants, JourneyCacheConstants, TaiConstants, UpdateOrRemoveCompanyBenefitDecisionConstants}
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
+import scala.concurrent.Future
 import scala.util.Random
 
 
@@ -115,11 +113,6 @@ class CompanyBenefitControllerSpec extends PlaySpec
     "throw exception" when {
       "employment not found" in {
         val SUT = createSUT
-        val cache = Map(EndCompanyBenefit_EmploymentIdKey -> "1",
-          EndCompanyBenefit_BenefitTypeKey -> "type",
-          EndCompanyBenefit_RefererKey -> "referrer")
-
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(cache))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = SUT.decision()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -193,13 +186,24 @@ class CompanyBenefitControllerSpec extends PlaySpec
     Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false)
 
   val employmentService = mock[EmploymentService]
+  val personService = mock[PersonService]
   val journeyCacheService = mock[JourneyCacheService]
 
   class SUT extends CompanyBenefitController(
+    personService,
+    mock[AuditService],
     employmentService,
     journeyCacheService,
-    FakeAuthAction,
-    FakeValidatePerson,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
     MockTemplateRenderer,
-    mock[FormPartialRetriever])
+    mock[FormPartialRetriever]) {
+
+    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
+
+    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
+  }
+
 }

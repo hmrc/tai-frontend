@@ -17,8 +17,7 @@
 package controllers.income.previousYears
 
 import builders.{AuthBuilder, RequestBuilder}
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
-import controllers.actions.FakeValidatePerson
+import controllers.FakeTaiPlayApplication
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.{Matchers, Mockito}
@@ -57,7 +56,7 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   override def beforeEach: Unit = {
-    Mockito.reset(journeyCacheService, trackingjourneyCacheService)
+    Mockito.reset(journeyCacheService, trackingjourneyCacheService, personService)
   }
 
   "decision" must {
@@ -332,17 +331,28 @@ class UpdateIncomeDetailsControllerSpec extends PlaySpec
 
   private def createSUT = new SUT
 
+  val personService: PersonService = mock[PersonService]
   val journeyCacheService = mock[JourneyCacheService]
   val trackingjourneyCacheService = mock[JourneyCacheService]
   val previousYearsIncomeService = mock[PreviousYearsIncomeService]
 
   private class SUT extends UpdateIncomeDetailsController(
     previousYearsIncomeService,
-    FakeAuthAction,
-    FakeValidatePerson,
+    personService,
+    mock[AuditConnector],
+    mock[DelegationConnector],
+    mock[AuthConnector],
     trackingjourneyCacheService,
     journeyCacheService,
     mock[FormPartialRetriever],
     MockTemplateRenderer
-  )
+  ) {
+
+    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
+
+    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
+
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
+  }
+
 }
