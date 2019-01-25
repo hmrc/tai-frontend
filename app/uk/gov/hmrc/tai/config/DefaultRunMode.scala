@@ -16,6 +16,10 @@
 
 package uk.gov.hmrc.tai.config
 
-import uk.gov.hmrc.play.config.ServicesConfig
+import play.api.Play
+import uk.gov.hmrc.play.config.RunMode
 
-trait TaiFrontendServicesConfig extends ServicesConfig with DefaultRunMode
+trait DefaultRunMode extends RunMode{
+  override def mode = Play.current.mode
+  override def runModeConfiguration = Play.current.configuration
+}

@@ -17,13 +17,11 @@
 package uk.gov.hmrc.tai.auth
 
 import play.api.Play
-import uk.gov.hmrc.play.config.RunMode
+import uk.gov.hmrc.tai.config.DefaultRunMode
 
-object ConfigProperties extends RunMode {
+object ConfigProperties extends DefaultRunMode {
 
   import play.api.Play.current
-  override lazy val mode = Play.current.mode
-  override lazy val runModeConfiguration = Play.current.configuration
 
   val postSignInRedirectUrl: Option[String] = Play.configuration.getString(s"govuk-tax.$env.login-callback.url")
 

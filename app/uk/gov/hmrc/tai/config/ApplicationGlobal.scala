@@ -25,13 +25,13 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Request
 import play.api.{Application, Play}
 import play.twirl.api.Html
-import uk.gov.hmrc.play.config.{AppName, ControllerConfig, RunMode}
+import uk.gov.hmrc.play.config.ControllerConfig
 import uk.gov.hmrc.play.frontend.bootstrap.DefaultFrontendGlobal
 import uk.gov.hmrc.play.frontend.filters.{FrontendAuditFilter, FrontendLoggingFilter, MicroserviceFilterSupport}
 import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
 import uk.gov.hmrc.urls.Link
 
-object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
+object ApplicationGlobal extends DefaultFrontendGlobal with DefaultRunMode {
 
   override val auditConnector = AuditConnector
   override val loggingFilter = HFLoggingFilter
@@ -39,9 +39,6 @@ object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
 
   implicit val templateRenderer = LocalTemplateRenderer
   implicit val partialRetriever = TaiHtmlPartialRetriever
-
-  override def mode = Play.current.mode
-  override def runModeConfiguration = Play.current.configuration
 
   override def onStart(app: Application) {
     super.onStart(app)
@@ -90,13 +87,10 @@ object ControllerConfiguration extends ControllerConfig {
 object HFLoggingFilter extends FrontendLoggingFilter with MicroserviceFilterSupport {
   override def controllerNeedsLogging(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsLogging
 }
-object HelpFrontendAuditFilter extends FrontendAuditFilter with RunMode with AppName with MicroserviceFilterSupport {
+object HelpFrontendAuditFilter extends FrontendAuditFilter with DefaultRunMode with DefaultAppName with MicroserviceFilterSupport {
   override lazy val maskedFormFields :Seq[String] = Seq.empty[String]
   override lazy val applicationPort: Option[Int] = None
   override lazy val auditConnector = AuditConnector
   override def controllerNeedsAuditing(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsAuditing
-  override def mode = Play.current.mode
-  override def runModeConfiguration = Play.current.configuration
-  override def appNameConfiguration = Play.current.configuration
 
 }

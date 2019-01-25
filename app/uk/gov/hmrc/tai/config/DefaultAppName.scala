@@ -16,6 +16,9 @@
 
 package uk.gov.hmrc.tai.config
 
-import uk.gov.hmrc.play.config.ServicesConfig
+import play.api.Play
+import uk.gov.hmrc.play.config.AppName
 
-trait TaiFrontendServicesConfig extends ServicesConfig with DefaultRunMode
+trait DefaultAppName extends AppName {
+  override def appNameConfiguration = Play.current.configuration
+}
