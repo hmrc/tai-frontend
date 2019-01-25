@@ -27,7 +27,6 @@ import uk.gov.hmrc.auth.core.retrieve.{Name, ~}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
-import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -55,8 +54,7 @@ object AuthActionedTaiUser {
 }
 
 @Singleton
-class AuthActionImpl @Inject()(personService: PersonService,
-                               override val authConnector: AuthConnector)
+class AuthActionImpl @Inject()(override val authConnector: AuthConnector)
                               (implicit ec: ExecutionContext) extends AuthAction
   with AuthorisedFunctions {
 
