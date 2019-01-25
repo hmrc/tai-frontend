@@ -45,6 +45,7 @@ import uk.gov.hmrc.tai.viewModels.pensions.update.UpdatePensionCheckYourAnswersV
 
 import scala.Function.tupled
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountService,
                                                 pensionProviderService: PensionProviderService,
@@ -76,7 +77,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
     implicit request =>
       implicit val user = request.taiUser
 
-      taxAccountService.taxCodeIncomes(request.taiUser.nino, TaxYear()) flatMap {
+      (taxAccountService.taxCodeIncomes(request.taiUser.nino, TaxYear()) flatMap {
         case TaiSuccessResponseWithPayload(incomes: Seq[TaxCodeIncome]) =>
           incomes.find(income => income.employmentId.contains(id) &&
             income.componentType == PensionIncome) match {
@@ -84,8 +85,9 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
             case _ => throw new RuntimeException(s"Tax code income source is not available for id $id")
           }
         case _ => throw new RuntimeException("Tax code income source is not available")
+      }).recover {
+        case NonFatal(e) => internalServerError(e.getMessage)
       }
-
   }
 
   private def cacheAndCreateView(id: Int, taxCodeIncome: TaxCodeIncome)(implicit hc: HeaderCarrier,
