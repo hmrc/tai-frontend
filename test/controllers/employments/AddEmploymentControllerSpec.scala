@@ -17,8 +17,7 @@
 package controllers.employments
 
 import builders.{AuthBuilder, RequestBuilder}
-import controllers.actions.FakeValidatePerson
-import controllers.{FakeAuthAction, FakeTaiPlayApplication}
+import controllers.FakeTaiPlayApplication
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -122,10 +121,7 @@ class AddEmploymentControllerSpec extends PlaySpec
       "the name is valid" in {
         val sut = createSUT
 
-        when(addEmploymentJourneyCacheService.cache(mockEq(Map("employmentName" -> "the employment")))(any()))
-            .thenReturn(Future.successful(Map.empty[String, String]))
-
-        Await.result(sut.submitEmploymentName()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(("employmentName", "the employment"))), 5.seconds)
+        Await.result(sut.submitEmploymentName()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(("employmentName", "the employment"))), 5 seconds)
 
         verify(addEmploymentJourneyCacheService, times(1)).cache(mockEq(Map("employmentName" -> "the employment")))(any())
       }
@@ -163,9 +159,6 @@ class AddEmploymentControllerSpec extends PlaySpec
     "return error" when {
       "cache doesn't return data" in {
         val sut = createSUT
-        when(addEmploymentJourneyCacheService.collectedValues(any(), any())(any()))
-            .thenReturn(Future.successful((Seq.empty[String], Seq.empty)))
-
         when(addEmploymentJourneyCacheService.currentValueAs[String](any(), any())(any())).thenReturn(Future.successful(None))
 
         val result = sut.addEmploymentStartDate()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -334,7 +327,7 @@ class AddEmploymentControllerSpec extends PlaySpec
         Await.result(sut.sixWeeksError()(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(
           AddEmploymentFirstPayForm.FirstPayChoice -> NoValue)),5 seconds)
 
-        verify(auditService, times(1)).createAndSendAuditEvent(Matchers.eq(AddEmployment_CantAddEmployer), Matchers.any())(Matchers.any(), Matchers.any())
+        verify(auditService, times(1)).createAndSendAuditEvent(Matchers.eq(AddEmployment_CantAddEmployer), Matchers.eq(Map("nino" -> nino)))(Matchers.any(), Matchers.any())
       }
     }
 
@@ -684,20 +677,28 @@ class AddEmploymentControllerSpec extends PlaySpec
 
   val auditService = mock[AuditService]
   val employmentService = mock[EmploymentService]
+  val personService = mock[PersonService]
   val addEmploymentJourneyCacheService = mock[JourneyCacheService]
   val trackSuccessJourneyCacheService = mock[JourneyCacheService]
 
   private class SUT extends AddEmploymentController(
+    personService,
     auditService,
     employmentService,
     addEmploymentJourneyCacheService,
     trackSuccessJourneyCacheService,
-    FakeAuthAction,
-    FakeValidatePerson,
+    mock[DelegationConnector],
+    mock[AuditConnector],
+    mock[AuthConnector],
     mock[FormPartialRetriever],
     MockTemplateRenderer) {
 
     val employmentStartDateForm = EmploymentAddDateForm("employer")
+
+    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(nino)))
+    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
+
+    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(Nino(nino))))
   }
 
 }
