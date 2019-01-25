@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.connectors
+package uk.gov.hmrc.tai.config
 
-import com.google.inject.Inject
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.tai.config.TaiConfig
+import play.api.Play
+import uk.gov.hmrc.play.config.RunMode
 
-import scala.concurrent.Future
-
-class SessionConnector @Inject() (httpHandler: HttpHandler) extends TaiUrls with TaiConfig {
-
-  def invalidateCache()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    httpHandler.deleteFromApi(invalidateCacheUrl())
-  }
-
+trait DefaultRunMode extends RunMode{
+  override def mode = Play.current.mode
+  override def runModeConfiguration = Play.current.configuration
 }

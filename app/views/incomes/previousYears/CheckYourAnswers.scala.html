@@ -22,7 +22,7 @@
 @import includes.forms._
 @import uk.gov.hmrc.tai.model.TaxYear
 
-@(viewModel: UpdateIncomeDetailsCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthActionedTaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: UpdateIncomeDetailsCheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
   ptaHeader(
@@ -33,7 +33,7 @@
 
 @main(
   title = messages("tai.checkYourAnswers.title"),
-  authActionedTaiUser = Some(user),
+  user = Some(user),
   pageHeader = Some(header),
   articleClasses = None
 ){

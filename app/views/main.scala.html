@@ -29,7 +29,7 @@
   sidebarClass: Option[String] = None,
   articleClasses: Option[String] = Some("full-width"),
   user: Option[controllers.auth.TaiUser] = None,
-  authActionedTaiUser: Option[controllers.auth.AuthActionedTaiUser] = None,
+  authedUser: Option[controllers.auth.AuthedUser] = None,
   employerName: Option[String] = None,
   includeGridWrapper: Boolean = false,
   webChat: Boolean = false,
@@ -66,7 +66,7 @@
     user.fold(false) {
         user =>
             user.authContext.principal.accounts.sa.map(_.utr).isDefined
-    } || authActionedTaiUser.fold(false) {
+    } || authedUser.fold(false) {
         _.getUTR != ""
     }
 }

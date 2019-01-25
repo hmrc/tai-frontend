@@ -16,8 +16,9 @@
 
 package controllers.income.bbsi
 
-import builders.{AuthBuilder, RequestBuilder}
-import controllers.FakeTaiPlayApplication
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
+import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
@@ -28,9 +29,6 @@ import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
@@ -165,20 +163,13 @@ class BbsiUpdateAccountControllerSpec extends PlaySpec with MockitoSugar with Fa
 
   class SUT extends BbsiUpdateAccountController(
     bbsiService,
-    personService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     journeyCacheService,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-
-    val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
     when(bbsiService.untaxedInterest(any())(any())).thenReturn(Future.successful(UntaxedInterest(1000,
       Seq(BankAccount(1, Some("1231231"), Some("123456"), Some("TEST"), 1000, Some("customer"))))))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
   }
-
 }

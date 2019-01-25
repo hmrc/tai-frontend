@@ -105,7 +105,7 @@ class YourIncomeCalculationController @Inject()(personService: PersonService,
   }
 
   private def showHistoricIncomeCalculation(nino: Nino, empId: Int, printPage: Boolean = false, year: TaxYear)
-                                           (implicit request: Request[AnyContent], user: AuthActionedTaiUser): Future[Result] = {
+                                           (implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
     for {
       employment <- employmentService.employments(nino, year)
     } yield {
