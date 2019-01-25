@@ -25,7 +25,7 @@
 @import includes.ptaHeader
 
 @(model: YourIncomeCalculationViewModel)(implicit request: Request[_],
-user: controllers.auth.AuthActionedTaiUser,
+user: controllers.auth.AuthedUser,
 messages: Messages,
 templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
 partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
@@ -52,7 +52,7 @@ partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
     title = Messages("tai.income.calculation.TaxableIncomeDetails", model.employerName),
-    authActionedTaiUser = Some(user),
+    authedUser = Some(user),
     pageHeader = Some(header),
     employerName = Some(model.employerName),
     gaCustomTitle = Some(Messages("tai.income.calculation.TaxableIncomeDetails.gaTitle")),

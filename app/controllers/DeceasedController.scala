@@ -17,7 +17,7 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.auth.{AuthAction, AuthActionedTaiUser}
+import controllers.auth.{AuthAction, AuthedUser}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.partials.FormPartialRetriever
@@ -32,7 +32,7 @@ class DeceasedController @Inject()(authenticate: AuthAction,
 
   def deceased() = authenticate.async {
     implicit request =>
-      implicit val user: AuthActionedTaiUser = request.taiUser
+      implicit val user: AuthedUser = request.taiUser
       Future.successful(Ok(views.html.deceased_helpline()))
   }
 }

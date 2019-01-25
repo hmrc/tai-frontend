@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.auth.AuthActionedTaiUser
+import controllers.auth.AuthedUser
 import controllers.auth.AuthenticatedRequest
 import builders.{AuthActionedUserBuilder, UserBuilder}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
@@ -43,7 +43,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     with I18nSupport
     with MockitoSugar {
 
-  implicit val authActionedTaiUser: AuthActionedTaiUser = AuthActionedUserBuilder()
+  implicit val authedUser: AuthedUser = AuthActionedUserBuilder()
 
   "ErrorPagesHandler" must {
     "handle an internal server error" in {
@@ -281,7 +281,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
       "there is hod internal server error" in {
         val exceptionController = createSut
 
-        implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authActionedTaiUser)
+        implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authedUser)
         implicit val rl = exceptionController.recoveryLocation
 
         val partialErrorFunction = exceptionController.hodInternalErrorResult
@@ -291,7 +291,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "there is hod bad request exception" in {
         val exceptionController = createSut
-        implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authActionedTaiUser)
+        implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authedUser)
         implicit val rl = exceptionController.recoveryLocation
 
         val partialErrorFunction = exceptionController.hodBadRequestResult
@@ -301,7 +301,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "there is any kind of exception" in {
         val exceptionController = createSut
-        implicit val request = AuthenticatedRequest[AnyContent](FakeRequest("GET", "/"), authActionedTaiUser)
+        implicit val request = AuthenticatedRequest[AnyContent](FakeRequest("GET", "/"), authedUser)
         implicit val rl = exceptionController.recoveryLocation
 
         val partialErrorFunction = exceptionController.hodAnyErrorResult

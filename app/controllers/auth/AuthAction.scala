@@ -30,9 +30,9 @@ import uk.gov.hmrc.play.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthActionedTaiUser) extends WrappedRequest[A](request)
+case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser) extends WrappedRequest[A](request)
 
-case class AuthActionedTaiUser(name: String, validNino: String, utr: String, userDetailsUri: String) {
+case class AuthedUser(name: String, validNino: String, utr: String, userDetailsUri: String) {
   def getDisplayName = name
 
   def getNino = validNino
@@ -42,14 +42,14 @@ case class AuthActionedTaiUser(name: String, validNino: String, utr: String, use
   def getUTR = utr
 }
 
-object AuthActionedTaiUser {
-  def apply(name: Option[Name], nino: Option[String], saUtr: Option[String], userDetailsUri: Option[String]): AuthActionedTaiUser = {
+object AuthedUser {
+  def apply(name: Option[Name], nino: Option[String], saUtr: Option[String], userDetailsUri: Option[String]): AuthedUser = {
     val validNino = nino.getOrElse("")
     val validName = name.flatMap(_.name).getOrElse("")
     val validUtr = saUtr.getOrElse("")
     val validUserDetailsUri = userDetailsUri.getOrElse("")
 
-    AuthActionedTaiUser(validName, validNino, validUtr, validUserDetailsUri)
+    AuthedUser(validName, validNino, validUtr, validUserDetailsUri)
   }
 }
 
@@ -64,7 +64,7 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)
     authorised(ConfidenceLevel.L200)
       .retrieve(Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.userDetailsUri) {
         case nino ~ name ~ saUtr ~ userDetailsUri => {
-          val taiUser = AuthActionedTaiUser(name, nino, saUtr, userDetailsUri)
+          val taiUser = AuthedUser(name, nino, saUtr, userDetailsUri)
 
           for {
             result <- block(AuthenticatedRequest(request, taiUser))
