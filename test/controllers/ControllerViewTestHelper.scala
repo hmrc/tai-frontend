@@ -17,7 +17,7 @@
 package controllers
 
 import builders.{AuthActionedUserBuilder, UserBuilder}
-import controllers.auth.{AuthActionedTaiUser, TaiUser}
+import controllers.auth.{AuthedUser, TaiUser}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.scalatestplus.play.PlaySpec
 import play.api.mvc.Result
@@ -32,7 +32,7 @@ import scala.concurrent.Future
 trait ControllerViewTestHelper extends PlaySpec {
 
   implicit val user: TaiUser = UserBuilder()
-  implicit val authActionedTaiUser: AuthActionedTaiUser = AuthActionedUserBuilder()
+  implicit val authedUser: AuthedUser = AuthActionedUserBuilder()
   implicit val templateRenderer: TemplateRenderer = MockTemplateRenderer
   implicit val partialRetriever: FormPartialRetriever = MockPartialRetriever
 

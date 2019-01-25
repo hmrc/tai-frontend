@@ -25,7 +25,7 @@
 
 
 @(model: YourIncomeCalculationViewModel)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.AuthActionedTaiUser)
+messages: Messages, user: controllers.auth.AuthedUser)
 
 @printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
 
