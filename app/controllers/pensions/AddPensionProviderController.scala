@@ -27,6 +27,7 @@ import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
@@ -43,10 +44,10 @@ import uk.gov.hmrc.tai.viewModels.pensions.{CheckYourAnswersViewModel, PensionNu
 import scala.Function.tupled
 import scala.concurrent.Future
 import scala.language.postfixOps
+import scala.util.control.NonFatal
 
 class AddPensionProviderController @Inject()(pensionProviderService: PensionProviderService,
                                              auditService: AuditService,
-                                             personService: PersonService,
                                              val auditConnector: AuditConnector,
                                              authenticate: AuthAction,
                                              validatePerson: ValidatePerson,
@@ -142,12 +143,16 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
     implicit request =>
       implicit val user = request.taiUser
 
-      journeyCacheService.collectedValues(Seq(AddPensionProvider_NameKey), Seq(AddPensionProvider_StartDateKey)) map tupled { (mandatoryVals, optionalVals) =>
+      (journeyCacheService.collectedValues(Seq(AddPensionProvider_NameKey), Seq(AddPensionProvider_StartDateKey)) map tupled { (mandatoryVals, optionalVals) =>
+
         val form = optionalVals(0) match {
           case Some(userDateString) => PensionAddDateForm(mandatoryVals(0)).form.fill(new LocalDate(userDateString))
           case _ => PensionAddDateForm(mandatoryVals(0)).form
         }
+
         Ok(views.html.pensions.addPensionStartDate(form, mandatoryVals(0)))
+      }).recover {
+        case NonFatal(e) => internalServerError(e.getMessage)
       }
   }
 
@@ -221,7 +226,7 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
         }
 
         val user = Some(request.taiUser)
-        
+
         Ok(views.html.can_we_contact_by_phone(user, None, contactPhonePensionProvider, YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq(0), telephoneNo))))
       }
   }
@@ -254,26 +259,29 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
     implicit request =>
       implicit val user = request.taiUser
 
-      journeyCacheService.collectedValues(
-        Seq(AddPensionProvider_NameKey, AddPensionProvider_StartDateKey, AddPensionProvider_PayrollNumberKey, AddPensionProvider_TelephoneQuestionKey),
-        Seq(AddPensionProvider_TelephoneNumberKey)
-      ) map tupled { (mandatoryVals, optionalVals) =>
+      try {
+        journeyCacheService.collectedValues(
+          Seq(AddPensionProvider_NameKey, AddPensionProvider_StartDateKey, AddPensionProvider_PayrollNumberKey, AddPensionProvider_TelephoneQuestionKey),
+          Seq(AddPensionProvider_TelephoneNumberKey)
+        ) map tupled { (mandatoryVals, optionalVals) =>
 
-        val model = CheckYourAnswersViewModel(
-          mandatoryVals.head,
-          mandatoryVals(1),
-          mandatoryVals(2),
-          mandatoryVals(3),
-          optionalVals.head
-        )
-        Ok(views.html.pensions.addPensionCheckYourAnswers(model))
+          val model = CheckYourAnswersViewModel(
+            mandatoryVals.head,
+            mandatoryVals(1),
+            mandatoryVals(2),
+            mandatoryVals(3),
+            optionalVals.head
+          )
+          Ok(views.html.pensions.addPensionCheckYourAnswers(model))
+        }
+      } catch {
+        case NonFatal(e) => Future.successful(internalServerError(e.getMessage))
       }
   }
 
 
   def submitYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
-      val nino = request.taiUser.nino
       implicit val user = request.taiUser
 
       for {
@@ -281,7 +289,7 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
           Seq(AddPensionProvider_NameKey, AddPensionProvider_StartDateKey, AddPensionProvider_PayrollNumberKey, AddPensionProvider_TelephoneQuestionKey),
           Seq(AddPensionProvider_TelephoneNumberKey))
         model = AddPensionProvider(mandatoryVals.head, LocalDate.parse(mandatoryVals(1)), mandatoryVals(2), mandatoryVals.last, optionalVals.head)
-        _ <- pensionProviderService.addPensionProvider(nino, model)
+        _ <- pensionProviderService.addPensionProvider(Nino(user.getNino), model)
         _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourney_AddPensionProviderKey, "true")
         _ <- journeyCacheService.flush()
       } yield {
