@@ -18,53 +18,40 @@ package controllers.income.bbsi
 
 
 import com.google.inject.Inject
-import controllers.auth.WithAuthorisedForTaiLite
-import controllers.{ServiceCheckLite, TaiBaseController}
+import controllers.TaiBaseController
+import controllers.actions.ValidatePerson
+import controllers.auth.AuthAction
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.tai.service.{BbsiService, PersonService}
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.{FrontEndDelegationConnector, FrontendAuthConnector, TaiHtmlPartialRetriever}
-import uk.gov.hmrc.tai.connectors.LocalTemplateRenderer
+import uk.gov.hmrc.tai.service.BbsiService
 
 
 class BbsiRemoveAccountController @Inject()(bbsiService: BbsiService,
-                                            personService: PersonService,
-                                            val auditConnector: AuditConnector,
-                                            val delegationConnector: DelegationConnector,
-                                            val authConnector: AuthConnector,
+                                            authenticate: AuthAction,
+                                            validatePerson: ValidatePerson,
                                             override implicit val partialRetriever: FormPartialRetriever,
-                                            override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite {
-  def checkYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            bbsiService.bankAccount(Nino(user.getNino), id) map {
-              case Some(bankAccount) =>
-                Ok(views.html.incomes.bbsi.remove.bank_building_society_check_your_answers(id, bankAccount.bankName.getOrElse("")))
-              case None => NotFound
-            }
-          }
+                                            override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
+
+  def checkYourAnswers(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user = request.taiUser
+      bbsiService.bankAccount(Nino(user.getNino), id) map {
+        case Some(bankAccount) =>
+          Ok(views.html.incomes.bbsi.remove.bank_building_society_check_your_answers(id, bankAccount.bankName.getOrElse("")))
+        case None => NotFound
+      }
   }
 
-  def submitYourAnswers(id: Int): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            bbsiService.removeBankAccount(Nino(user.getNino), id) map { _ =>
-              Redirect(controllers.income.bbsi.routes.BbsiController.removeConfirmation())
-            }
-          }
-  }
+  def submitYourAnswers(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user = request.taiUser
 
+      bbsiService.removeBankAccount(Nino(user.getNino), id) map { _ =>
+        Redirect(controllers.income.bbsi.routes.BbsiController.removeConfirmation())
+      }
+  }
 }
