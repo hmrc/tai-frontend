@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 
 @import uk.gov.hmrc.tai.forms.pensions.WhatDoYouWantToTellUsForm
-@(name: String, whatDoYouWantToTellUsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthActionedTaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(name: String, whatDoYouWantToTellUsForm: Form[String])(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{Messages("tai.updatePension.whatDoYouWantToTellUs.heading")}
 
@@ -37,7 +37,7 @@
 
 @main(
     title = Messages("tai.updatePension.whatDoYouWantToTellUs.heading", name),
-    authActionedTaiUser = Some(user),
+    user = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
     gaCustomTitle = Some(Messages("tai.updatePension.whatDoYouWantToTellUs.customGaTitle"))) {

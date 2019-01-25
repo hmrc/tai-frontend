@@ -19,7 +19,7 @@ package controllers
 import com.google.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.audit.Auditable
-import controllers.auth.{AuthAction, AuthActionedTaiUser}
+import controllers.auth.{AuthAction, AuthedUser}
 import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
@@ -83,7 +83,7 @@ class WhatDoYouWantToDoController @Inject()(employmentService: EmploymentService
         } recoverWith (hodBadRequestResult orElse hodInternalErrorResult)
   }
 
-  private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthActionedTaiUser): Future[Result] = {
+  private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
 
     val nino = Nino(user.getNino)
 

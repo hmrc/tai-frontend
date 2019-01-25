@@ -86,6 +86,7 @@ trait WithAuthorisedForTaiLite extends DelegationAwareActions { this: ErrorPages
   implicit private def createHeaderCarrier(implicit request: Request[_]): HeaderCarrier =
     fromHeadersAndSession(request.headers,Some(request.session))
 
+  @deprecated("Use AuthAction")
   def authorisedForTai(implicit personService: PersonService) = {
     new AuthorisedByTai(AuthorisedFor(TaiRegime, TaiConfidenceLevelPredicate), personService)
   }
