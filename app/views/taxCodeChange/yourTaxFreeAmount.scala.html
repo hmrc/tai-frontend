@@ -19,7 +19,7 @@
 @import includes.taxFreeAmountSummaryComparison
 @import uk.gov.hmrc.urls.Link
 
-@(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(currentTaxFreeAmount: YourTaxFreeAmountViewModel)(implicit request: Request[_], user: controllers.auth.AuthActionedTaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax-free amount"}
 
@@ -36,7 +36,7 @@
     title = Messages("taxCode.change.yourTaxFreeAmount.title"),
     articleClasses = Some("full-width"),
     pageHeader = Some(header),
-    user = Some(user),
+    authActionedTaiUser = Some(user),
     gaCustomTitle = None
 ){
 

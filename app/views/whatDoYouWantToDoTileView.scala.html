@@ -30,7 +30,7 @@
   model: WhatDoYouWantToDoViewModel
 )(implicit request: Request[_],
   messages: Messages,
-  user: controllers.auth.TaiUser,
+  user: controllers.auth.AuthActionedTaiUser,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -46,7 +46,7 @@
 
 @main(
     title = messages("your.paye.income.tax.overview"),
-    user = Some(user),
+    authActionedTaiUser = Some(user),
     gaCustomTitle = None,
     gaSettings = GoogleAnalyticsSettings(
                                             customClientIdRequired = true,

@@ -17,8 +17,9 @@
 package controllers
 
 import com.google.inject.Inject
+import controllers.actions.ValidatePerson
 import controllers.audit.Auditable
-import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
+import controllers.auth.{AuthAction, TaiUser, WithAuthorisedForTaiLite}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request}
@@ -35,39 +36,31 @@ import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, PersonService}
 import uk.gov.hmrc.tai.viewModels.TaxFreeAmountViewModel
 
-class TaxFreeAmountController @Inject()(personService: PersonService,
-                                        codingComponentService: CodingComponentService,
+import scala.util.control.NonFatal
+
+class TaxFreeAmountController @Inject()(codingComponentService: CodingComponentService,
                                         employmentService: EmploymentService,
                                         companyCarService: CompanyCarService,
-                                        val auditConnector: AuditConnector,
-                                        val delegationConnector: DelegationConnector,
-                                        val authConnector: AuthConnector,
+                                        authenticate: AuthAction,
+                                        validatePerson: ValidatePerson,
                                         override implicit val partialRetriever: FormPartialRetriever,
                                         override implicit val templateRenderer: TemplateRenderer
-                                       ) extends TaiBaseController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite
-  with Auditable
-  with FeatureTogglesConfig {
+                                       ) extends TaiBaseController {
 
-  def taxFreeAmount: Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            taxFreeAmount()
-          }
-  }
+  def taxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      val nino = request.taiUser.nino
 
-  private def taxFreeAmount()(implicit user: TaiUser, request: Request[AnyContent], person: Person) = {
-    val nino = Nino(user.getNino)
-    for {
-      codingComponents <- codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-      employmentNames <- employmentService.employmentNames(nino, TaxYear())
-      companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
-    } yield {
-      val viewModel = TaxFreeAmountViewModel(codingComponents, employmentNames, companyCarBenefits)
-      Ok(views.html.taxFreeAmount(viewModel))
-    }
+      (for {
+        codingComponents <- codingComponentService.taxFreeAmountComponents(nino, TaxYear())
+        employmentNames <- employmentService.employmentNames(nino, TaxYear())
+        companyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, codingComponents)
+      } yield {
+        val viewModel = TaxFreeAmountViewModel(codingComponents, employmentNames, companyCarBenefits)
+        implicit val user = request.taiUser
+        Ok(views.html.taxFreeAmount(viewModel))
+      }) recover {
+        case NonFatal(e) => internalServerError(s"Could not get tax free amount", Some(e))
+      }
   }
 }

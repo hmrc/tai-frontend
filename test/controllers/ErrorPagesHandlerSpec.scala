@@ -16,13 +16,16 @@
 
 package controllers
 
-import builders.UserBuilder
+import controllers.auth.AuthActionedTaiUser
+import controllers.auth.AuthenticatedRequest
+import builders.{AuthActionedUserBuilder, UserBuilder}
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.mvc.AnyContent
 import play.api.mvc.Results.{BadRequest, Redirect}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -40,6 +43,8 @@ class ErrorPagesHandlerSpec extends PlaySpec
     with I18nSupport
     with MockitoSugar {
 
+  implicit val authActionedTaiUser: AuthActionedTaiUser = AuthActionedUserBuilder()
+
   "ErrorPagesHandler" must {
     "handle an internal server error" in {
       val controller = createSut
@@ -51,7 +56,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
     "return the correct service unavailable page for 400" in  {
 
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("POST", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("POST", "/"))
 
       val e = new BadRequestException(message = "appStatusMessage=Version number incorrect")
       val result = sut(e)
@@ -70,7 +75,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     }
 
     "return the correct service unavailable page for  primary data" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
       val e = new BadRequestException(message = "appStatusMessage=Primary") {override val responseCode = 400}
       val result = sut(e)
 
@@ -79,7 +84,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     }
 
     "return the correct service unavailable page for no data" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
       val e = new BadRequestException(message = "appStatusMessage=")
       val result = sut(e)
 
@@ -96,7 +101,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     }
 
     "return the correct service unavailable page for 404" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
 
       val e = new Upstream4xxResponse("NotFoundException", 404, 404)
 
@@ -117,7 +122,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
 
     "return the correct service unavailable page for 500" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
 
       val e = new Upstream5xxResponse("Upstream5xxResponse", 500, 500)
 
@@ -137,7 +142,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     }
 
     "return the correct page where the user has no primary employments" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
       val e = new BadRequestException(message="appStatusMessage=Cannot complete a Coding Calculation without a Primary Employment") {override val responseCode = 400}
       val result = sut(e)
 
@@ -146,7 +151,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     }
 
     "return the correct service unavailable page for not found with npm" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
 
       val e = new NotFoundException("appStatusMessage")
 
@@ -166,7 +171,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     }
 
     "return the correct service unavailable page for not found without npm" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
 
       val result = sut(new NotFoundException(""))
       status(result) mustBe 404
@@ -183,7 +188,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
     }
 
     "return the correct service unavailable page for internal server error" in  {
-      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"), UserBuilder())
+      val sut = createSut.handleErrorResponse("testMethod", nino) (FakeRequest("GET", "/"))
 
       val e = new InternalServerException("Internal Server Error")
 
@@ -275,8 +280,8 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "there is hod internal server error" in {
         val exceptionController = createSut
-        implicit val request = FakeRequest("GET", "/")
-        implicit val user = UserBuilder()
+
+        implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authActionedTaiUser)
         implicit val rl = exceptionController.recoveryLocation
 
         val partialErrorFunction = exceptionController.hodInternalErrorResult
@@ -286,8 +291,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "there is hod bad request exception" in {
         val exceptionController = createSut
-        implicit val request = FakeRequest("GET", "/")
-        implicit val user = UserBuilder()
+        implicit val request = AuthenticatedRequest[AnyContent](fakeRequest, authActionedTaiUser)
         implicit val rl = exceptionController.recoveryLocation
 
         val partialErrorFunction = exceptionController.hodBadRequestResult
@@ -297,8 +301,7 @@ class ErrorPagesHandlerSpec extends PlaySpec
 
       "there is any kind of exception" in {
         val exceptionController = createSut
-        implicit val request = FakeRequest("GET", "/")
-        implicit val user = UserBuilder()
+        implicit val request = AuthenticatedRequest[AnyContent](FakeRequest("GET", "/"), authActionedTaiUser)
         implicit val rl = exceptionController.recoveryLocation
 
         val partialErrorFunction = exceptionController.hodAnyErrorResult

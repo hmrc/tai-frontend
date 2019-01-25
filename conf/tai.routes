@@ -266,6 +266,7 @@ GET         /tax-code-change/what-happens-next                                  
 
 ## Auth error page
 GET         /unauthorised                                                              @controllers.UnauthorisedController.onPageLoad
+GET         /unauthorised/login                                                        @controllers.UnauthorisedController.login
 
 
 ### Update Income CY + 1
@@ -278,6 +279,3 @@ GET         /update-income/next-year/income/:empId/confirmed                    
 GET         /update-income/next-year/income/:empId/confirm                             @controllers.income.UpdateIncomeNextYearController.confirm(empId: Int)
 GET         /update-income/next-year/income/:empId/success                             @controllers.income.UpdateIncomeNextYearController.success(empId: Int)
 
-
-## Test New Auth
-GET         /test-page                                                                 @controllers.TestAuthController.authCheckAction

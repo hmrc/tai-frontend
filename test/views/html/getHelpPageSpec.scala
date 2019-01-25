@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
 
 class getHelpPageSpec extends PlaySpec
   with FakeTaiPlayApplication
-  with JsoupMatchers{
+  with JsoupMatchers {
 
   implicit val request = FakeRequest("GET", "")
   implicit val user = AuthActionedUserBuilder()
