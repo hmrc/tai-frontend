@@ -20,15 +20,15 @@ import com.google.inject.Inject
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.tai.config.TaiFrontendServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeMismatch, TaxCodeRecord}
 
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import scala.concurrent.Future
 
-class TaxCodeChangeConnector @Inject() (httpHandler: HttpHandler) extends ServicesConfig {
+class TaxCodeChangeConnector @Inject() (httpHandler: HttpHandler) extends TaiFrontendServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 

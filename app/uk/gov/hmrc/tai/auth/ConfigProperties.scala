@@ -22,6 +22,8 @@ import uk.gov.hmrc.play.config.RunMode
 object ConfigProperties extends RunMode {
 
   import play.api.Play.current
+  override lazy val mode = Play.current.mode
+  override lazy val runModeConfiguration = Play.current.configuration
 
   val postSignInRedirectUrl: Option[String] = Play.configuration.getString(s"govuk-tax.$env.login-callback.url")
 

@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.tai.service
 
-import javax.inject.Singleton
-
 import com.google.inject.Inject
+import javax.inject.Singleton
 import play.api.mvc.{AnyContent, Request}
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions
@@ -36,10 +36,9 @@ import scala.concurrent.Future
 
 @Singleton
 class AuditService @Inject()(val auditConnector: AuditConnector,
-                             personService: PersonService) {
+                             personService: PersonService) extends AppName {
 
-  val appName = AppName.appName
-
+  override val appNameConfiguration = Play.current.configuration
   val userEnterEvent = "userEntersService"
   val employmentPensionEvent = "startedEmploymentPensionJourney"
   val companyBenefitsEvent = "startedCompanyBenefitJourney"

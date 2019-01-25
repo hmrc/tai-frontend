@@ -11,7 +11,7 @@ object FrontendBuild extends Build with MicroService {
   override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
   lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala, SbtWeb)
   override lazy val playSettings: Seq[Setting[_]] = Seq(
-    dependencyOverrides += "uk.gov.hmrc" %% "play-config" % "4.3.0",
+    dependencyOverrides += "uk.gov.hmrc" %% "play-config" % "7.2.0",
     routesImport ++= Seq(
       "uk.gov.hmrc.domain._",
       "_root_.uk.gov.hmrc.tai.binders.TaxYearObjectBinder._",

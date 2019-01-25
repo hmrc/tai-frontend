@@ -40,6 +40,9 @@ object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
   implicit val templateRenderer = LocalTemplateRenderer
   implicit val partialRetriever = TaiHtmlPartialRetriever
 
+  override def mode = Play.current.mode
+  override def runModeConfiguration = Play.current.configuration
+
   override def onStart(app: Application) {
     super.onStart(app)
     applicationCrypto.verifyConfiguration()
@@ -92,4 +95,8 @@ object HelpFrontendAuditFilter extends FrontendAuditFilter with RunMode with App
   override lazy val applicationPort: Option[Int] = None
   override lazy val auditConnector = AuditConnector
   override def controllerNeedsAuditing(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsAuditing
+  override def mode = Play.current.mode
+  override def runModeConfiguration = Play.current.configuration
+  override def appNameConfiguration = Play.current.configuration
+
 }
