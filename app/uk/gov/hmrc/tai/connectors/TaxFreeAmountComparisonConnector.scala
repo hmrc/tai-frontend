@@ -21,7 +21,7 @@ import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import uk.gov.hmrc.tai.config.TaiFrontendServicesConfig
+import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.TaxFreeAmountComparison
 
@@ -29,7 +29,7 @@ import scala.concurrent.Future
 import scala.util.control.NonFatal
 
 @Singleton
-class TaxFreeAmountComparisonConnector @Inject()(val httpHandler: HttpHandler) extends TaiFrontendServicesConfig {
+class TaxFreeAmountComparisonConnector @Inject()(val httpHandler: HttpHandler) extends DefaultServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 

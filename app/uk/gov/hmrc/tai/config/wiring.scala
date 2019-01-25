@@ -45,7 +45,7 @@ object WSHttp extends WSHttp{
   override lazy val configuration = Some(Play.current.configuration.underlying)
 }
 
-trait WSHttpProxy extends WSHttp with WSProxy with DefaultRunMode with HttpAuditing with TaiFrontendServicesConfig
+trait WSHttpProxy extends WSHttp with WSProxy with DefaultRunMode with HttpAuditing with DefaultServicesConfig
 
 object WSHttpProxy extends WSHttpProxy {
   override lazy val configuration = Some(Play.current.configuration.underlying)
@@ -59,12 +59,12 @@ object TaiHtmlPartialRetriever extends FormPartialRetriever {
   override def crypto: String => String = ApplicationGlobal.sessionCookieCryptoFilter.encrypt
 }
 
-object FrontendAuthConnector extends AuthConnector with TaiFrontendServicesConfig {
+object FrontendAuthConnector extends AuthConnector with DefaultServicesConfig {
   lazy val serviceUrl = baseUrl("auth")
   lazy val http = WSHttp
 }
 
-object FrontEndDelegationConnector extends DelegationConnector with TaiFrontendServicesConfig {
+object FrontEndDelegationConnector extends DelegationConnector with DefaultServicesConfig {
   override protected def serviceUrl: String = baseUrl("delegation")
   override protected def http: WSHttp = WSHttp
 }

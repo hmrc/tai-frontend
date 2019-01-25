@@ -18,14 +18,14 @@ package uk.gov.hmrc.tai.connectors
 
 import com.google.inject.Inject
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.config.TaiFrontendServicesConfig
+import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.model.domain.tracking.TrackedForm
 import uk.gov.hmrc.tai.model.domain.tracking.formatter.TrackedFormFormatters
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class TrackingConnector @Inject() (httpHandler: HttpHandler) extends TrackedFormFormatters with TaiFrontendServicesConfig {
+class TrackingConnector @Inject() (httpHandler: HttpHandler) extends TrackedFormFormatters with DefaultServicesConfig {
 
   lazy val serviceUrl: String = baseUrl("tracking")
 

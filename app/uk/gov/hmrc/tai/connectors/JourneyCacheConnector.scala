@@ -18,13 +18,13 @@ package uk.gov.hmrc.tai.connectors
 
 import com.google.inject.Inject
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
-import uk.gov.hmrc.tai.config.TaiFrontendServicesConfig
+import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class JourneyCacheConnector @Inject() (httpHandler: HttpHandler) extends TaiFrontendServicesConfig {
+class JourneyCacheConnector @Inject() (httpHandler: HttpHandler) extends DefaultServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 

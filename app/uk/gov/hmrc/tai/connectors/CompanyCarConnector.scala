@@ -20,14 +20,14 @@ import com.google.inject.Inject
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
-import uk.gov.hmrc.tai.config.TaiFrontendServicesConfig
+import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse}
 import uk.gov.hmrc.tai.model.domain.benefits.{CompanyCarBenefit, WithdrawCarAndFuel}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 
-class CompanyCarConnector @Inject() (httpHandler: HttpHandler) extends TaiFrontendServicesConfig {
+class CompanyCarConnector @Inject() (httpHandler: HttpHandler) extends DefaultServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 

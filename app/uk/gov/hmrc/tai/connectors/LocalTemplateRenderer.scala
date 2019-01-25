@@ -18,12 +18,12 @@ package uk.gov.hmrc.tai.connectors
 
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.config.{TaiFrontendServicesConfig, WSHttp}
+import uk.gov.hmrc.tai.config.{DefaultServicesConfig, WSHttp}
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-object LocalTemplateRenderer extends TemplateRenderer with TaiFrontendServicesConfig {
+object LocalTemplateRenderer extends TemplateRenderer with DefaultServicesConfig {
 
   override lazy val templateServiceBaseUrl = baseUrl("frontend-template-provider")
   override val refreshAfter: Duration = 10 minutes

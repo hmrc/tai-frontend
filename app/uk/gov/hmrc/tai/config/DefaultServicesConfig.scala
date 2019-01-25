@@ -18,4 +18,4 @@ package uk.gov.hmrc.tai.config
 
 import uk.gov.hmrc.play.config.ServicesConfig
 
-trait TaiFrontendServicesConfig extends ServicesConfig with DefaultRunMode
+trait DefaultServicesConfig extends ServicesConfig with DefaultRunMode

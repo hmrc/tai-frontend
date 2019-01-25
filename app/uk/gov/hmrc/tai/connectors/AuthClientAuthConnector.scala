@@ -22,7 +22,7 @@ import uk.gov.hmrc.auth.core.PlayAuthConnector
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.hooks.HttpHooks
 import uk.gov.hmrc.play.http.ws._
-import uk.gov.hmrc.tai.config.TaiFrontendServicesConfig
+import uk.gov.hmrc.tai.config.DefaultServicesConfig
 
 // TODO use bootstrap's AuthConnector when we upgrade
 
@@ -34,7 +34,7 @@ object ConnectorWithHttpValues {
 }
 
 @Singleton
-class AuthClientAuthConnector extends PlayAuthConnector with TaiFrontendServicesConfig {
+class AuthClientAuthConnector extends PlayAuthConnector with DefaultServicesConfig {
   override lazy val serviceUrl: String = baseUrl("auth")
 
   override def http: CorePost = ConnectorWithHttpValues.http

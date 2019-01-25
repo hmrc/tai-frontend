@@ -26,17 +26,16 @@ import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.IncorrectIncome
-
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
 class PreviousYearsIncomeConnectorSpec extends PlaySpec
   with MockitoSugar
-  with ServicesConfig
+  with DefaultServicesConfig
   with FakeTaiPlayApplication {
 
   "PreviousYearsIncomeConnector" must {
