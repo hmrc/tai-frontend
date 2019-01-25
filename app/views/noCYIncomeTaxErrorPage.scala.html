@@ -17,7 +17,7 @@
 @(noCYIncomeTaxErrorViewModel: uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
 )(implicit request: Request[_],
   messages: Messages,
-  user: controllers.auth.AuthActionedTaiUser,
+  user: controllers.auth.AuthedUser,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -54,7 +54,7 @@
 @main(
     title = messages("tai.noCYIncomeError.title"),
     articleClasses = None,
-    authActionedTaiUser = Some(user),
+    authedUser = Some(user),
     pageHeader = Some(header)
 ) {
     <p id="no-income-info">
