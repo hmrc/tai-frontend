@@ -22,6 +22,7 @@ import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
@@ -33,7 +34,7 @@ import uk.gov.hmrc.tai.model.domain.{TaxAccountSummary, UpdateTaxCodeIncomeReque
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class TaxAccountConnector @Inject() (httpHandler: HttpHandler) extends CodingComponentFormatters with ServicesConfig {
+class TaxAccountConnector @Inject() (httpHandler: HttpHandler) extends CodingComponentFormatters with DefaultServicesConfig {
 
   val serviceUrl: String = baseUrl("tai")
 
