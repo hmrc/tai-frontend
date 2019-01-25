@@ -232,7 +232,7 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
               case _ => None
             }
 
-            Ok(views.html.can_we_contact_by_phone(contactPhonePensionProvider, YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq(0), telephoneNo))))
+            Ok(views.html.can_we_contact_by_phone(None, Some(user), contactPhonePensionProvider, YesNoTextEntryForm.form().fill(YesNoTextEntryForm(seq(0), telephoneNo))))
           }
         }
   }
@@ -246,7 +246,7 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
           Messages("tai.canWeContactByPhone.telephone.empty"),
           Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
           formWithErrors => {
-            Future.successful(BadRequest(views.html.can_we_contact_by_phone(contactPhonePensionProvider, formWithErrors)))
+            Future.successful(BadRequest(views.html.can_we_contact_by_phone(None, Some(user), contactPhonePensionProvider, formWithErrors)))
           },
           form => {
             val mandatoryData = Map(AddPensionProvider_TelephoneQuestionKey -> Messages(s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))

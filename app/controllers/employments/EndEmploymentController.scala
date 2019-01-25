@@ -250,7 +250,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
               employmentId <- journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey)
               telephoneCache <- journeyCacheService.optionalValues(EndEmployment_TelephoneQuestionKey,EndEmployment_TelephoneNumberKey)
             } yield {
-              Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel(employmentId),
+              Ok(views.html.can_we_contact_by_phone(None, Some(user), telephoneNumberViewModel(employmentId),
                 YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
             }
           }
@@ -267,7 +267,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
               Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
               formWithErrors => {
                 journeyCacheService.mandatoryValueAsInt(EndEmployment_EmploymentIdKey) map { employmentId =>
-                  BadRequest(views.html.can_we_contact_by_phone(telephoneNumberViewModel(employmentId), formWithErrors))
+                  BadRequest(views.html.can_we_contact_by_phone(None, Some(user), telephoneNumberViewModel(employmentId), formWithErrors))
                 }
               },
               form => {
