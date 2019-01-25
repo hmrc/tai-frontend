@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 case class AuthenticatedRequest[A](request: Request[A], taiUser: AuthedUser) extends WrappedRequest[A](request)
 
-case class AuthedUser(name: String, validNino: String, utr: String, userDetailsUri: String) {
+case class AuthedUser(name: String, validNino: String, utr: String, userDetailsUri: String, confidenceLevel: String) {
   def getDisplayName = name
 
   def getNino = validNino
@@ -43,13 +43,13 @@ case class AuthedUser(name: String, validNino: String, utr: String, userDetailsU
 }
 
 object AuthedUser {
-  def apply(name: Option[Name], nino: Option[String], saUtr: Option[String], userDetailsUri: Option[String]): AuthedUser = {
+  def apply(name: Option[Name], nino: Option[String], saUtr: Option[String], userDetailsUri: Option[String], confidenceLevel: ConfidenceLevel): AuthedUser = {
     val validNino = nino.getOrElse("")
     val validName = name.flatMap(_.name).getOrElse("")
     val validUtr = saUtr.getOrElse("")
     val validUserDetailsUri = userDetailsUri.getOrElse("")
 
-    AuthedUser(validName, validNino, validUtr, validUserDetailsUri)
+    AuthedUser(validName, validNino, validUtr, validUserDetailsUri, confidenceLevel.toString)
   }
 }
 
@@ -62,9 +62,9 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     authorised(ConfidenceLevel.L200)
-      .retrieve(Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.userDetailsUri) {
-        case nino ~ name ~ saUtr ~ userDetailsUri => {
-          val taiUser = AuthedUser(name, nino, saUtr, userDetailsUri)
+      .retrieve(Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.userDetailsUri and Retrievals.confidenceLevel) {
+        case nino ~ name ~ saUtr ~ userDetailsUri ~ confidenceLevel => {
+          val taiUser = AuthedUser(name, nino, saUtr, userDetailsUri, confidenceLevel)
 
           for {
             result <- block(AuthenticatedRequest(request, taiUser))

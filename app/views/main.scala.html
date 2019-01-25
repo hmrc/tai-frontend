@@ -112,10 +112,15 @@
 
 
 @googleAnalytics = @{
+
+    def confidenceLevel: String = {
+        user.fold(authedUser.fold("false")(_.confidenceLevel))(_.authContext.user.confidenceLevel.toString)
+    }
+
     Map[String, Any](
         "trackingId" -> ApplicationConfig.analyticsToken,
         "cookieDomain" -> ApplicationConfig.analyticsHost,
-        "confidenceLevel" -> user.map(_.authContext.user.confidenceLevel.toString).getOrElse(false),
+        "confidenceLevel" -> confidenceLevel,
         "authProvider" -> authProvider
 
 
