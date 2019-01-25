@@ -126,7 +126,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
             telephoneCache <- journeyCacheService.optionalValues(UpdateEmployment_TelephoneQuestionKey, UpdateEmployment_TelephoneNumberKey)
 
           } yield {
-            Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel((employmentId)),
+            Ok(views.html.can_we_contact_by_phone(None, Some(user), telephoneNumberViewModel((employmentId)),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
           }
         }
@@ -141,7 +141,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
           Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
           formWithErrors => {
             journeyCacheService.currentCache map { currentCache =>
-              BadRequest(views.html.can_we_contact_by_phone(telephoneNumberViewModel(currentCache(UpdateEmployment_EmploymentIdKey).toInt), formWithErrors))
+              BadRequest(views.html.can_we_contact_by_phone(None, Some(user), telephoneNumberViewModel(currentCache(UpdateEmployment_EmploymentIdKey).toInt), formWithErrors))
             }
           },
           form => {

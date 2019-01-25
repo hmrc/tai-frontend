@@ -166,7 +166,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
             pensionId <- journeyCacheService.mandatoryValueAsInt(UpdatePensionProvider_IdKey)
             telephoneCache <- journeyCacheService.optionalValues(UpdatePensionProvider_TelephoneQuestionKey, UpdatePensionProvider_TelephoneNumberKey)
           } yield {
-            Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel(pensionId),
+            Ok(views.html.can_we_contact_by_phone(None, Some(user), telephoneNumberViewModel(pensionId),
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache(0), telephoneCache(1)))))
           }
         }
@@ -181,7 +181,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
           Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
           formWithErrors => {
             journeyCacheService.currentCache map { currentCache =>
-              BadRequest(views.html.can_we_contact_by_phone(telephoneNumberViewModel(currentCache(UpdatePensionProvider_IdKey).toInt), formWithErrors))
+              BadRequest(views.html.can_we_contact_by_phone(None, Some(user), telephoneNumberViewModel(currentCache(UpdatePensionProvider_IdKey).toInt), formWithErrors))
             }
           },
           form => {

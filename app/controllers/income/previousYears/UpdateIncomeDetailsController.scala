@@ -136,7 +136,7 @@ class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: Previo
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.currentCache map { currentCache =>
-              Ok(views.html.can_we_contact_by_phone(telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), YesNoTextEntryForm.form()))
+              Ok(views.html.can_we_contact_by_phone(None, Some(user), telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), YesNoTextEntryForm.form()))
             }
           }
   }
@@ -151,7 +151,7 @@ class UpdateIncomeDetailsController @Inject()(previousYearsIncomeService: Previo
             Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
             formWithErrors => {
               journeyCacheService.currentCache map { currentCache =>
-                BadRequest(views.html.can_we_contact_by_phone(telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), formWithErrors))
+                BadRequest(views.html.can_we_contact_by_phone(None, Some(user), telephoneNumberViewModel(currentCache(UpdatePreviousYearsIncome_TaxYearKey).toInt), formWithErrors))
               }
             },
             form => {
