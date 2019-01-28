@@ -41,6 +41,7 @@ import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, Jour
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.PayrollNumberViewModel
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
+
 import scala.Function.tupled
 import scala.concurrent.Future
 import scala.util.control.NonFatal
@@ -270,17 +271,15 @@ class AddEmploymentController @Inject()(auditService: AuditService,
   def submitYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async {
       implicit request =>
         implicit val user = request.taiUser
-        (for {
-          (mandatoryVals, optionalVals) <- journeyCacheService.collectedValues(Seq(AddEmployment_NameKey, AddEmployment_StartDateKey, AddEmployment_PayrollNumberKey, AddEmployment_TelephoneQuestionKey), Seq(AddEmployment_TelephoneNumberKey))
-          model = AddEmployment(mandatoryVals.head, LocalDate.parse(mandatoryVals(1)), mandatoryVals(2), mandatoryVals(3), optionalVals.head)
-          _ <- employmentService.addEmployment(Nino(user.getNino), model)
-          _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourney_AddEmploymentKey, "true")
-          _ <- journeyCacheService.flush()
-        } yield {
-          Redirect(controllers.employments.routes.AddEmploymentController.confirmation())
-        }) recover {
-          case NonFatal(e) => internalServerError("Exception occurred when submitting answers", Some(e))
-        }
+          for {
+            (mandatoryVals, optionalVals) <- journeyCacheService.collectedValues(Seq(AddEmployment_NameKey, AddEmployment_StartDateKey, AddEmployment_PayrollNumberKey, AddEmployment_TelephoneQuestionKey), Seq(AddEmployment_TelephoneNumberKey))
+            model = AddEmployment(mandatoryVals.head, LocalDate.parse(mandatoryVals(1)), mandatoryVals(2), mandatoryVals(3), optionalVals.head)
+            _ <- employmentService.addEmployment(Nino(user.getNino), model)
+            _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourney_AddEmploymentKey, "true")
+            _ <- journeyCacheService.flush()
+          } yield {
+            Redirect(controllers.employments.routes.AddEmploymentController.confirmation())
+          }
   }
 
   def confirmation: Action[AnyContent] = (authenticate andThen validatePerson).async {
