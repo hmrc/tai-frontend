@@ -309,7 +309,7 @@ class AddEmploymentControllerSpec extends PlaySpec
           AddEmploymentFirstPayForm.FirstPayChoice -> NoValue)),5 seconds)
 
         verify(auditService, times(1)).createAndSendAuditEvent(Matchers.eq(AddEmployment_CantAddEmployer),
-          Matchers.any(classOf[Map[String,String]]))(Matchers.any(), Matchers.any())
+          Matchers.eq(Map("nino" -> FakeAuthAction.nino.nino)))(Matchers.any(), Matchers.any())
       }
     }
 
