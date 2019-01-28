@@ -19,13 +19,14 @@ package controllers.employments
 import com.google.inject.Inject
 import com.google.inject.name.Named
 import controllers.audit.Auditable
-import controllers.auth.WithAuthorisedForTaiLite
+import controllers.auth.{AuthedUser, WithAuthorisedForTaiLite}
 import controllers.{ServiceCheckLite, TaiBaseController}
 import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.auth.core.ConfidenceLevel
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
