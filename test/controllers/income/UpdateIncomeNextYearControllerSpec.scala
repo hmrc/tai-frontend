@@ -16,8 +16,9 @@
 
 package controllers.income
 
-import builders.{AuthBuilder, RequestBuilder}
-import controllers.{ControllerViewTestHelper, FakeTaiPlayApplication}
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
+import controllers.{ControllerViewTestHelper, FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.mockito.Matchers
 import org.mockito.Matchers.any
@@ -30,16 +31,11 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, _}
 import uk.gov.hmrc.tai.forms.AmountComparatorForm
 import uk.gov.hmrc.tai.model.cache.UpdateNextYearsIncomeCacheModel
-import uk.gov.hmrc.tai.service.{PersonService, UpdateNextYearsIncomeService}
-import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
-import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
+import uk.gov.hmrc.tai.service.UpdateNextYearsIncomeService
 import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 import views.html.incomes.nextYear._
 
@@ -127,7 +123,6 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
       "valid input is passed that is different from the current estimated income" in {
         val testController = createTestIncomeController()
         val newEstPay = "999"
-        val nino = generateNino
         val updatedModel = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay, Some(newEstPay.toInt))
 
         when(updateNextYearsIncomeService.setNewAmount(Matchers.eq(newEstPay), Matchers.eq(employmentID), Matchers.eq(nino))(any()))
@@ -148,7 +143,6 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
       "valid input is passed that matches the current estimated income" in {
         val testController = createTestIncomeController()
         val newEstPay = 1234.toString
-        val nino = generateNino
         val updatedModel = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay, Some(newEstPay.toInt))
 
         when(updateNextYearsIncomeService.setNewAmount(Matchers.eq(newEstPay), Matchers.eq(employmentID), Matchers.eq(nino))(any()))
@@ -168,7 +162,6 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         "new estimated income is not present on the cache model" in {
           val testController = createTestIncomeController()
           val newEstPay = 1234.toString
-          val nino = generateNino
           val updatedModel = UpdateNextYearsIncomeCacheModel("EmployerName", employmentID, isPension, currentEstPay, None)
 
           when(updateNextYearsIncomeService.setNewAmount(Matchers.eq(newEstPay), Matchers.eq(employmentID), Matchers.eq(nino))(any()))
@@ -291,7 +284,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
           val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, false, 1, Some(newAmount))
           when(
-            updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
+            updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(nino))(any())
           ).thenReturn(
             Future.successful(serviceResponse)
           )
@@ -312,7 +305,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
           val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, false, 1, None)
           when(
-            updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
+            updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(nino))(any())
           ).thenReturn(
             Future.successful(serviceResponse)
           )
@@ -329,7 +322,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
 
           val serviceResponse = UpdateNextYearsIncomeCacheModel(employerName, employmentID, false, 1, None)
           when(
-            updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
+            updateNextYearsIncomeService.get(Matchers.eq(employmentID), Matchers.eq(nino))(any())
           ).thenReturn(
             Future.successful(serviceResponse)
           )
@@ -351,7 +344,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         val controller = createTestIncomeController()
 
         when(
-          updateNextYearsIncomeService.submit(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
+          updateNextYearsIncomeService.submit(Matchers.eq(employmentID), Matchers.eq(nino))(any())
         ).thenReturn(
           Future.successful(TaiSuccessResponse)
         )
@@ -367,7 +360,7 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
         val controller = createTestIncomeController()
 
         when(
-          updateNextYearsIncomeService.submit(Matchers.eq(employmentID), Matchers.eq(generateNino))(any())
+          updateNextYearsIncomeService.submit(Matchers.eq(employmentID), Matchers.eq(nino))(any())
         ).thenReturn(
           Future.successful(TaiTaxAccountFailureResponse("Error"))
         )
@@ -379,29 +372,21 @@ class UpdateIncomeNextYearControllerSpec extends PlaySpec
     }
   }
 
-  private val generateNino = new Generator(new Random).nextNino
+  private val nino = FakeAuthAction.nino
 
   private def createTestIncomeController(isCyPlusOneEnabled: Boolean = true): UpdateIncomeNextYearController = new TestUpdateIncomeNextYearController(isCyPlusOneEnabled)
 
-  val personService: PersonService = mock[PersonService]
   val updateNextYearsIncomeService = mock[UpdateNextYearsIncomeService]
 
   private class TestUpdateIncomeNextYearController(isCyPlusOneEnabled: Boolean) extends UpdateIncomeNextYearController(
     updateNextYearsIncomeService,
-    personService,
     mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-
     override val cyPlusOneEnabled: Boolean = isCyPlusOneEnabled
-
-    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.toString())))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
-
   }
 
 }
