@@ -237,7 +237,8 @@ class AddEmploymentController @Inject()(personService: PersonService,
               case Some(YesValue) => optSeq(1)
               case _ => None
             }
-            Ok(views.html.can_we_contact_by_phone(
+
+            Ok(views.html.can_we_contact_by_phone(None, Some(user),
               telephoneNumberViewModel,
               YesNoTextEntryForm.form().fill(YesNoTextEntryForm(optSeq(0), telNoToDisplay))
             ))
@@ -253,7 +254,7 @@ class AddEmploymentController @Inject()(personService: PersonService,
           Messages("tai.canWeContactByPhone.telephone.empty"),
           Some(telephoneNumberSizeConstraint)).bindFromRequest().fold(
           formWithErrors => {
-              Future.successful(BadRequest(views.html.can_we_contact_by_phone(telephoneNumberViewModel, formWithErrors)))
+              Future.successful(BadRequest(views.html.can_we_contact_by_phone(None, Some(user), telephoneNumberViewModel, formWithErrors)))
           },
           form => {
             val mandatoryData = Map(AddEmployment_TelephoneQuestionKey -> Messages(s"tai.label.${form.yesNoChoice.getOrElse(NoValue).toLowerCase}"))

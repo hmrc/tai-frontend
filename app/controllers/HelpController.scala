@@ -17,51 +17,44 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.audit.Auditable
-import controllers.auth.WithAuthorisedForTaiLite
+import controllers.actions.ValidatePerson
+import controllers.auth.AuthAction
 import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.{ApplicationConfig, WSHttpProxy}
-import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.Future
 
 class HelpController @Inject()(val config: ApplicationConfig,
                                val httpGet: WSHttpProxy,
-                               personService: PersonService,
-                               val auditConnector: AuditConnector,
-                               val delegationConnector: DelegationConnector,
-                               val authConnector: AuthConnector,
+                               authenticate: AuthAction,
+                               validatePerson: ValidatePerson,
                                override implicit val partialRetriever: FormPartialRetriever,
                                override implicit val templateRenderer: TemplateRenderer
-                              ) extends TaiBaseController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite
-  with Auditable {
+                              ) extends TaiBaseController {
 
   val webChatURL = config.webchatAvailabilityUrl
 
-  def helpPage() = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          try {
-            getEligibilityStatus map { status =>
-              Ok(views.html.help.getHelp(status))
-            } recoverWith handleErrorResponse("getHelpPage", Nino(user.getNino))
-          } catch {
-            case e: Exception => {
-              Future.successful(Ok(views.html.help.getHelp(None)))
-            }
-          }
+  def helpPage() = (authenticate andThen validatePerson).async {
+    implicit request =>
+
+      implicit val user = request.taiUser
+
+      try {
+        getEligibilityStatus map { status =>
+          Ok(views.html.help.getHelp(status))
+        } recover {
+          case _ => internalServerError("Could not get eligibility status")
+        }
+      } catch {
+        case _: Exception => {
+          Future.successful(Ok(views.html.help.getHelp(None)))
+        }
+      }
   }
 
   private def getEligibilityStatus()(implicit headerCarrier: HeaderCarrier): Future[Option[String]] = {

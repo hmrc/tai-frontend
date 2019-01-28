@@ -16,25 +16,23 @@
 
 package controllers.income.bbsi
 
-import builders.{AuthBuilder, RequestBuilder}
-import controllers.FakeTaiPlayApplication
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
+import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.when
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.model.domain.{BankAccount, UntaxedInterest}
+import uk.gov.hmrc.tai.service.BbsiService
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.service.{BbsiService, PersonService}
 import uk.gov.hmrc.tai.util.constants.BankAccountDecisionConstants
 
 import scala.concurrent.Future
@@ -301,26 +299,15 @@ class BbsiControllerSpec extends PlaySpec
   val emptyBankAccount: BankAccount = BankAccount(1, None, None, None, 123.4, None)
   val bankAccount: BankAccount = BankAccount(0, Some("0"), Some("0"), Some("TestBank"), 0, None)
 
-  val personService: PersonService = mock[PersonService]
   val bbsiService = mock[BbsiService]
   val journeyCacheService = mock[JourneyCacheService]
 
   class SUT extends BbsiController(
     bbsiService,
-    personService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     journeyCacheService,
     mock[FormPartialRetriever],
     MockTemplateRenderer
-  ) {
-
-    val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-
-  }
-
+  )
 }

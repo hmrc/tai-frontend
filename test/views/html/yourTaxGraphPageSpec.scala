@@ -21,7 +21,7 @@ import controllers.FakeTaiPlayApplication
 import controllers.auth.TaiUser
 import uk.gov.hmrc.tai.viewModels._
 import org.jsoup.Jsoup
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.test.FakeRequest

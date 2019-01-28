@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +12,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.play.language.LanguageUtils.Dates
-@import uk.gov.hmrc.tai.model.TaxYear
+package uk.gov.hmrc.tai.config
 
-@()(implicit messages: Messages)
+import play.api.Play
+import uk.gov.hmrc.play.config.RunMode
 
-<h2 class="heading-section">
- @Messages("tai.estimatedIncome.whyEstimate.link")
-</h2>
-<p id="whyEstimateDesc">@Messages("tai.estimatedIncome.whyEstimate.desc", Dates.formatDate(TaxYear().end))</p>
+trait DefaultRunMode extends RunMode{
+  override def mode = Play.current.mode
+  override def runModeConfiguration = Play.current.configuration
+}

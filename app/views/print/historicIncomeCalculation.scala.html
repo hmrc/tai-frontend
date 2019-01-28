@@ -29,10 +29,10 @@
 @import uk.gov.hmrc.tai.viewModels.HistoricIncomeCalculationViewModel
 @import uk.gov.hmrc.tai.model.domain.{TemporarilyUnavailable, Unavailable, Available}
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
-@import uk.gov.hmrc.time.TaxYearResolver
+
 
 @(historicIncomeCalculationViewModel: HistoricIncomeCalculationViewModel
-)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser)
+)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser)
 
 @printWrapper(title = Messages("tai.yourIncome.heading"), header = Messages("tai.yourIncome.heading")){
 

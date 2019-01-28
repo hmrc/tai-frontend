@@ -17,7 +17,7 @@
 @import includes.{cancelLink, ptaHeader, backLink}
 @import uk.gov.hmrc.tai.config.TaiHtmlPartialRetriever
 
-@()(implicit request: Request[_], user: controllers.auth.AuthActionedTaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
     ptaHeader(
@@ -29,7 +29,7 @@
 
 @main(
     title = "Title",
-    authActionedTaiUser = Some(user),
+    authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
     gaCustomTitle = None) {

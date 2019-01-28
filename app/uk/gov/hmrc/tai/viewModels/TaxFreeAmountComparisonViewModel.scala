@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.util.{HtmlFormatter, MonetaryUtil, ViewModelHelper}
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 case class TaxFreeAmountComparisonViewModel(
                                               personalAllowance: PersonalAllowance,
@@ -43,7 +43,7 @@ case class TaxFreeAmountComparisonViewModel(
       if(hasPersonalAllowanceIncrease) {
         val personallAllowanceCYPlusOneAmount = MonetaryUtil.withPoundPrefixAndSign(MoneyPounds(personalAllowance.values(PERSONAL_ALLOWANCE_CY_PLUS_ONE),0))
         Some(messages("tai.incomeTaxComparison.taxFreeAmount.PA.information1",
-          personallAllowanceCYPlusOneAmount,HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfNextTaxYear))
+          personallAllowanceCYPlusOneAmount,HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start))
           ))
       } else {
         None

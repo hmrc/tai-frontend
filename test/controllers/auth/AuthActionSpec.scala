@@ -21,11 +21,10 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.mvc.Controller
 import play.api.test.Helpers._
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.auth.core.{AuthConnector, InsufficientConfidenceLevel, UnsupportedAffinityGroup}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.service.PersonService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
@@ -47,13 +46,54 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
   "Auth Action" when {
     "the user has insufficient confidence level" must {
       "redirect the user to an unauthorised page " in {
-        val authAction = new AuthActionImpl(mock[PersonService], new FakeFailingAuthConnector(new InsufficientConfidenceLevel))
+        val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new InsufficientConfidenceLevel))
         val controller = new Harness(authAction)
         val result = controller.onPageLoad()(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().toString)
       }
+    }
+  }
+
+  "Given the user has no active session" should {
+    "redirect the user to the log in page" when {
+      "there is an invalid bearer token" in {
+        val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new InvalidBearerToken))
+        val controller = new Harness(authAction)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.login().toString)
+      }
+
+      "there is an expired bearer token" in {
+        val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new BearerTokenExpired))
+        val controller = new Harness(authAction)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.login().toString)
+      }
+
+      "there is a missing bearer token" in {
+        val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new MissingBearerToken))
+        val controller = new Harness(authAction)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.login().toString)
+      }
+
+      "there is no session record" in {
+        val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new SessionRecordNotFound))
+        val controller = new Harness(authAction)
+        val result = controller.onPageLoad()(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.login().toString)
+      }
+
     }
   }
 }

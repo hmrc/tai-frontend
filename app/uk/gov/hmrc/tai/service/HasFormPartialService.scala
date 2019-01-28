@@ -20,7 +20,7 @@ import com.google.inject.Inject
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
 import uk.gov.hmrc.play.partials.HtmlPartial
-import uk.gov.hmrc.tai.config.{ApplicationConfig, WSHttp}
+import uk.gov.hmrc.tai.config.{ApplicationConfig, ApplicationGlobal, WSHttp}
 import uk.gov.hmrc.tai.util.EnhancedPartialRetriever
 
 import scala.concurrent.Future
@@ -28,7 +28,7 @@ import scala.concurrent.Future
 
 class HasFormPartialService @Inject()() extends EnhancedPartialRetriever {
 
-  def crypto: (String) => String = SessionCookieCryptoFilter.encrypt
+  def crypto = new SessionCookieCryptoFilter(ApplicationGlobal.applicationCrypto).encrypt
   val http = WSHttp
 
   def getIncomeTaxPartial(implicit request: RequestHeader): Future[HtmlPartial] = {

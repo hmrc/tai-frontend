@@ -16,7 +16,8 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -25,16 +26,15 @@ import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.tai.model.domain.{Employment, Person}
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
+import uk.gov.hmrc.tai.service.EmploymentService
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -87,37 +87,6 @@ class NoCYIncomeTaxErrorControllerSpec
         status(result) mustBe OK
       }
     }
-
-    "redirect" when {
-      val nino = generateNino
-
-      "user is deceased" in {
-        val person = defaultPerson.copy(isDeceased = true)
-        val sut = createSUT(person)
-        val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe "/check-income-tax/deceased"
-      }
-
-      "MCI indicator is true" in {
-        val person = defaultPerson.copy(hasCorruptData = true)
-        val sut = createSUT(person)
-        val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).getOrElse("") mustBe "/check-income-tax/tax-estimate-unavailable"
-      }
-
-      "to deceased page when both deceased and MCI indicators are true" in {
-        val person = defaultPerson.copy(hasCorruptData = true, isDeceased = true)
-        val sut = createSUT(person)
-        val result = sut.noCYIncomeTaxErrorPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).getOrElse("") mustBe "/check-income-tax/deceased"
-      }
-    }
   }
 
 
@@ -131,21 +100,14 @@ class NoCYIncomeTaxErrorControllerSpec
   def createSUT(person: Person = defaultPerson, employmentDataFailure: Option[Throwable] = None) = new SUT(person, employmentDataFailure)
 
   val employmentService = mock[EmploymentService]
-  val personService = mock[PersonService]
 
   class SUT(person: Person, employmentDataFailure: Option[Throwable]) extends NoCYIncomeTaxErrorController(
-    personService,
     employmentService,
     mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     MockPartialRetriever,
     MockTemplateRenderer){
-
-    val ad = AuthBuilder.createFakeAuthData
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(person))
 
     val sampleEmployment = Seq(Employment("empName", None, new LocalDate(2017, 6, 9), None, Nil, "taxNumber", "payeNumber", 1, None, false, false))
 

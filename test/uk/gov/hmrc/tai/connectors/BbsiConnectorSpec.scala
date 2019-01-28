@@ -18,16 +18,16 @@ package uk.gov.hmrc.tai.connectors
 
 import controllers.FakeTaiPlayApplication
 import org.joda.time.LocalDate
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json._
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, NotFoundException}
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.model.domain.{BankAccount, SavingsInvestments, UntaxedInterest}
 import uk.gov.hmrc.tai.model.{AmountRequest, CloseAccountRequest}
 
@@ -37,7 +37,7 @@ import scala.concurrent.{Await, Future}
 class BbsiConnectorSpec extends PlaySpec
   with MockitoSugar
   with FakeTaiPlayApplication
-  with ServicesConfig
+  with DefaultServicesConfig
   with BeforeAndAfterEach {
 
   override def beforeEach: Unit = {

@@ -560,7 +560,7 @@ tai.income.calculation.update.pension=Gallwch {0} ar gyfer y darparwr pensiwn hw
 tai.income.calculation.update.regular=Gallwch {0} ar gyfer y cyflogwr hwn os yw''n anghywir.
 tai.income.calculation.updateLink.regular=diweddarwch eich incwm trethadwy amcangyfrifedig
 tai.income.details.addMissingCompanyCar=Ychwanegu car cwmni sydd ar goll
-tai.income.details.benefit.amount.announce=– Swm y budd hwn yw
+tai.income.details.benefit.amount.announce=– Swm y budd hwn yw {0}.
 tai.income.details.benefit.name.announce=Math o fudd:
 tai.income.details.checkPaymentsReceived.screenReader=Gwirio''r taliadau sydd wedi dod i law oddi wrth {0}.
 tai.income.details.checkPaymentsReceived=Gwiriwch y taliadau sydd wedi dod i law
@@ -635,7 +635,7 @@ tai.incomeTaxComparison.taxCodes.scottishInfo=Bydd eich cod treth ar gyfer y flw
 tai.incomeTaxComparison.taxCodes.subHeading=Codau treth
 
 tai.incomeTaxComparison.taxCodes.table.employmentsReaderText=Enw''r cyflogwr
-tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Enw pensiwn
+tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Enw''r pensiwn
 
 
 
@@ -702,7 +702,7 @@ tai.incomes.landing.Heading=Diweddarwch eich incwm trethadwy amcangyfrifedig odd
 tai.incomes.landing.title=Diweddarwch eich incwm trethadwy amcangyfrifedig
 tai.incomes.landing.intro=Dylech ddiweddaru eich incwm amcangyfrifedig os yw eich incwm wedi newid yn ddiweddar a’ch bod o’r farn y bydd yn effeithio ar eich haen treth bresennol.
 tai.incomes.landing.employment.ended=Os nad ydych yn gweithio i {0} mwyach
-tai.incomes.landing.employment.ended.link=gallwch roi wybod i ni pryd ddaeth eich cyflogaeth i ben.
+tai.incomes.landing.employment.ended.link=gallwch roi gwybod i ni pryd ddaeth eich cyflogaeth i ben.
 tai.incomes.landing.pension.ended=Os nad ydych bellach yn cael incwm oddi wrth {0}
 tai.incomes.landing.pension.ended.link=gallwch roi gwybod i ni pryd ddaeth hyn i ben.
 tai.incomes.amount.current=Y swm presennol
@@ -1020,8 +1020,8 @@ tai.taxFreeAmount.table.deductions.noDeduction=Nid oes gennych unrhyw ddidyniada
 tai.taxFreeAmount.table.deductions.total=Cyfanswm y didyniadau
 tai.taxFreeAmount.table.previous=Blaenorol
 tai.taxFreeAmount.table.current=Cyflogwr
-tai.taxFreeAmount.table.previous.taxCodes=Cod treth presennol
-tai.taxFreeAmount.table.current.taxCodes=Cod treth blaenorol
+tai.taxFreeAmount.table.previous.taxCodes=Cod treth blaenorol
+tai.taxFreeAmount.table.current.taxCodes=Cod treth presennol
 tai.taxFreeAmount.table.taxComponent.Accommodation=Llety
 tai.taxFreeAmount.table.taxComponent.AdjustmentToRateBand=Addasiad i''r haen cyfradd
 tai.taxFreeAmount.table.taxComponent.AssetTransfer=Asedion sydd wedi''u trosglwyddo

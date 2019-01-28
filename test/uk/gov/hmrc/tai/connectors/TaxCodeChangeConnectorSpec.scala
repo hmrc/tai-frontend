@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{get, ok, serverError, urlEqualTo}
 import controllers.FakeTaiPlayApplication
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsArray, Json}
 import uk.gov.hmrc.domain.{Generator, Nino}
@@ -28,7 +28,7 @@ import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiT
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
-import uk.gov.hmrc.time.TaxYearResolver
+
 import utils.WireMockHelper
 import utils.factories.TaxCodeMismatchFactory
 
@@ -58,9 +58,9 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
 
           val taxCodeChangeUrl = s"/tai/${nino.nino}/tax-account/tax-code-change"
 
-          val startDate = TaxYearResolver.startOfCurrentTaxYear
+          val startDate = TaxYear().start
           val taxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
-          val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYearResolver.endOfCurrentTaxYear)
+          val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(2), endDate = TaxYear().end)
 
           val json = Json.obj(
             "data" -> Json.obj(
@@ -80,7 +80,7 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
                 Json.obj(
                   "taxCode" -> "code",
                   "startDate" -> startDate.plusDays(2),
-                  "endDate" -> TaxYearResolver.endOfCurrentTaxYear,
+                  "endDate" -> TaxYear().end,
                   "basisOfOperation" -> "Cumulative",
                   "employerName" -> "Employer 1",
                   "pensionIndicator" -> false,
@@ -129,7 +129,7 @@ class TaxCodeChangeConnectorSpec extends PlaySpec with MockitoSugar with FakeTai
 
       val latestTaxCodeRecordUrl = s"/tai/${nino.nino}/tax-account/$year/tax-code/latest"
 
-      val startDate = TaxYearResolver.startOfCurrentTaxYear
+      val startDate = TaxYear().start
       val taxCodeRecord = TaxCodeRecord("code", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
       val taxCodeRecord2 = TaxCodeRecord("code2", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 2", false, Some("1239"), true)
 

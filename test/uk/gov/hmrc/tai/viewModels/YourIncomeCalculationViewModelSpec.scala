@@ -505,14 +505,14 @@ class YourIncomeCalculationViewModelSpec extends PlaySpec with FakeTaiPlayApplic
   }
 
   "manualUpdateIncomeCalculationEstimateMessage" must {
-    "return messages is not agent code" when {
+    "return messages is not agent code" in {
       val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
         Some(ManualTelephone), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
       ManualUpdateIncomeMessages.manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome) mustBe
         Some(messagesApi("tai.income.calculation.rti.manual.update.estimate", taxCodeIncome.amount))
     }
 
-    "return messages is agent code" when {
+    "return messages is agent code" in {
       val taxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 1111, "employment2", "150L", "test employment", Week1Month1BasisOfOperation, Live,
         Some(AgentContact), Some(new LocalDate().minusWeeks(4)), Some(new LocalDate()))
       ManualUpdateIncomeMessages.manualUpdateIncomeCalculationEstimateMessage(taxCodeIncome) mustBe

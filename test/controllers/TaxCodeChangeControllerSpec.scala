@@ -16,13 +16,14 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.{AuthActionedUserBuilder, AuthBuilder, RequestBuilder}
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{status, _}
@@ -38,7 +39,6 @@ import uk.gov.hmrc.tai.model.domain.{GiftAidPayments, GiftsSharesCharity, TaxCod
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
-import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -106,7 +106,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       }
     }
 
-    "show 'Your tax-free amount' page without previous benefits"when {
+    "show 'Your tax-free amount' page without previous benefits" when {
       "taxFreeAmountComparison is disabled and the request has a authorised session" in {
         val companyCarService = mock[CompanyCarService]
 
@@ -178,7 +178,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       Seq.empty,
       Seq.empty)
 
-  val nino: Nino = new Generator(new Random).nextNino
+  val nino: Nino = FakeAuthAction.nino
 
   val giftAmount = 1000
 
@@ -186,9 +186,9 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   private val codingComponent2 = CodingComponent(GiftsSharesCharity, None, giftAmount, "GiftsSharesCharity description")
   val codingComponents = Seq(codingComponent1, codingComponent2)
 
-  val startDate = TaxYearResolver.startOfCurrentTaxYear
+  val startDate = TaxYear().start
   val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
-  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
 
   val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
@@ -200,26 +200,20 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   private def createSUT(comparisonEnabled: Boolean = false, companyCarMockService: CompanyCarService = companyCarService) = new SUT(comparisonEnabled, companyCarMockService)
 
   private class SUT(comparisonEnabled: Boolean, companyCarMockService: CompanyCarService) extends TaxCodeChangeController(
-    personService,
     codingComponentService,
     employmentService,
     companyCarMockService,
     taxCodeChangeService,
     taxAccountService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-
     override val taxFreeAmountComparisonEnabled: Boolean = comparisonEnabled
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
-
-    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(nino.toString())))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(taxCodeChangeService.latestTaxCodeChangeDate(nino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
   }
+
 }

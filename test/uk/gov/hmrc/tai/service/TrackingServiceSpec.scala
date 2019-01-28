@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.service
 import uk.gov.hmrc.tai.connectors.TrackingConnector
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.tai.model.domain.tracking._

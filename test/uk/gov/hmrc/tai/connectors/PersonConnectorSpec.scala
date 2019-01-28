@@ -20,20 +20,19 @@ import controllers.FakeTaiPlayApplication
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.model.domain.Person
-
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.Random
 
-class PersonConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with ServicesConfig {
+class PersonConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with DefaultServicesConfig {
 
   "person method" must {
 
