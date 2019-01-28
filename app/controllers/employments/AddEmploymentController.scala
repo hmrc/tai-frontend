@@ -44,7 +44,6 @@ import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 
 import scala.Function.tupled
 import scala.concurrent.Future
-import scala.util.control.NonFatal
 
 class AddEmploymentController @Inject()(auditService: AuditService,
                                         employmentService: EmploymentService,
