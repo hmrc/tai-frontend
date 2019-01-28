@@ -17,7 +17,7 @@
 @(employmentName: String, isPension: Boolean)(
     implicit request: Request[_],
     messages: Messages,
-    user: controllers.auth.TaiUser,
+    user: controllers.auth.AuthedUser,
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
     partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
 )
@@ -27,7 +27,7 @@
 @main(
     title = messages("tai.updateIncome.CYPlus1.success.title"),
     articleClasses = Some("full-width"),
-    user = Some(user),
+    authedUser = Some(user),
     employerName = Some(employmentName)
 ){
 <div class="column-two-thirds">
