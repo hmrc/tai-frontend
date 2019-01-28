@@ -63,20 +63,33 @@
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
-                <h2 class="heading-medium heading--underlined flush--top">@Messages("tai.taxYear",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</h2>
 
                 @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount <= 0){
                         <section class="section soft--top">
-                            <p id="iya-cy-how-much">@Messages("tai.iya.paidTooLittle.cy.text", MoneyPounds(viewModel.iyaCYAmount, 2).quantity)</p>
-                            <p>@Html(
-                               Messages("tai.iya.check.your.tax.code.text",
-                               Link.toInternalPage(url=routes.YourTaxCodeController.taxCodes.toString,value=Some(Messages("tai.iya.your.tax.code.linkText"))).toHtml
-                               ))</p>
+                            <p id="iya-cy-how-much">@Html(
+                                Messages("tai.iya.paidTooLittle.cy.text",
+                                MoneyPounds(viewModel.iyaCYAmount, 2).quantity))</p>
+
+                            <h2 class="heading-medium">@Messages("tai.iya.how.collected.heading")</h2>
+
                              <p>@Html(
                                 Messages("tai.iya.paidTooLittle.cy.text2",
-                                MoneyPounds(viewModel.iyaCYAmount, 2).quantity,
+                                MoneyPounds(viewModel.iyaCYAmount, 0).quantity,
                                 s"${Dates.formatDate(TaxYear().end)}",
                                 MoneyPounds(viewModel.iyaTaxCodeChangeAmount, 0).quantity)) </p>
+
+                            <p>@Messages("tai.iya.paidTooLittle.cy.text3")</p>
+
+                            <p>@Html(
+                                Messages("tai.iya.paidTooLittle.get.help",
+                                Link.toInternalPage(url=routes.HelpController.helpPage.toString,value=Some(Messages("tai.iya.paidTooLittle.get.help.linkText"))).toHtml)) </p>
+
+                            <h2 class="heading-medium">@Messages("tai.iya.what.next.heading")</h2>
+
+                            <p>@Messages("tai.iya.what.next.text1", s"${Dates.formatDate(TaxYear().start)}", s"${Dates.formatDate(TaxYear().end)}")</p>
+
+                            <p>@Messages("tai.iya.what.next.text2")</p>
+
                         </section>
                 }
 
