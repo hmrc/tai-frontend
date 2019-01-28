@@ -29,7 +29,7 @@
 
 )(content: Html
 )(implicit request: Request[_],
-  user: controllers.auth.TaiUser,
+  user: controllers.auth.AuthedUser,
   messages: Messages,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
@@ -46,7 +46,7 @@
 @main(
     title = title,
     articleClasses = Some(""),
-    user = Some(user),
+    authedUser = Some(user),
     pageHeader = Some(header),
     employerName = Some(employerName),
     gaCustomTitle = None,
