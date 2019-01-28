@@ -21,7 +21,7 @@
 @(employmentName: String, employmentId: Int, isPension: Boolean, currentValue: Int, incomeForm: Form[uk.gov.hmrc.tai.forms.AmountComparatorForm])(
     implicit request: Request[_],
     messages: Messages,
-    user: controllers.auth.TaiUser,
+    user: controllers.auth.AuthedUser,
     templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
     partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
 )
