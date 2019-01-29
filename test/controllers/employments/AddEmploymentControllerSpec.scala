@@ -653,7 +653,6 @@ class AddEmploymentControllerSpec extends PlaySpec
   }
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
-  val nino: String = new Generator().nextNino.nino
 
   private def createSUT = new SUT
 
