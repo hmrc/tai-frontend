@@ -20,7 +20,6 @@ import com.google.inject.Inject
 import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.audit.Auditable
 import controllers.auth.AuthAction
 import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
@@ -42,6 +41,7 @@ import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploy
 
 import scala.Function.tupled
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
                                            val auditConnector: AuditConnector,
@@ -72,7 +72,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
   def updateEmploymentDetails(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
-      for {
+      (for {
         userSuppliedDetails <- journeyCacheService.currentValue(UpdateEmployment_EmploymentDetailsKey)
         employment <- employmentService.employment(Nino(user.getNino), empId)
         futureResult <-
@@ -86,7 +86,9 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
             }
             case _ => throw new RuntimeException("Error during employment details retrieval")
           }
-      } yield futureResult
+      } yield futureResult ).recover {
+        case NonFatal(exception) => internalServerError(exception.getMessage)
+      }
 
   }
 
