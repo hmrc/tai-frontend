@@ -55,7 +55,6 @@ class EndEmploymentController @Inject()(auditService: AuditService,
                                         implicit val templateRenderer: TemplateRenderer,
                                         implicit val partialRetriever: FormPartialRetriever
                                        ) extends TaiBaseController
-  with Auditable
   with JourneyCacheConstants
   with FormValuesConstants
   with IrregularPayConstants
