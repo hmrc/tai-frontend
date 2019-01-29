@@ -41,9 +41,9 @@ import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, Irre
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, WithinSixWeeksViewModel}
 import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
-
 import scala.Function.tupled
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 class EndEmploymentController @Inject()(auditService: AuditService,
                                         employmentService: EmploymentService,
@@ -177,7 +177,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
       implicit val user = request.taiUser
       val nino = Nino(user.getNino)
 
-      for{
+      (for{
         employment <- employmentService.employment(nino, employmentId)
         cache <- journeyCacheService.currentValueAsDate(EndEmployment_EndDateKey)
       }yield (employment, cache) match{
@@ -186,6 +186,8 @@ class EndEmploymentController @Inject()(auditService: AuditService,
         case (Some(employment),None) =>
           Ok(views.html.employments.endEmployment(EmploymentEndDateForm(employment.name).form, EmploymentViewModel(employment.name, employmentId)))
         case _ => throw new RuntimeException("No employment found")
+      })recover {
+        case NonFatal(exception) => internalServerError(exception.getMessage)
       }
   }
 
@@ -257,11 +259,11 @@ class EndEmploymentController @Inject()(auditService: AuditService,
       journeyCacheService.collectedValues(Seq(EndEmployment_EmploymentIdKey,
         EndEmployment_EndDateKey, EndEmployment_TelephoneQuestionKey),
         Seq(EndEmployment_TelephoneNumberKey)) map tupled { (mandatorySeq, optionalSeq) =>
-        val model = IncomeCheckYourAnswersViewModel(mandatorySeq(0).toInt, Messages("tai.endEmployment.preHeadingText"),
-          mandatorySeq(1), mandatorySeq(2), optionalSeq(0),
+        val model = IncomeCheckYourAnswersViewModel(mandatorySeq.head.toInt, Messages("tai.endEmployment.preHeadingText"),
+          mandatorySeq(1), mandatorySeq(2), optionalSeq.head,
           controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url,
           controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment.url,
-          controllers.routes.IncomeSourceSummaryController.onPageLoad(mandatorySeq(0).toInt).url)
+          controllers.routes.IncomeSourceSummaryController.onPageLoad(mandatorySeq.head.toInt).url)
         Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
       }
 
@@ -275,14 +277,16 @@ class EndEmploymentController @Inject()(auditService: AuditService,
       for {
         (mandatoryCacheSeq, optionalCacheSeq) <- journeyCacheService.collectedValues(Seq(EndEmployment_EmploymentIdKey, EndEmployment_EndDateKey,
           EndEmployment_TelephoneQuestionKey), Seq(EndEmployment_TelephoneNumberKey))
-        model = EndEmployment(LocalDate.parse(mandatoryCacheSeq(1)),mandatoryCacheSeq(2),optionalCacheSeq(0))
-        _ <- employmentService.endEmployment(nino, mandatoryCacheSeq(0).toInt, model)
+        model = EndEmployment(LocalDate.parse(mandatoryCacheSeq(1)),mandatoryCacheSeq(2),optionalCacheSeq.head)
+        _ <- employmentService.endEmployment(nino, mandatoryCacheSeq.head.toInt, model)
         _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourney_EndEmploymentKey, true.toString)
         _ <- journeyCacheService.flush
       } yield Redirect(routes.EndEmploymentController.showConfirmationPage())
   }
 
   def showConfirmationPage: Action[AnyContent] = (authenticate andThen validatePerson).async {
-        implicit request => Future.successful(Ok(views.html.employments.confirmation()))
+        implicit request =>
+          implicit val user = request.taiUser
+          Future.successful(Ok(views.html.employments.confirmation()))
   }
 }
