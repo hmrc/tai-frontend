@@ -20,7 +20,7 @@
 @import uk.gov.hmrc.play.views.html.helpers.{errorSummary, form}
 @import includes.forms.inputRadioGroupStyling
 
-@(updateRemoveForm: Form[Option[String]], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(updateRemoveForm: Form[Option[String]], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Update or remove employmer- Do you currently work for this employer?"}
 
@@ -36,8 +36,7 @@
 
 @main(
     title = messages("tai.employment.decision.customGaTitle"),
-    authedUser = Some(user),
-    user = None,
+    user = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
     gaCustomTitle = Some(messages("tai.employment.decision.customGaTitle"))) {
