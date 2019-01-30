@@ -327,10 +327,11 @@ class EndEmploymentController @Inject()(personService: PersonService,
         implicit request =>
 
           for {
-           Seq(x) <- journeyCacheService.optionalValues(s"EndEmploymentID-${empID}")
+           x <- successfulJourneyCacheService.currentValueAsBoolean(s"EndEmploymentID-${empID}")
 
           } yield {
-            if (x.isDefined) {
+
+            if (x.contains(true)) {
               Ok("It's been Submitted")
             } else {
               Redirect(routes.EndEmploymentController.employmentUpdateRemove(empID))
