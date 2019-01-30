@@ -60,8 +60,8 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
 
       auditService.createAndSendAuditEvent(TaxAccountSummary_UserEntersSummaryPage, Map("nino" -> nino.nino))
 
-      (taxAccountService.taxAccountSummary(nino, TaxYear()).flatMap {
-        case (TaiTaxAccountFailureResponse(message)) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
+      taxAccountService.taxAccountSummary(nino, TaxYear()).flatMap {
+        case TaiTaxAccountFailureResponse(message) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
           message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
           Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
         case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
@@ -70,7 +70,7 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
             Ok(views.html.incomeTaxSummary(vm))
           }
         case _ => Future.successful(internalServerError("Failed to fetch tax account summary details"))
-      }) recover {
+      } recover {
         case NonFatal(e) => internalServerError("Failed to fetch tax account summary from tax service", Some(e))
       }
   }

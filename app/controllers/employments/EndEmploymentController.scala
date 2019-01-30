@@ -315,7 +315,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
                 EndEmployment_TelephoneQuestionKey), Seq(EndEmployment_TelephoneNumberKey))
               model = EndEmployment(LocalDate.parse(mandatoryCacheSeq(1)),mandatoryCacheSeq(2),optionalCacheSeq(0))
               _ <- employmentService.endEmployment(nino, mandatoryCacheSeq(0).toInt, model)
-              _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourney_EndEmploymentKey, true.toString)
+              _ <- successfulJourneyCacheService.cache(Map(TrackSuccessfulJourney_EndEmploymentKey -> true.toString, s"EmploymentID${mandatoryCacheSeq.head}"-> true.toString))
               _ <- journeyCacheService.flush
             } yield Redirect(routes.EndEmploymentController.showConfirmationPage())
           }
