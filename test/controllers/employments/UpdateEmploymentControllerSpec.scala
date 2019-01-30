@@ -16,8 +16,9 @@
 
 package controllers.employments
 
-import builders.{AuthBuilder, RequestBuilder}
-import controllers.FakeTaiPlayApplication
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
+import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -32,15 +33,12 @@ import play.api.test.Helpers.{contentAsString, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.model.domain.{Employment, IncorrectIncome}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
-
 import scala.concurrent.Future
 import scala.language.postfixOps
 import scala.util.Random
@@ -117,7 +115,7 @@ class UpdateEmploymentControllerSpec extends PlaySpec
       "employment not found" in {
         val sut = createSUT
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
-
+        when(journeyCacheService.currentValue(any())(any())).thenReturn(Future.successful(Some("updateDetails")))
         val result = sut.updateEmploymentDetails(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
@@ -394,20 +392,15 @@ class UpdateEmploymentControllerSpec extends PlaySpec
 
   private class SUT extends UpdateEmploymentController(
     employmentService,
-    personService,
     mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     journeyCacheService,
     successfulJourneyCacheService,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
 
-    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
   }
 
 }
