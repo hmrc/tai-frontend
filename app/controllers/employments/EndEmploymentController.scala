@@ -321,11 +321,11 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-  def testRouting(empID: Int)= authorisedForTai(personService).async {
+  def redirectUpdateEmployment(empID: Int)= authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
-          successfulJourneyCacheService.currentValueAsBoolean(s"EndEmploymentID-${empID}").map {
+          successfulJourneyCacheService.currentValueAsBoolean(s"EndEmploymentID-${empID}") map {
             case(Some(_)) => Ok("It's been Submitted")
             case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemove(empID))
           }

@@ -58,7 +58,7 @@ POST        /add-pension-provider/check-your-answers                            
 
 GET         /add-pension-provider/success                                              @controllers.pensions.AddPensionProviderController.confirmation
 
-GET         /update-remove-employment/testRouting/:empId                               @controllers.employments.EndEmploymentController.testRouting(empId: Int)
+GET         /update-remove-employment/redirectUpdateEmployment/:empId                  @controllers.employments.EndEmploymentController.redirectUpdateEmployment(empId: Int)
 
 GET         /update-remove-employment/decision/:empId                                  @controllers.employments.EndEmploymentController.employmentUpdateRemove(empId: Int)
 POST        /update-remove-employment/decision/:empId                                  @controllers.employments.EndEmploymentController.handleEmploymentUpdateRemove(empId: Int)
