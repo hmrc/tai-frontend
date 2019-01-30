@@ -38,7 +38,6 @@ import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants}
 import uk.gov.hmrc.tai.viewModels.CanWeContactByPhoneViewModel
 import uk.gov.hmrc.tai.viewModels.employments.{EmploymentViewModel, UpdateEmploymentCheckYourAnswersViewModel}
-
 import scala.Function.tupled
 import scala.concurrent.Future
 import scala.util.control.NonFatal
@@ -116,7 +115,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
         telephoneCache <- journeyCacheService.optionalValues(UpdateEmployment_TelephoneQuestionKey, UpdateEmployment_TelephoneNumberKey)
       } yield {
         implicit val user = request.taiUser
-        Ok(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel((employmentId)),
+        Ok(views.html.can_we_contact_by_phone(Some(user), None, telephoneNumberViewModel(employmentId),
           YesNoTextEntryForm.form().fill(YesNoTextEntryForm(telephoneCache.head, telephoneCache(1)))))
       }
 
