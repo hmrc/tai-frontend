@@ -325,20 +325,10 @@ class EndEmploymentController @Inject()(personService: PersonService,
     implicit user =>
       implicit person =>
         implicit request =>
-
-          for {
-           x <- successfulJourneyCacheService.currentValueAsBoolean(s"EndEmploymentID-${empID}")
-
-          } yield {
-
-            if (x.contains(true)) {
-              Ok("It's been Submitted")
-            } else {
-              Redirect(routes.EndEmploymentController.employmentUpdateRemove(empID))
-            }
+          successfulJourneyCacheService.currentValueAsBoolean(s"EndEmploymentID-${empID}").map {
+            case(Some(_)) => Ok("It's been Submitted")
+            case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemove(empID))
           }
-
-
   }
 
   def showConfirmationPage: Action[AnyContent] = authorisedForTai(personService).async {
