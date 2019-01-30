@@ -96,7 +96,7 @@
         <p  aria-hidden="true">
             @Link.toInternalPage(
                 id=Some("updateEmployer"),
-                url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(model.empId).url,
+                url=controllers.employments.routes.EndEmploymentController.testRouting(model.empId).url,
                 value=Some(messages("tai.employment.income.details.updateLinkText"))).toHtml
         </p>
         <p class="visuallyhidden">
