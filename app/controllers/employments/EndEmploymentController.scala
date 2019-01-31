@@ -325,9 +325,24 @@ class EndEmploymentController @Inject()(personService: PersonService,
     implicit user =>
       implicit person =>
         implicit request =>
-          successfulJourneyCacheService.currentValue(s"EndEmploymentID-${empId}") map {
-            case Some(_) => Redirect(routes.EndEmploymentController.duplicateSubmissionWarning(empId))
-            case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemove(empId))
+          ServiceCheckLite.personDetailsCheck {
+            val nino = Nino(user.getNino)
+            employmentService.employment(nino, empId) flatMap {
+              case Some(employment) => {
+                val journeyCacheFuture = journeyCacheService.cache(EndEmployment_NameKey, employment.name)
+                val successfullJourneyCacheFuture = successfulJourneyCacheService.currentValue(s"EndEmploymentID-${empId}")
+                for {
+                  _ <- journeyCacheFuture
+                  successfulJourneyCache <- successfullJourneyCacheFuture
+                } yield {
+                  successfulJourneyCache match {
+                    case Some(_) => Redirect(routes.EndEmploymentController.duplicateSubmissionWarning(empId))
+                    case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemove(empId))
+                  }
+                }
+              }
+              case _ => throw new RuntimeException("No employment found")
+            }
           }
   }
 

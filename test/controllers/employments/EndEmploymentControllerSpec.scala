@@ -611,7 +611,10 @@ class EndEmploymentControllerSpec
     "redirect to employmentUpdateRemove when there is no end employment ID cache value present" in {
       val employmentId = 1
       val endEmploymentTest = createEndEmploymentTest
-      when(trackSuccessJourneyCacheService.currentValue(Matchers.eq(s"EndEmploymentID-$employmentId"))(any())).thenReturn(Future.successful(None))
+      when(endEmploymentJourneyCacheService.cache(Matchers.eq(EndEmployment_NameKey), Matchers.eq(employerName))(any())).
+        thenReturn(Future.successful(Map(EndEmployment_NameKey -> employerName)))
+      when(trackSuccessJourneyCacheService.currentValue(Matchers.eq(s"EndEmploymentID-$employmentId"))(any())).
+        thenReturn(Future.successful(None))
 
       val result = endEmploymentTest.redirectUpdateEmployment(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
@@ -621,6 +624,8 @@ class EndEmploymentControllerSpec
     "redirect to warning page when there is an end employment ID cache value present" in {
       val employmentId = 1
       val endEmploymentTest = createEndEmploymentTest
+      when(endEmploymentJourneyCacheService.cache(Matchers.eq(EndEmployment_NameKey), Matchers.eq(employerName))(any())).
+        thenReturn(Future.successful(Map(EndEmployment_NameKey -> employerName)))
       when(trackSuccessJourneyCacheService.currentValue(Matchers.eq(s"EndEmploymentID-$employmentId"))(any())).thenReturn(Future.successful(Some("true")))
 
       val result = endEmploymentTest.redirectUpdateEmployment(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
