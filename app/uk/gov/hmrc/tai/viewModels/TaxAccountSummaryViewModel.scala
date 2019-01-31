@@ -23,6 +23,7 @@ import uk.gov.hmrc.tai.filters.TaxAccountFilter
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
+import uk.gov.hmrc.tai.service.TimeToProcess
 import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
 
@@ -37,7 +38,7 @@ case class TaxAccountSummaryViewModel(header: String,
                                       pensions: Seq[IncomeSourceViewModel],
                                       ceasedEmployments: Seq[IncomeSourceViewModel],
                                       displayIyaBanner: Boolean,
-                                      isAnyFormInProgress: Boolean,
+                                      isAnyFormInProgress: TimeToProcess,
                                       otherIncomeSources: Seq[IncomeSourceViewModel]
                                      )
 
@@ -45,7 +46,7 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with TaxAccountFilter 
   def apply(taxCodeIncomes: Seq[TaxCodeIncome],
             employments: Seq[Employment],
             taxAccountSummary: TaxAccountSummary,
-            isAnyFormInProgress: Boolean,
+            isAnyFormInProgress: TimeToProcess,
             nonTaxCodeIncome: NonTaxCodeIncome)(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
     val header = messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak
