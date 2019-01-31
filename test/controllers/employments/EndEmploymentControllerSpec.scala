@@ -274,7 +274,7 @@ class EndEmploymentControllerSpec
       val employmentId = "0"
       val dataFromCache = (Seq(employmentId, new LocalDate(2017, 2, 1).toString,
         "Yes"), Seq(Some("EXT-TEST")))
-      val cacheMap = Map(TrackSuccessfulJourney_EndEmploymentKey -> "true", s"EndEmploymentID-${employmentId}"-> "true")
+      val cacheMap = Map(s"EndEmploymentID-${employmentId}" -> "true")
 
         when(endEmploymentJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(dataFromCache))
       when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))

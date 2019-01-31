@@ -315,19 +315,19 @@ class EndEmploymentController @Inject()(personService: PersonService,
                 EndEmployment_TelephoneQuestionKey), Seq(EndEmployment_TelephoneNumberKey))
               model = EndEmployment(LocalDate.parse(mandatoryCacheSeq(1)),mandatoryCacheSeq(2),optionalCacheSeq(0))
               _ <- employmentService.endEmployment(nino, mandatoryCacheSeq(0).toInt, model)
-              _ <- successfulJourneyCacheService.cache(Map(TrackSuccessfulJourney_EndEmploymentKey -> true.toString, s"EndEmploymentID-${mandatoryCacheSeq.head}"-> true.toString))
+              _ <- successfulJourneyCacheService.cache(Map(s"EndEmploymentID-${mandatoryCacheSeq.head}" -> "true"))
               _ <- journeyCacheService.flush
             } yield Redirect(routes.EndEmploymentController.showConfirmationPage())
           }
   }
 
-  def redirectUpdateEmployment(empID: Int): Action[AnyContent] = authorisedForTai(personService).async {
+  def redirectUpdateEmployment(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
-          successfulJourneyCacheService.currentValue(s"EndEmploymentID-${empID}") map {
-            case Some(_) => Redirect(routes.EndEmploymentController.showWarningPage(empID))
-            case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemove(empID))
+          successfulJourneyCacheService.currentValue(s"EndEmploymentID-${empId}") map {
+            case Some(_) => Redirect(routes.EndEmploymentController.showWarningPage(empId))
+            case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemove(empId))
           }
   }
 
@@ -346,8 +346,6 @@ class EndEmploymentController @Inject()(personService: PersonService,
               case _ => throw new RuntimeException("No employment found")
             }
           }
-
-
   }
 
   def showConfirmationPage: Action[AnyContent] = authorisedForTai(personService).async {
