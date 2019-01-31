@@ -345,32 +345,24 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-//  def handleEndEmploymentPage(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
-//    implicit user =>
-//      implicit person =>
-//        implicit request =>
-//          val nino = Nino(user.getNino)
-//          ServiceCheckLite.personDetailsCheck {
-//            employmentService.employment(nino, employmentId) flatMap {
-//              case Some(employment) =>
-//                EmploymentEndDateForm(employment.name).form.bindFromRequest.fold(
-//                  formWithErrors => {
-//                    Future.successful(BadRequest(views.html.employments.endEmployment(formWithErrors, EmploymentViewModel(employment.name, employmentId))))
-//                  },
-//                  date => {
-//                    val employmentJourneyCacheData = Map(EndEmployment_EmploymentIdKey -> employmentId.toString,
-//                      EndEmployment_NameKey -> employment.name,
-//                      EndEmployment_EndDateKey -> date.toString)
-//                    journeyCacheService.cache(employmentJourneyCacheData) map { _ =>
-//                      Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
-//                    }
-//                  }
-//                )
-//              case _ =>
-//                throw new RuntimeException("No employment found")
-//            }
-//          }
-//  }
+  def submitDuplicateSubmissionWarning(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
+              formWithErrors => {
+                Future.successful(BadRequest(views.html.employments.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, "Employment Name", employmentId)))
+              },
+              success => {
+                success.yesNoChoice match {
+                  case Some(YesValue) => Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(employmentId)))
+                  case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId)))
+                }
+              }
+            )
+          }
+  }
 
   def showConfirmationPage: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>

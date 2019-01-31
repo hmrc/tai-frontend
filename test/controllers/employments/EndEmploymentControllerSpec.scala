@@ -629,8 +629,8 @@ class EndEmploymentControllerSpec
     }
   }
 
-  "showWarningPage" must {
-    "show warning view" in {
+  "duplicateSubmissionWarning" must {
+    "show duplicateSubmissionWarning view" in {
       val endEmploymentTest = createEndEmploymentTest
 
       val result = endEmploymentTest.duplicateSubmissionWarning(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -638,6 +638,46 @@ class EndEmploymentControllerSpec
 
       status(result) mustBe OK
       doc.title() must include(Messages("tai.employment.warning.customGaTitle"))
+    }
+  }
+
+  "submitDuplicateSubmissionWarning" must {
+    "redirect to the update remove employment decision page" when {
+      "I want to update my employment is selected" in {
+        val endEmploymentTest = createEndEmploymentTest
+        val employmentId = 1
+
+        val result = endEmploymentTest.submitDuplicateSubmissionWarning(employmentId)(RequestBuilder.buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(YesNoChoice -> YesValue))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(employmentId).url
+      }
+    }
+
+    "redirect to the income source summary page" when {
+      "I want to return to my employment details is selected" in {
+        val endEmploymentTest = createEndEmploymentTest
+        val employmentId = 1
+
+        val result = endEmploymentTest.submitDuplicateSubmissionWarning(employmentId)(RequestBuilder.buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(YesNoChoice -> NoValue))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url
+      }
+    }
+
+    "return BadRequest" when {
+      "there is a form validation error (standard form validation)" in {
+        val endEmploymentTest = createEndEmploymentTest
+        val employmentId = 1
+
+        val result = endEmploymentTest.submitDuplicateSubmissionWarning(employmentId)(RequestBuilder.buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(YesNoChoice -> ""))
+
+        status(result) mustBe BAD_REQUEST
+      }
     }
   }
 
