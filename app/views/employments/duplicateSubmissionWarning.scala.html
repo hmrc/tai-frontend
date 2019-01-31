@@ -42,7 +42,7 @@
     articleClasses = None,
     gaCustomTitle = Some(messages("tai.employment.warning.customGaTitle"))) {
 
-    @form(action = controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove(empId), Symbol("data-journey-dynamic-radios") -> "" ) {
+    @form(action = controllers.employments.routes.EndEmploymentController.submitDuplicateSubmissionWarning(empId), Symbol("data-journey-dynamic-radios") -> "" ) {
         <div class="form-group">
 
             <p>@messages("tai.employment.warning.text1")</p>
