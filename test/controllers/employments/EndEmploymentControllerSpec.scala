@@ -625,7 +625,7 @@ class EndEmploymentControllerSpec
 
       val result = endEmploymentTest.redirectUpdateEmployment(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.showWarningPage(1).url
+      redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning(1).url
     }
   }
 
@@ -633,7 +633,7 @@ class EndEmploymentControllerSpec
     "show warning view" in {
       val endEmploymentTest = createEndEmploymentTest
 
-      val result = endEmploymentTest.showWarningPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = endEmploymentTest.duplicateSubmissionWarning(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
