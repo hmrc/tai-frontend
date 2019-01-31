@@ -17,6 +17,7 @@
 package views.html.employments
 
 import play.api.data.Form
+import play.api.libs.json.Json
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.YesNoForm
 import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
@@ -27,8 +28,7 @@ class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstant
   val employmentName = "Employment Name"
   val empId = 1
   val duplicateSubmissionWarningForm: Form[YesNoForm] = DuplicateSubmissionWarningForm.createForm
-
-
+  val choice = YesNoForm.YesNoChoice
 
   "duplicateSubmissionWarning" must {
     behave like pageWithTitle(messages("tai.employment.warning.customGaTitle"))
@@ -41,11 +41,36 @@ class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstant
       s"$YesNoChoice-yes",
       s"$YesNoChoice-no",
       messages("tai.employment.warning.radio1", employmentName),
-      messages("tai.employment.warning.radio2", employmentName))
+      messages("tai.employment.warning.radio2"))
 
     behave like pageWithContinueButtonForm("/check-income-tax/update-remove-employment/decision/1")
-
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(1))
+
+    "return no errors with valid 'yes' choice" in {
+      val validYesChoice = Json.obj(choice -> YesValue)
+      val validatedForm = duplicateSubmissionWarningForm.bind(validYesChoice)
+
+      validatedForm.errors mustBe empty
+      validatedForm.value.get mustBe YesNoForm(Some(YesValue))
+    }
+
+    "return no errors with valid 'no' choice" in {
+      val validNoChoice = Json.obj(choice -> NoValue)
+      val validatedForm = duplicateSubmissionWarningForm.bind(validNoChoice)
+
+      validatedForm.errors mustBe empty
+      validatedForm.value.get mustBe YesNoForm(Some(NoValue))
+    }
+
+    "display an error for invalid choice" in {
+      val invalidChoice = Json.obj(choice -> "")
+      val invalidatedForm = duplicateSubmissionWarningForm.bind(invalidChoice)
+      val emptySelectionErrorMessage = messages("tai.employment.warning.error")
+
+      val errorView = views.html.employments.duplicateSubmissionWarning(invalidatedForm,employmentName,empId)
+      doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
+      doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage),"error-message")
+    }
   }
 
   override def view: Html = views.html.employments.duplicateSubmissionWarning(duplicateSubmissionWarningForm,employmentName,empId)
