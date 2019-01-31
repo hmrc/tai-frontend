@@ -32,22 +32,20 @@ class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstant
 
   "duplicateSubmissionWarning" must {
     behave like pageWithTitle(messages("tai.employment.warning.customGaTitle"))
-
     behave like pageWithBackLink
-
     behave like pageWithCombinedHeader(
       preHeaderText = messages("tai.employment.warning.preHeading"),
       mainHeaderText = messages("tai.employment.warning.heading", employmentName))
 
     behave like pageWithYesNoRadioButton(
-      YesValue,
-      NoValue,
-      messages("tai.employment.warning.radio1"),
-      messages("tai.employment.warning.radio2"))
+      s"$YesNoChoice-yes",
+      s"$YesNoChoice-no",
+      messages("tai.employment.warning.radio1", employmentName),
+      messages("tai.employment.warning.radio2", employmentName))
 
-    behave like pageWithContinueButtonForm("/check-income-tax/update-remove-employment/warning/1")
+    behave like pageWithContinueButtonForm("/check-income-tax/update-remove-employment/decision/1")
 
-    behave like pageWithCancelLink(controllers.employments.routes.EndEmploymentController.showWarningPage(empId))
+    behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(1))
   }
 
   override def view: Html = views.html.employments.duplicateSubmissionWarning(duplicateSubmissionWarningForm,employmentName,empId)
