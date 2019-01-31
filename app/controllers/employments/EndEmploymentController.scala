@@ -321,14 +321,33 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-  def redirectUpdateEmployment(empID: Int)= authorisedForTai(personService).async {
+  def redirectUpdateEmployment(empID: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
-          successfulJourneyCacheService.currentValueAsBoolean(s"EndEmploymentID-${empID}") map {
-            case(Some(_)) => Ok("It's been Submitted")
+          successfulJourneyCacheService.currentValue(s"EndEmploymentID-${empID}") map {
+            case Some(_) => Redirect(routes.EndEmploymentController.showWarningPage(empID))
             case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemove(empID))
           }
+  }
+
+  def showWarningPage(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            val nino = Nino(user.getNino)
+            employmentService.employment(nino, empId).map {
+              case Some(employment) =>
+                Ok(views.html.employments.warning(
+                  updateRemoveForm = UpdateRemoveEmploymentForm.form,
+                  employmentName = employment.name,
+                  empId = empId))
+              case _ => throw new RuntimeException("No employment found")
+            }
+          }
+
+
   }
 
   def showConfirmationPage: Action[AnyContent] = authorisedForTai(personService).async {

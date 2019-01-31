@@ -611,7 +611,7 @@ class EndEmploymentControllerSpec
     "redirect to employmentUpdateRemove when there is no end employment ID cache value present" in {
       val employmentId = 1
       val endEmploymentTest = createEndEmploymentTest
-      when(trackSuccessJourneyCacheService.currentValueAsBoolean(Matchers.eq(s"EndEmploymentID-$employmentId"))(any())).thenReturn(Future.successful(None))
+      when(trackSuccessJourneyCacheService.currentValue(Matchers.eq(s"EndEmploymentID-$employmentId"))(any())).thenReturn(Future.successful(None))
 
       val result = endEmploymentTest.redirectUpdateEmployment(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
