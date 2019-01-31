@@ -16,17 +16,18 @@
 
 @import uk.gov.hmrc.tai.forms.employments.UpdateRemoveEmploymentForm
 @import includes.forms.submit
+@import uk.gov.hmrc.tai.forms.YesNoForm
 @import includes.{cancelLink, ptaHeader}
 @import uk.gov.hmrc.play.views.html.helpers.{errorSummary, form}
 @import includes.forms.inputRadioGroupStyling
 
-@(updateRemoveForm: Form[Option[String]], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(duplicateSubmissionWarningForm: Form[YesNoForm], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Update received"}
 
 @header = @{
     ptaHeader(
-        formForErrorSummary = Some(updateRemoveForm),
+        formForErrorSummary = Some(duplicateSubmissionWarningForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = messages("tai.employment.warning.heading", employmentName),
@@ -49,9 +50,9 @@
             <p>@messages("tai.employment.warning.text3")</p>
 
             @{inputRadioGroupStyling(
-                field=updateRemoveForm(UpdateRemoveEmploymentForm.EmploymentDecision),
-                radioOptions=Seq(("Yes" -> messages("tai.employment.warning.radio1", employmentName)), ("No" -> messages("tai.employment.warning.radio2")) ),
-                legend=messages("tai.employment.decision.legend"),
+                field=duplicateSubmissionWarningForm(YesNoForm.YesNoChoice),
+                radioOptions=Seq((YesNoForm.YesValue -> messages("tai.employment.warning.radio1", employmentName)), (YesNoForm.NoValue -> messages("tai.employment.warning.radio2")) ),
+                legend=messages("tai.employment.warning.legend"),
                 legendHint=None,
                 ('_groupDivClass, "form-group" ),
                 ('_fieldsetAttributes, "id=employmentDecision" ),

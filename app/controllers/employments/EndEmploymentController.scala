@@ -35,7 +35,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
-import uk.gov.hmrc.tai.forms.employments.{EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
+import uk.gov.hmrc.tai.forms.employments.{DuplicateSubmissionWarningForm, EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
 import uk.gov.hmrc.tai.model.domain.EndEmployment
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, PersonService}
@@ -339,10 +339,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
             val nino = Nino(user.getNino)
             employmentService.employment(nino, empId).map {
               case Some(employment) =>
-                Ok(views.html.employments.warning(
-                  updateRemoveForm = UpdateRemoveEmploymentForm.form,
-                  employmentName = employment.name,
-                  empId = empId))
+                Ok(views.html.employments.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, employment.name, empId))
               case _ => throw new RuntimeException("No employment found")
             }
           }

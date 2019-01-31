@@ -629,6 +629,18 @@ class EndEmploymentControllerSpec
     }
   }
 
+  "showWarningPage" must {
+    "show warning view" in {
+      val endEmploymentTest = createEndEmploymentTest
+
+      val result = endEmploymentTest.showWarningPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val doc = Jsoup.parse(contentAsString(result))
+
+      status(result) mustBe OK
+      doc.title() must include(Messages("tai.employment.warning.customGaTitle"))
+    }
+  }
+
   def employmentWithAccounts(accounts:List[AnnualAccount]) = Employment("employer", Some("emp123"), new LocalDate(2000, 5, 20),
     None, accounts, "", "", 8, None, false, false)
 
