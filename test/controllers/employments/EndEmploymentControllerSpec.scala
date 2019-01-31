@@ -615,6 +615,17 @@ class EndEmploymentControllerSpec
 
       val result = endEmploymentTest.redirectUpdateEmployment(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemove(1).url
+    }
+
+    "redirect to warning page when there is an end employment ID cache value present" in {
+      val employmentId = 1
+      val endEmploymentTest = createEndEmploymentTest
+      when(trackSuccessJourneyCacheService.currentValue(Matchers.eq(s"EndEmploymentID-$employmentId"))(any())).thenReturn(Future.successful(Some("true")))
+
+      val result = endEmploymentTest.redirectUpdateEmployment(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe routes.EndEmploymentController.showWarningPage(1).url
     }
   }
 
