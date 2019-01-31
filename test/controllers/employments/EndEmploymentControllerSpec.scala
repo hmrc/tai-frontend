@@ -611,8 +611,8 @@ class EndEmploymentControllerSpec
     "redirect to employmentUpdateRemove when there is no end employment ID cache value present" in {
       val employmentId = 1
       val endEmploymentTest = createEndEmploymentTest
-      when(endEmploymentJourneyCacheService.cache(Matchers.eq(EndEmployment_NameKey), Matchers.eq(employerName))(any())).
-        thenReturn(Future.successful(Map(EndEmployment_NameKey -> employerName)))
+      val cacheMap = Map(EndEmployment_EmploymentIdKey -> employmentId.toString, EndEmployment_NameKey -> employerName)
+      when(endEmploymentJourneyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
       when(trackSuccessJourneyCacheService.currentValue(Matchers.eq(s"EndEmploymentID-$employmentId"))(any())).
         thenReturn(Future.successful(None))
 
@@ -624,13 +624,13 @@ class EndEmploymentControllerSpec
     "redirect to warning page when there is an end employment ID cache value present" in {
       val employmentId = 1
       val endEmploymentTest = createEndEmploymentTest
-      when(endEmploymentJourneyCacheService.cache(Matchers.eq(EndEmployment_NameKey), Matchers.eq(employerName))(any())).
-        thenReturn(Future.successful(Map(EndEmployment_NameKey -> employerName)))
+      val cacheMap = Map(EndEmployment_EmploymentIdKey -> employmentId.toString, EndEmployment_NameKey -> employerName)
+      when(endEmploymentJourneyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
       when(trackSuccessJourneyCacheService.currentValue(Matchers.eq(s"EndEmploymentID-$employmentId"))(any())).thenReturn(Future.successful(Some("true")))
 
       val result = endEmploymentTest.redirectUpdateEmployment(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning(1).url
+      redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning.url
     }
   }
 
@@ -638,7 +638,7 @@ class EndEmploymentControllerSpec
     "show duplicateSubmissionWarning view" in {
       val endEmploymentTest = createEndEmploymentTest
 
-      val result = endEmploymentTest.duplicateSubmissionWarning(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = endEmploymentTest.duplicateSubmissionWarning(RequestBuilder.buildFakeRequestWithAuth("GET"))
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK

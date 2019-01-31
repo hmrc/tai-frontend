@@ -329,14 +329,15 @@ class EndEmploymentController @Inject()(personService: PersonService,
             val nino = Nino(user.getNino)
             employmentService.employment(nino, empId) flatMap {
               case Some(employment) => {
-                val journeyCacheFuture = journeyCacheService.cache(EndEmployment_NameKey, employment.name)
+                val journeyCacheFuture = journeyCacheService.
+                  cache(Map(EndEmployment_EmploymentIdKey -> empId.toString, EndEmployment_NameKey -> employment.name))
                 val successfullJourneyCacheFuture = successfulJourneyCacheService.currentValue(s"EndEmploymentID-${empId}")
                 for {
                   _ <- journeyCacheFuture
                   successfulJourneyCache <- successfullJourneyCacheFuture
                 } yield {
                   successfulJourneyCache match {
-                    case Some(_) => Redirect(routes.EndEmploymentController.duplicateSubmissionWarning(empId))
+                    case Some(_) => Redirect(routes.EndEmploymentController.duplicateSubmissionWarning)
                     case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemove(empId))
                   }
                 }
@@ -346,16 +347,13 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-  def duplicateSubmissionWarning(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+  def duplicateSubmissionWarning: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            val nino = Nino(user.getNino)
-            employmentService.employment(nino, empId).map {
-              case Some(employment) =>
-                Ok(views.html.employments.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, employment.name, empId))
-              case _ => throw new RuntimeException("No employment found")
+            journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { mandatoryValues =>
+              Ok(views.html.employments.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, mandatoryValues(0), mandatoryValues(1).toInt))
             }
           }
   }
@@ -367,12 +365,15 @@ class EndEmploymentController @Inject()(personService: PersonService,
           ServiceCheckLite.personDetailsCheck {
             DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
               formWithErrors => {
-                Future.successful(BadRequest(views.html.employments.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, "Employment Name", employmentId)))
+                Future.successful(BadRequest(views.html.employments.
+                  duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, "Employment Name", employmentId)))
               },
               success => {
                 success.yesNoChoice match {
-                  case Some(YesValue) => Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(employmentId)))
-                  case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId)))
+                  case Some(YesValue) => Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.
+                    employmentUpdateRemove(employmentId)))
+                  case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
+                    onPageLoad(employmentId)))
                 }
               }
             )
