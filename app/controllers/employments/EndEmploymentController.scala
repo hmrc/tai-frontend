@@ -367,7 +367,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
               DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
                 formWithErrors => {
                   Future.successful(BadRequest(views.html.employments.
-                    duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, mandatoryValues(0), mandatoryValues(1).toInt)))
+                    duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
                 },
                 success => {
                   success.yesNoChoice match {
