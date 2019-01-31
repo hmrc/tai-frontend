@@ -358,25 +358,27 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-  def submitDuplicateSubmissionWarning(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+  def submitDuplicateSubmissionWarning: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
-              formWithErrors => {
-                Future.successful(BadRequest(views.html.employments.
-                  duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, "Employment Name", employmentId)))
-              },
-              success => {
-                success.yesNoChoice match {
-                  case Some(YesValue) => Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.
-                    employmentUpdateRemove(employmentId)))
-                  case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
-                    onPageLoad(employmentId)))
+            journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) flatMap { mandatoryValues =>
+              DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
+                formWithErrors => {
+                  Future.successful(BadRequest(views.html.employments.
+                    duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, mandatoryValues(0), mandatoryValues(1).toInt)))
+                },
+                success => {
+                  success.yesNoChoice match {
+                    case Some(YesValue) => Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.
+                      employmentUpdateRemove(mandatoryValues(1).toInt)))
+                    case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
+                      onPageLoad(mandatoryValues(1).toInt)))
+                  }
                 }
-              }
-            )
+              )
+            }
           }
   }
 
