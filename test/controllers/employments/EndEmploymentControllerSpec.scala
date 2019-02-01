@@ -637,6 +637,10 @@ class EndEmploymentControllerSpec
   "duplicateSubmissionWarning" must {
     "show duplicateSubmissionWarning view" in {
       val endEmploymentTest = createEndEmploymentTest
+      val employmentId = 1
+
+      when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
 
       val result = endEmploymentTest.duplicateSubmissionWarning(RequestBuilder.buildFakeRequestWithAuth("GET"))
       val doc = Jsoup.parse(contentAsString(result))
@@ -652,7 +656,10 @@ class EndEmploymentControllerSpec
         val endEmploymentTest = createEndEmploymentTest
         val employmentId = 1
 
-        val result = endEmploymentTest.submitDuplicateSubmissionWarning(employmentId)(RequestBuilder.buildFakeRequestWithAuth("POST")
+        when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
+
+        val result = endEmploymentTest.submitDuplicateSubmissionWarning(RequestBuilder.buildFakeRequestWithAuth("POST")
           .withFormUrlEncodedBody(YesNoChoice -> YesValue))
 
         status(result) mustBe SEE_OTHER
@@ -665,7 +672,10 @@ class EndEmploymentControllerSpec
         val endEmploymentTest = createEndEmploymentTest
         val employmentId = 1
 
-        val result = endEmploymentTest.submitDuplicateSubmissionWarning(employmentId)(RequestBuilder.buildFakeRequestWithAuth("POST")
+        when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
+
+        val result = endEmploymentTest.submitDuplicateSubmissionWarning(RequestBuilder.buildFakeRequestWithAuth("POST")
           .withFormUrlEncodedBody(YesNoChoice -> NoValue))
 
         status(result) mustBe SEE_OTHER
@@ -678,7 +688,10 @@ class EndEmploymentControllerSpec
         val endEmploymentTest = createEndEmploymentTest
         val employmentId = 1
 
-        val result = endEmploymentTest.submitDuplicateSubmissionWarning(employmentId)(RequestBuilder.buildFakeRequestWithAuth("POST")
+        when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
+
+        val result = endEmploymentTest.submitDuplicateSubmissionWarning(RequestBuilder.buildFakeRequestWithAuth("POST")
           .withFormUrlEncodedBody(YesNoChoice -> ""))
 
         status(result) mustBe BAD_REQUEST
