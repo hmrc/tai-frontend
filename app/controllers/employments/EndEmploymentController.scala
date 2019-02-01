@@ -36,7 +36,7 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
 import uk.gov.hmrc.tai.forms.employments.{DuplicateSubmissionWarningForm, EmploymentEndDateForm, IrregularPayForm, UpdateRemoveEmploymentForm}
-import uk.gov.hmrc.tai.model.domain.EndEmployment
+import uk.gov.hmrc.tai.model.domain.{Employment, EndEmployment}
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, PersonService}
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, IrregularPayConstants, JourneyCacheConstants}
@@ -79,19 +79,13 @@ class EndEmploymentController @Inject()(personService: PersonService,
       case _ => Valid
     })
 
-  def employmentUpdateRemove(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+  def employmentUpdateRemove: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            val nino = Nino(user.getNino)
-            employmentService.employment(nino, empId).map {
-              case Some(employment) =>
-                Ok(views.html.employments.update_remove_employment_decision(
-                  updateRemoveForm = UpdateRemoveEmploymentForm.form,
-                  employmentName = employment.name,
-                  empId = empId))
-              case _ => throw new RuntimeException("No employment found")
+            journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { mandatoryValues =>
+              Ok(views.html.employments.update_remove_employment_decision(UpdateRemoveEmploymentForm.form, mandatoryValues(0), mandatoryValues(1).toInt))
             }
           }
   }
@@ -121,18 +115,14 @@ class EndEmploymentController @Inject()(personService: PersonService,
                       val hasIrregularPayment = employment.latestAnnualAccount.exists(_.isIrregularPayment)
                       if (latestPaymentDate.isDefined && latestPaymentDate.get.isAfter(today.minusWeeks(6).minusDays(1))) {
 
-                        val errorPagecache = Map(EndEmployment_LatestPaymentDateKey -> latestPaymentDate.get.toString,
-                          EndEmployment_NameKey -> employment.name, EndEmployment_EmploymentIdKey -> empId.toString)
+                        val errorPagecache = Map(EndEmployment_LatestPaymentDateKey -> latestPaymentDate.get.toString)
                         journeyCacheService.cache(errorPagecache) map { _ =>
                           auditService.createAndSendAuditEvent(EndEmployment_WithinSixWeeksError, Map("nino" -> nino.nino))
                           Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentError())
                         }
                       } else if (hasIrregularPayment) {
-                        val errorPagecache = Map(EndEmployment_NameKey -> employment.name)
-                        journeyCacheService.cache(errorPagecache) map { _ =>
                           auditService.createAndSendAuditEvent(EndEmployment_IrregularPayment, Map("nino" -> nino.nino))
-                          Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError(empId))
-                        }
+                          Future(Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError(empId)))
                       } else {
                         Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage(empId)))
                       }
@@ -142,7 +132,6 @@ class EndEmploymentController @Inject()(personService: PersonService,
               case _ => throw new RuntimeException("No employment found")
             }
           }
-
   }
 
   def endEmploymentError(): Action[AnyContent] = authorisedForTai(personService).async {
@@ -338,7 +327,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
                 } yield {
                   successfulJourneyCache match {
                     case Some(_) => Redirect(routes.EndEmploymentController.duplicateSubmissionWarning)
-                    case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemove(empId))
+                    case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemove)
                   }
                 }
               }
@@ -372,7 +361,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
                 success => {
                   success.yesNoChoice match {
                     case Some(YesValue) => Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.
-                      employmentUpdateRemove(mandatoryValues(1).toInt)))
+                      employmentUpdateRemove))
                     case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
                       onPageLoad(mandatoryValues(1).toInt)))
                   }

@@ -71,24 +71,22 @@ class EndEmploymentControllerSpec
   "employmentUpdateRemove" must {
     "call updateRemoveEmployer page successfully with an authorised session" in {
       val endEmploymentTest = createEndEmploymentTest
+      val employmentId = 1
 
-      val result = endEmploymentTest.employmentUpdateRemove(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
+
+      val result = endEmploymentTest.employmentUpdateRemove(RequestBuilder.buildFakeRequestWithAuth("GET"))
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
       doc.title() must include(Messages("tai.employment.decision.customGaTitle"))
     }
 
-    "call the Employment service to get the correct employment details" in {
-      val endEmploymentTest = createEndEmploymentTest
-      Await.result(endEmploymentTest.employmentUpdateRemove(1)(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
-      verify(employmentService, times(1)).employment(any(), any())(any())
-    }
-
     "redirect to GG login" when {
       "user is not authorised" in {
         val endEmploymentTest = createEndEmploymentTest
-        val result = endEmploymentTest.employmentUpdateRemove(1)(RequestBuilder.buildFakeRequestWithoutAuth("GET"))
+        val result = endEmploymentTest.employmentUpdateRemove(RequestBuilder.buildFakeRequestWithoutAuth("GET"))
         status(result) mustBe 303
 
         val nextUrl = redirectLocation(result) match {
@@ -618,7 +616,7 @@ class EndEmploymentControllerSpec
 
       val result = endEmploymentTest.redirectUpdateEmployment(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemove(1).url
+      redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemove.url
     }
 
     "redirect to warning page when there is an end employment ID cache value present" in {
@@ -663,7 +661,7 @@ class EndEmploymentControllerSpec
           .withFormUrlEncodedBody(YesNoChoice -> YesValue))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(employmentId).url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemove.url
       }
     }
 

@@ -63,7 +63,7 @@ GET         /update-remove-employment/redirectUpdateEmployment/:empId           
 GET         /update-remove-employment/warning                                          @controllers.employments.EndEmploymentController.duplicateSubmissionWarning
 POST        /update-remove-employment/warning                                          @controllers.employments.EndEmploymentController.submitDuplicateSubmissionWarning
 
-GET         /update-remove-employment/decision/:empId                                  @controllers.employments.EndEmploymentController.employmentUpdateRemove(empId: Int)
+GET         /update-remove-employment/decision                                         @controllers.employments.EndEmploymentController.employmentUpdateRemove
 POST        /update-remove-employment/decision/:empId                                  @controllers.employments.EndEmploymentController.handleEmploymentUpdateRemove(empId: Int)
 
 GET         /end-employment/six-weeks                                                  @controllers.employments.EndEmploymentController.endEmploymentError
