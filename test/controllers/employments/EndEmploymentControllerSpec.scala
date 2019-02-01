@@ -102,6 +102,10 @@ class EndEmploymentControllerSpec
     "redirect to the update employment url" when {
       "the form has the value Yes in EmploymentDecision" in {
         val endEmploymentTest = createEndEmploymentTest
+        val employmentId = 1
+
+        when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
 
         val request = FakeRequest("POST", "").withFormUrlEncodedBody(EmploymentDecision -> YesValue).withSession(
           SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
@@ -127,6 +131,10 @@ class EndEmploymentControllerSpec
         val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
+        val employmentId = 1
+
+        when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
 
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
@@ -152,6 +160,10 @@ class EndEmploymentControllerSpec
         val payment = paymentOnDate(LocalDate.now().minusWeeks(6))
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
+        val employmentId = 1
+
+        when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
 
         when(employmentService.employment(any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
@@ -184,7 +196,6 @@ class EndEmploymentControllerSpec
           .withFormUrlEncodedBody(EmploymentDecision -> NoValue)
 
         Await.result(endEmploymentTest.handleEmploymentUpdateRemove(1)(request), 5 seconds)
-        verify(endEmploymentJourneyCacheService, times(1)).cache(any())(any())
       }
     }
 
@@ -199,6 +210,10 @@ class EndEmploymentControllerSpec
         val payment = paymentOnDate(LocalDate.now().minusWeeks(8)).copy(payFrequency = Irregular)
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
+        val employmentId = 1
+
+        when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
 
         when(employmentService.employment(any(), any())(any()))
           .thenReturn(Future.successful(Some(employment)))
@@ -214,7 +229,11 @@ class EndEmploymentControllerSpec
     "render the what do you want to do page with form errors" when {
       "no value is present in EmploymentDecision" in {
         val endEmploymentTest = createEndEmploymentTest
+        val employmentId = 1
 
+        when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
+        
         val request = FakeRequest("POST", "").withFormUrlEncodedBody(EmploymentDecision -> "").withSession(
           SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
         )

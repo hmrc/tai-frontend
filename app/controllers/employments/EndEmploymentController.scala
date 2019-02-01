@@ -95,17 +95,18 @@ class EndEmploymentController @Inject()(personService: PersonService,
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            val nino = Nino(user.getNino)
-            employmentService.employment(nino, empId) flatMap  {
-              case Some(employment) =>
+            journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) flatMap { mandatoryValues: Seq[String] =>
                 UpdateRemoveEmploymentForm.form.bindFromRequest.fold(
                   formWithErrors => {
-                    Future(BadRequest(views.html.employments.update_remove_employment_decision(formWithErrors, employment.name, empId)))
+                    Future(BadRequest(views.html.employments.update_remove_employment_decision(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
                   },
                   {
-                    case Some(YesValue) => Future(Redirect(controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(empId)))
+                    case Some(YesValue) => Future(Redirect(controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(mandatoryValues(1).toInt)))
 
-                    case _ => {
+                    case _ =>
+                      val nino = Nino(user.getNino)
+                      employmentService.employment(nino, mandatoryValues(1).toInt) flatMap {
+                        case Some(employment) =>
                       val today = new LocalDate()
                       val latestPaymentDate: Option[LocalDate] = for {
                         latestAnnualAccount <- employment.latestAnnualAccount
@@ -122,14 +123,16 @@ class EndEmploymentController @Inject()(personService: PersonService,
                         }
                       } else if (hasIrregularPayment) {
                           auditService.createAndSendAuditEvent(EndEmployment_IrregularPayment, Map("nino" -> nino.nino))
-                          Future(Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError(empId)))
+                          Future(Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError(mandatoryValues(1).toInt)))
                       } else {
-                        Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage(empId)))
+                        Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage(mandatoryValues(1).toInt)))
                       }
                     }
-                  }
-                )
+
               case _ => throw new RuntimeException("No employment found")
+                  }
+                    )
+
             }
           }
   }
