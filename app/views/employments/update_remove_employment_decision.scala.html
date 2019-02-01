@@ -41,7 +41,7 @@
     articleClasses = None,
     gaCustomTitle = Some(messages("tai.employment.decision.customGaTitle"))) {
 
-    @form(action = controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove(empId), Symbol("data-journey-dynamic-radios") -> "" ) {
+    @form(action = controllers.employments.routes.EndEmploymentController.handleEmploymentUpdateRemove, Symbol("data-journey-dynamic-radios") -> "" ) {
         <div class="form-group">
 
             @{inputRadioGroupStyling(

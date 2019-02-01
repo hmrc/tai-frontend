@@ -111,7 +111,7 @@ class EndEmploymentControllerSpec
           SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
         )
 
-        val result = endEmploymentTest.handleEmploymentUpdateRemove(1)(request)
+        val result= endEmploymentTest.handleEmploymentUpdateRemove(request)
 
         status(result) mustBe SEE_OTHER
 
@@ -141,7 +141,7 @@ class EndEmploymentControllerSpec
         val request = RequestBuilder.buildFakeRequestWithAuth("GET")
           .withFormUrlEncodedBody(EmploymentDecision -> NoValue)
 
-        val result = endEmploymentTest.handleEmploymentUpdateRemove(1)(request)
+        val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
         status(result) mustBe SEE_OTHER
 
@@ -171,7 +171,7 @@ class EndEmploymentControllerSpec
         val request = RequestBuilder.buildFakeRequestWithAuth("GET")
           .withFormUrlEncodedBody(EmploymentDecision -> NoValue)
 
-        val result = endEmploymentTest.handleEmploymentUpdateRemove(1)(request)
+        val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.endEmploymentError().url
@@ -195,7 +195,7 @@ class EndEmploymentControllerSpec
         val request = RequestBuilder.buildFakeRequestWithAuth("GET")
           .withFormUrlEncodedBody(EmploymentDecision -> NoValue)
 
-        Await.result(endEmploymentTest.handleEmploymentUpdateRemove(1)(request), 5 seconds)
+        Await.result(endEmploymentTest.handleEmploymentUpdateRemove(request), 5 seconds)
       }
     }
 
@@ -219,7 +219,7 @@ class EndEmploymentControllerSpec
           .thenReturn(Future.successful(Some(employment)))
         when(auditService.createAndSendAuditEvent(any(), any())(any(), any())).thenReturn(Future.successful(Success))
 
-        val result = endEmploymentTest.handleEmploymentUpdateRemove(1)(request)
+        val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.irregularPaymentError(1).url
@@ -233,28 +233,14 @@ class EndEmploymentControllerSpec
 
         when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
-        
+
         val request = FakeRequest("POST", "").withFormUrlEncodedBody(EmploymentDecision -> "").withSession(
           SessionKeys.authProvider -> "IDA", SessionKeys.userId -> s"/path/to/authority"
         )
 
-        val result = endEmploymentTest.handleEmploymentUpdateRemove(1)(request)
+        val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
         status(result) mustBe BAD_REQUEST
-      }
-    }
-
-    "redirect to GG login" when {
-      "user is not authorised" in {
-        val endEmploymentTest = createEndEmploymentTest
-        val result = endEmploymentTest.handleEmploymentUpdateRemove(1)(RequestBuilder.buildFakeRequestWithoutAuth("POST"))
-        status(result) mustBe 303
-
-        val nextUrl = redirectLocation(result) match {
-          case Some(s: String) => s
-          case _ => "" + ""
-        }
-        nextUrl.contains("/gg/sign-in") mustBe true
       }
     }
   }
