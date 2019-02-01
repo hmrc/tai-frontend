@@ -64,7 +64,7 @@
         <div class="grid grid-2-3">
             <div class="inner-block">
 
-                @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount <= 0){
+                @if(viewModel.iyaCYAmount > 0){
                         <section class="section soft--top">
                             <p id="iya-cy-how-much">@Html(
                                 Messages("tai.iya.paidTooLittle.cy.text",
@@ -107,8 +107,8 @@
                         </section>
                 }
 
-                @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount > 0){
-                        <section class="section soft--top">
+                <!--@if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount > 0){
+                        <section class="section soft&#45;&#45;top">
                             <p>@Messages("tai.iya.paidTooLittle.cy-and-cy-plus-one.text1",MoneyPounds(viewModel.iyaTotalAmount, 2).quantity)</p>
                             <p>@Html(
                                 Messages("tai.iya.check.your.tax.code.text",
@@ -125,7 +125,7 @@
                                 s"${Dates.formatDate(TaxYear().next.start)}",
                                 s"${Dates.formatDate(TaxYear().next.end)}")</p>
                         </section>
-                }
+                }-->
 
             </div>
         </div>
