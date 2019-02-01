@@ -101,9 +101,12 @@ class WhatDoYouWantToDoController @Inject()(employmentService: EmploymentService
           taxAccountSummary <- cy1TaxAccountSummary
         } yield {
           taxAccountSummary match {
-            case TaiSuccessResponseWithPayload(_) =>
-              Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(
-                trackingResponse, cyPlusOneEnabled, taxCodeChanged.changed, taxCodeChanged.mismatch)))
+            case TaiSuccessResponseWithPayload(_) => {
+              val model = WhatDoYouWantToDoViewModel(
+                trackingResponse, cyPlusOneEnabled, taxCodeChanged.changed, taxCodeChanged.mismatch)
+              Logger.debug(s"wdywtdViewModelCYEnabled $model")
+              Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
+            }
             case _ =>
               Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(
                 trackingResponse, isCyPlusOneEnabled = false)))
@@ -111,9 +114,11 @@ class WhatDoYouWantToDoController @Inject()(employmentService: EmploymentService
         }
       }
       else {
-        taxCodeChangeService.hasTaxCodeChanged(nino).map(hasTaxCodeChanged =>
-          Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(
-            trackingResponse, cyPlusOneEnabled, hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch)))
+        taxCodeChangeService.hasTaxCodeChanged(nino).map(hasTaxCodeChanged => {
+          val model = WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch)
+          Logger.debug(s"wdywtdViewModelCYDisabled $model")
+          Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
+        }
         )
       }
     }
