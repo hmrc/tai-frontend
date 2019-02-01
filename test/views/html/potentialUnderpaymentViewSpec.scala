@@ -72,16 +72,6 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
 
       doc must not(haveElementWithId("getHelpLink"))
     }
-
-    "display the potential underpayment page configured for both CY and CY+1 when both are present" ignore {
-
-      doc.title() must include(Messages("tai.iya.tax.you.owe.cy-plus-one.title"))
-      doc must not(haveElementWithId("iya-cy-how-much"))
-      doc must not(haveElementWithId("iya-cy-plus-one-how-much"))
-      doc must haveElementWithId("iya-cy-and-cy-plus-one-how-much")
-
-      doc must not(haveElementWithId("getHelpLink"))
-    }
   }
 
   val nino = new Generator().nextNino
