@@ -69,7 +69,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
   private def telephoneNumberViewModel(employmentId: Int)(implicit messages: Messages) = CanWeContactByPhoneViewModel(
     messages("tai.endEmployment.preHeadingText"),
     messages("tai.canWeContactByPhone.title"),
-    controllers.employments.routes.EndEmploymentController.endEmploymentPage(employmentId).url,
+    controllers.employments.routes.EndEmploymentController.endEmploymentPage().url,
     controllers.employments.routes.EndEmploymentController.submitTelephoneNumber().url,
     controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url)
 
@@ -79,7 +79,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
       case _ => Valid
     })
 
-  def employmentUpdateRemove: Action[AnyContent] = authorisedForTai(personService).async {
+  def employmentUpdateRemove(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -90,7 +90,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-  def handleEmploymentUpdateRemove: Action[AnyContent] = authorisedForTai(personService).async {
+  def handleEmploymentUpdateRemove(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -101,8 +101,8 @@ class EndEmploymentController @Inject()(personService: PersonService,
                     Future(BadRequest(views.html.employments.update_remove_employment_decision(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
                   },
                   {
-                    case Some(YesValue) => Future(Redirect(controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(mandatoryValues(1).toInt)))
-
+                    case Some(YesValue) => Future(Redirect(controllers.employments.routes.UpdateEmploymentController.
+                      updateEmploymentDetails(mandatoryValues(1).toInt)))
                     case _ =>
                       val nino = Nino(user.getNino)
                       employmentService.employment(nino, mandatoryValues(1).toInt) flatMap {
@@ -123,9 +123,9 @@ class EndEmploymentController @Inject()(personService: PersonService,
                             }
                           } else if (hasIrregularPayment) {
                             auditService.createAndSendAuditEvent(EndEmployment_IrregularPayment, Map("nino" -> nino.nino))
-                            Future(Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError(mandatoryValues(1).toInt)))
+                            Future(Redirect(controllers.employments.routes.EndEmploymentController.irregularPaymentError()))
                           } else {
-                            Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage(mandatoryValues(1).toInt)))
+                            Future(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage()))
                           }
                         case _ => throw new RuntimeException("No employment found")
                     }
@@ -148,60 +148,60 @@ class EndEmploymentController @Inject()(personService: PersonService,
 
   }
 
-  def irregularPaymentError(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+  def irregularPaymentError(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            journeyCacheService.mandatoryValue(EndEmployment_NameKey) map { name =>
-              Ok(views.html.employments.EndEmploymentIrregularPaymentError(IrregularPayForm.createForm, EmploymentViewModel(name, empId)))
+            journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { mandatoryValues =>
+              Ok(views.html.employments.EndEmploymentIrregularPaymentError(IrregularPayForm.createForm,
+                EmploymentViewModel(mandatoryValues(0), mandatoryValues(1).toInt)))
             }
           }
 
   }
 
 
-  def handleIrregularPaymentError(empId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+  def handleIrregularPaymentError(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            IrregularPayForm.createForm.bindFromRequest.fold(
-              formWithErrors => {
-                journeyCacheService.mandatoryValue(EndEmployment_NameKey) map { name =>
-                  BadRequest(views.html.employments.EndEmploymentIrregularPaymentError(formWithErrors, EmploymentViewModel(name, empId)))
+            journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { mandatoryValues =>
+              IrregularPayForm.createForm.bindFromRequest.fold(
+                formWithErrors => {
+                  BadRequest(views.html.employments.EndEmploymentIrregularPaymentError(formWithErrors,
+                    EmploymentViewModel(mandatoryValues(0), mandatoryValues(1).toInt)))
+                },
+                formData => {
+                  formData.irregularPayDecision match {
+                    case Some(ContactEmployer) =>
+                      Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+                    case _ =>
+                      Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage())
+                  }
                 }
-              },
-              formData => {
-                formData.irregularPayDecision match {
-                  case Some(ContactEmployer) =>
-                    Future.successful(Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad()))
-                  case _ =>
-                    Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.endEmploymentPage(empId)))
-                }
-              }
-            )
+              )
+            }
           }
   }
 
-  def endEmploymentPage(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
+  def endEmploymentPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
           val nino = Nino(user.getNino)
           ServiceCheckLite.personDetailsCheck {
-            for{
-              employment <- employmentService.employment(nino, employmentId)
-              cache <- journeyCacheService.currentValueAsDate(EndEmployment_EndDateKey)
-            }yield (employment, cache) match{
-              case (Some(employment),Some(cache)) =>
-                Ok(views.html.employments.endEmployment(EmploymentEndDateForm(employment.name).form.fill(cache), EmploymentViewModel(employment.name, employmentId)))
-              case (Some(employment),None) =>
-                Ok(views.html.employments.endEmployment(EmploymentEndDateForm(employment.name).form, EmploymentViewModel(employment.name, employmentId)))
-              case _ => throw new RuntimeException("No employment found")
-            }
-
-
+              journeyCacheService.collectedValues(Seq(EndEmployment_NameKey,EndEmployment_EmploymentIdKey),
+                Seq(EndEmployment_EndDateKey)) map tupled { (mandatorySeq, optionalSeq) => {
+                  optionalSeq match {
+                    case Seq(Some(date)) => Ok(views.html.employments.endEmployment(EmploymentEndDateForm(mandatorySeq(0))
+                      .form.fill(new LocalDate(date)), EmploymentViewModel(mandatorySeq(0), mandatorySeq(1).toInt)))
+                    case _ => Ok(views.html.employments.endEmployment(EmploymentEndDateForm(mandatorySeq(0)).form,
+                                       EmploymentViewModel(mandatorySeq(0), mandatorySeq(1).toInt)))
+                  }
+                }
+              }
           }
   }
 
@@ -275,7 +275,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-  def endEmploymentCheckYourAnswers: Action[AnyContent] = authorisedForTai(personService).async {
+  def endEmploymentCheckYourAnswers(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -285,8 +285,8 @@ class EndEmploymentController @Inject()(personService: PersonService,
               Seq(EndEmployment_TelephoneNumberKey)) map tupled { (mandatorySeq, optionalSeq) =>
               val model = IncomeCheckYourAnswersViewModel(mandatorySeq(0).toInt, Messages("tai.endEmployment.preHeadingText"),
                 mandatorySeq(1), mandatorySeq(2), optionalSeq(0),
-                controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url,
-                controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment.url,
+                controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url,
+                controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url,
                 controllers.routes.IncomeSourceSummaryController.onPageLoad(mandatorySeq(0).toInt).url)
               Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
             }
@@ -294,7 +294,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
   }
 
 
-  def confirmAndSendEndEmployment: Action[AnyContent] = authorisedForTai(personService).async {
+  def confirmAndSendEndEmployment(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -327,8 +327,8 @@ class EndEmploymentController @Inject()(personService: PersonService,
                   successfulJourneyCache <- successfullJourneyCacheFuture
                 } yield {
                   successfulJourneyCache match {
-                    case Some(_) => Redirect(routes.EndEmploymentController.duplicateSubmissionWarning)
-                    case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemove)
+                    case Some(_) => Redirect(routes.EndEmploymentController.duplicateSubmissionWarning())
+                    case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemove())
                   }
                 }
               }
@@ -337,7 +337,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-  def duplicateSubmissionWarning: Action[AnyContent] = authorisedForTai(personService).async {
+  def duplicateSubmissionWarning(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -348,7 +348,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-  def submitDuplicateSubmissionWarning: Action[AnyContent] = authorisedForTai(personService).async {
+  def submitDuplicateSubmissionWarning(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -362,7 +362,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
                 success => {
                   success.yesNoChoice match {
                     case Some(YesValue) => Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.
-                      employmentUpdateRemove))
+                      employmentUpdateRemove()))
                     case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
                       onPageLoad(mandatoryValues(1).toInt)))
                   }
@@ -372,7 +372,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-  def showConfirmationPage: Action[AnyContent] = authorisedForTai(personService).async {
+  def showConfirmationPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request => Future.successful(Ok(views.html.employments.confirmation()))

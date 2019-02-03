@@ -33,7 +33,7 @@ case class EndIncomeCheckYourAnswersViewModel(preHeading: String,
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
 
     val mandatoryLines = Seq(
-      CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q2"), Dates.formatDate(new LocalDate(employmentEndDate)), controllers.employments.routes.EndEmploymentController.endEmploymentPage(employmentId).url),
+      CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q2"), Dates.formatDate(new LocalDate(employmentEndDate)), controllers.employments.routes.EndEmploymentController.endEmploymentPage().url),
       CheckYourAnswersConfirmationLine(Messages("tai.addEmployment.cya.q4"), contactableByPhone, controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url)
     )
 
