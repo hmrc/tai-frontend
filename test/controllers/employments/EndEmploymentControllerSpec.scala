@@ -16,14 +16,15 @@
 
 package controllers.employments
 
-import builders.{AuthBuilder, RequestBuilder}
-import controllers.FakeTaiPlayApplication
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
+import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -35,16 +36,13 @@ import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponse
 import uk.gov.hmrc.tai.forms.employments.EmploymentEndDateForm
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.service.{AuditService, EmploymentService, PersonService}
-import uk.gov.hmrc.tai.util._
+import uk.gov.hmrc.tai.service.{AuditService, EmploymentService}
 import uk.gov.hmrc.tai.util.constants.{EmploymentDecisionConstants, FormValuesConstants, IrregularPayConstants, JourneyCacheConstants}
 
 import scala.concurrent.duration._
@@ -81,20 +79,6 @@ class EndEmploymentControllerSpec
 
       status(result) mustBe OK
       doc.title() must include(Messages("tai.employment.decision.customGaTitle"))
-    }
-
-    "redirect to GG login" when {
-      "user is not authorised" in {
-        val endEmploymentTest = createEndEmploymentTest
-        val result = endEmploymentTest.employmentUpdateRemove(RequestBuilder.buildFakeRequestWithoutAuth("GET"))
-        status(result) mustBe 303
-
-        val nextUrl = redirectLocation(result) match {
-          case Some(s: String) => s
-          case _ => "" + ""
-        }
-        nextUrl.contains("/gg/sign-in") mustBe true
-      }
     }
   }
 
@@ -317,20 +301,6 @@ class EndEmploymentControllerSpec
         .thenReturn(Future.successful(None))
       val result = endEmploymentTest.endEmploymentPage(RequestBuilder.buildFakeRequestWithAuth("GET"))
      status(result) mustBe INTERNAL_SERVER_ERROR
-    }
-
-    "redirect to GG login" when {
-      "user is not authorised" in {
-        val endEmploymentTest = createEndEmploymentTest
-        val result = endEmploymentTest.endEmploymentPage(RequestBuilder.buildFakeRequestWithoutAuth("GET"))
-        status(result) mustBe 303
-
-        val nextUrl = redirectLocation(result) match {
-          case Some(s: String) => s
-          case _ => "" + ""
-        }
-          nextUrl.contains("/gg/sign-in") mustBe true
-      }
     }
   }
 
@@ -712,19 +682,16 @@ class EndEmploymentControllerSpec
 
   val auditService = mock[AuditService]
   val employmentService = mock[EmploymentService]
-  val personService = mock[PersonService]
   val endEmploymentJourneyCacheService = mock[JourneyCacheService]
   val trackSuccessJourneyCacheService = mock[JourneyCacheService]
 
   private class EndEmploymentTest extends EndEmploymentController(
-    personService,
     auditService,
     employmentService,
+    FakeAuthAction,
+    FakeValidatePerson,
     endEmploymentJourneyCacheService,
     trackSuccessJourneyCacheService,
-    mock[DelegationConnector],
-    mock[AuthConnector],
-
     mock[AuditConnector],
     MockTemplateRenderer,
     mock[FormPartialRetriever]) {
@@ -732,10 +699,6 @@ class EndEmploymentControllerSpec
     val employmentEndDateForm = EmploymentEndDateForm("employer")
 
     def generateNino: Nino = new Generator().nextNino
-    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
 
     when(employmentService.employment(any(), any())(any()))
       .thenReturn(Future.successful(Some(Employment(employerName, None, new LocalDate(), None, Nil, "", "", 1, None, false, false))))

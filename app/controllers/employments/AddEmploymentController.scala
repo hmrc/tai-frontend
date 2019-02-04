@@ -54,7 +54,6 @@ class AddEmploymentController @Inject()(auditService: AuditService,
                                         val auditConnector: AuditConnector,
                                         override implicit val partialRetriever: FormPartialRetriever,
                                         override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with Auditable
   with JourneyCacheConstants
   with AuditConstants
   with FormValuesConstants {
