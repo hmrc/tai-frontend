@@ -16,12 +16,13 @@
 
 @import uk.gov.hmrc.tai.viewModels.income.ConfirmAmountEnteredViewModel
 @import uk.gov.hmrc.tai.util.DateHelper.toDisplayFormat
-@import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.tai.model.TaxYear
+@import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
 @(viewModel: ConfirmAmountEnteredViewModel
 )(implicit request: Request[_],
   messages: Messages,
-  user: controllers.auth.TaiUser,
+  user: controllers.auth.AuthedUser,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
 )
@@ -34,7 +35,8 @@
     gaEventAction = gaEventActionString,
     title = messages("tai.irregular.title"),
     heading = messages("tai.irregular.confirm.mainHeading", viewModel.yearRange),
-    showCancel = false
+    showCancel = false,
+    gaSettings = viewModel.gaSettings
 ){
 
     <p>@viewModel.mainText</p>
@@ -45,7 +47,7 @@
 
     <div class="margin-bottom-large">
         <p>
-            @messages("tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom", toDisplayFormat(Some(TaxYearResolver.startOfNextTaxYear)))
+            @messages("tai.updateIncome.CYPlus1.confirm.changeEffectiveFrom", toDisplayFormat(Some(TaxYear().next.start)))
         </p>
     </div>
 

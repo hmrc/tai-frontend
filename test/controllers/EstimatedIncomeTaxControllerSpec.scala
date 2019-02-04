@@ -16,20 +16,19 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder, UserBuilder}
+import builders.{AuthActionedUserBuilder, RequestBuilder, UserBuilder}
+import controllers.actions.FakeValidatePerson
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.{FormPartialRetriever, HtmlPartial}
 import uk.gov.hmrc.play.views.formatting.Money.pounds
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
@@ -37,7 +36,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.model.domain.tax._
-import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.service.{CodingComponentService, HasFormPartialService, TaxAccountService}
 import uk.gov.hmrc.tai.util.constants.{BandTypesConstants, TaxRegionConstants}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax._
 import uk.gov.hmrc.urls.Link
@@ -330,30 +329,24 @@ class EstimatedIncomeTaxControllerSpec extends PlaySpec with MockitoSugar with F
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
   implicit val templateRenderer = MockTemplateRenderer
   implicit val partialRetriever = MockPartialRetriever
-  implicit val user = UserBuilder()
+  implicit val user = AuthActionedUserBuilder()
 
   val nino: Nino = new Generator(new Random).nextNino
 
   private def createSUT = new SUT
 
-  val personService: PersonService = mock[PersonService]
   val codingComponentService = mock[CodingComponentService]
   val taxAccountService = mock[TaxAccountService]
   val partialService = mock[HasFormPartialService]
 
   class SUT extends EstimatedIncomeTaxController(
-    personService,
     codingComponentService,
     partialService,
     taxAccountService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
-  ) {
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
-  }
+  )
 
 }

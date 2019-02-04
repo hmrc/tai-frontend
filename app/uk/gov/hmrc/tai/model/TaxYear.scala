@@ -37,7 +37,12 @@ case class TaxYear(year: Int) extends Ordered[TaxYear] {
   def compare(that: TaxYear) = this.year compare that.year
   def twoDigitRange = s"${start.year.get % 100}-${end.year.get % 100}"
   def fourDigitRange = s"${start.year.get}-${end.year.get}"
+  def within(currentDate: LocalDate): Boolean = {
+    (currentDate.isEqual(start) || currentDate.isAfter(start)) &&
+      (currentDate.isBefore(end) || currentDate.isEqual(end))
+  }
 }
+
 
 object TaxYear {
   def apply(from: LocalDate = new LocalDate): TaxYear = {
@@ -96,4 +101,5 @@ object TaxYear {
     }
     override def writes(v: TaxYear): JsValue = JsNumber(v.year)
   }
+
 }

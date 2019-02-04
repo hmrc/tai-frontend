@@ -16,16 +16,15 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
@@ -97,16 +96,12 @@ class DetailedIncomeTaxEstimateControllerSpec extends PlaySpec with MockitoSugar
   class SUT extends DetailedIncomeTaxEstimateController(
     taxAccountService,
     codingComponentService,
-    personService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
 
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData)
     when(taxAccountService.totalTax(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(TotalTax(0, Seq.empty, None, None, None))))
     when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq.empty[TaxCodeIncome])))
     when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(TaxAccountSummary(0, 0, 0, 0, 0))))

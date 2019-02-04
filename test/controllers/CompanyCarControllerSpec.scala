@@ -17,6 +17,7 @@
 package controllers
 
 import builders.{AuthBuilder, RequestBuilder}
+import controllers.actions.FakeValidatePerson
 import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
@@ -24,7 +25,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
@@ -172,23 +173,17 @@ class CompanyCarControllerSpec extends PlaySpec
 
   val sessionService = mock[SessionService]
   val companyCarService = mock[CompanyCarService]
-  val personService = mock[PersonService]
   val journeyCacheService = mock[JourneyCacheService]
 
   class SUT(isCompanyCarForceRedirectEnabled: Boolean) extends CompanyCarController(
-    personService,
     companyCarService,
     journeyCacheService,
     sessionService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     MockPartialRetriever,
     MockTemplateRenderer){
     override val companyCarForceRedirectEnabled: Boolean = isCompanyCarForceRedirectEnabled
-
-    when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(fakeAuthority)))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(fakeNino)))
   }
 
   override def messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

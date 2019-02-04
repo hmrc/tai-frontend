@@ -16,22 +16,21 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.service._
@@ -69,7 +68,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   "yourTaxFreeAmount" must {
     "show 'Your tax-free amount' page with comparison" when {
       "taxFreeAmountComparison is enabled and the request has an authorised session" in {
-
         val expectedViewModel: YourTaxFreeAmountViewModel =
           YourTaxFreeAmountViewModel(
             Some(TaxFreeInfo("previousTaxDate", 0, 0)),
@@ -82,7 +80,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         val SUT = createSUT(true)
 
-        when(describedYourTaxFreeAmountService.taxFreeAmountComparison(Matchers.eq(nino))(any(), any()))
+        when(describedYourTaxFreeAmountService.taxFreeAmountComparison(Matchers.eq(FakeAuthAction.nino))(any(), any()))
           .thenReturn(Future.successful(expectedViewModel))
 
         val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -93,13 +91,13 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       }
     }
 
-    "show 'Your tax-free amount' page without comparison"when {
+    "show 'Your tax-free amount' page without comparison" when {
       "taxFreeAmountComparison is disabled and the request has a authorised session" in {
         val expectedViewModel = YourTaxFreeAmountViewModel(None, TaxFreeInfo("currentTaxDate", 0, 0), Seq.empty, Seq.empty)
 
         val SUT = createSUT(false)
 
-        when(describedYourTaxFreeAmountService.taxFreeAmount(Matchers.eq(nino))(any(), any()))
+        when(describedYourTaxFreeAmountService.taxFreeAmount(Matchers.eq(FakeAuthAction.nino))(any(), any()))
           .thenReturn(Future.successful(expectedViewModel))
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
@@ -139,8 +137,9 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val giftAmount = 1000
 
   val startDate = TaxYearResolver.startOfCurrentTaxYear
+
   val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
-  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYearResolver.endOfCurrentTaxYear)
+  val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
 
   val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
@@ -151,25 +150,17 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   private def createSUT(comparisonEnabled: Boolean = false) = new SUT(comparisonEnabled)
 
   private class SUT(comparisonEnabled: Boolean) extends TaxCodeChangeController(
-    personService,
     taxCodeChangeService,
     taxAccountService,
     describedYourTaxFreeAmountService,
-    yourTaxFreeAmountService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-
     override val taxFreeAmountComparisonEnabled: Boolean = comparisonEnabled
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
-
-    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(nino.toString())))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(taxCodeChangeService.latestTaxCodeChangeDate(nino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
   }
 }

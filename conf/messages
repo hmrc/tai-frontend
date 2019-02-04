@@ -560,7 +560,7 @@ tai.income.calculation.update.pension=You can {0} for this pension provider if i
 tai.income.calculation.update.regular=You can {0} for this employer if it’s wrong.
 tai.income.calculation.updateLink.regular=update your estimated taxable income
 tai.income.details.addMissingCompanyCar=Add a missing company car
-tai.income.details.benefit.amount.announce=- The amount of this benefit is
+tai.income.details.benefit.amount.announce=- The amount of this benefit is {0}.
 tai.income.details.benefit.name.announce=Benefit type:
 tai.income.details.checkPaymentsReceived.screenReader=Check payments received from {0}.
 tai.income.details.checkPaymentsReceived=Check payments received
@@ -634,6 +634,7 @@ tai.incomeTaxComparison.taxCodes.scottishInfo=Your tax code for next year will s
 tai.incomeTaxComparison.taxCodes.subHeading=Tax codes
 
 tai.incomeTaxComparison.taxCodes.table.employmentsReaderText=Employer name
+tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Pension name
 
 tai.incomeTaxComparison.taxFreeAmount.NA=not applicable
 tai.incomeTaxComparison.taxFreeAmount.PA.information1=The standard Personal Allowance increases to {0} from {1}.

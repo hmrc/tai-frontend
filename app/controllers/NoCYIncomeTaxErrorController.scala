@@ -17,56 +17,47 @@
 package controllers
 
 import com.google.inject.Inject
+import controllers.actions.ValidatePerson
 import controllers.audit.Auditable
-import controllers.auth.WithAuthorisedForTaiLite
+import controllers.auth.AuthAction
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.Employment
-import uk.gov.hmrc.tai.service.{EmploymentService, PersonService}
+import uk.gov.hmrc.tai.service.EmploymentService
 import uk.gov.hmrc.tai.viewModels.NoCYIncomeTaxErrorViewModel
-import uk.gov.hmrc.time.TaxYearResolver
 
 import scala.concurrent.Future
 
 
-class NoCYIncomeTaxErrorController @Inject()(personService: PersonService,
-                                             employmentService: EmploymentService,
+class NoCYIncomeTaxErrorController @Inject()(employmentService: EmploymentService,
                                              val auditConnector: AuditConnector,
-                                             val delegationConnector: DelegationConnector,
-                                             val authConnector: AuthConnector,
+                                             authenticate: AuthAction,
+                                             validatePerson: ValidatePerson,
                                              override implicit val partialRetriever: FormPartialRetriever,
-                                             override implicit val templateRenderer: TemplateRenderer) extends FrontendController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite
-  with ErrorPagesHandler
+                                             override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with Auditable {
 
-  def noCYIncomeTaxErrorPage(): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request => {
-          ServiceCheckLite.personDetailsCheck {
-            for {
-              emp <- previousYearEmployments(Nino(user.getNino))
-            } yield {
-              Ok(views.html.noCYIncomeTaxErrorPage(NoCYIncomeTaxErrorViewModel(emp)))
-            }
-          }
-        }
+  def noCYIncomeTaxErrorPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request => {
+
+      for {
+        emp <- previousYearEmployments(request.taiUser.nino)
+      } yield {
+        implicit val user = request.taiUser
+        Ok(views.html.noCYIncomeTaxErrorPage(NoCYIncomeTaxErrorViewModel(emp)))
+      }
+    }
   }
 
   private def previousYearEmployments(nino: Nino)(implicit hc: HeaderCarrier): Future[Seq[Employment]] = {
-    employmentService.employments(nino, TaxYear(TaxYearResolver.currentTaxYear - 1)) recover {
+    employmentService.employments(nino, TaxYear().prev) recover {
       case _ => Nil
     }
   }

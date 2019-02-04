@@ -29,6 +29,7 @@
   sidebarClass: Option[String] = None,
   articleClasses: Option[String] = Some("full-width"),
   user: Option[controllers.auth.TaiUser] = None,
+  authedUser: Option[controllers.auth.AuthedUser] = None,
   employerName: Option[String] = None,
   includeGridWrapper: Boolean = false,
   webChat: Boolean = false,
@@ -65,6 +66,8 @@
     user.fold(false) {
         user =>
             user.authContext.principal.accounts.sa.map(_.utr).isDefined
+    } || authedUser.fold(false) {
+        _.getUTR != ""
     }
 }
 
@@ -109,10 +112,15 @@
 
 
 @googleAnalytics = @{
+
+    def confidenceLevel: String = {
+        user.fold(authedUser.fold("false")(_.confidenceLevel))(_.authContext.user.confidenceLevel.toString)
+    }
+
     Map[String, Any](
         "trackingId" -> ApplicationConfig.analyticsToken,
         "cookieDomain" -> ApplicationConfig.analyticsHost,
-        "confidenceLevel" -> user.map(_.authContext.user.confidenceLevel.toString).getOrElse(false),
+        "confidenceLevel" -> confidenceLevel,
         "authProvider" -> authProvider
 
 
@@ -189,7 +197,7 @@
     Map[String, Any](
         "pageTitle" -> s"${title} ${serviceSuffix}",
         "linkElems" -> Map(
-            "url" -> controllers.routes.AssetsController.versioned("stylesheets/tai05102018.min.css")
+            "url" -> controllers.routes.AssetsController.versioned("stylesheets/tai28012019.min.css")
         ),
         "navTitle" -> Messages("tai.service.navTitle"),
         "hasNavLinks" -> true,

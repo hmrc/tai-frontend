@@ -16,7 +16,7 @@
 
 package builders
 
-import controllers.auth.{AuthActionedTaiUser, TaiUser}
+import controllers.auth.{AuthedUser, TaiUser}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.frontend.auth.{Attorney, AuthContext, Link}
@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.model.domain.Person
 object AuthActionedUserBuilder {
   val nino: Nino = new Generator().nextNino
   def apply(firstName: String = "Jjj", lastName: String = "Bbb", utr: String = "utr") = {
-    AuthActionedTaiUser(firstName + " " + lastName, nino.toString(), utr)  }
+    AuthedUser(firstName + " " + lastName, nino.toString(), utr, "userDetails", "200")  }
 }
 
 object UserBuilder {

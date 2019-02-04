@@ -14,23 +14,25 @@
  * limitations under the License.
  *@
 
+@import includes.ptaHeader
+@import includes.cancelLink
+@import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
+
 @(employerName: String,
   form: Option[Form[_]],
   gaEventAction: String,
   heading: String,
   title: String,
   showCancel: Boolean = true,
-  cancelText : Option[String] = None
+  cancelText : Option[String] = None,
+  gaSettings: GoogleAnalyticsSettings = GoogleAnalyticsSettings()
+
 )(content: Html
 )(implicit request: Request[_],
-  user: controllers.auth.TaiUser,
+  user: controllers.auth.AuthedUser,
   messages: Messages,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
-
-@import includes.ptaHeader
-@import includes.cancelLink
-
 @header = @{
     ptaHeader(
         formForErrorSummary = form,
@@ -44,10 +46,11 @@
 @main(
     title = title,
     articleClasses = Some(""),
-    user = Some(user),
+    authedUser = Some(user),
     pageHeader = Some(header),
     employerName = Some(employerName),
-    gaCustomTitle = None
+    gaCustomTitle = None,
+    gaSettings = gaSettings
 ){
     <div class="section flush--bottom soft--top soft--bottom">
         @content

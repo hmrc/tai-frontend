@@ -21,7 +21,7 @@ import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import views.html.helper
 
-class ApplicationConfig extends ServicesConfig {
+class ApplicationConfig extends DefaultServicesConfig {
 
   def statusRange = s"${TaxYear().prev.year}-${TaxYear().year}"
 
@@ -94,17 +94,18 @@ class ApplicationConfig extends ServicesConfig {
 
 object ApplicationConfig extends ApplicationConfig
 
-trait FeatureTogglesConfig extends ServicesConfig {
+trait FeatureTogglesConfig extends DefaultServicesConfig {
   val cyPlusOneEnabled = configuration.getBoolean("tai.cyPlusOne.enabled").getOrElse(false)
   val welshLanguageEnabled =  configuration.getBoolean("tai.feature.welshLanguage.enabled").getOrElse(false)
   val companyCarForceRedirectEnabled = configuration.getBoolean("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
-  val cyPlus1EstimatedPayEnabled = configuration.getBoolean("tai.cyPlus1EstimatedPay.enabled").getOrElse(false)
   val taxFreeAmountComparisonEnabled = configuration.getBoolean("tai.taxFreeAmountComparison.enabled").getOrElse(false)
+  val cyPlus1EstimatedPayEnabled = configuration.getBoolean("tai.cyPlus1EstimatedPay.enabled").getOrElse(false)
+
 }
 
 object FeatureTogglesConfig extends FeatureTogglesConfig
 
-trait TaiConfig extends ServicesConfig {
+trait TaiConfig extends DefaultServicesConfig {
   lazy val baseURL: String = baseUrl("tai")
 }
 

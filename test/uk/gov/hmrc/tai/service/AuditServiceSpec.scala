@@ -21,7 +21,7 @@ import org.joda.time.{DateTime, LocalDate}
 import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.Generator
@@ -493,8 +493,8 @@ class AuditServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplic
       tags = Map("clientIP" -> trueClientIp.getOrElse("-"),
         "path" -> path.getOrElse("NA"), "X-Session-ID" -> sessionId.getOrElse("-"),
         "Akamai-Reputation" -> "-", "X-Request-ID" -> requestId.getOrElse("-"),
-        "deviceID" -> deviceId.getOrElse("-"), "ipAddress" -> ipAddress.getOrElse("-"),
-        "token" -> "-", "clientPort" -> clientPort.getOrElse("-"), "Authorization" -> authorization.getOrElse("-"),
+        "deviceID" -> deviceId.getOrElse("-"),
+        "clientPort" -> clientPort.getOrElse("-"),
         "transactionName" -> auditType), detail = detail
 
     )

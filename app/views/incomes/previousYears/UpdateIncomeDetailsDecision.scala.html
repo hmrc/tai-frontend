@@ -23,7 +23,7 @@
 @import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsDecisionForm
 @import includes.forms.inputRadioGroupStyling
 
-@(decisionForm: Form[Option[String]], taxYear: TaxYear)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(decisionForm: Form[Option[String]], taxYear: TaxYear)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Update income details decision"}
 
@@ -37,7 +37,7 @@
 
 @main(
     title = messages("tai.income.previousYears.decision.title", TaxPeriodLabelService.taxPeriodLabel(taxYear.year)),
-    user = Some(user),
+    authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
     gaCustomTitle = Some(messages("tai.income.previousYears.decision.customGaTitle"))

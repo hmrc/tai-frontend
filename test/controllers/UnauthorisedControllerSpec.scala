@@ -44,4 +44,14 @@ class UnauthorisedControllerSpec extends PlaySpec with FakeTaiPlayApplication {
       title must include("Sorry, we are experiencing technical difficulties - 500")
     }
   }
+
+  "login" must {
+    "redirect to a login page" in {
+      val result = controller.login(fakeRequest)
+      val expectedUrl = "http://localhost:4444/gg/sign-in?continue=http%3A%2F%2Flocalhost%3A1111%2Fpersonal-account/do-uplift?redirectUrl=%2Fcheck-income-tax%2Fwhat-do-you-want-to-do&accountType=individual"
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe expectedUrl
+    }
+  }
 }

@@ -16,7 +16,7 @@
 
 package views.html.incomes
 
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.twirl.api.Html

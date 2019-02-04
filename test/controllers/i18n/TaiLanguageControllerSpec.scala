@@ -17,11 +17,12 @@
 package controllers.i18n
 
 import builders.{AuthBuilder, RequestBuilder}
-import controllers.FakeTaiPlayApplication
+import controllers.actions.FakeValidatePerson
+import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.test.Helpers.{status, _}
@@ -55,16 +56,6 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
       }
     }
 
-    "return a redirect to the GG sign in page" when {
-      "the requested is unauthorised" in {
-        val sut = new SUT()
-        when(sut.authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(None))
-        val result = sut.switchToLanguage("english")(RequestBuilder.buildFakeRequestWithoutAuth("GET"))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get must include("gg/sign-in")
-      }
-    }
-
     "return a header to set the PLAY_LANG cookie to the requested language code" when {
       "the requested language is supported" in {
         val result = Await.result(new SUT().switchToLanguage("english")(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
@@ -92,21 +83,14 @@ class TaiLanguageControllerSpec extends PlaySpec with FakeTaiPlayApplication wit
   }
 
   private val nino = new Generator(new Random).nextNino
-  val personService: PersonService = mock[PersonService]
 
   private class SUT(welshEnabled: Boolean = true) extends TaiLanguageController(
-    personService,
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-
     override val isWelshEnabled = welshEnabled
-
-    val authority = AuthBuilder.createFakeAuthData
-    when(authConnector.currentAuthority(any(), any())).thenReturn(authority)
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
   }
 
 }

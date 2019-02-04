@@ -19,9 +19,6 @@ package uk.gov.hmrc.tai.model.domain
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.domain.Nino
 
-class PersonDeceasedException extends Exception
-class PersonCorruptDataException extends Exception
-
 case class Person(nino: Nino,
                   firstName: String,
                   surname: String,

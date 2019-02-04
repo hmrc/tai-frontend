@@ -20,9 +20,9 @@ import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.play.views.formatting.Dates
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{Band, BandedGraph, SimpleEstimatedIncomeTaxViewModel, ZeroTaxEstimatedIncomeTaxViewModel}
-import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.{Band, BandedGraph, ZeroTaxEstimatedIncomeTaxViewModel}
 import uk.gov.hmrc.urls.Link
 
 class zeroTaxEstimatedIncomeTaxSpec extends TaiViewSpec {
@@ -30,8 +30,8 @@ class zeroTaxEstimatedIncomeTaxSpec extends TaiViewSpec {
     behave like pageWithCombinedHeader(
       messages(
         "tai.taxYear",
-        Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear).replace(" ", "\u00A0"),
-        Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear).replace(" ", "\u00A0")),
+        Dates.formatDate(TaxYear().start).replace(" ", "\u00A0"),
+        Dates.formatDate(TaxYear().end).replace(" ", "\u00A0")),
       messages("tai.estimatedIncome.title"),
       Some(messages("tai.estimatedIncome.accessiblePreHeading")
       )
@@ -53,7 +53,7 @@ class zeroTaxEstimatedIncomeTaxSpec extends TaiViewSpec {
       doc(view) must haveH2HeadingWithText(messages("tai.estimatedIncome.howYouPay.heading"))
 
       doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.whyEstimate.desc",
-        Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))).body)
+        Dates.formatDate(TaxYear().end))).body)
 
       doc(view) must haveParagraphWithText(Html(messages("tai.estimatedIncome.howYouPay.desc",
         messages("tai.estimatedIncome.taxCodes.link"))).body)
