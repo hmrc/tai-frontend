@@ -52,22 +52,10 @@ class TrackingService @Inject()(trackingConnector: TrackingConnector,
       haveAnyShortProcesses <- shortTESProcesses map (_.nonEmpty)
       successfulJournies <- successfulJourneyCacheService.currentCache
     } yield {
-      if (haveAnyShortProcesses) {
-        SevenDays
-      }
-      else if(haveAnyLongProcesses) {
-        ThreeWeeks
-      }
-      else if(successfulJournies.nonEmpty) {
-        if(isA35DayJourney(successfulJournies)) {
-          ThreeWeeks
-        }
-        else {
-          SevenDays
-        }
-      }
-      else {
-        NoTimeToProcess
+      (haveAnyShortProcesses, haveAnyLongProcesses, successfulJournies.isEmpty, isA35DayJourney(successfulJournies)) match {
+        case(true, false, _, _) | (_ , _, false, false) => SevenDays
+        case(_, true, _, _ ) | (_ , _, false, true) => ThreeWeeks
+        case _ => NoTimeToProcess
       }
     }
   }
