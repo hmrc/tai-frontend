@@ -172,6 +172,10 @@ class EndEmploymentControllerSpec
 
         val dataToCache = Map(endEmploymentTest.EndEmployment_LatestPaymentDateKey -> date.toString,
           endEmploymentTest.EndEmployment_NameKey -> "employer name")
+        val employmentId = 1
+
+        when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
 
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(dataToCache))
@@ -291,16 +295,6 @@ class EndEmploymentControllerSpec
 
       status(result) mustBe OK
       doc.title() must include(Messages("tai.endEmployment.endDateForm.title", employerName))
-    }
-
-    "throw run time exception when endEmploymentPage call fails" in {
-      val endEmploymentTest = createEndEmploymentTest
-      when(endEmploymentJourneyCacheService.currentValueAsDate(any())(any()))
-        .thenReturn(Future.successful(None))
-      when(employmentService.employment(any(), any())(any()))
-        .thenReturn(Future.successful(None))
-      val result = endEmploymentTest.endEmploymentPage(RequestBuilder.buildFakeRequestWithAuth("GET"))
-     status(result) mustBe INTERNAL_SERVER_ERROR
     }
   }
 
