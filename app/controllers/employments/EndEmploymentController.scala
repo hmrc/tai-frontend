@@ -303,7 +303,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
                 EndEmployment_TelephoneQuestionKey), Seq(EndEmployment_TelephoneNumberKey))
               model = EndEmployment(LocalDate.parse(mandatoryCacheSeq(1)),mandatoryCacheSeq(2),optionalCacheSeq(0))
               _ <- employmentService.endEmployment(nino, mandatoryCacheSeq(0).toInt, model)
-              _ <- successfulJourneyCacheService.cache(Map(s"EndEmploymentID-${mandatoryCacheSeq.head}" -> "true"))
+              _ <- successfulJourneyCacheService.cache(Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-${mandatoryCacheSeq.head}" -> "true"))
               _ <- journeyCacheService.flush
             } yield Redirect(routes.EndEmploymentController.showConfirmationPage())
           }
@@ -319,7 +319,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
               case Some(employment) => {
                 val journeyCacheFuture = journeyCacheService.
                   cache(Map(EndEmployment_EmploymentIdKey -> empId.toString, EndEmployment_NameKey -> employment.name))
-                val successfullJourneyCacheFuture = successfulJourneyCacheService.currentValue(s"EndEmploymentID-${empId}")
+                val successfullJourneyCacheFuture = successfulJourneyCacheService.currentValue(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-${empId}")
                 for {
                   _ <- journeyCacheFuture
                   successfulJourneyCache <- successfullJourneyCacheFuture

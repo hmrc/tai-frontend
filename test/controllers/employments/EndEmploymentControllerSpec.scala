@@ -279,7 +279,7 @@ class EndEmploymentControllerSpec
       val employmentId = "0"
       val dataFromCache = (Seq(employmentId, new LocalDate(2017, 2, 1).toString,
         "Yes"), Seq(Some("EXT-TEST")))
-      val cacheMap = Map(s"EndEmploymentID-${employmentId}" -> "true")
+      val cacheMap = Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-${employmentId}" -> "true")
 
         when(endEmploymentJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(dataFromCache))
       when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
@@ -431,13 +431,14 @@ class EndEmploymentControllerSpec
 
       "submit the details to backend" in {
         val endEmploymentTest = createEndEmploymentTest
-        val dataFromCache = (Seq("0", new LocalDate(2017, 2, 1).toString,
+        val empId = 0
+        val dataFromCache = (Seq(empId.toString, new LocalDate(2017, 2, 1).toString,
           "Yes"), Seq(Some("EXT-TEST")))
 
         when(endEmploymentJourneyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(dataFromCache))
         when(employmentService.endEmployment(any(), any(), any())(any())).thenReturn(Future.successful("123-456-789"))
-        when(trackSuccessJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_EndEmploymentKey), Matchers.eq("true"))(any())).
-          thenReturn(Future.successful(Map(TrackSuccessfulJourney_EndEmploymentKey -> "true")))
+        when(trackSuccessJourneyCacheService.cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId"), Matchers.eq("true"))(any())).
+          thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId" -> "true")))
         when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
         val result = endEmploymentTest.confirmAndSendEndEmployment()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -608,7 +609,7 @@ class EndEmploymentControllerSpec
       val endEmploymentTest = createEndEmploymentTest
       val cacheMap = Map(EndEmployment_EmploymentIdKey -> employmentId.toString, EndEmployment_NameKey -> employerName)
       when(endEmploymentJourneyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
-      when(trackSuccessJourneyCacheService.currentValue(Matchers.eq(s"EndEmploymentID-$employmentId"))(any())).
+      when(trackSuccessJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$employmentId"))(any())).
         thenReturn(Future.successful(None))
 
       val result = endEmploymentTest.redirectUpdateEmployment(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -621,7 +622,7 @@ class EndEmploymentControllerSpec
       val endEmploymentTest = createEndEmploymentTest
       val cacheMap = Map(EndEmployment_EmploymentIdKey -> employmentId.toString, EndEmployment_NameKey -> employerName)
       when(endEmploymentJourneyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
-      when(trackSuccessJourneyCacheService.currentValue(Matchers.eq(s"EndEmploymentID-$employmentId"))(any())).thenReturn(Future.successful(Some("true")))
+      when(trackSuccessJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$employmentId"))(any())).thenReturn(Future.successful(Some("true")))
 
       val result = endEmploymentTest.redirectUpdateEmployment(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
