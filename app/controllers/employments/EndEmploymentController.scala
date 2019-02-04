@@ -79,7 +79,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
       case _ => Valid
     })
 
-  def employmentUpdateRemove(): Action[AnyContent] = authorisedForTai(personService).async {
+  def employmentUpdateRemove: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -90,7 +90,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-  def handleEmploymentUpdateRemove(): Action[AnyContent] = authorisedForTai(personService).async {
+  def handleEmploymentUpdateRemove: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -135,7 +135,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-  def endEmploymentError(): Action[AnyContent] = authorisedForTai(personService).async {
+  def endEmploymentError: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -148,7 +148,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
 
   }
 
-  def irregularPaymentError(): Action[AnyContent] = authorisedForTai(personService).async {
+  def irregularPaymentError: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -162,7 +162,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
   }
 
 
-  def handleIrregularPaymentError(): Action[AnyContent] = authorisedForTai(personService).async {
+  def handleIrregularPaymentError: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -186,7 +186,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-  def endEmploymentPage(): Action[AnyContent] = authorisedForTai(personService).async {
+  def endEmploymentPage: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -337,7 +337,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-  def duplicateSubmissionWarning(): Action[AnyContent] = authorisedForTai(personService).async {
+  def duplicateSubmissionWarning: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -348,7 +348,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-  def submitDuplicateSubmissionWarning(): Action[AnyContent] = authorisedForTai(personService).async {
+  def submitDuplicateSubmissionWarning: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
@@ -372,7 +372,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
           }
   }
 
-  def showConfirmationPage(): Action[AnyContent] = authorisedForTai(personService).async {
+  def showConfirmationPage: Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request => Future.successful(Ok(views.html.employments.confirmation()))

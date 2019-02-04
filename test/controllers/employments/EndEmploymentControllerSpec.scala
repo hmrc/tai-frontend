@@ -222,7 +222,7 @@ class EndEmploymentControllerSpec
         val result = endEmploymentTest.handleEmploymentUpdateRemove(request)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.irregularPaymentError(1).url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.irregularPaymentError.url
         }
     }
 
@@ -262,10 +262,12 @@ class EndEmploymentControllerSpec
 
     "show the irregular payment error page" in {
       val endEmploymentTest = createEndEmploymentTest
+      val employmentId = 1
 
-      when(endEmploymentJourneyCacheService.mandatoryValue(any())(any())).thenReturn(Future.successful("Employer Name"))
+      when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
 
-      val result = endEmploymentTest.irregularPaymentError(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = endEmploymentTest.irregularPaymentError(RequestBuilder.buildFakeRequestWithAuth("GET"))
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
@@ -295,35 +297,16 @@ class EndEmploymentControllerSpec
   "tellUsAboutEmploymentPage" must {
     "call tellUsAboutEmploymentPage() successfully with an authorised session" in {
       val endEmploymentTest = createEndEmploymentTest
-      val result = endEmploymentTest.endEmploymentPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val employmentId = 1
+
+      when(endEmploymentJourneyCacheService.collectedValues(Matchers.anyVararg[Seq[String]], any())(any()))
+        .thenReturn(Future.successful(Seq(employerName, employmentId.toString), Seq()))
+
+      val result = endEmploymentTest.endEmploymentPage(RequestBuilder.buildFakeRequestWithAuth("GET"))
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
       doc.title() must include(Messages("tai.endEmployment.endDateForm.title", employerName))
-    }
-
-    "call the Employment service to get the correct employment details" in {
-      val endEmploymentTest = createEndEmploymentTest
-      Await.result(endEmploymentTest.endEmploymentPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
-      verify(employmentService, times(1)).employment(any(), any())(any())
-      verify(endEmploymentJourneyCacheService, times(1)).currentValueAsDate(any())(any())
-    }
-    "call the Employment service to get the correct employment details and some cached date" in {
-      val endEmploymentTest = createEndEmploymentTest
-      when(endEmploymentJourneyCacheService.currentValueAsDate(any())(any())).thenReturn(Future.successful(Some(new LocalDate("2017-9-9"))))
-      when(employmentService.employment(any(), any())(any()))
-        .thenReturn(Future.successful(Some(Employment(employerName, None, new LocalDate(), None, Nil, "", "", 1, None, false, false))))
-      val result = endEmploymentTest.endEmploymentPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-      status(result) mustBe OK
-    }
-    "call the Employment service to get the correct employment details and no date"in{
-      val endEmploymentTest = createEndEmploymentTest
-      when(endEmploymentJourneyCacheService.currentValueAsDate(any())(any()))
-        .thenReturn(Future.successful(None))
-      when(employmentService.employment(any(), any())(any()))
-        .thenReturn(Future.successful(Some(Employment(employerName, None, new LocalDate(), None, Nil, "", "", 1, None, false, false))))
-      val result = endEmploymentTest.endEmploymentPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-      status(result) mustBe OK
     }
 
     "throw run time exception when endEmploymentPage call fails" in {
@@ -332,14 +315,14 @@ class EndEmploymentControllerSpec
         .thenReturn(Future.successful(None))
       when(employmentService.employment(any(), any())(any()))
         .thenReturn(Future.successful(None))
-      val result = endEmploymentTest.endEmploymentPage(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = endEmploymentTest.endEmploymentPage(RequestBuilder.buildFakeRequestWithAuth("GET"))
      status(result) mustBe INTERNAL_SERVER_ERROR
     }
 
     "redirect to GG login" when {
       "user is not authorised" in {
         val endEmploymentTest = createEndEmploymentTest
-        val result = endEmploymentTest.endEmploymentPage(1)(RequestBuilder.buildFakeRequestWithoutAuth("GET"))
+        val result = endEmploymentTest.endEmploymentPage(RequestBuilder.buildFakeRequestWithoutAuth("GET"))
         status(result) mustBe 303
 
         val nextUrl = redirectLocation(result) match {
@@ -577,9 +560,12 @@ class EndEmploymentControllerSpec
     "return bad request" when {
       "there are errors in form" in {
         val endEmploymentTest = createEndEmploymentTest
-        when(endEmploymentJourneyCacheService.mandatoryValue(Matchers.eq(EndEmployment_NameKey))(any())).thenReturn(Future.successful("Employer"))
+        val employmentId = 1
 
-        val result = endEmploymentTest.handleIrregularPaymentError(1)(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody())
+        when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
+
+        val result = endEmploymentTest.handleIrregularPaymentError(RequestBuilder.buildFakeRequestWithAuth("POST").withFormUrlEncodedBody())
 
         status(result) mustBe BAD_REQUEST
       }
@@ -588,8 +574,12 @@ class EndEmploymentControllerSpec
     "redirect to income summary view" when {
       "user selected an option to contact the employer" in {
         val endEmploymentTest = createEndEmploymentTest
+        val employmentId = 1
 
-        val result = endEmploymentTest.handleIrregularPaymentError(1)(RequestBuilder.
+        when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
+
+        val result = endEmploymentTest.handleIrregularPaymentError(RequestBuilder.
           buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(IrregularPayDecision -> ContactEmployer))
 
         status(result) mustBe SEE_OTHER
@@ -600,12 +590,16 @@ class EndEmploymentControllerSpec
     "redirect to end employment journey" when {
       "user selected an option to update the details" in {
         val endEmploymentTest = createEndEmploymentTest
+        val employmentId = 1
 
-        val result = endEmploymentTest.handleIrregularPaymentError(1)(RequestBuilder.
+        when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
+        
+        val result = endEmploymentTest.handleIrregularPaymentError(RequestBuilder.
           buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(IrregularPayDecision -> UpdateDetails))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.endEmploymentPage(1).url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.endEmploymentPage.url
       }
     }
   }
