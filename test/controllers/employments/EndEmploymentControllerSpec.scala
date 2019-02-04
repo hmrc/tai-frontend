@@ -395,9 +395,7 @@ class EndEmploymentControllerSpec
 
     "save data into journey cache" in {
       val endEmploymentTest = createEndEmploymentTest
-      val dataToCache = Map(EndEmployment_EmploymentIdKey -> "0",
-        EndEmployment_NameKey -> employerName,
-        EndEmployment_EndDateKey -> new LocalDate(2017, 2, 1).toString)
+      val dataToCache = Map(EndEmployment_EndDateKey -> new LocalDate(2017, 2, 1).toString)
 
       when(endEmploymentJourneyCacheService.cache(any())(any())).thenReturn(Future.successful(dataToCache))
 
@@ -594,7 +592,7 @@ class EndEmploymentControllerSpec
 
         when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
-        
+
         val result = endEmploymentTest.handleIrregularPaymentError(RequestBuilder.
           buildFakeRequestWithAuth("POST").withFormUrlEncodedBody(IrregularPayDecision -> UpdateDetails))
 

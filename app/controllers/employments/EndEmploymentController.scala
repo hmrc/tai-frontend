@@ -218,9 +218,7 @@ class EndEmploymentController @Inject()(personService: PersonService,
                     Future.successful(BadRequest(views.html.employments.endEmployment(formWithErrors, EmploymentViewModel(employment.name, employmentId))))
                   },
                   date => {
-                    val employmentJourneyCacheData = Map(EndEmployment_EmploymentIdKey -> employmentId.toString,
-                      EndEmployment_NameKey -> employment.name,
-                      EndEmployment_EndDateKey -> date.toString)
+                    val employmentJourneyCacheData = Map(EndEmployment_EndDateKey -> date.toString)
                     journeyCacheService.cache(employmentJourneyCacheData) map { _ =>
                       Redirect(controllers.employments.routes.EndEmploymentController.addTelephoneNumber())
                     }
