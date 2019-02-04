@@ -186,6 +186,8 @@ GET         /update-income/select-taxable-pay                                   
 GET         /update-income/edit-taxable-pay                                            @controllers.IncomeController.regularIncome
 POST        /update-income/edit-taxable-pay                                            @controllers.IncomeController.editRegularIncome
 
+GET         /update-income/same-amount                                                  @controllers.IncomeController.sameAmount
+
 
 ## Pension Income URIs
 GET         /update-income/edit-pension                                                @controllers.IncomeController.pensionIncome
