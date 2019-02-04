@@ -266,7 +266,8 @@ GET         /tax-code-change/what-happens-next                                  
 
 ## Auth error page
 GET         /unauthorised                                                              @controllers.UnauthorisedController.onPageLoad
-GET         /unauthorised/login                                                        @controllers.UnauthorisedController.login
+GET         /unauthorised/login-gg                                                     @controllers.UnauthorisedController.loginGG
+GET         /unauthorised/login-verify                                                 @controllers.UnauthorisedController.loginVerify
 
 
 ### Update Income CY + 1
