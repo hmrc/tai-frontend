@@ -52,7 +52,7 @@ class TrackingService @Inject()(trackingConnector: TrackingConnector,
       haveAnyShortProcesses <- shortTESProcesses map (_.nonEmpty)
       successfulJournies <- successfulJourneyCacheService.currentCache
     } yield {
-      (haveAnyShortProcesses, haveAnyLongProcesses, successfulJournies.isEmpty, isA35DayJourney(successfulJournies)) match {
+      (haveAnyShortProcesses, haveAnyLongProcesses, successfulJournies.isEmpty, isA3WeeksJourney(successfulJournies)) match {
         case(true, false, _, _) | (_ , _, false, false) => SevenDays
         case(_, true, _, _ ) | (_ , _, false, true) => ThreeWeeks
         case _ => NoTimeToProcess
@@ -60,7 +60,7 @@ class TrackingService @Inject()(trackingConnector: TrackingConnector,
     }
   }
 
-  private def isA35DayJourney(journies: Map[String, String]): Boolean = {
+  private def isA3WeeksJourney(journies: Map[String, String]): Boolean = {
     journies exists { _ == TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true" }
   }
 
