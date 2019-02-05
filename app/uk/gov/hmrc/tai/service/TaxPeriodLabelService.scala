@@ -18,15 +18,16 @@ package uk.gov.hmrc.tai.service
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.HtmlFormatter
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 
 object TaxPeriodLabelService {
 
   def taxPeriodLabel(year: Int)(implicit messages: Messages) : String = {
-    HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfTaxYear(year))) + " " + messages("language.to") + " " +
-      HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfTaxYear( year + 1).minusDays(1)))
+    s"${HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear(year).start))} ${messages("language.to")} " +
+      s"${HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear(year).end))}"
   }
 
 }

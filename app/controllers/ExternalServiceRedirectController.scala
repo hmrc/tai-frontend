@@ -17,35 +17,33 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.auth.WithAuthorisedForTaiLite
+import controllers.actions.ValidatePerson
+import controllers.auth.AuthAction
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
-import uk.gov.hmrc.tai.service.{AuditService, PersonService, SessionService}
+import uk.gov.hmrc.tai.service.{AuditService, SessionService}
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 
 class ExternalServiceRedirectController @Inject()(sessionService: SessionService,
-                                                  personService: PersonService,
                                                   auditService: AuditService,
-                                                  val delegationConnector: DelegationConnector,
-                                                  val authConnector: AuthConnector,
+                                                  authenticate: AuthAction,
+                                                  validatePerson: ValidatePerson,
                                                   override implicit val partialRetriever: FormPartialRetriever,
-                                                  override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
-  with DelegationAwareActions
-  with WithAuthorisedForTaiLite {
+                                                  override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
 
-  def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request => {
-          ServiceCheckLite.personDetailsCheck {
-            for {
-              redirectUri <- auditService.sendAuditEventAndGetRedirectUri(Nino(user.getNino), serviceAndIFormName)
-              _ <- sessionService.invalidateCache()
-            } yield Redirect(redirectUri)
-          }
-        }
+  def auditInvalidateCacheAndRedirectService(serviceAndIFormName: String): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request => {
+
+      (for {
+        redirectUri <- auditService.sendAuditEventAndGetRedirectUri(request.taiUser.nino, serviceAndIFormName)
+        _ <- sessionService.invalidateCache()
+      } yield {
+        Redirect(redirectUri)
+      }) recover {
+        case _ => internalServerError("Unable to audit and redirect")
+      }
+    }
   }
 }

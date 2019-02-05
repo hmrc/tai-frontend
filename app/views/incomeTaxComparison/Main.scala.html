@@ -15,14 +15,14 @@
  *@
 
 @import includes.ptaHeader
-@import uk.gov.hmrc.time.TaxYearResolver
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import incomeTaxComparison._
 @import uk.gov.hmrc.tai.config.{ApplicationConfig, TaiHtmlPartialRetriever}
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{IncomeTaxComparisonViewModel, EstimatedIncomeTaxComparisonViewModel}
+@import uk.gov.hmrc.tai.model.TaxYear
 
-@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, estimatedPayEnabled: Boolean)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
+@(incomeTaxComparisonViewModel: IncomeTaxComparisonViewModel, estimatedPayEnabled: Boolean)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever = TaiHtmlPartialRetriever)
 @gaEventActionString = @{"Income Tax comparison - current and next tax years"}
 @backLinkToChooseTaxYear = {
     <p class="flush--bottom">
@@ -49,7 +49,7 @@
 @main(title = messages("tai.incomeTaxComparison.heading"),
     gaCustomTitle = Some(messages("tai.incomeTaxComparison.heading")),
     pageHeader = Some(header),
-    user = Some(user)) {
+    authedUser = Some(user)) {
 
     <div class="grid-row">
         <div class="column-two-thirds">
@@ -74,11 +74,11 @@
 
 
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text")</p>
-                <p>@messages("tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text",s"${Dates.formatDate(TaxYearResolver.startOfNextTaxYear)}")</p>
+                <p>@messages("tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text",s"${Dates.formatDate(TaxYear().next.start)}")</p>
                 <p>@messages("tai.incomeTaxComparison.whatHappensNext.calculationMayChange.text")</p>
 
                 <h3 class="heading-medium">@messages("tai.incomeTaxComparison.whatHappensNext.ifInformationWrongOrIncomplete.heading")</h3>
-                <p>@messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description",s"${Dates.formatDate(TaxYearResolver.startOfNextTaxYear)}")</p>
+                <p>@messages("tai.incomeTaxComparison.whatHappensNext.tellAboutChange.description",s"${Dates.formatDate(TaxYear().next.start)}")</p>
 
 
                 <ul class="list list-bullet margin-bottom-large">

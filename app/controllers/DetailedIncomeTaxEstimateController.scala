@@ -23,7 +23,7 @@ import play.Logger
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
@@ -34,6 +34,8 @@ import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service.{CodingComponentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.estimatedIncomeTax.DetailedIncomeTaxEstimateViewModel
 
+import scala.util.control.NonFatal
+
 class DetailedIncomeTaxEstimateController @Inject()(taxAccountService: TaxAccountService,
                                                     codingComponentService: CodingComponentService,
                                                     authenticate: AuthAction,
@@ -41,7 +43,7 @@ class DetailedIncomeTaxEstimateController @Inject()(taxAccountService: TaxAccoun
                                                     override implicit val partialRetriever: FormPartialRetriever,
                                                     override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
 
-  def taxExplanationPage(): Action[AnyContent] = authenticate.async {
+  def taxExplanationPage(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
 
       val nino = request.taiUser.nino
@@ -69,16 +71,11 @@ class DetailedIncomeTaxEstimateController @Inject()(taxAccountService: TaxAccoun
             val model = DetailedIncomeTaxEstimateViewModel(totalTax, taxCodeIncomes, taxAccountSummary, codingComponents, nonTaxCodeIncome)
             Ok(views.html.estimatedIncomeTax.detailedIncomeTaxEstimate(model))
           case _ => {
-            handleError
+            internalServerError("Failed to fetch total tax details")
           }
         }
       }).recover {
-        case _ => handleError
+        case NonFatal(e) => internalServerError("Failed to fetch total tax details", Some(e))
       }
-  }
-
-  private def handleError(implicit request: Request[_]) = {
-    Logger.warn("Failed to fetch total tax details")
-    InternalServerError(error5xx(Messages("tai.technical.error.message")))
   }
 }

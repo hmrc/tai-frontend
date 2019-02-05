@@ -19,6 +19,7 @@ package views.html.benefits
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.benefits.CompanyBenefitTotalValueForm
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.benefit.BenefitViewModel
 
@@ -52,7 +53,7 @@ class RemoveBenefitTotalValuePageSpec extends TaiViewSpec {
     }
     "contain summary with text and a hidden text" in {
       doc must haveSummaryWithText(Messages("tai.remove.company.benefit.total.value.whatHappens.link"))
-      doc must haveSpanWithText(Messages("tai.remove.company.benefit.total.value.whatHappens.desc", uk.gov.hmrc.time.TaxYearResolver.startOfCurrentTaxYear.toString("yyyy"),uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("yyyy"), uk.gov.hmrc.time.TaxYearResolver.endOfCurrentTaxYear.toString("d MMMM yyyy")))
+      doc must haveSpanWithText(Messages("tai.remove.company.benefit.total.value.whatHappens.desc", TaxYear().start.toString("yyyy"),TaxYear().end.toString("yyyy"), TaxYear().end.toString("d MMMM yyyy")))
     }
     "contain an input field with pound symbol appended" in {
       doc must haveElementAtPathWithId("input", "totalValue")

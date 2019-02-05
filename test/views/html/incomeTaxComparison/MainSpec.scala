@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.util.{DateHelper, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel, IncomeTaxComparisonViewModel}
 import uk.gov.hmrc.tai.viewModels.{IncomeSourceComparisonViewModel, IncomeSourceViewModel, TaxCodeComparisonViewModel, TaxFreeAmountComparisonViewModel}
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 class MainSpec extends TaiViewSpec {
   "Cy plus one view" must {
@@ -110,7 +110,7 @@ class MainSpec extends TaiViewSpec {
   }
 
   private lazy val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(), 100)
-  private lazy val startOfNextTaxYear = Dates.formatDate(TaxYearResolver.startOfNextTaxYear)
+  private lazy val startOfNextTaxYear = Dates.formatDate(TaxYear().next.start)
   private lazy val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next, 200)
   private lazy val estimatedIncomeTaxComparisonViewModel = EstimatedIncomeTaxComparisonViewModel(Seq(currentYearItem, nextYearItem))
 

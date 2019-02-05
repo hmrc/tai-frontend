@@ -19,10 +19,10 @@
 @import includes.{ptaHeader, cancelLink}
 @import uk.gov.hmrc.tai.forms.benefits.UpdateOrRemoveCompanyBenefitDecisionForm
 @import includes.forms.{inputRadioGroupStyling, submit}
-@import uk.gov.hmrc.time.TaxYearResolver
+
 @import uk.gov.hmrc.tai.viewModels.benefit.CompanyBenefitDecisionViewModel
 
-@(viewModel: CompanyBenefitDecisionViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(viewModel: CompanyBenefitDecisionViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Update Or Remove Company Benefit Decision"}
 
@@ -37,7 +37,7 @@ preHeadingText = Messages("tai.benefits.updateOrRemove.journey.preHeader"))
 
 @main(
 title = Messages("tai.benefits.updateOrRemove.decision.heading",viewModel.benefitName,viewModel.employerName),
-user = Some(user),
+authedUser = Some(user),
 pageHeader = Some(header),
 articleClasses = None,
 gaCustomTitle = Some(Messages("tai.benefits.updateOrRemove.decision.customGaTitle"))){

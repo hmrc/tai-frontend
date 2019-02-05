@@ -17,19 +17,18 @@
 @import uk.gov.hmrc.urls.Link
 @import includes.confirmation_summary
 
-@()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@import views.html.includes.confirmationSuccessBanner
+@()(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
     title = Messages("tai.pensionConfirmation.heading"),
-    user = Some(user),
+    authedUser = Some(user),
     articleClasses = None,
     gaCustomTitle = None) {
 
-    <div class="transaction-banner--complete subsection">
-        <h1 class="transaction-banner__heading">@Messages("tai.pensionConfirmation.heading")</h1>
-    </div>
+    @confirmationSuccessBanner()
 
-    @confirmation_summary()
+    @confirmation_summary("tai.confirmation.paraTwo")
 
     @Link.toInternalPage(
         id=Some("returnToSummary"),

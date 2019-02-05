@@ -33,6 +33,7 @@ class UserDetailsConnector @Inject()(val http: WSHttp) {
     http.GET[UserDetails](userDetailsUri)
   }
 
+  // TODO delete this post auth update
   def userDetails(authContext: AuthContext)(implicit hc: HeaderCarrier): Future[UserDetails] = {
     authContext.userDetailsUri match {
       case Some(ud: String) =>

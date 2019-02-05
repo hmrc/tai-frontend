@@ -17,14 +17,15 @@
 package controllers.pensions
 
 import builders.{AuthBuilder, RequestBuilder}
-import controllers.FakeTaiPlayApplication
+import controllers.actions.FakeValidatePerson
+import controllers.{FakeAuthAction, FakeTaiPlayApplication}
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.{any, eq => mockEq}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{contentAsString, _}
@@ -430,7 +431,6 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
   val pensionName = "TEST"
 
   val pensionProviderService = mock[PensionProviderService]
-  val personService = mock[PersonService]
   val taxAccountService = mock[TaxAccountService]
   val journeyCacheService = mock[JourneyCacheService]
   val successfulJourneyCacheService = mock[JourneyCacheService]
@@ -439,18 +439,11 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     taxAccountService,
     pensionProviderService,
     mock[AuditService],
-    personService,
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     journeyCacheService,
     successfulJourneyCacheService,
     mock[FormPartialRetriever],
     MockTemplateRenderer
-  ) {
-
-    val ad: Future[Some[Authority]] = Future.successful(Some(AuthBuilder.createFakeAuthority(generateNino.nino)))
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(generateNino)))
-  }
-
+  )
 }

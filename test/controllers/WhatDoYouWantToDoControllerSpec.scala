@@ -16,24 +16,22 @@
 
 package controllers
 
-
-import builders.{AuthBuilder, RequestBuilder}
+import controllers.actions.FakeValidatePerson
+import builders.RequestBuilder
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{contentAsString, status, _}
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.{controllers, _}
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
-import uk.gov.hmrc.play.frontend.auth.connectors.domain._
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiNotFoundResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -42,7 +40,6 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.JsoupMatchers
-import uk.gov.hmrc.time.TaxYearResolver
 import utils.factories.TaxCodeMismatchFactory
 
 import scala.concurrent.duration._
@@ -72,7 +69,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
         val controller = createTestController(isCyPlusOneEnabled = true)
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
-        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
@@ -89,7 +85,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
         val testController = createTestController(isCyPlusOneEnabled = true)
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
-        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
@@ -107,7 +102,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
         val testController = createTestController(isCyPlusOneEnabled = true)
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
-        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
@@ -126,7 +120,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
         val testController = createTestController(isCyPlusOneEnabled = false)
 
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeChanged))
-        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
@@ -139,78 +132,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
         doc.title() must include(Messages("your.paye.income.tax.overview"))
         doc.body().toString must include(Messages("check.tax.hasChanged.header"))
         doc.select(".card").size mustBe 3
-      }
-    }
-
-    "redirect to GG login" when {
-      "user is not authorised" in {
-        val testController = createTestController()
-
-        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithoutAuth("GET"))
-        status(result) mustBe SEE_OTHER
-
-        val nextUrl = redirectLocation(result) match {
-          case Some(s: String) => s
-          case _ => "" + ""
-        }
-        nextUrl.contains("/gg/sign-in") mustBe true
-      }
-    }
-
-    "redirect to mci page" when {
-      "mci indicator is true" in {
-        val person = fakePerson(nino).copy(hasCorruptData = true)
-        val testController = createTestController()
-        when(personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(person))
-        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe SEE_OTHER
-        val redirectUrl = redirectLocation(result) match {
-          case Some(s: String) => s
-          case _ => ""
-        }
-
-        redirectUrl mustBe "/check-income-tax/tax-estimate-unavailable"
-      }
-    }
-
-    "redirect to deceased page" when {
-
-      "a deceased response is returned from nps tax account call" in {
-        val testController = createTestController()
-
-        when(taxAccountService.taxAccountSummary(any(), any())(any()))
-          .thenReturn(Future.successful(TaiTaxAccountFailureResponse(TaiConstants.NpsTaxAccountDeceasedMsg)))
-
-        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).getOrElse("") mustBe "/check-income-tax/deceased"
-      }
-
-      "the deceased indicator is set on the retrieved Person" in {
-        val person = fakePerson(nino).copy(isDeceased = true)
-        val testController = createTestController()
-        when(personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(person))
-        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-
-        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).getOrElse("") mustBe "/check-income-tax/deceased"
-      }
-
-      "the deceased AND mci indicators are set on the retrived Person" in {
-        val person = fakePerson(nino).copy(isDeceased = true, hasCorruptData = true)
-        val testController = createTestController()
-        when(personService.personDetails(any())(any()))
-          .thenReturn(Future.successful(person))
-        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
-
-        val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).getOrElse("") mustBe "/check-income-tax/deceased"
       }
     }
 
@@ -330,7 +251,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
           .thenReturn(Future.successful(fakeEmploymentData))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
-        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
@@ -354,7 +274,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
           .thenReturn(Future.successful(fakeEmploymentData))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
-        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary))
         )
@@ -369,7 +288,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
       "cy plus one data is not available and cy plus one is enabled" in {
         val testController = createTestController(isCyPlusOneEnabled = true)
 
-        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(
           TaiNotFoundResponse("Not found")
         ))
@@ -386,9 +304,7 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
       "cy plus one data is available and cy plus one is disabled" in {
         val testController = createTestController(isCyPlusOneEnabled = false)
 
-        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
-
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         val doc = Jsoup.parse(contentAsString(result))
@@ -401,7 +317,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
       "cy plus one data is not available and cy plus one is disabled" in {
         val testController = createTestController(isCyPlusOneEnabled = false)
 
-        when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
         when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
 
         val result = testController.whatDoYouWantToDoPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -418,7 +333,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
     "landed to the page and get TaiSuccessResponseWithPayload" in {
       val testController = createTestController()
 
-      when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
       when(taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](Seq.empty[TaxCodeIncome])))
       when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
@@ -432,7 +346,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
     "landed to the page and get TaiSuccessResponse" in {
       val testController = createTestController()
 
-      when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
       when(taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.successful(TaiSuccessResponse))
       when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
@@ -448,7 +361,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
       val testController = createTestController()
       val hasTaxCodeChanged = HasTaxCodeChanged(false, Some(TaxCodeMismatchFactory.matchedTaxCode))
 
-      when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(false))
       when(taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.failed(new BadRequestException("bad request")))
       when(taxCodeChangeService.hasTaxCodeChanged(any())(any())).thenReturn(Future.successful(taxCodeNotChanged))
@@ -481,9 +393,9 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
   }
 
   private val fakeEmploymentData = Seq(Employment("TEST", Some("12345"), LocalDate.now(), None,
-    List(AnnualAccount("", TaxYear(TaxYearResolver.currentTaxYear), Available, Nil, Nil)), "", "", 2, None, false, false),
+    List(AnnualAccount("", TaxYear(), Available, Nil, Nil)), "", "", 2, None, false, false),
     Employment("TEST1", Some("123456"), LocalDate.now(), None,
-      List(AnnualAccount("", TaxYear(TaxYearResolver.currentTaxYear), Unavailable, Nil, Nil)), "", "", 2, None, false, false))
+      List(AnnualAccount("", TaxYear(), Unavailable, Nil, Nil)), "", "", 2, None, false, false))
 
   private val nino = new Generator(new Random).nextNino
   private val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
@@ -492,7 +404,6 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
 
   private def createTestController(isCyPlusOneEnabled: Boolean = true) = new WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled)
 
-  val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val trackingService = mock[TrackingService]
   val auditService = mock[AuditService]
@@ -500,31 +411,26 @@ class WhatDoYouWantToDoControllerSpec extends PlaySpec
   val taxAccountService = mock[TaxAccountService]
 
   class WhatDoYouWantToDoControllerTest(isCyPlusOneEnabled: Boolean = true) extends WhatDoYouWantToDoController(
-    personService,
     employmentService,
     taxCodeChangeService,
     taxAccountService,
     trackingService,
-    auditService,
     mock[AuditConnector],
-    mock[AuthConnector],
-    mock[DelegationConnector],
+    auditService,
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
 
     override val cyPlusOneEnabled: Boolean = isCyPlusOneEnabled
 
-    val ad: Future[Some[Authority]] = AuthBuilder.createFakeAuthData
-    when(authConnector.currentAuthority(any(), any())).thenReturn(ad)
-
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(fakeEmploymentData))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(auditService.sendUserEntryAuditEvent(any(), any(), any(), any())(any())).thenReturn(Future.successful(AuditResult.Success))
+    when(trackingService.isAnyIFormInProgress(any())(any())).thenReturn(Future.successful(NoTimeToProcess))
 
     when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-      Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary))
-    )
+      Future.successful(TaiSuccessResponseWithPayload(taxAccountSummary)))
   }
 
 }

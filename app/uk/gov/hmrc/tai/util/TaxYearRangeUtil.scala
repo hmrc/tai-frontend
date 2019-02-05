@@ -20,7 +20,7 @@ import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.time.TaxYearResolver
+
 
 object TaxYearRangeUtil {
 
@@ -32,19 +32,19 @@ object TaxYearRangeUtil {
   }
 
   def currentTaxYearRange(implicit messages: Messages): String = {
-    dateRange(messageRangeKeyFromAndTo, TaxYearResolver.startOfCurrentTaxYear, TaxYearResolver.endOfCurrentTaxYear)
+    dateRange(messageRangeKeyFromAndTo, TaxYear().start, TaxYear().end)
   }
 
   def currentTaxYearRangeSingleLine(implicit messages: Messages): String = {
-    dateRangeSingleLine(messageRangeKeyFromAndTo, TaxYearResolver.startOfCurrentTaxYear, TaxYearResolver.endOfCurrentTaxYear)
+    dateRangeSingleLine(messageRangeKeyFromAndTo, TaxYear().start, TaxYear().end)
   }
 
   def currentTaxYearRangeBetweenDelimited(implicit messages: Messages): String = {
-    dateRange(messageRangeKeyBetween, TaxYearResolver.startOfCurrentTaxYear, TaxYearResolver.endOfCurrentTaxYear)
+    dateRange(messageRangeKeyBetween, TaxYear().start, TaxYear().end)
   }
 
   def currentTaxYearRangeSingleLineBetweenDelimited(implicit messages: Messages): String = {
-    dateRangeSingleLine(messageRangeKeyBetween, TaxYearResolver.startOfCurrentTaxYear, TaxYearResolver.endOfCurrentTaxYear)
+    dateRangeSingleLine(messageRangeKeyBetween, TaxYear().start, TaxYear().end)
   }
 
   def futureTaxYearRangeHtmlNonBreak(yearsFromNow: Int)(implicit messages: Messages): String = {

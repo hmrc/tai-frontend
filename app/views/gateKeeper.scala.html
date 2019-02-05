@@ -18,11 +18,11 @@
 
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.config.ApplicationConfig
-@import uk.gov.hmrc.time.TaxYearResolver
+@import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 
 @main(
-    title = Messages("tai.gatekeeper.heading", s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}", s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}"),
+    title = Messages("tai.gatekeeper.heading", s"${Dates.formatDate(TaxYear().start)}", s"${Dates.formatDate(TaxYear().end)}"),
     articleClasses = Some("full-width"),
     user = Some(user),
     gaCustomTitle = None
@@ -31,15 +31,15 @@
         <h1 id="gatekeeper-title" class="flush--bottom">@Messages("tai.gatekeeper.heading")</h1>
     </header>
 
-    <h2 class="heading--underlined">@Messages("tai.taxYear",s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</h2>
+    <h2 class="heading--underlined">@Messages("tai.taxYear",s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</h2>
     <div class="grid-row">
         <div class="grid grid-2-3">
             <div class="inner-block">
                 <section class="flush--bottom hard--bottom">
-                    <p>@Messages("tai.gateKeeper.description.p1", s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}")</p>
+                    <p>@Messages("tai.gateKeeper.description.p1", s"${Dates.formatDate(TaxYear().start)}")</p>
                     <p>@Messages("tai.gateKeeper.description.p2")</p>
                     <ul class="bullets">
-                        <li>@Messages("tai.gateKeeper.description.p2.1", s"${Dates.formatDate(TaxYearResolver.startOfCurrentTaxYear)}",s"${Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)}")</li>
+                        <li>@Messages("tai.gateKeeper.description.p2.1", s"${Dates.formatDate(TaxYear().start)}",s"${Dates.formatDate(TaxYear().end)}")</li>
                     </ul>
                     <p>@Messages("tai.gatekeeper.contact")</p>
                     <ul class="bullets">

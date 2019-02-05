@@ -16,18 +16,16 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.domain.tax.{IncomeCategory, NonSavingsIncomeCategory, TaxBand, TotalTax}
@@ -61,38 +59,22 @@ class UnderPaymentFromPreviousYearControllerSpec extends PlaySpec
         contentAsString(result) must include("What is a previous year underpayment?")
       }
     }
-
-    "respond with UNAUTHORIZED and redirect to unauthorised page" when {
-      "not authorized" in {
-        val controller = new SUT
-        val res = controller.underpaymentExplanation()(FakeRequest(method = "GET", path = ""))
-
-        status(res) mustEqual SEE_OTHER
-        redirectLocation(res).get must include("/gg/sign-in")
-      }
-    }
   }
 
-  val personService: PersonService = mock[PersonService]
   val codingComponentService = mock[CodingComponentService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
 
   private class SUT() extends UnderpaymentFromPreviousYearController(
-    personService,
     codingComponentService,
     employmentService,
     mock[CompanyCarService],
     taxAccountService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-
-    when(authConnector.currentAuthority(any(), any())).thenReturn(AuthBuilder.createFakeAuthData(nino))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
     when(employmentService.employments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
     when(taxAccountService.totalTax(any(), any())(any())).thenReturn(Future(TaiSuccessResponseWithPayload(totalTax)))
     when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty))

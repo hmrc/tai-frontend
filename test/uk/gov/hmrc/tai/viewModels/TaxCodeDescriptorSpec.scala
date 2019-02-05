@@ -16,19 +16,15 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import builders.AuthBuilder
-import controllers.FakeTaiPlayApplication
+import controllers.actions.FakeValidatePerson
 import controllers.i18n.TaiLanguageController
-import mocks.{MockPartialRetriever, MockTemplateRenderer}
-import org.mockito.Matchers.any
-import org.mockito.Mockito.when
-import org.scalatest.mock.MockitoSugar._
+import controllers.{FakeAuthAction, FakeTaiPlayApplication}
+import mocks.MockTemplateRenderer
+import org.scalatest.mockito.MockitoSugar._
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Lang, Messages, MessagesApi}
 import uk.gov.hmrc.domain.Generator
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
-import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
@@ -36,7 +32,6 @@ import uk.gov.hmrc.tai.service.PersonService
 import uk.gov.hmrc.urls.Link
 
 import scala.collection.immutable.ListMap
-import scala.concurrent.Future
 
 class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport {
 
@@ -181,15 +176,9 @@ class TaxCodeDescriptorSpec extends PlaySpec with FakeTaiPlayApplication with I1
   val personService: PersonService = mock[PersonService]
 
   private class SUT(welshEnabled: Boolean = true) extends TaiLanguageController(
-    personService,
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
-  ) {
-
-    val authority = AuthBuilder.createFakeAuthData
-    when(authConnector.currentAuthority(any(), any())).thenReturn(authority)
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-  }
+  )
 }

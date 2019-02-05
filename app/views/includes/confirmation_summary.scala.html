@@ -14,12 +14,12 @@
  * limitations under the License.
  *@
 
-@()(implicit messages: Messages)
+@(paragraphTwo: String = "tai.confirmation.threeWeeks.paraTwo")(implicit messages: Messages)
 
 
 <section class="section soft--top">
     <h2 class="heading-medium">@messages("tai.confirmation.sectionOne.heading")</h2>
     <p>@messages("tai.confirmation.paraOne")</p>
-    <p>@messages("tai.confirmation.paraTwo")</p>
+    <p>@messages(paragraphTwo)</p>
     <p>@messages("tai.confirmation.paraThree")</p>
 </section>

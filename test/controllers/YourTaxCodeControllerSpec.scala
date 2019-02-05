@@ -16,28 +16,26 @@
 
 package controllers
 
-import builders.{AuthBuilder, RequestBuilder}
+import builders.RequestBuilder
+import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.jsoup.Jsoup
 import org.mockito.Matchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome}
 import uk.gov.hmrc.tai.model.domain.{EmploymentIncome, TaxCodeRecord}
-import uk.gov.hmrc.tai.service.{PersonService, TaxAccountService, TaxCodeChangeService}
-import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.service.{TaxAccountService, TaxCodeChangeService}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -101,7 +99,7 @@ class YourTaxCodeControllerSpec extends PlaySpec
       when(taxAccountService.scottishBandRates(any(), any(), any())(any()))
         .thenReturn(Future.successful(Map.empty[String, BigDecimal]))
 
-      val startDate = TaxYearResolver.startOfCurrentTaxYear
+      val startDate = TaxYear().start
       val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation, "A Employer 1", false, Some("1234"), false)
 
       val taxCodeRecords = Seq(previousTaxCodeRecord1)
@@ -136,27 +134,20 @@ class YourTaxCodeControllerSpec extends PlaySpec
     }
   }
 
+
   val nino = new Generator(new Random).nextNino
 
   private def createTestController = new TestController
 
-  val personService: PersonService = mock[PersonService]
   val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
   val taxAccountService = mock[TaxAccountService]
 
   private class TestController extends YourTaxCodeController(
-    personService,
     taxAccountService,
     taxCodeChangeService,
-    mock[AuditConnector],
-    mock[DelegationConnector],
-    mock[AuthConnector],
+    FakeAuthAction,
+    FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
-  ) {
-    when(authConnector.currentAuthority(any(), any())).thenReturn(Future.successful(Some(AuthBuilder.createFakeAuthority(nino.nino))))
-    when(personService.personDetails(any())(any())).thenReturn(Future.successful(fakePerson(nino)))
-
-  }
-
+  )
 }
