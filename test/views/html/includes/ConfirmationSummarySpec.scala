@@ -30,7 +30,7 @@ class ConfirmationSummarySpec extends TaiViewSpec{
 
     "display paragraphs" in {
       doc must haveParagraphWithText(messages("tai.confirmation.paraOne"))
-      doc must haveParagraphWithText(messages("tai.confirmation.paraTwo"))
+      doc must haveParagraphWithText(messages("tai.confirmation.threeWeeks.paraTwo"))
       doc must haveParagraphWithText(messages("tai.confirmation.paraThree"))
     }
 
