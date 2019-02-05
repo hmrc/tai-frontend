@@ -65,7 +65,7 @@
         <div class="grid grid-2-3">
             <div class="inner-block">
 
-                @if(viewModel.iyaCYAmount > 0){
+                @if(viewModel.iyaCYAmount > 0){}
                         <section class="section soft--top">
                             <p id="iya-cy-how-much" class="flush--bottom">@messages("tai.iya.paidTooLittle.cy.text")</p>
 
@@ -93,10 +93,10 @@
 
                             <p>@Messages("tai.iya.what.next.text2")</p>
 
-                            <p>@Link.toInternalPage(url=routes.TaxCodeChangeController.yourTaxFreeAmount.toString,value=Some(Messages("tai.iya.tax.code.change.return.link"))).toHtml</p>
+                            <p>@viewModel.returnLink</p>
 
                         </section>
-                }
+
 
                 @if(viewModel.iyaCYAmount == 0 && viewModel.iyaCYPlusOneAmount > 0){
                         <section class="section soft--top">
