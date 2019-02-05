@@ -17,9 +17,8 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.actions.ValidatePerson
 import controllers.audit.Auditable
-import controllers.auth.{AuthAction, WithAuthorisedForTaiLite}
+import controllers.auth.WithAuthorisedForTaiLite
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
@@ -40,39 +39,41 @@ import uk.gov.hmrc.tai.util.constants.{AuditConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.TaxAccountSummaryViewModel
 
 import scala.concurrent.Future
-import scala.util.control.NonFatal
 
 class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
                                             employmentService: EmploymentService,
                                             taxAccountService: TaxAccountService,
                                             auditService: AuditService,
+                                            personService: PersonService,
                                             val auditConnector: AuditConnector,
-                                            authenticate: AuthAction,
-                                            validatePerson: ValidatePerson,
+                                            val delegationConnector: DelegationConnector,
+                                            val authConnector: AuthConnector,
                                             override implicit val partialRetriever: FormPartialRetriever,
                                             override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
+  with DelegationAwareActions
+  with WithAuthorisedForTaiLite
   with Auditable
   with AuditConstants {
 
-  def onPageLoad: Action[AnyContent] = (authenticate andThen validatePerson).async {
-    implicit request =>
-      val nino = request.taiUser.nino
+  def onPageLoad: Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
 
-      auditService.createAndSendAuditEvent(TaxAccountSummary_UserEntersSummaryPage, Map("nino" -> nino.nino))
-
-      taxAccountService.taxAccountSummary(nino, TaxYear()).flatMap {
-        case TaiTaxAccountFailureResponse(message) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
-          message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
-          Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
-        case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
-          taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
-            implicit val user = request.taiUser
-            Ok(views.html.incomeTaxSummary(vm))
+            val nino = Nino(user.getNino)
+            auditService.createAndSendAuditEvent(TaxAccountSummary_UserEntersSummaryPage, Map("nino" -> user.getNino))
+            taxAccountService.taxAccountSummary(nino, TaxYear()).flatMap {
+              case (TaiTaxAccountFailureResponse(message)) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
+                message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
+                Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
+              case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
+                taxAccountSummaryViewModel(nino, taxAccountSummary) map { vm =>
+                  Ok(views.html.incomeTaxSummary(vm))
+                }
+              case _ => throw new RuntimeException("Failed to fetch tax account summary details")
+            }
           }
-        case _ => Future.successful(internalServerError("Failed to fetch tax account summary details"))
-      } recover {
-        case NonFatal(e) => internalServerError("Failed to fetch tax account summary from tax service", Some(e))
-      }
   }
 
   private def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)(implicit hc: HeaderCarrier, messages: Messages) = {
