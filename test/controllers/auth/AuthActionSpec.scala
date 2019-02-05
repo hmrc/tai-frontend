@@ -27,7 +27,8 @@ import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future, Await}
+import scala.concurrent.duration._
 
 class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSugar {
   private implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -44,56 +45,62 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
   }
 
   "Auth Action" when {
-    "the user has insufficient confidence level" must {
-      "redirect the user to an unauthorised page " in {
-        val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new InsufficientConfidenceLevel))
-        val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest)
+    val authErrors = Seq[AuthorisationException](
+      new InsufficientConfidenceLevel,
+      new InsufficientEnrolments,
+      new UnsupportedAffinityGroup,
+      new UnsupportedCredentialRole,
+      new UnsupportedAuthProvider,
+      new IncorrectCredentialStrength,
+      new InternalError
+    )
 
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().toString)
+    authErrors.foreach(error => {
+      s"the user has ${error.toString}" must {
+        "redirect the user to an unauthorised page " in {
+          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(error))
+          val controller = new Harness(authAction)
+          val result = controller.onPageLoad()(fakeRequest)
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().toString)
+        }
       }
+    })
+  }
+
+  "Given the user is unauthorised" should {
+    "redirect the user to the log in page" when {
+
+      val authErrors = Seq[AuthorisationException](
+        new InvalidBearerToken,
+        new BearerTokenExpired,
+        new MissingBearerToken,
+        new SessionRecordNotFound
+      )
+
+      authErrors.foreach(error => {
+        s"there is an ${
+          error.toString
+        }" in {
+          val authAction = new AuthActionImpl(new FakeFailingAuthConnector(error))
+          val controller = new Harness(authAction)
+          val result = controller.onPageLoad()(fakeRequest)
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.UnauthorisedController.loginGG().toString)
+        }
+      })
     }
   }
 
-  "Given the user has no active session" should {
-    "redirect the user to the log in page" when {
-      "there is an invalid bearer token" in {
-        val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new InvalidBearerToken))
-        val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest)
+  "Given an unexpected exception occurred" should {
+    "return the exception" in {
+      val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new Exception("Help")))
+      val controller = new Harness(authAction)
 
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.login().toString)
-      }
-
-      "there is an expired bearer token" in {
-        val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new BearerTokenExpired))
-        val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.login().toString)
-      }
-
-      "there is a missing bearer token" in {
-        val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new MissingBearerToken))
-        val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.login().toString)
-      }
-
-      "there is no session record" in {
-        val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new SessionRecordNotFound))
-        val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.login().toString)
-      }
-
+      val ex: Exception = the[Exception] thrownBy Await.result(controller.onPageLoad()(fakeRequest), 5.seconds)
+      ex.getMessage mustBe "Help"
     }
   }
 }

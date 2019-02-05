@@ -85,6 +85,8 @@ class WhatDoYouWantToDoController @Inject()(employmentService: EmploymentService
 
   private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
 
+    Logger.debug(s"allowWhatDoYouWantToDo called")
+
     val nino = Nino(user.getNino)
 
     auditNumberOfTaxCodesReturned(nino)
@@ -101,19 +103,27 @@ class WhatDoYouWantToDoController @Inject()(employmentService: EmploymentService
           taxAccountSummary <- cy1TaxAccountSummary
         } yield {
           taxAccountSummary match {
-            case TaiSuccessResponseWithPayload(_) =>
-              Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(
-                trackingResponse, cyPlusOneEnabled, taxCodeChanged.changed, taxCodeChanged.mismatch)))
-            case _ =>
+            case TaiSuccessResponseWithPayload(_) => {
+              val model = WhatDoYouWantToDoViewModel(
+                trackingResponse, cyPlusOneEnabled, taxCodeChanged.changed, taxCodeChanged.mismatch)
+              Logger.debug(s"wdywtdViewModelCYEnabled $model")
+              Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
+            }
+            case _ => {
+              Logger.debug(s"allowWDYWTD")
               Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(
                 trackingResponse, isCyPlusOneEnabled = false)))
+
+            }
           }
         }
       }
       else {
-        taxCodeChangeService.hasTaxCodeChanged(nino).map(hasTaxCodeChanged =>
-          Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(
-            trackingResponse, cyPlusOneEnabled, hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch)))
+        taxCodeChangeService.hasTaxCodeChanged(nino).map(hasTaxCodeChanged => {
+          val model = WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch)
+          Logger.debug(s"wdywtdViewModelCYDisabled $model")
+          Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
+        }
         )
       }
     }

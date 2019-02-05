@@ -17,19 +17,19 @@
 @import uk.gov.hmrc.urls.Link
 @import includes.confirmation_summary
 
-@()(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@import views.html.includes.confirmationSuccessBanner
+@()(implicit request: Request[_], authedUser: Option[controllers.auth.AuthedUser] = None, user: Option[controllers.auth.TaiUser] = None, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @main(
 title = Messages("tai.employmentConfirmation.heading"),
-user = Some(user),
+authedUser = authedUser,
+user = user,
 articleClasses = None,
 gaCustomTitle = None) {
 
-<div class="transaction-banner--complete">
-    <h1 class="transaction-banner__heading">@Messages("tai.employmentConfirmation.heading")</h1>
-</div>
+    @confirmationSuccessBanner()
 
-@confirmation_summary()
+    @confirmation_summary("tai.confirmation.paraTwo")
 
 @includes.link(
     id=Some("returnToSummary"),
