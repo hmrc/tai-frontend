@@ -74,6 +74,11 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
       doc must haveElementAtPathWithAttribute("a[id=getHelpLink]", "href", controllers.routes.HelpController.helpPage.toString)
     }
 
+    "contain a link to return to the previous page" in {
+      val doc = Jsoup.parseBodyFragment(view.toString)
+
+      doc must haveLinkWithText(messages("tai.iya.tax.free.amount.return.link"))
+    }
 
     "display the potential underpayment page configured for a CY+1 IYA, when only a CY+1 amount is present" in {
 
@@ -101,6 +106,8 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
   val tasCYOnly = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)
   val tasCYAndCyPlusOne = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
   val tasCyPlusOneOnly = TaxAccountSummary(11.11, 22.22, 0, 44.44, 55.55)
+  val referalPath = "http://somelocation/tax-free-allowance"
+  val resourceName = "tax-free-allowance"
 
-  override def view = views.html.potentialUnderpayment(PotentialUnderpaymentViewModel(tas, ccs, "", ""))
+  override def view = views.html.potentialUnderpayment(PotentialUnderpaymentViewModel(tas, ccs, referalPath, resourceName))
 }
