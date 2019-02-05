@@ -112,7 +112,7 @@ class IncomeController @Inject()(personService: PersonService,
                     currentCache <- journeyCacheService.currentCache
                   } yield {
                     if (isCachedAmountSame(currentCache, income.newAmount)) {
-                      Redirect(routes.IncomeController.sameAmount())
+                      Redirect(routes.IncomeController.sameEstimatedPay())
                     } else {
                       journeyCacheService.cache(UpdateIncome_NewAmountKey, income.newAmount.getOrElse("0"))
                       Redirect(routes.IncomeController.confirmRegularIncome())
@@ -125,12 +125,12 @@ class IncomeController @Inject()(personService: PersonService,
         }
   }
 
-  def sameAmount(): Action[AnyContent] = authorisedForTai(personService).async {
+  def sameEstimatedPay(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            Future.successful(Ok(views.html.incomes.sameAmount()))
+            Future.successful(Ok(views.html.incomes.sameEstimatedPay()))
           }
   }
 

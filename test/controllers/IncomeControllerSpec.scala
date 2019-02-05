@@ -142,8 +142,10 @@ class IncomeControllerSpec extends PlaySpec
         val testController = createTestIncomeController
         when(journeyCacheService.collectedValues(any(), any())(any())).
           thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
-        when(journeyCacheService.cache(any(), any())(any())).
-          thenReturn(Future.successful(Map.empty[String, String]))
+
+        when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
         val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("200"))
         val formData = Json.toJson(editIncomeForm)
 
@@ -151,6 +153,28 @@ class IncomeControllerSpec extends PlaySpec
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.IncomeController.confirmRegularIncome().url
+      }
+    }
+
+    "redirect to the same estimated pay page" when {
+      "new input is the same as the cached input" in {
+        val testController = createTestIncomeController
+
+        val sameAmount = "200"
+
+        when(journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
+
+        when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(UpdateIncome_ConfirmedNewAmountKey -> sameAmount)))
+
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(sameAmount))
+        val formData = Json.toJson(editIncomeForm)
+
+        val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.IncomeController.sameEstimatedPay().url
       }
     }
 

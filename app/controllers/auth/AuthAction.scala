@@ -62,9 +62,9 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     authorised(ConfidenceLevel.L200)
-      .retrieve(Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.userDetailsUri and Retrievals.confidenceLevel and Retrievals.credentials) {
-        case nino ~ name ~ saUtr ~ userDetailsUri ~ confidenceLevel ~ credentials => {
-          val taiUser = AuthedUser(name, nino, saUtr, userDetailsUri, confidenceLevel, credentials)
+      .retrieve(Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.userDetailsUri and Retrievals.confidenceLevel) {
+        case nino ~ name ~ saUtr ~ userDetailsUri ~ confidenceLevel => {
+          val taiUser = AuthedUser(name, nino, saUtr, userDetailsUri, confidenceLevel)
 
           for {
             result <- block(AuthenticatedRequest(request, taiUser))
