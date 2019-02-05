@@ -22,9 +22,10 @@ import controllers.TaiBaseController
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
+import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
@@ -38,7 +39,7 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{Employment, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.journeyCache.{JourneyCacheService}
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
@@ -207,6 +208,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         val paymentRequest: Future[Option[Payment]] = incomeService.latestPayment(Nino(user.getNino), employmentId)
         val taxCodeIncomeRequest = taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId)
 
+
         paymentRequest flatMap { payment =>
           taxCodeIncomeRequest flatMap {
             case Some(tci) => {
@@ -253,13 +255,15 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit user =>
       implicit person =>
         implicit request => {
-          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey).map { cache => {
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey).map { cache =>
             val name :: newIrregularPay :: Nil = cache.toList
+
+            println("confirmIncomeIrregularHours")
+            journeyCacheService.currentCache map (println(_))
 
             val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
 
             Ok(views.html.incomes.confirmAmountEntered(vm))
-          }
           }
         }
   }
@@ -268,14 +272,19 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit user =>
       implicit person =>
         implicit request =>
-          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey).flatMap(cache => {
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey).flatMap { cache =>
             val employerName :: newPay :: employerId :: Nil = cache.toList
 
-            taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) map {
-              case TaiSuccessResponse => Ok(views.html.incomes.editSuccess(employerName, employerId.toInt))
-              case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
+            println("submitIncomeIrregularHours")
+            println("UpdateIncome_NewAmountKey: " + newPay)
+
+            journeyCacheService.cache(UpdateIncome_NewAmountKey, newPay).flatMap { _ =>
+              taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) map {
+                case TaiSuccessResponse => Ok(views.html.incomes.editSuccess(employerName, employerId.toInt))
+                case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
+              }
             }
-          })
+          }
   }
 
   def payPeriodPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>

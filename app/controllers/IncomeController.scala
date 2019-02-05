@@ -165,7 +165,6 @@ class IncomeController @Inject()(personService: PersonService,
           }
   }
 
-
   def updateEstimatedIncome(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person => {
