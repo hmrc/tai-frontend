@@ -65,7 +65,7 @@
         <div class="grid grid-2-3">
             <div class="inner-block">
 
-                @if(viewModel.iyaCYAmount > 0){}
+                @if(viewModel.iyaCYAmount > 0){
                         <section class="section soft--top">
                             <p id="iya-cy-how-much" class="flush--bottom">@messages("tai.iya.paidTooLittle.cy.text")</p>
 
@@ -77,15 +77,16 @@
 
                              <p>@Html(
                                 Messages("tai.iya.paidTooLittle.cy.text3",
-                                MoneyPounds(viewModel.iyaCYAmount, 0).quantity,
+                                MoneyPounds(viewModel.iyaTaxCodeChangeAmount, 0).quantity,
                                 s"${Dates.formatDate(TaxYear().end)}",
-                                MoneyPounds(viewModel.iyaTaxCodeChangeAmount, 0).quantity)) </p>
+                                MoneyPounds(viewModel.iyaCYAmount, 0).quantity)) </p>
 
                             <p>@Messages("tai.iya.paidTooLittle.cy.text4")</p>
 
                             <p>@Html(
                                 Messages("tai.iya.paidTooLittle.get.help",
-                                Link.toInternalPage(url=routes.HelpController.helpPage.toString,value=Some(Messages("tai.iya.paidTooLittle.get.help.linkText"))).toHtml)) </p>
+                                Link.toInternalPage(url=routes.HelpController.helpPage.toString,value=Some(Messages("tai.iya.paidTooLittle.get.help.linkText")),
+                                id=Some("getHelpLink")).toHtml)) </p>
 
                             <h2 class="heading-medium">@Messages("tai.iya.what.next.heading")</h2>
 
@@ -96,7 +97,7 @@
                             <p>@viewModel.returnLink</p>
 
                         </section>
-
+}
 
                 @if(viewModel.iyaCYAmount == 0 && viewModel.iyaCYPlusOneAmount > 0){
                         <section class="section soft--top">
@@ -110,35 +111,8 @@
                         </section>
                 }
 
-                <!--@if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount > 0){
-                        <section class="section soft&#45;&#45;top">
-                            <p>@Messages("tai.iya.paidTooLittle.cy-and-cy-plus-one.text1",MoneyPounds(viewModel.iyaTotalAmount, 2).quantity)</p>
-                            <p>@Html(
-                                Messages("tai.iya.check.your.tax.code.text",
-                                Link.toInternalPage(url=routes.YourTaxCodeController.taxCodes.toString,value=Some(Messages("tai.iya.your.tax.code.linkText"))).toHtml
-                                ))</p>
-                            <p>@Html(
-                                Messages("tai.iya.paidTooLittle.cy-and-cy-plus-one.text2",
-                                MoneyPounds(viewModel.iyaCYAmount, 2).quantity,
-                                s"${Dates.formatDate(TaxYear().end)}",
-                                MoneyPounds(viewModel.iyaTaxCodeChangeAmount, 0).quantity,
-                                Link.toInternalPage(url=routes.HelpController.helpPage.toString,value=Some(Messages("tai.iya.paidTooLittle.get.help.linkText"))).toHtml)) </p>
-                            <p id="iya-cy-and-cy-plus-one-how-much">@Messages("tai.iya.paidTooLittle.cy-and-cy-plus-one.text3",
-                                MoneyPounds(viewModel.iyaCYPlusOneAmount, 2).quantity,
-                                s"${Dates.formatDate(TaxYear().next.start)}",
-                                s"${Dates.formatDate(TaxYear().next.end)}")</p>
-                        </section>
-                }-->
-
             </div>
         </div>
     </div>
-
-    @if(viewModel.iyaCYAmount > 0 && viewModel.iyaCYPlusOneAmount <= 0){
-        <p>@Html(Messages("tai.iya.paidTooLittle.get.help",
-            Link.toInternalPage(url=routes.HelpController.helpPage.toString,
-                                value=Some(Messages("tai.iya.paidTooLittle.get.help.linkText")),
-                                id=Some("getHelpLink")).toHtml))</p>
-    }
 
 }

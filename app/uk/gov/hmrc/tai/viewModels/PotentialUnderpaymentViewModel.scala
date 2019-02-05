@@ -53,7 +53,7 @@ object PotentialUnderpaymentViewModel extends ViewModelHelper {
       }
 
     val title =
-      if(taxAccountSummary.totalInYearAdjustmentIntoCY > 0 && taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne <= 0){
+      if(taxAccountSummary.totalInYearAdjustmentIntoCY > 0){
         Messages("tai.iya.tax.you.owe.title")
       } else {
         Messages("tai.iya.tax.you.owe.cy-plus-one.title")

@@ -56,9 +56,6 @@ class PotentialUnderpaymentController @Inject()(taxAccountService: TaxAccountSer
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-            println("************************")
-            println(resourceName)
-            println(controllers.routes.TaxAccountSummaryController.onPageLoad.toString)
             sendActingAttorneyAuditEvent("getPotentialUnderpaymentPage")
             val tasFuture = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear())
             val ccFuture = codingComponentService.taxFreeAmountComponents(Nino(user.getNino), TaxYear())
