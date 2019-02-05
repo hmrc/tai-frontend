@@ -45,10 +45,20 @@ class UnauthorisedControllerSpec extends PlaySpec with FakeTaiPlayApplication {
     }
   }
 
-  "login" must {
+  "loginGG" must {
     "redirect to a login page" in {
-      val result = controller.login(fakeRequest)
+      val result = controller.loginGG(fakeRequest)
       val expectedUrl = "http://localhost:4444/gg/sign-in?continue=http%3A%2F%2Flocalhost%3A1111%2Fpersonal-account/do-uplift?redirectUrl=%2Fcheck-income-tax%2Fwhat-do-you-want-to-do&accountType=individual"
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe expectedUrl
+    }
+  }
+
+  "loginVerify" must {
+    "redirect to a login page" in {
+      val result = controller.loginVerify(fakeRequest)
+      val expectedUrl = "http://localhost:9999/ida/login"
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe expectedUrl

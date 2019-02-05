@@ -20,8 +20,8 @@ import com.google.inject.Inject
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, Request, Result}
+import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.auth.ConfigProperties
@@ -38,9 +38,22 @@ class UnauthorisedController @Inject()(override implicit val partialRetriever: F
       Ok(unauthorisedView())
   }
 
-  def login: Action[AnyContent] = Action.async {
+  def loginGG: Action[AnyContent] = Action.async {
     implicit request =>
       ggRedirect
+  }
+
+  def loginVerify: Action[AnyContent] = Action.async {
+    implicit request =>
+      verifyRedirect
+  }
+
+  private def verifyRedirect(implicit request: Request[_]): Future[Result] = {
+    lazy val idaSignIn = s"${ApplicationConfig.citizenAuthHost}/${ApplicationConfig.ida_web_context}/login"
+    Future.successful(Redirect(idaSignIn).withSession(
+      SessionKeys.loginOrigin -> "TAI",
+      SessionKeys.redirect -> ConfigProperties.postSignInRedirectUrl.getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
+    ))
   }
 
   private def ggRedirect(implicit request: Request[_]): Future[Result] = {

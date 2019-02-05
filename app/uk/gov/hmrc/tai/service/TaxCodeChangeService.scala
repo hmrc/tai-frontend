@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.service
 
 import com.google.inject.Inject
 import org.joda.time.LocalDate
+import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.connectors.TaxCodeChangeConnector
@@ -48,6 +49,7 @@ class TaxCodeChangeService @Inject() (taxCodeChangeConnector: TaxCodeChangeConne
     } yield {
       (hasTaxCodeChanged, taxCodeMismatch) match {
         case (_: Boolean, TaiSuccessResponseWithPayload(taxCodeMismatch: TaxCodeMismatch)) => {
+          Logger.debug(s"TCMismatch $taxCodeMismatch")
           HasTaxCodeChanged(hasTaxCodeChanged, Some(taxCodeMismatch))
         }
         case (_: Boolean, _: TaiTaxAccountFailureResponse) => {
