@@ -87,7 +87,7 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
         )
         val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
         val doc = Jsoup.parse(contentAsString(res))
-        doc.title() must include(Messages("tai.iya.tax.you.owe.cy-plus-one.title"))
+        doc.title() must include(Messages("tai.iya.tax.you.owe.title"))
 
       }
     }

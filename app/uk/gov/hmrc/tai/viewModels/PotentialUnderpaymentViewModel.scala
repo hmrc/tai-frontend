@@ -52,19 +52,12 @@ object PotentialUnderpaymentViewModel extends ViewModelHelper {
         case _ => None
       }
 
-    val title =
-      if(taxAccountSummary.totalInYearAdjustmentIntoCY > 0){
-        Messages("tai.iya.tax.you.owe.title")
-      } else {
-        Messages("tai.iya.tax.you.owe.cy-plus-one.title")
-      }
-
     PotentialUnderpaymentViewModel(
       taxAccountSummary.totalInYearAdjustmentIntoCY,
       iyaTaxCodeChangeAmount,
       taxAccountSummary.totalInYearAdjustmentIntoCYPlusOne,
       taxAccountSummary.totalInYearAdjustment,
-      title,
+      Messages("tai.iya.tax.you.owe.title"),
       returnLink(referer, resourceName),
       gaDimensions
     )
