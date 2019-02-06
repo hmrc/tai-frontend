@@ -172,7 +172,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
           Seq(UpdateEmployment_TelephoneNumberKey))
         model = IncorrectIncome(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
         _ <- employmentService.incorrectEmployment(Nino(user.getNino), mandatoryCacheSeq.head.toInt, model)
-        _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourney_UpdateEmploymentKey, true.toString)
+        _ <- successfulJourneyCacheService.cache(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-${mandatoryCacheSeq.head}", true.toString)
         _ <- journeyCacheService.flush
       } yield Redirect(controllers.employments.routes.UpdateEmploymentController.confirmation())
   }

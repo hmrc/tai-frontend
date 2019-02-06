@@ -74,7 +74,8 @@ object IncomeCheckYourAnswersViewModel {
     val journeyConfirmationLines: Seq[CheckYourAnswersConfirmationLine] = {
 
       val mandatoryLines = Seq(
-        CheckYourAnswersConfirmationLine(Messages("tai.checkYourAnswers.dateEmploymentEnded"), Dates.formatDate(new LocalDate(incomeSourceEnd)), controllers.employments.routes.EndEmploymentController.endEmploymentPage(employmentId).url),
+        CheckYourAnswersConfirmationLine(Messages("tai.checkYourAnswers.dateEmploymentEnded"), Dates.formatDate(new LocalDate(incomeSourceEnd)),
+          controllers.employments.routes.EndEmploymentController.endEmploymentPage().url),
         CheckYourAnswersConfirmationLine(Messages("tai.checkYourAnswers.contactByPhone"), contactableByPhone, controllers.employments.routes.EndEmploymentController.addTelephoneNumber.url)
       )
 

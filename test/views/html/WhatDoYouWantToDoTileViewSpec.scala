@@ -20,6 +20,7 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
+import uk.gov.hmrc.tai.service.{NoTimeToProcess, SevenDays, ThreeWeeks}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
@@ -31,11 +32,19 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("your.paye.income.tax.overview"))
     behave like pageWithHeader(messages("your.paye.income.tax.overview"))
 
-    "display iForms status message when an iForm has not been fully processed" in{
+    "display iForms status message with three weeks when an iForm has not been fully processed" in{
       def view: Html = views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1)
       val paragraphs = doc(view).select(".panel-indent > p")
       paragraphs.get(0).text mustBe Messages("tai.whatDoYouWantToDo.iformPanel.p1")
-      paragraphs.get(1).text mustBe Messages("tai.whatDoYouWantToDo.iformPanel.p2")
+      paragraphs.get(1).text mustBe Messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2")
+    }
+
+
+    "display iForms status message with seven days when an iForm has not been fully processed" in{
+      def view: Html = views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1ForSevenDays)
+      val paragraphs = doc(view).select(".panel-indent > p")
+      paragraphs.get(0).text mustBe Messages("tai.whatDoYouWantToDo.iformPanel.p1")
+      paragraphs.get(1).text mustBe Messages("tai.whatDoYouWantToDo.iformPanel.sevenDays.p2")
     }
 
     "not display iForms status message when no iForms are in progress" in{
@@ -96,10 +105,11 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
 
-  private lazy val modelNoiFormNoCyPlus1 = WhatDoYouWantToDoViewModel(false, false)
-  private lazy val modelNoiFormWithCyPlus1 = WhatDoYouWantToDoViewModel(false, true)
-  private lazy val modelWithiFormNoCyPlus1 = WhatDoYouWantToDoViewModel(true, false)
+  private lazy val modelNoiFormNoCyPlus1 = WhatDoYouWantToDoViewModel(NoTimeToProcess, false)
+  private lazy val modelNoiFormWithCyPlus1 = WhatDoYouWantToDoViewModel(NoTimeToProcess, true)
+  private lazy val modelWithiFormNoCyPlus1 = WhatDoYouWantToDoViewModel(ThreeWeeks, false)
+  private lazy val modelWithiFormNoCyPlus1ForSevenDays = WhatDoYouWantToDoViewModel(SevenDays, false)
   private lazy val taxCodeMatched = TaxCodeMismatchFactory.matchedTaxCode
-  private lazy val modeWithCyPlus1TaxCodeChange = WhatDoYouWantToDoViewModel(false, true, true, Some(taxCodeMatched))
+  private lazy val modeWithCyPlus1TaxCodeChange = WhatDoYouWantToDoViewModel(NoTimeToProcess, true, true, Some(taxCodeMatched))
   override def view: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1)
 }

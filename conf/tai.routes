@@ -58,20 +58,23 @@ POST        /add-pension-provider/check-your-answers                            
 
 GET         /add-pension-provider/success                                              @controllers.pensions.AddPensionProviderController.confirmation
 
+GET         /update-remove-employment/redirectUpdateEmployment/:empId                  @controllers.employments.EndEmploymentController.redirectUpdateEmployment(empId: Int)
 
+GET         /update-remove-employment/warning                                          @controllers.employments.EndEmploymentController.duplicateSubmissionWarning
+POST        /update-remove-employment/warning                                          @controllers.employments.EndEmploymentController.submitDuplicateSubmissionWarning
 
-GET         /update-remove-employment/decision/:empId                                  @controllers.employments.EndEmploymentController.employmentUpdateRemove(empId: Int)
-POST        /update-remove-employment/decision/:empId                                  @controllers.employments.EndEmploymentController.handleEmploymentUpdateRemove(empId: Int)
+GET         /update-remove-employment/decision                                         @controllers.employments.EndEmploymentController.employmentUpdateRemove
+POST        /update-remove-employment/decision                                         @controllers.employments.EndEmploymentController.handleEmploymentUpdateRemove
 
 GET         /end-employment/six-weeks                                                  @controllers.employments.EndEmploymentController.endEmploymentError
-GET         /end-employment/irregular-payment/:empId                                   @controllers.employments.EndEmploymentController.irregularPaymentError(empId: Int)
-POST        /end-employment/handle-irregular-payment/:empId                            @controllers.employments.EndEmploymentController.handleIrregularPaymentError(empId: Int)
+GET         /end-employment/irregular-payment                                          @controllers.employments.EndEmploymentController.irregularPaymentError
+POST        /end-employment/handle-irregular-payment                                   @controllers.employments.EndEmploymentController.handleIrregularPaymentError
 GET         /end-employment/check-your-answers                                         @controllers.employments.EndEmploymentController.endEmploymentCheckYourAnswers
 POST        /end-employment/check-your-answers                                         @controllers.employments.EndEmploymentController.confirmAndSendEndEmployment
 GET         /end-employment/success                                                    @controllers.employments.EndEmploymentController.showConfirmationPage
 GET         /end-employment/telephone-number                                           @controllers.employments.EndEmploymentController.addTelephoneNumber
 POST        /end-employment/telephone-number                                           @controllers.employments.EndEmploymentController.submitTelephoneNumber
-GET         /end-employment/date/:empId                                                @controllers.employments.EndEmploymentController.endEmploymentPage(empId: Int)
+GET         /end-employment/date                                                       @controllers.employments.EndEmploymentController.endEmploymentPage
 POST        /end-employment/date/:empId                                                @controllers.employments.EndEmploymentController.handleEndEmploymentPage(empId: Int)
 
 GET         /update-employment/what-do-you-want-to-tell-us/:empId                      @controllers.employments.UpdateEmploymentController.updateEmploymentDetails(empId: Int)
@@ -266,7 +269,8 @@ GET         /tax-code-change/what-happens-next                                  
 
 ## Auth error page
 GET         /unauthorised                                                              @controllers.UnauthorisedController.onPageLoad
-GET         /unauthorised/login                                                        @controllers.UnauthorisedController.login
+GET         /unauthorised/login-gg                                                     @controllers.UnauthorisedController.loginGG
+GET         /unauthorised/login-verify                                                 @controllers.UnauthorisedController.loginVerify
 
 
 ### Update Income CY + 1

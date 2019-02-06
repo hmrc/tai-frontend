@@ -16,13 +16,12 @@
 
 package views.html.incomeTaxComparison
 
-import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.time.TaxYearResolver
+import uk.gov.hmrc.tai.viewModels.incomeTaxComparison.{EstimatedIncomeTaxComparisonItem, EstimatedIncomeTaxComparisonViewModel}
 
 class IncomeTaxSpec extends TaiViewSpec {
 
@@ -95,8 +94,8 @@ class IncomeTaxSpec extends TaiViewSpec {
   }
 
   private val yourPAYEIncomeTaxEstimate = "Your PAYE Income Tax estimate"
-  val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear)) + " "
-  val taxYearStarts = "Next tax year from " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfNextTaxYear)) + " "
+  val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().end)) + " "
+  val taxYearStarts = "Next tax year from " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start)) + " "
   private val currentYearItem = EstimatedIncomeTaxComparisonItem(TaxYear(),100.83)
   private val nextYearItem = EstimatedIncomeTaxComparisonItem(TaxYear().next,100.83)
 
