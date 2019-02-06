@@ -28,14 +28,6 @@ class TaxCodeChangeDynamicTextViewModelSpec extends PlaySpec with MockitoSugar {
   private val carBenefitIncrease: CodingComponentPair = CodingComponentPair(CarBenefit, Some(1), Some(1000), Some(2000))
   private val taxCodeChange: TaxCodeChange = mock[TaxCodeChange]
 
-  "123TaxCodeChangeDynamicTextViewModel apply method" should {
-    "add an employment" when {
-      "gives me something" in {
-
-      }
-    }
-  }
-
   // TODO: All this
   "TaxCodeChangeDynamicTextViewModel apply method" ignore {
     "translate a YourTaxFreeAmountViewModel to a seq of dynamic text" in {

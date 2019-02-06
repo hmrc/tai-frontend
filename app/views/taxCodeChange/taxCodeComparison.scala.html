@@ -99,14 +99,14 @@
 @taxCodePairs(taxCodePairs: TaxCodePairs) = {
     <div class="column-half tax-code-change__previous">
         <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes")</h2>
-        @for((pair) <- taxCodePairs.pairs) {
+        @for((pair) <- taxCodePairs.combinedTaxCodePairs) {
             @taxCodeRecordPod(pair.previous, "previous")
         }
     </div>
 
     <div class="column-half tax-code-change__current">
         <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.currentTaxCodes")</h2>
-        @for((pair) <- taxCodePairs.pairs) {
+        @for((pair) <- taxCodePairs.combinedTaxCodePairs) {
             @taxCodeRecordPod(pair.current, "current")
         }
     </div>

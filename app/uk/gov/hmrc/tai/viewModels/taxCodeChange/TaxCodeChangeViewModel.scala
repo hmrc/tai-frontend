@@ -30,7 +30,7 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
                                   gaDimensions: Map[String, String]) {
 
   def taxCodeReasons: Seq[String] = {
-    println("REASONS")
+
     val removed = pairs.unMatchedPreviousCodes.flatMap(_.previous).map { record =>
       s"Removed ${record.employerName}"
     }
@@ -39,7 +39,23 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
       s"Added ${record.employerName}"
     }
 
-    removed ++ added
+    val primarySame: Seq[String] = {
+      pairs.primaryPairs flatMap { primaryPair =>
+        val current = primaryPair.current.map(_.employerName)
+        val previous = primaryPair.previous.map(_.employerName)
+
+        val currentEmployerName = current.getOrElse("No Current")
+        val previousEmployerName = previous.getOrElse("No Previous")
+
+        if (currentEmployerName != previousEmployerName) {
+          Seq(s"Removed $previousEmployerName", s"Added $currentEmployerName")
+        } else {
+          Seq.empty[String]
+        }
+      }
+    }
+
+    removed ++ added ++ primarySame
   }
 }
 
@@ -74,9 +90,9 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
 
   private def gaDimensions(taxCodeChange: TaxCodeChange, taxCodeChangeDate: LocalDate): Map[String, String] = {
     def moreThanTwoSecondaryWithoutPayroll(records: Seq[TaxCodeRecord]): Boolean = {
-       records.groupBy(_.employerName).values.exists(taxCodeRecords =>
-         taxCodeRecords.count(record => !record.primary && record.payrollNumber.isEmpty) >= 2
-       )
+      records.groupBy(_.employerName).values.exists(taxCodeRecords =>
+        taxCodeRecords.count(record => !record.primary && record.payrollNumber.isEmpty) >= 2
+      )
     }
 
     val taxCodeChangeDateGaDimension = Map[String, String]("taxCodeChangeDate" -> taxCodeChangeDate.toString(TaiConstants.EYU_DATE_FORMAT))

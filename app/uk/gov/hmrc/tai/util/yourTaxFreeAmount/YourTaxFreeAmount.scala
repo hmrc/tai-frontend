@@ -26,8 +26,6 @@ import uk.gov.hmrc.tai.util.{TaxAccountCalculator, TaxAccountCalculatorImpl, Tax
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
 
-case class CodingComponentsWithCarBenefits(date: LocalDate, codingComponents: Seq[CodingComponent], companyCarBenefits: Seq[CompanyCarBenefit])
-
 case class YourTaxFreeAmountComparison(previousTaxFreeInfo: Option[TaxFreeInfo], currentTaxFreeInfo: TaxFreeInfo, iabdPairs: AllowancesAndDeductionPairs)
 
 trait YourTaxFreeAmount {
