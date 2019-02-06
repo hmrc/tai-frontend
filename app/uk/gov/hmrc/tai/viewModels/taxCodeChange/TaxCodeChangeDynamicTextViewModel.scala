@@ -23,6 +23,6 @@ case class TaxCodeChangeDynamicTextViewModel(dynamicText: Seq[String])
 
 object TaxCodeChangeDynamicTextViewModel {
   def apply(taxCodeChange: TaxCodeChange, taxFreeAmountComparison: YourTaxFreeAmountComparison): TaxCodeChangeDynamicTextViewModel = {
-    ???
+    TaxCodeChangeDynamicTextViewModel(Seq.empty)
   }
 }

@@ -50,10 +50,12 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
     "translate the taxCodeChange object into a TaxCodePairs" in {
       val model = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
 
-      model.pairs mustEqual TaxCodePairs(Seq(
-        TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode)),
-        TaxCodePair(Some(previousTaxCodeRecord1), Some(currentTaxCodeRecord1))
-      ))
+      model.pairs mustEqual TaxCodePairs(
+        Seq(TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode))),
+        Seq.empty,
+        Seq(TaxCodePair(Some(previousTaxCodeRecord1), None)),
+        Seq(TaxCodePair(None, Some(currentTaxCodeRecord1)))
+      )
     }
 
     "sets the changeDate to the mostRecentTaxCodeChangeDate" in {
@@ -194,6 +196,16 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
         result mustEqual(expected)
       }
+    }
+  }
+
+  "TaxCodeChangeViewModel taxCodeReasons" must {
+    "return a reason when an employment is added" in {
+
+    }
+
+    "return a reason when an employment is removed" in {
+
     }
   }
 }

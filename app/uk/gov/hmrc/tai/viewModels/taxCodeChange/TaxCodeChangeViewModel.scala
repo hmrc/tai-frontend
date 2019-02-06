@@ -27,7 +27,21 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants
 case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
                                   changeDate: LocalDate,
                                   scottishTaxRateBands: Map[String, BigDecimal],
-                                  gaDimensions: Map[String, String])
+                                  gaDimensions: Map[String, String]) {
+
+  def taxCodeReasons: Seq[String] = {
+    println("REASONS")
+    val removed = pairs.unMatchedPreviousCodes.flatMap(_.previous).map { record =>
+      s"Removed ${record.employerName}"
+    }
+
+    val added = pairs.unMatchedCurrentCodes.flatMap(_.current).map { record =>
+      s"Added ${record.employerName}"
+    }
+
+    removed ++ added
+  }
+}
 
 
 object TaxCodeChangeViewModel extends TaxCodeDescriptor {

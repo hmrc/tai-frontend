@@ -41,7 +41,7 @@ class TaxCodePairsSpec extends PlaySpec{
         Seq(primaryFullYearTaxCode, previousTaxCodeRecord1, fullYearTaxCode),
         Seq(primaryFullYearTaxCode, currentTaxCodeRecord1, fullYearTaxCode)
       )
-      model.pairs(0) mustEqual TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode))
+      model.pairs.head mustEqual TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode))
     }
 
     "return the primary pair first when unmatched pairs exist" in {
@@ -49,7 +49,7 @@ class TaxCodePairsSpec extends PlaySpec{
         Seq(primaryFullYearTaxCode, previousTaxCodeRecord1, fullYearTaxCode),
         Seq(primaryFullYearTaxCode, currentTaxCodeRecord1, fullYearTaxCode)
       )
-      model.pairs(0) mustEqual TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode))
+      model.pairs.head mustEqual TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode))
     }
 
     "return the secondary pairs after the primary pairs" in {

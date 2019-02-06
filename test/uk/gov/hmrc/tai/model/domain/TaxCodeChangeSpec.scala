@@ -67,16 +67,6 @@ class TaxCodeChangeSpec extends PlaySpec{
         model.uniqueTaxCodes mustEqual Seq("1185L", "OT")
       }
     }
-
-    "whatsNewEmployment" should {
-      "tell me what new employments have been added" in {
-        val previousEmployer =
-        val previous =  TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation,"A Employer 1", false, Some("1234"), false)
-
-
-        val model = TaxCodeChange(Seq)
-      }
-    }
   }
 
   val nino = generateNino

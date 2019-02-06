@@ -49,7 +49,7 @@
 
     <div class="column-two-thirds">
         <div class="grid-row">
-            <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
+            @taxCodeReasons(taxCodeChangeViewModel.taxCodeReasons)
         </div>
         <div class="grid-row tax-code-change margin-bottom-xlarge">
             @taxCodePairs(taxCodeChangeViewModel.pairs)
@@ -71,6 +71,29 @@
         case Some(taxCodeRecord) => formattedTaxCodeForComparison(taxCodeRecord, identifier, taxCodeChangeViewModel.scottishTaxRateBands)
         case _ => None
     }}
+}
+
+@taxCodeReasons(taxCodeReasons: Seq[String]) = {
+    @if(taxCodeReasons.isEmpty) {
+        <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
+    } else {
+        <div class="notice">
+            <i class="icon icon-information">
+                <span class="visually-hidden">Information</span>
+            </i>
+            <strong class="bold-small">
+                We changed this because:
+            </strong>
+        </div>
+
+        <ul class="list-bullet">
+            @for((reason) <- taxCodeReasons) {
+            <li>
+                @reason
+            </li>
+            }
+        </ul>
+    }
 }
 
 @taxCodePairs(taxCodePairs: TaxCodePairs) = {

@@ -24,7 +24,7 @@ case class TaxCodePair(previous: Option[TaxCodeRecord], current: Option[TaxCodeR
 
 case class TaxCodePairs(primaryPairs: Seq[TaxCodePair], secondaryPairs: Seq[TaxCodePair], unMatchedPreviousCodes: Seq[TaxCodePair], unMatchedCurrentCodes: Seq[TaxCodePair]) {
 
-  def pairs(): Seq[TaxCodePair] = {
+  def pairs: Seq[TaxCodePair] = {
     primaryPairs ++
       secondaryPairs ++
       unMatchedPreviousCodes ++

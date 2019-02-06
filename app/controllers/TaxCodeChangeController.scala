@@ -48,15 +48,15 @@ class TaxCodeChangeController @Inject()(taxCodeChangeService: TaxCodeChangeServi
   def taxCodeComparison: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       val nino: Nino = request.taiUser.nino
-      val taxFreeAmountFuture = yourTaxFreeAmountService.taxFreeAmountComparison(nino)
+//      val taxFreeAmountFuture = yourTaxFreeAmountService.taxFreeAmountComparison(nino)
 
       for {
         taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
-        yourTaxFreeAmountComparison: YourTaxFreeAmountComparison <- taxFreeAmountFuture
+//        yourTaxFreeAmountComparison: YourTaxFreeAmountComparison <- taxFreeAmountFuture
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
       } yield {
         val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
-        val taxCodeChangeDynamicTextViewModel = TaxCodeChangeDynamicTextViewModel(taxCodeChange, yourTaxFreeAmountComparison)
+//        val taxCodeChangeDynamicTextViewModel = TaxCodeChangeDynamicTextViewModel(taxCodeChange, yourTaxFreeAmountComparison)
 
         implicit val user = request.taiUser
         Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
