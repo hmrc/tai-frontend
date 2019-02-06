@@ -28,10 +28,10 @@ private object AppDependencies {
   val compile = Seq(
     filters,
     "uk.gov.hmrc"  %% "play-conditional-form-mapping" %  "0.2.0",
-    "uk.gov.hmrc"  %%  "frontend-bootstrap"           %  "11.0.0",
+    "uk.gov.hmrc"  %%  "frontend-bootstrap"           %  "11.3.0",
     "uk.gov.hmrc"  %%  "url-builder"                  %  "2.1.0",
     "uk.gov.hmrc"  %%  "play-partials"                %  "6.3.0",
-    "uk.gov.hmrc"  %%  "csp-client"                   %  "3.1.0",
+    "uk.gov.hmrc"  %%  "csp-client"                   %  "3.2.0",
     "uk.gov.hmrc"  %%  "play-language"                %  "3.4.0",
     "uk.gov.hmrc"  %%  "local-template-renderer"      %  "2.0.0",
     "uk.gov.hmrc"  %% "auth-client" % "2.17.0-play-25"

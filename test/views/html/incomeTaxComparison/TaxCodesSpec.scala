@@ -16,15 +16,14 @@
 
 package views.html.incomeTaxComparison
 
-import uk.gov.hmrc.tai.viewModels.TaxCodeDetail
 import play.twirl.api.Html
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.HtmlFormatter
+import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{TaxCodeComparisonViewModel, TaxCodeDetail}
 import uk.gov.hmrc.urls.Link
-import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.time.TaxYearResolver
 
 class TaxCodesSpec extends TaiViewSpec {
   "Cy plus one tax codes view" must {
@@ -54,7 +53,7 @@ class TaxCodesSpec extends TaiViewSpec {
   private lazy val employmentTaxCode = Seq(TaxCodeDetail("EMPLOYER", Seq("1115L", "S975L")))
   private lazy val pensionTaxCode = Seq(TaxCodeDetail("PENSION", Seq("1150L", "1250L")))
   private lazy val model = TaxCodeComparisonViewModel(employmentTaxCode, pensionTaxCode)
-  val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.endOfCurrentTaxYear))
-  val taxYearStarts = "Next tax year from " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYearResolver.startOfNextTaxYear))
+  val taxYearEnds = "Current tax year ends " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear()end))
+  val taxYearStarts = "Next tax year from " + HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear().next.start))
   override def view: Html = views.html.incomeTaxComparison.TaxCodes(model)
 }
