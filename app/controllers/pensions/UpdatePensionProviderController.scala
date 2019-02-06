@@ -81,7 +81,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
         case TaiSuccessResponseWithPayload(incomes: Seq[TaxCodeIncome]) =>
           incomes.find(income => income.employmentId.contains(id) &&
             income.componentType == PensionIncome) match {
-            case Some(taxCodeIncome) => cacheAndCreateView(id, taxCodeIncome)
+            case Some(taxCodeIncome) => cacheAndCreateViewTemp(id, taxCodeIncome)
             case _ => throw new RuntimeException(s"Tax code income source is not available for id $id")
           }
         case _ => throw new RuntimeException("Tax code income source is not available")
@@ -90,7 +90,9 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
       }
   }
 
-  private def cacheAndCreateView(id: Int, taxCodeIncome: TaxCodeIncome)(implicit hc: HeaderCarrier,
+
+
+  private def cacheAndCreateViewTemp(id: Int, taxCodeIncome: TaxCodeIncome)(implicit hc: HeaderCarrier,
                                                                         request: Request[AnyContent],
                                                                         user: AuthedUser): Future[Result] = {
     for {
@@ -238,5 +240,39 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
       implicit val user = request.taiUser
 
       Future.successful(Ok(views.html.pensions.update.confirmation()))
+  }
+
+  def redirectUpdatePension(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user = request.taiUser
+
+      val cacheAndRedirect = (id: Int, taxCodeIncome: TaxCodeIncome) => {
+        val successfullJourneyCacheFuture = successfulJourneyCacheService.currentValue(s"$TrackSuccessfulJourney_UpdatePensionKey-${id}")
+        val journeyCacheFuture = journeyCacheService.cache(Map(UpdatePensionProvider_IdKey -> id.toString,
+          UpdatePensionProvider_NameKey -> taxCodeIncome.name))
+
+        for {
+          successfulJourneyCache <- successfullJourneyCacheFuture
+          _ <- journeyCacheFuture
+        } yield {
+          successfulJourneyCache match {
+            case Some(_) => ???
+            case _ => Redirect(routes.UpdatePensionProviderController.doYouGetThisPension(id))
+          }
+        }
+      }
+
+      (taxAccountService.taxCodeIncomes(request.taiUser.nino, TaxYear()) flatMap {
+        case TaiSuccessResponseWithPayload(incomes: Seq[TaxCodeIncome]) =>
+          incomes.find(income => income.employmentId.contains(id) &&
+            income.componentType == PensionIncome) match {
+            case Some(taxCodeIncome) => cacheAndRedirect(id, taxCodeIncome)
+            //case _ => throw new RuntimeException(s"Tax code income source is not available for id $id")
+          }
+        //case _ => throw new RuntimeException("Tax code income source is not available")
+      }).recover {
+        case NonFatal(e) => internalServerError(e.getMessage)
+      }
+
   }
 }

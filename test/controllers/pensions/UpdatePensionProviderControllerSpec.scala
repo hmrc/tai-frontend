@@ -423,6 +423,26 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     }
   }
 
+  "redirectUpdatePension" must {
+    "redirect to when there is no update pension ID cache value present" in {
+      val pensionId = 1
+      val pensionTaxCodeIncome = TaxCodeIncome(PensionIncome, Some(1), 100, "", "", "TEST", Week1Month1BasisOfOperation, Live)
+      val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "", "", Week1Month1BasisOfOperation, Live)
+      val cacheMap = Map(UpdatePensionProvider_IdKey -> pensionId.toString, UpdatePensionProvider_NameKey -> pensionName)
+      val sut = createSUT
+
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).
+        thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
+      when(journeyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
+      when(successfulJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$pensionId"))(any())).
+              thenReturn(Future.successful(None))
+
+      val result = sut.redirectUpdatePension(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe routes.UpdatePensionProviderController.doYouGetThisPension(pensionId).url
+    }
+  }
+
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private def createSUT = new SUT
