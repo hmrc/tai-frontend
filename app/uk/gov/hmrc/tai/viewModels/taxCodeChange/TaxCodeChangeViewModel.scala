@@ -29,6 +29,7 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
                                   scottishTaxRateBands: Map[String, BigDecimal],
                                   gaDimensions: Map[String, String])
 
+
 object TaxCodeChangeViewModel extends TaxCodeDescriptor {
 
   def apply(taxCodeChange: TaxCodeChange, scottishTaxRateBands: Map[String, BigDecimal]): TaxCodeChangeViewModel = {
