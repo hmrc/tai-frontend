@@ -86,16 +86,16 @@ class IncomeController @Inject()(personService: PersonService,
         ServiceCheckLite.personDetailsCheck {
           sendActingAttorneyAuditEvent("handleRegularIncomeUpdateForEdit")
 
-          journeyCacheService.collectedValues(Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey), Seq(UpdateIncome_DateKey)) flatMap tupled {
+          journeyCacheService.collectedValuesAsMap(Seq(UpdateIncome_PayToDateKey, UpdateIncome_IdKey, UpdateIncome_NameKey), Seq(UpdateIncome_DateKey)) flatMap tupled {
             (mandatorySeq, optionalSeq) => {
-              val date = optionalSeq.head.map(date => LocalDate.parse(date))
-              EditIncomeForm.bind(mandatorySeq(2), BigDecimal(mandatorySeq.head), date).fold(
+              val date = optionalSeq.getOrElse(UpdateIncome_DateKey, None).map(date => LocalDate.parse(date))
+              EditIncomeForm.bind(mandatorySeq(UpdateIncome_NameKey), BigDecimal(mandatorySeq(UpdateIncome_PayToDateKey)), date).fold(
                 formWithErrors => {
                   val webChat = true
                   Future.successful(BadRequest(views.html.incomes.editIncome(formWithErrors,
                     false,
-                    mandatorySeq(1).toInt,
-                    mandatorySeq.head, webChat = webChat)))
+                    mandatorySeq(UpdateIncome_IdKey).toInt,
+                    mandatorySeq(UpdateIncome_PayToDateKey), webChat = webChat)))
                 },
                 income => {
                   journeyCacheService.cache(UpdateIncome_NewAmountKey, income.newAmount.getOrElse("0")).map { x =>
@@ -120,7 +120,6 @@ class IncomeController @Inject()(personService: PersonService,
             taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
             employmentDetails <- employmentService.employment(Nino(user.getNino), id)
           } yield {
-
             (taxCodeIncomeDetails, employmentDetails) match {
               case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
                 taxCodeIncomes.find(_.employmentId.contains(cachedData.head.toInt)) match {

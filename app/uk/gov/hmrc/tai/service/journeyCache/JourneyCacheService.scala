@@ -69,11 +69,27 @@ class JourneyCacheService @Inject() (val journeyName: String,
     }
   }
 
+  def mandatoryValuesAsMap(keys : String*)(implicit hc: HeaderCarrier): Future[Map[String, String]] = {
+    for {
+      cache <- currentCache
+    } yield {
+      mappedMandatoryAsMap(cache, keys)
+    }
+  }
+
   def optionalValues(keys: String*)(implicit hc: HeaderCarrier): Future[Seq[Option[String]]] = {
     for {
       cache <- currentCache
     } yield {
       mappedOptional(cache, keys)
+    }
+  }
+
+  def optionalValuesAsMap(keys: String*)(implicit hc: HeaderCarrier): Future[Map[String, Option[String]]] = {
+    for {
+      cache <- currentCache
+    } yield {
+      mappedOptionalAsMap(cache, keys)
     }
   }
 
@@ -87,6 +103,16 @@ class JourneyCacheService @Inject() (val journeyName: String,
     }
   }
 
+  def collectedValuesAsMap(mandatoryValues: Seq[String], optionalValues: Seq[String])(implicit hc: HeaderCarrier): Future[(Map[String, String], Map[String, Option[String]])] = {
+    for {
+      cache <- currentCache
+    } yield {
+      val mandatoryResult = mappedMandatoryAsMap(cache, mandatoryValues)
+      val optionalResult = mappedOptionalAsMap(cache, optionalValues)
+      (mandatoryResult, optionalResult)
+    }
+  }
+
   private def mappedMandatory(cache: Map[String, String], mandatoryValues: Seq[String]): Seq[String] = {
     mandatoryValues map { key =>
       cache.get(key) match {
@@ -96,12 +122,30 @@ class JourneyCacheService @Inject() (val journeyName: String,
     }
   }
 
+  private def mappedMandatoryAsMap(cache: Map[String, String], mandatoryValues: Seq[String]): Map[String, String] = {
+    val filteredCache: Map[String, String] = cache.filter(cachePair => mandatoryValues.contains(cachePair._1))
+    val foundKeys = filteredCache.keys.toSeq
+
+    if (foundKeys.equals(mandatoryValues)) {
+      filteredCache
+    } else {
+      val missingKeys = mandatoryValues.diff(foundKeys).mkString("'",", ", "'")
+      throw new RuntimeException(s"The mandatory values '$missingKeys' were not found in the journey cache for '$journeyName'")
+    }
+  }
+
   private def mappedOptional(cache: Map[String, String], optionalValues: Seq[String]): Seq[Option[String]] = {
     optionalValues map { key =>
       cache.get(key) match {
         case found @ Some(str) if !str.trim.isEmpty => found
         case _ => None
       }
+    }
+  }
+
+  private def mappedOptionalAsMap(cache: Map[String, String], optionalValues: Seq[String]): Map[String, Option[String]] = {
+    cache.filter(cachePair => optionalValues.contains(cachePair._1)).flatMap { pair: (String, String) =>
+      Map[String, Option[String]](pair._1 -> Some(pair._2))
     }
   }
 
