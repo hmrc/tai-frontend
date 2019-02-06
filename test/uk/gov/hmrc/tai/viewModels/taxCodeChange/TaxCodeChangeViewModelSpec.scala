@@ -206,6 +206,18 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
       TaxCodeRecord("taxCode", startDate, startDate.plusMonths(1), OtherBasisOfOperation, employerName, false, Some("12345"), false)
     }
 
+    def createPrimaryTaxRecord(employerName: String): TaxCodeRecord = {
+      TaxCodeRecord("taxCode", startDate, startDate.plusMonths(1), OtherBasisOfOperation, employerName, false, Some("12345"), true)
+    }
+
+    def removedEmployer(employerName: String): String = {
+      Messages("tai.taxCodeComparison.removeEmployer", employerName)
+    }
+
+    def addedEmployer(employerName: String): String = {
+      Messages("tai.taxCodeComparison.addEmployer", employerName)
+    }
+
     "return a reason when an employment been removed" in {
       val previous = Seq(createTaxRecord(previousEmployer), createTaxRecord(currentEmployer))
       val current = Seq(createTaxRecord(currentEmployer))
@@ -213,7 +225,7 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
       val taxCodeChange = TaxCodeChange(previous, current)
       val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
 
-      model.taxCodeReasons mustBe Seq(s"Removed $previousEmployer")
+      model.taxCodeReasons mustBe Seq(removedEmployer(previousEmployer))
     }
 
     "return a reason when an employment been added" in {
@@ -223,17 +235,33 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
       val taxCodeChange = TaxCodeChange(previous, current)
       val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
 
-      model.taxCodeReasons mustBe Seq(s"Added $currentEmployer")
+      model.taxCodeReasons mustBe Seq(addedEmployer(currentEmployer))
     }
 
-    "return reasons when an employment has changed" in {
-      val previous = Seq(createTaxRecord(previousEmployer))
-      val current = Seq(createTaxRecord(currentEmployer))
+    "return multiple reasons when employments have changed" in {
+      val previous = Seq(createTaxRecord(previousEmployer), createTaxRecord(previousEmployer + "1"))
+      val current = Seq(createTaxRecord(currentEmployer), createTaxRecord(currentEmployer + "1"))
 
       val taxCodeChange = TaxCodeChange(previous, current)
       val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
 
-      model.taxCodeReasons mustBe Seq(s"Removed $previousEmployer", s"Added $currentEmployer")
+      model.taxCodeReasons mustBe Seq(
+        removedEmployer(previousEmployer), removedEmployer(previousEmployer + "1"),
+        addedEmployer(currentEmployer), addedEmployer(currentEmployer + "1")
+      )
+    }
+
+    "return an add and remove message when primary employment has changed" in {
+      val previous = Seq(createPrimaryTaxRecord(previousEmployer))
+      val current = Seq(createPrimaryTaxRecord(currentEmployer))
+
+      val taxCodeChange = TaxCodeChange(previous, current)
+      val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+      model.taxCodeReasons mustBe Seq(
+        removedEmployer(previousEmployer),
+        addedEmployer(currentEmployer)
+      )
     }
   }
 }

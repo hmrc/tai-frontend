@@ -29,14 +29,22 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
                                   scottishTaxRateBands: Map[String, BigDecimal],
                                   gaDimensions: Map[String, String]) {
 
-  def taxCodeReasons: Seq[String] = {
+  private def removeEmployer(employerName: String)(implicit messages: Messages): String = {
+    Messages("tai.taxCodeComparison.removeEmployer", employerName)
+  }
+
+  private def addEmployer(employerName: String)(implicit messages: Messages): String = {
+    Messages("tai.taxCodeComparison.addEmployer", employerName)
+  }
+
+  def taxCodeReasons(implicit messages: Messages): Seq[String] = {
 
     val removed = pairs.unMatchedPreviousCodes.flatMap(_.previous).map { record =>
-      s"Removed ${record.employerName}"
+      removeEmployer(record.employerName)
     }
 
     val added = pairs.unMatchedCurrentCodes.flatMap(_.current).map { record =>
-      s"Added ${record.employerName}"
+      addEmployer(record.employerName)
     }
 
     val primarySame: Seq[String] = {
@@ -48,7 +56,7 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
         val previousEmployerName = previous.getOrElse("No Previous")
 
         if (currentEmployerName != previousEmployerName) {
-          Seq(s"Removed $previousEmployerName", s"Added $currentEmployerName")
+          Seq(removeEmployer(previousEmployerName), addEmployer(currentEmployerName))
         } else {
           Seq.empty[String]
         }
@@ -70,8 +78,7 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
     TaxCodeChangeViewModel(taxCodePairs, changeDate, scottishTaxRateBands, gaDimensions(taxCodeChange, changeDate))
   }
 
-  def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal], identifier: String)
-                            (implicit messages: Messages): DescriptionListViewModel = {
+  def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal], identifier: String)(implicit messages: Messages): DescriptionListViewModel = {
 
     val isCurrentTaxCode = identifier == "current"
 
