@@ -39,7 +39,6 @@ class TaxCodeChangeController @Inject()(taxCodeChangeService: TaxCodeChangeServi
                                         describedYourTaxFreeAmountService: DescribedYourTaxFreeAmountService,
                                         authenticate: AuthAction,
                                         validatePerson: ValidatePerson,
-                                        yourTaxFreeAmountService: YourTaxFreeAmountService,
                                         override implicit val partialRetriever: FormPartialRetriever,
                                         override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with FeatureTogglesConfig

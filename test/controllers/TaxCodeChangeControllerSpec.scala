@@ -37,8 +37,6 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.yourTaxFreeAmount.DescribedYourTaxFreeAmountService
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxFreeInfo
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
-import uk.gov.hmrc.time.TaxYearResolver
-
 import scala.concurrent.Future
 import scala.util.Random
 
@@ -136,7 +134,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
   val giftAmount = 1000
 
-  val startDate = TaxYearResolver.startOfCurrentTaxYear
+  val startDate = TaxYear().start
 
   val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
@@ -155,7 +153,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     describedYourTaxFreeAmountService,
     FakeAuthAction,
     FakeValidatePerson,
-    mock[YourTaxFreeAmountService],
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
