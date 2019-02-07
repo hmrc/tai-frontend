@@ -32,6 +32,7 @@ import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.TaxAccountSummary
 import uk.gov.hmrc.tai.service.{AuditService, CodingComponentService, PersonService, TaxAccountService}
+import uk.gov.hmrc.tai.util.Referral
 import uk.gov.hmrc.tai.util.constants.AuditConstants
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 
@@ -47,14 +48,14 @@ class PotentialUnderpaymentController @Inject()(taxAccountService: TaxAccountSer
   with DelegationAwareActions
   with WithAuthorisedForTaiLite
   with Auditable
-  with AuditConstants {
+  with AuditConstants
+  with Referral {
 
   def potentialUnderpaymentPage(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request =>
           ServiceCheckLite.personDetailsCheck {
-
             sendActingAttorneyAuditEvent("getPotentialUnderpaymentPage")
             val tasFuture = taxAccountService.taxAccountSummary(Nino(user.getNino), TaxYear())
             val ccFuture = codingComponentService.taxFreeAmountComponents(Nino(user.getNino), TaxYear())
@@ -64,7 +65,7 @@ class PotentialUnderpaymentController @Inject()(taxAccountService: TaxAccountSer
               ccs <- ccFuture
             } yield {
               auditService.createAndSendAuditEvent(PotentialUnderpayment_InYearAdjustment, Map("nino" -> user.getNino))
-              val vm = PotentialUnderpaymentViewModel(tas, ccs)
+              val vm = PotentialUnderpaymentViewModel(tas, ccs, referer, resourceName)
               Ok(views.html.potentialUnderpayment(vm))
             }
           } recoverWith handleErrorResponse("getPotentialUnderpaymentPage", Nino(user.getNino))
