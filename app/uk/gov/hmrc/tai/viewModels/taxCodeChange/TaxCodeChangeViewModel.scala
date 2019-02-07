@@ -47,26 +47,21 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
       addEmployer(record.employerName)
     }
 
-    val primarySame: Seq[String] = {
+    val primaryEmploymentsSame: Seq[String] = {
       pairs.primaryPairs flatMap { primaryPair =>
         val current = primaryPair.current.map(_.employerName)
         val previous = primaryPair.previous.map(_.employerName)
 
-        val currentEmployerName = current.getOrElse("No Current")
-        val previousEmployerName = previous.getOrElse("No Previous")
-
-        if (currentEmployerName != previousEmployerName) {
-          Seq(removeEmployer(previousEmployerName), addEmployer(currentEmployerName))
-        } else {
-          Seq.empty[String]
+        (current, previous) match {
+          case (Some(current), Some(previous)) if (current != previous) => Seq(removeEmployer(previous), addEmployer(current))
+          case _ => Seq.empty[String]
         }
       }
     }
 
-    removed ++ added ++ primarySame
+    removed ++ added ++ primaryEmploymentsSame
   }
 }
-
 
 object TaxCodeChangeViewModel extends TaxCodeDescriptor {
 
