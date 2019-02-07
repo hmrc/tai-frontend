@@ -31,7 +31,7 @@ class EndEmploymentIrregularPaymentErrorPageSpec extends TaiViewSpec with Irregu
     behave like pageWithBackLink
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(model.empId))
     behave like pageWithCombinedHeader(messages("tai.irregular.preHeadingText"), messages("tai.irregular.heading", model.employerName))
-    behave like pageWithContinueButtonForm("/check-income-tax/end-employment/handle-irregular-payment/1")
+    behave like pageWithContinueButtonForm("/check-income-tax/end-employment/handle-irregular-payment")
 
     "display paragraphs" in {
       doc(view) must haveParagraphWithText(messages("tai.irregular.para1", model.employerName))

@@ -82,8 +82,6 @@ class TrackingServiceSpec extends PlaySpec
 
       Seq(
         Map(TrackSuccessfulJourney_AddEmploymentKey -> "true"),
-        Map(TrackSuccessfulJourney_EndEmploymentKey -> "true"),
-        Map(TrackSuccessfulJourney_UpdateEmploymentKey -> "true"),
         Map(TrackSuccessfulJourney_UpdatePensionKey -> "true"),
         Map(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey -> "true"),
         Map(TrackSuccessfulJourney_AddPensionProviderKey -> "true")

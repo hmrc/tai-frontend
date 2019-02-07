@@ -48,7 +48,7 @@ class UpdateRemoveEmploymentDecisionSpec extends TaiViewSpec with FormValuesCons
       messages("tai.employment.decision.radio1"),
       messages("tai.employment.decision.radio2"))
 
-    behave like pageWithContinueButtonForm("/check-income-tax/update-remove-employment/decision/1")
+    behave like pageWithContinueButtonForm("/check-income-tax/update-remove-employment/decision")
 
     behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
   }

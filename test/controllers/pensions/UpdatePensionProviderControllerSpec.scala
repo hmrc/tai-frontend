@@ -352,16 +352,17 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       "the request has an authorised session and a telephone number has been provided" in {
         val sut = createSUT
         val incorrectPensionProvider = IncorrectPensionProvider("some random info", "Yes", Some("123456789"))
+        val empId = 1
         when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
           Future.successful((
-            Seq[String]("1", "some random info", "Yes"),
+            Seq[String](empId.toString, "some random info", "Yes"),
             Seq[Option[String]](Some("123456789"))
           ))
         )
         when(pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(any()))
           .thenReturn(Future.successful("envelope_id_1"))
         when(successfulJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_UpdatePensionKey), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdateEmploymentKey -> "true")))
+          .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId" -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
@@ -374,16 +375,17 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       "the request has an authorised session and telephone number has not been provided" in {
         val sut = createSUT
         val incorrectPensionProvider = IncorrectPensionProvider("some random info", "No", None)
+        val empId = 1
         when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
           Future.successful((
-            Seq[String]("1", "some random info", "No"),
+            Seq[String](empId.toString, "some random info", "No"),
             Seq[Option[String]](None)
           ))
         )
         when(pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(any()))
           .thenReturn(Future.successful("envelope_id_1"))
         when(successfulJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_UpdatePensionKey), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(TrackSuccessfulJourney_UpdateEmploymentKey -> "true")))
+          .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId" -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
