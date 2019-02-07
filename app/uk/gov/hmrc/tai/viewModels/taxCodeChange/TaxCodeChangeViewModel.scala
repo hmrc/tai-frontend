@@ -47,7 +47,7 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
       addEmployer(record.employerName)
     }
 
-    val primaryEmploymentsSame: Seq[String] = {
+    val primaryEmploymentsChanged: Seq[String] = {
       pairs.primaryPairs flatMap { primaryPair =>
         val current = primaryPair.current.map(_.employerName)
         val previous = primaryPair.previous.map(_.employerName)
@@ -59,7 +59,7 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
       }
     }
 
-    removed ++ added ++ primaryEmploymentsSame
+    removed ++ added ++ primaryEmploymentsChanged
   }
 }
 
