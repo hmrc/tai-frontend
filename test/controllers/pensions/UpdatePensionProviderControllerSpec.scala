@@ -63,10 +63,6 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
     "show the decision view" when {
       "a valid pension id has been passed" in {
         val sut = createSUT
-        val pensionTaxCodeIncome = TaxCodeIncome(PensionIncome, Some(1), 100, "", "",
-          "TEST", Week1Month1BasisOfOperation, Live)
-        val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "",
-          "", Week1Month1BasisOfOperation, Live)
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
@@ -79,10 +75,6 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       }
       "a valid pension id has been passed and we have some cached data" in {
         val sut = createSUT
-        val pensionTaxCodeIncome = TaxCodeIncome(PensionIncome, Some(1), 100, "", "",
-          "TEST", Week1Month1BasisOfOperation, Live)
-        val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "",
-          "", Week1Month1BasisOfOperation, Live)
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
         when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
@@ -109,10 +101,6 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
       "an invalid id has been passed" in {
         val sut = createSUT
-        val pensionTaxCodeIncome = TaxCodeIncome(PensionIncome, Some(1), 100, "", "",
-          "", Week1Month1BasisOfOperation, Live)
-        val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "",
-          "", Week1Month1BasisOfOperation, Live)
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
@@ -124,10 +112,6 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
       "an invalid pension id has been passed" in {
         val sut = createSUT
-        val pensionTaxCodeIncome = TaxCodeIncome(PensionIncome, Some(1), 100, "", "",
-          "", Week1Month1BasisOfOperation, Live)
-        val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "",
-          "", Week1Month1BasisOfOperation, Live)
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
@@ -424,10 +408,9 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
   }
 
   "redirectUpdatePension" must {
-    "redirect to when there is no update pension ID cache value present" in {
+
+    "redirect to the Do You Get This Pension page when there is no update pension ID cache value present" in {
       val pensionId = 1
-      val pensionTaxCodeIncome = TaxCodeIncome(PensionIncome, Some(1), 100, "", "", "TEST", Week1Month1BasisOfOperation, Live)
-      val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "", "", Week1Month1BasisOfOperation, Live)
       val cacheMap = Map(UpdatePensionProvider_IdKey -> pensionId.toString, UpdatePensionProvider_NameKey -> pensionName)
       val sut = createSUT
 
@@ -441,6 +424,44 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.UpdatePensionProviderController.doYouGetThisPension(pensionId).url
     }
+
+    "redirect to the Duplicate Submission Warning page when there is an Update pension ID cache value present" in {
+      val pensionId = 1
+      val cacheMap = Map(UpdatePensionProvider_IdKey -> pensionId.toString, UpdatePensionProvider_NameKey -> pensionName)
+      val sut = createSUT
+
+      when(taxAccountService.taxCodeIncomes(any(), any())(any())).
+        thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
+      when(journeyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
+      when(successfulJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$pensionId"))(any())).
+        thenReturn(Future.successful(Some("true")))
+
+      val result = sut.redirectUpdatePension(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe routes.UpdatePensionProviderController.duplicateSubmissionWarning.url
+    }
+
+    "return Internal Server error" when {
+      "tax code income sources are not available" in {
+        val pensionId = 1
+        val sut = createSUT
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+
+        val result = sut.redirectUpdatePension(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+
+      "an invalid id has been passed" in {
+        val sut = createSUT
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
+
+        val result = sut.redirectUpdatePension(4)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
   }
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -449,6 +470,8 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
   val generateNino: Nino = new Generator().nextNino
   val pensionName = "TEST"
+  val pensionTaxCodeIncome = TaxCodeIncome(PensionIncome, Some(1), 100, "", "", "TEST", Week1Month1BasisOfOperation, Live)
+  val empTaxCodeIncome = TaxCodeIncome(EmploymentIncome, Some(2), 100, "", "", "", Week1Month1BasisOfOperation, Live)
 
   val pensionProviderService = mock[PensionProviderService]
   val taxAccountService = mock[TaxAccountService]

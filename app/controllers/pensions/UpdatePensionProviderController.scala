@@ -256,7 +256,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
           _ <- journeyCacheFuture
         } yield {
           successfulJourneyCache match {
-            case Some(_) => ???
+            case Some(_) => Redirect(routes.UpdatePensionProviderController.duplicateSubmissionWarning())
             case _ => Redirect(routes.UpdatePensionProviderController.doYouGetThisPension(id))
           }
         }
@@ -267,12 +267,23 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
           incomes.find(income => income.employmentId.contains(id) &&
             income.componentType == PensionIncome) match {
             case Some(taxCodeIncome) => cacheAndRedirect(id, taxCodeIncome)
-            //case _ => throw new RuntimeException(s"Tax code income source is not available for id $id")
+            case _ => throw new RuntimeException(s"Tax code income source is not available for id $id")
           }
-        //case _ => throw new RuntimeException("Tax code income source is not available")
+        case _ => throw new RuntimeException("Tax code income source is not available")
       }).recover {
         case NonFatal(e) => internalServerError(e.getMessage)
       }
 
   }
+
+  def duplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user = request.taiUser
+//      journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { mandatoryValues =>
+//        Ok(views.html.employments.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, mandatoryValues(0), mandatoryValues(1).toInt))
+//      }
+      ???
+  }
+
+
 }

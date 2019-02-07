@@ -257,6 +257,8 @@ POST        /incorrect-pension/telephone-number                                 
 GET         /incorrect-pension/check-your-answers                                      @controllers.pensions.UpdatePensionProviderController.checkYourAnswers
 POST        /incorrect-pension/check-your-answers                                      @controllers.pensions.UpdatePensionProviderController.submitYourAnswers
 GET         /incorrect-pension/success                                                 @controllers.pensions.UpdatePensionProviderController.confirmation
+GET         /incorrect-pension/redirect/:id                                            @controllers.pensions.UpdatePensionProviderController.redirectUpdatePension(id: Int)
+GET         /incorrect-pension/duplicateSubmissionWarning                              @controllers.pensions.UpdatePensionProviderController.duplicateSubmissionWarning
 
 ## Tax Code Change
 
