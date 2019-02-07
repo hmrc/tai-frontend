@@ -61,18 +61,57 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
   "doYouGetThisPension" must {
     "show the doYouGetThisPension view" in {
-        val sut = createSUT
-        val pensionId = "1"
-        val PensionQuestionKey = "yes"
+      val sut = createSUT
+      val pensionId = "1"
+      val PensionQuestionKey = "yes"
 
-        when(journeyCacheService.collectedValues(Seq(Matchers.anyVararg[String]),Seq(Matchers.anyVararg[String]))(any()))
-          .thenReturn(Future.successful(Seq(pensionId, pensionName), Seq(Some(PensionQuestionKey))))
+      when(journeyCacheService.collectedValues(Seq(Matchers.anyVararg[String]), Seq(Matchers.anyVararg[String]))(any()))
+        .thenReturn(Future.successful(Seq(pensionId, pensionName), Seq(Some(PensionQuestionKey))))
 
-        val result = sut.doYouGetThisPension()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = sut.doYouGetThisPension()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
-        status(result) mustBe OK
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.updatePension.decision.heading", "TEST"))
+      status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.title() must include(Messages("tai.updatePension.decision.heading", "TEST"))
+    }
+
+
+    "redirectUpdatePension" must {
+      "return Internal Server error" when {
+        "tax code income sources are not available" in {
+          val sut = createSUT
+          val empId = 1
+          when(taxAccountService.taxCodeIncomes(any(), any())(any())).
+            thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
+
+          val result = sut.redirectUpdatePension(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+          status(result) mustBe INTERNAL_SERVER_ERROR
+        }
+
+        "an invalid id has been passed" in {
+          val sut = createSUT
+          val empId = 1
+          when(taxAccountService.taxCodeIncomes(any(), any())(any())).
+            thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
+
+          val result = sut.redirectUpdatePension(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+          status(result) mustBe INTERNAL_SERVER_ERROR
+        }
+
+
+        "an invalid pension id has been passed" in {
+          val sut = createSUT
+          val empId = 1
+          when(taxAccountService.taxCodeIncomes(any(), any())(any())).
+            thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
+
+          val result = sut.redirectUpdatePension(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+          status(result) mustBe INTERNAL_SERVER_ERROR
+        }
+      }
     }
   }
 
