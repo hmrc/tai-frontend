@@ -49,7 +49,7 @@
 
     <div class="column-two-thirds">
         <div class="grid-row">
-            @taxCodeReasons(taxCodeChangeViewModel.taxCodeReasons)
+            @displayTaxCodeReasons(taxCodeChangeViewModel.taxCodeReasons)
         </div>
         <div class="grid-row tax-code-change margin-bottom-xlarge">
             @taxCodePairs(taxCodeChangeViewModel.pairs)
@@ -73,26 +73,37 @@
     }}
 }
 
-@taxCodeReasons(taxCodeReasons: Seq[String]) = {
+@displayTaxCodeReasons(taxCodeReasons: Seq[String]) = {
     @if(taxCodeReasons.isEmpty) {
         <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
     } else {
-        <div class="notice">
-            <i class="icon icon-information">
-                <span class="visually-hidden">Information</span>
-            </i>
-            <strong class="bold-small">
-                @Messages("tai.taxCodeComparison.title")
-            </strong>
-        </div>
+        @if(taxCodeReasons.size < 4) {
+            <div class="notice">
+                <i class="icon icon-information">
+                    <span class="visually-hidden">Information</span>
+                </i>
+                <strong class="bold-small">
+                    @Messages("tai.taxCodeComparison.title")
+                </strong>
+            </div>
 
-        <ul class="list-bullet">
-            @for((reason) <- taxCodeReasons) {
-            <li>
-                @reason
-            </li>
-            }
-        </ul>
+            <ul class="list-bullet">
+                @for((reason) <- taxCodeReasons) {
+                <li>
+                    @reason
+                </li>
+                }
+            </ul>
+        } else {
+            <div class="notice">
+                <i class="icon icon-information">
+                    <span class="visually-hidden">Information</span>
+                </i>
+                <strong class="bold-small">
+                @Messages("taxCode.change.yourTaxCodeChanged.paragraph")
+                </strong>
+            </div>
+        }
     }
 }
 
