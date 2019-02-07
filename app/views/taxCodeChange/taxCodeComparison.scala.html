@@ -86,14 +86,15 @@
                     @Messages("tai.taxCodeComparison.title")
                 </strong>
             </div>
-
-            <ul class="list-bullet">
-                @for((reason) <- taxCodeReasons) {
-                <li>
-                    @reason
-                </li>
-                }
-            </ul>
+            <div class ="tax-code-change">
+                <ul class="list-bullet">
+                    @for((reason) <- taxCodeReasons) {
+                    <li>
+                        @reason
+                    </li>
+                    }
+                </ul>
+            </div>
         } else {
             <div class="notice">
                 <i class="icon icon-information">
