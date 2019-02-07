@@ -263,5 +263,27 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
         addedEmployer(currentEmployer)
       )
     }
+
+    "if you can match by employer name but can't match with payroll" should {
+      "go to the generic message for primary tax records" in {
+        val previous = createPrimaryTaxRecord(previousEmployer)
+        val current = previous.copy(payrollNumber = Some("54321"))
+
+        val taxCodeChange = TaxCodeChange(Seq(previous), Seq(current))
+        val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+        model.taxCodeReasons mustBe Seq(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
+      }
+
+      "go to the generic message for secondary tax records" in {
+        val previous = createTaxRecord(previousEmployer)
+        val current = previous.copy(payrollNumber = Some("54321"))
+
+        val taxCodeChange = TaxCodeChange(Seq(previous), Seq(current))
+        val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+        model.taxCodeReasons mustBe Seq(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
+      }
+    }
   }
 }

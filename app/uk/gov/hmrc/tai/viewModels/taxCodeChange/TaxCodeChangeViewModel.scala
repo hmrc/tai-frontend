@@ -29,37 +29,46 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
                                   scottishTaxRateBands: Map[String, BigDecimal],
                                   gaDimensions: Map[String, String]) {
 
-  private def removeEmployer(employerName: String)(implicit messages: Messages): String = {
-    Messages("tai.taxCodeComparison.removeEmployer", employerName)
+  private def removeEmployer(employerNames: Seq[String])(implicit messages: Messages): Seq[String] = {
+    employerNames map ( name => Messages("tai.taxCodeComparison.removeEmployer", name))
   }
 
-  private def addEmployer(employerName: String)(implicit messages: Messages): String = {
-    Messages("tai.taxCodeComparison.addEmployer", employerName)
+  private def addEmployer(employerNames: Seq[String])(implicit messages: Messages): Seq[String] = {
+    employerNames map ( name => Messages("tai.taxCodeComparison.addEmployer", name))
+  }
+
+  private def genericMessage(implicit messages: Messages): Seq[String] = {
+    Seq(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
+  }
+
+  private def secondaryEmploymentsChanged(implicit messages: Messages): Seq[String] = {
+    val removed = pairs.unMatchedPreviousCodes.flatMap(_.previous).map ( record => record.employerName )
+    val added = pairs.unMatchedCurrentCodes.flatMap(_.current).map ( record => record.employerName )
+
+    val removedSet = removed.toSet
+    val currentAndPreviousEmployerNamesAreSame: Boolean = (added filter removedSet).nonEmpty
+
+    currentAndPreviousEmployerNamesAreSame match {
+      case true => genericMessage
+      case false => removeEmployer(removed) ++ addEmployer(added)
+    }
+  }
+
+  private def primaryEmploymentsChanged(implicit messages: Messages): Seq[String] = {
+    pairs.primaryPairs flatMap { primaryPair =>
+      val current = primaryPair.current.map(_.employerName)
+      val previous = primaryPair.previous.map(_.employerName)
+
+      (current, previous) match {
+        case (Some(current), Some(previous)) if (current != previous) => removeEmployer(Seq(previous)) ++ addEmployer(Seq(current))
+        case (Some(current), Some(previous)) if (current == previous) => { genericMessage }
+        case _ => Seq.empty[String]
+      }
+    }
   }
 
   def taxCodeReasons(implicit messages: Messages): Seq[String] = {
-
-    val removed = pairs.unMatchedPreviousCodes.flatMap(_.previous).map { record =>
-      removeEmployer(record.employerName)
-    }
-
-    val added = pairs.unMatchedCurrentCodes.flatMap(_.current).map { record =>
-      addEmployer(record.employerName)
-    }
-
-    val primaryEmploymentsChanged: Seq[String] = {
-      pairs.primaryPairs flatMap { primaryPair =>
-        val current = primaryPair.current.map(_.employerName)
-        val previous = primaryPair.previous.map(_.employerName)
-
-        (current, previous) match {
-          case (Some(current), Some(previous)) if (current != previous) => Seq(removeEmployer(previous), addEmployer(current))
-          case _ => Seq.empty[String]
-        }
-      }
-    }
-
-    removed ++ added ++ primaryEmploymentsChanged
+    primaryEmploymentsChanged ++ secondaryEmploymentsChanged
   }
 }
 
