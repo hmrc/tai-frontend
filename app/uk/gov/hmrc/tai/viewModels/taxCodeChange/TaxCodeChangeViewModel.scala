@@ -54,14 +54,33 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
     }
   }
 
+  private def isDifferentPayRollWithSameEmployerName(primaryPair: TaxCodePair): Boolean = {
+
+    val isEmployerNameSame = {
+      val currentName = primaryPair.current.map(_.employerName)
+      val previousName = primaryPair.previous.map(_.employerName)
+
+      currentName == previousName
+    }
+
+    val isPayRollSame = {
+      val previousPayRoll = primaryPair.previous.flatMap(_.payrollNumber)
+      val currentPayRoll = primaryPair.current.flatMap(_.payrollNumber)
+
+      previousPayRoll == currentPayRoll
+    }
+
+    isEmployerNameSame && !isPayRollSame
+  }
+
   private def primaryEmploymentsChanged(implicit messages: Messages): Seq[String] = {
-    pairs.primaryPairs flatMap { primaryPair =>
+    pairs.primaryPairs flatMap { primaryPair: TaxCodePair =>
       val current = primaryPair.current.map(_.employerName)
       val previous = primaryPair.previous.map(_.employerName)
 
       (current, previous) match {
         case (Some(current), Some(previous)) if (current != previous) => removeEmployer(Seq(previous)) ++ addEmployer(Seq(current))
-        case (Some(current), Some(previous)) if (current == previous) => { genericMessage }
+        case (Some(current), Some(previous)) if isDifferentPayRollWithSameEmployerName(primaryPair) => { genericMessage }
         case _ => Seq.empty[String]
       }
     }

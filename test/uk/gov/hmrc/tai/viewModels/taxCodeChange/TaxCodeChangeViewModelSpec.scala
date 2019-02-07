@@ -218,6 +218,15 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
       Messages("tai.taxCodeComparison.addEmployer", employerName)
     }
 
+    "return empty when nothing has changed" in {
+      val taxRecord = Seq(createTaxRecord(previousEmployer), createPrimaryTaxRecord(currentEmployer))
+
+      val taxCodeChange = TaxCodeChange(taxRecord, taxRecord)
+      val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+      model.taxCodeReasons mustBe Seq.empty[String]
+    }
+
     "return a reason when an employment been removed" in {
       val previous = Seq(createTaxRecord(previousEmployer), createTaxRecord(currentEmployer))
       val current = Seq(createTaxRecord(currentEmployer))
