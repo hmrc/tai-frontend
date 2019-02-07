@@ -59,69 +59,20 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
 
-  "decision" must {
-    "show the decision view" when {
-      "a valid pension id has been passed" in {
+  "doYouGetThisPension" must {
+    "show the doYouGetThisPension view" in {
         val sut = createSUT
         val pensionId = "1"
+        val PensionQuestionKey = "yes"
 
-        when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-          .thenReturn(Future.successful(Seq(pensionId, pensionName)))
+        when(journeyCacheService.collectedValues(Seq(Matchers.anyVararg[String]),Seq(Matchers.anyVararg[String]))(any()))
+          .thenReturn(Future.successful(Seq(pensionId, pensionName), Seq(Some(PensionQuestionKey))))
 
         val result = sut.doYouGetThisPension()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
-//        val doc = Jsoup.parse(contentAsString(result))
-//        doc.title() must include(Messages("tai.updatePension.decision.heading", "TEST"))
-      }
-
-
-      "a valid pension id has been passed and we have some cached data" in {
-        val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map("" -> "")))
-
-        val result = sut.doYouGetThisPension(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.updatePension.decision.heading", "TEST"))
-      }
-    }
-
-
-    "return Internal Server error" when {
-      "tax code income sources are not available" in {
-        val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
-
-        val result = sut.doYouGetThisPension(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
-
-      "an invalid id has been passed" in {
-        val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
-
-        val result = sut.doYouGetThisPension(4)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
-
-
-      "an invalid pension id has been passed" in {
-        val sut = createSUT
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
-
-        val result = sut.doYouGetThisPension(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
     }
   }
 
@@ -427,7 +378,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
       val result = sut.redirectUpdatePension(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.UpdatePensionProviderController.doYouGetThisPension(pensionId).url
+      redirectLocation(result).get mustBe routes.UpdatePensionProviderController.doYouGetThisPension().url
     }
 
     "redirect to the Duplicate Submission Warning page when there is an Update pension ID cache value present" in {

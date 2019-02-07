@@ -73,37 +73,17 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
     controllers.routes.IncomeSourceSummaryController.onPageLoad(pensionId).url
   )
 
-  def doYouGetThisPension(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def doYouGetThisPension(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
 
-      (taxAccountService.taxCodeIncomes(request.taiUser.nino, TaxYear()) flatMap {
-        case TaiSuccessResponseWithPayload(incomes: Seq[TaxCodeIncome]) =>
-          incomes.find(income => income.employmentId.contains(id) &&
-            income.componentType == PensionIncome) match {
-            case Some(taxCodeIncome) => cacheAndCreateViewTemp(id, taxCodeIncome)
-            case _ => throw new RuntimeException(s"Tax code income source is not available for id $id")
-          }
-        case _ => throw new RuntimeException("Tax code income source is not available")
-      }).recover {
-        case NonFatal(e) => internalServerError(e.getMessage)
+      journeyCacheService.collectedValues(Seq(UpdatePensionProvider_IdKey,UpdatePensionProvider_NameKey), Seq(UpdatePensionProvider_ReceivePensionQuestionKey)) map tupled { (mandatoryValues, optionalValues) =>
+        val model = PensionProviderViewModel(mandatoryValues(0).toInt, mandatoryValues(1))
+        val form = UpdateRemovePensionForm.form.fill(optionalValues(0))
+        Ok(views.html.pensions.update.doYouGetThisPensionIncome(model, form))
       }
   }
 
-
-
-  private def cacheAndCreateViewTemp(id: Int, taxCodeIncome: TaxCodeIncome)(implicit hc: HeaderCarrier,
-                                                                        request: Request[AnyContent],
-                                                                        user: AuthedUser): Future[Result] = {
-    for {
-      updatedCache <- journeyCacheService.cache(Map(UpdatePensionProvider_IdKey -> id.toString,
-        UpdatePensionProvider_NameKey -> taxCodeIncome.name))
-    } yield {
-      val model = PensionProviderViewModel(id, taxCodeIncome.name)
-      val form = UpdateRemovePensionForm.form.fill(updatedCache.get(UpdatePensionProvider_ReceivePensionQuestionKey))
-      Ok(views.html.pensions.update.doYouGetThisPensionIncome(model, form))
-    }
-  }
 
   def handleDoYouGetThisPension: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -257,7 +237,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
         } yield {
           successfulJourneyCache match {
             case Some(_) => Redirect(routes.UpdatePensionProviderController.duplicateSubmissionWarning())
-            case _ => Redirect(routes.UpdatePensionProviderController.doYouGetThisPension(id))
+            case _ => Redirect(routes.UpdatePensionProviderController.doYouGetThisPension())
           }
         }
       }

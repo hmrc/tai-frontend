@@ -47,7 +47,7 @@ class UpdatePensionCheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPl
   private lazy val receivePensionLine = CheckYourAnswersConfirmationLine(
     Messages("tai.updatePension.cya.currentlyReceivePension"),
     Messages("tai.label.yes"),
-    controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension(1).url
+    controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension().url
   )
 
   private lazy val whatYouToldUsLine = CheckYourAnswersConfirmationLine(

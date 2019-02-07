@@ -83,13 +83,13 @@
         <p  aria-hidden="true">
             @Link.toInternalPage(
                 id=Some("updatePension"),
-                url=controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension(model.empId).url,
+                url=controllers.pensions.routes.UpdatePensionProviderController.redirectUpdatePension(model.empId).url,
                 value=Some(messages("tai.pension.income.details.updateLinkText"))).toHtml
         </p>
         <p class="visuallyhidden">
         @Link.toInternalPage(
             id=Some("updatePensionScreenReader"),
-            url=controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension(model.empId).url,
+            url=controllers.pensions.routes.UpdatePensionProviderController.redirectUpdatePension(model.empId).url,
             value=Some(messages("tai.pension.income.details.updateLinkText.screenReader", model.empOrPensionName))).toHtml
         </p>
     }else {

@@ -251,7 +251,7 @@ GET         /language/:lang                                                     
 
 ## Incorrect Pension
 
-GET         /incorrect-pension/decision/:id                                            @controllers.pensions.UpdatePensionProviderController.doYouGetThisPension(id: Int)
+GET         /incorrect-pension/decision                                                @controllers.pensions.UpdatePensionProviderController.doYouGetThisPension
 POST        /incorrect-pension/decision                                                @controllers.pensions.UpdatePensionProviderController.handleDoYouGetThisPension
 GET         /incorrect-pension/what-do-you-want-to-tell-us                             @controllers.pensions.UpdatePensionProviderController.whatDoYouWantToTellUs
 POST        /incorrect-pension/what-do-you-want-to-tell-us                             @controllers.pensions.UpdatePensionProviderController.submitWhatDoYouWantToTellUs
