@@ -74,48 +74,9 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       val doc = Jsoup.parse(contentAsString(result))
       doc.title() must include(Messages("tai.updatePension.decision.heading", "TEST"))
     }
-
-
-    "redirectUpdatePension" must {
-      "return Internal Server error" when {
-        "tax code income sources are not available" in {
-          val sut = createSUT
-          val empId = 1
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-            thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
-
-          val result = sut.redirectUpdatePension(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-          status(result) mustBe INTERNAL_SERVER_ERROR
-        }
-
-        "an invalid id has been passed" in {
-          val sut = createSUT
-          val empId = 1
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-            thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
-
-          val result = sut.redirectUpdatePension(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-          status(result) mustBe INTERNAL_SERVER_ERROR
-        }
-
-
-        "an invalid pension id has been passed" in {
-          val sut = createSUT
-          val empId = 1
-          when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-            thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
-
-          val result = sut.redirectUpdatePension(empId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
-
-          status(result) mustBe INTERNAL_SERVER_ERROR
-        }
-      }
-    }
   }
 
-  "handle decision" must {
+  "handleDoYouGetThisPension" must {
     "return bad request" when {
       "no options are selected" in {
         val sut = createSUT
@@ -354,7 +315,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         )
         when(pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(any()))
           .thenReturn(Future.successful("envelope_id_1"))
-        when(successfulJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_UpdatePensionKey), Matchers.eq("true"))(any()))
+        when(successfulJourneyCacheService.cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-${empId}"), Matchers.eq("true"))(any()))
           .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId" -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
@@ -411,9 +372,9 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
       when(taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
-      when(journeyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
       when(successfulJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$pensionId"))(any())).
-              thenReturn(Future.successful(None))
+      thenReturn(Future.successful(None))
+      when(journeyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
 
       val result = sut.redirectUpdatePension(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
@@ -427,9 +388,9 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
       when(taxAccountService.taxCodeIncomes(any(), any())(any())).
         thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
-      when(journeyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
       when(successfulJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-$pensionId"))(any())).
-        thenReturn(Future.successful(Some("true")))
+      thenReturn(Future.successful(Some("true")))
+      when(journeyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
 
       val result = sut.redirectUpdatePension(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER

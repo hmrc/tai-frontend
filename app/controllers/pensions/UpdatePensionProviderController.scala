@@ -32,7 +32,7 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
-import uk.gov.hmrc.tai.forms.pensions.{UpdateRemovePensionForm, WhatDoYouWantToTellUsForm}
+import uk.gov.hmrc.tai.forms.pensions.{DuplicateSubmissionWarningForm, UpdateRemovePensionForm, WhatDoYouWantToTellUsForm}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{IncorrectPensionProvider, PensionIncome}
@@ -78,8 +78,8 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
       implicit val user = request.taiUser
 
       journeyCacheService.collectedValues(Seq(UpdatePensionProvider_IdKey,UpdatePensionProvider_NameKey), Seq(UpdatePensionProvider_ReceivePensionQuestionKey)) map tupled { (mandatoryValues, optionalValues) =>
-        val model = PensionProviderViewModel(mandatoryValues(0).toInt, mandatoryValues(1))
-        val form = UpdateRemovePensionForm.form.fill(optionalValues(0))
+        val model = PensionProviderViewModel(mandatoryValues.head.toInt, mandatoryValues(1))
+        val form = UpdateRemovePensionForm.form.fill(optionalValues.head)
         Ok(views.html.pensions.update.doYouGetThisPensionIncome(model, form))
       }
   }
@@ -210,7 +210,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
             Seq(UpdatePensionProvider_TelephoneNumberKey))
         model = IncorrectPensionProvider(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
         _ <- pensionProviderService.incorrectPensionProvider(nino, mandatoryCacheSeq.head.toInt, model)
-        _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourney_UpdatePensionKey, true.toString)
+        _ <- successfulJourneyCacheService.cache(s"$TrackSuccessfulJourney_UpdatePensionKey-${mandatoryCacheSeq.head}", true.toString)
         _ <- journeyCacheService.flush
       } yield Redirect(controllers.pensions.routes.UpdatePensionProviderController.confirmation())
   }
@@ -227,12 +227,12 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
       implicit val user = request.taiUser
 
       val cacheAndRedirect = (id: Int, taxCodeIncome: TaxCodeIncome) => {
-        val successfullJourneyCacheFuture = successfulJourneyCacheService.currentValue(s"$TrackSuccessfulJourney_UpdatePensionKey-${id}")
+        val successfulJourneyCacheFuture = successfulJourneyCacheService.currentValue(s"$TrackSuccessfulJourney_UpdatePensionKey-${id}")
         val journeyCacheFuture = journeyCacheService.cache(Map(UpdatePensionProvider_IdKey -> id.toString,
           UpdatePensionProvider_NameKey -> taxCodeIncome.name))
 
         for {
-          successfulJourneyCache <- successfullJourneyCacheFuture
+          successfulJourneyCache <- successfulJourneyCacheFuture
           _ <- journeyCacheFuture
         } yield {
           successfulJourneyCache match {
@@ -259,11 +259,30 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
   def duplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
-//      journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { mandatoryValues =>
-//        Ok(views.html.employments.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, mandatoryValues(0), mandatoryValues(1).toInt))
-//      }
-      ???
+      journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) map { mandatoryValues =>
+        Ok(views.html.pensions.update.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, mandatoryValues(0), mandatoryValues(1).toInt))
+      }
+
   }
 
-
+  def submitDuplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user = request.taiUser
+      journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) flatMap { mandatoryValues =>
+        DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
+          formWithErrors => {
+            Future.successful(BadRequest(views.html.pensions.update.
+              duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
+          },
+          success => {
+            success.yesNoChoice match {
+              case Some(YesValue) => Future.successful(Redirect(controllers.pensions.routes.UpdatePensionProviderController.
+                doYouGetThisPension()))
+              case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
+                onPageLoad(mandatoryValues(1).toInt)))
+            }
+          }
+        )
+      }
+  }
 }
