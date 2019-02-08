@@ -88,23 +88,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         result rendersTheSameViewAs views.html.taxCodeChange.yourTaxFreeAmount(expectedViewModel)
       }
     }
-
-    "show 'Your tax-free amount' page without comparison" when {
-      "taxFreeAmountComparison is disabled and the request has a authorised session" in {
-        val expectedViewModel = YourTaxFreeAmountViewModel(None, TaxFreeInfo("currentTaxDate", 0, 0), Seq.empty, Seq.empty)
-
-        val SUT = createSUT(false)
-
-        when(describedYourTaxFreeAmountService.taxFreeAmount(Matchers.eq(FakeAuthAction.nino))(any(), any()))
-          .thenReturn(Future.successful(expectedViewModel))
-
-        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
-
-        val result = SUT.yourTaxFreeAmount()(request)
-
-        status(result) mustBe OK
-      }
-    }
   }
 
   "taxCodeComparison" must {

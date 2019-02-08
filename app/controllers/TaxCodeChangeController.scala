@@ -62,12 +62,7 @@ class TaxCodeChangeController @Inject()(taxCodeChangeService: TaxCodeChangeServi
   def yourTaxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       val nino: Nino = request.taiUser.nino
-      val taxFreeAmountViewModel =
-        if (taxFreeAmountComparisonEnabled) {
-          describedYourTaxFreeAmountService.taxFreeAmountComparison(nino)
-        } else {
-          describedYourTaxFreeAmountService.taxFreeAmount(nino)
-        }
+      val taxFreeAmountViewModel = describedYourTaxFreeAmountService.taxFreeAmountComparison(nino)
 
       implicit val user = request.taiUser
 

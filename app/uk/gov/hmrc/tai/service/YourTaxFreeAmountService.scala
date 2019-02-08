@@ -45,21 +45,4 @@ class YourTaxFreeAmountService @Inject()(taxCodeChangeService: TaxCodeChangeServ
       )
     }
   }
-
-  def taxFreeAmount(nino: Nino)(implicit hc: HeaderCarrier, messages: Messages): Future[YourTaxFreeAmountComparison] = {
-
-    val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
-    val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-
-    for {
-      taxCodeChange <- taxCodeChangeFuture
-      currentCodingComponents <- codingComponentsFuture
-    } yield {
-      buildTaxFreeAmount(
-        taxCodeChange.mostRecentTaxCodeChangeDate,
-        None,
-        currentCodingComponents
-      )
-    }
-  }
 }

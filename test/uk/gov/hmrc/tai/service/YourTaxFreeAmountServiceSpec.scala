@@ -65,32 +65,7 @@ class YourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar with FakeT
       Await.result(result, 5.seconds) mustBe expectedModel
     }
   }
-
-  "taxFreeAmount" must {
-    "return a TaxFreeAmountViewModel with only current" in {
-      val currentCodingComponents = Seq(codingComponent2)
-
-      when(codingComponentService.taxFreeAmountComponents(Matchers.eq(nino), Matchers.eq(TaxYear()))(any()))
-        .thenReturn(Future.successful(currentCodingComponents))
-
-      when(taxCodeChangeService.taxCodeChange(Matchers.eq(nino))(any()))
-        .thenReturn(Future.successful(taxCodeChange))
-
-      val service = createTestService
-      implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
-      val result = service.taxFreeAmount(nino)
-
-      val expectedModel: YourTaxFreeAmountComparison =
-        YourTaxFreeAmountComparison(
-          None,
-          TaxFreeInfo("currentTaxDate", 0, 0),
-          AllowancesAndDeductionPairs(Seq.empty, Seq.empty)
-        )
-
-      Await.result(result, 5.seconds) mustBe expectedModel
-    }
-  }
-
+  
   trait YourTaxFreeAmountMock {
     this: YourTaxFreeAmount =>
     override def buildTaxFreeAmount(unused1: LocalDate,

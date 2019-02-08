@@ -63,9 +63,6 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
       preHeaderText = Messages("taxCode.change.journey.preHeading"),
       mainHeaderText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(viewModel.changeDate)))
 
-    "display the correct paragraphs" in {
-      doc(view) must haveParagraphWithText(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
-    }
 
     "displays the previous tax code section title" in {
       doc(view) must haveHeadingH2WithText (Messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes"))

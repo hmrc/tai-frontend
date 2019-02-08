@@ -38,9 +38,6 @@ class DescribedYourTaxFreeAmountService @Inject()(yourTaxFreeAmountService: Your
     taxFreeAmount(nino, yourTaxFreeAmountService.taxFreeAmountComparison)
   }
 
-  def taxFreeAmount(nino: Nino)(implicit hc: HeaderCarrier, messages: Messages): Future[YourTaxFreeAmountViewModel] = {
-    taxFreeAmount(nino, yourTaxFreeAmountService.taxFreeAmount)
-  }
 
   private def taxFreeAmount(nino: Nino, getTaxFreeAmount: Nino => Future[YourTaxFreeAmountComparison])(implicit hc: HeaderCarrier, messages: Messages): Future[YourTaxFreeAmountViewModel] = {
     val taxFreeAmountComparisonFuture: Future[YourTaxFreeAmountComparison] = getTaxFreeAmount(nino)

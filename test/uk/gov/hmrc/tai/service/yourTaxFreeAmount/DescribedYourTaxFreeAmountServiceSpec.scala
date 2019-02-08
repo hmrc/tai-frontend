@@ -101,66 +101,6 @@ class DescribedYourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar w
     }
   }
 
-  "taxFreeAmount" must {
-    "returns a YourTaxFreeAmountViewModel with the described comparison for current" in {
-      val yourTaxFreeAmountComparison = YourTaxFreeAmountComparison(
-        None,
-        currentTaxFreeInfo,
-        AllowancesAndDeductionPairs(Seq.empty, Seq.empty)
-      )
-
-      when(yourTaxFreeAmountService.taxFreeAmount(Matchers.eq(nino))(any(), any()))
-        .thenReturn(Future.successful(yourTaxFreeAmountComparison))
-      when(employmentService.employmentNames(Matchers.eq(nino), Matchers.eq(TaxYear()))(any()))
-        .thenReturn(Future.successful(Map.empty[Int, String]))
-      when(companyCarService.companyCars(Matchers.eq(nino))(any()))
-        .thenReturn(Future.successful(Seq.empty))
-
-      val expectedModel: YourTaxFreeAmountViewModel =
-        YourTaxFreeAmountViewModel(
-          None,
-          currentTaxFreeInfo,
-          Seq.empty,
-          Seq.empty
-        )
-
-      val service = createTestService
-      implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
-      val result = service.taxFreeAmount(nino)
-
-      Await.result(result, 5.seconds) mustBe expectedModel
-    }
-
-    "returns a translates the coding component pair to a described coding component pair for the view model" in {
-      val yourTaxFreeAmountComparison = YourTaxFreeAmountComparison(
-        None,
-        currentTaxFreeInfo,
-        AllowancesAndDeductionPairs(Seq.empty, Seq(deductionPair))
-      )
-
-      when(yourTaxFreeAmountService.taxFreeAmount(Matchers.eq(nino))(any(), any()))
-        .thenReturn(Future.successful(yourTaxFreeAmountComparison))
-      when(employmentService.employmentNames(Matchers.eq(nino), Matchers.eq(TaxYear()))(any()))
-        .thenReturn(Future.successful(Map.empty[Int, String]))
-      when(companyCarService.companyCars(Matchers.eq(nino))(any()))
-        .thenReturn(Future.successful(Seq.empty))
-
-      val expectedModel: YourTaxFreeAmountViewModel =
-        YourTaxFreeAmountViewModel(
-          None,
-          currentTaxFreeInfo,
-          Seq.empty,
-          Seq(describedDeductionPair)
-        )
-
-      val service = createTestService
-      implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
-      val result = service.taxFreeAmount(nino)
-
-      Await.result(result, 5.seconds) mustBe expectedModel
-    }
-  }
-
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   private val nino: Nino = new Generator(new Random).nextNino
   private def createTestService = new TestService
