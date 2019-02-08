@@ -20,6 +20,8 @@ import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.scalatestplus.play.PlaySpec
 import play.api.test.Helpers._
+import uk.gov.hmrc.play.binders.Origin
+import uk.gov.hmrc.tai.util.constants.TaiConstants._
 
 class UnauthorisedControllerSpec extends PlaySpec with FakeTaiPlayApplication {
   implicit val templateRenderer = MockTemplateRenderer
@@ -59,6 +61,16 @@ class UnauthorisedControllerSpec extends PlaySpec with FakeTaiPlayApplication {
     "redirect to a login page" in {
       val result = controller.loginVerify(fakeRequest)
       val expectedUrl = "http://localhost:9999/ida/login"
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe expectedUrl
+    }
+  }
+
+  "upliftFailedUrl" must {
+    "redirect to the failed uplift url" in {
+      val result = controller.loginVerify(fakeRequest)
+      val expectedUrl = s"/uplift?$Origin=TAI&${ConfidenceLevel}=200&$CompletionUrl=%2Fcomplete&$FailureUrl=%2Ffailure"
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe expectedUrl

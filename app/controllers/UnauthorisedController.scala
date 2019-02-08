@@ -22,11 +22,14 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.http.SessionKeys
+import uk.gov.hmrc.play.config
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.auth.ConfigProperties
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.config.ApplicationConfig
+import uk.gov.hmrc.tai.util.constants.TaiConstants._
 
 import scala.concurrent.Future
 
@@ -48,6 +51,24 @@ class UnauthorisedController @Inject()(override implicit val partialRetriever: F
       verifyRedirect
   }
 
+  def upliftFailedUrl: Action[AnyContent] = Action.async {
+    implicit request =>
+      val upliftUrl: String = ApplicationConfig.sa16UpliftUrl
+      val failureUrl: String = ApplicationConfig.pertaxServiceUpliftFailedUrl
+      val completionUrl: String = ApplicationConfig.taiFrontendServiceUrl
+
+      Future.successful(
+        Redirect(
+          upliftUrl,
+          Map(Origin -> Seq("TAI"),
+            ConfidenceLevel -> Seq("200"),
+            CompletionUrl -> Seq(completionUrl),
+            FailureUrl -> Seq(failureUrl)
+          )
+        )
+      )
+  }
+
   private def verifyRedirect(implicit request: Request[_]): Future[Result] = {
     lazy val idaSignIn = s"${ApplicationConfig.citizenAuthHost}/${ApplicationConfig.ida_web_context}/login"
     Future.successful(Redirect(idaSignIn).withSession(
@@ -57,12 +78,16 @@ class UnauthorisedController @Inject()(override implicit val partialRetriever: F
   }
 
   private def ggRedirect(implicit request: Request[_]): Future[Result] = {
-    val postSignInUpliftUrl = s"${ViewModelHelper.urlEncode(ApplicationConfig.pertaxServiceUrl)}/do-uplift?redirectUrl=${ViewModelHelper.
-      urlEncode(ConfigProperties.postSignInRedirectUrl.
-        getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url))}"
+    val postSignInUpliftUrl = s"${ViewModelHelper.urlEncode(ApplicationConfig.pertaxServiceUrl)}/do-uplift?redirectUrl=${
+      ViewModelHelper.
+        urlEncode(ConfigProperties.postSignInRedirectUrl.
+          getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url))
+    }"
 
-    lazy val ggSignIn = s"${ApplicationConfig.
-      companyAuthUrl}/${ApplicationConfig.gg_web_context}/sign-in?continue=${postSignInUpliftUrl}&accountType=individual"
+    lazy val ggSignIn = s"${
+      ApplicationConfig.
+        companyAuthUrl
+    }/${ApplicationConfig.gg_web_context}/sign-in?continue=${postSignInUpliftUrl}&accountType=individual"
 
     Future.successful(Redirect(ggSignIn))
   }
