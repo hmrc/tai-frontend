@@ -260,6 +260,19 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
       )
     }
 
+      "return primary and secondary employment have changed at the same time" in {
+        val previous = Seq(createPrimaryTaxRecord(previousEmployer), createTaxRecord(previousEmployer + "1"))
+        val current = Seq(createPrimaryTaxRecord(currentEmployer), createTaxRecord(currentEmployer + "1"))
+
+        val taxCodeChange = TaxCodeChange(previous, current)
+        val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+        model.taxCodeReasons mustBe Seq(
+          removedEmployer(previousEmployer), addedEmployer(currentEmployer),
+          removedEmployer(previousEmployer + "1"), addedEmployer(currentEmployer + "1")
+        )
+    }
+
     "return an add and remove message when primary employment has changed" in {
       val previous = Seq(createPrimaryTaxRecord(previousEmployer))
       val current = Seq(createPrimaryTaxRecord(currentEmployer))
