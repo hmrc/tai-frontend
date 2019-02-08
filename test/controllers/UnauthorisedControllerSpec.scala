@@ -20,14 +20,20 @@ import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.scalatestplus.play.PlaySpec
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.binders.Origin
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
+
 
 class UnauthorisedControllerSpec extends PlaySpec with FakeTaiPlayApplication {
   implicit val templateRenderer = MockTemplateRenderer
   implicit val partialRetriever = MockPartialRetriever
 
-  val controller = new UnauthorisedController
+
+  val controller = new UnauthorisedController {
+    override def upliftUrl: String = "/uplift"
+    override def failureUrl: String = "/failure"
+    override def completionUrl: String = "/complete"
+  }
 
   "onPageLoad" must {
     "return OK for a GET request" in {
@@ -69,10 +75,10 @@ class UnauthorisedControllerSpec extends PlaySpec with FakeTaiPlayApplication {
 
   "upliftFailedUrl" must {
     "redirect to the failed uplift url" in {
-      val result = controller.loginVerify(fakeRequest)
-      val expectedUrl = s"/uplift?$Origin=TAI&${ConfidenceLevel}=200&$CompletionUrl=%2Fcomplete&$FailureUrl=%2Ffailure"
+      val result = controller.upliftFailedUrl(fakeRequest)
 
-      status(result) mustBe SEE_OTHER
+      val expectedUrl = s"/uplift?$Origin=TAI&${TaiConstants.ConfidenceLevel}=200&$CompletionUrl=%2Fcomplete&$FailureUrl=%2Ffailure"
+
       redirectLocation(result).get mustBe expectedUrl
     }
   }

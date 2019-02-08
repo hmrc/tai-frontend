@@ -36,6 +36,10 @@ import scala.concurrent.Future
 class UnauthorisedController @Inject()(override implicit val partialRetriever: FormPartialRetriever,
                                        override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController {
 
+  def upliftUrl: String = ApplicationConfig.sa16UpliftUrl
+  def failureUrl: String = ApplicationConfig.pertaxServiceUpliftFailedUrl
+  def completionUrl: String = ApplicationConfig.taiFrontendServiceUrl
+
   def onPageLoad: Action[AnyContent] = Action {
     implicit request =>
       Ok(unauthorisedView())
@@ -53,10 +57,6 @@ class UnauthorisedController @Inject()(override implicit val partialRetriever: F
 
   def upliftFailedUrl: Action[AnyContent] = Action.async {
     implicit request =>
-      val upliftUrl: String = ApplicationConfig.sa16UpliftUrl
-      val failureUrl: String = ApplicationConfig.pertaxServiceUpliftFailedUrl
-      val completionUrl: String = ApplicationConfig.taiFrontendServiceUrl
-
       Future.successful(
         Redirect(
           upliftUrl,
