@@ -76,7 +76,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         val sut = createSUT
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(incomeSourceJson))
 
-        val result = Await.result(sut.incomeSources(generateNino, currentTaxYear, "Employment", "Live"), 10 seconds)
+        val result = Await.result(sut.incomeSources(generateNino, currentTaxYear, "EmploymentIncome", "Live"), 10 seconds)
         result mustBe TaiSuccessResponseWithPayload(Seq(incomeSource))
       }
     }
@@ -86,7 +86,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         val sut = createSUT
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new NotFoundException("Not Found")))
 
-        val result = Await.result(sut.incomeSources(generateNino, currentTaxYear, "Employment", "Live"), 10 seconds)
+        val result = Await.result(sut.incomeSources(generateNino, currentTaxYear, "EmploymentIncome", "Live"), 10 seconds)
         result mustBe TaiSuccessResponseWithPayload(Seq.empty[IncomeSource])
       }
     }
@@ -97,7 +97,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
         val sut = createSUT
         when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(corruptJsonResponse))
 
-        val ex = Await.result(sut.incomeSources(generateNino, currentTaxYear, "Employment", "Live"), 5 seconds)
+        val ex = Await.result(sut.incomeSources(generateNino, currentTaxYear, "EmploymentIncome", "Live"), 5 seconds)
         ex mustBe a[TaiTaxAccountFailureResponse]
       }
     }

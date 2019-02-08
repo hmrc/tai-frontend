@@ -68,15 +68,15 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
         Future.successful(Seq(employment))
       )
 
-      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("pensions"), Matchers.eq("live"))(any[HeaderCarrier])).thenReturn(
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("PensionIncome"), Matchers.eq("Live"))(any[HeaderCarrier])).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[Seq[IncomeSource]](Seq.empty[IncomeSource]))
       )
 
-      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("employments"), Matchers.eq("live"))(any[HeaderCarrier])).thenReturn(
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("EmploymentIncome"), Matchers.eq("Live"))(any[HeaderCarrier])).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[Seq[IncomeSource]](Seq.empty[IncomeSource]))
       )
 
-      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("employments"), Matchers.eq("ceased"))(any[HeaderCarrier])).thenReturn(
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("EmploymentIncome"), Matchers.eq("Ceased"))(any[HeaderCarrier])).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[Seq[IncomeSource]](Seq.empty[IncomeSource]))
       )
 
@@ -99,15 +99,15 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
     "raise an audit event" in {
       val sut = createSUT
       when(employmentService.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(Seq(employment)))
-      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("pensions"), Matchers.eq("live"))(any[HeaderCarrier])).thenReturn(
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("PensionIncome"), Matchers.eq("Live"))(any[HeaderCarrier])).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[Seq[IncomeSource]](Seq.empty[IncomeSource]))
       )
 
-      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("employments"), Matchers.eq("live"))(any[HeaderCarrier])).thenReturn(
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("EmploymentIncome"), Matchers.eq("Live"))(any[HeaderCarrier])).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[Seq[IncomeSource]](Seq.empty[IncomeSource]))
       )
 
-      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("employments"), Matchers.eq("ceased"))(any[HeaderCarrier])).thenReturn(
+      when(taxAccountService.incomeSources(any[Nino], any[TaxYear], Matchers.eq("EmploymentIncome"), Matchers.eq("Ceased"))(any[HeaderCarrier])).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[Seq[IncomeSource]](Seq.empty[IncomeSource]))
       )
       when(taxAccountService.nonTaxCodeIncomes(any(), any())(any())).thenReturn(

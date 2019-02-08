@@ -79,9 +79,9 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
   private def taxAccountSummaryViewModel(nino: Nino, taxAccountSummary: TaxAccountSummary)
                                         (implicit hc: HeaderCarrier, messages: Messages): Future[TaxAccountSummaryViewModel] =
     for {
-      livePensionIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "pensions", "live")
-      liveEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "employments", "live")
-      ceasedEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "employments", "ceased")
+      livePensionIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "PensionIncome", "Live")
+      liveEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "EmploymentIncome", "Live")
+      ceasedEmploymentIncomeSources <- taxAccountService.incomeSources(nino, TaxYear(), "EmploymentIncome", "Ceased")
       nonMatchingCeasedEmployments <- employmentService.ceasedEmployments(nino, TaxYear())
       nonTaxCodeIncome <- taxAccountService.nonTaxCodeIncomes(nino, TaxYear())
       isAnyFormInProgress <- trackingService.isAnyIFormInProgress(nino.nino)
