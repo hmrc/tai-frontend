@@ -261,7 +261,7 @@ GET         /incorrect-pension/check-your-answers                               
 POST        /incorrect-pension/check-your-answers                                      @controllers.pensions.UpdatePensionProviderController.submitYourAnswers
 GET         /incorrect-pension/success                                                 @controllers.pensions.UpdatePensionProviderController.confirmation
 GET         /incorrect-pension/redirect/:id                                            @controllers.pensions.UpdatePensionProviderController.redirectUpdatePension(id: Int)
-GET         /incorrect-pension/duplicateSubmissionWarning                              @controllers.pensions.UpdatePensionProviderController.duplicateSubmissionWarning
+GET         /incorrect-pension/warning                                                 @controllers.pensions.UpdatePensionProviderController.duplicateSubmissionWarning
 POST        /incorrect-pension/warning                                                 @controllers.pensions.UpdatePensionProviderController.submitDuplicateSubmissionWarning
 
 ## Tax Code Change

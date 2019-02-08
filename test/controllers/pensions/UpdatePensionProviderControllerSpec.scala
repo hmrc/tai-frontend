@@ -316,7 +316,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         when(pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(any()))
           .thenReturn(Future.successful("envelope_id_1"))
         when(successfulJourneyCacheService.cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-${empId}"), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId" -> "true")))
+          .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdatePensionKey-$empId" -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
@@ -338,8 +338,8 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         )
         when(pensionProviderService.incorrectPensionProvider(any(), Matchers.eq(1), Matchers.eq(incorrectPensionProvider))(any()))
           .thenReturn(Future.successful("envelope_id_1"))
-        when(successfulJourneyCacheService.cache(Matchers.eq(TrackSuccessfulJourney_UpdatePensionKey), Matchers.eq("true"))(any()))
-          .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$empId" -> "true")))
+        when(successfulJourneyCacheService.cache(Matchers.eq(s"$TrackSuccessfulJourney_UpdatePensionKey-${empId}"), Matchers.eq("true"))(any()))
+          .thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_UpdatePensionKey-${empId}" -> "true")))
         when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
 
         val result = sut.submitYourAnswers()(RequestBuilder.buildFakeRequestWithAuth("POST"))
@@ -416,6 +416,71 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         val result = sut.redirectUpdatePension(4)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  "duplicateSubmissionWarning" must {
+    "show duplicateSubmissionWarning view" in {
+      val updatePensionTest = createSUT
+      val pensionId = 1
+
+      when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.successful(Seq(pensionName, pensionId.toString)))
+
+      val result = updatePensionTest.duplicateSubmissionWarning(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val doc = Jsoup.parse(contentAsString(result))
+
+      status(result) mustBe OK
+      doc.title() must include(Messages("tai.pension.warning.customGaTitle"))
+    }
+  }
+
+  "submitDuplicateSubmissionWarning" must {
+    "redirect to the update remove employment decision page" when {
+      "I want to update my employment is selected" in {
+        val pensionId = 1
+        val updatePensionTest = createSUT
+
+        when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(pensionName, pensionId.toString)))
+
+        val result = updatePensionTest.submitDuplicateSubmissionWarning(RequestBuilder.buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(YesNoChoice -> YesValue))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension().url
+      }
+    }
+
+    "redirect to the income source summary page" when {
+      "I want to return to my employment details is selected" in {
+        val pensionId = 1
+        val updatePensionTest = createSUT
+
+        when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(pensionName, pensionId.toString)))
+
+        val result = updatePensionTest.submitDuplicateSubmissionWarning(RequestBuilder.buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(YesNoChoice -> NoValue))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(pensionId).url
+      }
+    }
+
+    "return BadRequest" when {
+      "there is a form validation error (standard form validation)" in {
+        val pensionId = 1
+        val updatePensionTest = createSUT
+
+        when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+          .thenReturn(Future.successful(Seq(pensionName, pensionId.toString)))
+
+        val result = updatePensionTest.submitDuplicateSubmissionWarning(RequestBuilder.buildFakeRequestWithAuth("POST")
+          .withFormUrlEncodedBody(YesNoChoice -> ""))
+
+        status(result) mustBe BAD_REQUEST
       }
     }
   }
