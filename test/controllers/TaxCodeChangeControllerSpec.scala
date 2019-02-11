@@ -54,7 +54,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
       "the request has an authorised session" in {
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-        val result = controller.whatHappensNext()(request)
+        val result = createController.whatHappensNext()(request)
 
         status(result) mustBe OK
 
@@ -76,12 +76,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-        val SUT = createSUT(true)
+
 
         when(describedYourTaxFreeAmountService.taxFreeAmountComparison(Matchers.eq(FakeAuthAction.nino))(any(), any()))
           .thenReturn(Future.successful(expectedViewModel))
 
-        val result = SUT.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = createController.yourTaxFreeAmount()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -101,7 +101,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
         when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
         when(taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map[String, BigDecimal]()))
 
-        val result = controller.taxCodeComparison()(request)
+        val result = createController.taxCodeComparison()(request)
 
         val taxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates)
 
@@ -111,7 +111,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     }
   }
 
-  private def controller = createSUT()
 
   val nino: Nino = new Generator(new Random).nextNino
 
@@ -128,9 +127,9 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val yourTaxFreeAmountService: YourTaxFreeAmountService = mock[YourTaxFreeAmountService]
   val describedYourTaxFreeAmountService: DescribedYourTaxFreeAmountService = mock[DescribedYourTaxFreeAmountService]
 
-  private def createSUT(comparisonEnabled: Boolean = false) = new SUT(comparisonEnabled)
+  private def createController() = new TaxCodeChangeTestController()
 
-  private class SUT(comparisonEnabled: Boolean) extends TaxCodeChangeController(
+  private class TaxCodeChangeTestController() extends TaxCodeChangeController(
     taxCodeChangeService,
     taxAccountService,
     describedYourTaxFreeAmountService,
@@ -139,7 +138,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
-    override val taxFreeAmountComparisonEnabled: Boolean = comparisonEnabled
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
     when(taxCodeChangeService.latestTaxCodeChangeDate(nino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
