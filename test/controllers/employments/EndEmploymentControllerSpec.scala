@@ -74,7 +74,7 @@ class EndEmploymentControllerSpec
       when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
         .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
 
-      val result = endEmploymentTest.employmentUpdateRemove(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = endEmploymentTest.employmentUpdateRemoveDecision(RequestBuilder.buildFakeRequestWithAuth("GET"))
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
@@ -576,9 +576,9 @@ class EndEmploymentControllerSpec
       when(trackSuccessJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$employmentId"))(any())).
         thenReturn(Future.successful(None))
 
-      val result = endEmploymentTest.redirectUpdateEmployment(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = endEmploymentTest.employmentUpdateRemove(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemove.url
+      redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemoveDecision.url
     }
 
     "redirect to warning page when there is an end employment ID cache value present" in {
@@ -588,7 +588,7 @@ class EndEmploymentControllerSpec
       when(endEmploymentJourneyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
       when(trackSuccessJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$employmentId"))(any())).thenReturn(Future.successful(Some("true")))
 
-      val result = endEmploymentTest.redirectUpdateEmployment(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = endEmploymentTest.employmentUpdateRemove(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning.url
     }
@@ -623,7 +623,7 @@ class EndEmploymentControllerSpec
           .withFormUrlEncodedBody(YesNoChoice -> YesValue))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemove.url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.url
       }
     }
 

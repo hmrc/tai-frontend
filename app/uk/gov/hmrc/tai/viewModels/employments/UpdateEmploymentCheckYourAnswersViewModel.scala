@@ -30,7 +30,7 @@ case class UpdateEmploymentCheckYourAnswersViewModel(id: Int,
     val currentlyWorkHereLine = CheckYourAnswersConfirmationLine(
       Messages("tai.updateEmployment.cya.currentlyWorkHere"),
       Messages("tai.label.yes"),
-      controllers.employments.routes.EndEmploymentController.employmentUpdateRemove.url
+      controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.url
     )
     val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.whatYouToldUs"),
