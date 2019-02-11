@@ -271,6 +271,7 @@ GET         /tax-code-change/what-happens-next                                  
 GET         /unauthorised                                                              @controllers.UnauthorisedController.onPageLoad
 GET         /unauthorised/login-gg                                                     @controllers.UnauthorisedController.loginGG
 GET         /unauthorised/login-verify                                                 @controllers.UnauthorisedController.loginVerify
+GET         /unauthorised/confidence-level                                             @controllers.UnauthorisedController.upliftFailedUrl
 
 
 ### Update Income CY + 1
