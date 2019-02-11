@@ -64,7 +64,7 @@ class TaxAccountSummaryController @Inject()(trackingService: TrackingService,
             val nino = Nino(user.getNino)
             auditService.createAndSendAuditEvent(TaxAccountSummary_UserEntersSummaryPage, Map("nino" -> user.getNino))
             taxAccountService.taxAccountSummary(nino, TaxYear()).flatMap {
-              case (TaiTaxAccountFailureResponse(message)) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
+              case TaiTaxAccountFailureResponse(message) if message.toLowerCase.contains(TaiConstants.NpsTaxAccountDataAbsentMsg) ||
                 message.toLowerCase.contains(TaiConstants.NpsNoEmploymentForCurrentTaxYear) =>
                 Future.successful(Redirect(routes.NoCYIncomeTaxErrorController.noCYIncomeTaxErrorPage()))
               case TaiSuccessResponseWithPayload(taxAccountSummary: TaxAccountSummary) =>
