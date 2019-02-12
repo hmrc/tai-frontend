@@ -130,7 +130,6 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
           val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
 
           val view = views.html.taxCodeChange.taxCodeComparison(viewModel)
-          println(view.toString())
           doc(view) must haveClassCount("tax-code-reason", 1)
         }
       }
