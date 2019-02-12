@@ -89,7 +89,7 @@
             <div class ="tax-code-change">
                 <ul class="list-bullet">
                     @for((reason) <- taxCodeReasons) {
-                    <li>
+                    <li class="tax-code-reason">
                         @reason
                     </li>
                     }
@@ -100,7 +100,7 @@
                 <i class="icon icon-information">
                     <span class="visually-hidden">Information</span>
                 </i>
-                <strong class="bold-small">
+                <strong class="tax-code-reason bold-small">
                 @Messages("taxCode.change.yourTaxCodeChanged.paragraph")
                 </strong>
             </div>
