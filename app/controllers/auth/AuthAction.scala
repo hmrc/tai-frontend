@@ -23,7 +23,7 @@ import play.api.mvc.Results.Redirect
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.retrieve.{Name, ~}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, Name, ~}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
@@ -58,29 +58,62 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)
                               (implicit ec: ExecutionContext) extends AuthAction
   with AuthorisedFunctions {
 
+
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
-    authorised(ConfidenceLevel.L200)
-      .retrieve(Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.userDetailsUri and Retrievals.confidenceLevel) {
-        case nino ~ name ~ saUtr ~ userDetailsUri ~ confidenceLevel => {
-          val taiUser = AuthedUser(name, nino, saUtr, userDetailsUri, confidenceLevel)
-
-          for {
-            result <- block(AuthenticatedRequest(request, taiUser))
-          } yield {
-            result
-          }
+    authorised().
+      retrieve(Retrievals.credentials and Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.userDetailsUri and Retrievals.confidenceLevel) {
+        case credentials ~ nino ~ name ~ saUtr ~ userDetailsUri ~ confidenceLevel => {
+          val user = AuthedUser(name, nino, saUtr, userDetailsUri, confidenceLevel)
+          authWithCredentials(request, block, credentials, user)
         }
-
-        case _ => {
-          Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
-        }
-      } recover handleFailure
+        case _ => throw new RuntimeException("Can't find credentials for user")
+      } recover handleGGFailure
   }
 
-  private def handleFailure: PartialFunction[Throwable, Result] = {
-    case _: NoActiveSession => Redirect(routes.UnauthorisedController.login())
+  private def authWithCredentials[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result], credentials: Option[Credentials], user: AuthedUser)(implicit hc: HeaderCarrier): Future[Result] = {
+    val GOVERNMENT_GATEWAY = "GovernmentGateway"
+    val VERIFY = "Verify"
+
+    credentials match {
+      case Some(Credentials(_, GOVERNMENT_GATEWAY)) => {
+        processRequest(user, request, block, handleGGFailure)
+      }
+      case Some(Credentials(_, VERIFY)) => {
+        processRequest(user, request, block, handleVerifyFailure)
+      }
+      case _ => throw new RuntimeException("Can't find valid credentials for user")
+    }
+  }
+
+  private def processRequest[A](user: AuthedUser, request: Request[A], block: AuthenticatedRequest[A] => Future[Result], failureHandler: PartialFunction[Throwable, Result])
+                               (implicit hc: HeaderCarrier): Future[Result] = {
+
+    val confidenceLevel = user.confidenceLevel.toInt
+
+    (confidenceLevel match {
+    case level if level >= 200 => {
+        for {
+          result <- block(AuthenticatedRequest(request, user))
+        } yield {
+          result
+        }
+      }
+      case _ => Future.successful(Redirect(routes.UnauthorisedController.upliftFailedUrl()))
+    }) recover failureHandler
+  }
+
+  private def handleGGFailure: PartialFunction[Throwable, Result] = {
+    handleFailure(routes.UnauthorisedController.loginGG())
+  }
+
+  private def handleVerifyFailure: PartialFunction[Throwable, Result] = {
+    handleFailure(routes.UnauthorisedController.loginVerify())
+  }
+
+  private def handleFailure(redirect: Call): PartialFunction[Throwable, Result] = {
+    case _: NoActiveSession => Redirect(redirect)
     case ex: AuthorisationException => {
       Logger.warn(s"<Exception returned during authorisation with exception: ${ex.getClass()}", ex)
       Redirect(routes.UnauthorisedController.onPageLoad())

@@ -102,7 +102,7 @@
         <p class="visuallyhidden">
         @Link.toInternalPage(
             id=Some("updateEmployerScreenReader"),
-            url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(model.empId).url,
+            url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.url,
             value=Some(messages("tai.employment.income.details.updateLinkText.screenReader", model.empOrPensionName))).toHtml
         </p>
     }

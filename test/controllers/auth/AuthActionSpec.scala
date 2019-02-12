@@ -88,20 +88,20 @@ class AuthActionSpec extends PlaySpec with FakeTaiPlayApplication with MockitoSu
           val result = controller.onPageLoad()(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.UnauthorisedController.login().toString)
+          redirectLocation(result) mustBe Some(routes.UnauthorisedController.loginGG().toString)
         }
       })
     }
   }
 
-    "Given an unexpected exception occurred" should {
-      "return the exception" in {
-        val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new Exception("Help")))
-        val controller = new Harness(authAction)
+  "Given an unexpected exception occurred" should {
+    "return the exception" in {
+      val authAction = new AuthActionImpl(new FakeFailingAuthConnector(new Exception("Help")))
+      val controller = new Harness(authAction)
 
-        val ex: Exception = the[Exception] thrownBy Await.result(controller.onPageLoad()(fakeRequest), 5.seconds)
-        ex.getMessage mustBe "Help"
-      }
+      val ex: Exception = the[Exception] thrownBy Await.result(controller.onPageLoad()(fakeRequest), 5.seconds)
+      ex.getMessage mustBe "Help"
     }
+  }
 }
 

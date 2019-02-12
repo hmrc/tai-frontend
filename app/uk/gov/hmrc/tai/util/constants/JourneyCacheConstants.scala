@@ -87,8 +87,7 @@ trait JourneyCacheConstants {
 
   val TrackSuccessfulJourney_JourneyKey = "successful-journey"
   val TrackSuccessfulJourney_AddEmploymentKey = "addEmployment"
-  val TrackSuccessfulJourney_EndEmploymentKey = "endEmployment"
-  val TrackSuccessfulJourney_UpdateEmploymentKey = "updateEmployment"
+  val TrackSuccessfulJourney_UpdateEndEmploymentKey = "updateEndEmployment"
   val TrackSuccessfulJourney_UpdatePensionKey = "updatePensionProvider"
   val TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey = "updatePreviousYearsIncome"
   val TrackSuccessfulJourney_AddPensionProviderKey = "addPensionProvider"

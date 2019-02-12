@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.viewModels.pensions.update
+package uk.gov.hmrc.tai.forms.employments
 
-import controllers.routes
-import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import play.api.data.Form
+import play.api.i18n.Messages
+import uk.gov.hmrc.tai.forms.YesNoForm
 
-class confirmationSpec extends TaiViewSpec {
-  override def view: Html = views.html.pensions.update.confirmation()
-
-  "Confirmation View" must {
-
-    behave like pageWithTitle(messages("tai.updatePension.confirmation.heading"))
-    behave like pageWithHeader(messages("tai.confirmation.heading"))
-    behave like haveReturnToSummaryButtonWithUrl(routes.TaxAccountSummaryController.onPageLoad())
-
-  }
+object DuplicateSubmissionWarningForm {
+    def createForm(implicit messages: Messages): Form[YesNoForm] = {
+      YesNoForm.form(messages("tai.employment.warning.error"))
+    }
 }

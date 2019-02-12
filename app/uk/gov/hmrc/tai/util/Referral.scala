@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.viewModels.pensions.update
+package uk.gov.hmrc.tai.util
 
-import controllers.routes
-import play.twirl.api.Html
-import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
+import play.api.mvc.Request
 
-class confirmationSpec extends TaiViewSpec {
-  override def view: Html = views.html.pensions.update.confirmation()
+trait Referral {
 
-  "Confirmation View" must {
+  def referer[A](implicit request: Request[A]): String = {
+    request.headers.toMap("Referer").mkString
+  }
 
-    behave like pageWithTitle(messages("tai.updatePension.confirmation.heading"))
-    behave like pageWithHeader(messages("tai.confirmation.heading"))
-    behave like haveReturnToSummaryButtonWithUrl(routes.TaxAccountSummaryController.onPageLoad())
-
+  def resourceName[A](implicit request: Request[A]): String = {
+      request.headers.toMap("Referer").mkString.split("/").last
   }
 }

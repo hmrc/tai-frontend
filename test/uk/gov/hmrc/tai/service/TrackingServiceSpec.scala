@@ -16,139 +16,134 @@
 
 package uk.gov.hmrc.tai.service
 
-import uk.gov.hmrc.tai.connectors.TrackingConnector
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import org.scalatest.prop.TableDrivenPropertyChecks._
 import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.tai.connectors.TrackingConnector
 import uk.gov.hmrc.tai.model.domain.tracking._
+import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
-import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 
 class TrackingServiceSpec extends PlaySpec
   with MockitoSugar
   with JourneyCacheConstants {
 
+  val nino = new Generator().nextNino.nino
+
+  private val name = "name1"
+
   "isAnyIFormInProgress" must {
-    "return true" when {
-      "there is an iForm with status In Progress" in {
-        val sut = createSut
-        when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm("TES1", "name1", TrackedFormInProgress))))
-        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
-        val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
-        Await.result(result, 5 seconds) mustBe true
+    "return a time to process" when {
+
+      "the iForm status is not done" in {
+        val notDoneStatus = Table("TrackedFormStatus", TrackedFormReceived, TrackedFormAcquired, TrackedFormInProgress)
+
+        forAll(notDoneStatus) { (status: TrackedFormStatus) =>
+          when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm("TES1", name, status))))
+
+          val result = sut.isAnyIFormInProgress(nino)
+          Await.result(result, 5 seconds) mustBe ThreeWeeks
+        }
       }
 
-      "there is an iForm with status in Acquired" in {
-        val sut = createSut
-        when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm("TES2", "name1", TrackedFormAcquired))))
-        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
-        val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
-        Await.result(result, 5 seconds) mustBe true
+      Seq("TES1", "TES7"
+      ) foreach { case (tes) =>
+        s"$tes should take three weeks to process" in {
+          when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm(tes, name, TrackedFormReceived))))
+          val result = sut.isAnyIFormInProgress(nino)
+          Await.result(result, 5 seconds) mustBe ThreeWeeks
+        }
       }
 
-      "return true when there is an iForm with status in Received" in {
-        val sut = createSut
-        when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm("TES3", "name1", TrackedFormReceived))))
-        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
-        val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
-        Await.result(result, 5 seconds) mustBe true
+      Seq("TES2", "TES3", "TES4", "TES5", "TES6"
+      ) foreach { case (tes) =>
+        s"$tes should take seven days to process" in {
+          when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm(tes, name, TrackedFormReceived))))
+          val result = sut.isAnyIFormInProgress(nino)
+          Await.result(result, 5 seconds) mustBe SevenDays
+        }
       }
 
       "there is one iForm done and one IForm is in progress" in {
-        val sut = createSut
-        when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm("TES4", "name1", TrackedFormDone),
-          TrackedForm("TES1", "name1", TrackedFormReceived))))
-        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
-        val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
-        Await.result(result, 5 seconds) mustBe true
+        val doneIForm = TrackedForm("TES4", name, TrackedFormDone)
+        val notDoneIForm = TrackedForm("TES1", name, TrackedFormReceived)
+        when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(doneIForm, notDoneIForm)))
+
+        val result = sut.isAnyIFormInProgress(nino)
+        Await.result(result, 5 seconds) mustBe ThreeWeeks
       }
 
-      "user has completed add employment iFormJourney but tracking service has return empty sequence" in {
-        val sut = createSut
-        when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
-        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map(TrackSuccessfulJourney_AddEmploymentKey -> "true")))
-        val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
-        Await.result(result, 5 seconds) mustBe true
+      Seq(
+        Map(TrackSuccessfulJourney_AddEmploymentKey -> "true"),
+        Map(TrackSuccessfulJourney_UpdatePensionKey -> "true"),
+        Map(TrackSuccessfulJourney_UpdatePreviousYearsIncomeKey -> "true"),
+        Map(TrackSuccessfulJourney_AddPensionProviderKey -> "true")
+      ) foreach { case entry =>
+        s"user has completed add employment iFormJourney but tracking service returns empty sequence, for $entry" in {
+          val controller = sut
+          when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
+          when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(entry))
+
+          val result = controller.isAnyIFormInProgress(nino)
+          Await.result(result, 5 seconds) mustBe SevenDays
+        }
       }
+
+      Seq(
+        Map(TrackSuccessfulJourney_EndEmploymentBenefitKey -> "true")
+      ) foreach { case entry =>
+        s"user has completed add employment iFormJourney but tracking service returns empty sequence, for $entry" in {
+          val controller = sut
+          when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
+          when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(entry))
+
+          val result = controller.isAnyIFormInProgress(nino)
+          Await.result(result, 5 seconds) mustBe ThreeWeeks
+        }
+      }
+
 
       "tracking service throws back an exception but user has completed a journey" in {
-        val sut = createSut
+        val controller = sut
         when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.failed(new RuntimeException("an error occurred")))
-        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map[String, String](TrackSuccessfulJourney_AddEmploymentKey -> "true")))
-        val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
-        Await.result(result, 5 seconds) mustBe true
+        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map(TrackSuccessfulJourney_AddEmploymentKey -> "true")))
+
+        val result = controller.isAnyIFormInProgress(nino)
+        Await.result(result, 5 seconds) mustBe SevenDays
       }
     }
 
-    "return false" when {
+    "return no time to process" when {
       "there is no iForm in progress" in {
-        val sut = createSut
-        when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm("TES1", "name1", TrackedFormDone))))
-        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
-        val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
-        Await.result(result, 5 seconds) mustBe false
+        when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm("TES1", name, TrackedFormDone))))
+        val result = sut.isAnyIFormInProgress(nino)
+        Await.result(result, 5 seconds) mustBe NoTimeToProcess
+      }
+
+      "the TES value is not valid" in {
+        when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm("AAA", name, TrackedFormDone))))
+        val result = sut.isAnyIFormInProgress(nino)
+        Await.result(result, 5 seconds) mustBe NoTimeToProcess
       }
 
       "tracking service throws back an exception" in {
-        val sut = createSut
         when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.failed(new Exception("an error occurred")))
-        when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
-        val result = sut.isAnyIFormInProgress(new Generator().nextNino.nino)
-        Await.result(result, 5 seconds) mustBe false
-      }
-    }
-  }
-
-  "trackingForTesForms" must {
-    "return nil" when {
-      "the list from tracking connector has a form that is not TES" in {
-        val sut = createSut
-        when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq(TrackedForm("a1", "name1", TrackedFormDone))))
-        val result = sut.trackingForTesForms(new Generator().nextNino.nino)
-        Await.result(result, 5 seconds) mustBe Nil
-      }
-    }
-
-    "return TES forms from TES1 to TES7" when {
-      "the list from tracking connector has TES and non-TES uk.gov.hmrc.tai.forms" in {
-        val sut = createSut
-        when(trackingConnector.getUserTracking(any())(any())).
-          thenReturn(Future.successful(Seq(
-            TrackedForm("TES0", "name1", TrackedFormDone),
-            TrackedForm("TES1", "name1", TrackedFormDone),
-            TrackedForm("TES2", "name1", TrackedFormDone),
-            TrackedForm("TES3", "name1", TrackedFormDone),
-            TrackedForm("TES4", "name1", TrackedFormDone),
-            TrackedForm("TES5", "name1", TrackedFormDone),
-            TrackedForm("TES6", "name1", TrackedFormDone),
-            TrackedForm("TES7", "name1", TrackedFormDone),
-            TrackedForm("TES8", "name1", TrackedFormDone),
-            TrackedForm("AAA1", "name1", TrackedFormDone),
-            TrackedForm("AAA", "name1", TrackedFormDone))))
-        val result = sut.trackingForTesForms(new Generator().nextNino.nino)
-        val expectedResult = Seq(
-          TrackedForm("TES1", "name1", TrackedFormDone),
-          TrackedForm("TES2", "name1", TrackedFormDone),
-          TrackedForm("TES3", "name1", TrackedFormDone),
-          TrackedForm("TES4", "name1", TrackedFormDone),
-          TrackedForm("TES5", "name1", TrackedFormDone),
-          TrackedForm("TES6", "name1", TrackedFormDone),
-          TrackedForm("TES7", "name1", TrackedFormDone))
-
-        Await.result(result, 5 seconds) mustBe expectedResult
+        val result = sut.isAnyIFormInProgress(nino)
+        Await.result(result, 5 seconds) mustBe NoTimeToProcess
       }
     }
   }
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  private def createSut = new TrackingServiceTest
+  private def sut = new TrackingServiceTest
 
   val trackingConnector: TrackingConnector = mock[TrackingConnector]
   val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
@@ -156,6 +151,8 @@ class TrackingServiceSpec extends PlaySpec
   private class TrackingServiceTest extends TrackingService(
     trackingConnector,
     successfulJourneyCacheService
-  )
+  ) {
+    when(successfulJourneyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
+  }
 
 }

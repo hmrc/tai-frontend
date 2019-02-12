@@ -20,12 +20,20 @@ import mocks.{MockPartialRetriever, MockTemplateRenderer}
 import org.jsoup.Jsoup
 import org.scalatestplus.play.PlaySpec
 import play.api.test.Helpers._
+import uk.gov.hmrc.tai.util.constants.TaiConstants
+import uk.gov.hmrc.tai.util.constants.TaiConstants._
+
 
 class UnauthorisedControllerSpec extends PlaySpec with FakeTaiPlayApplication {
   implicit val templateRenderer = MockTemplateRenderer
   implicit val partialRetriever = MockPartialRetriever
 
-  val controller = new UnauthorisedController
+
+  val controller = new UnauthorisedController {
+    override def upliftUrl: String = "/uplift"
+    override def failureUrl: String = "/failure"
+    override def completionUrl: String = "/complete"
+  }
 
   "onPageLoad" must {
     "return OK for a GET request" in {
@@ -45,12 +53,32 @@ class UnauthorisedControllerSpec extends PlaySpec with FakeTaiPlayApplication {
     }
   }
 
-  "login" must {
+  "loginGG" must {
     "redirect to a login page" in {
-      val result = controller.login(fakeRequest)
+      val result = controller.loginGG(fakeRequest)
       val expectedUrl = "http://localhost:4444/gg/sign-in?continue=http%3A%2F%2Flocalhost%3A1111%2Fpersonal-account/do-uplift?redirectUrl=%2Fcheck-income-tax%2Fwhat-do-you-want-to-do&accountType=individual"
 
       status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe expectedUrl
+    }
+  }
+
+  "loginVerify" must {
+    "redirect to a login page" in {
+      val result = controller.loginVerify(fakeRequest)
+      val expectedUrl = "http://localhost:9999/ida/login"
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe expectedUrl
+    }
+  }
+
+  "upliftFailedUrl" must {
+    "redirect to the failed uplift url" in {
+      val result = controller.upliftFailedUrl(fakeRequest)
+
+      val expectedUrl = s"/uplift?$Origin=TAI&${TaiConstants.ConfidenceLevel}=200&$CompletionUrl=%2Fcomplete&$FailureUrl=%2Ffailure"
+
       redirectLocation(result).get mustBe expectedUrl
     }
   }

@@ -20,10 +20,12 @@
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.config.ApplicationConfig
 
+@import uk.gov.hmrc.tai.service.ThreeWeeks
+@import uk.gov.hmrc.tai.service.SevenDays
 @(viewModel: TaxAccountSummaryViewModel
 )(implicit request: Request[_],
   messages: Messages,
-  user: controllers.auth.AuthedUser,
+  user: controllers.auth.TaiUser,
   templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
   partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -46,14 +48,14 @@
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
         mainHeadingText = viewModel.header,
-        preHeadingText = s"${user.getDisplayName}",
+        preHeadingText = s"${user.person.firstName} ${user.person.surname}",
         preHeadingAccessibleAnnouncement = "This section is the income tax summary for",
         customBackLinkContent = Some(backLinkToChooseTaxYear))
 }
 
 @main(
     title = viewModel.title,
-    authedUser = Some(user),
+    user = Some(user),
     pageHeader = Some(header),
     articleClasses = Some("full-width")){
 
@@ -74,11 +76,18 @@
             </p>
             }
 
-            @if(viewModel.isAnyFormInProgress){
+            @if(viewModel.isAnyFormInProgress == ThreeWeeks){
             <div id="isAnyFormInProgressBanner" class="panel-indent panel-indent--info flush--top">
                 <p>@Messages("tai.whatDoYouWantToDo.iformPanel.p1")</p>
-                <p>@Messages("tai.whatDoYouWantToDo.iformPanel.p2")</p>
+                <p>@messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2")</p>
             </div>
+            }
+
+            @if(viewModel.isAnyFormInProgress == SevenDays){
+                <div id="isAnyFormInProgressBanner" class="panel-indent panel-indent--info flush--top">
+                    <p>@messages("tai.whatDoYouWantToDo.iformPanel.p1")</p>
+                    <p>@messages("tai.whatDoYouWantToDo.iformPanel.sevenDays.p2")</p>
+                </div>
             }
 
             @if(viewModel.employments.nonEmpty){
