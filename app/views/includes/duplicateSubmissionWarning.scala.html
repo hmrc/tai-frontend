@@ -14,36 +14,15 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.tai.viewModels.duplicateSubmissionWarning.DuplicateSubmissionWarning
-@import uk.gov.hmrc.tai.forms.employments.UpdateRemoveEmploymentForm
 @import includes.forms.submit
 @import uk.gov.hmrc.tai.forms.YesNoForm
-@import includes.{cancelLink, ptaHeader}
 @import uk.gov.hmrc.play.views.html.helpers.{errorSummary, form}
 @import includes.forms.inputRadioGroupStyling
+@import play.api.mvc.Call
 
-@(duplicateSubmissionWarningForm: Form[YesNoForm], viewModel: DuplicateSubmissionWarning, Id: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(duplicateSubmissionWarningForm: Form[YesNoForm], yesChoiceText: String, noChoiceText: String, actionRoute: Call, gaEventActionString: String )(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
-@gaEventActionString = @{"Update received"}
-
-@header = @{
-    ptaHeader(
-        formForErrorSummary = Some(duplicateSubmissionWarningForm),
-        displayBackLink = true,
-        backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = viewModel.warningHeading,
-        preHeadingText = messages("tai.employment.warning.preHeading")
-    )
-}
-
-@main(
-    title = messages("tai.employment.warning.customGaTitle"),
-    authedUser = Some(user),
-    pageHeader = Some(header),
-    articleClasses = None,
-    gaCustomTitle = Some(messages("tai.employment.warning.customGaTitle"))) {
-
-    @form(action = viewModel.actionRoute, Symbol("data-journey-dynamic-radios") -> "" ) {
+    @form(action = actionRoute, Symbol("data-journey-dynamic-radios") -> "" ) {
         <div class="form-group">
 
             <p>@messages("tai.employment.warning.text1")</p>
@@ -52,7 +31,7 @@
 
             @{inputRadioGroupStyling(
                 field=duplicateSubmissionWarningForm(YesNoForm.YesNoChoice),
-                radioOptions=Seq((YesNoForm.YesValue -> viewModel.yesChoiceText), (YesNoForm.NoValue -> viewModel.noChoiceText) ),
+                radioOptions=Seq((YesNoForm.YesValue -> yesChoiceText), (YesNoForm.NoValue -> noChoiceText) ),
                 legend=messages("tai.employment.warning.legend"),
                 legendHint=None,
                 ('_groupDivClass, "form-group" ),
@@ -66,6 +45,3 @@
 
         @submit(buttonMessageKey = Some(messages("tai.submit")), gaEventAction = Some(gaEventActionString), gaEventLabel = Some(""))
     }
-
-    @cancelLink(routes.IncomeSourceSummaryController.onPageLoad(Id), gaEventAction = Some(gaEventActionString))
-}

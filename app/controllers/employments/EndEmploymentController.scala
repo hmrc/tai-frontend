@@ -299,7 +299,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
         implicit request =>
           implicit val user = request.taiUser
             journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { mandatoryValues =>
-              Ok(views.html.includes.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, EmploymentDuplicateSubmissionWarningViewModel(mandatoryValues(0)), mandatoryValues(1).toInt))
+              Ok(views.html.employments.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, mandatoryValues(0), mandatoryValues(1).toInt))
             }
   }
 
@@ -309,8 +309,8 @@ class EndEmploymentController @Inject()(auditService: AuditService,
             journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) flatMap { mandatoryValues =>
               DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
                 formWithErrors => {
-                  Future.successful(BadRequest(views.html.includes.
-                    duplicateSubmissionWarning(formWithErrors, EmploymentDuplicateSubmissionWarningViewModel(mandatoryValues(0)), mandatoryValues(1).toInt)))
+                  Future.successful(BadRequest(views.html.employments.
+                    duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
                 },
                 success => {
                   success.yesNoChoice match {

@@ -260,7 +260,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
     implicit request =>
       implicit val user = request.taiUser
       journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) map { mandatoryValues =>
-        Ok(views.html.includes.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, PensionDuplicateSubmissionWarningViewModel(mandatoryValues(0)), mandatoryValues(1).toInt))
+        Ok(views.html.pensions.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, mandatoryValues(0), mandatoryValues(1).toInt))
       }
 
   }
@@ -271,8 +271,8 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
       journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) flatMap { mandatoryValues =>
         DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
           formWithErrors => {
-            Future.successful(BadRequest(views.html.includes.
-              duplicateSubmissionWarning(formWithErrors, PensionDuplicateSubmissionWarningViewModel(mandatoryValues(0)), mandatoryValues(1).toInt)))
+            Future.successful(BadRequest(views.html.pensions.
+              duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
           },
           success => {
             success.yesNoChoice match {

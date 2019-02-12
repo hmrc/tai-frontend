@@ -35,8 +35,11 @@ class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstant
   val choice = YesNoForm.YesNoChoice
 
 
-  "Employment Journey" when {
-    "duplicateSubmissionWarning" must {
+  "duplicateSubmissionWarning" must {
+
+  }
+
+    "Employment Journey duplicateSubmissionWarning" must {
       behave like pageWithTitle(messages("tai.employment.warning.customGaTitle"))
       behave like pageWithBackLink
       behave like pageWithCombinedHeader(
@@ -73,16 +76,16 @@ class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstant
         val invalidatedForm = employmentDuplicateSubmissionWarningForm.bind(invalidChoice)
         val emptySelectionErrorMessage = messages("tai.employment.warning.error")
 
-        val errorView = views.html.includes.duplicateSubmissionWarning(invalidatedForm, new EmploymentDuplicateSubmissionWarningViewModel(employmentName), empId)
+        val errorView = views.html.includes.duplicateSubmissionWarning(invalidatedForm, EmploymentDuplicateSubmissionWarningViewModel(employmentName), empId)
         doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
         doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
       }
     }
-  }
-  "Pension journey" when {
-    val pensionView: Html = views.html.includes.duplicateSubmissionWarning(pensionDuplicateSubmissionWarningForm, PensionDuplicateSubmissionWarningViewModel(pensionName),pensionId)
 
-    "duplicateSubmissionWarning" must {
+
+    //val pensionView: Html = views.html.includes.duplicateSubmissionWarning(pensionDuplicateSubmissionWarningForm, PensionDuplicateSubmissionWarningViewModel(pensionName),pensionId)
+
+    "Pension journey duplicateSubmissionWarning" must {
       behave like pageWithTitle(messages("tai.pension.warning.customGaTitle"))
       behave like pageWithBackLink
       behave like pageWithCombinedHeader(
@@ -124,6 +127,6 @@ class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstant
         doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage), "error-message")
       }
     }
-  }
+
     override def view: Html = views.html.includes.duplicateSubmissionWarning(employmentDuplicateSubmissionWarningForm,EmploymentDuplicateSubmissionWarningViewModel(employmentName),empId)
 }
