@@ -85,8 +85,6 @@ class IncomeController @Inject()(personService: PersonService,
 
   private def isCachedAmountSame(currentCache: Map[String, String], newAmount: Option[String]): Boolean = {
     val amount = currentCache.get(UpdateIncome_ConfirmedNewAmountKey)
-    Logger.warn("Amount: " + FormHelper.stripNumber(amount))
-    Logger.warn("newAmount: " + FormHelper.stripNumber(newAmount))
     FormHelper.stripNumber(amount) == FormHelper.stripNumber(newAmount)
   }
 
