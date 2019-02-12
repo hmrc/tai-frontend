@@ -14,7 +14,9 @@
  * limitations under the License.
  *@
 
-@()(implicit
+@import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
+
+@(model: SameEstimatedPayViewModel)(implicit
 request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
@@ -30,7 +32,7 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
 <div class="grid-row">
     <div class="grid grid-2-3">
         <div class="inner-block">
-            SAME AMOUNT
+            <p>@messages("tai.income.calculation.amount.same", model.employerName, model.startOfCurrentYear, model.endOfCurrentYear))</p>
         </div>
     </div>
 </div>

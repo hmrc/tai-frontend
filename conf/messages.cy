@@ -572,6 +572,7 @@ tai.income.calculation.totalNotMatching.pension.message=Anfonodd darparwr eich p
 tai.income.calculation.update.pension=Gallwch {0} ar gyfer y darparwr pensiwn hwn os yw''n anghywir.
 tai.income.calculation.update.regular=Gallwch {0} ar gyfer y cyflogwr hwn os yw''n anghywir.
 tai.income.calculation.updateLink.regular=diweddarwch eich incwm trethadwy amcangyfrifedig
+tai.income.calculation.amount.same=Mae’r swm hwn eisoes wedi’i amcangyfrif ar gyfer {0} ar gyfer {1} i {2}, felly does dim rhaid i chi ddiweddaru’ch incwm.
 tai.income.details.addMissingCompanyCar=Ychwanegu car cwmni sydd ar goll
 tai.income.details.benefit.amount.announce=– Swm y budd hwn yw {0}.
 tai.income.details.benefit.name.announce=Math o fudd:

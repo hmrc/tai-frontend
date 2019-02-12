@@ -35,6 +35,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
@@ -173,8 +174,12 @@ class IncomeControllerSpec extends PlaySpec
 
         val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.IncomeController.sameEstimatedPay().url
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+
+        val currentTaxYear = Dates.formatDate(TaxYear().start)
+        val endTaxYear = Dates.formatDate(TaxYear().end)
+        doc.body().toString must include(Messages("tai.income.calculation.amount.same", "Employer Name", currentTaxYear, endTaxYear))
       }
     }
 

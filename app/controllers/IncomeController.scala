@@ -42,6 +42,7 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
+import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 
 import scala.Function.tupled
 import scala.concurrent.Future
@@ -83,11 +84,6 @@ class IncomeController @Inject()(personService: PersonService,
         }
   }
 
-  private def isCachedAmountSame(currentCache: Map[String, String], newAmount: Option[String]): Boolean = {
-    val amount = currentCache.get(UpdateIncome_ConfirmedNewAmountKey)
-    FormHelper.stripNumber(amount) == FormHelper.stripNumber(newAmount)
-  }
-
   def editRegularIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
@@ -109,8 +105,9 @@ class IncomeController @Inject()(personService: PersonService,
                   for {
                     currentCache <- journeyCacheService.currentCache
                   } yield {
-                    if (isCachedAmountSame(currentCache, income.newAmount)) {
-                      Redirect(routes.IncomeController.sameEstimatedPay())
+                    if (FormHelper.areEqual(currentCache.get(UpdateIncome_ConfirmedNewAmountKey), income.newAmount)) {
+                      val model = SameEstimatedPayViewModel(mandatorySeq(2))
+                      Ok(views.html.incomes.sameEstimatedPay(model))
                     } else {
                       journeyCacheService.cache(UpdateIncome_NewAmountKey, income.newAmount.getOrElse("0"))
                       Redirect(routes.IncomeController.confirmRegularIncome())
@@ -121,15 +118,6 @@ class IncomeController @Inject()(personService: PersonService,
             }
           }
         }
-  }
-
-  def sameEstimatedPay(): Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            Future.successful(Ok(views.html.incomes.sameEstimatedPay()))
-          }
   }
 
   def confirmRegularIncome(): Action[AnyContent] = authorisedForTai(personService).async {
