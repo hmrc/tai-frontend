@@ -569,29 +569,26 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           val payYearToDate: BigDecimal = payment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
           val paymentDate: Option[LocalDate] = payment.map(_.date)
 
-          // TODO fix .get
-          if (FormHelper.areEqual(cache.get(UpdateIncome_ConfirmedNewAmountKey), Some(calculatedPay.grossAnnualPay.get.toString()))) {
-            val model = SameEstimatedPayViewModel(employerName)
-            Future.successful(Ok(views.html.incomes.sameEstimatedPay(model)))
-          }
-          else if (calculatedPay.grossAnnualPay.get > payYearToDate) {
-            val cache = Map(UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
-              UpdateIncome_NewAmountKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
+          calculatedPay.grossAnnualPay match {
+            case pay if (FormHelper.areEqual(cache.get(UpdateIncome_ConfirmedNewAmountKey), pay map (_.toString()))) =>
+              val model = SameEstimatedPayViewModel(employerName)
+              Future.successful(Ok(views.html.incomes.sameEstimatedPay(model)))
+            case Some(pay) if pay > payYearToDate =>
+              val cache = Map(UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
+                UpdateIncome_NewAmountKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
 
-            val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
+              val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
 
-            journeyCache(cacheMap = cache) map { _ =>
+              journeyCache(cacheMap = cache) map { _ =>
 
-              val viewModel = EstimatedPayViewModel(calculatedPay.grossAnnualPay, calculatedPay.netAnnualPay, id, isBonusPayment,
-                calculatedPay.annualAmount, calculatedPay.startDate, employerName)
+                val viewModel = EstimatedPayViewModel(calculatedPay.grossAnnualPay, calculatedPay.netAnnualPay, id, isBonusPayment,
+                  calculatedPay.annualAmount, calculatedPay.startDate, employerName)
 
-              Ok(views.html.incomes.estimatedPay(viewModel))
-            }
-          } else {
-            Future.successful(Ok(views.html.incomes.incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), id)))
+                Ok(views.html.incomes.estimatedPay(viewModel))
+              }
+            case _ => Future.successful(Ok(views.html.incomes.incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), id)))
           }
         }
-
         result.flatMap(identity)
   }
 

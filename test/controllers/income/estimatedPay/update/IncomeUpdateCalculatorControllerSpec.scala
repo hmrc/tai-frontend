@@ -94,6 +94,7 @@ class IncomeUpdateCalculatorControllerSpec
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.IncomeController.pensionIncome().url)
     }
+
     "employments return empty income is none" in {
       val testController = createTestIncomeUpdateCalculatorController
       when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
