@@ -280,10 +280,10 @@ class EndEmploymentController @Inject()(auditService: AuditService,
               case Some(employment) => {
                 val journeyCacheFuture = journeyCacheService.
                   cache(Map(EndEmployment_EmploymentIdKey -> empId.toString, EndEmployment_NameKey -> employment.name))
-                val successfullJourneyCacheFuture = successfulJourneyCacheService.currentValue(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-${empId}")
+                val successfulJourneyCacheFuture = successfulJourneyCacheService.currentValue(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-${empId}")
                 for {
                   _ <- journeyCacheFuture
-                  successfulJourneyCache <- successfullJourneyCacheFuture
+                  successfulJourneyCache <- successfulJourneyCacheFuture
                 } yield {
                   successfulJourneyCache match {
                     case Some(_) => Redirect(routes.EndEmploymentController.duplicateSubmissionWarning())
