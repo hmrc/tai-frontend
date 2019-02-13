@@ -250,7 +250,7 @@ GET         /language/:lang                                                     
 
 ## Incorrect Pension
 
-GET         /incorrect-pension/decision/:id                                            @controllers.pensions.UpdatePensionProviderController.doYouGetThisPension(id: Int)
+GET         /incorrect-pension/decision                                                @controllers.pensions.UpdatePensionProviderController.doYouGetThisPension
 POST        /incorrect-pension/decision                                                @controllers.pensions.UpdatePensionProviderController.handleDoYouGetThisPension
 GET         /incorrect-pension/what-do-you-want-to-tell-us                             @controllers.pensions.UpdatePensionProviderController.whatDoYouWantToTellUs
 POST        /incorrect-pension/what-do-you-want-to-tell-us                             @controllers.pensions.UpdatePensionProviderController.submitWhatDoYouWantToTellUs
@@ -259,6 +259,9 @@ POST        /incorrect-pension/telephone-number                                 
 GET         /incorrect-pension/check-your-answers                                      @controllers.pensions.UpdatePensionProviderController.checkYourAnswers
 POST        /incorrect-pension/check-your-answers                                      @controllers.pensions.UpdatePensionProviderController.submitYourAnswers
 GET         /incorrect-pension/success                                                 @controllers.pensions.UpdatePensionProviderController.confirmation
+GET         /incorrect-pension/redirect/:id                                            @controllers.pensions.UpdatePensionProviderController.UpdatePension(id: Int)
+GET         /incorrect-pension/warning                                                 @controllers.pensions.UpdatePensionProviderController.duplicateSubmissionWarning
+POST        /incorrect-pension/warning                                                 @controllers.pensions.UpdatePensionProviderController.submitDuplicateSubmissionWarning
 
 ## Tax Code Change
 
