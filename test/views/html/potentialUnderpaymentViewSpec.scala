@@ -90,7 +90,7 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
       doc must haveElementWithId("iya-cy-plus-one-how-much")
       doc must not(haveElementWithId("iya-cy-and-cy-plus-one-how-much"))
 
-      doc must not(haveElementWithId("getHelpLink"))
+      doc must haveElementWithId("getHelpLink")
     }
   }
 
