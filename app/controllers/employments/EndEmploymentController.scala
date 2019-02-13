@@ -48,7 +48,6 @@ import uk.gov.hmrc.tai.viewModels.income.IncomeCheckYourAnswersViewModel
 
 import scala.Function.tupled
 import scala.concurrent.Future
-import scala.util.control.NonFatal
 
 class EndEmploymentController @Inject()(auditService: AuditService,
                                         employmentService: EmploymentService,
@@ -112,9 +111,9 @@ class EndEmploymentController @Inject()(auditService: AuditService,
           val journeyCacheFuture = journeyCacheService.
             cache(Map(EndEmployment_EmploymentIdKey -> empId.toString, EndEmployment_NameKey -> employment.name))
 
-          val successfullJourneyCacheFuture = successfulJourneyCacheService.currentValue(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-${empId}")
+          val successfulJourneyCacheFuture = successfulJourneyCacheService.currentValue(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-${empId}")
 
-          redirectToWarningOrDecisionPage(journeyCacheFuture, successfullJourneyCacheFuture)
+          redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
         }
         case _ => throw new RuntimeException("No employment found")
       }

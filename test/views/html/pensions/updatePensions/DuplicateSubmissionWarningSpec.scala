@@ -30,37 +30,37 @@
  * limitations under the License.
  */
 
-package views.html.employments
+package views.html.pensions.updatePensions
 
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.YesNoForm
-import uk.gov.hmrc.tai.forms.employments.DuplicateSubmissionWarningForm
+import uk.gov.hmrc.tai.forms.pensions.DuplicateSubmissionWarningForm
 import uk.gov.hmrc.tai.util.constants.FormValuesConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstants {
-  val employmentName = "Employment Name"
-  val empId = 1
+  val pensionName = "pension Name"
+  val pensionId = 1
   val duplicateSubmissionWarningForm: Form[YesNoForm] = DuplicateSubmissionWarningForm.createForm
   val choice = YesNoForm.YesNoChoice
 
   "duplicateSubmissionWarning" must {
-    behave like pageWithTitle(messages("tai.employment.warning.customGaTitle"))
+    behave like pageWithTitle(messages("tai.pension.warning.customGaTitle"))
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
-      preHeaderText = messages("tai.employment.warning.preHeading"),
-      mainHeaderText = messages("tai.employment.warning.heading", employmentName))
+      preHeaderText = messages("tai.pension.warning.preHeading"),
+      mainHeaderText = messages("tai.pension.warning.heading", pensionName))
 
     behave like pageWithYesNoRadioButton(
       s"$YesNoChoice-yes",
       s"$YesNoChoice-no",
-      messages("tai.employment.warning.radio1", employmentName),
-      messages("tai.employment.warning.radio2"))
+      messages("tai.pension.warning.radio1", pensionName),
+      messages("tai.pension.warning.radio2"))
 
-    behave like pageWithContinueButtonForm("/check-income-tax/update-remove-employment/warning")
-    behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+    behave like pageWithContinueButtonForm("/check-income-tax/incorrect-pension/warning")
+    behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(pensionId))
 
     "return no errors with valid 'yes' choice" in {
       val validYesChoice = Json.obj(choice -> YesValue)
@@ -81,13 +81,13 @@ class DuplicateSubmissionWarningSpec extends TaiViewSpec with FormValuesConstant
     "display an error for invalid choice" in {
       val invalidChoice = Json.obj(choice -> "")
       val invalidatedForm = duplicateSubmissionWarningForm.bind(invalidChoice)
-      val emptySelectionErrorMessage = messages("tai.employment.warning.error")
+      val emptySelectionErrorMessage = messages("tai.pension.warning.error")
 
-      val errorView = views.html.employments.duplicateSubmissionWarning(invalidatedForm,employmentName,empId)
+      val errorView = views.html.pensions.duplicateSubmissionWarning(invalidatedForm, pensionName ,pensionId)
       doc(errorView) must haveErrorLinkWithText(messages(emptySelectionErrorMessage))
       doc(errorView) must haveClassWithText(messages(emptySelectionErrorMessage),"error-message")
     }
   }
 
-  override def view: Html = views.html.employments.duplicateSubmissionWarning(duplicateSubmissionWarningForm,employmentName,empId)
+  override def view: Html = views.html.pensions.duplicateSubmissionWarning(duplicateSubmissionWarningForm, pensionName, pensionId)
 }
