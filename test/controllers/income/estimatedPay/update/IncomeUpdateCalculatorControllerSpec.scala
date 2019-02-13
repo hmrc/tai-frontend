@@ -899,39 +899,50 @@ class IncomeUpdateCalculatorControllerSpec
       val payToDate = 123
       val newAmount = 123
 
-      when(
-        journeyCacheService.mandatoryValues(any())(any())
-      ).thenReturn(
-        Future.successful(Seq(employerName, newAmount.toString))
-      )
-
+      when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(employerName, newAmount.toString)))
 
       val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
         RequestBuilder.buildFakeRequestWithOnlySession("GET")
       )
 
-
       status(result) mustBe OK
-
       val doc = Jsoup.parse(contentAsString(result))
-
       doc.title() must include(messages("tai.irregular.title"))
     }
 
     "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
       val testController = createTestIncomeUpdateCalculatorController
 
-      when(
-        journeyCacheService.mandatoryValues(any())(any())
-      ).thenReturn(
-        Future.failed(new Exception)
-      )
+      when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.failed(new Exception))
 
       val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
         RequestBuilder.buildFakeRequestWithOnlySession("GET")
       )
 
       status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+
+    "redirect to SameEstimatedPayPage" when {
+      "the same amount of pay has been entered" in {
+        val testController = createTestIncomeUpdateCalculatorController
+        val newAmount = 123
+
+        val currentCache: Map[String, String] = Map(UpdateIncome_ConfirmedNewAmountKey -> newAmount.toString)
+
+        when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(EmployerName, newAmount.toString)))
+        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(currentCache))
+
+        val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
+          RequestBuilder.buildFakeRequestWithOnlySession("GET")
+        )
+
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+
+        val currentTaxYear = Dates.formatDate(TaxYear().start)
+        val endTaxYear = Dates.formatDate(TaxYear().end)
+        doc.body().toString must include(Messages("tai.income.calculation.amount.same", EmployerName, currentTaxYear, endTaxYear))
+      }
     }
   }
 
