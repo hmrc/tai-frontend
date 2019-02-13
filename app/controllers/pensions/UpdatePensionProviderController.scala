@@ -25,7 +25,8 @@ import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Result}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
@@ -221,7 +222,21 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
       Future.successful(Ok(views.html.pensions.update.confirmation()))
   }
 
-  def redirectUpdatePension(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  private def redirectToWarningOrDecisionPage(journeyCacheFuture: Future[Map[String, String]],
+                                              successfulJourneyCacheFuture: Future[Option[String]])
+                                             (implicit hc: HeaderCarrier): Future[Result] = {
+    for {
+      _ <- journeyCacheFuture
+      successfulJourneyCache <- successfulJourneyCacheFuture
+    } yield {
+      successfulJourneyCache match {
+        case Some(_) => Redirect(routes.UpdatePensionProviderController.duplicateSubmissionWarning())
+        case _ => Redirect(routes.UpdatePensionProviderController.doYouGetThisPension())
+      }
+    }
+  }
+
+  def UpdatePension(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
 
@@ -230,15 +245,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
         val journeyCacheFuture = journeyCacheService.cache(Map(UpdatePensionProvider_IdKey -> id.toString,
           UpdatePensionProvider_NameKey -> taxCodeIncome.name))
 
-        for {
-          successfulJourneyCache <- successfulJourneyCacheFuture
-          _ <- journeyCacheFuture
-        } yield {
-          successfulJourneyCache match {
-            case Some(_) => Redirect(routes.UpdatePensionProviderController.duplicateSubmissionWarning())
-            case _ => Redirect(routes.UpdatePensionProviderController.doYouGetThisPension())
-          }
-        }
+        redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
       }
 
       (taxAccountService.taxCodeIncomes(request.taiUser.nino, TaxYear()) flatMap {

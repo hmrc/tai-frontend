@@ -375,7 +375,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       thenReturn(Future.successful(None))
       journeyCacheCall
 
-      val result = createController.redirectUpdatePension(pensionId)(fakeGetRequest)
+      val result = createController.UpdatePension(pensionId)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.UpdatePensionProviderController.doYouGetThisPension().url
 
@@ -388,7 +388,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
       thenReturn(Future.successful(Some("true")))
       journeyCacheCall
 
-      val result = createController.redirectUpdatePension(pensionId)(fakeGetRequest)
+      val result = createController.UpdatePension(pensionId)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.UpdatePensionProviderController.duplicateSubmissionWarning.url
     }
@@ -399,7 +399,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiTaxAccountFailureResponse("Failed")))
 
-        val result = createController.redirectUpdatePension(pensionId)(fakeGetRequest)
+        val result = createController.UpdatePension(pensionId)(fakeGetRequest)
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
 
@@ -408,7 +408,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload(Seq(pensionTaxCodeIncome, empTaxCodeIncome))))
 
-        val result = createController.redirectUpdatePension(4)(fakeGetRequest)
+        val result = createController.UpdatePension(4)(fakeGetRequest)
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -439,8 +439,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
         journeyCacheCall
 
-        val result = createController.submitDuplicateSubmissionWarning(fakePostRequest
-          .withFormUrlEncodedBody(YesNoChoice -> YesValue))
+        val result = createController.submitDuplicateSubmissionWarning(fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> YesValue))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension().url
@@ -452,8 +451,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
 
         journeyCacheCall
 
-        val result = createController.submitDuplicateSubmissionWarning(fakePostRequest
-          .withFormUrlEncodedBody(YesNoChoice -> NoValue))
+        val result = createController.submitDuplicateSubmissionWarning(fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> NoValue))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(pensionId).url
@@ -466,8 +464,7 @@ class UpdatePensionProviderControllerSpec extends PlaySpec with FakeTaiPlayAppli
         when(journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
           .thenReturn(Future.successful(Seq(pensionName, pensionId.toString)))
 
-        val result = createController.submitDuplicateSubmissionWarning(fakePostRequest
-          .withFormUrlEncodedBody(YesNoChoice -> ""))
+        val result = createController.submitDuplicateSubmissionWarning(fakePostRequest.withFormUrlEncodedBody(YesNoChoice -> ""))
 
         status(result) mustBe BAD_REQUEST
       }

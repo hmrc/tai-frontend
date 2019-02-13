@@ -259,7 +259,7 @@ POST        /incorrect-pension/telephone-number                                 
 GET         /incorrect-pension/check-your-answers                                      @controllers.pensions.UpdatePensionProviderController.checkYourAnswers
 POST        /incorrect-pension/check-your-answers                                      @controllers.pensions.UpdatePensionProviderController.submitYourAnswers
 GET         /incorrect-pension/success                                                 @controllers.pensions.UpdatePensionProviderController.confirmation
-GET         /incorrect-pension/redirect/:id                                            @controllers.pensions.UpdatePensionProviderController.redirectUpdatePension(id: Int)
+GET         /incorrect-pension/redirect/:id                                            @controllers.pensions.UpdatePensionProviderController.UpdatePension(id: Int)
 GET         /incorrect-pension/warning                                                 @controllers.pensions.UpdatePensionProviderController.duplicateSubmissionWarning
 POST        /incorrect-pension/warning                                                 @controllers.pensions.UpdatePensionProviderController.submitDuplicateSubmissionWarning
 
