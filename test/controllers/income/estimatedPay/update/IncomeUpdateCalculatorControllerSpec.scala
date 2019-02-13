@@ -539,16 +539,37 @@ class IncomeUpdateCalculatorControllerSpec
   }
 
   "estimatedPayPage" must {
+    def createTestController(currentCache: Map[String, String]):  TestIncomeUpdateCalculatorController = {
+      val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
+      val payment = Payment(new LocalDate(), 200, 50, 25, 100, 50, 25, Monthly)
+
+      when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+      when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(currentCache))
+      when(incomeService.calculateEstimatedPay(any(), any())(any())).thenReturn(
+        Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
+      when(incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(Some(payment)))
+      when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+      createTestIncomeUpdateCalculatorController
+    }
+
     "display estimatedPay page" when {
       "payYearToDate is less than gross annual pay" in {
-        val testController = createTestIncomeUpdateCalculatorController
-        val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
+        val testController = createTestController(Map.empty)
 
-        when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
-        when(incomeService.calculateEstimatedPay(any(), any())(any())).thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
+        val payment = Payment(new LocalDate(), 50, 1, 1, 1, 1, 1, Monthly)
+        when(incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(Some(payment)))
+
+        val result = testController.estimatedPayPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messages("tai.estimatedPay.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+      }
+
+      "payYearToDate is None" in {
+        val testController = createTestController(Map.empty)
         when(incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(None))
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = testController.estimatedPayPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -560,15 +581,7 @@ class IncomeUpdateCalculatorControllerSpec
 
     "display incorrectTaxableIncome page" when {
       "payYearToDate is greater than gross annual pay" in {
-        val testController = createTestIncomeUpdateCalculatorController
-        val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
-        val payment = Payment(new LocalDate(), 200, 50, 25, 100, 50, 25, Monthly)
-
-        when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map.empty[String, String]))
-        when(incomeService.calculateEstimatedPay(any(), any())(any())).thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
-        when(incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(Some(payment)))
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        val testController = createTestController(Map.empty)
 
         val result = testController.estimatedPayPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
@@ -580,17 +593,8 @@ class IncomeUpdateCalculatorControllerSpec
 
     "redirect to sameEstimatedPay page" when {
       "the pay is the same" in {
-        // TODO dedupe
-        val testController = createTestIncomeUpdateCalculatorController
-        val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
-        val payment = Payment(new LocalDate(), 200, 50, 25, 100, 50, 25, Monthly)
         val currentCache = Map(UpdateIncome_ConfirmedNewAmountKey -> "100")
-
-        when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(currentCache))
-        when(incomeService.calculateEstimatedPay(any(), any())(any())).thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
-        when(incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(None))
-        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        val testController = createTestController(currentCache)
 
         val result = testController.estimatedPayPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK

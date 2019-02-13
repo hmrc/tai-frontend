@@ -552,6 +552,10 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         }
   }
 
+  private def isCachedAmountSameAsEnteredAmount(cache: Map[String, String], newAmount: Option[BigDecimal]): Boolean = {
+    FormHelper.areEqual(cache.get(UpdateIncome_ConfirmedNewAmountKey), newAmount map (_.toString()))
+  }
+
   def estimatedPayPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
@@ -570,10 +574,10 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           val paymentDate: Option[LocalDate] = payment.map(_.date)
 
           calculatedPay.grossAnnualPay match {
-            case pay if (FormHelper.areEqual(cache.get(UpdateIncome_ConfirmedNewAmountKey), pay map (_.toString()))) =>
+            case newAmount if (isCachedAmountSameAsEnteredAmount(cache, newAmount)) =>
               val model = SameEstimatedPayViewModel(employerName)
               Future.successful(Ok(views.html.incomes.sameEstimatedPay(model)))
-            case Some(pay) if pay > payYearToDate =>
+            case Some(newAmount) if newAmount > payYearToDate =>
               val cache = Map(UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
                 UpdateIncome_NewAmountKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
 
@@ -589,6 +593,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             case _ => Future.successful(Ok(views.html.incomes.incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), id)))
           }
         }
+
         result.flatMap(identity)
   }
 
