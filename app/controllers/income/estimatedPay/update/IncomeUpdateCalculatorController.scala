@@ -547,6 +547,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
           val viewModel = CheckYourAnswersViewModel(payPeriodFrequency, totalSalaryAmount, hasPayslipDeductions,
             taxablePay, hasBonusPayments, bonusPaymentAmount)
+
           Ok(views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel, incomeId))
         }
         }
@@ -565,12 +566,19 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           calculatedPay <- incomeService.calculateEstimatedPay(cache, income.startDate)
           payment <- incomeService.latestPayment(Nino(user.getNino), id)
         } yield {
+
           val payYearToDate: BigDecimal = payment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
           val paymentDate: Option[LocalDate] = payment.map(_.date)
 
-          if (calculatedPay.grossAnnualPay.get > payYearToDate) {
+          // TODO fix .get
+          if (FormHelper.areEqual(cache.get(UpdateIncome_ConfirmedNewAmountKey), Some(calculatedPay.grossAnnualPay.get.toString()))) {
+            val model = SameEstimatedPayViewModel(employerName)
+            Future.successful(Ok(views.html.incomes.sameEstimatedPay(model)))
+          }
+          else if (calculatedPay.grossAnnualPay.get > payYearToDate) {
             val cache = Map(UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
               UpdateIncome_NewAmountKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
+
             val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
 
             journeyCache(cacheMap = cache) map { _ =>
@@ -580,7 +588,6 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
               Ok(views.html.incomes.estimatedPay(viewModel))
             }
-
           } else {
             Future.successful(Ok(views.html.incomes.incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), id)))
           }
@@ -598,6 +605,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           income <- incomeService.employmentAmount(Nino(user.getNino), id)
           netAmount <- journeyCacheService.currentValue(UpdateIncome_NewAmountKey)
         } yield {
+
           val newAmount = income.copy(newAmount = netAmount.map(netAmountValue => BigDecimal(netAmountValue).intValue()).getOrElse(income.oldAmount))
           Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = newAmount).get))
         }

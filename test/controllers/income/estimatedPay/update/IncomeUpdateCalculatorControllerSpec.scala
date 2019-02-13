@@ -33,6 +33,7 @@ import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.{BonusOvertimeAmountForm, BonusPaymentsForm}
@@ -573,7 +574,31 @@ class IncomeUpdateCalculatorControllerSpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.estimatedPay.error.incorrectTaxableIncome.title"))
+      }
+    }
 
+    "redirect to sameEstimatedPay page" when {
+      "the pay is the same" in {
+        // TODO dedupe
+        val testController = createTestIncomeUpdateCalculatorController
+        val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
+        val payment = Payment(new LocalDate(), 200, 50, 25, 100, 50, 25, Monthly)
+        val currentCache = Map(UpdateIncome_ConfirmedNewAmountKey -> "100")
+
+        when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(currentCache))
+        when(incomeService.calculateEstimatedPay(any(), any())(any())).thenReturn(Future.successful(CalculatedPay(Some(BigDecimal(100)), Some(BigDecimal(100)))))
+        when(incomeService.latestPayment(any(), any())(any())).thenReturn(Future.successful(None))
+        when(journeyCacheService.cache(any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+
+        val result = testController.estimatedPayPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+
+        val currentTaxYear = Dates.formatDate(TaxYear().start)
+        val endTaxYear = Dates.formatDate(TaxYear().end)
+        doc.body().toString must include(Messages("tai.income.calculation.amount.same", EmployerName, currentTaxYear, endTaxYear))
       }
     }
   }
