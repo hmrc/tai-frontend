@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,11 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@()(implicit messages: Messages)
+package uk.gov.hmrc.tai.forms.pensions
 
-<div class="govuk-box-highlight">
-    <h1 class="heading-large">@Messages("tai.confirmation.heading")</h1>
-    <h2 class="flush--top">@Messages("tai.confirmation.subheading")</h2>
-</div>
+import play.api.data.Form
+import play.api.i18n.Messages
+import uk.gov.hmrc.tai.forms.YesNoForm
+
+object DuplicateSubmissionWarningForm {
+    def createForm(implicit messages: Messages): Form[YesNoForm] = {
+      YesNoForm.form(messages("tai.pension.warning.error"))
+    }
+}

@@ -58,13 +58,13 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       "income source is employment" in {
         doc must haveParagraphWithText(messages("tai.employment.income.details.updateLinkText"))
         doc must haveLinkWithUrlWithID("updateEmployer",
-          controllers.employments.routes.EndEmploymentController.redirectUpdateEmployment(model.empId).url)
+          controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(model.empId).url)
       }
 
       "income source is pension" in {
         pensionDoc must haveParagraphWithText(messages("tai.pension.income.details.updateLinkText"))
         pensionDoc must haveLinkWithUrlWithID("updatePension",
-          controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension(model.empId).url)
+          controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url)
       }
     }
 

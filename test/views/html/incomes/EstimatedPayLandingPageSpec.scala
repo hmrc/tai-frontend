@@ -37,7 +37,7 @@ class EstimatedPayLandingPageSpec extends TaiViewSpec {
       doc(view).getElementsByTag("p").text must include(messages("tai.incomes.landing.intro"))
       doc(view) must haveLinkWithText(messages("tai.incomes.landing.employment.ended.link", employerName))
       doc(view) must haveLinkWithUrlWithID("updateEmployer",
-        controllers.employments.routes.EndEmploymentController.employmentUpdateRemove.url)
+        controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.url)
       doc(view).getElementsByClass("button").text must include(messages("tai.income.details.updateTaxableIncome.update"))
     }
 

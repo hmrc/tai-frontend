@@ -18,7 +18,7 @@
 @import includes.{cancelLink, ptaHeader}
 @import uk.gov.hmrc.play.views.html.helpers.{errorSummary, form}
 
-@(duplicateSubmissionWarningForm: Form[YesNoForm], employmentName: String, empId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(duplicateSubmissionWarningForm: Form[YesNoForm], pensionName: String, pensionId: Int)(implicit request: Request[_], messages: Messages, user: controllers.auth.AuthedUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Update received"}
 
@@ -27,25 +27,25 @@
         formForErrorSummary = Some(duplicateSubmissionWarningForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.employment.warning.heading", employmentName),
-        preHeadingText = messages("tai.employment.warning.preHeading")
+        mainHeadingText = messages("tai.pension.warning.heading", pensionName),
+        preHeadingText = messages("tai.pension.warning.preHeading")
     )
 }
 
 @main(
-    title = messages("tai.employment.warning.customGaTitle"),
+    title = messages("tai.pension.warning.customGaTitle"),
     authedUser = Some(user),
     pageHeader = Some(header),
     articleClasses = None,
-    gaCustomTitle = Some(messages("tai.employment.warning.customGaTitle"))) {
+    gaCustomTitle = Some(messages("tai.pension.warning.customGaTitle"))) {
 
     @includes.duplicateSubmissionWarning(
         duplicateSubmissionWarningForm,
-        messages("tai.employment.warning.radio1", employmentName),
-        messages("tai.employment.warning.radio2"),
-        controllers.employments.routes.EndEmploymentController.submitDuplicateSubmissionWarning,
+        messages("tai.pension.warning.radio1", pensionName),
+        messages("tai.pension.warning.radio2"),
+        controllers.pensions.routes.UpdatePensionProviderController.submitDuplicateSubmissionWarning,
         gaEventActionString
 )
 
-    @cancelLink(routes.IncomeSourceSummaryController.onPageLoad(empId), gaEventAction = Some(gaEventActionString))
+    @cancelLink(routes.IncomeSourceSummaryController.onPageLoad(pensionId), gaEventAction = Some(gaEventActionString))
 }

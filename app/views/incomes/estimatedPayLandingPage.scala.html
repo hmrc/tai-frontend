@@ -50,7 +50,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
             } else {
                 @messages("tai.incomes.landing.employment.ended", incomeName)
                 @includes.link(
-                    url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemove.toString,
+                    url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.toString,
                     copy=messages("tai.incomes.landing.employment.ended.link"),
                     id=Some("updateEmployer")
                 )

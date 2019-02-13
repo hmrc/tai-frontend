@@ -83,26 +83,26 @@
         <p  aria-hidden="true">
             @Link.toInternalPage(
                 id=Some("updatePension"),
-                url=controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension(model.empId).url,
+                url=controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url,
                 value=Some(messages("tai.pension.income.details.updateLinkText"))).toHtml
         </p>
         <p class="visuallyhidden">
         @Link.toInternalPage(
             id=Some("updatePensionScreenReader"),
-            url=controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension(model.empId).url,
+            url=controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url,
             value=Some(messages("tai.pension.income.details.updateLinkText.screenReader", model.empOrPensionName))).toHtml
         </p>
     }else {
         <p  aria-hidden="true">
             @Link.toInternalPage(
                 id=Some("updateEmployer"),
-                url=controllers.employments.routes.EndEmploymentController.redirectUpdateEmployment(model.empId).url,
+                url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(model.empId).url,
                 value=Some(messages("tai.employment.income.details.updateLinkText"))).toHtml
         </p>
         <p class="visuallyhidden">
         @Link.toInternalPage(
             id=Some("updateEmployerScreenReader"),
-            url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemove.url,
+            url=controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.url,
             value=Some(messages("tai.employment.income.details.updateLinkText.screenReader", model.empOrPensionName))).toHtml
         </p>
     }
