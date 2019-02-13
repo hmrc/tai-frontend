@@ -62,44 +62,46 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector)
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
-    authorised().retrieve(Retrievals.credentials) {
-      case credentials: Option[Credentials] => authWithCredentials(request, block, credentials)
-      case _ => throw new RuntimeException("Can't find credentials for user")
-    } recover handleGGFailure
+    authorised().
+      retrieve(Retrievals.credentials and Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.userDetailsUri and Retrievals.confidenceLevel) {
+        case credentials ~ nino ~ name ~ saUtr ~ userDetailsUri ~ confidenceLevel => {
+          val user = AuthedUser(name, nino, saUtr, userDetailsUri, confidenceLevel)
+          authWithCredentials(request, block, credentials, user)
+        }
+        case _ => throw new RuntimeException("Can't find credentials for user")
+      } recover handleGGFailure
   }
 
-  private def authWithCredentials[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result], credentials: Option[Credentials])(implicit hc: HeaderCarrier): Future[Result] = {
+  private def authWithCredentials[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result], credentials: Option[Credentials], user: AuthedUser)(implicit hc: HeaderCarrier): Future[Result] = {
     val GOVERNMENT_GATEWAY = "GovernmentGateway"
     val VERIFY = "Verify"
 
     credentials match {
       case Some(Credentials(_, GOVERNMENT_GATEWAY)) => {
-        processRequest(request, block, handleGGFailure)
+        processRequest(user, request, block, handleGGFailure)
       }
       case Some(Credentials(_, VERIFY)) => {
-        processRequest(request, block, handleVerifyFailure)
+        processRequest(user, request, block, handleVerifyFailure)
       }
       case _ => throw new RuntimeException("Can't find valid credentials for user")
     }
   }
 
-  private def processRequest[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result], failureHandler: PartialFunction[Throwable, Result])(implicit hc: HeaderCarrier): Future[Result] = {
-    authorised(ConfidenceLevel.L200)
-      .retrieve(Retrievals.nino and Retrievals.name and Retrievals.saUtr and Retrievals.userDetailsUri and Retrievals.confidenceLevel) {
-        case nino ~ name ~ saUtr ~ userDetailsUri ~ confidenceLevel => {
-          val taiUser = AuthedUser(name, nino, saUtr, userDetailsUri, confidenceLevel)
+  private def processRequest[A](user: AuthedUser, request: Request[A], block: AuthenticatedRequest[A] => Future[Result], failureHandler: PartialFunction[Throwable, Result])
+                               (implicit hc: HeaderCarrier): Future[Result] = {
 
-          for {
-            result <- block(AuthenticatedRequest(request, taiUser))
-          } yield {
-            result
-          }
-        }
+    val confidenceLevel = user.confidenceLevel.toInt
 
-        case _ => {
-          Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
+    (confidenceLevel match {
+    case level if level >= 200 => {
+        for {
+          result <- block(AuthenticatedRequest(request, user))
+        } yield {
+          result
         }
-      } recover failureHandler
+      }
+      case _ => Future.successful(Redirect(routes.UnauthorisedController.upliftFailedUrl()))
+    }) recover failureHandler
   }
 
   private def handleGGFailure: PartialFunction[Throwable, Result] = {

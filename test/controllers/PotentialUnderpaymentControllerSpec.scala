@@ -59,7 +59,7 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
   "potentialUnderpaymentPage method" must {
     "return a clean response" when {
       "supplied with an authorised session" in {
-        val res = new SUT().potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val res = new SUT().potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
         status(res) mustBe OK
       }
     }
@@ -71,7 +71,7 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
             TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)
           ))
         )
-        val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
         val doc = Jsoup.parse(contentAsString(res))
         doc.title() must include(Messages("tai.iya.tax.you.owe.title"))
 
@@ -85,21 +85,21 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
             TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
           ))
         )
-        val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
         val doc = Jsoup.parse(contentAsString(res))
-        doc.title() must include(Messages("tai.iya.tax.you.owe.cy-plus-one.title"))
+        doc.title() must include(Messages("tai.iya.tax.you.owe.title"))
 
       }
     }
     "raise an in year adjustment audit events" in {
       val sut = new SUT()
-      Await.result(sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET")), 5 seconds)
+      Await.result(sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap)), 5 seconds)
       verify(auditService, times(1)).createAndSendAuditEvent(Matchers.eq(PotentialUnderpayment_InYearAdjustment), any())(any(), any())
     }
     "return the service unavailable error page in response to an internal error" in {
       val sut = new SUT()
       when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.failed(new ForbiddenException("")))
-      val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val res = sut.potentialUnderpaymentPage()(RequestBuilder.buildFakeRequestWithAuth("GET", referralMap))
       status(res) mustBe INTERNAL_SERVER_ERROR
       val doc = Jsoup.parse(contentAsString(res))
       doc.title() must include("Sorry, we are experiencing technical difficulties - 500")
@@ -110,6 +110,7 @@ class PotentialUnderpaymentControllerSpec extends PlaySpec
   val codingComponentService = mock[CodingComponentService]
   val auditService = mock[AuditService]
   val taxAccountService = mock[TaxAccountService]
+  val referralMap = Map("Referer" ->"http://somelocation/somePageResource")
 
   private class SUT() extends PotentialUnderpaymentController(
     taxAccountService,
