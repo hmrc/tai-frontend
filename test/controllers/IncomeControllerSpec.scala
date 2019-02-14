@@ -576,6 +576,33 @@ class IncomeControllerSpec extends PlaySpec
         redirectLocation(result).get mustBe routes.IncomeController.pensionIncome().url
       }
     }
+
+    "sameEstimatedPay page" should {
+      "contain the employer name and current pay " in {
+        val testController = createTestIncomeController
+
+        val currentCache: Map[String, String] = Map(UpdateIncome_ConfirmedNewAmountKey -> "12345", UpdateIncome_NameKey -> "Employer Name")
+
+        when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("Employer Name", "987")))
+
+        val result = testController.sameEstimatedPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe OK
+
+        val doc = Jsoup.parse(contentAsString(result))
+        val body = doc.body().toString
+        body must include("Employer Name")
+        body must include("987")
+      }
+
+      "fail if there are no mandatory values " in {
+        val testController = createTestIncomeController
+
+        when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq.empty))
+
+        val result = testController.sameEstimatedPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
   }
 
   val nino = new Generator(new Random).nextNino
