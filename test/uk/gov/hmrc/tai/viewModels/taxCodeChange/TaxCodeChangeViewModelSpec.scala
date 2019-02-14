@@ -27,16 +27,13 @@ import uk.gov.hmrc.tai.viewModels.DescriptionListViewModel
 
 import scala.collection.immutable.ListMap
 
-/**
-  * Created by digital032748 on 25/07/18.
-  */
 class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 
   val endOfTaxYear = TaxYear().end
   val startDate = TaxYear().start
-  val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation,"A Employer 1", false, Some("1234"), false)
+  val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation, "A Employer 1", false, Some("1234"), false)
   val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = endOfTaxYear)
   val fullYearTaxCode = TaxCodeRecord("1185L", startDate, endOfTaxYear, Week1Month1BasisOfOperation, "B Employer 1", false, Some("12345"), false)
   val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", pensionIndicator = false, primary = true)
@@ -50,10 +47,15 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
     "translate the taxCodeChange object into a TaxCodePairs" in {
       val model = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
 
-      model.pairs mustEqual TaxCodePairs(Seq(
-        TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode)),
-        TaxCodePair(Some(previousTaxCodeRecord1), Some(currentTaxCodeRecord1))
-      ))
+      val primaryPairs = Seq(TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode)))
+      val secondaryPairs = Seq(TaxCodePair(Some(previousTaxCodeRecord1), Some(currentTaxCodeRecord1)))
+
+      model.pairs mustEqual TaxCodePairs(
+        primaryPairs,
+        secondaryPairs,
+        Seq.empty,
+        Seq.empty
+      )
     }
 
     "sets the changeDate to the mostRecentTaxCodeChangeDate" in {
@@ -61,7 +63,6 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
       model.changeDate mustEqual currentTaxCodeRecord1.startDate
     }
-
 
     "ga custom dimension for 'Multiple Secondary Employments without payroll number'" should {
       val gaCustomDimensionYes = Map("taxCodeChangeEdgeCase" -> "Yes")
@@ -72,8 +73,8 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
           val startDate = TaxYear().start
           val endDate = startDate.plusMonths(1)
           val changeDate = startDate.plusMonths(1).plusDays(1)
-          
-          val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, endDate, OtherBasisOfOperation,"A Employer 1", false, Some("1234"), false)
+
+          val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, endDate, OtherBasisOfOperation, "A Employer 1", false, Some("1234"), false)
           val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = changeDate, endDate = endOfTaxYear)
 
           val previousTCR2Primary = TaxCodeRecord("1185L", startDate, endOfTaxYear, Week1Month1BasisOfOperation, "B Employer 1", false, Some("12345"), true)
@@ -99,7 +100,6 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
           val changeDate = startDate.plusMonths(1).plusDays(1)
 
           val employerName = "A Employer 1"
-
 
 
           val previousTaxCodeRecord1 = TaxCodeRecord("1185L", startDate, endDate, OtherBasisOfOperation, employerName, false, None, false)
@@ -160,7 +160,7 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
         val result = TaxCodeChangeViewModel.getTaxCodeExplanations(previousTaxCodeRecord1, Map[String, BigDecimal](), "current")
 
-        result mustEqual(expected)
+        result mustEqual (expected)
       }
 
       "basisOfOperation is emergency" in {
@@ -175,7 +175,7 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
         val result = TaxCodeChangeViewModel.getTaxCodeExplanations(fullYearTaxCode, Map[String, BigDecimal](), "current")
 
-        result mustEqual(expected)
+        result mustEqual (expected)
       }
 
       "Using a scottish tax rate band" in {
@@ -192,7 +192,119 @@ class TaxCodeChangeViewModelSpec extends PlaySpec with FakeTaiPlayApplication {
 
         val result = TaxCodeChangeViewModel.getTaxCodeExplanations(scottishTaxCode, scottishTaxRateBands, "current")
 
-        result mustEqual(expected)
+        result mustEqual (expected)
+      }
+    }
+  }
+
+  "TaxCodeChangeViewModel taxCodeReasons" must {
+
+    val previousEmployer = "Previous Employer"
+    val currentEmployer = "Current Employer"
+
+    def createTaxRecord(employerName: String): TaxCodeRecord = {
+      TaxCodeRecord("taxCode", startDate, startDate.plusMonths(1), OtherBasisOfOperation, employerName, false, Some("12345"), false)
+    }
+
+    def createPrimaryTaxRecord(employerName: String): TaxCodeRecord = {
+      TaxCodeRecord("taxCode", startDate, startDate.plusMonths(1), OtherBasisOfOperation, employerName, false, Some("12345"), true)
+    }
+
+    def removedEmployer(employerName: String): String = {
+      Messages("tai.taxCodeComparison.removeEmployer", employerName)
+    }
+
+    def addedEmployer(employerName: String): String = {
+      Messages("tai.taxCodeComparison.addEmployer", employerName)
+    }
+
+    "return empty when nothing has changed" in {
+      val taxRecord = Seq(createTaxRecord(previousEmployer), createPrimaryTaxRecord(currentEmployer))
+
+      val taxCodeChange = TaxCodeChange(taxRecord, taxRecord)
+      val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+      model.taxCodeReasons mustBe Seq.empty[String]
+    }
+
+    "return a reason when an employment been removed" in {
+      val previous = Seq(createTaxRecord(previousEmployer), createTaxRecord(currentEmployer))
+      val current = Seq(createTaxRecord(currentEmployer))
+
+      val taxCodeChange = TaxCodeChange(previous, current)
+      val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+      model.taxCodeReasons mustBe Seq(removedEmployer(previousEmployer))
+    }
+
+    "return a reason when an employment been added" in {
+      val previous = Seq(createTaxRecord(previousEmployer))
+      val current = Seq(createTaxRecord(previousEmployer), createTaxRecord(currentEmployer))
+
+      val taxCodeChange = TaxCodeChange(previous, current)
+      val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+      model.taxCodeReasons mustBe Seq(addedEmployer(currentEmployer))
+    }
+
+    "return multiple reasons when employments have changed" in {
+      val previous = Seq(createTaxRecord(previousEmployer), createTaxRecord(previousEmployer + "1"))
+      val current = Seq(createTaxRecord(currentEmployer), createTaxRecord(currentEmployer + "1"))
+
+      val taxCodeChange = TaxCodeChange(previous, current)
+      val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+      model.taxCodeReasons mustBe Seq(
+        removedEmployer(previousEmployer), removedEmployer(previousEmployer + "1"),
+        addedEmployer(currentEmployer), addedEmployer(currentEmployer + "1")
+      )
+    }
+
+      "return primary and secondary employment have changed at the same time" in {
+        val previous = Seq(createPrimaryTaxRecord(previousEmployer), createTaxRecord(previousEmployer + "1"))
+        val current = Seq(createPrimaryTaxRecord(currentEmployer), createTaxRecord(currentEmployer + "1"))
+
+        val taxCodeChange = TaxCodeChange(previous, current)
+        val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+        model.taxCodeReasons mustBe Seq(
+          removedEmployer(previousEmployer), addedEmployer(currentEmployer),
+          removedEmployer(previousEmployer + "1"), addedEmployer(currentEmployer + "1")
+        )
+    }
+
+    "return an add and remove message when primary employment has changed" in {
+      val previous = Seq(createPrimaryTaxRecord(previousEmployer))
+      val current = Seq(createPrimaryTaxRecord(currentEmployer))
+
+      val taxCodeChange = TaxCodeChange(previous, current)
+      val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+      model.taxCodeReasons mustBe Seq(
+        removedEmployer(previousEmployer),
+        addedEmployer(currentEmployer)
+      )
+    }
+
+    "if you can match by employer name but can't match with payroll" should {
+      "go to the generic message for primary tax records" in {
+        val previous = createPrimaryTaxRecord(previousEmployer)
+        val current = previous.copy(payrollNumber = Some("54321"))
+
+        val taxCodeChange = TaxCodeChange(Seq(previous), Seq(current))
+        val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+        model.taxCodeReasons mustBe Seq(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
+      }
+
+      "go to the generic message for secondary tax records" in {
+        val previous = createTaxRecord(previousEmployer)
+        val current = previous.copy(payrollNumber = Some("54321"))
+
+        val taxCodeChange = TaxCodeChange(Seq(previous), Seq(current))
+        val model = TaxCodeChangeViewModel(taxCodeChange, Map.empty[String, BigDecimal])
+
+        model.taxCodeReasons mustBe Seq(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
       }
     }
   }

@@ -31,6 +31,11 @@
     border-bottom: 1px solid #ccc;
     margin-bottom: 30px;
   }
+
+  .list-bullet {
+    list-style-type: disc;
+    padding-left: 12%;
+  }
 }
 
 .tax-free-amount-comparison-table.responsive-table {

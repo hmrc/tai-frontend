@@ -26,48 +26,37 @@ import uk.gov.hmrc.tai.util.{TaxAccountCalculator, TaxAccountCalculatorImpl, Tax
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
 
-case class CodingComponentsWithCarBenefits(date: LocalDate, codingComponents: Seq[CodingComponent], companyCarBenefits: Seq[CompanyCarBenefit])
+case class YourTaxFreeAmountComparison(previousTaxFreeInfo: Option[TaxFreeInfo], currentTaxFreeInfo: TaxFreeInfo, iabdPairs: AllowancesAndDeductionPairs)
 
 trait YourTaxFreeAmount {
-  def buildTaxFreeAmount(previous: Option[CodingComponentsWithCarBenefits],
-                         current: CodingComponentsWithCarBenefits,
-                         employmentIds: Map[Int, String])
-                        (implicit messages: Messages): YourTaxFreeAmountViewModel = {
+
+  def buildTaxFreeAmount(changeDate: LocalDate,
+                         previous: Option[Seq[CodingComponent]],
+                         current: Seq[CodingComponent])
+                        (implicit messages: Messages): YourTaxFreeAmountComparison = {
 
     val taxAccountCalculator: TaxAccountCalculator = new TaxAccountCalculatorImpl
 
-    val previousTaxFreeInfo: Option[TaxFreeInfo] = extractPreviousTaxFreeInfo(previous, taxAccountCalculator)
+    val previousTaxFreeInfo: Option[TaxFreeInfo] = previous.map(codingComponents => {
+      val previousTaxCodeDateRange = Dates.formatDate(changeDate)
+      TaxFreeInfo(previousTaxCodeDateRange, codingComponents, taxAccountCalculator)
+    })
 
     val currentTaxFreeInfo = {
-      val currentTaxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(current.date, TaxYear().end)
-      TaxFreeInfo(currentTaxCodeDateRange, current.codingComponents, taxAccountCalculator)
+      val currentTaxCodeDateRange = TaxYearRangeUtil.dynamicDateRange(changeDate, TaxYear().end)
+      TaxFreeInfo(currentTaxCodeDateRange, current, taxAccountCalculator)
     }
 
-    val previousCodingComponents: Seq[CodingComponent] = previous.fold(Seq.empty[CodingComponent])(_.codingComponents)
-    val previousCompanyCarBenefit: Seq[CompanyCarBenefit] = previous.fold(Seq.empty[CompanyCarBenefit])(_.companyCarBenefits)
+    val allowancesAndDeductions = buildAllowancesAndDeductionPairs(previous.getOrElse(Seq.empty), current)
 
-    val allowancesAndDeductions = AllowancesAndDeductionPairs.fromCodingComponents(previousCodingComponents, current.codingComponents)
-    val allowancesDescription = for (
-      allowance <- allowancesAndDeductions.allowances
-    ) yield CodingComponentPairDescription(allowance, employmentIds, previousCompanyCarBenefit ++ current.companyCarBenefits)
-
-    val deductionsDescription = for (
-      deduction <- allowancesAndDeductions.deductions
-    ) yield CodingComponentPairDescription(deduction, employmentIds, previousCompanyCarBenefit ++ current.companyCarBenefits)
-
-    YourTaxFreeAmountViewModel(
+    YourTaxFreeAmountComparison(
       previousTaxFreeInfo,
       currentTaxFreeInfo,
-      allowancesDescription,
-      deductionsDescription)
+      allowancesAndDeductions
+    )
   }
 
-  private def extractPreviousTaxFreeInfo(previous: Option[CodingComponentsWithCarBenefits], taxAccountCalculator: TaxAccountCalculator)
-                         (implicit message: Messages): Option[TaxFreeInfo] = {
-
-    previous.map(p => {
-      val previousTaxCodeDateRange = Dates.formatDate(p.date)
-      TaxFreeInfo(previousTaxCodeDateRange, p.codingComponents, taxAccountCalculator)
-    })
+  def buildAllowancesAndDeductionPairs(previous: Seq[CodingComponent], current: Seq[CodingComponent]): AllowancesAndDeductionPairs = {
+    AllowancesAndDeductionPairs.fromCodingComponents(previous, current)
   }
 }
