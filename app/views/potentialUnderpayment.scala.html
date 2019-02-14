@@ -24,6 +24,7 @@
 @import uk.gov.hmrc.play.language.LanguageUtils.Dates
 @import uk.gov.hmrc.tai.model.TaxYear
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 @(viewModel:uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel)(implicit request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -90,7 +91,7 @@
 
                         <h2 class="heading-medium">@Messages("tai.iya.what.next.heading")</h2>
 
-                        <p>@Messages("tai.iya.what.next.text1", s"${Dates.formatDate(TaxYear().start)}", s"${Dates.formatDate(TaxYear().end)}")</p>
+                        <p>@Messages("tai.iya.what.next.text1", TaxYearRangeUtil.currentTaxYearRange)</p>
 
                         <p>@Messages("tai.iya.what.next.text2")</p>
 
@@ -106,7 +107,7 @@
 
                         <h2 class="heading-medium">@messages("tai.iya.what.next.heading")</h2>
 
-                        <p>@Messages("tai.iya.what.next.text1", s"${Dates.formatDate(TaxYear().start)}", s"${Dates.formatDate(TaxYear().end)}")</p>
+                        <p>@Messages("tai.iya.what.next.text1", TaxYearRangeUtil.currentTaxYearRange)</p>
 
                         <p>@messages("tai.iya.cyPlusOne.what.next.p800.description")</p>
 
