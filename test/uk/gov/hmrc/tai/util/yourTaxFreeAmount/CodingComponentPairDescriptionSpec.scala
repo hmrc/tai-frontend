@@ -27,7 +27,7 @@ class CodingComponentPairDescriptionSpec extends PlaySpec with FakeTaiPlayApplic
 
   "#description" should {
     "return a human readable coding component and pass through the current and previous amounts" in {
-      val codingComponentPair = CodingComponentPair(GiftAidPayments, None, 456, 789)
+      val codingComponentPair = CodingComponentPair(GiftAidPayments, None, Some(456), Some(789))
       val actual = CodingComponentPairDescription(codingComponentPair, employmentIds = Map.empty, companyCarBenefits = Seq.empty)
 
       actual mustBe CodingComponentPairDescription("Gift Aid Payments", 456, 789)
@@ -38,7 +38,7 @@ class CodingComponentPairDescriptionSpec extends PlaySpec with FakeTaiPlayApplic
         val id = 123
 
         val employmentIds = Map(id -> "123")
-        val codingComponentPair = CodingComponentPair(GiftAidPayments, Some(id), 456, 789)
+        val codingComponentPair = CodingComponentPair(GiftAidPayments, Some(id), Some(456), Some(789))
         val actual = CodingComponentPairDescription(codingComponentPair, employmentIds, companyCarBenefits = Seq.empty)
 
         actual.description mustBe "Gift Aid Payments from 123"
@@ -46,7 +46,7 @@ class CodingComponentPairDescriptionSpec extends PlaySpec with FakeTaiPlayApplic
 
       "there is a car benefit" should {
         "display a generic car benefit message when there is no matching ID" in {
-          val codingComponentPair = CodingComponentPair(CarBenefit, Some(123), 456, 789)
+          val codingComponentPair = CodingComponentPair(CarBenefit, Some(123), Some(456), Some(789))
           val companyCarBenefit = Seq(CompanyCarBenefit(456, 123, Seq.empty))
           val actual = CodingComponentPairDescription(codingComponentPair, employmentIds = Map.empty, companyCarBenefit)
 
@@ -57,7 +57,7 @@ class CodingComponentPairDescriptionSpec extends PlaySpec with FakeTaiPlayApplic
           val id = 123
 
           val employmentIds = Map(id -> "123")
-          val codingComponentPair = CodingComponentPair(CarBenefit, Some(id), 456, 789)
+          val codingComponentPair = CodingComponentPair(CarBenefit, Some(id), Some(456), Some(789))
           val companyCar = CompanyCar(98, "Make Model", false, None, None, None)
           val companyCarBenefit = Seq(CompanyCarBenefit(id, 45678, Seq(companyCar)))
           val actual = CodingComponentPairDescription(codingComponentPair, employmentIds, companyCarBenefit)

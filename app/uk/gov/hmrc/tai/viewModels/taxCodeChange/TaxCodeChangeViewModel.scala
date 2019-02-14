@@ -27,7 +27,69 @@ import uk.gov.hmrc.tai.util.constants.TaiConstants
 case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
                                   changeDate: LocalDate,
                                   scottishTaxRateBands: Map[String, BigDecimal],
-                                  gaDimensions: Map[String, String])
+                                  gaDimensions: Map[String, String]) {
+
+  private def removeEmployer(employerNames: Seq[String])(implicit messages: Messages): Seq[String] = {
+    employerNames map ( name => Messages("tai.taxCodeComparison.removeEmployer", name))
+  }
+
+  private def addEmployer(employerNames: Seq[String])(implicit messages: Messages): Seq[String] = {
+    employerNames map ( name => Messages("tai.taxCodeComparison.addEmployer", name))
+  }
+
+  private def genericMessage(implicit messages: Messages): Seq[String] = {
+    Seq(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
+  }
+
+  private def secondaryEmploymentsChanged(implicit messages: Messages): Seq[String] = {
+    val removed = pairs.unMatchedPreviousCodes.flatMap(_.previous).map ( record => record.employerName )
+    val added = pairs.unMatchedCurrentCodes.flatMap(_.current).map ( record => record.employerName )
+
+    val removedSet = removed.toSet
+    val currentAndPreviousEmployerNamesAreSame: Boolean = (added filter removedSet).nonEmpty
+
+    currentAndPreviousEmployerNamesAreSame match {
+      case true => genericMessage
+      case false => removeEmployer(removed) ++ addEmployer(added)
+    }
+  }
+
+  private def isDifferentPayRollWithSameEmployerName(primaryPair: TaxCodePair): Boolean = {
+
+    val isEmployerNameSame = {
+      val currentName = primaryPair.current.map(_.employerName)
+      val previousName = primaryPair.previous.map(_.employerName)
+
+      currentName == previousName
+    }
+
+    val isPayRollSame = {
+      val previousPayRoll = primaryPair.previous.flatMap(_.payrollNumber)
+      val currentPayRoll = primaryPair.current.flatMap(_.payrollNumber)
+
+      previousPayRoll == currentPayRoll
+    }
+
+    isEmployerNameSame && !isPayRollSame
+  }
+
+  private def primaryEmploymentsChanged(implicit messages: Messages): Seq[String] = {
+    pairs.primaryPairs flatMap { primaryPair: TaxCodePair =>
+      val current = primaryPair.current.map(_.employerName)
+      val previous = primaryPair.previous.map(_.employerName)
+
+      (current, previous) match {
+        case (Some(current), Some(previous)) if (current != previous) => removeEmployer(Seq(previous)) ++ addEmployer(Seq(current))
+        case (Some(current), Some(previous)) if isDifferentPayRollWithSameEmployerName(primaryPair) => { genericMessage }
+        case _ => Seq.empty[String]
+      }
+    }
+  }
+
+  def taxCodeReasons(implicit messages: Messages): Seq[String] = {
+    primaryEmploymentsChanged ++ secondaryEmploymentsChanged
+  }
+}
 
 object TaxCodeChangeViewModel extends TaxCodeDescriptor {
 
@@ -39,8 +101,7 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
     TaxCodeChangeViewModel(taxCodePairs, changeDate, scottishTaxRateBands, gaDimensions(taxCodeChange, changeDate))
   }
 
-  def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal], identifier: String)
-                            (implicit messages: Messages): DescriptionListViewModel = {
+  def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal], identifier: String)(implicit messages: Messages): DescriptionListViewModel = {
 
     val isCurrentTaxCode = identifier == "current"
 
@@ -59,9 +120,9 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
 
   private def gaDimensions(taxCodeChange: TaxCodeChange, taxCodeChangeDate: LocalDate): Map[String, String] = {
     def moreThanTwoSecondaryWithoutPayroll(records: Seq[TaxCodeRecord]): Boolean = {
-       records.groupBy(_.employerName).values.exists(taxCodeRecords =>
-         taxCodeRecords.count(record => !record.primary && record.payrollNumber.isEmpty) >= 2
-       )
+      records.groupBy(_.employerName).values.exists(taxCodeRecords =>
+        taxCodeRecords.count(record => !record.primary && record.payrollNumber.isEmpty) >= 2
+      )
     }
 
     val taxCodeChangeDateGaDimension = Map[String, String]("taxCodeChangeDate" -> taxCodeChangeDate.toString(TaiConstants.EYU_DATE_FORMAT))

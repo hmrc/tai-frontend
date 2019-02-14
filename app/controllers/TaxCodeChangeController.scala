@@ -20,27 +20,23 @@ import com.google.inject.Inject
 import controllers.actions.ValidatePerson
 import controllers.auth.AuthAction
 import play.api.Play.current
-import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentsWithCarBenefits, YourTaxFreeAmount}
-import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
-import uk.gov.hmrc.urls.Link
+import uk.gov.hmrc.tai.service.yourTaxFreeAmount.DescribedYourTaxFreeAmountService
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.YourTaxFreeAmount
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
 
 import scala.concurrent.Future
 
-class TaxCodeChangeController @Inject()(codingComponentService: CodingComponentService,
-                                        employmentService: EmploymentService,
-                                        companyCarService: CompanyCarService,
-                                        taxCodeChangeService: TaxCodeChangeService,
+class TaxCodeChangeController @Inject()(taxCodeChangeService: TaxCodeChangeService,
                                         taxAccountService: TaxAccountService,
+                                        describedYourTaxFreeAmountService: DescribedYourTaxFreeAmountService,
                                         authenticate: AuthAction,
                                         validatePerson: ValidatePerson,
                                         override implicit val partialRetriever: FormPartialRetriever,
@@ -51,11 +47,13 @@ class TaxCodeChangeController @Inject()(codingComponentService: CodingComponentS
   def taxCodeComparison: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       val nino: Nino = request.taiUser.nino
+
       for {
         taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
       } yield {
         val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
+
         implicit val user = request.taiUser
         Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
       }
@@ -64,14 +62,10 @@ class TaxCodeChangeController @Inject()(codingComponentService: CodingComponentS
   def yourTaxFreeAmount: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       val nino: Nino = request.taiUser.nino
-      val taxFreeAmountViewModel =
-        if (taxFreeAmountComparisonEnabled) {
-          taxFreeAmountWithPrevious(nino)
-        } else {
-          taxFreeAmount(nino)
-        }
+      val taxFreeAmountViewModel = describedYourTaxFreeAmountService.taxFreeAmountComparison(nino)
 
       implicit val user = request.taiUser
+
       taxFreeAmountViewModel.map(viewModel => {
         Ok(views.html.taxCodeChange.yourTaxFreeAmount(viewModel))
       })
@@ -81,56 +75,5 @@ class TaxCodeChangeController @Inject()(codingComponentService: CodingComponentS
     implicit request =>
       implicit val user = request.taiUser
       Future.successful(Ok(views.html.taxCodeChange.whatHappensNext()))
-  }
-
-  private def taxFreeAmountWithPrevious(nino: Nino)(implicit request: Request[AnyContent]): Future[YourTaxFreeAmountViewModel] = {
-
-    val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
-    val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
-    val taxFreeAmountComparisonFuture = codingComponentService.taxFreeAmountComparison(nino)
-
-    for {
-      employmentNames <- employmentNameFuture
-      taxCodeChange <- taxCodeChangeFuture
-      taxFreeAmountComparison <- taxFreeAmountComparisonFuture
-      currentCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, taxFreeAmountComparison.current)
-      previousCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, taxFreeAmountComparison.previous)
-    } yield {
-      buildTaxFreeAmount(
-        Some(CodingComponentsWithCarBenefits(
-          taxCodeChange.mostRecentPreviousTaxCodeChangeDate,
-          taxFreeAmountComparison.previous,
-          previousCompanyCarBenefits
-        )),
-        CodingComponentsWithCarBenefits(
-          taxCodeChange.mostRecentTaxCodeChangeDate,
-          taxFreeAmountComparison.current,
-          currentCompanyCarBenefits
-        ),
-        employmentNames)
-    }
-  }
-
-  private def taxFreeAmount(nino: Nino)(implicit request: Request[AnyContent]): Future[YourTaxFreeAmountViewModel] = {
-
-    val employmentNameFuture = employmentService.employmentNames(nino, TaxYear())
-    val taxCodeChangeFuture = taxCodeChangeService.taxCodeChange(nino)
-    val codingComponentsFuture = codingComponentService.taxFreeAmountComponents(nino, TaxYear())
-
-    for {
-      employmentNames <- employmentNameFuture
-      taxCodeChange <- taxCodeChangeFuture
-      currentCodingComponents <- codingComponentsFuture
-      currentCompanyCarBenefits <- companyCarService.companyCarOnCodingComponents(nino, currentCodingComponents)
-    } yield {
-      buildTaxFreeAmount(
-        None,
-        CodingComponentsWithCarBenefits(
-          taxCodeChange.mostRecentTaxCodeChangeDate,
-          currentCodingComponents,
-          currentCompanyCarBenefits
-        ),
-        employmentNames)
-    }
   }
 }

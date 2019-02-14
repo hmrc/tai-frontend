@@ -49,7 +49,7 @@
 
     <div class="column-two-thirds">
         <div class="grid-row">
-            <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
+            @displayTaxCodeReasons(taxCodeChangeViewModel.taxCodeReasons)
         </div>
         <div class="grid-row tax-code-change margin-bottom-xlarge">
             @taxCodePairs(taxCodeChangeViewModel.pairs)
@@ -73,17 +73,52 @@
     }}
 }
 
+@displayTaxCodeReasons(taxCodeReasons: Seq[String]) = {
+    @if(taxCodeReasons.isEmpty) {
+        <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
+    } else {
+        @if(taxCodeReasons.size < 4) {
+            <div class="notice">
+                <i class="icon icon-information">
+                    <span class="visually-hidden">Information</span>
+                </i>
+                <strong class="bold-small">
+                    @Messages("tai.taxCodeComparison.title")
+                </strong>
+            </div>
+            <div class ="tax-code-change">
+                <ul class="list-bullet">
+                    @for((reason) <- taxCodeReasons) {
+                    <li class="tax-code-reason">
+                        @reason
+                    </li>
+                    }
+                </ul>
+            </div>
+        } else {
+            <div class="notice">
+                <i class="icon icon-information">
+                    <span class="visually-hidden">Information</span>
+                </i>
+                <strong class="tax-code-reason bold-small">
+                @Messages("taxCode.change.yourTaxCodeChanged.paragraph")
+                </strong>
+            </div>
+        }
+    }
+}
+
 @taxCodePairs(taxCodePairs: TaxCodePairs) = {
     <div class="column-half tax-code-change__previous">
         <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.previousTaxCodes")</h2>
-        @for((pair) <- taxCodePairs.pairs) {
+        @for((pair) <- taxCodePairs.combinedTaxCodePairs) {
             @taxCodeRecordPod(pair.previous, "previous")
         }
     </div>
 
     <div class="column-half tax-code-change__current">
         <h2 class="heading-medium section-title">@Messages("taxCode.change.yourTaxCodeChanged.currentTaxCodes")</h2>
-        @for((pair) <- taxCodePairs.pairs) {
+        @for((pair) <- taxCodePairs.combinedTaxCodePairs) {
             @taxCodeRecordPod(pair.current, "current")
         }
     </div>
