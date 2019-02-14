@@ -105,11 +105,13 @@ class IncomeController @Inject()(personService: PersonService,
                   for {
                     currentCache <- journeyCacheService.currentCache
                   } yield {
-                    if (FormHelper.areEqual(currentCache.get(UpdateIncome_ConfirmedNewAmountKey), income.newAmount)) {
-                      val model = SameEstimatedPayViewModel(mandatorySeq(2))
+                    val newAmount = income.newAmount.getOrElse("0")
+
+                    if (FormHelper.areEqual(currentCache.get(UpdateIncome_ConfirmedNewAmountKey), Some(newAmount))) {
+                      val model = SameEstimatedPayViewModel(mandatorySeq(2), newAmount.toInt)
                       Ok(views.html.incomes.sameEstimatedPay(model))
                     } else {
-                      journeyCacheService.cache(UpdateIncome_NewAmountKey, income.newAmount.getOrElse("0"))
+                      journeyCacheService.cache(UpdateIncome_NewAmountKey, newAmount)
                       Redirect(routes.IncomeController.confirmRegularIncome())
                     }
                   }

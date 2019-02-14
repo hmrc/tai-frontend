@@ -600,10 +600,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-
-        val currentTaxYear = Dates.formatDate(TaxYear().start)
-        val endTaxYear = Dates.formatDate(TaxYear().end)
-        doc.body().toString must include(Messages("tai.income.calculation.amount.same", EmployerName, currentTaxYear, endTaxYear))
+        doc.body.toString must include(s"This amount has already been estimated for $EmployerName for")
       }
     }
   }
@@ -944,9 +941,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
 
-        val currentTaxYear = Dates.formatDate(TaxYear().start)
-        val endTaxYear = Dates.formatDate(TaxYear().end)
-        doc.body().toString must include(Messages("tai.income.calculation.amount.same", EmployerName, currentTaxYear, endTaxYear))
+        doc.body.toString must include(s"This amount has already been estimated for $EmployerName for")
       }
     }
   }

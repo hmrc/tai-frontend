@@ -55,7 +55,7 @@
             <div class="inner-block">
 
                 <section class="section flush--bottom soft--ends">
-                    <p>@messages("tai.updateEmployment.incomeSame.newEstimate.text") <span class="bold-large">20000</span></p>
+                    <p>@messages("tai.updateEmployment.incomeSame.newEstimate.text") <span class="bold-large">@model.amountWithPounds</span></p>
                     <div class="panel panel-border-narrow">
                         <p>@messages("tai.updateEmployment.incomeSame.description", model.employerName,TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)</p>
                     </div>

@@ -45,6 +45,7 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCode
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
 
@@ -177,9 +178,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe OK
         val doc = Jsoup.parse(contentAsString(result))
 
-        val currentTaxYear = Dates.formatDate(TaxYear().start)
-        val endTaxYear = Dates.formatDate(TaxYear().end)
-        doc.body().toString must include(Messages("tai.income.calculation.amount.same", "Employer Name", currentTaxYear, endTaxYear))
+        doc.body.toString must include(s"This amount has already been estimated for Employer Name for")
       }
     }
 

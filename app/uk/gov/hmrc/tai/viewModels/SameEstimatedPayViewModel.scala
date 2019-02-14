@@ -16,12 +16,8 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import play.api.i18n.Messages
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
-import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.{MonetaryUtil, ViewModelHelper}
 
-case class SameEstimatedPayViewModel(employerName: String) extends ViewModelHelper {
-  def startOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().start)
-  def endOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().end)
+case class SameEstimatedPayViewModel(employerName: String, amount: Int) extends ViewModelHelper {
+  def amountWithPounds: String = MonetaryUtil.withPoundPrefix(amount, 0)
 }
