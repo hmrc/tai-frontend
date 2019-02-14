@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.config
 
+import akka.actor.ActorSystem
 import play.api.Play
 import uk.gov.hmrc.http.hooks.HttpHooks
 import uk.gov.hmrc.http.{HttpDelete, HttpGet, HttpPost, HttpPut}
@@ -43,6 +44,7 @@ trait WSHttp extends HttpGet with WSGet
 
 object WSHttp extends WSHttp{
   override lazy val configuration = Some(Play.current.configuration.underlying)
+  override lazy val actorSystem: ActorSystem = ActorSystem()
 }
 
 trait WSHttpProxy extends WSHttp with WSProxy with DefaultRunMode with HttpAuditing with DefaultServicesConfig
@@ -52,6 +54,7 @@ object WSHttpProxy extends WSHttpProxy {
   override def appName = getString("appName")
   override lazy val wsProxyServer = WSProxyConfiguration(s"proxy")
   override lazy val auditConnector = AuditConnector
+  override lazy val actorSystem: ActorSystem = ActorSystem()
 }
 
 object TaiHtmlPartialRetriever extends FormPartialRetriever {
