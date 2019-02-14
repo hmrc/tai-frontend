@@ -597,10 +597,9 @@ class IncomeUpdateCalculatorControllerSpec
         val testController = createTestController(currentCache)
 
         val result = testController.estimatedPayPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe OK
+        status(result) mustBe SEE_OTHER
 
-        val doc = Jsoup.parse(contentAsString(result))
-        doc.body.toString must include(s"This amount has already been estimated for $EmployerName for")
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPay().url)
       }
     }
   }
@@ -938,10 +937,8 @@ class IncomeUpdateCalculatorControllerSpec
           RequestBuilder.buildFakeRequestWithOnlySession("GET")
         )
 
-        status(result) mustBe OK
-        val doc = Jsoup.parse(contentAsString(result))
-
-        doc.body.toString must include(s"This amount has already been estimated for $EmployerName for")
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPay().url)
       }
     }
   }

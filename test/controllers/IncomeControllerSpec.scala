@@ -175,10 +175,8 @@ class IncomeControllerSpec extends PlaySpec
 
         val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
-        status(result) mustBe OK
-        val doc = Jsoup.parse(contentAsString(result))
-
-        doc.body.toString must include(s"This amount has already been estimated for Employer Name for")
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPay().url)
       }
     }
 

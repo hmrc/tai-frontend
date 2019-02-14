@@ -84,6 +84,19 @@ class IncomeController @Inject()(personService: PersonService,
         }
   }
 
+  def sameEstimatedPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit person =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          for {
+            cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NewAmountKey, UpdateIncome_ConfirmedNewAmountKey)
+          } yield {
+            val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt)
+            Ok(views.html.incomes.sameEstimatedPay(model))
+          }
+        }
+  }
+
   def editRegularIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
@@ -108,8 +121,7 @@ class IncomeController @Inject()(personService: PersonService,
                     val newAmount = income.newAmount.getOrElse("0")
 
                     if (FormHelper.areEqual(currentCache.get(UpdateIncome_ConfirmedNewAmountKey), Some(newAmount))) {
-                      val model = SameEstimatedPayViewModel(mandatorySeq(2), newAmount.toInt)
-                      Ok(views.html.incomes.sameEstimatedPay(model))
+                      Redirect(routes.IncomeController.sameEstimatedPay())
                     } else {
                       journeyCacheService.cache(UpdateIncome_NewAmountKey, newAmount)
                       Redirect(routes.IncomeController.confirmRegularIncome())
