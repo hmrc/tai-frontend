@@ -16,8 +16,16 @@
 
 @import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 
+@import uk.gov.hmrc.tai.model.TaxYear
+@import uk.gov.hmrc.tai.util.HtmlFormatter
+@import uk.gov.hmrc.play.views.formatting.Dates
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @(model: SameEstimatedPayViewModel)(implicit
-request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+        request: Request[_],
+        messages: Messages,
+        user: controllers.auth.TaiUser,
+        templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+        partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.formatting.Money._
@@ -28,12 +36,48 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
 @import uk.gov.hmrc.play.views.html.layouts.loginStatus
 @import uk.gov.hmrc.tai.util.FormHelper
 @import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
+@header = @{
+    ptaHeader(
+        displayBackLink = true,
+        backLinkGaEventAction = None,
+        mainHeadingText = messages("tai.updateEmployemnt.incomeSame.heading", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+        preHeadingText = messages("tai.updateEmployment.incomeSame.preHeading",model.employerName)
+    )
+}
 
-<div class="grid-row">
-    <div class="grid grid-2-3">
-        <div class="inner-block">
-            <p>@messages("tai.income.calculation.amount.same", model.employerName, model.startOfCurrentYear, model.endOfCurrentYear))</p>
+@main(
+    title = messages("tai.updateEmployment.incomeSame.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+    pageHeader = Some(header),
+    articleClasses = Some("")
+) {
+    <div class="grid-row">
+        <div class="grid grid-2-3">
+            <div class="inner-block">
+
+                <section class="section flush--bottom soft--ends">
+                    <p>@messages("tai.updateEmployment.incomeSame.newEstimate.text") <span class="bold-large">20000</span></p>
+                    <div class="panel panel-border-narrow">
+                        <p>@messages("tai.updateEmployment.incomeSame.description", model.employerName,TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)</p>
+                    </div>
+                </section>
+            </div>
+
+
+            @includes.link(
+                url = controllers.routes.IncomeTaxComparisonController.onPageLoad().url,
+                copy=messages("tai.updateEmployment.incomeSame.estimatedPayCYPlusOne.link"),
+                id=Some("viewEstimatedPayCYPlusOne")
+            )
+
+            <div class="subsection">
+            @Link.toInternalPage(
+                id=Some("returnToEmploymentDetails"),
+                value=Some(Messages("Return to employment details")),
+                url = routes.TaxAccountSummaryController.onPageLoad.url,
+                cssClasses=Some("button")
+            ).toHtml
+            </div>
         </div>
     </div>
-</div>
 
+}
