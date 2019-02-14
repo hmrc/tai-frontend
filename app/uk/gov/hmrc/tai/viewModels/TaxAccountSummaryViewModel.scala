@@ -51,32 +51,33 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with TaxAccountFilter 
             ceasedEmploymentIncomeSources: Seq[IncomeSource],
             nonMatchingCeasedEmployments: Seq[Employment])(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
-    val header = messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak
-    val title = messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak
+    val header: String = messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak
+    val title: String = messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak
 
-    val taxFreeAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
-    val estimatedIncomeTaxAmount = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))
+    val taxFreeAmount: String = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
+    val estimatedIncomeTaxAmount: String = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))
 
-    val employmentViewModels = liveEmploymentIncomeSources.map(IncomeSourceViewModel(_))
+    val employmentViewModels: Seq[IncomeSourceViewModel] = liveEmploymentIncomeSources.map(IncomeSourceViewModel(_))
 
-    val pensionsViewModels = livePensionIncomeSources.map(IncomeSourceViewModel(_))
+    val pensionsViewModels: Seq[IncomeSourceViewModel] = livePensionIncomeSources.map(IncomeSourceViewModel(_))
 
-    val ceasedEmploymentViewModels = ceasedEmploymentIncomeSources.map(IncomeSourceViewModel(_)) ++ nonMatchingCeasedEmployments.map(IncomeSourceViewModel(_))
+    val ceasedEmploymentViewModels: Seq[IncomeSourceViewModel] = ceasedEmploymentIncomeSources.map(IncomeSourceViewModel(_)) ++
+      nonMatchingCeasedEmployments.map(IncomeSourceViewModel(_))
 
-    val lastTaxYearEnd = Dates.formatDate(TaxYear().prev.end)
+    val lastTaxYearEnd: String = Dates.formatDate(TaxYear().prev.end)
 
     TaxAccountSummaryViewModel(
-      header,
-      title,
-      taxFreeAmount,
-      estimatedIncomeTaxAmount,
-      lastTaxYearEnd,
-      employmentViewModels,
-      pensionsViewModels,
-      ceasedEmploymentViewModels,
-      taxAccountSummary.totalInYearAdjustmentIntoCY > 0,
-      isAnyFormInProgress,
-      IncomeSourceViewModel(nonTaxCodeIncome))
+      header = header,
+      title = title,
+      taxFreeAmount = taxFreeAmount,
+      estimatedIncomeTaxAmount = estimatedIncomeTaxAmount,
+      lastTaxYearEnd = lastTaxYearEnd,
+      employments = employmentViewModels,
+      pensions = pensionsViewModels,
+      ceasedEmployments = ceasedEmploymentViewModels,
+      displayIyaBanner = taxAccountSummary.totalInYearAdjustmentIntoCY > 0,
+      isAnyFormInProgress = isAnyFormInProgress,
+      otherIncomeSources = IncomeSourceViewModel(nonTaxCodeIncome))
   }
 
 }
@@ -113,14 +114,14 @@ object IncomeSourceViewModel extends ViewModelHelper {
       employment.name,
       amountString,
       "",
-      false,
+      displayTaxCode = false,
       employment.payrollNumber.getOrElse(""),
-      employment.payrollNumber.isDefined,
+      displayPayrollNumber = employment.payrollNumber.isDefined,
       endDate.getOrElse(""),
-      endDate.isDefined,
+      displayEndDate = endDate.isDefined,
       messages("tai.incomeTaxSummary.employment.link"),
-      controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(employment.sequenceNumber).url,
-      true)
+      controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(employment.sequenceNumber).url
+    )
   }
 
   def apply(incomeSource: IncomeSource)(implicit messages: Messages): IncomeSourceViewModel = {
@@ -135,9 +136,13 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
     val incomeSourceSummaryUrl =
       if (incomeSource.taxCodeIncome.componentType == EmploymentIncome && incomeSource.taxCodeIncome.status != Live)
-        controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(incomeSource.employment.sequenceNumber).url
+        {
+          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(incomeSource.employment.sequenceNumber).url
+        }
       else
-        controllers.routes.IncomeSourceSummaryController.onPageLoad(incomeSource.employment.sequenceNumber).url
+        {
+          controllers.routes.IncomeSourceSummaryController.onPageLoad(incomeSource.employment.sequenceNumber).url
+        }
 
     IncomeSourceViewModel(
       incomeSource.employment.name,
@@ -165,9 +170,13 @@ object IncomeSourceViewModel extends ViewModelHelper {
 
     val incomeSourceSummaryUrl =
       if(taxCodeIncome.componentType == EmploymentIncome && taxCodeIncome.status != Live)
-        controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(employment.sequenceNumber).url
+        {
+          controllers.routes.YourIncomeCalculationController.yourIncomeCalculationPage(employment.sequenceNumber).url
+        }
       else
-        controllers.routes.IncomeSourceSummaryController.onPageLoad(employment.sequenceNumber).url
+        {
+          controllers.routes.IncomeSourceSummaryController.onPageLoad(employment.sequenceNumber).url
+        }
 
     IncomeSourceViewModel(
       employment.name,
@@ -212,8 +221,7 @@ object IncomeSourceViewModel extends ViewModelHelper {
         "",
         displayEndDate = false,
         messages("tai.updateOrRemove"),
-        "",
-        displayDetailsLink = true
+        ""
       )
       otherNonTaxCodeIncome.incomeComponentType match {
         case _: OtherIncomes => model.copy(detailsLinkUrl = controllers.routes.AuditController.auditLinksToIForm(OtherIncomeIform).url)
