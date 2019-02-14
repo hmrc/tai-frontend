@@ -47,7 +47,7 @@ class UpdateEmploymentCheckYourAnswersViewModelSpec extends PlaySpec with FakeTa
   private lazy val currentlyWorkHereLine = CheckYourAnswersConfirmationLine(
     Messages("tai.updateEmployment.cya.currentlyWorkHere"),
     Messages("tai.label.yes"),
-    controllers.employments.routes.EndEmploymentController.employmentUpdateRemove.url
+    controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.url
   )
 
   private lazy val whatYouToldUsLine = CheckYourAnswersConfirmationLine(

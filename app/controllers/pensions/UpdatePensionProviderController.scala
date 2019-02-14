@@ -20,19 +20,19 @@ import com.google.inject.Inject
 import com.google.inject.name.Named
 import controllers.TaiBaseController
 import controllers.actions.ValidatePerson
-import controllers.auth.{AuthAction, AuthedUser}
+import controllers.auth.AuthAction
 import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.forms.YesNoTextEntryForm
-import uk.gov.hmrc.tai.forms.pensions.{UpdateRemovePensionForm, WhatDoYouWantToTellUsForm}
+import uk.gov.hmrc.tai.forms.pensions.{DuplicateSubmissionWarningForm, UpdateRemovePensionForm, WhatDoYouWantToTellUsForm}
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{IncorrectPensionProvider, PensionIncome}
@@ -73,35 +73,17 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
     controllers.routes.IncomeSourceSummaryController.onPageLoad(pensionId).url
   )
 
-  def doYouGetThisPension(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def doYouGetThisPension(): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
 
-      (taxAccountService.taxCodeIncomes(request.taiUser.nino, TaxYear()) flatMap {
-        case TaiSuccessResponseWithPayload(incomes: Seq[TaxCodeIncome]) =>
-          incomes.find(income => income.employmentId.contains(id) &&
-            income.componentType == PensionIncome) match {
-            case Some(taxCodeIncome) => cacheAndCreateView(id, taxCodeIncome)
-            case _ => throw new RuntimeException(s"Tax code income source is not available for id $id")
-          }
-        case _ => throw new RuntimeException("Tax code income source is not available")
-      }).recover {
-        case NonFatal(e) => internalServerError(e.getMessage)
+      journeyCacheService.collectedValues(Seq(UpdatePensionProvider_IdKey,UpdatePensionProvider_NameKey), Seq(UpdatePensionProvider_ReceivePensionQuestionKey)) map tupled { (mandatoryValues, optionalValues) =>
+        val model = PensionProviderViewModel(mandatoryValues.head.toInt, mandatoryValues(1))
+        val form = UpdateRemovePensionForm.form.fill(optionalValues.head)
+        Ok(views.html.pensions.update.doYouGetThisPensionIncome(model, form))
       }
   }
 
-  private def cacheAndCreateView(id: Int, taxCodeIncome: TaxCodeIncome)(implicit hc: HeaderCarrier,
-                                                                        request: Request[AnyContent],
-                                                                        user: AuthedUser): Future[Result] = {
-    for {
-      updatedCache <- journeyCacheService.cache(Map(UpdatePensionProvider_IdKey -> id.toString,
-        UpdatePensionProvider_NameKey -> taxCodeIncome.name))
-    } yield {
-      val model = PensionProviderViewModel(id, taxCodeIncome.name)
-      val form = UpdateRemovePensionForm.form.fill(updatedCache.get(UpdatePensionProvider_ReceivePensionQuestionKey))
-      Ok(views.html.pensions.update.doYouGetThisPensionIncome(model, form))
-    }
-  }
 
   def handleDoYouGetThisPension: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
@@ -228,7 +210,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
             Seq(UpdatePensionProvider_TelephoneNumberKey))
         model = IncorrectPensionProvider(mandatoryCacheSeq(1), mandatoryCacheSeq(2), optionalCacheSeq.head)
         _ <- pensionProviderService.incorrectPensionProvider(nino, mandatoryCacheSeq.head.toInt, model)
-        _ <- successfulJourneyCacheService.cache(TrackSuccessfulJourney_UpdatePensionKey, true.toString)
+        _ <- successfulJourneyCacheService.cache(s"$TrackSuccessfulJourney_UpdatePensionKey-${mandatoryCacheSeq.head}", true.toString)
         _ <- journeyCacheService.flush
       } yield Redirect(controllers.pensions.routes.UpdatePensionProviderController.confirmation())
   }
@@ -238,5 +220,76 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
       implicit val user = request.taiUser
 
       Future.successful(Ok(views.html.pensions.update.confirmation()))
+  }
+
+  private def redirectToWarningOrDecisionPage(journeyCacheFuture: Future[Map[String, String]],
+                                              successfulJourneyCacheFuture: Future[Option[String]])
+                                             (implicit hc: HeaderCarrier): Future[Result] = {
+    for {
+      _ <- journeyCacheFuture
+      successfulJourneyCache <- successfulJourneyCacheFuture
+    } yield {
+      successfulJourneyCache match {
+        case Some(_) => Redirect(routes.UpdatePensionProviderController.duplicateSubmissionWarning())
+        case _ => Redirect(routes.UpdatePensionProviderController.doYouGetThisPension())
+      }
+    }
+  }
+
+  def UpdatePension(id: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user = request.taiUser
+
+      val cacheAndRedirect = (id: Int, taxCodeIncome: TaxCodeIncome) => {
+        val successfulJourneyCacheFuture = successfulJourneyCacheService.currentValue(s"$TrackSuccessfulJourney_UpdatePensionKey-${id}")
+        val journeyCacheFuture = journeyCacheService.cache(Map(UpdatePensionProvider_IdKey -> id.toString,
+          UpdatePensionProvider_NameKey -> taxCodeIncome.name))
+
+        redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
+      }
+
+      (taxAccountService.taxCodeIncomes(request.taiUser.nino, TaxYear()) flatMap {
+        case TaiSuccessResponseWithPayload(incomes: Seq[TaxCodeIncome]) =>
+          incomes.find(income => income.employmentId.contains(id) &&
+            income.componentType == PensionIncome) match {
+            case Some(taxCodeIncome) => cacheAndRedirect(id, taxCodeIncome)
+            case _ => throw new RuntimeException(s"Tax code income source is not available for id $id")
+          }
+        case _ => throw new RuntimeException("Tax code income source is not available")
+      }).recover {
+        case NonFatal(e) => internalServerError(e.getMessage)
+      }
+
+  }
+
+  def duplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user = request.taiUser
+      journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) map { mandatoryValues =>
+        Ok(views.html.pensions.duplicateSubmissionWarning(DuplicateSubmissionWarningForm.createForm, mandatoryValues(0), mandatoryValues(1).toInt))
+      }
+
+  }
+
+  def submitDuplicateSubmissionWarning: Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      implicit val user = request.taiUser
+      journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) flatMap { mandatoryValues =>
+        DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
+          formWithErrors => {
+            Future.successful(BadRequest(views.html.pensions.
+              duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
+          },
+          success => {
+            success.yesNoChoice match {
+              case Some(YesValue) => Future.successful(Redirect(controllers.pensions.routes.UpdatePensionProviderController.
+                doYouGetThisPension()))
+              case Some(NoValue) =>
+                Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
+                onPageLoad(mandatoryValues(1).toInt)))
+            }
+          }
+        )
+      }
   }
 }

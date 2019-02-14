@@ -58,12 +58,11 @@ POST        /add-pension-provider/check-your-answers                            
 
 GET         /add-pension-provider/success                                              @controllers.pensions.AddPensionProviderController.confirmation
 
-GET         /update-remove-employment/redirectUpdateEmployment/:empId                  @controllers.employments.EndEmploymentController.redirectUpdateEmployment(empId: Int)
-
 GET         /update-remove-employment/warning                                          @controllers.employments.EndEmploymentController.duplicateSubmissionWarning
 POST        /update-remove-employment/warning                                          @controllers.employments.EndEmploymentController.submitDuplicateSubmissionWarning
 
-GET         /update-remove-employment/decision                                         @controllers.employments.EndEmploymentController.employmentUpdateRemove
+GET         /update-remove-employment/decision-page                                    @controllers.employments.EndEmploymentController.employmentUpdateRemoveDecision
+GET         /update-remove-employment/decision/:empId                                  @controllers.employments.EndEmploymentController.employmentUpdateRemove(empId: Int)
 POST        /update-remove-employment/decision                                         @controllers.employments.EndEmploymentController.handleEmploymentUpdateRemove
 
 GET         /end-employment/six-weeks                                                  @controllers.employments.EndEmploymentController.endEmploymentError
@@ -251,7 +250,7 @@ GET         /language/:lang                                                     
 
 ## Incorrect Pension
 
-GET         /incorrect-pension/decision/:id                                            @controllers.pensions.UpdatePensionProviderController.doYouGetThisPension(id: Int)
+GET         /incorrect-pension/decision                                                @controllers.pensions.UpdatePensionProviderController.doYouGetThisPension
 POST        /incorrect-pension/decision                                                @controllers.pensions.UpdatePensionProviderController.handleDoYouGetThisPension
 GET         /incorrect-pension/what-do-you-want-to-tell-us                             @controllers.pensions.UpdatePensionProviderController.whatDoYouWantToTellUs
 POST        /incorrect-pension/what-do-you-want-to-tell-us                             @controllers.pensions.UpdatePensionProviderController.submitWhatDoYouWantToTellUs
@@ -260,6 +259,9 @@ POST        /incorrect-pension/telephone-number                                 
 GET         /incorrect-pension/check-your-answers                                      @controllers.pensions.UpdatePensionProviderController.checkYourAnswers
 POST        /incorrect-pension/check-your-answers                                      @controllers.pensions.UpdatePensionProviderController.submitYourAnswers
 GET         /incorrect-pension/success                                                 @controllers.pensions.UpdatePensionProviderController.confirmation
+GET         /incorrect-pension/redirect/:id                                            @controllers.pensions.UpdatePensionProviderController.UpdatePension(id: Int)
+GET         /incorrect-pension/warning                                                 @controllers.pensions.UpdatePensionProviderController.duplicateSubmissionWarning
+POST        /incorrect-pension/warning                                                 @controllers.pensions.UpdatePensionProviderController.submitDuplicateSubmissionWarning
 
 ## Tax Code Change
 
@@ -271,6 +273,7 @@ GET         /tax-code-change/what-happens-next                                  
 GET         /unauthorised                                                              @controllers.UnauthorisedController.onPageLoad
 GET         /unauthorised/login-gg                                                     @controllers.UnauthorisedController.loginGG
 GET         /unauthorised/login-verify                                                 @controllers.UnauthorisedController.loginVerify
+GET         /unauthorised/confidence-level                                             @controllers.UnauthorisedController.upliftFailedUrl
 
 
 ### Update Income CY + 1
