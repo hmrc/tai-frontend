@@ -18,46 +18,65 @@ package views.html
 
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
+import play.twirl.api.Html
 import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.{EstimatedTaxYouOweThisYear, MarriageAllowanceTransferred, TaxAccountSummary}
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
+import uk.gov.hmrc.tai.util.MonetaryUtil.withPoundPrefix
 
 class potentialUnderpaymentViewSpec extends TaiViewSpec {
 
   implicit val hc = HeaderCarrier()
 
-  "the Potential Underpayment view method" should {
+  "Potential Underpayment" must {
+    behave like pageWithBackLink
+    behave like pageWithTitle(messages("tai.iya.tax.you.owe.title"))
 
-    "show a back button" when {
-      behave like pageWithBackLink
+
+    "display text indicating tax is owed " in {
+      cyAndCyPlusOneDocument must haveParagraphWithText(messages("tai.iya.paidTooLittle.cy.text"))
     }
 
-    "omit underpayment content if no underpayment is present" in {
+    "cater for a CY IYA, when only a CY amount is present and " should {
 
-      val html = views.html.potentialUnderpayment(PotentialUnderpaymentViewModel(tasNoUnderpay, ccs, "", ""))
-      val doc = Jsoup.parseBodyFragment(html.toString)
+      def cyOnlyViewModel = PotentialUnderpaymentViewModel(tasCYOnly, ccs, "", "")
+      def cyOnlyDoc = document(views.html.potentialUnderpayment(cyOnlyViewModel))
 
-      doc.title() must include(Messages("tai.iya.tax.you.owe.title"))
-      doc must not(haveElementWithId("iya-cy-how-much"))
-      doc must not(haveElementWithId("iya-cy-plus-one-how-much"))
-      doc must not(haveElementWithId("iya-cy-and-cy-plus-one-how-much"))
-    }
+      "display amount owing" in {
+        cyOnlyDoc must haveParagraphWithText(withPoundPrefix(MoneyPounds(cyOnlyViewModel.iyaCYAmount, 2)))
+      }
 
-    "display the potential underpayment page configured for a CY IYA, when only a CY amount is present " in {
+      "display heading text in " in {
+        cyOnlyDoc must haveH2HeadingWithText(messages("tai.iya.how.collected.heading"))
+        cyOnlyDoc must haveH2HeadingWithText(messages("tai.iya.what.next.heading"))
+      }
 
-      val html = views.html.potentialUnderpayment(PotentialUnderpaymentViewModel(tasCYOnly, ccs, "", ""))
-      val doc = Jsoup.parseBodyFragment(html.toString)
+      "display static text " in {
+        cyOnlyDoc must haveParagraphWithText(messages("tai.iya.paidTooLittle.cy.text2"))
+        cyOnlyDoc must haveParagraphWithText(messages("tai.iya.paidTooLittle.cy.text4"))
+        cyOnlyDoc must haveParagraphWithText(messages("tai.iya.what.next.text2"))
+      }
 
-      doc.title() must include(Messages("tai.iya.tax.you.owe.title"))
-      doc must haveElementWithId("iya-cy-how-much")
-      doc must not(haveElementWithId("iya-cy-plus-one-how-much"))
-      doc must not(haveElementWithId("iya-cy-and-cy-plus-one-how-much"))
 
-      doc must haveElementAtPathWithText("a[id=getHelpLink]", Messages("tai.iya.paidTooLittle.get.help.linkText"))
-      doc must haveElementAtPathWithAttribute("a[id=getHelpLink]", "href", controllers.routes.HelpController.helpPage.toString)
+
+      "cxcxc" in {
+
+        cyOnlyDoc must haveElementWithId("iya-cy-how-much")
+
+
+        cyOnlyDoc must haveElementAtPathWithText("a[id=getHelpLink]", Messages("tai.iya.paidTooLittle.get.help.linkText"))
+        cyOnlyDoc must haveElementAtPathWithAttribute("a[id=getHelpLink]", "href", controllers.routes.HelpController.helpPage.toString)
+      }
+
+      "ommit " in {
+        cyOnlyDoc must not(haveElementWithId("iya-cy-plus-one-how-much"))
+        cyOnlyDoc must not(haveElementWithId("iya-cy-and-cy-plus-one-how-much"))
+      }
+
     }
 
     "display the potential underpayment page configured for a CY IYA, when both CY and CY+1 are present" in {
@@ -65,7 +84,6 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
       val html = views.html.potentialUnderpayment(PotentialUnderpaymentViewModel(tasCYAndCyPlusOne, ccs, "", ""))
       val doc = Jsoup.parseBodyFragment(html.toString)
 
-      doc.title() must include(Messages("tai.iya.tax.you.owe.title"))
       doc must haveElementWithId("iya-cy-how-much")
       doc must not(haveElementWithId("iya-cy-plus-one-how-much"))
       doc must not(haveElementWithId("iya-cy-and-cy-plus-one-how-much"))
@@ -108,6 +126,11 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
   val tasCyPlusOneOnly = TaxAccountSummary(11.11, 22.22, 0, 44.44, 55.55)
   val referalPath = "http://somelocation/tax-free-allowance"
   val resourceName = "tax-free-allowance"
+  lazy val cyAndCyPlusOneDocument = document()
+
+  def document(customView: Html = view) = {
+    Jsoup.parseBodyFragment(customView.toString)
+  }
 
   override def view = views.html.potentialUnderpayment(PotentialUnderpaymentViewModel(tas, ccs, referalPath, resourceName))
 }
