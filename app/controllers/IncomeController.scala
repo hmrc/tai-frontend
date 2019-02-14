@@ -89,7 +89,7 @@ class IncomeController @Inject()(personService: PersonService,
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           for {
-            cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NewAmountKey, UpdateIncome_ConfirmedNewAmountKey)
+            cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_ConfirmedNewAmountKey)
           } yield {
             val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt)
             Ok(views.html.incomes.sameEstimatedPay(model))
