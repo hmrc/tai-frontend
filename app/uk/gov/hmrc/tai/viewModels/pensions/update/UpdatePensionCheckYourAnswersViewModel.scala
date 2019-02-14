@@ -32,7 +32,7 @@ case class UpdatePensionCheckYourAnswersViewModel(id: Int,
     val receivePensionLine = CheckYourAnswersConfirmationLine(
       Messages("tai.updatePension.cya.currentlyReceivePension"),
       receivePension,
-      controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension(id).url
+      controllers.pensions.routes.UpdatePensionProviderController.doYouGetThisPension().url
     )
     val whatYouToldUsLine = CheckYourAnswersConfirmationLine(
       Messages("tai.checkYourAnswers.whatYouToldUs"),
