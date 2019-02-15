@@ -32,10 +32,34 @@ import uk.gov.hmrc.tai.viewModels.PotentialUnderpaymentViewModel
 class potentialUnderpaymentViewSpec extends TaiViewSpec {
 
   implicit val hc = HeaderCarrier()
+  val nino = new Generator().nextNino
+
+  val tas = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
+  val ccs = Seq(
+    CodingComponent(MarriageAllowanceTransferred, Some(1), 1400.86, "MarriageAllowanceTransfererd"),
+    CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear")
+  )
+
+  val tasNoUnderpay = TaxAccountSummary(11.11, 22.22, 0, 44.44, 0)
+  val tasCYOnly = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)
+  val tasCYAndCyPlusOne = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
+  val tasCyPlusOneOnly = TaxAccountSummary(11.11, 22.22, 0, 44.44, 55.55)
+  val referalPath = "http://somelocation/tax-free-allowance"
+  val resourceName = "tax-free-allowance"
+
+  val viewModel = PotentialUnderpaymentViewModel(tas, ccs, referalPath, resourceName)
+  def document(viewModel: PotentialUnderpaymentViewModel = viewModel) = {
+    Jsoup.parseBodyFragment(views.html.potentialUnderpayment(viewModel).toString)
+  }
+
+
+  override def view = views.html.potentialUnderpayment(viewModel)
+
 
   "Potential Underpayment" must {
     behave like pageWithBackLink
-    behave like pageWithTitle(messages("tai.iya.tax.you.owe.title"))
+    behave like pageWithTitle(viewModel.pageTitle)
+    behave like pageWithCombinedHeader(messages("tai.iya.tax.you.owe.preHeading"), viewModel.pageTitle)
 
 
     "display text indicating tax is owed " in {
@@ -130,26 +154,5 @@ class potentialUnderpaymentViewSpec extends TaiViewSpec {
     }
   }
 
-  val nino = new Generator().nextNino
 
-  val tas = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
-  val ccs = Seq(
-    CodingComponent(MarriageAllowanceTransferred, Some(1), 1400.86, "MarriageAllowanceTransfererd"),
-    CodingComponent(EstimatedTaxYouOweThisYear, Some(1), 33.44, "EstimatedTaxYouOweThisYear")
-  )
-
-  val tasNoUnderpay = TaxAccountSummary(11.11, 22.22, 0, 44.44, 0)
-  val tasCYOnly = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 0)
-  val tasCYAndCyPlusOne = TaxAccountSummary(11.11, 22.22, 33.33, 44.44, 55.55)
-  val tasCyPlusOneOnly = TaxAccountSummary(11.11, 22.22, 0, 44.44, 55.55)
-  val referalPath = "http://somelocation/tax-free-allowance"
-  val resourceName = "tax-free-allowance"
-
-
-  def document(viewModel: PotentialUnderpaymentViewModel = viewModel) = {
-    Jsoup.parseBodyFragment(views.html.potentialUnderpayment(viewModel).toString)
-  }
-
-  val viewModel = PotentialUnderpaymentViewModel(tas, ccs, referalPath, resourceName)
-  override def view = views.html.potentialUnderpayment(viewModel)
 }
