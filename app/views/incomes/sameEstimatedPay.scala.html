@@ -40,13 +40,13 @@
     ptaHeader(
         displayBackLink = true,
         backLinkGaEventAction = None,
-        mainHeadingText = messages("tai.updateEmployemnt.incomeSame.heading", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+        mainHeadingText = messages("tai.updateEmployemnt.incomeSame.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
         preHeadingText = messages("tai.updateEmployment.incomeSame.preHeading",model.employerName)
     )
 }
 
 @main(
-    title = messages("tai.updateEmployment.incomeSame.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+    title = messages("tai.updateEmployment.incomeSame.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
     pageHeader = Some(header),
     articleClasses = Some("")
 ) {
@@ -57,7 +57,7 @@
                 <section class="section flush--bottom soft--ends">
                     <p>@messages("tai.updateEmployment.incomeSame.newEstimate.text") <span class="bold-large">@model.amountWithPounds</span></p>
                     <div class="panel panel-border-narrow">
-                        <p>@messages("tai.updateEmployment.incomeSame.description", model.employerName,TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited)</p>
+                        <p>@messages("tai.updateEmployment.incomeSame.description", model.employerName,TaxYearRangeUtil.currentTaxYearRangeSingleLine)</p>
                     </div>
                 </section>
             </div>
