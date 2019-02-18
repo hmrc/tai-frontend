@@ -19,6 +19,7 @@ package uk.gov.hmrc.tai.model.domain.income
 import org.joda.time.LocalDate
 import play.api.libs.json._
 import uk.gov.hmrc.tai.model.domain.TaxComponentType
+import uk.gov.hmrc.tai.model.domain.TaxComponentType.taxComponentsMap
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 sealed trait BasisOfOperation
@@ -45,10 +46,18 @@ case object PotentiallyCeased extends TaxCodeIncomeSourceStatus
 case object Ceased extends TaxCodeIncomeSourceStatus
 
 object TaxCodeIncomeSourceStatus{
-  implicit val formatTaxCodeIncomeSourceStatus = new Format[TaxCodeIncomeSourceStatus] {
-    override def reads(json: JsValue): JsSuccess[TaxCodeIncomeSourceStatus] = ???
+  implicit val formatTaxCodeIncomeSourceStatus: Format[TaxCodeIncomeSourceStatus] = new Format[TaxCodeIncomeSourceStatus] {
+    override def reads(json: JsValue): JsSuccess[TaxCodeIncomeSourceStatus] = JsSuccess(formatTaxCodeIncomeSourceStatusMap.getOrElse(json.as[String],
+      throw new IllegalArgumentException("Invalid Tax component type")))
     override def writes(taxCodeIncomeSourceStatus: TaxCodeIncomeSourceStatus) = JsString(taxCodeIncomeSourceStatus.toString)
   }
+
+  private val formatTaxCodeIncomeSourceStatusMap: Map[String, TaxCodeIncomeSourceStatus] = Map(
+    "Live" -> Live,
+    "PotentiallyCeased" -> PotentiallyCeased,
+    "Ceased" -> Ceased
+  )
+
 }
 
 sealed trait IabdUpdateSource
@@ -61,7 +70,7 @@ case object Internet extends IabdUpdateSource
 case object InformationLetter extends IabdUpdateSource
 
 object IabdUpdateSource extends IabdUpdateSource {
-  implicit val formatIabdUpdateSource = new Format[IabdUpdateSource] {
+  implicit val formatIabdUpdateSource: Format[IabdUpdateSource] = new Format[IabdUpdateSource] {
     override def reads(json: JsValue): JsSuccess[IabdUpdateSource] = json.as[String] match {
       case "ManualTelephone" => JsSuccess(ManualTelephone)
       case "Letter" => JsSuccess(Letter)
