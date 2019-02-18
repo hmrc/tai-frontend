@@ -899,8 +899,13 @@ class IncomeUpdateCalculatorControllerSpec
       val employerName = "name"
       val payToDate = 123
       val newAmount = 123
+      val confirmedNewAmout = 1234
 
-      when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(employerName, newAmount.toString)))
+      when(
+      journeyCacheService.mandatoryValues(any())(any())
+      ).thenReturn(
+        Future.successful(Seq(employerName, newAmount.toString,confirmedNewAmout.toString))
+      )
 
       val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
         RequestBuilder.buildFakeRequestWithOnlySession("GET")
@@ -927,11 +932,9 @@ class IncomeUpdateCalculatorControllerSpec
       "the same amount of pay has been entered" in {
         val testController = createTestIncomeUpdateCalculatorController
         val newAmount = 123
+        val confirmednewAmount = 123
 
-        val currentCache: Map[String, String] = Map(UpdateIncome_ConfirmedNewAmountKey -> newAmount.toString)
-
-        when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(EmployerName, newAmount.toString)))
-        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(currentCache))
+        when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(EmployerName, newAmount.toString, confirmednewAmount.toString)))
 
         val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
           RequestBuilder.buildFakeRequestWithOnlySession("GET")

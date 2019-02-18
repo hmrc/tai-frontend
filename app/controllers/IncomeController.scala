@@ -146,7 +146,6 @@ class IncomeController @Inject()(personService: PersonService,
               id = cachedData.head.toInt
               taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
               employmentDetails <- employmentService.employment(Nino(user.getNino), id)
-              currentCache <- journeyCacheService.currentCache
             } yield {
               (taxCodeIncomeDetails, employmentDetails) match {
                 case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
@@ -232,14 +231,12 @@ class IncomeController @Inject()(personService: PersonService,
                   },
                   income => {
                     journeyCacheService.cache(UpdateIncome_NewAmountKey, income.newAmount.getOrElse("0")).map {
-                      x =>
-                        Redirect(routes.IncomeController.confirmPensionIncome())
+                      x => Redirect(routes.IncomeController.confirmPensionIncome())
                     }
                   }
                 )
               }
             }
-
           }
   }
 

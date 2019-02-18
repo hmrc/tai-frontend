@@ -256,18 +256,14 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit user =>
       implicit person =>
         implicit request => {
-          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey) flatMap { cache =>
-            val name :: newIrregularPay :: Nil = cache.toList
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_ConfirmedNewAmountKey) map { cache =>
+            val name :: newIrregularPay :: confirmedNewAmount :: Nil = cache.toList
 
-            for {
-              currentCache <- journeyCacheService.currentCache
-            } yield {
-              if (FormHelper.areEqual(currentCache.get(UpdateIncome_ConfirmedNewAmountKey), Some(newIrregularPay))) {
-                Redirect(controllers.routes.IncomeController.sameEstimatedPay())
-              } else {
-                val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
-                Ok(views.html.incomes.confirmAmountEntered(vm))
-              }
+            if (FormHelper.areEqual(Some(confirmedNewAmount), Some(newIrregularPay))) {
+              Redirect(controllers.routes.IncomeController.sameEstimatedPay())
+            } else {
+              val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
+              Ok(views.html.incomes.confirmAmountEntered(vm))
             }
           }
         }
