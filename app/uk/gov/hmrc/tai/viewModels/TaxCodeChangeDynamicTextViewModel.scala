@@ -38,9 +38,8 @@ object TaxCodeChangeDynamicTextViewModel {
   private def createReasons(allowancesChange: Seq[String], deductionsChange: Seq[String])
                            (implicit messages: Messages): Seq[String] = {
     val reasons = allowancesChange ++ deductionsChange
-
     val genericReasonsForTaxCodeChange = reasons filter (_ == genericTaxCodeChangeReason)
-    if (genericReasonsForTaxCodeChange.isEmpty) {
+    if (genericReasonsForTaxCodeChange.isEmpty || reasons.size <= 4) {
       reasons
     } else {
       Seq(genericTaxCodeChangeReason)

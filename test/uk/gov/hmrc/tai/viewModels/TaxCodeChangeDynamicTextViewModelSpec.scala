@@ -54,18 +54,8 @@ class TaxCodeChangeDynamicTextViewModelSpec extends PlaySpec with MockitoSugar w
         model.reasons mustBe Seq(messagesApi("taxCode.change.yourTaxCodeChanged.paragraph"))
       }
 
-      "there is no previous amount" in {
-        val noPreviousAmount = CodingComponentPair(JobExpenses, Some(2), None, Some(100))
-        val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq(noPreviousAmount), Seq(carBenefitIncrease))
-        val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
-
-        val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison, employmentsMap)
-        model.reasons mustBe Seq(messagesApi("taxCode.change.yourTaxCodeChanged.paragraph"))
-      }
-
-      "there is no current amount" in {
-        val noCurrentAmount = CodingComponentPair(JobExpenses, Some(2), Some(50), None)
-        val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq(noCurrentAmount), Seq(carBenefitIncrease))
+      "there are more than 4 benefit changes" in {
+        val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq.empty, Seq(carBenefitIncrease, carBenefitIncrease, carBenefitIncrease, carBenefitIncrease, carBenefitIncrease))
         val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
 
         val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison, employmentsMap)
