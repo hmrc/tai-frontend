@@ -30,15 +30,15 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
                                   gaDimensions: Map[String, String]) {
 
   private def removeEmployer(employerNames: Seq[String])(implicit messages: Messages): Seq[String] = {
-    employerNames map ( name => Messages("tai.taxCodeComparison.removeEmployer", name))
+    employerNames map ( name => messages("tai.taxCodeComparison.removeEmployer", name))
   }
 
   private def addEmployer(employerNames: Seq[String])(implicit messages: Messages): Seq[String] = {
-    employerNames map ( name => Messages("tai.taxCodeComparison.addEmployer", name))
+    employerNames map ( name => messages("tai.taxCodeComparison.addEmployer", name))
   }
 
   private def genericMessage(implicit messages: Messages): Seq[String] = {
-    Seq(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
+    Seq(messages("taxCode.change.yourTaxCodeChanged.paragraph"))
   }
 
   private def secondaryEmploymentsChanged(implicit messages: Messages): Seq[String] = {

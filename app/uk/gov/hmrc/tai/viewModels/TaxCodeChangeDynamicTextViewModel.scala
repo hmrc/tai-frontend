@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.TaxCodeChange
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentPair, CodingComponentPairDescription, CodingComponentTypeDescription, YourTaxFreeAmountComparison}
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentPair, CodingComponentTypeDescription, YourTaxFreeAmountComparison}
 
 case class TaxCodeChangeDynamicTextViewModel(reasons: Seq[String])
 
@@ -30,32 +30,49 @@ object TaxCodeChangeDynamicTextViewModel {
     val allowancesChange: Seq[String] = translatePairsToDynamicText(taxFreeAmountComparison.iabdPairs.allowances, employmentsMap)
     val deductionsChange: Seq[String] = translatePairsToDynamicText(taxFreeAmountComparison.iabdPairs.deductions, employmentsMap)
 
-    val reasons = allowancesChange ++ deductionsChange
+    val reasons = createReasons(allowancesChange, deductionsChange)
 
     TaxCodeChangeDynamicTextViewModel(reasons)
   }
 
-  private def translatePairsToDynamicText(pairs: Seq[CodingComponentPair], employmentsMap: Map[Int, String])(implicit messages: Messages): Seq[String] = {
-    val changedPairs = pairs.filter(pair => pair.previous.isDefined && pair.current.isDefined)
+  private def createReasons(allowancesChange: Seq[String], deductionsChange: Seq[String])
+                           (implicit messages: Messages): Seq[String] = {
+    val reasons = allowancesChange ++ deductionsChange
 
-    val describedChangedPairs = changedPairs.flatMap(translateChangedCodingComponentPair(_, employmentsMap))
-    describedChangedPairs
+    val genericReasonsForTaxCodeChange = reasons filter (_ == genericTaxCodeChangeReason)
+    if (genericReasonsForTaxCodeChange.isEmpty) {
+      reasons
+    } else {
+      Seq(genericTaxCodeChangeReason)
+    }
   }
 
-  private def translateChangedCodingComponentPair(pair: CodingComponentPair, employmentsMap: Map[Int, String])(implicit messages: Messages): Option[String] = {
+  private def translatePairsToDynamicText(pairs: Seq[CodingComponentPair], employmentsMap: Map[Int, String])(implicit messages: Messages): Seq[String] = {
+    val changedPairs = pairs.filter(pair => pair.previous.isDefined && pair.current.isDefined)
+    changedPairs.map(translateChangedCodingComponentPair(_, employmentsMap))
+  }
+
+  private def translateChangedCodingComponentPair(pair: CodingComponentPair, employmentsMap: Map[Int, String])(implicit messages: Messages): String = {
     val direction: Option[String] = pair match {
-      case CodingComponentPair(_, _, p: Some[BigDecimal], c: Some[BigDecimal]) if c.x > p.x => Some("increased")
-      case CodingComponentPair(_, _, p: Some[BigDecimal], c: Some[BigDecimal]) if c.x < p.x => Some("decreased")
+      case CodingComponentPair(_, _, previousAmount: Some[BigDecimal], currentAmount: Some[BigDecimal])
+        if currentAmount.x > previousAmount.x => Some("increased")
+      case CodingComponentPair(_, _, previousAmount: Some[BigDecimal], currentAmount: Some[BigDecimal])
+        if currentAmount.x < previousAmount.x => Some("decreased")
       case _ => None
     }
 
-    val componentType: String = CodingComponentTypeDescription.componentTypeToString(pair.componentType)
-    val employmentName = employmentsMap(pair.employmentId.getOrElse(0))
-//      List("Job expenses from Sainsburys has increased from Some(50) to Some(100)", "Car benefit from from Tesco has increased from Some(1000) to Some(2000)")
-//      List("Job Expense from Sainsburys has increased from 50 to 100", "Car Benefit from TESCO has increased from 1000 to 2000") (TaxCodeChangeDynamicTextViewModelSpec.scala:43)
+    (pair.employmentId, pair.previous, pair.current, direction) match {
+      case (Some(id), Some(previousAmount), Some(currentAmount), Some(d)) =>
 
-    direction.map(d => {
-      s"${componentType} from ${employmentName} has $d from ${pair.previous.getOrElse(0)} to ${pair.current.getOrElse(0)}"
-    })
+        val employmentName: String = employmentsMap(id)
+        val componentType: String = CodingComponentTypeDescription.componentTypeToString(pair.componentType)
+
+        s"${componentType} from ${employmentName} has ${d} from ${previousAmount} to ${currentAmount}"
+      case _ => genericTaxCodeChangeReason
+    }
+  }
+
+  private def genericTaxCodeChangeReason(implicit messages: Messages): String = {
+    Messages("taxCode.change.yourTaxCodeChanged.paragraph")
   }
 }
