@@ -902,7 +902,7 @@ class IncomeUpdateCalculatorControllerSpec
       val confirmedNewAmout = 1234
 
       when(
-      journeyCacheService.mandatoryValues(any())(any())
+      journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any())
       ).thenReturn(
         Future.successful(Seq(employerName, newAmount.toString,confirmedNewAmout.toString))
       )
