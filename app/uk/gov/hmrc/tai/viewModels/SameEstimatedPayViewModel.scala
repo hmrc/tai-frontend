@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.tai.viewModels
 
-import uk.gov.hmrc.tai.util.{MonetaryUtil, ViewModelHelper}
+import uk.gov.hmrc.tai.util.MonetaryUtil
 
-case class SameEstimatedPayViewModel(employerName: String, amount: Int) extends ViewModelHelper {
+case class SameEstimatedPayViewModel(employerName: String, amount: Int) {
   def amountWithPounds: String = MonetaryUtil.withPoundPrefix(amount, 0)
 }
