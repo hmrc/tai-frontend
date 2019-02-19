@@ -42,15 +42,17 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
   }
 
   private def secondaryEmploymentsChanged(implicit messages: Messages): Seq[String] = {
-    val removed = pairs.unMatchedPreviousCodes.flatMap(_.previous).map ( record => record.employerName )
-    val added = pairs.unMatchedCurrentCodes.flatMap(_.current).map ( record => record.employerName )
+    val previous = pairs.unMatchedPreviousCodes.flatMap(_.previous).map ( record => record.employerName )
+    val current = pairs.unMatchedCurrentCodes.flatMap(_.current).map ( record => record.employerName )
 
-    val removedSet = removed.toSet
-    val currentAndPreviousEmployerNamesAreSame: Boolean = (added filter removedSet).nonEmpty
+    val uniquePrevious = previous.distinct.sorted
+    val uniqueCurrent = current.distinct.sorted
+
+    val currentAndPreviousEmployerNamesAreSame: Boolean = (uniquePrevious == uniqueCurrent) && (uniquePrevious ++ uniqueCurrent).nonEmpty
 
     currentAndPreviousEmployerNamesAreSame match {
       case true => genericMessage
-      case false => removeEmployer(removed) ++ addEmployer(added)
+      case false => removeEmployer(previous) ++ addEmployer(current)
     }
   }
 
