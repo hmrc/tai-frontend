@@ -20,13 +20,9 @@ import org.joda.time.LocalDate
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
+import uk.gov.hmrc.tai.service.yourTaxFreeAmount.YourTaxFreeAmountComparison
 import uk.gov.hmrc.tai.util.{TaxAccountCalculator, TaxAccountCalculatorImpl, TaxYearRangeUtil}
-import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
-
-
-case class YourTaxFreeAmountComparison(previousTaxFreeInfo: Option[TaxFreeInfo], currentTaxFreeInfo: TaxFreeInfo, iabdPairs: AllowancesAndDeductionPairs)
 
 trait YourTaxFreeAmount {
 

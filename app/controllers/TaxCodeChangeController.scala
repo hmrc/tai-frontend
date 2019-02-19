@@ -28,9 +28,9 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.yourTaxFreeAmount.DescribedYourTaxFreeAmountService
+import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, YourTaxFreeAmountComparison}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.YourTaxFreeAmount
-import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeDynamicTextViewModel, TaxCodeChangeViewModel}
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
 
 import scala.concurrent.Future
 
@@ -48,15 +48,13 @@ class TaxCodeChangeController @Inject()(taxCodeChangeService: TaxCodeChangeServi
   def taxCodeComparison: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       val nino: Nino = request.taiUser.nino
-      val taxFreeAmountFuture = yourTaxFreeAmountService.taxFreeAmountComparison(nino)
+      val taxFreeAmountFuture: Future[YourTaxFreeAmountComparison] = yourTaxFreeAmountService.taxFreeAmountComparison(nino)
 
       for {
         taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
-        yourTaxFreeAmountComparison <- taxFreeAmountFuture
+//        yourTaxFreeAmountComparison <- taxFreeAmountFuture
       } yield {
-        val taxCodeChangeDynamicTextViewModel = TaxCodeChangeDynamicTextViewModel(taxCodeChange, yourTaxFreeAmountComparison)
-
         val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
 
         implicit val user = request.taiUser

@@ -14,40 +14,32 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.viewModels.taxCodeChange
+package uk.gov.hmrc.tai.service.yourTaxFreeAmount
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.model.domain.TaxCodeChange
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentPair, CodingComponentTypeDescription, YourTaxFreeAmountComparison}
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, CodingComponentPair, CodingComponentTypeDescription, TaxFreeInfo}
 
-case class TaxCodeChangeDynamicTextViewModel(reasons: Seq[String])
+case class YourTaxFreeAmountComparison(previousTaxFreeInfo: Option[TaxFreeInfo], currentTaxFreeInfo: TaxFreeInfo, iabdPairs: AllowancesAndDeductionPairs)
 
-object TaxCodeChangeDynamicTextViewModel {
+object YourTaxFreeAmountComparisonService {
 
-  def apply(taxCodeChange: TaxCodeChange, taxFreeAmountComparison: YourTaxFreeAmountComparison)
-           (implicit messages: Messages): TaxCodeChangeDynamicTextViewModel = {
+  def taxCodeChangeReasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
 
-    val allowancesChange: Seq[String] = translatePairsToDynamicText(taxFreeAmountComparison.iabdPairs.allowances)
-    val deductionsChange: Seq[String] = translatePairsToDynamicText(taxFreeAmountComparison.iabdPairs.deductions)
+    val changedBenefits: Seq[String] = getChangedBenefits(iabdPairs.allowances
+      ++ iabdPairs.deductions)
 
-    val reasons = createReasons(allowancesChange, deductionsChange)
-
-    TaxCodeChangeDynamicTextViewModel(reasons)
-  }
-
-  private def createReasons(allowancesChange: Seq[String], deductionsChange: Seq[String])
-                           (implicit messages: Messages): Seq[String] = {
-    val reasons = allowancesChange ++ deductionsChange
-
-    val genericReasonsForTaxCodeChange = reasons filter (_ == genericTaxCodeChangeReason)
-    if (genericReasonsForTaxCodeChange.isEmpty && reasons.size <= 4) {
-      reasons
-    } else {
-      Seq(genericTaxCodeChangeReason)
+    isAGenericBenefit(changedBenefits) match {
+      case true => changedBenefits
+      case false => Seq(genericTaxCodeChangeReason)
     }
   }
 
-  private def translatePairsToDynamicText(pairs: Seq[CodingComponentPair])(implicit messages: Messages): Seq[String] = {
+  private def isAGenericBenefit(changedBenefits: Seq[String])(implicit messages: Messages): Boolean = {
+    val genericReasonsForTaxCodeChange = changedBenefits filter (_ == genericTaxCodeChangeReason)
+    genericReasonsForTaxCodeChange.isEmpty && changedBenefits.size <= 4
+  }
+
+  private def getChangedBenefits(pairs: Seq[CodingComponentPair])(implicit messages: Messages): Seq[String] = {
     val changedPairs = pairs.filter(pair => pair.previous.isDefined && pair.current.isDefined)
     changedPairs.flatMap(translateChangedCodingComponentPair(_)).distinct
   }
