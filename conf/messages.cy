@@ -1259,6 +1259,7 @@ tai.updateEmployment.incomeSame.preHeading=Diweddarwch eich incwm amcangyfrifedi
 tai.updateEmployemnt.incomeSame.heading=Eich incwm amcangyfrifedig ar gyfer {0}
 tai.updateEmployment.incomeSame.newEstimate.text=Eich incwm amcangyfrifedig newydd yw
 tai.updateEmployment.incomeSame.description=Mae’r swm hwn eisoes wedi’i amcangyfrif ar gyfer {0} ar gyfer {1}, felly does dim rhaid i chi ddiweddaru’ch incwm.
+tai.updateEmployment.incomeSame.return.link=Dychwelyd i’ch manylion incwm
 tai.updateEmployment.incomeSame.estimatedPayCYPlusOne.link=View your estimated income for next tax year
 tai.updateEmployment.incomeSame.returnToIncomeDetails.button=Dychwelyd i’ch manylion incwm
 

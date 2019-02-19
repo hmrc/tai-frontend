@@ -48,7 +48,7 @@ class SameEstimatedPaySpec extends TaiViewSpec with MockitoSugar{
     "display return to employment details link" in {
       doc must haveLinkElement("returnToEmploymentDetails",
         routes.TaxAccountSummaryController.onPageLoad().url,
-        messages("Return to employment details"))
+        messages("tai.updateEmployment.incomeSame.return.link"))
     }
   }
 
