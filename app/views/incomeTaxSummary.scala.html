@@ -19,9 +19,8 @@
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 @import uk.gov.hmrc.tai.config.ApplicationConfig
+@import uk.gov.hmrc.tai.viewModels.IFormInProgressBannerViewModel
 
-@import uk.gov.hmrc.tai.service.ThreeWeeks
-@import uk.gov.hmrc.tai.service.SevenDays
 @(viewModel: TaxAccountSummaryViewModel
 )(implicit request: Request[_],
   messages: Messages,
@@ -76,19 +75,7 @@
             </p>
             }
 
-            @if(viewModel.isAnyFormInProgress == ThreeWeeks){
-            <div id="isAnyFormInProgressBanner" class="panel-indent panel-indent--info flush--top">
-                <p>@Messages("tai.whatDoYouWantToDo.iformPanel.p1")</p>
-                <p>@messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2")</p>
-            </div>
-            }
-
-            @if(viewModel.isAnyFormInProgress == SevenDays){
-                <div id="isAnyFormInProgressBanner" class="panel-indent panel-indent--info flush--top">
-                    <p>@messages("tai.whatDoYouWantToDo.iformPanel.p1")</p>
-                    <p>@messages("tai.whatDoYouWantToDo.iformPanel.sevenDays.p2")</p>
-                </div>
-            }
+            @includes.iFormInProgressBanner(IFormInProgressBannerViewModel(viewModel.isAnyFormInProgress))
 
             @if(viewModel.employments.nonEmpty){
             <section id="incomeFromEmploymentSection" class="section flush--bottom" aria-labelledby="incomeFromEmploymentHeading">
