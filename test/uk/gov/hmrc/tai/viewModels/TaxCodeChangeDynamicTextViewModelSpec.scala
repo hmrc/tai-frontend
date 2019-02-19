@@ -29,37 +29,36 @@ class TaxCodeChangeDynamicTextViewModelSpec extends PlaySpec with MockitoSugar w
   private val jobExpensesIncrease = CodingComponentPair(JobExpenses, Some(2), Some(50), Some(100))
   private val carBenefitIncrease = CodingComponentPair(CarBenefit, Some(1), Some(1000), Some(2000))
   private val taxCodeChange = mock[TaxCodeChange]
-  private val employmentsMap = Map(1 -> "TESCO", 2 -> "Sainsburys")
   implicit val messagesApi = app.injector.instanceOf[MessagesApi]
-
 
   "TaxCodeChangeDynamicTextViewModel apply method" must {
     "have no reasons" when {
       "there are no allowances and deductions" in {
         val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq.empty, Seq.empty)
         val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
-        val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison, employmentsMap)
+        val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
 
         model.reasons mustBe Seq.empty
       }
-    }
 
-    "translate to the generic benefit message" when {
-      "there is no employment id" in {
-        val noJobId = CodingComponentPair(JobExpenses, None, Some(50), Some(100))
-        val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq(noJobId), Seq(carBenefitIncrease))
+      "there is no previous amount" in {
+        val noPreviousAmount = CodingComponentPair(JobExpenses, None, None, Some(123))
+        val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq(noPreviousAmount), Seq.empty)
         val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
 
-        val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison, employmentsMap)
-        model.reasons mustBe Seq(messagesApi("taxCode.change.yourTaxCodeChanged.paragraph"))
+        val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
+
+        model.reasons mustBe Seq.empty
       }
 
-      "there are more than 4 benefit changes" in {
-        val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq.empty, Seq(carBenefitIncrease, carBenefitIncrease, carBenefitIncrease, carBenefitIncrease, carBenefitIncrease))
+      "there is no current amount" in {
+        val noCurrentAmount = CodingComponentPair(JobExpenses, None, Some(123), None)
+        val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq(noCurrentAmount), Seq.empty)
         val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
 
-        val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison, employmentsMap)
-        model.reasons mustBe Seq(messagesApi("taxCode.change.yourTaxCodeChanged.paragraph"))
+        val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
+
+        model.reasons mustBe Seq.empty
       }
     }
 
@@ -67,52 +66,24 @@ class TaxCodeChangeDynamicTextViewModelSpec extends PlaySpec with MockitoSugar w
       val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq(jobExpensesIncrease), Seq(carBenefitIncrease))
       val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
 
-      val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison, employmentsMap)
+      val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
 
       model.reasons mustBe Seq(
-        "Job expenses from Sainsburys has increased from 50 to 100",
-        "Car benefit from TESCO has increased from 1000 to 2000"
+        "Your Job expenses has been updated",
+        "Your Car benefit has been updated"
       )
     }
   }
 
-  "translate an allowance increase to a text" in {
-    val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq(jobExpensesIncrease), Seq.empty)
-    val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
+  "translate to the generic benefit message" when {
+    "there are more than 4 benefit changes" in {
+      val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq.empty,
+        Seq(carBenefitIncrease, carBenefitIncrease, carBenefitIncrease, carBenefitIncrease, carBenefitIncrease))
+      val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
 
-    val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison, employmentsMap)
+      val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
 
-    model.reasons mustBe Seq("Job expenses from Sainsburys has increased from 50 to 100")
-  }
-
-  "translate a allowance decrease to text" in {
-    val jobExpensesDecrease = CodingComponentPair(JobExpenses, Some(2), Some(100), Some(50))
-
-    val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq(jobExpensesDecrease), Seq.empty)
-    val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
-
-    val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison, employmentsMap)
-
-    model.reasons mustBe Seq("Job expenses from Sainsburys has decreased from 100 to 50")
-  }
-
-  "translate a deduction increase to a text" in {
-    val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq.empty, Seq(carBenefitIncrease))
-    val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
-
-    val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison, employmentsMap)
-
-    model.reasons mustBe Seq("Car benefit from TESCO has increased from 1000 to 2000")
-  }
-
-  "translate a deduction decrease to text" in {
-    val carBenefitDecrease = CodingComponentPair(CarBenefit, Some(1), Some(2000), Some(1000))
-
-    val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq.empty, Seq(carBenefitDecrease))
-    val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
-
-    val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison, employmentsMap)
-
-    model.reasons mustBe Seq("Car benefit from TESCO has decreased from 2000 to 1000")
+      model.reasons mustBe Seq(messagesApi("taxCode.change.yourTaxCodeChanged.paragraph"))
+    }
   }
 }

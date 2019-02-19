@@ -24,11 +24,11 @@ case class TaxCodeChangeDynamicTextViewModel(reasons: Seq[String])
 
 object TaxCodeChangeDynamicTextViewModel {
 
-  def apply(taxCodeChange: TaxCodeChange, taxFreeAmountComparison: YourTaxFreeAmountComparison, employmentsMap: Map[Int, String])
+  def apply(taxCodeChange: TaxCodeChange, taxFreeAmountComparison: YourTaxFreeAmountComparison)
            (implicit messages: Messages): TaxCodeChangeDynamicTextViewModel = {
 
-    val allowancesChange: Seq[String] = translatePairsToDynamicText(taxFreeAmountComparison.iabdPairs.allowances, employmentsMap)
-    val deductionsChange: Seq[String] = translatePairsToDynamicText(taxFreeAmountComparison.iabdPairs.deductions, employmentsMap)
+    val allowancesChange: Seq[String] = translatePairsToDynamicText(taxFreeAmountComparison.iabdPairs.allowances)
+    val deductionsChange: Seq[String] = translatePairsToDynamicText(taxFreeAmountComparison.iabdPairs.deductions)
 
     val reasons = createReasons(allowancesChange, deductionsChange)
 
@@ -38,40 +38,37 @@ object TaxCodeChangeDynamicTextViewModel {
   private def createReasons(allowancesChange: Seq[String], deductionsChange: Seq[String])
                            (implicit messages: Messages): Seq[String] = {
     val reasons = allowancesChange ++ deductionsChange
+
     val genericReasonsForTaxCodeChange = reasons filter (_ == genericTaxCodeChangeReason)
-    if (genericReasonsForTaxCodeChange.isEmpty || reasons.size <= 4) {
+    println(reasons)
+    if (genericReasonsForTaxCodeChange.isEmpty && reasons.size <= 4) {
       reasons
     } else {
       Seq(genericTaxCodeChangeReason)
     }
   }
 
-  private def translatePairsToDynamicText(pairs: Seq[CodingComponentPair], employmentsMap: Map[Int, String])(implicit messages: Messages): Seq[String] = {
+  private def translatePairsToDynamicText(pairs: Seq[CodingComponentPair])(implicit messages: Messages): Seq[String] = {
     val changedPairs = pairs.filter(pair => pair.previous.isDefined && pair.current.isDefined)
-    changedPairs.map(translateChangedCodingComponentPair(_, employmentsMap))
+    changedPairs.flatMap(translateChangedCodingComponentPair(_))
   }
 
-  private def translateChangedCodingComponentPair(pair: CodingComponentPair, employmentsMap: Map[Int, String])(implicit messages: Messages): String = {
-    val direction: Option[String] = pair match {
-      case CodingComponentPair(_, _, previousAmount: Some[BigDecimal], currentAmount: Some[BigDecimal])
-        if currentAmount.x > previousAmount.x => Some("increased")
-      case CodingComponentPair(_, _, previousAmount: Some[BigDecimal], currentAmount: Some[BigDecimal])
-        if currentAmount.x < previousAmount.x => Some("decreased")
-      case _ => None
+  private def translateChangedCodingComponentPair(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
+    val hasAnythingChanged: Boolean = pair match {
+      case CodingComponentPair(_, _, previousAmount: Some[BigDecimal], currentAmount: Some[BigDecimal]) =>
+        currentAmount.x != previousAmount.x
+      case _ => false
     }
 
-    (pair.employmentId, pair.previous, pair.current, direction) match {
-      case (Some(id), Some(previousAmount), Some(currentAmount), Some(d)) =>
-
-        val employmentName: String = employmentsMap(id)
+    (hasAnythingChanged) match {
+      case true =>
         val componentType: String = CodingComponentTypeDescription.componentTypeToString(pair.componentType)
-
-        s"${componentType} from ${employmentName} has ${d} from ${previousAmount} to ${currentAmount}"
-      case _ => genericTaxCodeChangeReason
+        Some(messages("tai.taxCodeComparison.iabd.new.allowanceOrDeduction", componentType))
+      case false => None
     }
   }
 
   private def genericTaxCodeChangeReason(implicit messages: Messages): String = {
-    Messages("taxCode.change.yourTaxCodeChanged.paragraph")
+    messages("taxCode.change.yourTaxCodeChanged.paragraph")
   }
 }

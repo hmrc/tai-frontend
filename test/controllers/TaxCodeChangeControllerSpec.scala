@@ -136,7 +136,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     FakeAuthAction,
     FakeValidatePerson,
     mock[YourTaxFreeAmountService],
-    mock[EmploymentService],
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
