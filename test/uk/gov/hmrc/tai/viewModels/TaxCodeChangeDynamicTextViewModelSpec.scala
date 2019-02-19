@@ -20,7 +20,7 @@ import controllers.FakeTaiPlayApplication
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.tai.model.domain.{CarBenefit, JobExpenses, TaxCodeChange}
+import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 
 class TaxCodeChangeDynamicTextViewModelSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport {
@@ -34,8 +34,8 @@ class TaxCodeChangeDynamicTextViewModelSpec extends PlaySpec with MockitoSugar w
   "TaxCodeChangeDynamicTextViewModel apply method" must {
     "have no reasons" when {
       "there are no allowances and deductions" in {
-        val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq.empty, Seq.empty)
-        val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
+        val pairs = AllowancesAndDeductionPairs(Seq.empty, Seq.empty)
+        val taxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
         val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
 
         model.reasons mustBe Seq.empty
@@ -43,8 +43,8 @@ class TaxCodeChangeDynamicTextViewModelSpec extends PlaySpec with MockitoSugar w
 
       "there is no previous amount" in {
         val noPreviousAmount = CodingComponentPair(JobExpenses, None, None, Some(123))
-        val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq(noPreviousAmount), Seq.empty)
-        val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
+        val pairs = AllowancesAndDeductionPairs(Seq(noPreviousAmount), Seq.empty)
+        val taxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
 
         val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
 
@@ -53,8 +53,8 @@ class TaxCodeChangeDynamicTextViewModelSpec extends PlaySpec with MockitoSugar w
 
       "there is no current amount" in {
         val noCurrentAmount = CodingComponentPair(JobExpenses, None, Some(123), None)
-        val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq(noCurrentAmount), Seq.empty)
-        val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
+        val pairs = AllowancesAndDeductionPairs(Seq(noCurrentAmount), Seq.empty)
+        val taxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
 
         val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
 
@@ -63,8 +63,8 @@ class TaxCodeChangeDynamicTextViewModelSpec extends PlaySpec with MockitoSugar w
     }
 
     "translate a YourTaxFreeAmountViewModel to a seq of dynamic text" in {
-      val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq(jobExpensesIncrease), Seq(carBenefitIncrease))
-      val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
+      val pairs = AllowancesAndDeductionPairs(Seq(jobExpensesIncrease), Seq(carBenefitIncrease))
+      val taxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
 
       val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
 
@@ -73,17 +73,30 @@ class TaxCodeChangeDynamicTextViewModelSpec extends PlaySpec with MockitoSugar w
         "Your Car benefit has been updated"
       )
     }
-  }
 
-  "translate to the generic benefit message" when {
-    "there are more than 4 benefit changes" in {
-      val pairs: AllowancesAndDeductionPairs = AllowancesAndDeductionPairs(Seq.empty,
-        Seq(carBenefitIncrease, carBenefitIncrease, carBenefitIncrease, carBenefitIncrease, carBenefitIncrease))
-      val taxFreeAmountComparison: YourTaxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
+    "show benefit changes once" in {
+      val pairs = AllowancesAndDeductionPairs(Seq.empty, Seq(carBenefitIncrease, carBenefitIncrease))
+      val taxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
 
       val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
 
-      model.reasons mustBe Seq(messagesApi("taxCode.change.yourTaxCodeChanged.paragraph"))
+      model.reasons mustBe Seq("Your Car benefit has been updated")
+    }
+
+    "translate to the generic benefit message" when {
+      "there are more than 4 unique benefit changes" in {
+        val giftSharesCharity = CodingComponentPair(GiftsSharesCharity, Some(2), Some(50), Some(100))
+        val flatRateJobExpense = CodingComponentPair(FlatRateJobExpenses, Some(2), Some(50), Some(100))
+        val lossRelief = CodingComponentPair(LossRelief, Some(2), Some(50), Some(100))
+
+        val pairs = AllowancesAndDeductionPairs(Seq.empty,
+          Seq(carBenefitIncrease, jobExpensesIncrease, giftSharesCharity, flatRateJobExpense, lossRelief))
+        val taxFreeAmountComparison = YourTaxFreeAmountComparison(None, taxFreeInfo, pairs)
+
+        val model = TaxCodeChangeDynamicTextViewModel(taxCodeChange, taxFreeAmountComparison)
+
+        model.reasons mustBe Seq(messagesApi("taxCode.change.yourTaxCodeChanged.paragraph"))
+      }
     }
   }
 }

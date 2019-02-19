@@ -40,7 +40,6 @@ object TaxCodeChangeDynamicTextViewModel {
     val reasons = allowancesChange ++ deductionsChange
 
     val genericReasonsForTaxCodeChange = reasons filter (_ == genericTaxCodeChangeReason)
-    println(reasons)
     if (genericReasonsForTaxCodeChange.isEmpty && reasons.size <= 4) {
       reasons
     } else {
@@ -50,7 +49,7 @@ object TaxCodeChangeDynamicTextViewModel {
 
   private def translatePairsToDynamicText(pairs: Seq[CodingComponentPair])(implicit messages: Messages): Seq[String] = {
     val changedPairs = pairs.filter(pair => pair.previous.isDefined && pair.current.isDefined)
-    changedPairs.flatMap(translateChangedCodingComponentPair(_))
+    changedPairs.flatMap(translateChangedCodingComponentPair(_)).distinct
   }
 
   private def translateChangedCodingComponentPair(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
