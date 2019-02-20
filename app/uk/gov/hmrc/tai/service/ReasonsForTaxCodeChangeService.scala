@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.tai.service
 
+import com.google.inject.Inject
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.TaxCodeChange
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodePair, TaxCodePairs}
 
-class ReasonsForTaxCodeChangeService {
+class ReasonsForTaxCodeChangeService @Inject()() {
 
   def reasons(taxCodeChange: TaxCodeChange)(implicit messages: Messages): Seq[String] = {
 
