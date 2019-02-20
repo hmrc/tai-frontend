@@ -74,11 +74,25 @@ class EndEmploymentControllerSpec
       when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
         .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
 
-      val result = endEmploymentTest.employmentUpdateRemoveDecision(fakeGetRequest)
+      val result = endEmploymentTest.employmentUpdateRemoveDecision(employmentId)(fakeGetRequest)
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
       doc.title() must include(Messages("tai.employment.decision.customGaTitle"))
+    }
+
+    "go to the redirect to try and recache if the mandatory cache values are not present" in {
+      val endEmploymentTest = createEndEmploymentTest
+      val employmentId = 1
+
+      when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
+        .thenReturn(Future.failed(new RuntimeException("bad cache")))
+
+      val result = endEmploymentTest.employmentUpdateRemoveDecision(employmentId)(fakeGetRequest)
+      val doc = Jsoup.parse(contentAsString(result))
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(employmentId).url
     }
   }
 
@@ -574,7 +588,7 @@ class EndEmploymentControllerSpec
 
       val result = endEmploymentTest.employmentUpdateRemove(employmentId)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemoveDecision.url
+      redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemoveDecision(employmentId).url
     }
 
     "redirect to warning page when there is an end employment ID cache value present" in {
@@ -619,7 +633,7 @@ class EndEmploymentControllerSpec
           .withFormUrlEncodedBody(YesNoChoice -> YesValue))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision(employmentId).url
       }
     }
 

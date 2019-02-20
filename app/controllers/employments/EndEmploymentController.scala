@@ -77,15 +77,18 @@ class EndEmploymentController @Inject()(auditService: AuditService,
       case _ => Valid
     })
 
-  def employmentUpdateRemoveDecision: Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def employmentUpdateRemoveDecision(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
       journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { mandatoryValues =>
         Ok(views.html.employments.update_remove_employment_decision(UpdateRemoveEmploymentForm.form, mandatoryValues(0), mandatoryValues(1).toInt))
+      } recover {
+        case _ : RuntimeException => Redirect(routes.EndEmploymentController.employmentUpdateRemove(empId))
       }
   }
 
-  private def redirectToWarningOrDecisionPage(journeyCacheFuture: Future[Map[String, String]],
+  private def redirectToWarningOrDecisionPage(empId: Int,
+                                              journeyCacheFuture: Future[Map[String, String]],
                                               successfullJourneyCacheFuture: Future[Option[String]])
                                              (implicit hc: HeaderCarrier): Future[Result] = {
     for {
@@ -94,7 +97,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
     } yield {
       successfulJourneyCache match {
         case Some(_) => Redirect(routes.EndEmploymentController.duplicateSubmissionWarning())
-        case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemoveDecision())
+        case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemoveDecision(empId))
       }
     }
   }
@@ -113,7 +116,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
           val successfulJourneyCacheFuture = successfulJourneyCacheService.currentValue(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-${empId}")
 
-          redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
+          redirectToWarningOrDecisionPage(empId, journeyCacheFuture, successfulJourneyCacheFuture)
         }
         case _ => throw new RuntimeException("No employment found")
       }
@@ -322,17 +325,19 @@ class EndEmploymentController @Inject()(auditService: AuditService,
     implicit request =>
       implicit val user = request.taiUser
       journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) flatMap { mandatoryValues =>
+        val empId = mandatoryValues(1).toInt
+
         DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
           formWithErrors => {
             Future.successful(BadRequest(views.html.employments.
-              duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
+              duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), empId)))
           },
           success => {
             success.yesNoChoice match {
               case Some(YesValue) => Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.
-                employmentUpdateRemoveDecision()))
+                employmentUpdateRemoveDecision(empId)))
               case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
-                onPageLoad(mandatoryValues(1).toInt)))
+                onPageLoad(empId)))
             }
           }
         )
