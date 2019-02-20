@@ -90,16 +90,17 @@ hr {
 }
 
 .tai-progress-panel {
-  background-color:#005ea5;
-  color:#fff;
-  line-height:1;
-
+  background-color: #005ea5;
+  color: #fff;
+  margin: 15px 0 20px 0;
+  padding: 15px 15px 20px 15px;
+  clear: both;
 }
 
 .tai-progress-panel a {
-  color:#fff;
+  color: #fff;
 }
 
-.tai-progress-panel p:first-child {
-  font-weight:bold;
+.tai-progress-panel p {
+  margin-bottom: 0;
 }

@@ -21,8 +21,8 @@
 
 @viewModel.durationMessage.map { durationMessage =>
 
-    <div id="isAnyFormInProgressBanner" class="tai-progress-panel panel-indent panel-indent--info flush--top">
-        <p>@messages("tai.whatDoYouWantToDo.iformPanel.p1")</p>
+    <div id="isAnyFormInProgressBanner" class="tai-progress-panel">
+        <h2 class="heading-small flush--top">@messages("tai.whatDoYouWantToDo.iformPanel.p1")</h2>
         <p>@durationMessage</p>
         <p><a id="checkProgressLink" href="@ApplicationConfig.checkUpdateProgressLinkUrl">@messages("checkProgress.link")</a></p>
     </div>

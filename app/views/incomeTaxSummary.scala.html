@@ -58,7 +58,7 @@
     pageHeader = Some(header),
     articleClasses = Some("full-width")){
 
-
+@includes.iFormInProgressBanner(IFormInProgressBannerViewModel(viewModel.isAnyFormInProgress))
 
 <div class="grid-row">
 
@@ -74,8 +74,6 @@
                 ).toHtml
             </p>
             }
-
-            @includes.iFormInProgressBanner(IFormInProgressBannerViewModel(viewModel.isAnyFormInProgress))
 
             @if(viewModel.employments.nonEmpty){
             <section id="incomeFromEmploymentSection" class="section flush--bottom" aria-labelledby="incomeFromEmploymentHeading">

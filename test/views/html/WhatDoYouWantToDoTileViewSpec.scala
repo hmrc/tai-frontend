@@ -35,7 +35,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
     "display iForms status message with three weeks when an iForm has not been fully processed" in{
       val threeWeekDoc = doc(views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1))
-      threeWeekDoc must haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1"))
+      threeWeekDoc must haveH2HeadingWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1"))
       threeWeekDoc must haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2"))
       threeWeekDoc must haveLinkElement("checkProgressLink",ApplicationConfig.checkUpdateProgressLinkUrl, messages("checkProgress.link"))
     }
@@ -44,7 +44,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     "display iForms status message with seven days when an iForm has not been fully processed" in{
 
       val sevenDaysDoc = doc(views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1ForSevenDays))
-      sevenDaysDoc must haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1"))
+      sevenDaysDoc must haveH2HeadingWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1"))
       sevenDaysDoc must haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.sevenDays.p2"))
       sevenDaysDoc must haveLinkElement("checkProgressLink",ApplicationConfig.checkUpdateProgressLinkUrl, messages("checkProgress.link"))
     }
