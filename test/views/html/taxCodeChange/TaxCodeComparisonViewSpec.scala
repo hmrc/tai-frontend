@@ -108,30 +108,18 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
     }
 
     "display tax code change reasons" when {
-      def createTaxCodeRecord(employerName: String): TaxCodeRecord = {
-        TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation, employerName, true, Some("1234"), true)
-      }
-
       "primary employments have changed" in {
+        def createTaxCodeRecord(employerName: String): TaxCodeRecord = {
+          TaxCodeRecord("1185L", startDate, startDate.plusMonths(1), OtherBasisOfOperation, employerName, true, Some("1234"), true)
+        }
+
         val previous = createTaxCodeRecord("Employer 1")
         val current = createTaxCodeRecord("Employer 2")
         val taxCodeChange: TaxCodeChange = TaxCodeChange(Seq(previous), Seq(current))
-        val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
+        val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"))
 
         val view = views.html.taxCodeChange.taxCodeComparison(viewModel)
         doc(view) must haveClassCount("tax-code-reason", 2)
-      }
-
-      "display a generic tax code reason" when {
-        "there are more than 4 reasons" in {
-          val fivePreviousJobs: Seq[TaxCodeRecord] = Seq.tabulate(5)(i => createTaxCodeRecord(s"Employer+$i"))
-          val current = createTaxCodeRecord("a new job")
-          val taxCodeChange: TaxCodeChange = TaxCodeChange(fivePreviousJobs, Seq(current))
-          val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map[String, BigDecimal]())
-
-          val view = views.html.taxCodeChange.taxCodeComparison(viewModel)
-          doc(view) must haveClassCount("tax-code-reason", 1)
-        }
       }
     }
   }

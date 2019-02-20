@@ -30,7 +30,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, YourTaxFreeAmountComparison}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.YourTaxFreeAmount
-import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, TaxCodePairs}
 
 import scala.concurrent.Future
 
@@ -40,6 +40,7 @@ class TaxCodeChangeController @Inject()(taxCodeChangeService: TaxCodeChangeServi
                                         authenticate: AuthAction,
                                         validatePerson: ValidatePerson,
                                         yourTaxFreeAmountService: YourTaxFreeAmountService,
+                                        reasonsForTaxCodeChangeService: ReasonsForTaxCodeChangeService,
                                         override implicit val partialRetriever: FormPartialRetriever,
                                         override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with FeatureTogglesConfig
@@ -53,9 +54,10 @@ class TaxCodeChangeController @Inject()(taxCodeChangeService: TaxCodeChangeServi
       for {
         taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
-//        yourTaxFreeAmountComparison <- taxFreeAmountFuture
+        yourTaxFreeAmountComparison <- taxFreeAmountFuture
       } yield {
-        val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands)
+        val reasons = reasonsForTaxCodeChangeService.reasons(taxCodeChange)
+        val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, reasons)
 
         implicit val user = request.taiUser
         Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))

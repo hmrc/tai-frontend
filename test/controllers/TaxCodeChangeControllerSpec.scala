@@ -111,7 +111,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     }
   }
 
-
   val nino: Nino = new Generator(new Random).nextNino
 
   val giftAmount = 1000

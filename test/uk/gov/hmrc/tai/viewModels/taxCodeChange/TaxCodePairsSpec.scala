@@ -20,42 +20,47 @@ import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 
 import scala.util.Random
 
-class TaxCodePairsSpec extends PlaySpec{
+class TaxCodePairsSpec extends PlaySpec {
 
   "TaxCodePairs" should {
     "return the primary pair when only one pair exists" in {
-      val model = TaxCodePairs(
-        Seq(primaryFullYearTaxCode),
-        Seq(primaryFullYearTaxCode)
-      )
+      val model = TaxCodePairs(TaxCodeChange(Seq(primaryFullYearTaxCode), Seq(primaryFullYearTaxCode)))
+
       model.combinedTaxCodePairs mustEqual Seq(TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode)))
     }
 
     "return the primary pair first when multiple pairs exist" in {
       val model = TaxCodePairs(
-        Seq(primaryFullYearTaxCode, previousTaxCodeRecord1, fullYearTaxCode),
-        Seq(primaryFullYearTaxCode, currentTaxCodeRecord1, fullYearTaxCode)
+        TaxCodeChange(
+          Seq(primaryFullYearTaxCode, previousTaxCodeRecord1, fullYearTaxCode),
+          Seq(primaryFullYearTaxCode, currentTaxCodeRecord1, fullYearTaxCode)
+        )
       )
       model.combinedTaxCodePairs.head mustEqual TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode))
     }
 
     "return the primary pair first when unmatched pairs exist" in {
       val model = TaxCodePairs(
-        Seq(primaryFullYearTaxCode, previousTaxCodeRecord1, fullYearTaxCode),
-        Seq(primaryFullYearTaxCode, currentTaxCodeRecord1, fullYearTaxCode)
+        TaxCodeChange(
+          Seq(primaryFullYearTaxCode, previousTaxCodeRecord1, fullYearTaxCode),
+          Seq(primaryFullYearTaxCode, currentTaxCodeRecord1, fullYearTaxCode)
+        )
       )
+
       model.combinedTaxCodePairs.head mustEqual TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode))
     }
 
     "return the secondary pairs after the primary pairs" in {
       val model = TaxCodePairs(
-        Seq(previousTaxCodeRecord1, fullYearTaxCode, primaryFullYearTaxCode, unmatchedPreviousTaxCode),
-        Seq(currentTaxCodeRecord1, fullYearTaxCode, primaryFullYearTaxCode, unmatchedCurrentTaxCode)
+        TaxCodeChange(
+          Seq(previousTaxCodeRecord1, fullYearTaxCode, primaryFullYearTaxCode, unmatchedPreviousTaxCode),
+          Seq(currentTaxCodeRecord1, fullYearTaxCode, primaryFullYearTaxCode, unmatchedCurrentTaxCode)
+        )
       )
 
       model.combinedTaxCodePairs(1) mustEqual TaxCodePair(Some(previousTaxCodeRecord1), Some(currentTaxCodeRecord1))
@@ -64,9 +69,12 @@ class TaxCodePairsSpec extends PlaySpec{
 
     "return the unmatched current and previous taxCodes given one in current and one in previous" in {
       val model = TaxCodePairs(
-        Seq(unmatchedPreviousTaxCode),
-        Seq(unmatchedCurrentTaxCode)
+        TaxCodeChange(
+          Seq(unmatchedPreviousTaxCode),
+          Seq(unmatchedCurrentTaxCode)
+        )
       )
+
       model.combinedTaxCodePairs mustEqual Seq(
         TaxCodePair(Some(unmatchedPreviousTaxCode), None),
         TaxCodePair(None, Some(unmatchedCurrentTaxCode))
@@ -75,9 +83,12 @@ class TaxCodePairsSpec extends PlaySpec{
 
     "return all tax codes pairs ordered by primary, secondary, unmatched previous, unmatched current" in {
       val model = TaxCodePairs(
-        Seq(previousTaxCodeRecord1, fullYearTaxCode, primaryFullYearTaxCode, unmatchedPreviousTaxCode),
-        Seq(currentTaxCodeRecord1, fullYearTaxCode, primaryFullYearTaxCode, unmatchedCurrentTaxCode)
+        TaxCodeChange(
+          Seq(previousTaxCodeRecord1, fullYearTaxCode, primaryFullYearTaxCode, unmatchedPreviousTaxCode),
+          Seq(currentTaxCodeRecord1, fullYearTaxCode, primaryFullYearTaxCode, unmatchedCurrentTaxCode)
+        )
       )
+
       model.combinedTaxCodePairs mustEqual Seq(
         TaxCodePair(Some(primaryFullYearTaxCode), Some(primaryFullYearTaxCode)),
         TaxCodePair(Some(previousTaxCodeRecord1), Some(currentTaxCodeRecord1)),
@@ -89,14 +100,16 @@ class TaxCodePairsSpec extends PlaySpec{
 
     "return pairs based on employment name when duplicate payroll numbers exist" in {
       val dateOfTaxCodeChange = startDate.plusMonths(1)
-      val secondaryEmployer1Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 1", false, Some("A-1234"), false)
-      val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 2", false, Some("A-1234"), false)
-      val secondaryEmployer1After = secondaryEmployer1Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYear().end)
-      val secondaryEmployer2After = secondaryEmployer2Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYear().end)
+      val secondaryEmployer1Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("A-1234"), false)
+      val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation, "Employer 2", false, Some("A-1234"), false)
+      val secondaryEmployer1After = secondaryEmployer1Before.copy(startDate = startDate.plusMonths(1), endDate = TaxYear().end)
+      val secondaryEmployer2After = secondaryEmployer2Before.copy(startDate = startDate.plusMonths(1), endDate = TaxYear().end)
 
       val model = TaxCodePairs(
-        Seq(primaryFullYearTaxCode, secondaryEmployer1Before, secondaryEmployer2Before),
-        Seq(primaryFullYearTaxCode, secondaryEmployer1After, secondaryEmployer2After)
+        TaxCodeChange(
+          Seq(primaryFullYearTaxCode, secondaryEmployer1Before, secondaryEmployer2Before),
+          Seq(primaryFullYearTaxCode, secondaryEmployer1After, secondaryEmployer2After)
+        )
       )
 
       model.combinedTaxCodePairs mustEqual Seq(
@@ -104,19 +117,20 @@ class TaxCodePairsSpec extends PlaySpec{
         TaxCodePair(Some(secondaryEmployer1Before), Some(secondaryEmployer1After)),
         TaxCodePair(Some(secondaryEmployer2Before), Some(secondaryEmployer2After))
       )
-
     }
 
     "return pairs based on employment name when no payroll numbers exist for one employment name" in {
       val dateOfTaxCodeChange = startDate.plusMonths(1)
       val secondaryEmployer1Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation, "Employer 1", false, None, false)
-      val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 2", false, None, false)
-      val secondaryEmployer1After = secondaryEmployer1Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYear().end)
-      val secondaryEmployer2After = secondaryEmployer2Before.copy(startDate =  startDate.plusMonths(1), endDate = TaxYear().end)
+      val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation, "Employer 2", false, None, false)
+      val secondaryEmployer1After = secondaryEmployer1Before.copy(startDate = startDate.plusMonths(1), endDate = TaxYear().end)
+      val secondaryEmployer2After = secondaryEmployer2Before.copy(startDate = startDate.plusMonths(1), endDate = TaxYear().end)
 
       val model = TaxCodePairs(
-        Seq(primaryFullYearTaxCode, secondaryEmployer1Before, secondaryEmployer2Before),
-        Seq(primaryFullYearTaxCode, secondaryEmployer1After, secondaryEmployer2After)
+        TaxCodeChange(
+          Seq(primaryFullYearTaxCode, secondaryEmployer1Before, secondaryEmployer2Before),
+          Seq(primaryFullYearTaxCode, secondaryEmployer1After, secondaryEmployer2After)
+        )
       )
 
       model.combinedTaxCodePairs mustEqual Seq(
@@ -131,14 +145,16 @@ class TaxCodePairsSpec extends PlaySpec{
       val dateOfTaxCodeChange = startDate.plusMonths(1)
       val noPayrollNumber: Option[String] = None
 
-      val secondaryEmployer1Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 1", false, noPayrollNumber, false)
-      val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 2", false, noPayrollNumber, false)
-      val secondaryEmployer3After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYear().end, OtherBasisOfOperation,"Employer 3", false, noPayrollNumber, false)
-      val secondaryEmployer4After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYear().end, OtherBasisOfOperation,"Employer 4", false, noPayrollNumber, false)
+      val secondaryEmployer1Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation, "Employer 1", false, noPayrollNumber, false)
+      val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation, "Employer 2", false, noPayrollNumber, false)
+      val secondaryEmployer3After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYear().end, OtherBasisOfOperation, "Employer 3", false, noPayrollNumber, false)
+      val secondaryEmployer4After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYear().end, OtherBasisOfOperation, "Employer 4", false, noPayrollNumber, false)
 
       val model = TaxCodePairs(
-        Seq(primaryFullYearTaxCode, secondaryEmployer1Before, secondaryEmployer2Before),
-        Seq(primaryFullYearTaxCode, secondaryEmployer3After, secondaryEmployer4After)
+        TaxCodeChange(
+          Seq(primaryFullYearTaxCode, secondaryEmployer1Before, secondaryEmployer2Before),
+          Seq(primaryFullYearTaxCode, secondaryEmployer3After, secondaryEmployer4After)
+        )
       )
 
       model.combinedTaxCodePairs mustEqual Seq(
@@ -148,20 +164,21 @@ class TaxCodePairsSpec extends PlaySpec{
         TaxCodePair(None, Some(secondaryEmployer3After)),
         TaxCodePair(None, Some(secondaryEmployer4After))
       )
-
     }
 
     "return non duplicating pairs when payroll numbers don't exist and employment name is the same by split by primary and secondary" in {
       val dateOfTaxCodeChange = startDate.plusMonths(1)
-      val primaryEmployer1Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 1", false, None, true)
-      val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 1", false, None, false)
+      val primaryEmployer1Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation, "Employer 1", false, None, true)
+      val secondaryEmployer2Before = TaxCodeRecord("code", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation, "Employer 1", false, None, false)
 
-      val primaryEmployer1After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYear().end, OtherBasisOfOperation,"Employer 1", false, None, true)
-      val secondaryEmployer2After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYear().end, OtherBasisOfOperation,"Employer 1", false, None, false)
+      val primaryEmployer1After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYear().end, OtherBasisOfOperation, "Employer 1", false, None, true)
+      val secondaryEmployer2After = TaxCodeRecord("code", startDate.plusMonths(1), TaxYear().end, OtherBasisOfOperation, "Employer 1", false, None, false)
 
       val model = TaxCodePairs(
-        Seq(primaryEmployer1Before, secondaryEmployer2Before),
-        Seq(primaryEmployer1After, secondaryEmployer2After)
+        TaxCodeChange(
+          Seq(primaryEmployer1Before, secondaryEmployer2Before),
+          Seq(primaryEmployer1After, secondaryEmployer2After)
+        )
       )
 
       model.combinedTaxCodePairs mustEqual Seq(
@@ -173,8 +190,8 @@ class TaxCodePairsSpec extends PlaySpec{
 
     "return the best possible match when multiple payroll numbers are missing for a employer" in {
       val dateOfTaxCodeChange = startDate.plusMonths(1)
-      val secondaryEmployer1ABefore = TaxCodeRecord("code 1a", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 1", false, None, false)
-      val secondaryEmployer1BBefore = TaxCodeRecord("code 1b", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation,"Employer 1", false, None, false)
+      val secondaryEmployer1ABefore = TaxCodeRecord("code 1a", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation, "Employer 1", false, None, false)
+      val secondaryEmployer1BBefore = TaxCodeRecord("code 1b", startDate, dateOfTaxCodeChange.minusDays(1), OtherBasisOfOperation, "Employer 1", false, None, false)
 
       val secondaryEmployer1AAfter = TaxCodeRecord("code 1a - after", dateOfTaxCodeChange, TaxYear().end, OtherBasisOfOperation, "Employer 1", false, None, false)
       val secondaryEmployer1BAfter = TaxCodeRecord("code 1b - after", dateOfTaxCodeChange, TaxYear().end, OtherBasisOfOperation, "Employer 1", false, None, false)
@@ -209,8 +226,9 @@ class TaxCodePairsSpec extends PlaySpec{
       )
 
 
-      forAll(orderings) { (p: Seq[TaxCodeRecord], c: Seq[TaxCodeRecord]) =>
-        val pairs = TaxCodePairs(p, c).combinedTaxCodePairs
+      forAll(orderings) { (previous: Seq[TaxCodeRecord], current: Seq[TaxCodeRecord]) =>
+        val pairs = TaxCodePairs(TaxCodeChange(previous, current)).combinedTaxCodePairs
+
         assert(Set(possibleOrder1, possibleOrder2, possibleOrder3, possibleOrder4).contains(pairs))
       }
     }
@@ -218,12 +236,12 @@ class TaxCodePairsSpec extends PlaySpec{
 
   val nino = generateNino
   val startDate = TaxYear().start
-  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1), OtherBasisOfOperation,"A Employer 1", false, Some("A-1234"), false)
+  val previousTaxCodeRecord1 = TaxCodeRecord("code", startDate, startDate.plusMonths(1), OtherBasisOfOperation, "A Employer 1", false, Some("A-1234"), false)
   val currentTaxCodeRecord1 = previousTaxCodeRecord1.copy(startDate = startDate.plusMonths(1).plusDays(1), endDate = TaxYear().end)
   val fullYearTaxCode = TaxCodeRecord("code", startDate, TaxYear().end, OtherBasisOfOperation, "B Employer 1", false, Some("B-1234"), false)
   val primaryFullYearTaxCode = fullYearTaxCode.copy(employerName = "C", payrollNumber = Some("C-1234"), primary = true)
-  val unmatchedPreviousTaxCode = TaxCodeRecord("Unmatched Previous", startDate, startDate.plusMonths(1), OtherBasisOfOperation,"D", false, Some("D Payroll Id"), false)
-  val unmatchedCurrentTaxCode = TaxCodeRecord("Unmatched Current", startDate.plusMonths(1), TaxYear().end, OtherBasisOfOperation,"E", false,Some("E Payroll id"), false)
+  val unmatchedPreviousTaxCode = TaxCodeRecord("Unmatched Previous", startDate, startDate.plusMonths(1), OtherBasisOfOperation, "D", false, Some("D Payroll Id"), false)
+  val unmatchedCurrentTaxCode = TaxCodeRecord("Unmatched Current", startDate.plusMonths(1), TaxYear().end, OtherBasisOfOperation, "E", false, Some("E Payroll id"), false)
 
   private def generateNino: Nino = new Generator(new Random).nextNino
 }
