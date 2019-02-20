@@ -88,3 +88,18 @@ hr {
   -moz-hyphens: none;
   hyphens: none;
 }
+
+.tai-progress-panel {
+  background-color:#005ea5;
+  color:#fff;
+  line-height:1;
+
+}
+
+.tai-progress-panel a {
+  color:#fff;
+}
+
+.tai-progress-panel p:first-child {
+  font-weight:bold;
+}

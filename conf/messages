@@ -1375,3 +1375,4 @@ tai.updateIncome.CYPlus1.same.cancel=Return to your Income Tax comparison for cu
 tai.taxCodeComparison.addEmployer=You have a new employment with {0}
 tai.taxCodeComparison.removeEmployer=Your employment {0} has ended
 tai.taxCodeComparison.title=We changed this because:
+checkProgress.link=Check the progress of your update
