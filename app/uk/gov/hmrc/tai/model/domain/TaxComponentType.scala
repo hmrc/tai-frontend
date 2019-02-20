@@ -181,10 +181,18 @@ case object JobSeekerAllowanceIncome extends TaxCodeIncomeComponentType
 case object OtherIncome extends TaxCodeIncomeComponentType
 
 object TaxComponentType{
-  implicit val formatTaxComponentType = new Format[TaxComponentType] {
-    override def reads(json: JsValue): JsSuccess[TaxComponentType] = ???
+  implicit val formatTaxComponentType: Format[TaxComponentType] = new Format[TaxComponentType] {
+    override def reads(json: JsValue): JsSuccess[TaxComponentType] =  JsSuccess(taxComponentsMap.getOrElse(json.as[String],
+      throw new IllegalArgumentException("Invalid Tax component type")))
+
     override def writes(taxComponentType: TaxComponentType) = JsString(taxComponentType.toString)
   }
+  private val taxComponentsMap: Map[String, TaxComponentType] = Map(
+    "EmploymentIncome" -> EmploymentIncome,
+    "PensionIncome" -> PensionIncome,
+    "JobSeekerAllowanceIncome" -> JobSeekerAllowanceIncome,
+    "OtherIncome" -> OtherIncome
+  )
 }
 
 object NonTaxCodeIncomeComponentType {
@@ -221,7 +229,7 @@ object NonTaxCodeIncomeComponentType {
     "EmploymentAndSupportAllowance" -> EmploymentAndSupportAllowance
   )
 
-  implicit val formatTaxComponentType = new Format[NonTaxCodeIncomeComponentType] {
+  implicit val formatTaxComponentType: Format[NonTaxCodeIncomeComponentType] = new Format[NonTaxCodeIncomeComponentType] {
     override def reads(json: JsValue): JsSuccess[NonTaxCodeIncomeComponentType] = JsSuccess(nonTaxCodeIncomesMap.getOrElse(json.as[String],
       throw new IllegalArgumentException("Invalid Non tax code component type")))
 
