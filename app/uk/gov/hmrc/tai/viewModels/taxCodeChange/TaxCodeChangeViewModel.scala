@@ -30,11 +30,11 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
                                   gaDimensions: Map[String, String]) {
 
   private def removeEmployer(employerNames: Seq[String])(implicit messages: Messages): Seq[String] = {
-    employerNames map ( name => messages("tai.taxCodeComparison.removeEmployer", name))
+    employerNames map (name => messages("tai.taxCodeComparison.removeEmployer", name))
   }
 
   private def addEmployer(employerNames: Seq[String])(implicit messages: Messages): Seq[String] = {
-    employerNames map ( name => messages("tai.taxCodeComparison.addEmployer", name))
+    employerNames map (name => messages("tai.taxCodeComparison.addEmployer", name))
   }
 
   private def genericMessage(implicit messages: Messages): Seq[String] = {
@@ -42,8 +42,8 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
   }
 
   private def secondaryEmploymentsChanged(implicit messages: Messages): Seq[String] = {
-    val previous = pairs.unMatchedPreviousCodes.flatMap(_.previous).map ( record => record.employerName )
-    val current = pairs.unMatchedCurrentCodes.flatMap(_.current).map ( record => record.employerName )
+    val previous = pairs.unMatchedPreviousCodes.flatMap(_.previous).map(record => record.employerName)
+    val current = pairs.unMatchedCurrentCodes.flatMap(_.current).map(record => record.employerName)
 
     val uniquePrevious = previous.distinct.sorted
     val uniqueCurrent = current.distinct.sorted
@@ -82,7 +82,9 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
 
       (current, previous) match {
         case (Some(current), Some(previous)) if (current != previous) => removeEmployer(Seq(previous)) ++ addEmployer(Seq(current))
-        case (Some(current), Some(previous)) if isDifferentPayRollWithSameEmployerName(primaryPair) => { genericMessage }
+        case (Some(current), Some(previous)) if isDifferentPayRollWithSameEmployerName(primaryPair) => {
+          genericMessage
+        }
         case _ => Seq.empty[String]
       }
     }
@@ -103,13 +105,19 @@ object TaxCodeChangeViewModel extends TaxCodeDescriptor {
     TaxCodeChangeViewModel(taxCodePairs, changeDate, scottishTaxRateBands, gaDimensions(taxCodeChange, changeDate))
   }
 
-  def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal], identifier: String)(implicit messages: Messages): DescriptionListViewModel = {
+  def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal], identifier: String)
+                            (implicit messages: Messages): DescriptionListViewModel = {
 
     val isCurrentTaxCode = identifier == "current"
 
     val taxCode = taxCodeWithEmergencySuffix(taxCodeRecord.taxCode, taxCodeRecord.basisOfOperation)
 
-    val explanation = describeTaxCode(taxCode, taxCodeRecord.basisOfOperation, scottishTaxRateBands, isCurrentTaxCode)
+    val explanation = describeTaxCode(
+      taxCode,
+      taxCodeRecord.basisOfOperation,
+      scottishTaxRateBands,
+      isCurrentTaxCode)
+
     DescriptionListViewModel(messages("taxCode.change.yourTaxCodeChanged.whatTaxCodeMeans", taxCode), explanation)
   }
 

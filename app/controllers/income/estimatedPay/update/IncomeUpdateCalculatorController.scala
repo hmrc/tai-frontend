@@ -256,10 +256,10 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit user =>
       implicit person =>
         implicit request => {
-          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_ConfirmedNewAmountKey) map { cache =>
-            val name :: newIrregularPay :: confirmedNewAmount :: Nil = cache.toList
-
-            if (FormHelper.areEqual(Some(confirmedNewAmount), Some(newIrregularPay))) {
+          journeyCacheService.collectedValues(Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey), Seq(UpdateIncome_ConfirmedNewAmountKey)) map tupled { (mandatoryCache, optionalCache) =>
+            val name :: newIrregularPay :: Nil = mandatoryCache.toList
+            val confirmedNewAmount = optionalCache.head
+            if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
               Redirect(controllers.routes.IncomeController.sameEstimatedPay())
             } else {
               val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
@@ -276,10 +276,11 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey).flatMap { cache =>
             val employerName :: newPay :: employerId :: Nil = cache.toList
 
-            taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) map {
+            taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) flatMap {
               case TaiSuccessResponse => {
-                journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newPay)
-                Ok(views.html.incomes.editSuccess(employerName, employerId.toInt))
+                journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newPay).map { _ =>
+                  Ok(views.html.incomes.editSuccess(employerName, employerId.toInt))
+                }
               }
               case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
             }

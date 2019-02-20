@@ -99,7 +99,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
     }
   }
 
-  def employmentUpdateRemove(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
 
@@ -322,17 +322,19 @@ class EndEmploymentController @Inject()(auditService: AuditService,
     implicit request =>
       implicit val user = request.taiUser
       journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) flatMap { mandatoryValues =>
+        val empId = mandatoryValues(1).toInt
+
         DuplicateSubmissionWarningForm.createForm.bindFromRequest.fold(
           formWithErrors => {
             Future.successful(BadRequest(views.html.employments.
-              duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), mandatoryValues(1).toInt)))
+              duplicateSubmissionWarning(formWithErrors, mandatoryValues(0), empId)))
           },
           success => {
             success.yesNoChoice match {
               case Some(YesValue) => Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.
-                employmentUpdateRemoveDecision()))
+                employmentUpdateRemoveDecision))
               case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
-                onPageLoad(mandatoryValues(1).toInt)))
+                onPageLoad(empId)))
             }
           }
         )
