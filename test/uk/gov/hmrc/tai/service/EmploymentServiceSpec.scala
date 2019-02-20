@@ -68,6 +68,41 @@ class EmploymentServiceSpec extends PlaySpec with MockitoSugar {
     }
   }
 
+  "CeasedEmployments Service" must {
+    "return one employment" when {
+      "connector gives one employment" in {
+        val sut = createSUT
+        when(employmentsConnector.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(oneEmploymentDetails))
+
+        val data = Await.result(sut.ceasedEmployments(nino, year), 5.seconds)
+
+        data mustBe oneEmploymentDetails
+      }
+    }
+
+    "return multiple employments" when {
+      "connector gives multiple employments" in {
+        val sut = createSUT
+        when(employmentsConnector.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(twoEmploymentsDetails))
+
+        val data = Await.result(sut.ceasedEmployments(nino, year), 5.seconds)
+
+        data mustBe twoEmploymentsDetails
+      }
+    }
+
+    "return nil" when {
+      "connector gives nil" in {
+        val sut = createSUT
+        when(employmentsConnector.ceasedEmployments(any(), any())(any())).thenReturn(Future.successful(Seq.empty))
+
+        val data = Await.result(sut.ceasedEmployments(nino, year), 5.seconds)
+
+        data mustBe Nil
+      }
+    }
+  }
+
   "Employment Names" must {
     "return a map of employment id and employment name" when {
       "connector returns one employment" in {
