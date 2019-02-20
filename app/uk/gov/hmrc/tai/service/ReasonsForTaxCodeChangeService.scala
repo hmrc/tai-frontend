@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodePair, TaxCodePairs}
 
 class ReasonsForTaxCodeChangeService @Inject()() {
 
-  def reasons(taxCodeChange: TaxCodeChange)(implicit messages: Messages): Seq[String] = {
+  def employmentReasons(taxCodeChange: TaxCodeChange)(implicit messages: Messages): Seq[String] = {
 
     val taxCodePairs = TaxCodePairs(taxCodeChange)
     primaryEmploymentsChanged(taxCodePairs.primaryPairs) ++

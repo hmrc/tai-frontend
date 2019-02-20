@@ -144,6 +144,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     when(taxCodeChangeService.latestTaxCodeChangeDate(nino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
 
     when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any())).thenReturn(Future.successful(mock[YourTaxFreeAmountComparison]))
-    when(reasonsForTaxCodeChangeService.reasons(any())(any())).thenReturn(Seq.empty)
+    when(reasonsForTaxCodeChangeService.employmentReasons(any())(any())).thenReturn(Seq.empty)
   }
 }

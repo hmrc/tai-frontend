@@ -54,7 +54,7 @@ class ReasonsForTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with
       val taxRecord = Seq(createTaxRecord(previousEmployer), createPrimaryTaxRecord(currentEmployer))
       val taxCodeChange = TaxCodeChange(taxRecord, taxRecord)
 
-      reasonsService.reasons(taxCodeChange) mustBe Seq.empty[String]
+      reasonsService.employmentReasons(taxCodeChange) mustBe Seq.empty[String]
     }
 
     "return a reason when an employment been removed" in {
@@ -62,7 +62,7 @@ class ReasonsForTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with
       val current = Seq(createTaxRecord(currentEmployer))
       val taxCodeChange = TaxCodeChange(previous, current)
 
-      reasonsService.reasons(taxCodeChange) mustBe Seq(removedEmployer(previousEmployer))
+      reasonsService.employmentReasons(taxCodeChange) mustBe Seq(removedEmployer(previousEmployer))
     }
 
     "return a reason when an employment been added" in {
@@ -71,7 +71,7 @@ class ReasonsForTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with
 
       val taxCodeChange = TaxCodeChange(previous, current)
 
-      reasonsService.reasons(taxCodeChange) mustBe Seq(addedEmployer(currentEmployer))
+      reasonsService.employmentReasons(taxCodeChange) mustBe Seq(addedEmployer(currentEmployer))
     }
 
     "return multiple reasons when employments have changed" in {
@@ -80,7 +80,7 @@ class ReasonsForTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with
 
       val taxCodeChange = TaxCodeChange(previous, current)
 
-      reasonsService.reasons(taxCodeChange) mustBe Seq(
+      reasonsService.employmentReasons(taxCodeChange) mustBe Seq(
         removedEmployer(previousEmployer), removedEmployer(previousEmployer + "1"),
         addedEmployer(currentEmployer), addedEmployer(currentEmployer + "1")
       )
@@ -92,7 +92,7 @@ class ReasonsForTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with
 
       val taxCodeChange = TaxCodeChange(previous, current)
 
-      reasonsService.reasons(taxCodeChange) mustBe Seq(
+      reasonsService.employmentReasons(taxCodeChange) mustBe Seq(
         removedEmployer(previousEmployer), addedEmployer(currentEmployer),
         removedEmployer(previousEmployer + "1"), addedEmployer(currentEmployer + "1")
       )
@@ -104,7 +104,7 @@ class ReasonsForTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with
 
       val taxCodeChange = TaxCodeChange(previous, current)
 
-      reasonsService.reasons(taxCodeChange) mustBe Seq(
+      reasonsService.employmentReasons(taxCodeChange) mustBe Seq(
         removedEmployer(previousEmployer),
         addedEmployer(currentEmployer)
       )
@@ -117,7 +117,7 @@ class ReasonsForTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with
 
         val taxCodeChange = TaxCodeChange(Seq(previous), Seq(current))
 
-        reasonsService.reasons(taxCodeChange) mustBe Seq(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
+        reasonsService.employmentReasons(taxCodeChange) mustBe Seq(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
       }
 
       "go to the generic message for secondary tax records" in {
@@ -126,7 +126,7 @@ class ReasonsForTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with
 
         val taxCodeChange = TaxCodeChange(Seq(previous), Seq(current))
 
-        reasonsService.reasons(taxCodeChange) mustBe Seq(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
+        reasonsService.employmentReasons(taxCodeChange) mustBe Seq(Messages("taxCode.change.yourTaxCodeChanged.paragraph"))
       }
     }
   }
