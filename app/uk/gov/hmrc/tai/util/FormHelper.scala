@@ -18,6 +18,7 @@ package uk.gov.hmrc.tai.util
 
 object FormHelper {
 
+
   def stripNumber(stringValue: Option[String]): Option[String] = {
 
     stringValue.map { value =>
@@ -34,6 +35,9 @@ object FormHelper {
     newValue.takeWhile(_ != '.')
   }
 
+  def areEqual(oldAmount: Option[String], newAmount: Option[String]): Boolean = {
+    FormHelper.stripNumber(oldAmount) == FormHelper.stripNumber(newAmount)
+  }
 
   def isValidCurrency(stringValue: Option[String], isWholeNumRequired: Boolean = false): Boolean = {
     stringValue match {
