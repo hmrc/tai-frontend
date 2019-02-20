@@ -85,8 +85,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
       }
   }
 
-  private def redirectToWarningOrDecisionPage(empId: Int,
-                                              journeyCacheFuture: Future[Map[String, String]],
+  private def redirectToWarningOrDecisionPage(journeyCacheFuture: Future[Map[String, String]],
                                               successfullJourneyCacheFuture: Future[Option[String]])
                                              (implicit hc: HeaderCarrier): Future[Result] = {
     for {
@@ -114,7 +113,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
 
           val successfulJourneyCacheFuture = successfulJourneyCacheService.currentValue(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-${empId}")
 
-          redirectToWarningOrDecisionPage(empId, journeyCacheFuture, successfulJourneyCacheFuture)
+          redirectToWarningOrDecisionPage(journeyCacheFuture, successfulJourneyCacheFuture)
         }
         case _ => throw new RuntimeException("No employment found")
       }
