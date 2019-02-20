@@ -74,25 +74,11 @@ class EndEmploymentControllerSpec
       when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
         .thenReturn(Future.successful(Seq(employerName, employmentId.toString)))
 
-      val result = endEmploymentTest.employmentUpdateRemoveDecision(employmentId)(fakeGetRequest)
+      val result = endEmploymentTest.employmentUpdateRemoveDecision(fakeGetRequest)
       val doc = Jsoup.parse(contentAsString(result))
 
       status(result) mustBe OK
       doc.title() must include(Messages("tai.employment.decision.customGaTitle"))
-    }
-
-    "go to the redirect to try and recache if the mandatory cache values are not present" in {
-      val endEmploymentTest = createEndEmploymentTest
-      val employmentId = 1
-
-      when(endEmploymentJourneyCacheService.mandatoryValues(Matchers.anyVararg[String])(any()))
-        .thenReturn(Future.failed(new RuntimeException("bad cache")))
-
-      val result = endEmploymentTest.employmentUpdateRemoveDecision(employmentId)(fakeGetRequest)
-      val doc = Jsoup.parse(contentAsString(result))
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemove(employmentId).url
     }
   }
 
@@ -577,7 +563,7 @@ class EndEmploymentControllerSpec
     }
   }
 
-  "redirectUpdateEmployment" must {
+  "onPageLoad" must {
     "redirect to employmentUpdateRemove when there is no end employment ID cache value present" in {
       val employmentId = 1
       val endEmploymentTest = createEndEmploymentTest
@@ -586,9 +572,9 @@ class EndEmploymentControllerSpec
       when(trackSuccessJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$employmentId"))(any())).
         thenReturn(Future.successful(None))
 
-      val result = endEmploymentTest.employmentUpdateRemove(employmentId)(fakeGetRequest)
+      val result = endEmploymentTest.onPageLoad(employmentId)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemoveDecision(employmentId).url
+      redirectLocation(result).get mustBe routes.EndEmploymentController.employmentUpdateRemoveDecision.url
     }
 
     "redirect to warning page when there is an end employment ID cache value present" in {
@@ -598,7 +584,7 @@ class EndEmploymentControllerSpec
       when(endEmploymentJourneyCacheService.cache(Matchers.eq(cacheMap))(any())).thenReturn(Future.successful(cacheMap))
       when(trackSuccessJourneyCacheService.currentValue(Matchers.eq(s"$TrackSuccessfulJourney_UpdateEndEmploymentKey-$employmentId"))(any())).thenReturn(Future.successful(Some("true")))
 
-      val result = endEmploymentTest.employmentUpdateRemove(employmentId)(fakeGetRequest)
+      val result = endEmploymentTest.onPageLoad(employmentId)(fakeGetRequest)
       status(result) mustBe SEE_OTHER
       redirectLocation(result).get mustBe routes.EndEmploymentController.duplicateSubmissionWarning.url
     }
@@ -633,7 +619,7 @@ class EndEmploymentControllerSpec
           .withFormUrlEncodedBody(YesNoChoice -> YesValue))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision(employmentId).url
+        redirectLocation(result).get mustBe controllers.employments.routes.EndEmploymentController.employmentUpdateRemoveDecision.url
       }
     }
 

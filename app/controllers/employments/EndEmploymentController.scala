@@ -77,13 +77,11 @@ class EndEmploymentController @Inject()(auditService: AuditService,
       case _ => Valid
     })
 
-  def employmentUpdateRemoveDecision(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def employmentUpdateRemoveDecision: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
       journeyCacheService.mandatoryValues(EndEmployment_NameKey, EndEmployment_EmploymentIdKey) map { mandatoryValues =>
         Ok(views.html.employments.update_remove_employment_decision(UpdateRemoveEmploymentForm.form, mandatoryValues(0), mandatoryValues(1).toInt))
-      } recover {
-        case _ : RuntimeException => Redirect(routes.EndEmploymentController.employmentUpdateRemove(empId))
       }
   }
 
@@ -97,12 +95,12 @@ class EndEmploymentController @Inject()(auditService: AuditService,
     } yield {
       successfulJourneyCache match {
         case Some(_) => Redirect(routes.EndEmploymentController.duplicateSubmissionWarning())
-        case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemoveDecision(empId))
+        case _ => Redirect(routes.EndEmploymentController.employmentUpdateRemoveDecision())
       }
     }
   }
 
-  def employmentUpdateRemove(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+  def onPageLoad(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       implicit val user = request.taiUser
 
@@ -335,7 +333,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
           success => {
             success.yesNoChoice match {
               case Some(YesValue) => Future.successful(Redirect(controllers.employments.routes.EndEmploymentController.
-                employmentUpdateRemoveDecision(empId)))
+                employmentUpdateRemoveDecision))
               case Some(NoValue) => Future.successful(Redirect(controllers.routes.IncomeSourceSummaryController.
                 onPageLoad(empId)))
             }
