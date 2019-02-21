@@ -30,10 +30,6 @@ import scala.concurrent.Future
 
 class TaxAccountService @Inject() (taxAccountConnector: TaxAccountConnector) {
 
-  def incomeSources(nino: Nino, year: TaxYear, incomeType: String, status: String)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
-    taxAccountConnector.incomeSources(nino, year, incomeType, status)
-  }
-
   def taxCodeIncomes(nino: Nino, year: TaxYear)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     taxAccountConnector.taxCodeIncomes(nino, year)
   }
