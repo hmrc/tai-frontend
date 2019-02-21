@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.service.yourTaxFreeAmount
+package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, CodingComponentPair, CodingComponentTypeDescription, TaxFreeInfo}
 
-class IabdTaxCodeChangeService {
+class IabdTaxCodeChangeReasons {
 
-  def iabdReasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
+  def reasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
 
     val changedBenefits: Seq[String] = getChangedBenefits(iabdPairs.allowances
       ++ iabdPairs.deductions)

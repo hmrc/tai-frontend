@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.service
+package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import com.google.inject.Inject
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.TaxCodeChange
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodePair, TaxCodePairs}
 
-class EmploymentTaxCodeChangeService @Inject()() {
+class EmploymentTaxCodeChangeReasons @Inject()() {
 
-  def employmentReasons(taxCodeChange: TaxCodeChange)(implicit messages: Messages): Seq[String] = {
+  def reasons(taxCodeChange: TaxCodeChange)(implicit messages: Messages): Seq[String] = {
 
     val taxCodePairs = TaxCodePairs(taxCodeChange)
     primaryEmploymentsChanged(taxCodePairs.primaryPairs) ++

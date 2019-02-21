@@ -14,30 +14,28 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.tai.service.yourTaxFreeAmount
-
+package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import controllers.FakeTaiPlayApplication
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 
-class IabdTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport {
+class IabdTaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport {
 
   private val taxFreeInfo = TaxFreeInfo("12-12-2015", 2000, 1000)
   private val jobExpensesIncrease = CodingComponentPair(JobExpenses, Some(2), Some(50), Some(100))
   private val carBenefitIncrease = CodingComponentPair(CarBenefit, Some(1), Some(1000), Some(2000))
   private val taxCodeChange = mock[TaxCodeChange]
   implicit val messagesApi = app.injector.instanceOf[MessagesApi]
-  val service = new IabdTaxCodeChangeService
+  val iabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons
 
   "iabdReasons method" must {
     "have no reasons" when {
       "there are no allowances and deductions" in {
         val pairs = AllowancesAndDeductionPairs(Seq.empty, Seq.empty)
-        val reasons = service.iabdReasons(pairs)
+        val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
 
         reasons mustBe Seq.empty
       }
@@ -46,7 +44,7 @@ class IabdTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with FakeT
         val noPreviousAmount = CodingComponentPair(JobExpenses, None, None, Some(123))
         val pairs = AllowancesAndDeductionPairs(Seq(noPreviousAmount), Seq.empty)
 
-        val reasons = service.iabdReasons(pairs)
+        val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
 
         reasons mustBe Seq.empty
       }
@@ -55,7 +53,7 @@ class IabdTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with FakeT
         val noCurrentAmount = CodingComponentPair(JobExpenses, None, Some(123), None)
         val pairs = AllowancesAndDeductionPairs(Seq(noCurrentAmount), Seq.empty)
 
-        val reasons = service.iabdReasons(pairs)
+        val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
 
         reasons mustBe Seq.empty
       }
@@ -63,7 +61,7 @@ class IabdTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with FakeT
 
     "give multiple reasons for a tax code change" in {
       val pairs = AllowancesAndDeductionPairs(Seq(jobExpensesIncrease), Seq(carBenefitIncrease))
-      val reasons = service.iabdReasons(pairs)
+      val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
 
       reasons mustBe Seq(
         "Your Job expenses has been updated",
@@ -74,7 +72,7 @@ class IabdTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with FakeT
     "show benefit changes once" in {
       val pairs = AllowancesAndDeductionPairs(Seq.empty, Seq(carBenefitIncrease, carBenefitIncrease))
 
-      val reasons = service.iabdReasons(pairs)
+      val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
 
       reasons mustBe Seq("Your Car benefit has been updated")
     }
@@ -88,7 +86,7 @@ class IabdTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with FakeT
         val pairs = AllowancesAndDeductionPairs(Seq.empty,
           Seq(carBenefitIncrease, jobExpensesIncrease, giftSharesCharity, flatRateJobExpense, lossRelief))
 
-        val reasons = service.iabdReasons(pairs)
+        val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
 
         reasons mustBe Seq(messagesApi("taxCode.change.yourTaxCodeChanged.paragraph"))
       }

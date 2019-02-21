@@ -33,9 +33,9 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
-import uk.gov.hmrc.tai.service.{EmploymentTaxCodeChangeService, _}
-import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, IabdTaxCodeChangeService}
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, TaxFreeInfo}
+import uk.gov.hmrc.tai.service._
+import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, TaxCodeChangeReasonsService}
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, EmploymentTaxCodeChangeReasons, IabdTaxCodeChangeReasons, TaxFreeInfo}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 
 import scala.concurrent.Future
@@ -124,8 +124,7 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val taxAccountService = mock[TaxAccountService]
   val describedYourTaxFreeAmountService = mock[DescribedYourTaxFreeAmountService]
   val yourTaxFreeAmountService = mock[YourTaxFreeAmountService]
-  val employmentTaxCodeChangeService = mock[EmploymentTaxCodeChangeService]
-  val iabdTaxCodeChangeService = mock[IabdTaxCodeChangeService]
+  val taxCodeChangeReasonsService = mock[TaxCodeChangeReasonsService]
 
   private def createController() = new TaxCodeChangeTestController()
 
@@ -136,16 +135,14 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     FakeAuthAction,
     FakeValidatePerson,
     yourTaxFreeAmountService,
-    iabdTaxCodeChangeService,
-    employmentTaxCodeChangeService,
+    taxCodeChangeReasonsService,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
     when(taxCodeChangeService.latestTaxCodeChangeDate(nino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
-
     when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any())).thenReturn(Future.successful(mock[YourTaxFreeAmountComparison]))
-    when(employmentTaxCodeChangeService.employmentReasons(any())(any())).thenReturn(Seq.empty)
+   // when(taxCodeChangeReasonsService.reasons(any(), any())(any())).thenReturn(Seq.empty)
   }
 }
