@@ -24,12 +24,12 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 
-class ReasonsForTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
+class EmploymentTaxCodeChangeServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication {
 
   val startDate = TaxYear().start
   val previousEmployer = "Previous Employer"
   val currentEmployer = "Current Employer"
-  val reasonsService = new ReasonsForTaxCodeChangeService
+  val reasonsService = new EmploymentTaxCodeChangeService
 
   implicit val messages: Messages = play.api.i18n.Messages.Implicits.applicationMessages
 

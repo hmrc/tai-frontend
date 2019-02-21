@@ -31,7 +31,6 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
-import uk.gov.hmrc.tai.service.yourTaxFreeAmount.YourTaxFreeAmountComparison
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 
 import scala.concurrent.duration._

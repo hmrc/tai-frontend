@@ -20,11 +20,12 @@ import com.google.inject.Inject
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.service.yourTaxFreeAmount.YourTaxFreeAmountComparison
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+
+case class YourTaxFreeAmountComparison(previousTaxFreeInfo: Option[TaxFreeInfo], currentTaxFreeInfo: TaxFreeInfo, iabdPairs: AllowancesAndDeductionPairs)
 
 class YourTaxFreeAmountService @Inject()(taxCodeChangeService: TaxCodeChangeService,
                                          codingComponentService: CodingComponentService) extends YourTaxFreeAmount {

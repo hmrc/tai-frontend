@@ -21,7 +21,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.TaxCodeChange
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodePair, TaxCodePairs}
 
-class ReasonsForTaxCodeChangeService @Inject()() {
+class EmploymentTaxCodeChangeService @Inject()() {
 
   def employmentReasons(taxCodeChange: TaxCodeChange)(implicit messages: Messages): Seq[String] = {
 

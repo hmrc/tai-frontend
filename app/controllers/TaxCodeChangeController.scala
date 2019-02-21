@@ -28,9 +28,9 @@ import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, YourTaxFreeAmountComparison}
+import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, IabdTaxCodeChangeService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.YourTaxFreeAmount
-import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, TaxCodePairs}
+import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
 
 import scala.concurrent.Future
 
@@ -40,7 +40,8 @@ class TaxCodeChangeController @Inject()(taxCodeChangeService: TaxCodeChangeServi
                                         authenticate: AuthAction,
                                         validatePerson: ValidatePerson,
                                         yourTaxFreeAmountService: YourTaxFreeAmountService,
-                                        reasonsForTaxCodeChangeService: ReasonsForTaxCodeChangeService,
+                                        iabdTaxCodeChangeService: IabdTaxCodeChangeService,
+                                        employmentTaxCodeChangeService: EmploymentTaxCodeChangeService,
                                         override implicit val partialRetriever: FormPartialRetriever,
                                         override implicit val templateRenderer: TemplateRenderer) extends TaiBaseController
   with FeatureTogglesConfig
@@ -55,7 +56,10 @@ class TaxCodeChangeController @Inject()(taxCodeChangeService: TaxCodeChangeServi
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
         yourTaxFreeAmountComparison <- yourTaxFreeAmountService.taxFreeAmountComparison(nino)
       } yield {
-        val reasons = reasonsForTaxCodeChangeService.employmentReasons(taxCodeChange)
+
+        val reasons = employmentTaxCodeChangeService.employmentReasons(taxCodeChange)
+        val iabdReasons = iabdTaxCodeChangeService.iabdReasons(yourTaxFreeAmountComparison.iabdPairs)
+
         val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, reasons)
 
         implicit val user = request.taiUser

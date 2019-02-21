@@ -19,11 +19,9 @@ package uk.gov.hmrc.tai.service.yourTaxFreeAmount
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, CodingComponentPair, CodingComponentTypeDescription, TaxFreeInfo}
 
-case class YourTaxFreeAmountComparison(previousTaxFreeInfo: Option[TaxFreeInfo], currentTaxFreeInfo: TaxFreeInfo, iabdPairs: AllowancesAndDeductionPairs)
+class IabdTaxCodeChangeService {
 
-object YourTaxFreeAmountComparisonService {
-
-  def taxCodeChangeReasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
+  def iabdReasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
 
     val changedBenefits: Seq[String] = getChangedBenefits(iabdPairs.allowances
       ++ iabdPairs.deductions)

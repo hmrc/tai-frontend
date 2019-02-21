@@ -33,8 +33,8 @@ import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
-import uk.gov.hmrc.tai.service.{ReasonsForTaxCodeChangeService, _}
-import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, YourTaxFreeAmountComparison}
+import uk.gov.hmrc.tai.service.{EmploymentTaxCodeChangeService, _}
+import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, IabdTaxCodeChangeService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, TaxFreeInfo}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 
@@ -124,7 +124,8 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val taxAccountService = mock[TaxAccountService]
   val describedYourTaxFreeAmountService = mock[DescribedYourTaxFreeAmountService]
   val yourTaxFreeAmountService = mock[YourTaxFreeAmountService]
-  val reasonsForTaxCodeChangeService = mock[ReasonsForTaxCodeChangeService]
+  val employmentTaxCodeChangeService = mock[EmploymentTaxCodeChangeService]
+  val iabdTaxCodeChangeService = mock[IabdTaxCodeChangeService]
 
   private def createController() = new TaxCodeChangeTestController()
 
@@ -135,7 +136,8 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     FakeAuthAction,
     FakeValidatePerson,
     yourTaxFreeAmountService,
-    reasonsForTaxCodeChangeService,
+    iabdTaxCodeChangeService,
+    employmentTaxCodeChangeService,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {
@@ -144,6 +146,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     when(taxCodeChangeService.latestTaxCodeChangeDate(nino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
 
     when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any())).thenReturn(Future.successful(mock[YourTaxFreeAmountComparison]))
-    when(reasonsForTaxCodeChangeService.employmentReasons(any())(any())).thenReturn(Seq.empty)
+    when(employmentTaxCodeChangeService.employmentReasons(any())(any())).thenReturn(Seq.empty)
   }
 }
