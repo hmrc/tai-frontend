@@ -54,11 +54,11 @@ object TaiAuthenticationProvider extends AnyAuthenticationProvider {
   }
 
   private def idaRedirect(implicit request: Request[_]): Future[Result] = {
-      lazy val idaSignIn = s"${ApplicationConfig.citizenAuthHost}/${ApplicationConfig.ida_web_context}/login"
-      Future.successful(Redirect(idaSignIn).withSession(
-        SessionKeys.loginOrigin -> "TAI",
-        SessionKeys.redirect -> ConfigProperties.postSignInRedirectUrl.getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
-      ))
+    lazy val idaSignIn = s"${ApplicationConfig.citizenAuthHost}/${ApplicationConfig.ida_web_context}/login"
+    Future.successful(Redirect(idaSignIn).withSession(
+      SessionKeys.loginOrigin -> "TAI",
+      SessionKeys.redirect -> ConfigProperties.postSignInRedirectUrl.getOrElse(controllers.routes.WhatDoYouWantToDoController.whatDoYouWantToDoPage().url)
+    ))
   }
 
   private def ggRedirect(implicit request: Request[_]): Future[Result] = {

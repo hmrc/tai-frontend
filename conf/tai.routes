@@ -157,6 +157,7 @@ POST        /update-income/edit-income-irregular-hours/:employmentId            
 GET         /update-income/edit-income-irregular-hours/:employmentId/confirm           @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId: Int)
 GET         /update-income/edit-income-irregular-hours/:employmentId/submit            @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId: Int)
 
+
 GET         /update-income/pay-period                                                  @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payPeriodPage
 POST        /update-income/pay-period                                                  @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayPeriod
 
@@ -187,13 +188,13 @@ GET         /update-income/select-taxable-pay                                   
 GET         /update-income/edit-taxable-pay                                            @controllers.IncomeController.regularIncome
 POST        /update-income/edit-taxable-pay                                            @controllers.IncomeController.editRegularIncome
 
+
 ## Pension Income URIs
 GET         /update-income/edit-pension                                                @controllers.IncomeController.pensionIncome
 POST        /update-income/edit-pension                                                @controllers.IncomeController.editPensionIncome
 
 
 GET         /update-income/income/check-save                                           @controllers.IncomeController.confirmRegularIncome
-GET         /update-income/income/same-estimated-pay                                   @controllers.IncomeController.sameEstimatedPay
 
 GET         /update-income/pension/check-save                                          @controllers.IncomeController.confirmPensionIncome
 
