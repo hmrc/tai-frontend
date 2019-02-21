@@ -171,11 +171,17 @@ class IncomeController @Inject()(personService: PersonService,
       implicit person => {
         implicit request => {
 
-          def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)(implicit user: TaiUser, request: Request[AnyContent]): Result = {
+          def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)
+                                (implicit user: TaiUser, request: Request[AnyContent]): Result = {
             journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newAmount)
 
             incomeType match {
-              case TaiConstants.IncomeTypePension => Ok(views.html.incomes.editPensionSuccess(employerName, employerId))
+              case TaiConstants.IncomeTypePension =>
+                if (confirmedAPIEnabled) {
+                  Ok(views.html.incomes.editPensionSuccess(employerName, employerId))
+                } else {
+                  Ok(views.html.incomes.oldEditPensionSuccess(employerName, employerId))
+                }
               case _ =>
                 if (confirmedAPIEnabled) {
                   Ok(views.html.incomes.editSuccess(employerName, employerId))

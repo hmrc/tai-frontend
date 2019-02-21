@@ -622,18 +622,14 @@ tai.incomeTax.taxFree.link=Gwirio''ch swm rhydd o dreth
 tai.incomeTax.totalEstimatedIncome.subheading=Cyfanswm incwm amcangyfrifedig
 tai.incomeTax.totalIncomeTaxEstimate=Cyfanswm Amcangyfrif Treth Incwm
 tai.incomeTaxBand=Haen Treth Incwm
-
 tai.incomeTaxComparison.incomeSourceAbsent=Ddim ar gael
 tai.incomeTaxComparison.incomeTax.column1=yn dod i ben ar {0}
 tai.incomeTaxComparison.incomeTax.column2=o {0}
-
 tai.incomeTaxComparison.heading=Cymhariaeth Treth Incwm: y flwyddyn dreth bresennol a’r flwyddyn nesaf
 tai.incomeTaxComparison.incomeTax.description=Mae’r amcangyfrif hwn yn seiliedig ar eich amgylchiadau presennol.
-
 tai.incomeTaxComparison.incomeTax.updateEstimated=Diweddarwch incwm amcangyfrifedig
 tai.incomeTaxComparison.incomeTax.forEmployer=ar gyfer {0}
 tai.incomeTaxComparison.incomeTax.fromEmployer.description=Gallwch ddiweddaru’r amcangyfrif o’ch incwm o gyflogaeth neu bensiynau ar gyfer y flwyddyn nesaf. Bydd hyn yn diweddaru’r amcangyfrif y byddwn yn seilio treth y flwyddyn nesaf arno.
-
 tai.incomeTaxComparison.incomeTax.estimate=Amcangyfrif o''ch Treth Incwm TWE
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmployment =Incwm o gyflogaeth
 tai.incomeTaxComparison.incomeTax.subHeading.incomeFromEmploymentAndPrivatePensions=Incwm o gyflogaeth a phensiynau preifat
@@ -646,20 +642,13 @@ tai.incomeTaxComparison.sidebar.subHeading=Ewch i''r flwyddyn dreth bresennol
 tai.incomeTaxComparison.taxCodes.description=Defnyddir eich codau treth i gyfrifo faint o Dreth Incwm i''w chymryd o''ch cyflog neu''ch pensiwn.
 tai.incomeTaxComparison.taxCodes.scottishInfo=Bydd eich cod treth ar gyfer y flwyddyn nesaf yn dechrau gydag ''S'' oherwydd y byddwch yn drethdalwr yn yr Alban. {0}
 tai.incomeTaxComparison.taxCodes.subHeading=Codau treth
-
 tai.incomeTaxComparison.taxCodes.table.employmentsReaderText=Enw''r cyflogwr
 tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Enw''r pensiwn
-
-
-
-
-
 tai.incomeTaxComparison.taxFreeAmount.NA=ddim yn gymwys
 tai.incomeTaxComparison.taxFreeAmount.PA.information1=Mae’r Lwfans Personol safonol yn cynyddu i {0} o {1} ymlaen.
 tai.incomeTaxComparison.taxFreeAmount.PA.information2=Gall eich Lwfans Personol fod yn wahanol, yn dibynnu ar eich amgylchiadau.
 tai.incomeTaxComparison.taxFreeAmount.additions.caption=Ychwanegiadau
 tai.incomeTaxComparison.taxFreeAmount.deductions.caption=Didyniadau
-
 tai.incomeTaxComparison.taxFreeAmount.noAdditions=Nid oes gennych unrhyw ychwanegiadau
 tai.incomeTaxComparison.taxFreeAmount.noDeductions=Nid oes gennych unrhyw ddidyniadau
 tai.incomeTaxComparison.taxFreeAmount.subHeading=Lwfans rhydd o dreth
@@ -667,7 +656,6 @@ tai.incomeTaxComparison.taxFreeAmount.description=Eich swm rhydd o dreth yw’r 
 tai.incomeTaxComparison.taxFreeAmount.totalAdditions=Cyfanswm yr ychwanegiadau
 tai.incomeTaxComparison.taxFreeAmount.totalDeductions=Cyfanswm y didyniadau
 tai.incomeTaxComparison.taxFreeAmount.totalTFA=Eich cyfanswm sy''n rhydd o dreth
-
 tai.incomeTaxComparison.whatHappensNext.subHeading=Yr hyn sy’n digwydd nesaf
 tai.incomeTaxComparison.whatHappensNext.doNotDoAnything.text=Os yw’r wybodaeth hon yn gywir, nid oes angen i chi wneud unrhyw beth.
 tai.incomeTaxComparison.whatHappensNext.estimationApplyDate.text=Caiff eich codau treth a’ch amcangyfrifon incwm ar gyfer y flwyddyn dreth nesaf eu defnyddio ar gyfer eich cyfrif o {0} ymlaen.
@@ -681,7 +669,6 @@ tai.incomeTaxComparison.whatHappensNext.tellAboutChange.otherIncomeReaderText=Rh
 tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefText=lwfansau neu ryddhad treth
 tai.incomeTaxComparison.whatHappensNext.tellAboutChange.allowanceTaxReliefReaderText=Rhowch wybod i ni am lwfansau neu ryddhad treth
 tai.incomeTaxComparison.returnToPAYEIncomeTaxOverview.link=Dychwelyd i’r Trosolwg o’ch Treth Incwm TWE
-
 tai.incomeTaxSummary.addMissingIncome.section.employerLink=Ychwanegu cyflogwr sydd ar goll
 tai.incomeTaxSummary.addMissingIncome.section.heading=Rhywbeth ar goll?
 tai.incomeTaxSummary.addMissingIncome.section.otherLink=Ychwanegu incwm o ffynhonnell arall sydd ar goll
@@ -749,22 +736,25 @@ tai.incomes.jobTitle=Teitl y swydd:
 tai.incomes.noneEditable.link.text=cysylltwch â''ch swyddfa DWP
 tai.incomes.noneEditable.link.url=https://www.gov.uk/government/organisations/department-for-work-pensions.cy
 tai.incomes.noneEditable.text=Ni ellir diweddaru''r buddiannau a geir gan yr Adran Gwaith a Phensiynau (DWP). Os ydynt yn anghywir, dylech
-tai.incomes.seeChanges.text=Mae’n bosibl y bydd y cyfrifiad hwn yn newid pan fyddwn yn cael eich diweddariad nesaf oddi wrth {0}.
+tai.incomes.seeChanges.text.old=Mae’n bosibl y bydd y cyfrifiad hwn yn newid pan fyddwn yn cael eich diweddariad nesaf oddi wrth {0}.
 tai.incomes.select.title=Dewiswch incwm i''w ddiweddaru
 tai.incomes.startDate=Dyddiad cychwyn:
 tai.incomes.status-1=(Cyflogwr
 tai.incomes.status-2=(Blaenorol
 tai.incomes.type-0=presennol)
 tai.incomes.type-1=(Pensiwn)
-tai.incomes.updated.check.text=Gallwch weld eich diweddariad drwy
+tai.incomes.updated.check.text.old=Gallwch weld eich diweddariad drwy
 tai.incomes.updated.check.link=fwrw golwg ar eich manylion cyflogaeth.
-tai.incomes.updated.check.heading=Mae’ch incwm trethadwy oddi wrth {0} wedi’i ddiweddaru
+tai.incomes.updated.check.heading.old=Mae’ch incwm trethadwy oddi wrth {0} wedi’i ddiweddaru
+tai.incomes.updated.check.heading=Mae’ch diweddariad wedi dod i law.
+tai.incomes.updated.check.heading.pt2=Bydd eich cyfrif yn cael ei ddiweddaru cyn pen
+tai.incomes.updated.check.heading.pt3=48 awr
+tai.incomes.updated.check.button=Dychwelyd i’ch incwm amcangyfrifedig
 tai.incomes.updated.check.title=Mae’ch incwm trethadwy wedi’i ddiweddaru
 tai.incomes.updated.pension.check.text=Gallwch weld eich diweddariad drwy
 tai.incomes.updated.pension.check.link=fwrw golwg ar eich manylion cyflogaeth
 tai.incomes.updated.pension.seeChanges.text=Mae’n bosibl y bydd y cyfrifiad hwn yn newid pan fyddwn yn cael eich datganiad pensiwn nesaf oddi wrth {0}.
 tai.incomes.workNumber=Rhif y cyflogai:
-
 tai.irregular.secondaryHeading=Nodwch eich amcangyfrif eich hun ar gyfer  {0}
 tai.irregular.option1=cysylltwch â {0} yn y lle cyntaf
 tai.irregular.option2=diweddaru fy manylion nawr
@@ -1266,7 +1256,6 @@ tai.updateEmployment.incomeSame.description=Mae’r swm hwn eisoes wedi’i amca
 tai.updateEmployment.incomeSame.return.link=Dychwelyd i’ch manylion incwm
 tai.updateEmployment.incomeSame.estimatedPayCYPlusOne.link=View your estimated income for next tax year
 tai.updateEmployment.incomeSame.returnToIncomeDetails.button=Dychwelyd i’ch manylion incwm
-
 tai.updateOrRemove.fromOtherSources=Diweddaru neu ddileu {0}
 tai.updateOrRemove=Diweddaru neu ddileu
 tai.updatePension.confirmation.heading=Mae''ch diweddariad am bensiwn wedi dod i law
@@ -1328,7 +1317,6 @@ your.paye.income.tax.overview=Trosolwg o’ch Treth Incwm TWE
 your.total.income.from.employment.desc=Mae cyfanswm eich incwm o gyflogaeth wedi ei amcangyfrif yn {0} am y flwyddyn dreth hon. Mae gennych {1} am eich incwm o gyflogaeth. Mae hyn yn golygu bod y {2} cyntaf o''ch enillion o gyflogaeth yn rhydd o dreth.
 your.total.income.from.paye.desc=Amcangyfrifir y bydd cyfanswm eich incwm TWE yn {0} am y flwyddyn dreth hon. Mae gennych {1} ar gyfer eich incwm TWE. Golyga hyn fod y {2} cyntaf o’ch incwm TWE yn rhydd o dreth.
 your.total.income.from.private.pension.desc=Amcangyfrifir y bydd cyfanswm eich incwm o bensiwn preifat yn {0} am y flwyddyn dreth hon. Mae gennych {1} ar gyfer eich incwm o bensiwn preifat. Golyga hyn fod y {2} cyntaf o’ch enillion o bensiwn preifat yn rhydd o dreth.
-
 taxCode.change.journey.preHeading= Newid yn eich cod treth
 taxCode.change.whatHappensNext.paragragh1=Os yw’r wybodaeth am eich cod treth yn gywir, nid oes angen i chi wneud unrhyw beth.
 taxCode.change.whatHappensNext.paragragh2=Gallwch wirio {0} i weld faint o dreth y byddwch yn ei thalu yn ein barn ni.
@@ -1352,7 +1340,6 @@ taxCode.change.yourTaxCodeChanged.currentTaxCodes=Codau treth presennol
 taxCode.change.yourTaxCodeChanged.understand=Deall beth mae {0} yn ei olygu
 taxCode.change.yourTaxCodeChanged.currentTaxCodeDetails.screenReader=O {0} ymlaen, eich cod treth ar gyfer {2} yw {3}
 taxCode.change.yourTaxCodeChanged.previousTaxCodeDetails.screenReader=O {0} i {1}, eich cod treth ar gyfer {2} oedd {3}
-
 tai.estimatedPay.update.checkYourAnswers.paymentFrequency = Pa mor aml rydych yn cael eich talu
 tai.estimatedPay.update.checkYourAnswers.totalPay = Cyfanswm y cyflog {0}
 tai.estimatedPay.update.checkYourAnswers.hasDeduction = Ydy eich slip cyflog yn dangos didyniadau?
@@ -1364,7 +1351,6 @@ tai.estimatedPay.update.checkYourAnswers.timePeriod.month=y mis hwn
 tai.estimatedPay.update.checkYourAnswers.timePeriod.week=yr wythnos hon
 tai.estimatedPay.update.checkYourAnswers.timePeriod.fortnight=y pythefnos hwn
 tai.estimatedPay.update.checkYourAnswers.timePeriod.period=yn y cyfnod hwn
-
 tai.updateIncome.CYPlus1.preheading=Diweddarwch yr amcangyfrif o’ch incwm oddi wrth {0} ar gyfer y flwyddyn nesaf
 tai.updateIncome.CYPlus1.start.heading=Diweddarwch yr amcangyfrif o’ch incwm oddi wrth {0} ar gyfer y flwyddyn nesaf
 tai.updateIncome.CYPlus1.start.title=Diweddarwch eich incwm amcangyfrifedig
