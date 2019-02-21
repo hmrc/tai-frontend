@@ -32,6 +32,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
+import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
@@ -65,7 +66,8 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   with JourneyCacheConstants
   with EditIncomeIrregularPayConstants
   with UpdatedEstimatedPayJourneyCache
-  with FormValuesConstants {
+  with FormValuesConstants
+  with FeatureTogglesConfig {
 
   def estimatedPayLandingPage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
@@ -279,7 +281,11 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) flatMap {
               case TaiSuccessResponse => {
                 journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newPay).map { _ =>
-                  Ok(views.html.incomes.editSuccess(employerName, employerId.toInt))
+                  if (confirmedAPIEnabled) {
+                    Ok(views.html.incomes.editSuccess(employerName, employerId.toInt))
+                  } else {
+                    Ok(views.html.incomes.oldEditSuccess(employerName, employerId.toInt))
+                  }
                 }
               }
               case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
