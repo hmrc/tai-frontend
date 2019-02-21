@@ -33,11 +33,9 @@ class TaxCodeChangeReasonsService @Inject()(iabdTaxCodeChangeReasons: IabdTaxCod
   }
 
   def isAGenericReason(reasons: Seq[String])(implicit messages: Messages): Boolean = {
-    val genericReasonsForTaxCodeChange = reasons filter (_ == genericTaxCodeChangeReason)
-    genericReasonsForTaxCodeChange.nonEmpty || reasons.size > 4
-  }
+    val genericTaxCodeReasonMessage = messages("taxCode.change.yourTaxCodeChanged.paragraph")
 
-  private def genericTaxCodeChangeReason(implicit messages: Messages): String = {
-    messages("taxCode.change.yourTaxCodeChanged.paragraph")
+    val genericReasonsForTaxCodeChange = reasons filter (_ == genericTaxCodeReasonMessage)
+    genericReasonsForTaxCodeChange.nonEmpty || reasons.size > 4
   }
 }

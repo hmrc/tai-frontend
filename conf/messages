@@ -1384,5 +1384,5 @@ tai.updateIncome.CYPlus1.same.cancel=Return to your Income Tax comparison for cu
 tai.taxCodeComparison.addEmployer=You have a new employment with {0}
 tai.taxCodeComparison.removeEmployer=Your employment {0} has ended
 tai.taxCodeComparison.title=We changed this because:
-tai.taxCodeComparison.iabd.new.expense=Your {0} have been updated
-tai.taxCodeComparison.iabd.new.allowanceOrDeduction=Your {0} has been updated
+tai.taxCodeComparison.iabd.have.been.updated=Your {0} have been updated
+tai.taxCodeComparison.iabd.has.been.updated=Your {0} has been updated

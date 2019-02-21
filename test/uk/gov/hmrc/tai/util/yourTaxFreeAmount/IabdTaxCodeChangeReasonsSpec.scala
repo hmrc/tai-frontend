@@ -21,14 +21,16 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.tax.ConcessionalRelief
 
 class IabdTaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport {
 
-  private val taxFreeInfo = TaxFreeInfo("12-12-2015", 2000, 1000)
-  private val jobExpensesIncrease = CodingComponentPair(JobExpenses, Some(2), Some(50), Some(100))
-  private val carBenefitIncrease = CodingComponentPair(CarBenefit, Some(1), Some(1000), Some(2000))
-  private val taxCodeChange = mock[TaxCodeChange]
   implicit val messagesApi = app.injector.instanceOf[MessagesApi]
+
+  val taxFreeInfo = TaxFreeInfo("12-12-2015", 2000, 1000)
+  val jobExpensesIncrease = CodingComponentPair(JobExpenses, Some(2), Some(50), Some(100))
+  val carBenefitIncrease = CodingComponentPair(CarBenefit, Some(1), Some(1000), Some(2000))
+  val taxCodeChange = mock[TaxCodeChange]
   val iabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons
 
   "iabdReasons method" must {
@@ -64,9 +66,50 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeT
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
 
       reasons mustBe Seq(
-        "Your Job expenses has been updated",
+        "Your Job expenses have been updated",
         "Your Car benefit has been updated"
       )
     }
+
+    iabdTaxCodeChangeReasons.hasBeenAllowances foreach {
+      case (taxComponentType: TaxComponentType) =>
+        s"have the text 'has been updated' for the benefit $taxComponentType" in {
+          val benefit = CodingComponentPair(taxComponentType, Some(2), Some(50), Some(100))
+
+          val pairs = AllowancesAndDeductionPairs(Seq.empty, Seq(benefit))
+          val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
+
+          reasons.head must include("has been updated")
+        }
+    }
+
+    iabdTaxCodeChangeReasons.haveBeenAllowances foreach {
+      case (taxComponentType: TaxComponentType) =>
+        s"have the text 'have been updated' for the benefit $taxComponentType" in {
+          val benefit = CodingComponentPair(taxComponentType, Some(2), Some(50), Some(100))
+
+          val pairs = AllowancesAndDeductionPairs(Seq.empty, Seq(benefit))
+          val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
+
+          reasons.head must include("have been updated")
+        }
+    }
+
+    Seq(
+      CommunityInvestmentTaxCredit,
+      DoubleTaxationRelief,
+      ForeignPensionAllowance
+    ) foreach {
+      case (taxComponentType: TaxComponentType) =>
+        s"have the generic text for any other benefit such as $taxComponentType" in {
+          val benefit = CodingComponentPair(taxComponentType, Some(2), Some(50), Some(100))
+
+          val pairs = AllowancesAndDeductionPairs(Seq.empty, Seq(benefit))
+          val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
+
+          reasons mustBe Seq(messagesApi("taxCode.change.yourTaxCodeChanged.paragraph"))
+        }
+    }
+
   }
 }

@@ -1395,4 +1395,4 @@ tai.taxCodeComparison.addEmployer=Mae gennych gyflogaeth newydd gyda {0}
 tai.taxCodeComparison.removeEmployer=Mae’ch cyflogaeth {0} wedi dod i ben
 tai.taxCodeComparison.title=Gwnaethom newid hyn oherwydd y canlynol:
 tai.taxCodeComparison.iabd.new.expense=Mae’ch {0} wedi’u diweddaru
-tai.taxCodeComparison.iabd.new.allowanceOrDeduction=Mae’ch {0} wedi’i ddiweddaru
+tai.taxCodeComparison.iabd.has.been.updated=Mae’ch {0} wedi’i ddiweddaru

@@ -17,6 +17,7 @@
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.model.domain._
 
 class IabdTaxCodeChangeReasons {
 
@@ -24,8 +25,8 @@ class IabdTaxCodeChangeReasons {
 
     val combinedBenefits = iabdPairs.allowances ++ iabdPairs.deductions
 
-    val whatsChangedinPairs = combinedBenefits.filter(pair => pair.previous.isDefined && pair.current.isDefined)
-    whatsChangedinPairs.flatMap(translateChangedCodingComponentPair(_))
+    val whatsChangedPairs = combinedBenefits.filter(pair => pair.previous.isDefined && pair.current.isDefined)
+    whatsChangedPairs.flatMap(translateChangedCodingComponentPair(_))
   }
 
   private def translateChangedCodingComponentPair(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
@@ -37,9 +38,54 @@ class IabdTaxCodeChangeReasons {
 
     (hasAnythingChanged) match {
       case true =>
-        val componentType: String = CodingComponentTypeDescription.componentTypeToString(pair.componentType)
-        Some(messages("tai.taxCodeComparison.iabd.new.allowanceOrDeduction", componentType))
+
+        val isHaveBeen: Boolean = (haveBeenAllowances filter (_ == pair.componentType)).nonEmpty
+
+        val isNeitherHasOrHaveBeen: Boolean = (hasBeenAllowances filter (_ == pair.componentType)).isEmpty && !isHaveBeen
+
+        if(isNeitherHasOrHaveBeen) {
+          Some(messages("taxCode.change.yourTaxCodeChanged.paragraph"))
+        } else if (isHaveBeen) {
+          Some(messages("tai.taxCodeComparison.iabd.have.been.updated", CodingComponentTypeDescription.componentTypeToString(pair.componentType)))
+        } else {
+          Some(messages("tai.taxCodeComparison.iabd.has.been.updated", CodingComponentTypeDescription.componentTypeToString(pair.componentType)))
+        }
+
       case false => None
     }
+  }
+
+  val haveBeenAllowances: Seq[TaxComponentType] = {
+    Seq(
+      JobExpenses,
+      FlatRateJobExpenses,
+      ProfessionalSubscriptions,
+      HotelAndMealExpenses,
+      VehicleExpenses
+    )
+  }
+
+  val hasBeenAllowances: Seq[TaxComponentType] = {
+    Seq(
+      BlindPersonsAllowance,
+      GiftAidPayments,
+      MileageAllowanceRelief,
+      Commission,
+      BeneficialLoan,
+      CarBenefit,
+      CarFuelBenefit,
+      MedicalInsurance,
+      VanBenefit,
+      VanFuelBenefit,
+      EmployerProvidedProfessionalSubscription,
+      QualifyingRelocationExpenses,
+      TravelAndSubsistence,
+      VouchersAndCreditCards,
+      StatePension,
+      OccupationalPension,
+      PublicServicesPension,
+      ForcesPension,
+      PersonalPensionAnnuity
+    )
   }
 }
