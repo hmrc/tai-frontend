@@ -37,21 +37,23 @@ class IabdTaxCodeChangeReasons {
     }
 
     (hasAnythingChanged) match {
-      case true =>
-
-        val isHaveBeen: Boolean = (haveBeenAllowances filter (_ == pair.componentType)).nonEmpty
-
-        val isNeitherHasOrHaveBeen: Boolean = (hasBeenAllowances filter (_ == pair.componentType)).isEmpty && !isHaveBeen
-
-        if(isNeitherHasOrHaveBeen) {
-          Some(messages("taxCode.change.yourTaxCodeChanged.paragraph"))
-        } else if (isHaveBeen) {
-          Some(messages("tai.taxCodeComparison.iabd.have.been.updated", CodingComponentTypeDescription.componentTypeToString(pair.componentType)))
-        } else {
-          Some(messages("tai.taxCodeComparison.iabd.has.been.updated", CodingComponentTypeDescription.componentTypeToString(pair.componentType)))
-        }
-
+      case true => yourBenefitsUpdatedMessage(pair.componentType)
       case false => None
+    }
+  }
+
+  private def yourBenefitsUpdatedMessage(componentType: TaxComponentType)(implicit messages: Messages): Option[String] = {
+
+    val isHaveBeen: Boolean = (haveBeenAllowances filter (_ == componentType)).nonEmpty
+
+    val isNeitherHasOrHaveBeen: Boolean = (hasBeenAllowances filter (_ == componentType)).isEmpty && !isHaveBeen
+
+    if(isNeitherHasOrHaveBeen) {
+      Some(messages("taxCode.change.yourTaxCodeChanged.paragraph"))
+    } else if (isHaveBeen) {
+      Some(messages("tai.taxCodeComparison.iabd.have.been.updated", CodingComponentTypeDescription.componentTypeToString(componentType)))
+    } else {
+      Some(messages("tai.taxCodeComparison.iabd.has.been.updated", CodingComponentTypeDescription.componentTypeToString(componentType)))
     }
   }
 
