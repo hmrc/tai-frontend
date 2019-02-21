@@ -28,16 +28,26 @@ case class TaxCodeChangeViewModel(pairs: TaxCodePairs,
                                   changeDate: LocalDate,
                                   scottishTaxRateBands: Map[String, BigDecimal],
                                   taxCodeChangeReasons: Seq[String],
+                                  isAGenericReason: Boolean,
                                   gaDimensions: Map[String, String])
 
 object TaxCodeChangeViewModel extends TaxCodeDescriptor {
 
-  def apply(taxCodeChange: TaxCodeChange, scottishTaxRateBands: Map[String, BigDecimal], taxCodeChangeReasons: Seq[String] = Seq.empty[String]): TaxCodeChangeViewModel = {
+  def apply(taxCodeChange: TaxCodeChange, scottishTaxRateBands: Map[String, BigDecimal],
+            taxCodeChangeReasons: Seq[String] = Seq.empty[String],
+            isAGenericReason: Boolean = true): TaxCodeChangeViewModel = {
 
     val taxCodePairs = TaxCodePairs(taxCodeChange)
     val changeDate = taxCodeChange.mostRecentTaxCodeChangeDate
 
-    TaxCodeChangeViewModel(taxCodePairs, changeDate, scottishTaxRateBands, taxCodeChangeReasons, gaDimensions(taxCodeChange, changeDate))
+    TaxCodeChangeViewModel(
+      taxCodePairs,
+      changeDate,
+      scottishTaxRateBands,
+      taxCodeChangeReasons,
+      isAGenericReason,
+      gaDimensions(taxCodeChange, changeDate)
+    )
   }
 
   def getTaxCodeExplanations(taxCodeRecord: TaxCodeRecord, scottishTaxRateBands: Map[String, BigDecimal], identifier: String)

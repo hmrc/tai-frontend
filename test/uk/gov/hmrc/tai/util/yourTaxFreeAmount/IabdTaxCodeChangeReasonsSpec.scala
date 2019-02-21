@@ -68,28 +68,5 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeT
         "Your Car benefit has been updated"
       )
     }
-
-    "show benefit changes once" in {
-      val pairs = AllowancesAndDeductionPairs(Seq.empty, Seq(carBenefitIncrease, carBenefitIncrease))
-
-      val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
-
-      reasons mustBe Seq("Your Car benefit has been updated")
-    }
-
-    "give a generic message" when {
-      "there are more than 4 unique benefit changes" in {
-        val giftSharesCharity = CodingComponentPair(GiftsSharesCharity, Some(2), Some(50), Some(100))
-        val flatRateJobExpense = CodingComponentPair(FlatRateJobExpenses, Some(2), Some(50), Some(100))
-        val lossRelief = CodingComponentPair(LossRelief, Some(2), Some(50), Some(100))
-
-        val pairs = AllowancesAndDeductionPairs(Seq.empty,
-          Seq(carBenefitIncrease, jobExpensesIncrease, giftSharesCharity, flatRateJobExpense, lossRelief))
-
-        val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
-
-        reasons mustBe Seq(messagesApi("taxCode.change.yourTaxCodeChanged.paragraph"))
-      }
-    }
   }
 }

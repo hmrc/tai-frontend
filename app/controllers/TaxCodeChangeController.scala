@@ -55,8 +55,10 @@ class TaxCodeChangeController @Inject()(taxCodeChangeService: TaxCodeChangeServi
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
         yourTaxFreeAmountComparison <- yourTaxFreeAmountService.taxFreeAmountComparison(nino)
       } yield {
-        val taxCodeChangeReasons = taxCodeChangeReasonsService.reasons(yourTaxFreeAmountComparison.iabdPairs, taxCodeChange)
-        val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, taxCodeChangeReasons)
+        val taxCodeChangeReasons = taxCodeChangeReasonsService.combineTaxCodeChangeReasons(yourTaxFreeAmountComparison.iabdPairs, taxCodeChange)
+        val isAGenericReason = taxCodeChangeReasonsService.isAGenericReason(taxCodeChangeReasons)
+
+        val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, taxCodeChangeReasons, isAGenericReason)
 
         implicit val user = request.taiUser
         Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))

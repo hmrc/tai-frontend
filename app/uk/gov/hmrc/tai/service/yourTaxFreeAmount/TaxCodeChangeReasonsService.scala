@@ -23,11 +23,21 @@ import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, Empl
 
 class TaxCodeChangeReasonsService @Inject()(iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons,
                                             employmentTaxCodeChangeReasons: EmploymentTaxCodeChangeReasons) {
-  def reasons(iabdPairs: AllowancesAndDeductionPairs, taxCodeChange: TaxCodeChange)
-             (implicit messages: Messages): Seq[String] = {
+  def combineTaxCodeChangeReasons(iabdPairs: AllowancesAndDeductionPairs, taxCodeChange: TaxCodeChange)
+                                 (implicit messages: Messages): Seq[String] = {
     val employmentReasons = employmentTaxCodeChangeReasons.reasons(taxCodeChange)
     val benefitReasons = iabdTaxCodeChangeReasons.reasons(iabdPairs)
 
-    employmentReasons ++ benefitReasons
+    val combinedReasons = employmentReasons ++ benefitReasons
+    combinedReasons.distinct
+  }
+
+  def isAGenericReason(reasons: Seq[String])(implicit messages: Messages): Boolean = {
+    val genericReasonsForTaxCodeChange = reasons filter (_ == genericTaxCodeChangeReason)
+    genericReasonsForTaxCodeChange.nonEmpty || reasons.size > 4
+  }
+
+  private def genericTaxCodeChangeReason(implicit messages: Messages): String = {
+    messages("taxCode.change.yourTaxCodeChanged.paragraph")
   }
 }

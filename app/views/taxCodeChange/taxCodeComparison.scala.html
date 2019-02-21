@@ -74,37 +74,33 @@
 }
 
 @displayTaxCodeReasons(taxCodeReasons: Seq[String]) = {
-    @if(taxCodeReasons.isEmpty) {
-        <p class="lede">@Messages("taxCode.change.yourTaxCodeChanged.paragraph")</p>
+    @if(taxCodeChangeViewModel.isAGenericReason) {
+        <div class="notice">
+            <i class="icon icon-information">
+                <span class="visually-hidden">Information</span>
+            </i>
+            <strong class="tax-code-reason bold-small">
+            @Messages("taxCode.change.yourTaxCodeChanged.paragraph")
+            </strong>
+        </div>
     } else {
-        @if(taxCodeReasons.size < 4) {
-            <div class="notice">
-                <i class="icon icon-information">
-                    <span class="visually-hidden">Information</span>
-                </i>
-                <strong class="bold-small">
-                    @Messages("tai.taxCodeComparison.title")
-                </strong>
-            </div>
-            <div class ="tax-code-change">
-                <ul class="list-bullet">
-                    @for((reason) <- taxCodeReasons) {
-                    <li class="tax-code-reason">
-                        @reason
-                    </li>
-                    }
-                </ul>
-            </div>
-        } else {
-            <div class="notice">
-                <i class="icon icon-information">
-                    <span class="visually-hidden">Information</span>
-                </i>
-                <strong class="tax-code-reason bold-small">
-                @Messages("taxCode.change.yourTaxCodeChanged.paragraph")
-                </strong>
-            </div>
-        }
+        <div class="notice">
+            <i class="icon icon-information">
+                <span class="visually-hidden">Information</span>
+            </i>
+            <strong class="bold-small">
+            @Messages("tai.taxCodeComparison.title")
+            </strong>
+        </div>
+        <div class ="tax-code-change">
+            <ul class="list-bullet">
+            @for((reason) <- taxCodeReasons) {
+                <li class="tax-code-reason">
+                @reason
+                </li>
+            }
+            </ul>
+        </div>
     }
 }
 

@@ -109,21 +109,17 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
     "display tax code change reasons" when {
       "primary employments have changed" in {
-        val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"))
+        val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"), false)
 
         val view = views.html.taxCodeChange.taxCodeComparison(viewModel)
         doc(view) must haveClassCount("tax-code-reason", 2)
       }
 
-      "display a generic tax code reason" when {
-        "there are more than 4 reasons" in {
-          val fiveReasons = Seq("1", "2", "3", "4", "5")
+      "display a generic tax code reason" in {
+        val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map.empty, Seq("a reason", "another reason"), true)
 
-          val viewModel: TaxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, Map.empty, fiveReasons)
-
-          val view = views.html.taxCodeChange.taxCodeComparison(viewModel)
-          doc(view) must haveClassCount("tax-code-reason", 1)
-        }
+        val view = views.html.taxCodeChange.taxCodeComparison(viewModel)
+        doc(view) must haveClassCount("tax-code-reason", 1)
       }
     }
   }

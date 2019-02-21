@@ -35,7 +35,7 @@ import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, TaxCodeChangeReasonsService}
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, EmploymentTaxCodeChangeReasons, IabdTaxCodeChangeReasons, TaxFreeInfo}
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxFreeInfo
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
 
 import scala.concurrent.Future
@@ -99,13 +99,18 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
         when(taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map[String, BigDecimal]()))
+        when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any())).thenReturn(Future.successful(mock[YourTaxFreeAmountComparison]))
+
+        val reasons = Seq("a reason")
+        when(taxCodeChangeReasonsService.combineTaxCodeChangeReasons(any(), Matchers.eq(taxCodeChange))(any())).thenReturn(reasons)
+        when(taxCodeChangeReasonsService.isAGenericReason(Matchers.eq(reasons))(any())).thenReturn(false)
 
         val result = createController.taxCodeComparison()(request)
 
-        val taxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates)
+        val expectedViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates, reasons, false)
 
         status(result) mustBe OK
-        result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(taxCodeChangeViewModel)
+        result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(expectedViewModel)
       }
     }
   }
@@ -142,7 +147,5 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
     when(taxCodeChangeService.latestTaxCodeChangeDate(nino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
-    when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any())).thenReturn(Future.successful(mock[YourTaxFreeAmountComparison]))
-   // when(taxCodeChangeReasonsService.reasons(any(), any())(any())).thenReturn(Seq.empty)
   }
 }

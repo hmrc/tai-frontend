@@ -22,23 +22,10 @@ class IabdTaxCodeChangeReasons {
 
   def reasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
 
-    val changedBenefits: Seq[String] = getChangedBenefits(iabdPairs.allowances
-      ++ iabdPairs.deductions)
+    val combinedBenefits = iabdPairs.allowances ++ iabdPairs.deductions
 
-    isAGenericBenefit(changedBenefits) match {
-      case true => changedBenefits
-      case false => Seq(genericTaxCodeChangeReason)
-    }
-  }
-
-  private def isAGenericBenefit(changedBenefits: Seq[String])(implicit messages: Messages): Boolean = {
-    val genericReasonsForTaxCodeChange = changedBenefits filter (_ == genericTaxCodeChangeReason)
-    genericReasonsForTaxCodeChange.isEmpty && changedBenefits.size <= 4
-  }
-
-  private def getChangedBenefits(pairs: Seq[CodingComponentPair])(implicit messages: Messages): Seq[String] = {
-    val changedPairs = pairs.filter(pair => pair.previous.isDefined && pair.current.isDefined)
-    changedPairs.flatMap(translateChangedCodingComponentPair(_)).distinct
+    val whatsChangedinPairs = combinedBenefits.filter(pair => pair.previous.isDefined && pair.current.isDefined)
+    whatsChangedinPairs.flatMap(translateChangedCodingComponentPair(_))
   }
 
   private def translateChangedCodingComponentPair(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
@@ -54,9 +41,5 @@ class IabdTaxCodeChangeReasons {
         Some(messages("tai.taxCodeComparison.iabd.new.allowanceOrDeduction", componentType))
       case false => None
     }
-  }
-
-  private def genericTaxCodeChangeReason(implicit messages: Messages): String = {
-    messages("taxCode.change.yourTaxCodeChanged.paragraph")
   }
 }
