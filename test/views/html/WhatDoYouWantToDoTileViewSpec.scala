@@ -25,7 +25,7 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import utils.factories.TaxCodeMismatchFactory
-
+import play.api.mvc.Cookie
 
 class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
   "whatDoYouWantTodo Page" should {
@@ -101,7 +101,20 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         cards.toString mustNot include("Find out what has changed and what happens next")
       }
     }
-  }
+
+      "display UR banner" in {
+        val document: Html = views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1)
+        val urBanner =  doc(document).getElementsByAttributeValue("id", "full-width-banner")
+        val urDismissedText =  doc(document).getElementsByAttributeValue("id", "fullWidthBannerDismissText")
+        val urBannerHref =  doc(document).getElementsByAttributeValue("id", "fullWidthBannerLink")
+        urBanner mustNot be(null)
+        urBanner.text() startsWith Messages("tai.urbanner.title")
+        urDismissedText.text() must include(Messages("tai.urbanner.reject"))
+        urBanner.text() must include(Messages("tai.urbanner.text"))
+        urBannerHref.text() must include(Messages("tai.urbanner.link"))
+      }
+
+    }
 
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
 

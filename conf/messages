@@ -1379,3 +1379,8 @@ tai.updateIncome.CYPlus1.same.cancel=Return to your Income Tax comparison for cu
 tai.taxCodeComparison.addEmployer=You have a new employment with {0}
 tai.taxCodeComparison.removeEmployer=Your employment {0} has ended
 tai.taxCodeComparison.title=We changed this because:
+
+tai.urbanner.title=Help improve HMRC letters
+tai.urbanner.text=Please take part in our short survey (opens in a new window or tab)
+tai.urbanner.link=https://www.surveygizmo.com/s3/4842480/HMRC-Letter-Study-5
+tai.urbanner.reject=No thanks
