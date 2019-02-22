@@ -1268,7 +1268,7 @@ tai.viewDetails.screenReader=View details for {0}
 tai.viewDetails=View details
 tai.whatDoYouWantToDo.error.selectOption=Choose what you want to do.
 tai.whatDoYouWantToDo.heading=Choose tax year
-tai.whatDoYouWantToDo.iformPanel.p1=You recently updated your details.
+tai.whatDoYouWantToDo.iformPanel.p1=You recently updated your details
 tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2=It can take up to 3 weeks for the changes to be shown here.
 tai.whatDoYouWantToDo.iformPanel.sevenDays.p2=It can take up to 7 days for the changes to be shown here.
 tai.whatDoYouWantToDo.legend=View PAYE Income Tax details for:
@@ -1384,3 +1384,5 @@ tai.urbanner.title=Help improve HMRC letters
 tai.urbanner.text=Please take part in our short survey (opens in a new window or tab)
 tai.urbanner.link=https://www.surveygizmo.com/s3/4842480/HMRC-Letter-Study-5
 tai.urbanner.reject=No thanks
+
+checkProgress.link=Check the progress of your update

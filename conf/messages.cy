@@ -1275,7 +1275,7 @@ tai.viewDetails.screenReader=Gweld manylion ar gyfer {0}
 tai.viewDetails=Gweld y manylion
 tai.whatDoYouWantToDo.error.selectOption=Dewiswch beth rydych am ei wneud.
 tai.whatDoYouWantToDo.heading=Dewis blwyddyn dreth
-tai.whatDoYouWantToDo.iformPanel.p1=Rydych wedi diweddaru''ch manylion yn ddiweddar.
+tai.whatDoYouWantToDo.iformPanel.p1=Rydych wedi diweddaru''ch manylion yn ddiweddar
 tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2=Gall gymryd hyd at 3 wythnos i''r newidiadau ymddangos yma.
 tai.whatDoYouWantToDo.iformPanel.sevenDays.p2=Gall gymryd hyd at 7 diwrnod i''r newidiadau ymddangos yma.
 tai.whatDoYouWantToDo.legend=Gweld manylion Treth Incwm TWE ar gyfer:
@@ -1393,3 +1393,5 @@ tai.urbanner.title=Helpwch i wella llythyrau CThEM
 tai.urbanner.text=Cymerwch ran yn ein harolwg byr (yn agor ffenestr neu dab newydd)
 tai.urbanner.link=https://www.surveygizmo.com/s3/4842480/HMRC-Letter-Study-5
 tai.urbanner.reject=Dim diolch
+
+checkProgress.link=Gwiriwch gynnydd eich diweddariad
