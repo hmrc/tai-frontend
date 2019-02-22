@@ -99,7 +99,7 @@ trait FeatureTogglesConfig extends DefaultServicesConfig {
   val welshLanguageEnabled =  configuration.getBoolean("tai.feature.welshLanguage.enabled").getOrElse(false)
   val companyCarForceRedirectEnabled = configuration.getBoolean("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
   val cyPlus1EstimatedPayEnabled = configuration.getBoolean("tai.cyPlus1EstimatedPay.enabled").getOrElse(false)
-
+  val confirmedAPIEnabled = configuration.getBoolean("tai.confirmedAPI.enabled").getOrElse(false)
 }
 
 object FeatureTogglesConfig extends FeatureTogglesConfig
