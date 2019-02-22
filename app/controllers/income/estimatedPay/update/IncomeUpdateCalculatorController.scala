@@ -39,11 +39,10 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.domain.{Employment, Payment, PensionIncome}
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.journeyCache.{JourneyCacheService}
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
-import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{CheckYourAnswersViewModel, EstimatedPayViewModel}
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel}
 
@@ -105,13 +104,11 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             for {
               incomeToEdit: EmploymentAmount <- incomeToEditFuture
               taxCodeIncomeDetails <- taxCodeIncomeDetailsFuture
-              _ <- {
-                journeyCache(cacheMap = Map(
-                  UpdateIncome_NameKey -> employment.name,
-                  UpdateIncome_IdKey -> id.toString,
-                  UpdateIncome_IncomeTypeKey -> incomeType)
-                )
-              }
+              _ <- journeyCache(cacheMap = Map(
+                UpdateIncome_NameKey -> employment.name,
+                UpdateIncome_IdKey -> id.toString,
+                UpdateIncome_IncomeTypeKey -> incomeType)
+              )
             } yield {
               processHowToUpdatePage(id, employment.name, incomeToEdit, taxCodeIncomeDetails)
             }
@@ -211,7 +208,6 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         val paymentRequest: Future[Option[Payment]] = incomeService.latestPayment(Nino(user.getNino), employmentId)
         val taxCodeIncomeRequest = taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId)
 
-
         paymentRequest flatMap { payment =>
           taxCodeIncomeRequest flatMap {
             case Some(tci) => {
@@ -258,15 +254,13 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit user =>
       implicit person =>
         implicit request => {
-          journeyCacheService.collectedValues(Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey), Seq(UpdateIncome_ConfirmedNewAmountKey)) map tupled { (mandatoryCache, optionalCache) =>
-            val name :: newIrregularPay :: Nil = mandatoryCache.toList
-            val confirmedNewAmount = optionalCache.head
-            if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
-              Redirect(controllers.routes.IncomeController.sameEstimatedPay())
-            } else {
-              val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
-              Ok(views.html.incomes.confirmAmountEntered(vm))
-            }
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey).map { cache => {
+            val name :: newIrregularPay :: Nil = cache.toList
+
+            val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
+
+            Ok(views.html.incomes.confirmAmountEntered(vm))
+          }
           }
         }
   }
@@ -275,22 +269,19 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit user =>
       implicit person =>
         implicit request =>
-          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey).flatMap { cache =>
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey).flatMap(cache => {
             val employerName :: newPay :: employerId :: Nil = cache.toList
 
-            taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) flatMap {
-              case TaiSuccessResponse => {
-                journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newPay).map { _ =>
-                  if (confirmedAPIEnabled) {
-                    Ok(views.html.incomes.editSuccess(employerName, employerId.toInt))
-                  } else {
-                    Ok(views.html.incomes.oldEditSuccess(employerName, employerId.toInt))
-                  }
+            taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) map {
+              case TaiSuccessResponse =>
+                if (confirmedAPIEnabled) {
+                  Ok(views.html.incomes.editSuccess(employerName, employerId.toInt))
+                } else {
+                  Ok(views.html.incomes.oldEditSuccess(employerName, employerId.toInt))
                 }
-              }
               case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
             }
-          }
+          })
   }
 
   def payPeriodPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -548,14 +539,9 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
           val viewModel = CheckYourAnswersViewModel(payPeriodFrequency, totalSalaryAmount, hasPayslipDeductions,
             taxablePay, hasBonusPayments, bonusPaymentAmount)
-
           Ok(views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel, incomeId))
         }
         }
-  }
-
-  private def isCachedAmountSameAsEnteredAmount(cache: Map[String, String], newAmount: Option[BigDecimal]): Boolean = {
-    FormHelper.areEqual(cache.get(UpdateIncome_ConfirmedNewAmountKey), newAmount map (_.toString()))
   }
 
   def estimatedPayPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -571,27 +557,24 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           calculatedPay <- incomeService.calculateEstimatedPay(cache, income.startDate)
           payment <- incomeService.latestPayment(Nino(user.getNino), id)
         } yield {
-
           val payYearToDate: BigDecimal = payment.map(_.amountYearToDate).getOrElse(BigDecimal(0))
           val paymentDate: Option[LocalDate] = payment.map(_.date)
 
-          calculatedPay.grossAnnualPay match {
-            case newAmount if (isCachedAmountSameAsEnteredAmount(cache, newAmount)) =>
-              Future.successful(Redirect(controllers.routes.IncomeController.sameEstimatedPay()))
-            case Some(newAmount) if newAmount > payYearToDate =>
-              val cache = Map(UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
-                UpdateIncome_NewAmountKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
+          if (calculatedPay.grossAnnualPay.get > payYearToDate) {
+            val cache = Map(UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
+              UpdateIncome_NewAmountKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
+            val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
 
-              val isBonusPayment = cache.getOrElse(UpdateIncome_BonusPaymentsKey, "") == "Yes"
+            journeyCache(cacheMap = cache) map { _ =>
 
-              journeyCache(cacheMap = cache) map { _ =>
+              val viewModel = EstimatedPayViewModel(calculatedPay.grossAnnualPay, calculatedPay.netAnnualPay, id, isBonusPayment,
+                calculatedPay.annualAmount, calculatedPay.startDate, employerName)
 
-                val viewModel = EstimatedPayViewModel(calculatedPay.grossAnnualPay, calculatedPay.netAnnualPay, id, isBonusPayment,
-                  calculatedPay.annualAmount, calculatedPay.startDate, employerName)
+              Ok(views.html.incomes.estimatedPay(viewModel))
+            }
 
-                Ok(views.html.incomes.estimatedPay(viewModel))
-              }
-            case _ => Future.successful(Ok(views.html.incomes.incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), id)))
+          } else {
+            Future.successful(Ok(views.html.incomes.incorrectTaxableIncome(payYearToDate, paymentDate.getOrElse(new LocalDate), id)))
           }
         }
 
@@ -607,7 +590,6 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           income <- incomeService.employmentAmount(Nino(user.getNino), id)
           netAmount <- journeyCacheService.currentValue(UpdateIncome_NewAmountKey)
         } yield {
-
           val newAmount = income.copy(newAmount = netAmount.map(netAmountValue => BigDecimal(netAmountValue).intValue()).getOrElse(income.oldAmount))
           Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = newAmount).get))
         }

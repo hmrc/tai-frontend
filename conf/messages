@@ -1259,15 +1259,6 @@ tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.blank=Enter what you w
 tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.maximumExceeded=You can only enter a maximum of {0} characters
 tai.updateEmployment.whatDoYouWantToTellUs.textarea.text=Enter details about your update (Maximum characters {0})
 tai.updateEmployment.whatDoYouWantToTellUs.title=What do you want to tell us about {0}?
-tai.updateEmployment.incomeSame.title=Your estimated income for {0}
-tai.updateEmployment.incomeSame.preHeading=Update your estimated income from {0}
-tai.updateEmployemnt.incomeSame.heading=Your estimated income for {0}
-tai.updateEmployment.incomeSame.newEstimate.text=Your new estimated income is
-tai.updateEmployment.incomeSame.description=This amount has already been estimated for {0} for {1}, so you do not need to update your income.
-tai.updateEmployment.incomeSame.return.link=Return to employment details
-tai.updateEmployment.incomeSame.estimatedPayCYPlusOne.link=View your estimated income for next tax year
-tai.updateEmployment.incomeSame.returnToIncomeDetails.button=Return to employment details
-
 tai.updateOrRemove.fromOtherSources=Update or remove {0}
 tai.updateOrRemove=Update or remove
 tai.updatePension.confirmation.heading=Your update about a pension has been received
@@ -1329,7 +1320,6 @@ your.paye.income.tax.overview=Your PAYE Income Tax overview
 your.total.income.from.employment.desc=Your total income from employment is estimated at {0} this tax year. You have a {1} for your employment income. This means the first {2} of your employment earnings are tax free.
 your.total.income.from.paye.desc=Your total income from PAYE is estimated at {0} this tax year. You have a {1} for your PAYE income. This means the first {2} of your PAYE earnings are tax free.
 your.total.income.from.private.pension.desc=Your total income from private pension is estimated at {0} this tax year. You have a {1} for your private pension income. This means the first {2} of your private pension earnings are tax free.
-
 taxCode.change.journey.preHeading= Your tax code change
 taxCode.change.whatHappensNext.paragragh1=If the information about your tax code is right, you do not need to do anything.
 taxCode.change.whatHappensNext.paragragh2=You can check {0} to see how much tax we think you will pay.
@@ -1353,7 +1343,6 @@ taxCode.change.yourTaxCodeChanged.currentTaxCodes=Current tax codes
 taxCode.change.yourTaxCodeChanged.understand=Understand what {0} means
 taxCode.change.yourTaxCodeChanged.currentTaxCodeDetails.screenReader=From {0} your tax code for {2} is {3}
 taxCode.change.yourTaxCodeChanged.previousTaxCodeDetails.screenReader=From {0} to {1} your tax code for {2} was {3}
-
 tai.estimatedPay.update.checkYourAnswers.paymentFrequency = How often you get paid
 tai.estimatedPay.update.checkYourAnswers.totalPay = Total pay this {0}
 tai.estimatedPay.update.checkYourAnswers.hasDeduction = Does your payslip show deductions?
