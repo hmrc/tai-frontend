@@ -157,7 +157,7 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
           IncomeSourceComparisonViewModel(
             Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne))
         }.getMessage must equal("Employment id is missing")
-        
+
       }
     }
   }
