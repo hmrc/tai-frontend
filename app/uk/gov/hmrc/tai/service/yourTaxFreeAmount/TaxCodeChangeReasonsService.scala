@@ -36,6 +36,7 @@ class TaxCodeChangeReasonsService @Inject()(iabdTaxCodeChangeReasons: IabdTaxCod
     val genericTaxCodeReasonMessage = messages("taxCode.change.yourTaxCodeChanged.paragraph")
 
     val genericReasonsForTaxCodeChange = reasons filter (_ == genericTaxCodeReasonMessage)
-    genericReasonsForTaxCodeChange.nonEmpty || reasons.size > 4
+    val maxReasonsAllowed = 4
+    genericReasonsForTaxCodeChange.nonEmpty || reasons.size > maxReasonsAllowed
   }
 }
