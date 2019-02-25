@@ -899,13 +899,13 @@ class IncomeUpdateCalculatorControllerSpec
       val employerName = "name"
       val payToDate = 123
       val newAmount = 123
-      val confirmedNewAmout = 1234
+      val confirmedNewAmount = 1234
 
       when(
-      journeyCacheService.mandatoryValues(Matchers.anyVararg[String])(any())
-      ).thenReturn(
-        Future.successful(Seq(employerName, newAmount.toString,confirmedNewAmout.toString))
-      )
+        journeyCacheService.collectedValues(any(), any())(any()))
+        .thenReturn(Future.successful(
+          Seq(EmployerName, newAmount.toString), Seq(Some(confirmedNewAmount.toString))))
+
 
       val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
         RequestBuilder.buildFakeRequestWithOnlySession("GET")
@@ -919,7 +919,7 @@ class IncomeUpdateCalculatorControllerSpec
     "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
       val testController = createTestIncomeUpdateCalculatorController
 
-      when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.failed(new Exception))
+      when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.failed(new Exception))
 
       val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
         RequestBuilder.buildFakeRequestWithOnlySession("GET")
@@ -934,7 +934,7 @@ class IncomeUpdateCalculatorControllerSpec
         val newAmount = 123
         val confirmednewAmount = 123
 
-        when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(EmployerName, newAmount.toString, confirmednewAmount.toString)))
+        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(EmployerName, newAmount.toString), Seq(Some(confirmednewAmount.toString))))
 
         val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
           RequestBuilder.buildFakeRequestWithOnlySession("GET")
