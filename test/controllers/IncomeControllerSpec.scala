@@ -44,6 +44,7 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCode
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
 
@@ -283,6 +284,9 @@ class IncomeControllerSpec extends PlaySpec
 
         when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponse))
+
+        when(estimatedPayJourneyCompletionService.journeyCompleted(Matchers.eq(employerId.toString))(any())).
+          thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = testController.updateEstimatedIncome()(fakeRequest)
 
@@ -583,6 +587,7 @@ class IncomeControllerSpec extends PlaySpec
   val personService = mock[PersonService]
   val taxAccountService = mock[TaxAccountService]
   val journeyCacheService = mock[JourneyCacheService]
+  val estimatedPayJourneyCompletionService = mock[EstimatedPayJourneyCompletionService]
 
   private def createTestIncomeController = new TestIncomeController
   private class TestIncomeController extends IncomeController(
@@ -591,6 +596,7 @@ class IncomeControllerSpec extends PlaySpec
     taxAccountService,
     employmentService,
     incomeService,
+    estimatedPayJourneyCompletionService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],

@@ -37,6 +37,7 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
 
@@ -48,6 +49,7 @@ class IncomeController @Inject()(personService: PersonService,
                                  taxAccountService: TaxAccountService,
                                  employmentService: EmploymentService,
                                  incomeService: IncomeService,
+                                 estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
                                  val auditConnector: AuditConnector,
                                  val delegationConnector: DelegationConnector,
                                  val authConnector: AuthConnector,
@@ -149,12 +151,22 @@ class IncomeController @Inject()(personService: PersonService,
           }
         }
 
+        val updateJourneyCompletion: String => Future[Map[String, String]] = (employerId: String) => {
+          estimatedPayJourneyCompletionService.journeyCompleted(employerId)
+        }
+
         ServiceCheckLite.personDetailsCheck {
-          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey).flatMap(cache => {
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey)
+            .flatMap(cache => {
             val employerName :: newAmount :: employerId :: incomeType :: Nil = cache.toList
 
-            taxAccountService.updateEstimatedIncome(Nino(user.getNino), FormHelper.stripNumber(newAmount).toInt, TaxYear(), employerId.toInt) map {
-              case TaiSuccessResponse => respondWithSuccess(employerName, employerId.toInt, incomeType)
+            taxAccountService.updateEstimatedIncome(Nino(user.getNino), FormHelper.stripNumber(newAmount).toInt, TaxYear(), employerId.toInt) flatMap {
+              case TaiSuccessResponse => {
+                updateJourneyCompletion(employerId) map { _ =>
+                  respondWithSuccess(employerName, employerId.toInt, incomeType)
+                }
+
+              }
               case _ => throw new RuntimeException("Failed to update estimated income")
             }
           })
