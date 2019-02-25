@@ -54,8 +54,6 @@
     if(str.trim == "") false else str
 }
 
-@isUserResearchBannerHidden = @{request.cookies.exists((x: Cookie) => x.name == "mdtpurr")}
-
 @authProvider = @{
     request.session.get(SessionKeys.authProvider)
 }
@@ -224,8 +222,7 @@
             Map("url" -> controllers.routes.AssetsController.versioned("javascript/tai-backlink.js")),
             Map("url" -> controllers.routes.AssetsController.versioned("javascript/char-count.js")),
             Map("url" -> controllers.routes.AssetsController.versioned("javascript/card.js")),
-            Map("url" -> controllers.routes.AssetsController.versioned("javascript/tax-code-change.js")),
-            Map("url" -> controllers.routes.AssetsController.versioned("javascript/urbanner.js"))
+            Map("url" -> controllers.routes.AssetsController.versioned("javascript/tax-code-change.js"))
         ),
         "inlineScript" -> inlineScript,
         "showPropositionLinks" -> isWelshEnabled,
@@ -240,17 +237,6 @@
     )
 }
 
-@templateArguments = @{
-    if(!isUserResearchBannerHidden && ApplicationConfig.urBannerEnabled) {
-        mustacheMap ++ Map[String, Any](
-            "fullWidthBannerTitle" -> Messages("tai.urbanner.title"),
-            "fullWidthBannerText" -> Messages("tai.urbanner.text"),
-            "fullWidthBannerLink" -> Messages("tai.urbanner.link"),
-            "fullWidthBannerDismissText" -> Messages("tai.urbanner.reject"),
-            "fullWidthBannerGaAction" -> "Help improve HMRC letters"
-        )
-    } else mustacheMap
-}
 @{
-    templateRenderer.renderDefaultTemplate(ApplicationConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), templateArguments)
+    templateRenderer.renderDefaultTemplate(ApplicationConfig.frontendTemplatePath, layouts.article(content = mainContent, includeGridWrapper = includeGridWrapper, articleClasses), mustacheMap)
 }
