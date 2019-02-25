@@ -130,16 +130,16 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesCYPlusOneMultiple)))
       when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
       when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty[CodingComponent]))
-      when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(Future.successful(Seq(employment, employment2)))
+      when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(Future.successful(Seq(employment, employment2, pension, pension2)))
 
       val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
-      doc.getElementById("amount-cy-1").text must equal ("£1,111")
-      doc.getElementById("amount-cy-plus-one-1").text must equal ("£2,222")
-      doc.getElementById("amount-cy-0").text must equal ("£3,234")
-      doc.getElementById("amount-cy-plus-one-0").text must equal ("£4,000")
+      doc.getElementById("pension-amount-cy-0").text must equal ("£4,321")
+      doc.getElementById("pension-amount-cy-plus-one-0").text must equal ("£4,444")
+      doc.getElementById("pension-amount-cy-1").text must equal ("£1,234")
+      doc.getElementById("pension-amount-cy-plus-one-1").text must equal ("£3,333")
     }
 
     "show not applicable when CY and CY+1 employment id's don't match" in {
@@ -162,6 +162,8 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
   val nino: Nino = new Generator(new Random).nextNino
   val employment = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
   val employment2 = Employment("employment2", None, new LocalDate(), None, Nil, "", "", 2, None, false, false)
+  val pension = Employment("employment3", None, new LocalDate(), None, Nil, "", "", 3, None, false, false)
+  val pension2 = Employment("employment4", None, new LocalDate(), None, Nil, "", "", 4, None, false, false)
   val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
 
   val taxCodeIncomes = Seq(
@@ -172,7 +174,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
   val taxCodeIncomesMultiple = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
     TaxCodeIncome(EmploymentIncome, Some(2), 3234, "employment2", "1050L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(3), 1234, "employment3", "150L", "employment", Week1Month1BasisOfOperation, Live)
+    TaxCodeIncome(PensionIncome, Some(3), 1234, "employment3", "150L", "employment", Week1Month1BasisOfOperation, Live),
     TaxCodeIncome(PensionIncome, Some(4), 4321, "employment4", "150L", "employment", Week1Month1BasisOfOperation, Live)
   )
 
@@ -184,7 +186,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
   val taxCodeIncomesCYPlusOneMultiple = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 2222, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
     TaxCodeIncome(EmploymentIncome, Some(2), 4000, "employment2", "1050L", "employment", OtherBasisOfOperation, Live),
-    TaxCodeIncome(PensionIncome, Some(3), 3333, "employment3", "150L", "employment", Week1Month1BasisOfOperation, Live)
+    TaxCodeIncome(PensionIncome, Some(3), 3333, "employment3", "150L", "employment", Week1Month1BasisOfOperation, Live),
     TaxCodeIncome(PensionIncome, Some(4), 4444, "employment4", "150L", "employment", Week1Month1BasisOfOperation, Live)
   )
 
