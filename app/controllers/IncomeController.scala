@@ -16,11 +16,14 @@
 
 package controllers
 
+import java.util.NoSuchElementException
+
 import com.google.inject.Inject
 import com.google.inject.name.Named
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
+import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
@@ -30,6 +33,7 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -58,8 +62,8 @@ class IncomeController @Inject()(personService: PersonService,
   with JourneyCacheConstants
   with AuditConstants
   with FormValuesConstants
-  with Auditable {
-
+  with Auditable
+  with FeatureTogglesConfig {
 
 
   def regularIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -105,7 +109,6 @@ class IncomeController @Inject()(personService: PersonService,
               )
             }
           }
-
         }
   }
 
@@ -144,8 +147,18 @@ class IncomeController @Inject()(personService: PersonService,
 
         def respondWithSuccess(employerName: String, employerId: Int, incomeType: String)(implicit user: TaiUser, request: Request[AnyContent]): Result = {
           incomeType match {
-            case TaiConstants.IncomeTypePension => Ok(views.html.incomes.editPensionSuccess(employerName, employerId))
-            case _ => Ok(views.html.incomes.editSuccess(employerName, employerId))
+            case TaiConstants.IncomeTypePension =>
+              if (confirmedAPIEnabled) {
+                Ok(views.html.incomes.editPensionSuccess(employerName, employerId))
+              } else {
+                Ok(views.html.incomes.oldEditPensionSuccess(employerName, employerId))
+              }
+            case _ =>
+              if (confirmedAPIEnabled) {
+                Ok(views.html.incomes.editSuccess(employerName, employerId))
+              } else {
+                Ok(views.html.incomes.oldEditSuccess(employerName, employerId))
+              }
           }
         }
 

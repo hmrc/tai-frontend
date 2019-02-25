@@ -32,6 +32,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConne
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.cacheResolver.estimatedPay.UpdatedEstimatedPayJourneyCache
+import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms._
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
@@ -64,7 +65,8 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
   with JourneyCacheConstants
   with EditIncomeIrregularPayConstants
   with UpdatedEstimatedPayJourneyCache
-  with FormValuesConstants {
+  with FormValuesConstants
+  with FeatureTogglesConfig {
 
   def estimatedPayLandingPage(id: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
@@ -72,7 +74,6 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
         val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
         val employmentFuture = employmentService.employment(Nino(user.getNino), id)
-
 
         for {
           taxCodeIncomeDetails <- taxCodeIncomesFuture
@@ -272,7 +273,12 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             val employerName :: newPay :: employerId :: Nil = cache.toList
 
             taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) map {
-              case TaiSuccessResponse => Ok(views.html.incomes.editSuccess(employerName, employerId.toInt))
+              case TaiSuccessResponse =>
+                if (confirmedAPIEnabled) {
+                  Ok(views.html.incomes.editSuccess(employerName, employerId.toInt))
+                } else {
+                  Ok(views.html.incomes.oldEditSuccess(employerName, employerId.toInt))
+                }
               case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
             }
           })
