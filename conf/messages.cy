@@ -1260,6 +1260,15 @@ tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.blank=Rhowch yr hyn yr
 tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.maximumExceeded=Gallwch ond nodi hyd at uchafswm o {0} o gymeriadau
 tai.updateEmployment.whatDoYouWantToTellUs.textarea.text=Rhowch fanylion eich diweddariad (Uchafswm o {0} o gymeriadau)
 tai.updateEmployment.whatDoYouWantToTellUs.title=Beth ydych am roi gwybod i ni am {0}?
+tai.updateEmployment.incomeSame.title=Eich incwm amcangyfrifedig ar gyfer {0}
+tai.updateEmployment.incomeSame.preHeading=Diweddarwch eich incwm amcangyfrifedig oddi wrth {0}
+tai.updateEmployemnt.incomeSame.heading=Eich incwm amcangyfrifedig ar gyfer {0}
+tai.updateEmployment.incomeSame.newEstimate.text=Eich incwm amcangyfrifedig newydd yw
+tai.updateEmployment.incomeSame.description=Mae’r swm hwn eisoes wedi’i amcangyfrif ar gyfer {0} ar gyfer {1}, felly does dim rhaid i chi ddiweddaru’ch incwm.
+tai.updateEmployment.incomeSame.return.link=Dychwelyd i’ch manylion incwm
+tai.updateEmployment.incomeSame.estimatedPayCYPlusOne.link=View your estimated income for next tax year
+tai.updateEmployment.incomeSame.returnToIncomeDetails.button=Dychwelyd i’ch manylion incwm
+
 tai.updateOrRemove.fromOtherSources=Diweddaru neu ddileu {0}
 tai.updateOrRemove=Diweddaru neu ddileu
 tai.updatePension.confirmation.heading=Mae''ch diweddariad am bensiwn wedi dod i law
@@ -1390,4 +1399,10 @@ tai.updateIncome.CYPlus1.same.cancel=Dychwelyd i’ch cymhariaeth Treth Incwm ar
 tai.taxCodeComparison.addEmployer=Mae gennych gyflogaeth newydd gyda {0}
 tai.taxCodeComparison.removeEmployer=Mae’ch cyflogaeth {0} wedi dod i ben
 tai.taxCodeComparison.title=Gwnaethom newid hyn oherwydd y canlynol:
+
+tai.urbanner.title=Helpwch i wella llythyrau CThEM
+tai.urbanner.text=Cymerwch ran yn ein harolwg byr (yn agor ffenestr neu dab newydd)
+tai.urbanner.link=https://www.surveygizmo.com/s3/4842480/HMRC-Letter-Study-5
+tai.urbanner.reject=Dim diolch
+
 checkProgress.link=Gwiriwch gynnydd eich diweddariad

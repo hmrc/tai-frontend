@@ -1259,6 +1259,14 @@ tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.blank=Enter what you w
 tai.updateEmployment.whatDoYouWantToTellUs.textarea.error.maximumExceeded=You can only enter a maximum of {0} characters
 tai.updateEmployment.whatDoYouWantToTellUs.textarea.text=Enter details about your update (Maximum characters {0})
 tai.updateEmployment.whatDoYouWantToTellUs.title=What do you want to tell us about {0}?
+tai.updateEmployment.incomeSame.title=Your estimated income for {0}
+tai.updateEmployment.incomeSame.preHeading=Update your estimated income from {0}
+tai.updateEmployemnt.incomeSame.heading=Your estimated income for {0}
+tai.updateEmployment.incomeSame.newEstimate.text=Your new estimated income is
+tai.updateEmployment.incomeSame.description=This amount has already been estimated for {0} for {1}, so you do not need to update your income.
+tai.updateEmployment.incomeSame.return.link=Return to employment details
+tai.updateEmployment.incomeSame.estimatedPayCYPlusOne.link=View your estimated income for next tax year
+tai.updateEmployment.incomeSame.returnToIncomeDetails.button=Return to employment details
 tai.updateOrRemove.fromOtherSources=Update or remove {0}
 tai.updateOrRemove=Update or remove
 tai.updatePension.confirmation.heading=Your update about a pension has been received
@@ -1387,4 +1395,10 @@ tai.updateIncome.CYPlus1.same.cancel=Return to your Income Tax comparison for cu
 tai.taxCodeComparison.addEmployer=You have a new employment with {0}
 tai.taxCodeComparison.removeEmployer=Your employment {0} has ended
 tai.taxCodeComparison.title=We changed this because:
+
+tai.urbanner.title=Help improve HMRC letters
+tai.urbanner.text=Please take part in our short survey (opens in a new window or tab)
+tai.urbanner.link=https://www.surveygizmo.com/s3/4842480/HMRC-Letter-Study-5
+tai.urbanner.reject=No thanks
+
 checkProgress.link=Check the progress of your update
