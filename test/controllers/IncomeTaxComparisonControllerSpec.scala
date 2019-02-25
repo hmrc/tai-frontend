@@ -162,8 +162,8 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
   val nino: Nino = new Generator(new Random).nextNino
   val employment = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
   val employment2 = Employment("employment2", None, new LocalDate(), None, Nil, "", "", 2, None, false, false)
-  val pension = Employment("employment3", None, new LocalDate(), None, Nil, "", "", 3, None, false, false)
-  val pension2 = Employment("employment4", None, new LocalDate(), None, Nil, "", "", 4, None, false, false)
+  val pension = Employment("employment3", None, new LocalDate(), None, Nil, "", "", 3, None, false, true)
+  val pension2 = Employment("employment4", None, new LocalDate(), None, Nil, "", "", 4, None, false, true)
   val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
 
   val taxCodeIncomes = Seq(
