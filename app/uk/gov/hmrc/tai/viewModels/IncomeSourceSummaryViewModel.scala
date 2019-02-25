@@ -94,6 +94,7 @@ object IncomeSourceSummaryViewModel {
     ccBenVMs ++ otherBenVMs
 
   }
+
 }
 
 case class CompanyBenefitViewModel(name: String, amount: BigDecimal, changeUrl: String)
