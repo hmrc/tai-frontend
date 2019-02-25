@@ -32,22 +32,21 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
 
   def apply(taxCodeIncomesCY:Seq[TaxCodeIncome],
             employmentsCY:Seq[Employment],
-            taxCodeIncomesCYPlusOne:Seq[TaxCodeIncome],
-            employmentsCYPlusOne:Seq[Employment]): IncomeSourceComparisonViewModel = {
+            taxCodeIncomesCYPlusOne:Seq[TaxCodeIncome]): IncomeSourceComparisonViewModel = {
 
     val employmentTaxCodeIncomes = taxCodeIncomesCY filter liveEmployment
     val employmentIncomeSourceDetailCY = incomeSourceDetail(employmentTaxCodeIncomes, employmentsCY,TaiConstants.CurrentTaxYear)
 
     val employmentTaxCodeIncomesCYPlusOne = taxCodeIncomesCYPlusOne filter liveEmployment
     val employmentIncomeSourceDetailCYPlusOne = incomeSourceDetail(
-      employmentTaxCodeIncomesCYPlusOne, employmentsCYPlusOne,TaiConstants.CurrentTaxYearPlusOne)
+      employmentTaxCodeIncomesCYPlusOne, Nil,TaiConstants.CurrentTaxYearPlusOne)
 
     val pensionTaxCodeIncomes = taxCodeIncomesCY filter livePension
     val pensionIncomeSourceDetailCY = incomeSourceDetail(pensionTaxCodeIncomes, employmentsCY,TaiConstants.CurrentTaxYear)
 
     val pensionTaxCodeIncomesCYPlusOne = taxCodeIncomesCYPlusOne filter livePension
     val pensionIncomeSourceDetailCYPlusOne = incomeSourceDetail(
-      pensionTaxCodeIncomesCYPlusOne, employmentsCYPlusOne,TaiConstants.CurrentTaxYearPlusOne)
+      pensionTaxCodeIncomesCYPlusOne, Nil,TaiConstants.CurrentTaxYearPlusOne)
 
     val employmentIncomeSourceComparisonDetailSeq = incomeSourceComparisionDetail(
       employmentIncomeSourceDetailCY, employmentIncomeSourceDetailCYPlusOne).sortBy(_.amountCY).reverse
@@ -60,13 +59,24 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
   }
 
   private def incomeSourceDetail(taxCodeIncomes: Seq[TaxCodeIncome], employments: Seq[Employment], taxYearStatus:String): Seq[IncomeSourceDetail] = {
-    taxCodeIncomes.flatMap { (t: TaxCodeIncome) =>
-      t.employmentId.flatMap { (id: Int) =>
-        employments.find(_.sequenceNumber == id).map{ e:Employment =>
-          val amount = withPoundPrefixAndSign(MoneyPounds(t.amount, 0))
-          IncomeSourceDetail(e.name,e.sequenceNumber, amount, taxYearStatus)
+    taxYearStatus match {
+      case TaiConstants.CurrentTaxYearPlusOne =>
+        taxCodeIncomes.map { taxCodeIncome =>
+          lazy val amount = withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0))
+          taxCodeIncome.employmentId match {
+            case Some(id) => IncomeSourceDetail(taxCodeIncome.name, id, amount, taxYearStatus)
+            case _ => throw new RuntimeException("Employment id is missing")
+          }
         }
-      }
+      case _ =>
+        taxCodeIncomes.flatMap { taxCodeIncome =>
+          taxCodeIncome.employmentId.flatMap { id =>
+            employments.find(_.sequenceNumber == id).map{ employment =>
+              val amount = withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0))
+              IncomeSourceDetail(employment.name,employment.sequenceNumber, amount, taxYearStatus)
+            }
+          }
+        }
     }
   }
 
@@ -79,8 +89,10 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
       val incomeSourceDetailSeq = map._2
       incomeSourceDetailSeq.size match {
         case(1) => incomeSourceDetailSeq(0) match {
-          case IncomeSourceDetail(name, id, amount, TaiConstants.CurrentTaxYear) => IncomeSourceComparisonDetail(id, name, amount, TaiConstants.notApplicable.toLowerCase())
-          case IncomeSourceDetail(name, id, amount, TaiConstants.CurrentTaxYearPlusOne) => IncomeSourceComparisonDetail(id, name, TaiConstants.notApplicable.toLowerCase(), amount)
+          case IncomeSourceDetail(name, id, amount, TaiConstants.CurrentTaxYear) =>
+            IncomeSourceComparisonDetail(id, name, amount, TaiConstants.notApplicable.toLowerCase())
+          case IncomeSourceDetail(name, id, amount, TaiConstants.CurrentTaxYearPlusOne) =>
+            IncomeSourceComparisonDetail(id, name, TaiConstants.notApplicable.toLowerCase(), amount)
         }
         case(2) =>{
           val sortedSeq = incomeSourceDetailSeq.sortBy(_.taxYearStatus)

@@ -59,9 +59,6 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
         Future.successful(Seq.empty[CodingComponent]))
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(
         Future.successful(Seq(employment)))
-      when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear().next))(Matchers.any())).thenReturn(
-        Future.successful(Seq(employment)))
-
 
       val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -70,7 +67,6 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
       doc.title() must include(Messages("tai.incomeTaxComparison.heading"))
 
       verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
-      verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(TaxYear().next))(Matchers.any())
 
     }
 
