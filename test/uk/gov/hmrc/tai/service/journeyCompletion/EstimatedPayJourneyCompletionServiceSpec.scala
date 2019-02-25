@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.tai.service.journeyCompletion
 
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.{Matchers, Mockito}
+import org.mockito.Matchers.{any, eq => meq}
 import org.mockito.Mockito.{times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.http.HeaderCarrier
@@ -28,31 +29,41 @@ import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
-class EstimatedPayJourneyCompletionServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheConstants{
+class EstimatedPayJourneyCompletionServiceSpec extends PlaySpec with MockitoSugar with JourneyCacheConstants with BeforeAndAfterEach {
 
   private def createTestService = new EstimatedPayJourneyCompletionServiceTest
 
   val successfulJourneyCacheService: JourneyCacheService = mock[JourneyCacheService]
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-
+  val incomeId = "1"
+  val trueValue = true.toString
 
   private class EstimatedPayJourneyCompletionServiceTest extends EstimatedPayJourneyCompletionService(
     successfulJourneyCacheService
-
   )
 
+  override def beforeEach: Unit = {
+    Mockito.reset(successfulJourneyCacheService)
+  }
+
   "Estimated Pay Journey Completed Service" must {
+
     "add a cache entry upon successful completion of a journey" in {
-      val incomeId = "1"
-      val trueValue = true.toString
       val idKey=s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId"
-      when(successfulJourneyCacheService.cache(Matchers.eq(idKey), Matchers.eq(trueValue))(any())).thenReturn(Future.successful(Map(idKey -> trueValue)))
+      when(successfulJourneyCacheService.cache(meq(idKey), meq(trueValue))(any())).thenReturn(Future.successful(Map(idKey -> trueValue)))
 
       Await.result(createTestService.journeyCompleted(incomeId)(hc), 5 seconds)
-      verify(successfulJourneyCacheService, times(1)).cache(Matchers.eq(idKey),Matchers.eq(trueValue))(any())
+      verify(successfulJourneyCacheService, times(1)).cache(meq(idKey),meq(trueValue))(any())
+    }
+
+    "retrieve a cache entry upon request" in {
+      val idKey=s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId"
+      when(successfulJourneyCacheService.currentValue(meq(idKey))(any())).thenReturn(Future.successful(Some(trueValue)))
+
+      Await.result(createTestService.hasJourneyCompleted(incomeId)(hc), 5 seconds)
+      verify(successfulJourneyCacheService, times(1)).currentValue(meq(idKey))(any())
     }
 
   }
-
 }
