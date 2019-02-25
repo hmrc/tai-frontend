@@ -18,6 +18,7 @@ package views.html.incomes
 
 import org.scalatest.mockito.MockitoSugar
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.util.HtmlFormatter.htmlNonBroken
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 
 class EditSuccessSpec extends TaiViewSpec with MockitoSugar{
@@ -27,12 +28,16 @@ class EditSuccessSpec extends TaiViewSpec with MockitoSugar{
 
   "Edit Success Employment view" should {
     "contain the success heading" in {
-      doc(view).getElementsByTag("h1").text must include(messages("tai.incomes.updated.check.heading", employerName))
+      doc(view) must haveHeadingWithText(
+        s"${htmlNonBroken(messages("tai.incomes.updated.check.heading"))} " +
+          s"${htmlNonBroken(messages("tai.incomes.updated.check.heading.pt2"))} " +
+          s"${htmlNonBroken(messages("tai.incomes.updated.check.heading.pt3"))}"
+      )
     }
 
-    "contain the success paragraph and link" in {
+    "contain the success paragraph" in {
       doc(view).getElementsByTag("p").text must include(
-        s"${messages("tai.incomes.updated.check.text")} ${messages("tai.incomes.updated.check.link")}"
+        messages("tai.incomes.updated.check.text")
       )
     }
 

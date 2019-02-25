@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.tai.util.ViewModelHelper.htmlNonBroken
+
 @(employerName: String, employerId: Int)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -26,19 +28,24 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     <div class="column-two-thirds">
         <header class="grid-row margin-bottom-large">
             <div class="govuk-box-highlight">
-                <h1 class="heading-large" id="currentYearTitle">@messages("tai.incomes.updated.check.heading", employerName)</h1>
+                <h1 class="heading-large" id="currentYearTitle">
+                    @htmlNonBroken(messages("tai.incomes.updated.check.heading"))
+                    @htmlNonBroken(messages("tai.incomes.updated.check.heading.pt2"))
+                    @htmlNonBroken(messages("tai.incomes.updated.check.heading.pt3"))
+                </h1>
             </div>
         </header>
 
         <div class="grid-row">
+            <p>@messages("tai.incomes.updated.check.text")</p>
+            <p>@messages("tai.incomes.seeChanges.text", employerName)</p>
             <p>
-                @messages("tai.incomes.updated.check.text")
                 @includes.link(
-                    copy = messages("tai.incomes.updated.check.link"),
-                    url = routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString
+                copy=messages("tai.incomes.updated.check.button"),
+                url = routes.IncomeSourceSummaryController.onPageLoad(employerId).url.toString,
+                isButton=true
                 )
             </p>
-            <p>@messages("tai.incomes.seeChanges.text", employerName)</p>
         </div>
     </div>
 }

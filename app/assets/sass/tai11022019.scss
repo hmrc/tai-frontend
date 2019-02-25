@@ -88,3 +88,33 @@ hr {
   -moz-hyphens: none;
   hyphens: none;
 }
+
+.banner-panel-close {
+    display: none;
+}
+
+@media (max-width: 640px) {
+    #full-width-banner {
+        display: none;
+    }
+}
+
+.tai-progress-panel {
+  background-color: #005ea5;
+  color: #fff;
+  margin: 15px 0 20px 0;
+  padding: 15px 15px 20px 15px;
+  clear: both;
+}
+
+.tai-progress-panel a {
+  color: #fff;
+}
+
+.tai-progress-panel a:hover {
+  text-decoration: none;
+}
+
+.tai-progress-panel p {
+  margin-bottom: 0;
+}

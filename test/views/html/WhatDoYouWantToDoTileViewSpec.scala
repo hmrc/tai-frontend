@@ -19,13 +19,14 @@ package views.html
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
 import uk.gov.hmrc.tai.service.{NoTimeToProcess, SevenDays, ThreeWeeks}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
 import utils.factories.TaxCodeMismatchFactory
-
+import play.api.mvc.Cookie
 
 class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
   "whatDoYouWantTodo Page" should {
@@ -33,18 +34,19 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     behave like pageWithHeader(messages("your.paye.income.tax.overview"))
 
     "display iForms status message with three weeks when an iForm has not been fully processed" in{
-      def view: Html = views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1)
-      val paragraphs = doc(view).select(".panel-indent > p")
-      paragraphs.get(0).text mustBe Messages("tai.whatDoYouWantToDo.iformPanel.p1")
-      paragraphs.get(1).text mustBe Messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2")
+      val threeWeekDoc = doc(views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1))
+      threeWeekDoc must haveH2HeadingWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1"))
+      threeWeekDoc must haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2"))
+      threeWeekDoc must haveLinkElement("checkProgressLink",ApplicationConfig.checkUpdateProgressLinkUrl, messages("checkProgress.link"))
     }
 
 
     "display iForms status message with seven days when an iForm has not been fully processed" in{
-      def view: Html = views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1ForSevenDays)
-      val paragraphs = doc(view).select(".panel-indent > p")
-      paragraphs.get(0).text mustBe Messages("tai.whatDoYouWantToDo.iformPanel.p1")
-      paragraphs.get(1).text mustBe Messages("tai.whatDoYouWantToDo.iformPanel.sevenDays.p2")
+
+      val sevenDaysDoc = doc(views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1ForSevenDays))
+      sevenDaysDoc must haveH2HeadingWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1"))
+      sevenDaysDoc must haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.sevenDays.p2"))
+      sevenDaysDoc must haveLinkElement("checkProgressLink",ApplicationConfig.checkUpdateProgressLinkUrl, messages("checkProgress.link"))
     }
 
     "not display iForms status message when no iForms are in progress" in{
@@ -101,7 +103,20 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         cards.toString mustNot include("Find out what has changed and what happens next")
       }
     }
-  }
+
+      "display UR banner" in {
+        val document: Html = views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1)
+        val urBanner =  doc(document).getElementsByAttributeValue("id", "full-width-banner")
+        val urDismissedText =  doc(document).getElementsByAttributeValue("id", "fullWidthBannerDismissText")
+        val urBannerHref =  doc(document).getElementsByAttributeValue("id", "fullWidthBannerLink")
+        urBanner mustNot be(null)
+        urBanner.text() startsWith Messages("tai.urbanner.title")
+        urDismissedText.text() must include(Messages("tai.urbanner.reject"))
+        urBanner.text() must include(Messages("tai.urbanner.text"))
+        urBannerHref.text() must include(Messages("tai.urbanner.link"))
+      }
+
+    }
 
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
 
