@@ -39,6 +39,7 @@ class ApplicationConfig extends DefaultServicesConfig {
   lazy val reportAProblemPartialUrl = s"${fetchUrl("contact-frontend")}/contact/problem_reports?secure=true&service=TAI"
   lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
   lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
+  lazy val checkUpdateProgressLinkUrl = s"${fetchUrl("track")}/track"
 
   lazy val analyticsToken: Option[String] = configuration.getString(s"govuk-tax.$env.google-analytics.token")
   lazy val gaValueOfPayments: String = configuration.getString(s"govuk-tax.$env.google-analytics.gaValueOfPayments").getOrElse("")
@@ -70,7 +71,6 @@ class ApplicationConfig extends DefaultServicesConfig {
   lazy val companyAuthFrontendSignOutUrl = s"$companyAuthUrl/gg/sign-out?continue=$feedbackSurveyUrl"
   lazy val citizenAuthFrontendSignOutUrl = citizenAuthHost + "/ida/signout"
   lazy val assetsPath = s"${configuration.getString(s"$env.assets.url").getOrElse("")}${configuration.getString(s"$env.assets.version").getOrElse("")}/"
-
   lazy val webchatTemplate = configuration.getString(s"govuk-tax.$env.services.webchat-frontend.template").getOrElse("defaultTemplate")
   lazy val webchatEntryPoint = configuration.getString(s"govuk-tax.$env.services.webchat-frontend.entry-point").getOrElse("defaultEntryPoint")
   lazy val webchatAvailabilityUrl = s"${configuration.getString(s"govuk-tax.$env.services.webchat-frontend.url").getOrElse("")}/$webchatEntryPoint"
@@ -98,9 +98,8 @@ trait FeatureTogglesConfig extends DefaultServicesConfig {
   val cyPlusOneEnabled = configuration.getBoolean("tai.cyPlusOne.enabled").getOrElse(false)
   val welshLanguageEnabled =  configuration.getBoolean("tai.feature.welshLanguage.enabled").getOrElse(false)
   val companyCarForceRedirectEnabled = configuration.getBoolean("tai.feature.companyCarForceRedirect.enabled").getOrElse(false)
-  val taxFreeAmountComparisonEnabled = configuration.getBoolean("tai.taxFreeAmountComparison.enabled").getOrElse(false)
   val cyPlus1EstimatedPayEnabled = configuration.getBoolean("tai.cyPlus1EstimatedPay.enabled").getOrElse(false)
-
+  val confirmedAPIEnabled = configuration.getBoolean("tai.confirmedAPI.enabled").getOrElse(false)
 }
 
 object FeatureTogglesConfig extends FeatureTogglesConfig

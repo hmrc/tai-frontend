@@ -20,7 +20,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.model.domain.{CarBenefit, TaxComponentType}
 
-case class CodingComponentPair(componentType: TaxComponentType, employmentId: Option[Int], previous: BigDecimal, current: BigDecimal)
+case class CodingComponentPair(componentType: TaxComponentType, employmentId: Option[Int], previous: Option[BigDecimal], current: Option[BigDecimal])
 
 case class CodingComponentPairDescription(description: String, previous: BigDecimal, current: BigDecimal)
 
@@ -32,7 +32,10 @@ object CodingComponentPairDescription {
 
     val description = CodingComponentTypeDescription.describe(codingComponentPair.componentType, codingComponentPair.employmentId, companyCarBenefits, employmentIds)
 
-    CodingComponentPairDescription(description, codingComponentPair.previous, codingComponentPair.current)
+    val previousAmount: BigDecimal = codingComponentPair.previous.getOrElse(0)
+    val currentAmount: BigDecimal = codingComponentPair.current.getOrElse(0)
+
+    CodingComponentPairDescription(description, previousAmount, currentAmount)
   }
 }
 
