@@ -21,7 +21,8 @@ import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.config.ApplicationConfig
 import uk.gov.hmrc.tai.forms.{WhatDoYouWantToDoForm, WhatDoYouWantToDoFormData}
-import uk.gov.hmrc.tai.service.{NoTimeToProcess, SevenDays, ThreeWeeks}
+import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
+import uk.gov.hmrc.tai.service.{NoTimeToProcess, SevenDays, ThreeWeeks, TimeToProcess}
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.WhatDoYouWantToDoViewModel
@@ -33,26 +34,45 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     behave like pageWithTitle(messages("your.paye.income.tax.overview"))
     behave like pageWithHeader(messages("your.paye.income.tax.overview"))
 
-    "display iForms status message with three weeks when an iForm has not been fully processed" in{
-      val threeWeekDoc = doc(views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1))
-      threeWeekDoc must haveH2HeadingWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1"))
-      threeWeekDoc must haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2"))
-      threeWeekDoc must haveLinkElement("checkProgressLink",ApplicationConfig.checkUpdateProgressLinkUrl, messages("checkProgress.link"))
+    "when confirmedAPIEnabled is set to false" should {
+      "display iForms status message with three weeks when an iForm has not been fully processed" in{
+
+        val modelWithiFormNoCyPlus1 = createViewModel(ThreeWeeks, false)
+
+        val threeWeekDoc = doc(views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1))
+        threeWeekDoc must haveH2HeadingWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1"))
+        threeWeekDoc must haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2"))
+        threeWeekDoc must haveLinkElement("checkProgressLink",ApplicationConfig.checkUpdateProgressLinkUrl, messages("checkProgress.link"))
+      }
+
+
+      "display iForms status message with seven days when an iForm has not been fully processed" in{
+
+        val modelWithiFormNoCyPlus1ForSevenDays = createViewModel(SevenDays, false)
+
+        val sevenDaysDoc = doc(views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1ForSevenDays))
+        sevenDaysDoc must haveH2HeadingWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1"))
+        sevenDaysDoc must haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.sevenDays.p2"))
+        sevenDaysDoc must haveLinkElement("checkProgressLink",ApplicationConfig.checkUpdateProgressLinkUrl, messages("checkProgress.link"))
+
+      }
+
+      "not display iForms status message when no iForms are in progress" in{
+        doc(view).select(".tai-progress-panel").size() mustBe 0
+      }
     }
 
+    "when confirmedAPIEnabled is set to true" should {
+      "not display iForms status message" in{
+        val threeWeeksViewModel = createViewModel(ThreeWeeks, false, isConfirmedAPI = true)
+        val confirmedAPIEnabledDoc = doc(views.html.whatDoYouWantToDoTileView(form, threeWeeksViewModel))
 
-    "display iForms status message with seven days when an iForm has not been fully processed" in{
+        confirmedAPIEnabledDoc must not(haveH2HeadingWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1")))
+        confirmedAPIEnabledDoc must not(haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2")))
+        confirmedAPIEnabledDoc.select("#checkProgressLink").size() mustBe 0
 
-      val sevenDaysDoc = doc(views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1ForSevenDays))
-      sevenDaysDoc must haveH2HeadingWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1"))
-      sevenDaysDoc must haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.sevenDays.p2"))
-      sevenDaysDoc must haveLinkElement("checkProgressLink",ApplicationConfig.checkUpdateProgressLinkUrl, messages("checkProgress.link"))
+      }
     }
-
-    "not display iForms status message when no iForms are in progress" in{
-      doc(view).select(".panel-indent").size() mustBe 0
-    }
-
 
     "display cards correctly" when {
       "CY+1 is not enabled" in {
@@ -71,6 +91,8 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
       "CY+1 is enabled" in {
 
+        val modelNoiFormWithCyPlus1 = createViewModel(NoTimeToProcess, true)
+
         val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1)
         val cards = doc(nextYearView).getElementsByClass("card")
 
@@ -85,6 +107,9 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
       "Tax Code Change is enabled" in {
 
+        val taxCodeMatched = TaxCodeMismatchFactory.matchedTaxCode
+        val modeWithCyPlus1TaxCodeChange = createViewModel(NoTimeToProcess, true, true, Some(taxCodeMatched))
+
         val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modeWithCyPlus1TaxCodeChange)
         val cards = doc(nextYearView).getElementsByClass("card")
 
@@ -94,6 +119,8 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       }
 
       "Tax Code Change is disabled" in {
+
+        val modelNoiFormWithCyPlus1 = createViewModel(NoTimeToProcess, true)
 
         val nextYearView: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormWithCyPlus1)
         val cards = doc(nextYearView).getElementsByClass("card")
@@ -105,13 +132,16 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
     }
   }
 
+  def createViewModel(isAnyIFormInProgress: TimeToProcess,
+                      isCyPlusOneEnabled: Boolean,
+                      hasTaxCodeChanged: Boolean = false,
+                      taxCodeMismatch: Option[TaxCodeMismatch] = None,
+                      isConfirmedAPI: Boolean = false): WhatDoYouWantToDoViewModel = {
+    WhatDoYouWantToDoViewModel(isAnyIFormInProgress, isCyPlusOneEnabled, hasTaxCodeChanged, taxCodeMismatch, isConfirmedAPI)
+  }
+
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
 
-  private lazy val modelNoiFormNoCyPlus1 = WhatDoYouWantToDoViewModel(NoTimeToProcess, false)
-  private lazy val modelNoiFormWithCyPlus1 = WhatDoYouWantToDoViewModel(NoTimeToProcess, true)
-  private lazy val modelWithiFormNoCyPlus1 = WhatDoYouWantToDoViewModel(ThreeWeeks, false)
-  private lazy val modelWithiFormNoCyPlus1ForSevenDays = WhatDoYouWantToDoViewModel(SevenDays, false)
-  private lazy val taxCodeMatched = TaxCodeMismatchFactory.matchedTaxCode
-  private lazy val modeWithCyPlus1TaxCodeChange = WhatDoYouWantToDoViewModel(NoTimeToProcess, true, true, Some(taxCodeMatched))
+  private lazy val modelNoiFormNoCyPlus1 = createViewModel(NoTimeToProcess, false)
   override def view: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1)
 }
