@@ -37,6 +37,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.{CodingComponentService, EmploymentService, TaxAccountService}
+import uk.gov.hmrc.tai.util.constants.TaiConstants
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -50,7 +51,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
 
   "onPageLoad" must {
     "display the cy plus one page" in {
-      val sut = createSut
+      val controller = new TestController
       when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
         Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
       when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
@@ -60,7 +61,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(
         Future.successful(Seq(employment)))
 
-      val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
 
       val doc = Jsoup.parse(contentAsString(result))
@@ -72,7 +73,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
 
     "throw an error page" when {
       "not able to fetch comparision details" in {
-        val sut = createSut
+        val controller = new TestController
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiNotFoundResponse("Not Found")))
         when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
@@ -80,13 +81,49 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
         when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
           Future.successful(Seq.empty[CodingComponent]))
 
-        val result = sut.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
 
   }
+
+  "rendered CY+1 page" must {
+    "show estimated income for CY and CY+1" in {
+      val controller = new TestController
+      when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear()))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+      when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesCYPlusOne)))
+      when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
+      when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty[CodingComponent]))
+      when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(Future.successful(Seq(employment)))
+
+      val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe OK
+
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.getElementById("amount-cy-0").text must equal ("£1,111")
+      doc.getElementById("amount-cy-plus-one-0").text must equal ("£2,222")
+    }
+
+    "show not applicable when CY and CY+1 employment id's don't match" in {
+      val controller = new TestController
+      when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear()))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+      when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesCYPlusOne2)))
+      when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
+      when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty[CodingComponent]))
+      when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(Future.successful(Seq(employment)))
+
+      val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe OK
+
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.getElementById("amount-cy-0").text must equal ("£1,111")
+      doc.getElementById("amount-cy-plus-one-0").text must equal("not applicable")
+    }
+  }
+
+
 
   val nino: Nino = new Generator(new Random).nextNino
   val employment = Employment("employment1", None, new LocalDate(), None, Nil, "", "", 1, None, false, false)
@@ -97,13 +134,21 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
     TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
   )
 
+  val taxCodeIncomesCYPlusOne = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(1), 2222, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 2222, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
+  )
+
+  val taxCodeIncomesCYPlusOne2 = Seq(
+    TaxCodeIncome(EmploymentIncome, Some(2), 2222, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 2222, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
+  )
+
   val codingComponentService = mock[CodingComponentService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
 
-  def createSut = new SUT()
-
-  class SUT() extends IncomeTaxComparisonController(
+  class TestController() extends IncomeTaxComparisonController(
     mock[AuditConnector],
     taxAccountService,
     employmentService,
