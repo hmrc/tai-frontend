@@ -25,9 +25,8 @@
 @import includes.forms.card
 @import uk.gov.hmrc.tai.util.TaxYearRangeUtil.dynamicDateRange
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
+@import uk.gov.hmrc.tai.viewModels.IFormInProgressBannerViewModel
 
-@import uk.gov.hmrc.tai.service.ThreeWeeks
-@import uk.gov.hmrc.tai.service.SevenDays
 @(wdywtdForm: Form[uk.gov.hmrc.tai.forms.WhatDoYouWantToDoFormData],
   model: WhatDoYouWantToDoViewModel
 )(implicit request: Request[_],
@@ -67,19 +66,7 @@
         <div class="grid">
             <div class="inner-block">
 
-                @if(model.isAnyIFormInProgress == ThreeWeeks){
-                    <div id="isAnyFormInProgressBanner" class="panel-indent panel-indent--info flush--top">
-                        <p>@messages("tai.whatDoYouWantToDo.iformPanel.p1")</p>
-                        <p>@messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2")</p>
-                    </div>
-                }
-
-                @if(model.isAnyIFormInProgress == SevenDays){
-                    <div id="isAnyFormInProgressBanner" class="panel-indent panel-indent--info flush--top">
-                        <p>@messages("tai.whatDoYouWantToDo.iformPanel.p1")</p>
-                        <p>@messages("tai.whatDoYouWantToDo.iformPanel.sevenDays.p2")</p>
-                    </div>
-                }
+                @includes.iFormInProgressBanner(IFormInProgressBannerViewModel(model.isAnyIFormInProgress))
 
                 <div class="flex-container grid-row">
                     @if(model.showTaxCodeChangeTile()){

@@ -649,11 +649,6 @@ tai.incomeTaxComparison.taxCodes.subHeading=Codau treth
 
 tai.incomeTaxComparison.taxCodes.table.employmentsReaderText=Enw''r cyflogwr
 tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Enw''r pensiwn
-
-
-
-
-
 tai.incomeTaxComparison.taxFreeAmount.NA=ddim yn gymwys
 tai.incomeTaxComparison.taxFreeAmount.PA.information1=Mae’r Lwfans Personol safonol yn cynyddu i {0} o {1} ymlaen.
 tai.incomeTaxComparison.taxFreeAmount.PA.information2=Gall eich Lwfans Personol fod yn wahanol, yn dibynnu ar eich amgylchiadau.
@@ -749,22 +744,29 @@ tai.incomes.jobTitle=Teitl y swydd:
 tai.incomes.noneEditable.link.text=cysylltwch â''ch swyddfa DWP
 tai.incomes.noneEditable.link.url=https://www.gov.uk/government/organisations/department-for-work-pensions.cy
 tai.incomes.noneEditable.text=Ni ellir diweddaru''r buddiannau a geir gan yr Adran Gwaith a Phensiynau (DWP). Os ydynt yn anghywir, dylech
-tai.incomes.seeChanges.text=Mae’n bosibl y bydd y cyfrifiad hwn yn newid pan fyddwn yn cael eich diweddariad nesaf oddi wrth {0}.
+tai.incomes.seeChanges.text.old=Mae’n bosibl y bydd y cyfrifiad hwn yn newid pan fyddwn yn cael eich diweddariad nesaf oddi wrth {0}.
+tai.incomes.seeChanges.text=Mae’n bosibl y bydd y incwm amcangyfrifedig hwn yn newid pan fyddwn yn cael eich diweddariad nesaf oddi wrth {0}.
 tai.incomes.select.title=Dewiswch incwm i''w ddiweddaru
 tai.incomes.startDate=Dyddiad cychwyn:
 tai.incomes.status-1=(Cyflogwr
 tai.incomes.status-2=(Blaenorol
 tai.incomes.type-0=presennol)
 tai.incomes.type-1=(Pensiwn)
-tai.incomes.updated.check.text=Gallwch weld eich diweddariad drwy
+tai.incomes.updated.check.text.old=Gallwch weld eich diweddariad drwy
+tai.incomes.updated.check.text=Gallwch wirio’ch cyfrif ar ôl hyn i weld manylion newydd eich incwm amcangyfrifedig
 tai.incomes.updated.check.link=fwrw golwg ar eich manylion cyflogaeth.
-tai.incomes.updated.check.heading=Mae’ch incwm trethadwy oddi wrth {0} wedi’i ddiweddaru
 tai.incomes.updated.check.title=Mae’ch incwm trethadwy wedi’i ddiweddaru
-tai.incomes.updated.pension.check.text=Gallwch weld eich diweddariad drwy
+tai.incomes.updated.check.heading.old=Mae’ch incwm trethadwy oddi wrth {0} wedi’i ddiweddaru
+tai.incomes.updated.check.heading=Mae’ch diweddariad wedi dod i law.
+tai.incomes.updated.check.heading.pt2=Bydd eich cyfrif yn cael ei ddiweddaru cyn pen
+tai.incomes.updated.check.heading.pt3=48 awr
+tai.incomes.updated.check.button=Dychwelyd i’ch incwm amcangyfrifedig
+tai.incomes.updated.pension.check.text.old=Gallwch weld eich diweddariad drwy
+tai.incomes.updated.pension.check.text=Gallwch wirio’ch cyfrif ar ôl hyn i weld manylion newydd eich incwm amcangyfrifedig
 tai.incomes.updated.pension.check.link=fwrw golwg ar eich manylion cyflogaeth
-tai.incomes.updated.pension.seeChanges.text=Mae’n bosibl y bydd y cyfrifiad hwn yn newid pan fyddwn yn cael eich datganiad pensiwn nesaf oddi wrth {0}.
+tai.incomes.updated.pension.seeChanges.text=Mae’n bosibl y bydd y incwm amcangyfrifedig hwn yn newid pan fyddwn yn cael eich datganiad pensiwn nesaf oddi wrth {0}.
+tai.incomes.updated.pension.seeChanges.text.old=Mae’n bosibl y bydd y cyfrifiad hwn yn newid pan fyddwn yn cael eich datganiad pensiwn nesaf oddi wrth {0}.
 tai.incomes.workNumber=Rhif y cyflogai:
-
 tai.irregular.secondaryHeading=Nodwch eich amcangyfrif eich hun ar gyfer  {0}
 tai.irregular.option1=cysylltwch â {0} yn y lle cyntaf
 tai.irregular.option2=diweddaru fy manylion nawr
@@ -1284,7 +1286,7 @@ tai.viewDetails.screenReader=Gweld manylion ar gyfer {0}
 tai.viewDetails=Gweld y manylion
 tai.whatDoYouWantToDo.error.selectOption=Dewiswch beth rydych am ei wneud.
 tai.whatDoYouWantToDo.heading=Dewis blwyddyn dreth
-tai.whatDoYouWantToDo.iformPanel.p1=Rydych wedi diweddaru''ch manylion yn ddiweddar.
+tai.whatDoYouWantToDo.iformPanel.p1=Rydych wedi diweddaru''ch manylion yn ddiweddar
 tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2=Gall gymryd hyd at 3 wythnos i''r newidiadau ymddangos yma.
 tai.whatDoYouWantToDo.iformPanel.sevenDays.p2=Gall gymryd hyd at 7 diwrnod i''r newidiadau ymddangos yma.
 tai.whatDoYouWantToDo.legend=Gweld manylion Treth Incwm TWE ar gyfer:
@@ -1397,3 +1399,4 @@ tai.updateIncome.CYPlus1.same.cancel=Dychwelyd i’ch cymhariaeth Treth Incwm ar
 tai.taxCodeComparison.addEmployer=Mae gennych gyflogaeth newydd gyda {0}
 tai.taxCodeComparison.removeEmployer=Mae’ch cyflogaeth {0} wedi dod i ben
 tai.taxCodeComparison.title=Gwnaethom newid hyn oherwydd y canlynol:
+checkProgress.link=Gwiriwch gynnydd eich diweddariad

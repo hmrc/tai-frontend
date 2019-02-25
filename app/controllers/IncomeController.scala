@@ -33,6 +33,7 @@ import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
+import uk.gov.hmrc.tai.config.FeatureTogglesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
 import uk.gov.hmrc.tai.model.domain.Employment
@@ -62,8 +63,8 @@ class IncomeController @Inject()(personService: PersonService,
   with JourneyCacheConstants
   with AuditConstants
   with FormValuesConstants
-  with Auditable {
-
+  with Auditable
+  with FeatureTogglesConfig {
 
   def regularIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
@@ -169,14 +170,23 @@ class IncomeController @Inject()(personService: PersonService,
       implicit person => {
         implicit request => {
 
-          def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)(implicit user: TaiUser, request: Request[AnyContent]): Result = {
-            journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newAmount)
-
-            incomeType match {
-              case TaiConstants.IncomeTypePension => Ok(views.html.incomes.editPensionSuccess(employerName, employerId))
-              case _ => Ok(views.html.incomes.editSuccess(employerName, employerId))
-            }
+        def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)(implicit user: TaiUser, request: Request[AnyContent]): Result = {
+          journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newAmount)
+          incomeType match {
+            case TaiConstants.IncomeTypePension =>
+              if (confirmedAPIEnabled) {
+                Ok(views.html.incomes.editPensionSuccess(employerName, employerId))
+              } else {
+                Ok(views.html.incomes.oldEditPensionSuccess(employerName, employerId))
+              }
+            case _ =>
+              if (confirmedAPIEnabled) {
+                Ok(views.html.incomes.editSuccess(employerName, employerId))
+              } else {
+                Ok(views.html.incomes.oldEditSuccess(employerName, employerId))
+              }
           }
+        }
 
           ServiceCheckLite.personDetailsCheck {
             journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey).flatMap(cache => {
