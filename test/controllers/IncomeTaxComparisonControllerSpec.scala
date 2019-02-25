@@ -24,6 +24,7 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{times, verify, when}
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -157,6 +158,18 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
       doc.getElementById("amount-cy-0").text must equal ("£1,111")
       doc.getElementById("amount-cy-plus-one-0").text must equal("not applicable")
     }
+
+    "throw internal server error when employment id is missing" in {
+      val controller = new TestController
+      when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear()))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+      when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesNoEmpId)))
+      when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
+      when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty[CodingComponent]))
+      when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(Future.successful(Seq(employment, employment2)))
+
+      val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
   }
 
   val nino: Nino = new Generator(new Random).nextNino
@@ -165,6 +178,11 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
   val pension = Employment("employment3", None, new LocalDate(), None, Nil, "", "", 3, None, false, true)
   val pension2 = Employment("employment4", None, new LocalDate(), None, Nil, "", "", 4, None, false, true)
   val taxAccountSummary = TaxAccountSummary(111, 222, 333, 444, 111)
+
+  val taxCodeIncomesNoEmpId = Seq(
+    TaxCodeIncome(EmploymentIncome, None, 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
+    TaxCodeIncome(PensionIncome, Some(2), 1111, "employment2", "150L", "employment", Week1Month1BasisOfOperation, Live)
+  )
 
   val taxCodeIncomes = Seq(
     TaxCodeIncome(EmploymentIncome, Some(1), 1111, "employment1", "1150L", "employment", OtherBasisOfOperation, Live),
