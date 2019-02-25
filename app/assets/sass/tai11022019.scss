@@ -93,6 +93,12 @@ hr {
     display: none;
 }
 
+@media (max-width: 640px) {
+    #full-width-banner {
+        display: none;
+    }
+}
+
 .tai-progress-panel {
   background-color: #005ea5;
   color: #fff;
