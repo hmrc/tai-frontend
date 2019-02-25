@@ -35,7 +35,7 @@ abstract class JourneyCompletionService(successfulJourneyCacheService: JourneyCa
     successfulJourneyCacheService.currentValue(key) map(_.isDefined)
   }
 
-  def journeyCompleted(incomeId: String, value: String)(implicit hc: HeaderCarrier): Future[Map[String,String]]
+  def journeyCompleted(incomeId: String)(implicit hc: HeaderCarrier): Future[Map[String,String]]
 
   def hasJourneyCompleted(id: String)(implicit hc: HeaderCarrier): Future[Boolean]
 
@@ -44,8 +44,8 @@ abstract class JourneyCompletionService(successfulJourneyCacheService: JourneyCa
 class EstimatedPayJourneyCompletionService @Inject()(@Named("Track Successful Journey")successfulJourneyCacheService: JourneyCacheService)
   extends JourneyCompletionService(successfulJourneyCacheService){
 
-  override def journeyCompleted(incomeId: String, value: String)(implicit hc: HeaderCarrier): Future[Map[String,String]] = {
-    cache(s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId", value)
+  override def journeyCompleted(incomeId: String)(implicit hc: HeaderCarrier): Future[Map[String,String]] = {
+    cache(s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId", true.toString)
   }
 
   override def hasJourneyCompleted(id: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
