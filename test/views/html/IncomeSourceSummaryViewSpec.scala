@@ -192,14 +192,18 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       doc must haveLinkWithUrlWithID("taxableIncomeLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url)
     }
 
-    "display an estimated pay update confirmation banner when the journey has been successfully completed" in {
+    "display an estimated pay update confirmation banner when the journey has been successfully completed and confirmedApi is toggled on" in {
       doc must haveH2HeadingWithText(messages("tai.estimatedIncome.confirmation.banner.heading"))
+    }
+
+    "don't display an estimated pay update confirmation banner when the confirmedApi is toggled off" in {
+      pensionDoc must not(haveH2HeadingWithText(messages("tai.estimatedIncome.confirmation.banner.heading")))
     }
 
   }
 
   private lazy val model = IncomeSourceSummaryViewModel(1, "User Name", "Employer", 100, 400, "1100L", "EMPLOYER-1122", false,
-    estimatedPayJourneyCompleted = true)
+    estimatedPayJourneyCompleted = true, isConfirmedAPIEnabled = true)
   private lazy val companyBenefits = Seq(
     CompanyBenefitViewModel("ben1", BigDecimal(100.20), "url1"),
     CompanyBenefitViewModel("ben2", BigDecimal(3002.23), "url2"),
@@ -207,7 +211,7 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
   )
   private lazy val modelWithCompanyBenefits = model.copy(benefits = companyBenefits)
   private lazy val pensionModel = IncomeSourceSummaryViewModel(1, "User Name", "PENSION", 100, 400, "1100L", "PENSION-1122", true,
-    estimatedPayJourneyCompleted = false)
+    estimatedPayJourneyCompleted = true, isConfirmedAPIEnabled = false)
   private lazy val pensionDoc = Jsoup.parse(pensionView.toString())
 
   override def view: Html = views.html.IncomeSourceSummary(model)

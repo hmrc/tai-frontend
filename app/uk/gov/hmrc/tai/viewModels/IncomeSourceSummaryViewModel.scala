@@ -37,7 +37,8 @@ case class IncomeSourceSummaryViewModel(empId: Int,
                                         isPension: Boolean,
                                         benefits: Seq[CompanyBenefitViewModel] = Seq.empty[CompanyBenefitViewModel],
                                         displayAddCompanyCarLink: Boolean = true,
-                                        estimatedPayJourneyCompleted: Boolean) extends ViewModelHelper {
+                                        estimatedPayJourneyCompleted: Boolean,
+                                        isConfirmedAPIEnabled: Boolean) extends ViewModelHelper {
   def startOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().start)
 
   def endOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().end)
@@ -45,7 +46,7 @@ case class IncomeSourceSummaryViewModel(empId: Int,
 
 object IncomeSourceSummaryViewModel {
   def apply(empId: Int, displayName: String, taxCodeIncomeSources: Seq[TaxCodeIncome], employment: Employment, benefits: Benefits,
-            estimatedPayJourneyCompleted: Boolean)(implicit messages: Messages): IncomeSourceSummaryViewModel = {
+            estimatedPayJourneyCompleted: Boolean, isConfirmedAPIEnabled: Boolean)(implicit messages: Messages): IncomeSourceSummaryViewModel = {
     val amountYearToDate = for {
       latestAnnualAccount <- employment.latestAnnualAccount
       latestPayment <- latestAnnualAccount.latestPayment
@@ -67,7 +68,8 @@ object IncomeSourceSummaryViewModel {
       taxCodeIncomeSource.componentType == PensionIncome,
       benefitVMs,
       displayAddCompanyCar,
-      estimatedPayJourneyCompleted
+      estimatedPayJourneyCompleted,
+      isConfirmedAPIEnabled
     )
   }
 

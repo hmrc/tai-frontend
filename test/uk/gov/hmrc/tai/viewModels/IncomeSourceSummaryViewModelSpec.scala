@@ -38,6 +38,17 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
   val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
   val estimatedPayJourneyCompleted = false
 
+  val expectedPenisonViewModel = IncomeSourceSummaryViewModel(1, "User Name", "Pension", 100, 400, "1100LX", "PENSION-1122", true,
+    estimatedPayJourneyCompleted = false, isConfirmedAPIEnabled = false)
+
+  val expectedEmploymentViewModel = IncomeSourceSummaryViewModel(1, "User Name", "Employer", 100, 400, "1100L", "EMPLOYER-1122", false,
+    estimatedPayJourneyCompleted = false, isConfirmedAPIEnabled = false)
+
+  def createViewModel(taxCodeIncomeSources: Seq[TaxCodeIncome], employment: Employment, benefits: Benefits, empId: Int = 1):
+  IncomeSourceSummaryViewModel = {
+    IncomeSourceSummaryViewModel(empId, "User Name", taxCodeIncomeSources, employment, benefits, false, false)
+  }
+
   "IncomeSourceSummaryViewModel apply method" must {
     "return pension details" when {
       "component type is pension" in {
@@ -48,11 +59,9 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         val employment = Employment("test employment", Some("PENSION-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 2, None, false, false)
 
-        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits,
-          estimatedPayJourneyCompleted)
+        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
 
-        model mustBe IncomeSourceSummaryViewModel(1, "User Name", "Pension", 100, 400, "1100LX", "PENSION-1122", true,
-          estimatedPayJourneyCompleted = estimatedPayJourneyCompleted)
+        model mustBe expectedPenisonViewModel
 
       }
     }
@@ -66,11 +75,9 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 2, None, false, false)
 
-        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits,
-          estimatedPayJourneyCompleted)
+        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
 
-        model mustBe IncomeSourceSummaryViewModel(1, "User Name", "Employer", 100, 400, "1100L", "EMPLOYER-1122", false,
-          estimatedPayJourneyCompleted = estimatedPayJourneyCompleted)
+        model mustBe expectedEmploymentViewModel
       }
     }
 
@@ -83,8 +90,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 2, None, false, false)
 
-        val exception = the[RuntimeException] thrownBy IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits,
-          estimatedPayJourneyCompleted)
+        val exception = the[RuntimeException] thrownBy createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
 
         exception.getMessage mustBe "Income details not found for employment id 1"
       }
@@ -99,7 +105,8 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 1, None, false, false)
 
-        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits, estimatedPayJourneyCompleted)
+        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+
         model.benefits mustBe Seq.empty[CompanyBenefitViewModel]
       }
 
@@ -117,8 +124,8 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
           GenericBenefit(Entertaining, None, BigDecimal(120653.99))
         )
         val benefits = Benefits(companyCars, otherBenefits)
+        val model = createViewModel(taxCodeIncomeSources, employment, benefits, empId = 7)
 
-        val model = IncomeSourceSummaryViewModel(7, "User Name", taxCodeIncomeSources, employment, benefits, estimatedPayJourneyCompleted)
         model.benefits mustBe Seq.empty[CompanyBenefitViewModel]
       }
     }
@@ -141,7 +148,8 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         )
         val benefits = Benefits(companyCars, otherBenefits)
 
-        val model = IncomeSourceSummaryViewModel(employmentId, "User Name", taxCodeIncomeSources, employment, benefits, estimatedPayJourneyCompleted)
+        val model = createViewModel(taxCodeIncomeSources, employment, benefits)
+
         model.benefits mustBe Seq(
           CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), BigDecimal(200.22), controllers.routes.CompanyCarController.redirectCompanyCarSelection(1).url),
           CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"), BigDecimal(321.12), controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform).url),
@@ -164,7 +172,8 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         )
         val benefits = Benefits(companyCars, otherBenefits)
 
-        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, benefits, estimatedPayJourneyCompleted)
+        val model = createViewModel(taxCodeIncomeSources, employment, benefits)
+
         model.benefits must contain theSameElementsAs Seq(
           CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), BigDecimal(200.22), controllers.routes.CompanyCarController.redirectCompanyCarSelection(1).url),
           CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"), BigDecimal(200.22), ApplicationConfig.companyCarFuelBenefitUrl),
@@ -182,7 +191,8 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 1, None, false, false)
 
-        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits, estimatedPayJourneyCompleted)
+        val model = createViewModel(taxCodeIncomeSources, employment, emptyBenefits)
+
         model.displayAddCompanyCarLink mustBe true
       }
     }
@@ -197,8 +207,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
 
         val companyCars = Seq(CompanyCarBenefit(1, BigDecimal(200.22), Seq(CompanyCar(1, "transit", false, Some(LocalDate.now), None, None))))
         val benefits = Benefits(companyCars, Seq.empty[GenericBenefit])
-        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, benefits, estimatedPayJourneyCompleted)
-
+        val model = createViewModel(taxCodeIncomeSources, employment, benefits)
         model.displayAddCompanyCarLink mustBe false
       }
     }
