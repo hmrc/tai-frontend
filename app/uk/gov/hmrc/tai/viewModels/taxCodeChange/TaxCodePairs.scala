@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
-import uk.gov.hmrc.tai.model.domain.TaxCodeRecord
+import play.api.i18n.Messages
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 
 class NoMatchPossibleException extends Exception
 
@@ -29,7 +30,7 @@ case class TaxCodePairs(primaryPairs: Seq[TaxCodePair],
                         unMatchedCurrentCodes: Seq[TaxCodePair]) {
 
   def combinedTaxCodePairs: Seq[TaxCodePair] = {
-      primaryPairs ++
+    primaryPairs ++
       secondaryPairs ++
       unMatchedPreviousCodes ++
       unMatchedCurrentCodes
@@ -37,10 +38,9 @@ case class TaxCodePairs(primaryPairs: Seq[TaxCodePair],
 }
 
 object TaxCodePairs {
-  def apply(previous: Seq[TaxCodeRecord],
-            current: Seq[TaxCodeRecord]): TaxCodePairs = {
+  def apply(taxCodeChange: TaxCodeChange): TaxCodePairs = {
 
-    val pairs = createAllPairs(previous, current)
+    val pairs = createAllPairs(taxCodeChange.previous, taxCodeChange.current)
 
     TaxCodePairs(
       primaryPairs(pairs),

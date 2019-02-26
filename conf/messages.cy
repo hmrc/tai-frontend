@@ -1396,9 +1396,12 @@ tai.updateIncome.CYPlus1.same.title=Diweddarwch eich incwm amcangyfrifedig
 tai.updateIncome.CYPlus1.same.paragraph1=Rydych wedi nodi {0}
 tai.updateIncome.CYPlus1.same.paragraph2=Mae hyn yr un peth â’r swm sydd gennym eisoes ar gyfer {0} ar gyfer y flwyddyn nesaf, felly does dim angen i chi ddiweddaru’ch incwm.
 tai.updateIncome.CYPlus1.same.cancel=Dychwelyd i’ch cymhariaeth Treth Incwm ar gyfer y flwyddyn dreth bresennol a’r flwyddyn dreth nesaf
+
 tai.taxCodeComparison.addEmployer=Mae gennych gyflogaeth newydd gyda {0}
 tai.taxCodeComparison.removeEmployer=Mae’ch cyflogaeth {0} wedi dod i ben
 tai.taxCodeComparison.title=Gwnaethom newid hyn oherwydd y canlynol:
+tai.taxCodeComparison.iabd.have.been.updated=Mae’ch {0} wedi’u diweddaru
+tai.taxCodeComparison.iabd.has.been.updated=Mae’ch {0} wedi’i ddiweddaru
 
 tai.urbanner.title=Helpwch i wella llythyrau CThEM
 tai.urbanner.text=Cymerwch ran yn ein harolwg byr (yn agor ffenestr neu dab newydd)
