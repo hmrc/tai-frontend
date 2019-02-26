@@ -53,15 +53,6 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
   "onPageLoad" must {
     "display the cy plus one page" in {
       val controller = new TestController
-      when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
-        Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-      when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-        Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
-      when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
-        Future.successful(Seq.empty[CodingComponent]))
-      when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(
-        Future.successful(Seq(employment)))
-
       val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
 
@@ -69,7 +60,6 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
       doc.title() must include(Messages("tai.incomeTaxComparison.heading"))
 
       verify(employmentService, times(1)).employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())
-
     }
 
     "throw an error page" when {
@@ -77,10 +67,6 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
         val controller = new TestController
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiNotFoundResponse("Not Found")))
-        when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
-          Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
-        when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
-          Future.successful(Seq.empty[CodingComponent]))
 
         val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
@@ -93,11 +79,8 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
   "rendered CY+1 page" must {
     "show estimated income for CY and CY+1 for single employment" in {
       val controller = new TestController
-      when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear()))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-      when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesCYPlusOne)))
-      when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
-      when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty[CodingComponent]))
-      when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(Future.successful(Seq(employment)))
+      when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any())).thenReturn(
+        Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesCYPlusOne)))
 
       val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
       status(result) mustBe OK
@@ -111,8 +94,6 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
       val controller = new TestController
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear()))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesMultiple)))
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesCYPlusOneMultiple)))
-      when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
-      when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty[CodingComponent]))
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(Future.successful(Seq(employment, employment2)))
 
       val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -129,8 +110,6 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
       val controller = new TestController
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear()))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesMultiple)))
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesCYPlusOneMultiple)))
-      when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
-      when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty[CodingComponent]))
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(Future.successful(Seq(employment, employment2, pension, pension2)))
 
       val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -145,10 +124,7 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
 
     "show not applicable when CY and CY+1 employment id's don't match" in {
       val controller = new TestController
-      when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear()))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesCYPlusOne2)))
-      when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
-      when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty[CodingComponent]))
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(Future.successful(Seq(employment, employment2)))
 
       val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
@@ -159,16 +135,15 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
       doc.getElementById("amount-cy-plus-one-0").text must equal("not applicable")
     }
 
-    "throw internal server error when employment id is missing" in {
+    "show not applicable when employment id is missing for CY+1" in {
       val controller = new TestController
-      when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear()))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
       when(taxAccountService.taxCodeIncomes(any(), Matchers.eq(TaxYear().next))(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomesNoEmpId)))
-      when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
-      when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(Future.successful(Seq.empty[CodingComponent]))
       when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(Future.successful(Seq(employment, employment2)))
 
       val result = controller.onPageLoad()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-      status(result) mustBe INTERNAL_SERVER_ERROR
+      status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.getElementById("amount-cy-plus-one-0").text must equal("not applicable")
     }
   }
 
@@ -226,6 +201,17 @@ class IncomeTaxComparisonControllerSpec extends PlaySpec
     FakeValidatePerson,
     mock[FormPartialRetriever],
     MockTemplateRenderer
-  )
+  ) {
+
+    when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
+      Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+    when(taxAccountService.taxAccountSummary(any(), any())(any())).thenReturn(
+      Future.successful(TaiSuccessResponseWithPayload[TaxAccountSummary](taxAccountSummary)))
+    when(codingComponentService.taxFreeAmountComponents(any(), any())(any())).thenReturn(
+      Future.successful(Seq.empty[CodingComponent]))
+    when(employmentService.employments(Matchers.any(), Matchers.eq(TaxYear()))(Matchers.any())).thenReturn(
+      Future.successful(Seq(employment)))
+
+  }
 
 }

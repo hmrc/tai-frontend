@@ -61,11 +61,10 @@ object IncomeSourceComparisonViewModel extends ViewModelHelper with TaxAccountFi
   private def incomeSourceDetail(taxCodeIncomes: Seq[TaxCodeIncome], employments: Seq[Employment], taxYearStatus:String): Seq[IncomeSourceDetail] = {
     taxYearStatus match {
       case TaiConstants.CurrentTaxYearPlusOne =>
-        taxCodeIncomes.map { taxCodeIncome =>
-          lazy val amount = withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0))
-          taxCodeIncome.employmentId match {
-            case Some(id) => IncomeSourceDetail(taxCodeIncome.name, id, amount, taxYearStatus)
-            case _ => throw new RuntimeException("Employment id is missing")
+        taxCodeIncomes.flatMap { taxCodeIncome =>
+          val amount = withPoundPrefixAndSign(MoneyPounds(taxCodeIncome.amount, 0))
+          taxCodeIncome.employmentId.map { id =>
+            IncomeSourceDetail(taxCodeIncome.name, id, amount, taxYearStatus)
           }
         }
       case _ =>

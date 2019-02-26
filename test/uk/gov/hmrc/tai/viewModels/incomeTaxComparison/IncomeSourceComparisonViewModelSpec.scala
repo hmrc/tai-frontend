@@ -142,8 +142,8 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
       }
     }
 
-    "throw an exception" when {
-      "no employment id is present in tax code income" in {
+    "show not applicable amount" when {
+      "no employment id is present in tax code income for CY+1" in {
 
         val taxCodeIncomesCY =
           TaxCodeIncome(PensionIncome, Some(3), 3333, "employment", "1150L", "employer3", OtherBasisOfOperation, Live)
@@ -153,11 +153,12 @@ class IncomeSourceComparisonViewModelSpec extends PlaySpec {
 
         val employmentCY = Employment("Pension1", Some("3ABC"), new LocalDate(2017, 3, 1), None, Nil, "DIST3", "PAYE3", 3, None, false, false)
 
-        intercept[RuntimeException]{
-          IncomeSourceComparisonViewModel(
-            Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne))
-        }.getMessage must equal("Employment id is missing")
+        val incomeSourceComparisonViewModel = IncomeSourceComparisonViewModel(
+          Seq(taxCodeIncomesCY), Seq(employmentCY), Seq(taxCodeIncomesCYPlusOne))
 
+        val incomeSourceComparisonDetailCY = incomeSourceComparisonViewModel.pensionIncomeSourceDetail(0)
+
+        incomeSourceComparisonDetailCY.amountCYPlusOne mustBe NA
       }
     }
   }
