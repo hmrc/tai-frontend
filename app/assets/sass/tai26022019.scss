@@ -69,7 +69,15 @@ hr {
   .heading-large {
     font-size: 36px;
     margin: 0;
-    word-break: break-word;
+
+    $mobile: 768px;
+    $mobile-small: 641px;
+    @media (max-width: $mobile) {
+      font-size: 22px;
+    }
+    @media (max-width: $mobile-small) {
+      font-size: 19px;
+    }
   }
 }
 
