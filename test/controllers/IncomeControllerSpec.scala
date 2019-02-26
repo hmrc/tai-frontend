@@ -312,6 +312,9 @@ class IncomeControllerSpec extends PlaySpec
         when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponse))
 
+        when(estimatedPayJourneyCompletionService.journeyCompleted(Matchers.eq(employerId.toString))(any())).
+          thenReturn(Future.successful(Map.empty[String, String]))
+
         val result = testController.updateEstimatedIncome()(fakeRequest)
 
         status(result) mustBe OK

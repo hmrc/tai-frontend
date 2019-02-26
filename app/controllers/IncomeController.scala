@@ -158,12 +158,12 @@ class IncomeController @Inject()(personService: PersonService,
         ServiceCheckLite.personDetailsCheck {
           journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey)
             .flatMap(cache => {
-            val employerName :: newAmount :: employerId :: incomeType :: Nil = cache.toList
+            val incomeName :: newAmount :: incomeId :: incomeType :: Nil = cache.toList
 
-            taxAccountService.updateEstimatedIncome(Nino(user.getNino), FormHelper.stripNumber(newAmount).toInt, TaxYear(), employerId.toInt) flatMap {
+            taxAccountService.updateEstimatedIncome(Nino(user.getNino), FormHelper.stripNumber(newAmount).toInt, TaxYear(), incomeId.toInt) flatMap {
               case TaiSuccessResponse => {
-                updateJourneyCompletion(employerId) map { _ =>
-                  respondWithSuccess(employerName, employerId.toInt, incomeType)
+                updateJourneyCompletion(incomeId) map { _ =>
+                  respondWithSuccess(incomeName, incomeId.toInt, incomeType)
                 }
 
               }
