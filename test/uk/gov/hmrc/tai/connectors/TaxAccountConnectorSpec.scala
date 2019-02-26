@@ -25,7 +25,7 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json._
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -84,7 +84,7 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
     "fetch empty seq" when {
       "provided with nino that is not found" in {
         val sut = createSUT
-        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.failed(new NotFoundException("Not Found")))
+        when(httpHandler.getFromApi(any())(any())).thenReturn(Future.successful(incomeSourceEmpty))
 
         val result = Await.result(sut.incomeSources(generateNino, currentTaxYear, "EmploymentIncome", "Live"), 10 seconds)
         result mustBe TaiSuccessResponseWithPayload(Seq.empty[IncomeSource])
@@ -278,6 +278,12 @@ class TaxAccountConnectorSpec extends PlaySpec with MockitoSugar with FakeTaiPla
           "receivingOccupationalPension" -> true
         )
       )
+    )
+  )
+
+  val incomeSourceEmpty: JsValue = Json.obj(
+    "data" -> Json.arr(
+
     )
   )
 

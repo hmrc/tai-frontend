@@ -20,8 +20,7 @@ import com.google.inject.Inject
 import play.api.Logger
 import play.api.libs.json.Reads
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.config.DefaultServicesConfig
 import uk.gov.hmrc.tai.connectors.responses.{TaiResponse, TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.model.TaxYear
@@ -59,8 +58,8 @@ class TaxAccountConnector @Inject() (httpHandler: HttpHandler) extends CodingCom
       json =>
         TaiSuccessResponseWithPayload((json \ "data").as[Seq[IncomeSource]])
       ) recover {
-      case _: NotFoundException =>
-        TaiSuccessResponseWithPayload(Seq.empty[IncomeSource])
+//      case _: NotFoundException =>
+//        TaiSuccessResponseWithPayload(Seq.empty[IncomeSource])
       case e: Exception =>
         Logger.warn(s"Couldn't retrieve $status $incomeType income sources for $nino with exception:${e.getMessage}",e)
 
