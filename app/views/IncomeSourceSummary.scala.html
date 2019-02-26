@@ -110,7 +110,7 @@
     @if(model.isConfirmedAPIEnabled){
         @if(model.estimatedPayJourneyCompleted){
             <div class="tai-progress-panel" id="estimatedPayCompletionBanner">
-                <h2 class="heading-small flush--top">@messages("tai.estimatedIncome.confirmation.banner.heading")</h2>
+                <h2 class="heading-medium flush-bottom flush--top" id="incomeSummary-banner-heading">@messages("tai.estimatedIncome.confirmation.banner.heading")</h2>
             </div>
         }
     }
