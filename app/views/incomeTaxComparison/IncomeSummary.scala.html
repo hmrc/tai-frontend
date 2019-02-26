@@ -61,7 +61,7 @@
         </thead>
         <tbody>
 
-        @for(employmentIncomeSourceDetail <- incomeSourceViewModel.employmentIncomeSourceDetail) {
+        @for((employmentIncomeSourceDetail, count) <- incomeSourceViewModel.employmentIncomeSourceDetail.zipWithIndex) {
 
             <tr>
                 <td scope="row" role="gridcell" class="table-title">
@@ -76,7 +76,7 @@
                         @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
                         @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
                     </span>
-                    @employmentIncomeSourceDetail.amountCY
+                    <span id="amount-cy-@{count}">@employmentIncomeSourceDetail.amountCY</span>
                 </td>
 
                 <td scope="row" role="gridcell" class="numeric">
@@ -84,7 +84,7 @@
                         @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))
                         @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
                     </span>
-                    @employmentIncomeSourceDetail.amountCYPlusOne
+                    <span id="amount-cy-plus-one-@{count}">@employmentIncomeSourceDetail.amountCYPlusOne</span>
                 </td>
                 @if(estimatedPayEnabled) {
                     <td class="link-update">
@@ -103,7 +103,7 @@
         }
 
 
-            @for(pensionIncomeSourceDetail <- incomeSourceViewModel.pensionIncomeSourceDetail) {
+            @for((pensionIncomeSourceDetail, count) <- incomeSourceViewModel.pensionIncomeSourceDetail.zipWithIndex) {
 
                 <tr>
                     <td scope="row" role="gridcell" class="table-title">
@@ -117,7 +117,7 @@
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.CurrentTaxYear")))
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column1", Dates.formatDate(TaxYear().end))))
                         </span>
-                        @pensionIncomeSourceDetail.amountCY
+                        <span id="pension-amount-cy-@{count}">@pensionIncomeSourceDetail.amountCY</span>
                     </td>
 
                     <td scope="row" role="gridcell" class="numeric">
@@ -125,7 +125,7 @@
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.NextTaxYear")))
                             @Html(incomeSourceViewModel.htmlNonBroken(messages("tai.incomeTaxComparison.incomeTax.column2", Dates.formatDate(TaxYear().next.start))))
                         </span>
-                        @pensionIncomeSourceDetail.amountCYPlusOne
+                        <span id="pension-amount-cy-plus-one-@{count}">@pensionIncomeSourceDetail.amountCYPlusOne</span>
                     </td>
                     @if(estimatedPayEnabled) {
                         <td class="link-update">
