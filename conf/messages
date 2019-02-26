@@ -1398,6 +1398,11 @@ tai.taxCodeComparison.removeEmployer=Your employment {0} has ended
 tai.taxCodeComparison.title=We changed this because:
 tai.taxCodeComparison.iabd.have.been.updated=Your {0} have been updated
 tai.taxCodeComparison.iabd.has.been.updated=Your {0} has been updated
+tai.taxCodeComparison.iabd.you.now.get=You now get {0}
+tai.taxCodeComparison.iabd.you.have.claimed=You have claimed {0} for the current year
+tai.taxCodeComparison.iabd.you.have.claimed.expenses=You have claimed expenses for previous years
+tai.taxCodeComparison.iabd.you.have.underpaid=You have underpaid {0} from a previous year
+tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid=We estimate you have underpaid {0} tax this year
 
 tai.urbanner.title=Help improve HMRC letters
 tai.urbanner.text=Please take part in our short survey (opens in a new window or tab)
