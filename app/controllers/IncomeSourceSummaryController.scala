@@ -29,6 +29,7 @@ import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
+import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
 import uk.gov.hmrc.tai.viewModels.IncomeSourceSummaryViewModel
 
@@ -38,6 +39,7 @@ class IncomeSourceSummaryController @Inject()(val auditConnector: AuditConnector
                                               taxAccountService: TaxAccountService,
                                               employmentService: EmploymentService,
                                               benefitsService: BenefitsService,
+                                              estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
                                               authenticate: AuthAction,
                                               validatePerson: ValidatePerson,
                                               override implicit val partialRetriever: FormPartialRetriever,
@@ -50,15 +52,18 @@ class IncomeSourceSummaryController @Inject()(val auditConnector: AuditConnector
       val taxCodeIncomesFuture = taxAccountService.taxCodeIncomes(nino, TaxYear())
       val employmentFuture = employmentService.employment(nino, empId)
       val benefitsFuture = benefitsService.benefits(nino, TaxYear().year)
+      val estimatedPayCompletionFuture = estimatedPayJourneyCompletionService.hasJourneyCompleted(empId.toString)
 
       (for {
         taxCodeIncomeDetails <- taxCodeIncomesFuture
         employmentDetails <- employmentFuture
         benefitsDetails <- benefitsFuture
+        estimatedPayCompletion <- estimatedPayCompletionFuture
       } yield {
         (taxCodeIncomeDetails, employmentDetails) match {
           case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-            val incomeDetailsViewModel = IncomeSourceSummaryViewModel(empId, request.taiUser.getDisplayName, taxCodeIncomes, employment, benefitsDetails)
+            val incomeDetailsViewModel = IncomeSourceSummaryViewModel(empId, request.taiUser.getDisplayName, taxCodeIncomes,
+              employment, benefitsDetails, estimatedPayCompletion)
             implicit val user = request.taiUser
             Ok(views.html.IncomeSourceSummary(incomeDetailsViewModel))
           case _ => throw new RuntimeException("Error while fetching income summary details")

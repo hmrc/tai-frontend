@@ -30,6 +30,14 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
+  val emptyBenefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
+  val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
+  val secondPayment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
+  val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
+  val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
+  val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
+  val estimatedPayJourneyCompleted = false
+
   "IncomeSourceSummaryViewModel apply method" must {
     "return pension details" when {
       "component type is pension" in {
@@ -40,9 +48,11 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         val employment = Employment("test employment", Some("PENSION-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 2, None, false, false)
 
-        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits)
+        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits,
+          estimatedPayJourneyCompleted)
 
-        model mustBe IncomeSourceSummaryViewModel(1, "User Name", "Pension", 100, 400, "1100LX", "PENSION-1122", true)
+        model mustBe IncomeSourceSummaryViewModel(1, "User Name", "Pension", 100, 400, "1100LX", "PENSION-1122", true,
+          estimatedPayJourneyCompleted = estimatedPayJourneyCompleted)
 
       }
     }
@@ -56,9 +66,11 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 2, None, false, false)
 
-        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits)
+        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits,
+          estimatedPayJourneyCompleted)
 
-        model mustBe IncomeSourceSummaryViewModel(1, "User Name", "Employer", 100, 400, "1100L", "EMPLOYER-1122", false)
+        model mustBe IncomeSourceSummaryViewModel(1, "User Name", "Employer", 100, 400, "1100L", "EMPLOYER-1122", false,
+          estimatedPayJourneyCompleted = estimatedPayJourneyCompleted)
       }
     }
 
@@ -71,7 +83,8 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 2, None, false, false)
 
-        val exception = the[RuntimeException] thrownBy IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits)
+        val exception = the[RuntimeException] thrownBy IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits,
+          estimatedPayJourneyCompleted)
 
         exception.getMessage mustBe "Income details not found for employment id 1"
       }
@@ -86,7 +99,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 1, None, false, false)
 
-        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits)
+        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits, estimatedPayJourneyCompleted)
         model.benefits mustBe Seq.empty[CompanyBenefitViewModel]
       }
 
@@ -105,7 +118,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         )
         val benefits = Benefits(companyCars, otherBenefits)
 
-        val model = IncomeSourceSummaryViewModel(7, "User Name", taxCodeIncomeSources, employment, benefits)
+        val model = IncomeSourceSummaryViewModel(7, "User Name", taxCodeIncomeSources, employment, benefits, estimatedPayJourneyCompleted)
         model.benefits mustBe Seq.empty[CompanyBenefitViewModel]
       }
     }
@@ -128,7 +141,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         )
         val benefits = Benefits(companyCars, otherBenefits)
 
-        val model = IncomeSourceSummaryViewModel(employmentId, "User Name", taxCodeIncomeSources, employment, benefits)
+        val model = IncomeSourceSummaryViewModel(employmentId, "User Name", taxCodeIncomeSources, employment, benefits, estimatedPayJourneyCompleted)
         model.benefits mustBe Seq(
           CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), BigDecimal(200.22), controllers.routes.CompanyCarController.redirectCompanyCarSelection(1).url),
           CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.MedicalInsurance"), BigDecimal(321.12), controllers.routes.ExternalServiceRedirectController.auditInvalidateCacheAndRedirectService(TaiConstants.MedicalBenefitsIform).url),
@@ -151,7 +164,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         )
         val benefits = Benefits(companyCars, otherBenefits)
 
-        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, benefits)
+        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, benefits, estimatedPayJourneyCompleted)
         model.benefits must contain theSameElementsAs Seq(
           CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"), BigDecimal(200.22), controllers.routes.CompanyCarController.redirectCompanyCarSelection(1).url),
           CompanyBenefitViewModel(Messages("tai.taxFreeAmount.table.taxComponent.CarFuelBenefit"), BigDecimal(200.22), ApplicationConfig.companyCarFuelBenefitUrl),
@@ -169,7 +182,7 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
         val employment = Employment("test employment", Some("EMPLOYER-1122"), LocalDate.now(),
           None, Seq(annualAccount), "", "", 1, None, false, false)
 
-        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits)
+        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, emptyBenefits, estimatedPayJourneyCompleted)
         model.displayAddCompanyCarLink mustBe true
       }
     }
@@ -184,17 +197,10 @@ class IncomeSourceSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicat
 
         val companyCars = Seq(CompanyCarBenefit(1, BigDecimal(200.22), Seq(CompanyCar(1, "transit", false, Some(LocalDate.now), None, None))))
         val benefits = Benefits(companyCars, Seq.empty[GenericBenefit])
-        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, benefits)
+        val model = IncomeSourceSummaryViewModel(1, "User Name", taxCodeIncomeSources, employment, benefits, estimatedPayJourneyCompleted)
 
         model.displayAddCompanyCarLink mustBe false
       }
     }
   }
-
-  val emptyBenefits = Benefits(Seq.empty[CompanyCarBenefit], Seq.empty[GenericBenefit])
-  val firstPayment = Payment(new LocalDate().minusWeeks(4), 100, 50, 25, 100, 50, 25, Monthly)
-  val secondPayment = Payment(new LocalDate().minusWeeks(3), 100, 50, 25, 100, 50, 25, Monthly)
-  val thirdPayment = Payment(new LocalDate().minusWeeks(2), 100, 50, 25, 100, 50, 25, Monthly)
-  val latestPayment = Payment(new LocalDate().minusWeeks(1), 400, 50, 25, 100, 50, 25, Irregular)
-  val annualAccount = AnnualAccount("KEY", uk.gov.hmrc.tai.model.TaxYear(), Available, Seq(latestPayment, secondPayment, thirdPayment, firstPayment), Nil)
 }

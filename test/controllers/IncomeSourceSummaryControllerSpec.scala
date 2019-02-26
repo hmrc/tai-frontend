@@ -21,6 +21,7 @@ import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
@@ -36,6 +37,7 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
+import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
 
 import scala.concurrent.Future
@@ -48,16 +50,21 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
+
+
   "onPageLoad" must {
     "display the income details page" when {
       "asked for employment details" in {
         val sut = createSUT
+        val employmentId = 1
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(employmentId.toString))(any())).
+          thenReturn(Future.successful(true))
 
-        val result = sut.onPageLoad(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -69,12 +76,15 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
 
       "asked for pension details" in {
         val sut = createSUT
+        val pensionId = 2
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(pensionId.toString))(any())).
+          thenReturn(Future.successful(true))
 
-        val result = sut.onPageLoad(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
@@ -103,7 +113,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
-        val result = sut.onPageLoad(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.onPageLoad(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -131,12 +141,14 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
   val benefitsService = mock[BenefitsService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
+  val estimatedPayJourneyCompletionService = mock[EstimatedPayJourneyCompletionService]
 
   class SUT extends IncomeSourceSummaryController(
     mock[AuditConnector],
     taxAccountService,
     employmentService,
     benefitsService,
+    estimatedPayJourneyCompletionService,
     FakeAuthAction,
     FakeValidatePerson,
     mock[FormPartialRetriever],
