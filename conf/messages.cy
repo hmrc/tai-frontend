@@ -1399,4 +1399,9 @@ tai.updateIncome.CYPlus1.same.cancel=Dychwelyd i’ch cymhariaeth Treth Incwm ar
 tai.taxCodeComparison.addEmployer=Mae gennych gyflogaeth newydd gyda {0}
 tai.taxCodeComparison.removeEmployer=Mae’ch cyflogaeth {0} wedi dod i ben
 tai.taxCodeComparison.title=Gwnaethom newid hyn oherwydd y canlynol:
+
+tai.urbanner.title=Helpwch i wella llythyrau CThEM
+tai.urbanner.text=Cymerwch ran yn ein harolwg byr (yn agor ffenestr neu dab newydd)
+tai.urbanner.reject=Dim diolch
+
 checkProgress.link=Gwiriwch gynnydd eich diweddariad

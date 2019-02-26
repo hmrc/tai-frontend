@@ -31,6 +31,9 @@ object MockTemplateRenderer extends TemplateRenderer {
 
   override def renderDefaultTemplate(path: String, content: Html, extraArgs: Map[String, Any])(implicit messages: Messages) = {
     val pageHeader = extraArgs.getOrElse("mainContentHeader", Html(""))
-    Html("<title>" + extraArgs("pageTitle") + "</title>" + pageHeader + content)
+
+    Html("<title>" + extraArgs("pageTitle") + "</title>" + "<div id=full-width-banner>"+extraArgs("fullWidthBannerTitle")+extraArgs("fullWidthBannerText")+"</div>"
+      +"<div id=fullWidthBannerDismissText>"+extraArgs("fullWidthBannerDismissText")+"<div>"+ "<div id=fullWidthBannerLink>"+extraArgs("fullWidthBannerLink")+"<div>"
+      + pageHeader + content)
   }
 }
