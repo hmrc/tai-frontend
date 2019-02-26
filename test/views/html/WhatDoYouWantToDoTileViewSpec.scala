@@ -39,6 +39,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
     "when confirmedAPIEnabled is set to false" should {
       "display iForms status message with three weeks when an iForm has not been fully processed" in {
+
         val threeWeekDoc = doc(views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1))
         threeWeekDoc must haveH2HeadingWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1"))
         threeWeekDoc must haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2"))
@@ -64,6 +65,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
 
     "when confirmedAPIEnabled is set to true" should {
       "not display iForms status message" in {
+
         val threeWeeksViewModel = createViewModel(ThreeWeeks, false, isConfirmedAPI = true)
         val confirmedAPIEnabledDoc = doc(views.html.whatDoYouWantToDoTileView(form, threeWeeksViewModel))
 
@@ -129,7 +131,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         cards.toString mustNot include("Check your latest tax code change")
         cards.toString mustNot include("Find out what has changed and what happens next")
       }
-    } 
+    }
 
     "display UR banner" in {
       val document: Html = views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1)
@@ -140,7 +142,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       urBanner.text() startsWith Messages("tai.urbanner.title")
       urDismissedText.text() must include(Messages("tai.urbanner.reject"))
       urBanner.text() must include(Messages("tai.urbanner.text"))
-      urBannerHref.text() must include(Messages("tai.urbanner.link"))
+      urBannerHref.text() must include(ApplicationConfig.urBannerLink)
     }
 
   }
