@@ -30,40 +30,42 @@ import utils.factories.TaxCodeMismatchFactory
 import play.api.mvc.Cookie
 
 class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
+
+  val modelWithiFormNoCyPlus1 = createViewModel(ThreeWeeks, false)
+
   "whatDoYouWantTodo Page" should {
     behave like pageWithTitle(messages("your.paye.income.tax.overview"))
     behave like pageWithHeader(messages("your.paye.income.tax.overview"))
 
     "when confirmedAPIEnabled is set to false" should {
-      "display iForms status message with three weeks when an iForm has not been fully processed" in{
-
-        val modelWithiFormNoCyPlus1 = createViewModel(ThreeWeeks, false)
+      "display iForms status message with three weeks when an iForm has not been fully processed" in {
 
         val threeWeekDoc = doc(views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1))
         threeWeekDoc must haveH2HeadingWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1"))
         threeWeekDoc must haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.threeWeeks.p2"))
-        threeWeekDoc must haveLinkElement("checkProgressLink",ApplicationConfig.checkUpdateProgressLinkUrl, messages("checkProgress.link"))
+        threeWeekDoc must haveLinkElement("checkProgressLink", ApplicationConfig.checkUpdateProgressLinkUrl, messages("checkProgress.link"))
       }
 
 
-      "display iForms status message with seven days when an iForm has not been fully processed" in{
+      "display iForms status message with seven days when an iForm has not been fully processed" in {
 
         val modelWithiFormNoCyPlus1ForSevenDays = createViewModel(SevenDays, false)
 
         val sevenDaysDoc = doc(views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1ForSevenDays))
         sevenDaysDoc must haveH2HeadingWithText(messages("tai.whatDoYouWantToDo.iformPanel.p1"))
         sevenDaysDoc must haveParagraphWithText(messages("tai.whatDoYouWantToDo.iformPanel.sevenDays.p2"))
-        sevenDaysDoc must haveLinkElement("checkProgressLink",ApplicationConfig.checkUpdateProgressLinkUrl, messages("checkProgress.link"))
+        sevenDaysDoc must haveLinkElement("checkProgressLink", ApplicationConfig.checkUpdateProgressLinkUrl, messages("checkProgress.link"))
 
       }
 
-      "not display iForms status message when no iForms are in progress" in{
+      "not display iForms status message when no iForms are in progress" in {
         doc(view).select(".tai-progress-panel").size() mustBe 0
       }
     }
 
     "when confirmedAPIEnabled is set to true" should {
-      "not display iForms status message" in{
+      "not display iForms status message" in {
+
         val threeWeeksViewModel = createViewModel(ThreeWeeks, false, isConfirmedAPI = true)
         val confirmedAPIEnabledDoc = doc(views.html.whatDoYouWantToDoTileView(form, threeWeeksViewModel))
 
@@ -100,7 +102,7 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
         cards.toString must include(Messages("current.tax.year"))
         doc(nextYearView) must haveParagraphWithText(Messages("check.current.income", TaxYearRangeUtil.currentTaxYearRange))
         cards.toString must include(Messages("next.year"))
-        doc(nextYearView) must haveParagraphWithText(Messages("check.estimated.income", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(yearsFromNow=1)))
+        doc(nextYearView) must haveParagraphWithText(Messages("check.estimated.income", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(yearsFromNow = 1)))
         cards.toString must include(Messages("earlier"))
         cards.toString must include(Messages("check.tax.previous.years"))
       }
@@ -131,19 +133,19 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
       }
     }
 
-      "display UR banner" in {
-        val document: Html = views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1)
-        val urBanner =  doc(document).getElementsByAttributeValue("id", "full-width-banner")
-        val urDismissedText =  doc(document).getElementsByAttributeValue("id", "fullWidthBannerDismissText")
-        val urBannerHref =  doc(document).getElementsByAttributeValue("id", "fullWidthBannerLink")
-        urBanner mustNot be(null)
-        urBanner.text() startsWith Messages("tai.urbanner.title")
-        urDismissedText.text() must include(Messages("tai.urbanner.reject"))
-        urBanner.text() must include(Messages("tai.urbanner.text"))
-        urBannerHref.text() must include(Messages("tai.urbanner.link"))
-      }
-
+    "display UR banner" in {
+      val document: Html = views.html.whatDoYouWantToDoTileView(form, modelWithiFormNoCyPlus1)
+      val urBanner = doc(document).getElementsByAttributeValue("id", "full-width-banner")
+      val urDismissedText = doc(document).getElementsByAttributeValue("id", "fullWidthBannerDismissText")
+      val urBannerHref = doc(document).getElementsByAttributeValue("id", "fullWidthBannerLink")
+      urBanner mustNot be(null)
+      urBanner.text() startsWith Messages("tai.urbanner.title")
+      urDismissedText.text() must include(Messages("tai.urbanner.reject"))
+      urBanner.text() must include(Messages("tai.urbanner.text"))
+      urBannerHref.text() must include(ApplicationConfig.urBannerLink)
     }
+
+  }
 
   def createViewModel(isAnyIFormInProgress: TimeToProcess,
                       isCyPlusOneEnabled: Boolean,
@@ -156,5 +158,6 @@ class WhatDoYouWantToDoTileViewSpec extends TaiViewSpec {
   def form: Form[WhatDoYouWantToDoFormData] = WhatDoYouWantToDoForm.createForm.bind(Map("taxYears" -> ""))
 
   private lazy val modelNoiFormNoCyPlus1 = createViewModel(NoTimeToProcess, false)
+
   override def view: Html = views.html.whatDoYouWantToDoTileView(form, modelNoiFormNoCyPlus1)
 }
