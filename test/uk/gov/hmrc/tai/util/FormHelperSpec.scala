@@ -42,8 +42,6 @@ class FormHelperSpec extends PlaySpec {
     }
   }
 
-
-
   "New Strip Number" must {
 
     "return original string if only has numbers" in {
@@ -115,6 +113,18 @@ class FormHelperSpec extends PlaySpec {
 
     "allow None as a currency" in {
       FormHelper.isValidCurrency(None) mustBe true
+    }
+  }
+
+  "areEqual" must {
+    "be the same, ignoring commmas and dots" in {
+      FormHelper.areEqual(Some("123"), Some("123")) mustBe true
+      FormHelper.areEqual(Some("1,23"), Some("1,23")) mustBe true
+    }
+
+    "not be the same" in {
+      FormHelper.areEqual(Some("123"), Some("124")) mustBe false
+      FormHelper.areEqual(Some("1,23"), Some("1.24")) mustBe false
     }
   }
 

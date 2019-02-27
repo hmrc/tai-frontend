@@ -40,21 +40,28 @@ object CodingComponentPairDescription {
 }
 
 object CodingComponentTypeDescription {
-  def describe(componentType: TaxComponentType, employmentId: Option[Int], companyCarBenefits: Seq[CompanyCarBenefit], employmentIdNameMap: Map[Int, String])(implicit messages: Messages): String = {
+  def describe(componentType: TaxComponentType, employmentId: Option[Int], companyCarBenefits: Seq[CompanyCarBenefit], employmentIdNameMap: Map[Int, String])
+              (implicit messages: Messages): String = {
     (componentType, employmentId) match {
       case (CarBenefit, Some(id)) if employmentIdNameMap.contains(id) =>
-        val makeModel = CompanyCarMakeModel.description(id, companyCarBenefits).getOrElse(Messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
 
-        s"${Messages("tai.taxFreeAmount.table.taxComponent.CarBenefitMakeModel", makeModel)}" + " " +
-          s"${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentIdNameMap(id))}"
+        val makeModel = CompanyCarMakeModel.description(id, companyCarBenefits).
+          getOrElse(messages("tai.taxFreeAmount.table.taxComponent.CarBenefit"))
+
+        s"${messages("tai.taxFreeAmount.table.taxComponent.CarBenefitMakeModel", makeModel)}" + " " +
+          s"${messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentIdNameMap(id))}"
 
       case (_, Some(id)) if employmentIdNameMap.contains(id) =>
-        s"${Messages(s"tai.taxFreeAmount.table.taxComponent.${componentType.toString}")}" + " " +
-          s"${Messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentIdNameMap(id))}"
+        componentTypeToString(componentType) + " " +
+          s"${messages("tai.taxFreeAmount.table.taxComponent.from.employment", employmentIdNameMap(id))}"
 
       case _ =>
-        Messages(s"tai.taxFreeAmount.table.taxComponent.${componentType.toString}")
+        messages(s"tai.taxFreeAmount.table.taxComponent.${componentType.toString}")
     }
+  }
+
+  def componentTypeToString(componentType: TaxComponentType)(implicit messages: Messages): String = {
+    s"${messages(s"tai.taxFreeAmount.table.taxComponent.${componentType.toString}")}"
   }
 }
 

@@ -29,7 +29,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
-import uk.gov.hmrc.tai.service.{EmploymentService, YourTaxFreeAmountService}
+import uk.gov.hmrc.tai.service.{EmploymentService, YourTaxFreeAmountComparison, YourTaxFreeAmountService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount._
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.YourTaxFreeAmountViewModel
 
