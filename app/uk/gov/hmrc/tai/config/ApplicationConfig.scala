@@ -40,6 +40,7 @@ class ApplicationConfig extends DefaultServicesConfig {
   lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
   lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
   lazy val urBannerEnabled = configuration.getString("feature.ur-banner.enabled").getOrElse("true").toBoolean
+  lazy val urBannerLink = "https://www.surveygizmo.com/s3/4842480/HMRC-Letter-Study-5"
   lazy val checkUpdateProgressLinkUrl = s"${fetchUrl("track")}/track"
 
   lazy val analyticsToken: Option[String] = configuration.getString(s"govuk-tax.$env.google-analytics.token")

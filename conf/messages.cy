@@ -1410,7 +1410,6 @@ tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid=Rydym yn amcangyfrif 
 
 tai.urbanner.title=Helpwch i wella llythyrau CThEM
 tai.urbanner.text=Cymerwch ran yn ein harolwg byr (yn agor ffenestr neu dab newydd)
-tai.urbanner.link=https://www.surveygizmo.com/s3/4842480/HMRC-Letter-Study-5
 tai.urbanner.reject=Dim diolch
 
 checkProgress.link=Gwiriwch gynnydd eich diweddariad
