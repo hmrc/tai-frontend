@@ -258,11 +258,14 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit user =>
       implicit person =>
         implicit request => {
-          journeyCacheService.collectedValues(Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey), Seq(UpdateIncome_ConfirmedNewAmountKey)) map tupled { (mandatoryCache, optionalCache) =>
-            val name :: newIrregularPay :: Nil = mandatoryCache.toList
+          journeyCacheService.collectedValues(Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_PayToDateKey), Seq(UpdateIncome_ConfirmedNewAmountKey)) map tupled { (mandatoryCache, optionalCache) =>
+            val name :: newIrregularPay :: oldIrregularPay :: Nil = mandatoryCache.toList
             val confirmedNewAmount = optionalCache.head
             if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
               Redirect(controllers.routes.IncomeController.sameEstimatedPay())
+            } else if (FormHelper.areEqual(Some(newIrregularPay), Some(oldIrregularPay))) {
+              val vm = SameEstimatedPayViewModel(name, oldIrregularPay.toInt)
+              Ok(views.html.incomes.sameEstimatedPay(vm))
             } else {
               val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
               Ok(views.html.incomes.confirmAmountEntered(vm))

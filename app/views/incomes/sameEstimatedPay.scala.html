@@ -15,61 +15,49 @@
  *@
 
 @import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
-
-@import uk.gov.hmrc.tai.model.TaxYear
-@import uk.gov.hmrc.tai.util.HtmlFormatter
-@import uk.gov.hmrc.play.views.formatting.Dates
-@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-@(model: SameEstimatedPayViewModel)(implicit
-        request: Request[_],
-        messages: Messages,
-        user: controllers.auth.TaiUser,
-        templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
-        partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
-
 @import includes.ptaHeader
-@import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.play.views.helpers.MoneyPounds
-@import org.joda.time.DateTime
-@import uk.gov.hmrc.play.views.html.layouts.loginStatus
-@import uk.gov.hmrc.tai.util.FormHelper
 @import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
+
+@(model: SameEstimatedPayViewModel)(implicit
+request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        backLinkGaEventAction = None,
-        mainHeadingText = messages("tai.updateEmployemnt.incomeSame.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
-        preHeadingText = messages("tai.updateEmployment.incomeSame.preHeading",model.employerName)
+        mainHeadingText = messages("tai.incomes.confirm.save.heading", currentTaxYearRangeHtmlNonBreak),
+        preHeadingText = messages("tai.incomes.edit.preHeading", model.employerName)
     )
 }
 
 @main(
-    title = messages("tai.updateEmployment.incomeSame.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
+    title = messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak),
+    articleClasses = Some("full-width"),
     pageHeader = Some(header),
-    articleClasses = Some("")
-) {
+    user = Some(user),
+    employerName = Some(model.employerName),
+    gaCustomTitle = None
+){
     <div class="grid-row">
+        <div class="grid grid-2-3">
             <div class="inner-block">
+
                 <section class="section flush--bottom soft--ends">
-                    <p>@messages("tai.updateEmployment.incomeSame.newEstimate.text") <span class="bold-large">@model.amountWithPounds</span></p>
+                    <p>@messages(s"tai.incomes.confirm.save.messageEquals", model.amountWithPounds)</p>
                     <div class="panel panel-border-narrow">
-                        <p>@messages("tai.updateEmployment.incomeSame.description", model.employerName,TaxYearRangeUtil.currentTaxYearRangeSingleLine)</p>
+                        <p>@messages("tai.incomes.confirm.save.messageEquals.details", model.employerName)</p>
                     </div>
                 </section>
-
                 <div class="subsection">
-                @Link.toInternalPage(
-                    id=Some("returnToEmploymentDetails"),
-                    value=Some(messages("tai.updateEmployment.incomeSame.return.link")),
-                    url = routes.TaxAccountSummaryController.onPageLoad.url,
-                    cssClasses=Some("button")
-                ).toHtml
+                    @Link.toInternalPage(
+                        id=Some("returnToEmploymentDetails"),
+                        value=Some(messages("tai.updateEmployment.incomeSame.return.link")),
+                        url = routes.TaxAccountSummaryController.onPageLoad.url,
+                        cssClasses=Some("button")
+                    ).toHtml
                 </div>
             </div>
-
-
+        </div>
     </div>
-
 }

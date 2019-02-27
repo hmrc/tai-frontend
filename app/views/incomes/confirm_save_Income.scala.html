@@ -48,26 +48,18 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
             <div class="inner-block">
 
                 @if(income.toEmploymentAmount().newAmount == 0){
-                <section class="section flush--bottom soft--ends">
-                    <p  id="result">@messages(s"tai.incomes.confirm.same.result", income.toEmploymentAmount().oldAmount)</p>
-                    <p  id="resultSame">@messages(s"tai.incomes.confirm.same",income.name)</p>
-                </section>
-                }else{
-
                     <section class="section flush--bottom soft--ends">
-                        @if(FormHelper.convertCurrencyToInt(income.newAmount) == income.oldAmount){
-                            <p>@messages(s"tai.incomes.confirm.save.messageEquals", income.toEmploymentAmount().newAmount)</p>
-                            <div class="panel panel-border-narrow">
-                                <p>@messages("tai.incomes.confirm.save.messageEquals.details", income.name)</p>
-                            </div>
-
-                        }else{
-                            <p>@messages(s"tai.incomes.confirm.save.message", income.toEmploymentAmount().newAmount)</p>
-                            <div class="panel panel-border-narrow">
-                                <p>@messages("tai.incomes.confirm.save.message.details")</p>
-                            </div>
-                        }
+                        <p  id="result">@messages(s"tai.incomes.confirm.same.result", income.toEmploymentAmount().oldAmount)</p>
+                        <p  id="resultSame">@messages(s"tai.incomes.confirm.same",income.name)</p>
                     </section>
+                }else{
+                    <section class="section flush--bottom soft--ends">
+                        <p>@messages(s"tai.incomes.confirm.save.message", income.toEmploymentAmount().newAmount)</p>
+                        <div class="panel panel-border-narrow">
+                            <p>@messages("tai.incomes.confirm.save.message.details")</p>
+                        </div>
+                    </section>
+                }
                 @if(FormHelper.convertCurrencyToInt(income.newAmount) != income.oldAmount){
                     <section class="section">
                         @form(action = controllers.routes.IncomeController.updateEstimatedIncome) {
@@ -83,7 +75,6 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                             </div>
                         }
                     </section>
-                }
                 }
             </div>
         </div>

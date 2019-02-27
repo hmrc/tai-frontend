@@ -93,7 +93,7 @@ class IncomeController @Inject()(personService: PersonService,
             cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_ConfirmedNewAmountKey)
           } yield {
             val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt)
-            Ok(views.html.incomes.sameEstimatedPay(model))
+            Ok(views.html.incomes.sameEstimatedPayInCache(model))
           }
         }
   }
@@ -143,10 +143,10 @@ class IncomeController @Inject()(personService: PersonService,
             sendActingAttorneyAuditEvent("confirmRegularIncome")
 
             for {
-              cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey)
-              id = cachedData.head.toInt
+              cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey, UpdateIncome_NameKey)
+              id :: newAmount :: employerName :: Nil = cachedData.toList
               taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
-              employmentDetails <- employmentService.employment(Nino(user.getNino), id)
+              employmentDetails <- employmentService.employment(Nino(user.getNino), id.toInt)
             } yield {
               (taxCodeIncomeDetails, employmentDetails) match {
                 case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
@@ -154,9 +154,15 @@ class IncomeController @Inject()(personService: PersonService,
                     case Some(taxCodeIncome) =>
                       val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
                       val (_, date) = retrieveAmountAndDate(employment)
-                      val form = EditIncomeForm(employmentAmount, cachedData(1), date.map(_.toString()))
+                      val form = EditIncomeForm(employmentAmount, newAmount, date.map(_.toString()))
 
-                      Ok(views.html.incomes.confirm_save_Income(form))
+                      if (FormHelper.areEqual(Some(newAmount), Some(s"${employmentAmount.oldAmount}"))) {
+                        val vm = SameEstimatedPayViewModel(employerName, employmentAmount.oldAmount)
+                        Ok(views.html.incomes.sameEstimatedPay(vm))
+                      } else {
+                        Ok(views.html.incomes.confirm_save_Income(form))
+                      }
+
                     case _ => throw new RuntimeException(s"Not able to found employment with id $id")
                   }
                 case _ => throw new RuntimeException("Exception while reading employment and tax code details")
