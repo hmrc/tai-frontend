@@ -21,9 +21,11 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.tax.ConcessionalRelief
 
-class IabdTaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport {
+class IabdTaxCodeChangeReasonsSpec extends PlaySpec
+  with MockitoSugar
+  with FakeTaiPlayApplication
+  with I18nSupport {
 
   implicit val messagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -42,15 +44,6 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeT
         reasons mustBe Seq.empty
       }
 
-      "there is no previous amount" in {
-        val noPreviousAmount = CodingComponentPair(JobExpenses, None, None, Some(123))
-        val pairs = AllowancesAndDeductionPairs(Seq(noPreviousAmount), Seq.empty)
-
-        val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
-
-        reasons mustBe Seq.empty
-      }
-
       "there is no current amount" in {
         val noCurrentAmount = CodingComponentPair(JobExpenses, None, Some(123), None)
         val pairs = AllowancesAndDeductionPairs(Seq(noCurrentAmount), Seq.empty)
@@ -60,56 +53,66 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeT
         reasons mustBe Seq.empty
       }
     }
+  }
+
+  "starting a new benefit" must {
+    "give multiple reasons when you have multiple new benefits" in {
+      val newBenefit1 = CodingComponentPair(JobExpenses, None, None, Some(123))
+      val newBenefit2 = CodingComponentPair(CarBenefit, None, None, Some(123))
+
+      val pairs = AllowancesAndDeductionPairs(Seq(newBenefit1), Seq(newBenefit2))
+
+      val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
+
+      reasons mustBe Seq(
+        "There has been an update to your Job expenses",
+        "There has been an update to your Car benefit"
+      )
+    }
+
+    "give a reason for an earlier year's adjustment" in {
+      val newBenefit = CodingComponentPair(EarlyYearsAdjustment, None, None, Some(123))
+      val pairs = AllowancesAndDeductionPairs(Seq(newBenefit), Seq.empty)
+
+      val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
+      reasons mustBe Seq(messagesApi("tai.taxCodeComparison.iabd.you.have.claimed.expenses"))
+    }
+
+    "give a reason with the amount for underpaid from a previous year" in {
+      val newBenefit = CodingComponentPair(UnderPaymentFromPreviousYear, None, None, Some(123))
+      val pairs = AllowancesAndDeductionPairs(Seq(newBenefit), Seq.empty)
+
+      val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
+      reasons mustBe Seq("You have underpaid £123 from a previous year")
+    }
+
+    "give a reason with the amount for estimated tax owed this year" in {
+      val newBenefit = CodingComponentPair(EstimatedTaxYouOweThisYear, None, None, Some(123))
+      val pairs = AllowancesAndDeductionPairs(Seq(newBenefit), Seq.empty)
+
+      val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
+      reasons mustBe Seq("We estimate you have underpaid £123 tax this year")
+    }
+  }
+
+  "amending a benefit" must {
+    "have no reasons if the previous and current amounts are the same" in {
+      val sameAmountAllowance = CodingComponentPair(JobExpenses, Some(2), Some(12345), Some(12345))
+      val pairs = AllowancesAndDeductionPairs(Seq.empty, Seq(sameAmountAllowance))
+
+      val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
+
+      reasons mustBe Seq.empty
+    }
 
     "give multiple reasons for a tax code change" in {
       val pairs = AllowancesAndDeductionPairs(Seq(jobExpensesIncrease), Seq(carBenefitIncrease))
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
 
       reasons mustBe Seq(
-        "Your Job expenses have been updated",
-        "Your Car benefit has been updated"
+        "There has been an update to your Job expenses",
+        "There has been an update to your Car benefit"
       )
     }
-
-    iabdTaxCodeChangeReasons.hasBeenAllowances foreach {
-      case (taxComponentType: TaxComponentType) =>
-        s"have the text 'has been updated' for the benefit $taxComponentType" in {
-          val benefit = CodingComponentPair(taxComponentType, Some(2), Some(50), Some(100))
-
-          val pairs = AllowancesAndDeductionPairs(Seq.empty, Seq(benefit))
-          val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
-
-          reasons.head must include("has been updated")
-        }
-    }
-
-    iabdTaxCodeChangeReasons.haveBeenAllowances foreach {
-      case (taxComponentType: TaxComponentType) =>
-        s"have the text 'have been updated' for the benefit $taxComponentType" in {
-          val benefit = CodingComponentPair(taxComponentType, Some(2), Some(50), Some(100))
-
-          val pairs = AllowancesAndDeductionPairs(Seq.empty, Seq(benefit))
-          val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
-
-          reasons.head must include("have been updated")
-        }
-    }
-
-    Seq(
-      CommunityInvestmentTaxCredit,
-      DoubleTaxationRelief,
-      ForeignPensionAllowance
-    ) foreach {
-      case (taxComponentType: TaxComponentType) =>
-        s"have the generic text for any other benefit such as $taxComponentType" in {
-          val benefit = CodingComponentPair(taxComponentType, Some(2), Some(50), Some(100))
-
-          val pairs = AllowancesAndDeductionPairs(Seq.empty, Seq(benefit))
-          val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
-
-          reasons mustBe Seq(messagesApi("taxCode.change.yourTaxCodeChanged.paragraph"))
-        }
-    }
-
   }
 }

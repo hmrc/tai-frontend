@@ -1400,8 +1400,10 @@ tai.updateIncome.CYPlus1.same.cancel=Dychwelyd i’ch cymhariaeth Treth Incwm ar
 tai.taxCodeComparison.addEmployer=Mae gennych gyflogaeth newydd gyda {0}
 tai.taxCodeComparison.removeEmployer=Mae’ch cyflogaeth {0} wedi dod i ben
 tai.taxCodeComparison.title=Gwnaethom newid hyn oherwydd y canlynol:
-tai.taxCodeComparison.iabd.have.been.updated=Mae’ch {0} wedi’u diweddaru
-tai.taxCodeComparison.iabd.has.been.updated=Mae’ch {0} wedi’i ddiweddaru
+tai.taxCodeComparison.iabd.updated=Bu ddiweddaraf am eich {0}
+tai.taxCodeComparison.iabd.you.have.claimed.expenses=Rydych wedi hawlio treuliau ar gyfer blynyddoedd blaenorol
+tai.taxCodeComparison.iabd.you.have.underpaid=Rydych wedi tandalu {0} o flwyddyn flaenorol
+tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid=Rydym yn amcangyfrif eich bod wedi tandalu {0} o dreth y flwyddyn hon
 
 tai.urbanner.title=Helpwch i wella llythyrau CThEM
 tai.urbanner.text=Cymerwch ran yn ein harolwg byr (yn agor ffenestr neu dab newydd)
