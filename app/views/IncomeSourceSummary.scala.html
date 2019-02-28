@@ -80,7 +80,7 @@
 ) {
 
     @if(model.isPension){
-        <p  aria-hidden="true">
+        <p aria-hidden="true">
             @Link.toInternalPage(
                 id=Some("updatePension"),
                 url=controllers.pensions.routes.UpdatePensionProviderController.UpdatePension(model.empId).url,
@@ -93,7 +93,7 @@
             value=Some(messages("tai.pension.income.details.updateLinkText.screenReader", model.empOrPensionName))).toHtml
         </p>
     }else {
-        <p  aria-hidden="true">
+        <p aria-hidden="true">
             @Link.toInternalPage(
                 id=Some("updateEmployer"),
                 url=controllers.employments.routes.EndEmploymentController.onPageLoad(model.empId).url,
@@ -108,6 +108,13 @@
     }
 
     <div class="grid-row">
+
+      @if(request.session.get("medBenUpdated")) {
+        <div class="tai-medben-updated">
+          @messages("tai.updated.medical-benefits")
+        </div>
+      }
+
         <div class="column-one-half subsection--wide">
                 <h2 class="flush">@messages("tai.income.details.estimatedTaxableIncome")</h2>
                 <p class="break-word">@messages("tai.income.details.estimatedTaxableIncome.desc")</p>
