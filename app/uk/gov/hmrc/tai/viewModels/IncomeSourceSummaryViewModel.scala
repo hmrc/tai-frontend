@@ -36,14 +36,17 @@ case class IncomeSourceSummaryViewModel(empId: Int,
                                         pensionOrPayrollNumber: String,
                                         isPension: Boolean,
                                         benefits: Seq[CompanyBenefitViewModel] = Seq.empty[CompanyBenefitViewModel],
-                                        displayAddCompanyCarLink: Boolean = true) extends ViewModelHelper {
+                                        displayAddCompanyCarLink: Boolean = true,
+                                        estimatedPayJourneyCompleted: Boolean,
+                                        isConfirmedAPIEnabled: Boolean) extends ViewModelHelper {
   def startOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().start)
 
   def endOfCurrentYear(implicit messages: Messages): String = Dates.formatDate(TaxYear().end)
 }
 
 object IncomeSourceSummaryViewModel {
-  def apply(empId: Int, displayName: String, taxCodeIncomeSources: Seq[TaxCodeIncome], employment: Employment, benefits: Benefits)(implicit messages: Messages): IncomeSourceSummaryViewModel = {
+  def apply(empId: Int, displayName: String, taxCodeIncomeSources: Seq[TaxCodeIncome], employment: Employment, benefits: Benefits,
+            estimatedPayJourneyCompleted: Boolean, isConfirmedAPIEnabled: Boolean)(implicit messages: Messages): IncomeSourceSummaryViewModel = {
     val amountYearToDate = for {
       latestAnnualAccount <- employment.latestAnnualAccount
       latestPayment <- latestAnnualAccount.latestPayment
@@ -64,7 +67,10 @@ object IncomeSourceSummaryViewModel {
       employment.payrollNumber.getOrElse(""),
       taxCodeIncomeSource.componentType == PensionIncome,
       benefitVMs,
-      displayAddCompanyCar)
+      displayAddCompanyCar,
+      estimatedPayJourneyCompleted,
+      isConfirmedAPIEnabled
+    )
   }
 
   private def companyBenefitViewModels(empId: Int, benefits: Benefits)(implicit messages: Messages): Seq[CompanyBenefitViewModel] = {
@@ -94,6 +100,7 @@ object IncomeSourceSummaryViewModel {
     ccBenVMs ++ otherBenVMs
 
   }
+
 }
 
 case class CompanyBenefitViewModel(name: String, amount: BigDecimal, changeUrl: String)

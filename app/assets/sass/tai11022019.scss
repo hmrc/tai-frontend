@@ -103,7 +103,7 @@ hr {
   background-color: #005ea5;
   color: #fff;
   margin: 15px 0 20px 0;
-  padding: 15px 15px 20px 15px;
+  padding: 10px 5px 5px 10px;
   clear: both;
 }
 
@@ -116,5 +116,9 @@ hr {
 }
 
 .tai-progress-panel p {
+  margin-bottom: 0;
+}
+
+#incomeSummary-banner-heading{
   margin-bottom: 0;
 }
