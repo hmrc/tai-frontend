@@ -192,8 +192,8 @@ class IncomeController @Inject()(personService: PersonService,
           }
         }
 
-        val updateJourneyCompletion: String => Future[Map[String, String]] = (employerId: String) => {
-          estimatedPayJourneyCompletionService.journeyCompleted(employerId)
+        val updateJourneyCompletion: String => Future[Map[String, String]] = (incomeId: String) => {
+          estimatedPayJourneyCompletionService.journeyCompleted(incomeId)
         }
 
         ServiceCheckLite.personDetailsCheck {
