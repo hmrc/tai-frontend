@@ -897,14 +897,14 @@ class IncomeUpdateCalculatorControllerSpec
       val testController = createTestIncomeUpdateCalculatorController
 
       val employerName = "name"
-      val payToDate = 123
+      val oldAmount = 100
       val newAmount = 123
       val confirmedNewAmount = 1234
 
       when(
         journeyCacheService.collectedValues(any(), any())(any()))
         .thenReturn(Future.successful(
-          Seq(EmployerName, newAmount.toString), Seq(Some(confirmedNewAmount.toString))))
+          Seq(EmployerName, newAmount.toString, oldAmount.toString), Seq(None)))
 
 
       val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(

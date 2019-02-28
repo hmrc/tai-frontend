@@ -195,14 +195,15 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         )
   }
 
-
   private val taxCodeIncomeInfoToCache = (taxCodeIncome: TaxCodeIncome, payment: Option[Payment]) => {
     val defaultCaching = Map[String, String](
       UpdateIncome_NameKey -> taxCodeIncome.name,
-      UpdateIncome_PayToDateKey -> taxCodeIncome.amount.toString
+      UpdateIncome_CurrentAmountKey -> taxCodeIncome.amount.toString
     )
 
-    payment.fold(defaultCaching)(payment => defaultCaching + (UpdateIncome_DateKey -> payment.date.toString(MONTH_AND_YEAR)))
+    payment.fold(defaultCaching)(payment => defaultCaching + (
+      UpdateIncome_PayToDateKey -> payment.amountYearToDate.toString,
+      UpdateIncome_DateKey -> payment.date.toString(MONTH_AND_YEAR)))
   }
 
   def editIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -210,7 +211,6 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
       implicit request => {
         val paymentRequest: Future[Option[Payment]] = incomeService.latestPayment(Nino(user.getNino), employmentId)
         val taxCodeIncomeRequest = taxAccountService.taxCodeIncomeForEmployment(Nino(user.getNino), TaxYear(), employmentId)
-
 
         paymentRequest flatMap { payment =>
           taxCodeIncomeRequest flatMap {
@@ -258,7 +258,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit user =>
       implicit person =>
         implicit request => {
-          journeyCacheService.collectedValues(Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_PayToDateKey), Seq(UpdateIncome_ConfirmedNewAmountKey)) map tupled { (mandatoryCache, optionalCache) =>
+          journeyCacheService.collectedValues(Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_CurrentAmountKey), Seq(UpdateIncome_ConfirmedNewAmountKey)) map tupled { (mandatoryCache, optionalCache) =>
             val name :: newIrregularPay :: oldIrregularPay :: Nil = mandatoryCache.toList
             val confirmedNewAmount = optionalCache.head
             if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {

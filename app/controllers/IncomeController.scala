@@ -46,7 +46,7 @@ import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, Jour
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 
 import scala.Function.tupled
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class IncomeController @Inject()(personService: PersonService,
                                  @Named("Update Income") journeyCacheService: JourneyCacheService,
@@ -263,20 +263,25 @@ class IncomeController @Inject()(personService: PersonService,
           ServiceCheckLite.personDetailsCheck {
             sendActingAttorneyAuditEvent("confirmIncomeUpdatesForEdit")
             for {
-              cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey)
-              id = cachedData.head.toInt
+              cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey, UpdateIncome_NameKey)
+              id :: newAmount :: pensionName :: Nil = cachedData.toList
               taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
-              employmentDetails <- employmentService.employment(Nino(user.getNino), id)
+              employmentDetails <- employmentService.employment(Nino(user.getNino), id.toInt)
             } yield {
 
               (taxCodeIncomeDetails, employmentDetails) match {
                 case (TaiSuccessResponseWithPayload(taxCodeIncomes: Seq[TaxCodeIncome]), Some(employment)) =>
-                  taxCodeIncomes.find(_.employmentId.contains(cachedData.head.toInt)) match {
+                  taxCodeIncomes.find(_.employmentId.contains(id.toInt)) match {
                     case Some(taxCodeIncome) =>
                       val employmentAmount = EmploymentAmount(taxCodeIncome, employment)
                       val (_, date) = retrieveAmountAndDate(employment)
-                      val form = EditIncomeForm(employmentAmount, cachedData(1), date.map(_.toString()))
-                      Ok(views.html.incomes.confirm_save_Income(form))
+                      val form = EditIncomeForm(employmentAmount, newAmount, date.map(_.toString()))
+                      if (FormHelper.areEqual(Some(newAmount), Some(s"${employmentAmount.oldAmount}"))) {
+                        val vm = SameEstimatedPayViewModel(pensionName, employmentAmount.oldAmount)
+                        Ok(views.html.incomes.sameEstimatedPay(vm))
+                      } else {
+                        Ok(views.html.incomes.confirm_save_Income(form))
+                      }
                     case _ => throw new RuntimeException(s"Not able to found employment with id $id")
                   }
                 case _ => throw new RuntimeException("Exception while reading employment and tax code details")
