@@ -49,14 +49,13 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
   with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
-
+  val employmentId = 1
+  val pensionId = 2
 
   "onPageLoad" must {
     "display the income details page" when {
       "asked for employment details" in {
         val sut = createSUT
-        val employmentId = 1
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -76,7 +75,6 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
 
       "asked for pension details" in {
         val sut = createSUT
-        val pensionId = 2
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).thenReturn(
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
@@ -102,7 +100,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
           Future.successful(TaiTaxAccountFailureResponse("FAILED")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.onPageLoad(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -113,7 +111,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
-        val result = sut.onPageLoad(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }

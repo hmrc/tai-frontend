@@ -292,7 +292,7 @@ class IncomeControllerSpec extends PlaySpec
 
   "updateEstimatedIncome" must {
     "return OK" when {
-      "confirmed API is toggled on and" when {
+      "confirmed API is toggled on " when {
         def createTestIncomeControllerwithToggleOn = createTestIncomeController(true)
 
       "income from employment is successfully updated" in {
@@ -350,7 +350,7 @@ class IncomeControllerSpec extends PlaySpec
       }
     }
 
-      "confirmed API is toggled off and" when {
+      "confirmed API is toggled off" when {
 
         "income from employment is successfully updated" in {
           val testController = createTestIncomeController()
