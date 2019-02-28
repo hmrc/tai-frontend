@@ -37,7 +37,9 @@ class EstimatedPayJourneyCompletionServiceSpec extends PlaySpec with MockitoSuga
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val incomeId = "1"
-  val trueValue = true.toString
+  val trueValue = "true"
+  val idKey=s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId"
+  val failedCacheCall = Future.failed(new Exception)
 
   private class EstimatedPayJourneyCompletionServiceTest extends EstimatedPayJourneyCompletionService(
     successfulJourneyCacheService
@@ -49,20 +51,27 @@ class EstimatedPayJourneyCompletionServiceSpec extends PlaySpec with MockitoSuga
 
   "Estimated Pay Journey Completed Service" must {
 
-    "add a cache entry upon successful completion of a journey" in {
-      val idKey=s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId"
-      when(successfulJourneyCacheService.cache(meq(idKey), meq(trueValue))(any())).thenReturn(Future.successful(Map(idKey -> trueValue)))
+    "add a successful journey completion" in {
 
+      when(successfulJourneyCacheService.cache(meq(idKey), meq(trueValue))(any())).thenReturn(Future.successful(Map(idKey -> trueValue)))
       Await.result(createTestService.journeyCompleted(incomeId)(hc), 5 seconds)
       verify(successfulJourneyCacheService, times(1)).cache(meq(idKey),meq(trueValue))(any())
     }
 
-    "retrieve a cache entry upon request" in {
-      val idKey=s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId"
-      when(successfulJourneyCacheService.currentValue(meq(idKey))(any())).thenReturn(Future.successful(Some(trueValue)))
+    "return an empty collection upon failing to add a journey completion" in {
+      when(successfulJourneyCacheService.cache(meq(idKey), meq(trueValue))(any())).thenReturn(failedCacheCall)
+      Await.result(createTestService.journeyCompleted(incomeId)(hc), 5 seconds) mustBe Map.empty[String, String]
+    }
 
+    "retrieve a successful journey completion" in {
+      when(successfulJourneyCacheService.currentValue(meq(idKey))(any())).thenReturn(Future.successful(Some(trueValue)))
       Await.result(createTestService.hasJourneyCompleted(incomeId)(hc), 5 seconds)
       verify(successfulJourneyCacheService, times(1)).currentValue(meq(idKey))(any())
+    }
+
+    "return false upon failing to retrieve a journey completion" in {
+      when(successfulJourneyCacheService.currentValue(meq(idKey))(any())).thenReturn(failedCacheCall)
+      Await.result(createTestService.hasJourneyCompleted(incomeId)(hc), 5 seconds) mustBe false
     }
 
   }

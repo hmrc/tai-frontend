@@ -415,6 +415,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
+
   }
 
   "pension" must {

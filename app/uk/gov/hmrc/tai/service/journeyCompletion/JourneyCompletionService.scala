@@ -18,21 +18,33 @@ package uk.gov.hmrc.tai.service.journeyCompletion
 
 import com.google.inject.Inject
 import com.google.inject.name.Named
+import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.constants.JourneyCacheConstants
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 abstract class JourneyCompletionService(successfulJourneyCacheService: JourneyCacheService) extends JourneyCacheConstants {
 
-  protected def cache(key: String, value: String)(implicit hc: HeaderCarrier): Future[Map[String,String]] = {
-    successfulJourneyCacheService.cache(key, value)
+  protected def cache(key: String)(implicit hc: HeaderCarrier): Future[Map[String,String]] = {
+    successfulJourneyCacheService.cache(key, "true") recover {
+      case NonFatal(exception) =>
+        Logger.warn(s"Failed to update Journey Completion service for key:$key caused by ${exception.getStackTrace}")
+        Map.empty[String, String]
+    }
   }
 
   protected def currentValue(key: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
-    successfulJourneyCacheService.currentValue(key) map(_.isDefined)
+    {
+      successfulJourneyCacheService.currentValue(key) map (_.isDefined) recover {
+        case NonFatal(exception) =>
+          Logger.warn(s"Failed to retrieve Journey Completion service value for key:$key caused by ${exception.getStackTrace}")
+          false
+      }
+    }
   }
 
   def journeyCompleted(incomeId: String)(implicit hc: HeaderCarrier): Future[Map[String,String]]
@@ -45,7 +57,7 @@ class EstimatedPayJourneyCompletionService @Inject()(@Named("Track Successful Jo
   extends JourneyCompletionService(successfulJourneyCacheService){
 
   override def journeyCompleted(incomeId: String)(implicit hc: HeaderCarrier): Future[Map[String,String]] = {
-    cache(s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId", true.toString)
+    cache(s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId")
   }
 
   override def hasJourneyCompleted(id: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
