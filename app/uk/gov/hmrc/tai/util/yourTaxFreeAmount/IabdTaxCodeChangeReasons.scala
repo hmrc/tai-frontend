@@ -21,7 +21,7 @@ import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.util.MonetaryUtil
 
-class IabdTaxCodeChangeReasons extends IabdMessageGroups {
+class IabdTaxCodeChangeReasons {
 
   def reasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
 
@@ -35,30 +35,18 @@ class IabdTaxCodeChangeReasons extends IabdMessageGroups {
   }
 
   private def translateNewBenefits(pair: CodingComponentPair)(implicit  messages: Messages): String = {
-    val componentType = pair.componentType
-
-    val isNowGet: Boolean = (youNowGetBenefits filter (_ == componentType)).nonEmpty
-    val isHaveClaimed: Boolean = (youHaveClaimedBenefits filter (_ == componentType)).nonEmpty
-
-    if(isNowGet) {
-      messages("tai.taxCodeComparison.iabd.you.now.get", CodingComponentTypeDescription.componentTypeToString(componentType))
-    } else if (isHaveClaimed) {
-      messages("tai.taxCodeComparison.iabd.you.have.claimed", CodingComponentTypeDescription.componentTypeToString(componentType))
-    } else if(componentType == EarlyYearsAdjustment) {
-      messages("tai.taxCodeComparison.iabd.you.have.claimed.expenses")
-    } else if(componentType == UnderPaymentFromPreviousYear) {
+    def createYouHaveMessage(text: String): String = {
       pair.current match {
-        case Some(value) => messages("tai.taxCodeComparison.iabd.you.have.underpaid", MonetaryUtil.withPoundPrefix(value.toInt))
-        case None => genericBenefitMessage
-      }
-    } else if(componentType == EstimatedTaxYouOweThisYear) {
-      pair.current match {
-        case Some(value) => messages("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid", MonetaryUtil.withPoundPrefix(value.toInt))
+        case Some(value) => messages(text, MonetaryUtil.withPoundPrefix(value.toInt))
         case None => genericBenefitMessage
       }
     }
-    else {
-      genericBenefitMessage
+
+    pair.componentType match {
+      case EarlyYearsAdjustment => messages("tai.taxCodeComparison.iabd.you.have.claimed.expenses")
+      case UnderPaymentFromPreviousYear => createYouHaveMessage("tai.taxCodeComparison.iabd.you.have.underpaid")
+      case EstimatedTaxYouOweThisYear => createYouHaveMessage("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid")
+      case _ => messageWithComponentType(pair)
     }
   }
 
@@ -70,24 +58,13 @@ class IabdTaxCodeChangeReasons extends IabdMessageGroups {
     }
 
     (hasAnythingChanged) match {
-      case true => yourBenefitsUpdatedMessage(pair.componentType)
+      case true => Some(messageWithComponentType(pair))
       case false => None
     }
   }
 
-  private def yourBenefitsUpdatedMessage(componentType: TaxComponentType)(implicit messages: Messages): Option[String] = {
-
-    val isHaveBeen: Boolean = (haveBeenAllowances filter (_ == componentType)).nonEmpty
-
-    val isNeitherHasOrHaveBeen: Boolean = (hasBeenAllowances filter (_ == componentType)).isEmpty && !isHaveBeen
-
-    if(isNeitherHasOrHaveBeen) {
-      Some(genericBenefitMessage)
-    } else if (isHaveBeen) {
-      Some(messages("tai.taxCodeComparison.iabd.have.been.updated", CodingComponentTypeDescription.componentTypeToString(componentType)))
-    } else {
-      Some(messages("tai.taxCodeComparison.iabd.has.been.updated", CodingComponentTypeDescription.componentTypeToString(componentType)))
-    }
+  private def messageWithComponentType(pair: CodingComponentPair)(implicit messages: Messages) = {
+    messages("tai.taxCodeComparison.iabd.updated", CodingComponentTypeDescription.componentTypeToString(pair.componentType))
   }
 
   private def genericBenefitMessage(implicit messages: Messages): String = {
