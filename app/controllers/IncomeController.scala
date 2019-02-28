@@ -41,18 +41,21 @@ import uk.gov.hmrc.tai.model.domain.income.TaxCodeIncome
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util._
 import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 
 import scala.Function.tupled
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 class IncomeController @Inject()(personService: PersonService,
                                  @Named("Update Income") journeyCacheService: JourneyCacheService,
                                  taxAccountService: TaxAccountService,
                                  employmentService: EmploymentService,
                                  incomeService: IncomeService,
+                                 estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
                                  val auditConnector: AuditConnector,
                                  val delegationConnector: DelegationConnector,
                                  val authConnector: AuthConnector,
@@ -170,7 +173,8 @@ class IncomeController @Inject()(personService: PersonService,
       implicit person => {
         implicit request => {
 
-        def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)(implicit user: TaiUser, request: Request[AnyContent]): Result = {
+        def respondWithSuccess(employerName: String, employerId: Int, incomeType: String, newAmount: String)
+                              (implicit user: TaiUser, request: Request[AnyContent]): Result = {
           journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newAmount)
           incomeType match {
             case TaiConstants.IncomeTypePension =>
@@ -188,18 +192,28 @@ class IncomeController @Inject()(personService: PersonService,
           }
         }
 
-          ServiceCheckLite.personDetailsCheck {
-            journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey).flatMap(cache => {
-              val employerName :: newAmount :: employerId :: incomeType :: Nil = cache.toList
+        val updateJourneyCompletion: String => Future[Map[String, String]] = (incomeId: String) => {
+          estimatedPayJourneyCompletionService.journeyCompleted(incomeId)
+        }
 
-              taxAccountService.updateEstimatedIncome(Nino(user.getNino), FormHelper.stripNumber(newAmount).toInt, TaxYear(), employerId.toInt) map {
-                case TaiSuccessResponse => respondWithSuccess(employerName, employerId.toInt, incomeType, newAmount)
+        ServiceCheckLite.personDetailsCheck {
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey, UpdateIncome_IncomeTypeKey)
+            .flatMap(cache => {
+
+              val incomeName :: newAmount :: incomeId :: incomeType :: Nil = cache.toList
+
+              taxAccountService.updateEstimatedIncome(Nino(user.getNino), FormHelper.stripNumber(newAmount).toInt, TaxYear(), incomeId.toInt) flatMap {
+                case TaiSuccessResponse => {
+                  updateJourneyCompletion(incomeId) map { _ =>
+                    respondWithSuccess(incomeName, incomeId.toInt, incomeType, newAmount)
+                  }
+                }
                 case _ => throw new RuntimeException("Failed to update estimated income")
               }
-            })
-          }
+          })
         }
       }
+    }
   }
 
   def pensionIncome(): Action[AnyContent] = authorisedForTai(personService).async {

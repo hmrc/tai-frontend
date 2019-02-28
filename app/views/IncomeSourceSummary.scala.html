@@ -107,7 +107,18 @@
         </p>
     }
 
+    @if(model.isConfirmedAPIEnabled){
+        @if(model.estimatedPayJourneyCompleted){
+            <div class="tai-progress-panel" id="estimatedPayCompletionBanner">
+                <h2 class="heading-medium flush-bottom flush--top" id="incomeSummary-banner-heading">@messages("tai.estimatedIncome.confirmation.banner.heading")</h2>
+            </div>
+        }
+    }
+
     <div class="grid-row">
+
+
+
         <div class="column-one-half subsection--wide">
                 <h2 class="flush">@messages("tai.income.details.estimatedTaxableIncome")</h2>
                 <p class="break-word">@messages("tai.income.details.estimatedTaxableIncome.desc")</p>

@@ -93,6 +93,8 @@ trait JourneyCacheConstants {
   val TrackSuccessfulJourney_AddPensionProviderKey = "addPensionProvider"
   val TrackSuccessfulJourney_EndEmploymentBenefitKey = "endEmploymentBenefit"
 
+  val TrackSuccessfulJourney_EstimatedPayKey = "updateEstimatedPay"
+
   val UpdatePreviousYearsIncome_JourneyKey = "update-previous-years-income"
   val UpdatePreviousYearsIncome_TaxYearKey = "taxYear"
   val UpdatePreviousYearsIncome_IncomeDetailsKey = "incomeDetails"
