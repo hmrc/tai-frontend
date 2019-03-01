@@ -42,6 +42,7 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCode
 import uk.gov.hmrc.tai.model.domain.{Employment, _}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
@@ -985,6 +986,9 @@ class IncomeUpdateCalculatorControllerSpec
         Future.successful(TaiSuccessResponse)
       )
 
+      when(estimatedPayJourneyCompletionService.journeyCompleted(Matchers.eq(employerId.toString))(any())).
+        thenReturn(Future.successful(Map.empty[String, String]))
+
       val result: Future[Result] = testController.submitIncomeIrregularHours(1)(
         RequestBuilder.buildFakeRequestWithOnlySession("GET")
       )
@@ -1009,12 +1013,14 @@ class IncomeUpdateCalculatorControllerSpec
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
   val journeyCacheService = mock[JourneyCacheService]
+  val estimatedPayJourneyCompletionService = mock[EstimatedPayJourneyCompletionService]
 
   private class TestIncomeUpdateCalculatorController extends IncomeUpdateCalculatorController(
     incomeService,
     employmentService,
     taxAccountService,
     personService,
+    estimatedPayJourneyCompletionService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],

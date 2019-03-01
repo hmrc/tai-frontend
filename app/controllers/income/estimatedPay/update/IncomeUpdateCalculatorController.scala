@@ -46,7 +46,7 @@ import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, FormValu
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{CheckYourAnswersViewModel, EstimatedPayViewModel}
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel}
-
+import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import scala.Function.tupled
 import scala.concurrent.Future
 
@@ -54,6 +54,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
                                                  employmentService: EmploymentService,
                                                  taxAccountService: TaxAccountService,
                                                  personService: PersonService,
+                                                 estimatedPayJourneyCompletionService: EstimatedPayJourneyCompletionService,
                                                  val auditConnector: AuditConnector,
                                                  val delegationConnector: DelegationConnector,
                                                  val authConnector: AuthConnector,
@@ -275,21 +276,36 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit user =>
       implicit person =>
         implicit request =>
-          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey).flatMap { cache =>
-            val employerName :: newPay :: employerId :: Nil = cache.toList
 
-            taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) map {
-              case TaiSuccessResponse =>
-                journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newPay)
-                if (confirmedAPIEnabled) {
+          val updateJourneyCompletion: String => Future[Map[String, String]] = (incomeId: String) => {
+            estimatedPayJourneyCompletionService.journeyCompleted(incomeId)
+          }
 
-                  Ok(views.html.incomes.editSuccess(employerName, employerId.toInt))
-                } else {
-                  Ok(views.html.incomes.oldEditSuccess(employerName, employerId.toInt))
+          val cacheAndRespond = (incomeName: String, incomeId: String, newPay: String) => {
+            journeyCacheService.cache(UpdateIncome_ConfirmedNewAmountKey, newPay) map { _ =>
+              if (confirmedAPIEnabled) {
+
+                Ok(views.html.incomes.editSuccess(incomeName, incomeId.toInt))
+              } else {
+                Ok(views.html.incomes.oldEditSuccess(incomeName, incomeId.toInt))
+              }
+            }
+
+          }
+
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey).flatMap(cache => {
+            val incomeName :: newPay :: incomeId :: Nil = cache.toList
+
+            taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) flatMap {
+              case TaiSuccessResponse => {
+                updateJourneyCompletion(incomeId) flatMap { _ =>
+                  cacheAndRespond(incomeName, incomeId, newPay)
                 }
+              }
               case _ => throw new RuntimeException(s"Not able to update estimated pay for $employmentId")
             }
-          }
+
+          })
   }
 
   def payPeriodPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>

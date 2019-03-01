@@ -17,7 +17,9 @@
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.util.MonetaryUtil
 
 class IabdTaxCodeChangeReasons {
 
@@ -26,10 +28,29 @@ class IabdTaxCodeChangeReasons {
     val combinedBenefits = iabdPairs.allowances ++ iabdPairs.deductions
 
     val whatsChangedPairs = combinedBenefits.filter(pair => pair.previous.isDefined && pair.current.isDefined)
-    whatsChangedPairs.flatMap(translateChangedCodingComponentPair(_))
+    val whatsNewPairs = combinedBenefits.filter(pair => pair.previous.isEmpty && pair.current.isDefined)
+
+    whatsNewPairs.map(translateNewBenefits(_)) ++
+    whatsChangedPairs.flatMap(translateChangedBenefits(_))
   }
 
-  private def translateChangedCodingComponentPair(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
+  private def translateNewBenefits(pair: CodingComponentPair)(implicit  messages: Messages): String = {
+    def createYouHaveMessage(text: String): String = {
+      pair.current match {
+        case Some(value) => messages(text, MonetaryUtil.withPoundPrefix(value.toInt))
+        case None => genericBenefitMessage
+      }
+    }
+
+    pair.componentType match {
+      case EarlyYearsAdjustment => messages("tai.taxCodeComparison.iabd.you.have.claimed.expenses")
+      case UnderPaymentFromPreviousYear => createYouHaveMessage("tai.taxCodeComparison.iabd.you.have.underpaid")
+      case EstimatedTaxYouOweThisYear => createYouHaveMessage("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid")
+      case _ => messageWithComponentType(pair)
+    }
+  }
+
+  private def translateChangedBenefits(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
     val hasAnythingChanged: Boolean = pair match {
       case CodingComponentPair(_, _, previousAmount: Some[BigDecimal], currentAmount: Some[BigDecimal]) =>
         currentAmount.x != previousAmount.x
@@ -37,57 +58,16 @@ class IabdTaxCodeChangeReasons {
     }
 
     (hasAnythingChanged) match {
-      case true => yourBenefitsUpdatedMessage(pair.componentType)
+      case true => Some(messageWithComponentType(pair))
       case false => None
     }
   }
 
-  private def yourBenefitsUpdatedMessage(componentType: TaxComponentType)(implicit messages: Messages): Option[String] = {
-
-    val isHaveBeen: Boolean = (haveBeenAllowances filter (_ == componentType)).nonEmpty
-
-    val isNeitherHasOrHaveBeen: Boolean = (hasBeenAllowances filter (_ == componentType)).isEmpty && !isHaveBeen
-
-    if(isNeitherHasOrHaveBeen) {
-      Some(messages("taxCode.change.yourTaxCodeChanged.paragraph"))
-    } else if (isHaveBeen) {
-      Some(messages("tai.taxCodeComparison.iabd.have.been.updated", CodingComponentTypeDescription.componentTypeToString(componentType)))
-    } else {
-      Some(messages("tai.taxCodeComparison.iabd.has.been.updated", CodingComponentTypeDescription.componentTypeToString(componentType)))
-    }
+  private def messageWithComponentType(pair: CodingComponentPair)(implicit messages: Messages) = {
+    messages("tai.taxCodeComparison.iabd.updated", CodingComponentTypeDescription.componentTypeToString(pair.componentType))
   }
 
-  val haveBeenAllowances: Seq[TaxComponentType] = {
-    Seq(
-      JobExpenses,
-      FlatRateJobExpenses,
-      ProfessionalSubscriptions,
-      HotelAndMealExpenses,
-      VehicleExpenses
-    )
-  }
-
-  val hasBeenAllowances: Seq[TaxComponentType] = {
-    Seq(
-      BlindPersonsAllowance,
-      GiftAidPayments,
-      MileageAllowanceRelief,
-      Commission,
-      BeneficialLoan,
-      CarBenefit,
-      CarFuelBenefit,
-      MedicalInsurance,
-      VanBenefit,
-      VanFuelBenefit,
-      EmployerProvidedProfessionalSubscription,
-      QualifyingRelocationExpenses,
-      TravelAndSubsistence,
-      VouchersAndCreditCards,
-      StatePension,
-      OccupationalPension,
-      PublicServicesPension,
-      ForcesPension,
-      PersonalPensionAnnuity
-    )
+  private def genericBenefitMessage(implicit messages: Messages): String = {
+    messages("taxCode.change.yourTaxCodeChanged.paragraph")
   }
 }
