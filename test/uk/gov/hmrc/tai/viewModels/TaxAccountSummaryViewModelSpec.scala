@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service.ThreeWeeks
-import uk.gov.hmrc.tai.util.HtmlFormatter
+import uk.gov.hmrc.tai.util.{HtmlFormatter, TaxYearRangeUtil}
 import uk.gov.hmrc.tai.util.constants.TaiConstants._
 
 
@@ -39,14 +39,14 @@ class TaxAccountSummaryViewModelSpec extends PlaySpec with FakeTaiPlayApplicatio
         HtmlFormatter.htmlNonBroken(TaxYear().end.toString("d MMMM yyyy")))
 
       "has header relating to current tax year" in {
-        val expectedHeader = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRange
+        val expectedHeader = Messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
 
         val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, ThreeWeeks, nonTaxCodeIncome)
         sut.header mustBe expectedHeader
       }
 
       "has title relating to current tax year" in {
-        val expectedTitle = Messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRange
+        val expectedTitle = Messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
         val sut = TaxAccountSummaryViewModel(emptyTaxCodeIncomes, emptyEmployments, taxAccountSummary, ThreeWeeks, nonTaxCodeIncome)
         sut.title mustBe expectedTitle
       }
