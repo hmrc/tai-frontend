@@ -95,6 +95,19 @@ class IncomeController @Inject()(personService: PersonService,
         }
   }
 
+  def sameEstimatedPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit person =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          for {
+            cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey)
+          } yield {
+            val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt)
+            Ok(views.html.incomes.sameEstimatedPay(model))
+          }
+        }
+  }
+
   def editRegularIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
@@ -117,11 +130,14 @@ class IncomeController @Inject()(personService: PersonService,
                     currentCache <- journeyCacheService.currentCache
                   } yield {
                     val newAmount = income.newAmount.getOrElse("0")
+                    val oldAmount = income.oldAmount.toString
+                    journeyCacheService.cache(UpdateIncome_NewAmountKey, newAmount)
 
                     if (FormHelper.areEqual(currentCache.get(UpdateIncome_ConfirmedNewAmountKey), Some(newAmount))) {
                       Redirect(routes.IncomeController.sameEstimatedPayInCache())
+                    } else if (FormHelper.areEqual(Some(newAmount), Some(oldAmount))) {
+                      Redirect(routes.IncomeController.sameEstimatedPay())
                     } else {
-                      journeyCacheService.cache(UpdateIncome_NewAmountKey, newAmount)
                       Redirect(routes.IncomeController.confirmRegularIncome())
                     }
                   }
@@ -140,8 +156,8 @@ class IncomeController @Inject()(personService: PersonService,
             sendActingAttorneyAuditEvent("confirmRegularIncome")
 
             for {
-              cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey, UpdateIncome_NameKey)
-              id :: newAmount :: employerName :: Nil = cachedData.toList
+              cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_IdKey, UpdateIncome_NewAmountKey)
+              id :: newAmount :: Nil = cachedData.toList
               taxCodeIncomeDetails <- taxAccountService.taxCodeIncomes(Nino(user.getNino), TaxYear())
               employmentDetails <- employmentService.employment(Nino(user.getNino), id.toInt)
             } yield {
@@ -153,12 +169,7 @@ class IncomeController @Inject()(personService: PersonService,
                       val (_, date) = retrieveAmountAndDate(employment)
                       val form = EditIncomeForm(employmentAmount, newAmount, date.map(_.toString()))
 
-                      if (FormHelper.areEqual(Some(newAmount), Some(s"${employmentAmount.oldAmount}"))) {
-                        val vm = SameEstimatedPayViewModel(employerName, employmentAmount.oldAmount)
-                        Ok(views.html.incomes.sameEstimatedPay(vm))
-                      } else {
                         Ok(views.html.incomes.confirm_save_Income(form))
-                      }
 
                     case _ => throw new RuntimeException(s"Not able to found employment with id $id")
                   }

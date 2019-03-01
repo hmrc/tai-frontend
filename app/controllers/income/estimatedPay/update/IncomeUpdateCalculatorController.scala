@@ -231,12 +231,11 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit user =>
       implicit person =>
         implicit request => {
-          journeyCacheService.currentCache flatMap { cache =>
-            val name = cache(UpdateIncome_NameKey)
-            val paymentToDate: String = cache(UpdateIncome_PayToDateKey)
-            val latestPayDate = cache.get(UpdateIncome_DateKey)
+          journeyCacheService.collectedValues(Seq(UpdateIncome_NameKey, UpdateIncome_PayToDateKey, UpdateIncome_DateKey, UpdateIncome_CurrentAmountKey), Seq(UpdateIncome_ConfirmedNewAmountKey)) flatMap tupled { (mandatoryValues, optionalValues) =>
 
-            AmountComparatorForm.createForm(latestPayDate, Some(paymentToDate.toInt)).bindFromRequest().fold(
+            val name :: paymentToDate :: latestPayDate :: currentAmount :: Nil = mandatoryValues.toList
+            val confirmedNewAmount = optionalValues.head
+            AmountComparatorForm.createForm(Some(latestPayDate), Some(paymentToDate.toInt)).bindFromRequest().fold(
 
               formWithErrors => {
                 val viewModel = EditIncomeIrregularHoursViewModel(employmentId, name, paymentToDate)
@@ -245,8 +244,15 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
               validForm =>
                 validForm.income.fold(throw new RuntimeException) { income =>
-                  journeyCacheService.cache(UpdateIncome_IrregularAnnualPayKey, income) map { _ =>
-                    Redirect(routes.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId))
+                  journeyCacheService.cache(UpdateIncome_NewAmountKey, income) map { _ =>
+
+                    if (FormHelper.areEqual(Some(income), confirmedNewAmount)) {
+                      Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache())
+                    } else if (FormHelper.areEqual(Some(income), Some(currentAmount))) {
+                      Redirect(controllers.routes.IncomeController.sameEstimatedPay())
+                    } else {
+                      Redirect(routes.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId))
+                    }
                   }
                 }
             )
@@ -258,18 +264,11 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit user =>
       implicit person =>
         implicit request => {
-          journeyCacheService.collectedValues(Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_CurrentAmountKey), Seq(UpdateIncome_ConfirmedNewAmountKey)) map tupled { (mandatoryCache, optionalCache) =>
-            val name :: newIrregularPay :: oldIrregularPay :: Nil = mandatoryCache.toList
-            val confirmedNewAmount = optionalCache.head
-            if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
-              Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache())
-            } else if (FormHelper.areEqual(Some(newIrregularPay), Some(oldIrregularPay))) {
-              val vm = SameEstimatedPayViewModel(name, oldIrregularPay.toInt)
-              Ok(views.html.incomes.sameEstimatedPay(vm))
-            } else {
-              val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
-              Ok(views.html.incomes.confirmAmountEntered(vm))
-            }
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey) map { mandatoryCache =>
+            val name :: newIrregularPay :: Nil = mandatoryCache.toList
+
+            val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
+            Ok(views.html.incomes.confirmAmountEntered(vm))
           }
         }
   }
@@ -278,7 +277,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit user =>
       implicit person =>
         implicit request =>
-          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_IdKey).flatMap { cache =>
+          journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_NewAmountKey, UpdateIncome_IdKey).flatMap { cache =>
             val employerName :: newPay :: employerId :: Nil = cache.toList
 
             taxAccountService.updateEstimatedIncome(Nino(user.getNino), newPay.toInt, TaxYear(), employmentId) map {
