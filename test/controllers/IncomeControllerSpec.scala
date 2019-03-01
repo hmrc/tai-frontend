@@ -176,7 +176,7 @@ class IncomeControllerSpec extends PlaySpec
         val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPay().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPayInCache().url)
       }
     }
 
@@ -640,7 +640,7 @@ class IncomeControllerSpec extends PlaySpec
 
         when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("Employer Name", "987")))
 
-        val result = testController.sameEstimatedPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.sameEstimatedPayInCache()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -654,7 +654,7 @@ class IncomeControllerSpec extends PlaySpec
 
         when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq.empty))
 
-        val result = testController.sameEstimatedPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.sameEstimatedPayInCache()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }

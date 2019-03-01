@@ -262,7 +262,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             val name :: newIrregularPay :: oldIrregularPay :: Nil = mandatoryCache.toList
             val confirmedNewAmount = optionalCache.head
             if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
-              Redirect(controllers.routes.IncomeController.sameEstimatedPay())
+              Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache())
             } else if (FormHelper.areEqual(Some(newIrregularPay), Some(oldIrregularPay))) {
               val vm = SameEstimatedPayViewModel(name, oldIrregularPay.toInt)
               Ok(views.html.incomes.sameEstimatedPay(vm))
@@ -579,7 +579,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
           calculatedPay.grossAnnualPay match {
             case newAmount if (isCachedAmountSameAsEnteredAmount(cache, newAmount)) =>
-              Future.successful(Redirect(controllers.routes.IncomeController.sameEstimatedPay()))
+              Future.successful(Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache()))
             case Some(newAmount) if newAmount > payYearToDate =>
               val cache = Map(UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
                 UpdateIncome_NewAmountKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))

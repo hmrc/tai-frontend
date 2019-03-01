@@ -85,7 +85,7 @@ class IncomeController @Inject()(personService: PersonService,
         }
   }
 
-  def sameEstimatedPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+  def sameEstimatedPayInCache(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -122,7 +122,7 @@ class IncomeController @Inject()(personService: PersonService,
                     val newAmount = income.newAmount.getOrElse("0")
 
                     if (FormHelper.areEqual(currentCache.get(UpdateIncome_ConfirmedNewAmountKey), Some(newAmount))) {
-                      Redirect(routes.IncomeController.sameEstimatedPay())
+                      Redirect(routes.IncomeController.sameEstimatedPayInCache())
                     } else {
                       journeyCacheService.cache(UpdateIncome_NewAmountKey, newAmount)
                       Redirect(routes.IncomeController.confirmRegularIncome())
