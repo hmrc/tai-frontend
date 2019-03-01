@@ -1407,4 +1407,6 @@ tai.urbanner.title=Helpwch i wella llythyrau CThEM
 tai.urbanner.text=Cymerwch ran yn ein harolwg byr (yn agor ffenestr neu dab newydd)
 tai.urbanner.reject=Dim diolch
 
+tai.updated.medical-benefits=Your updated medical benefit details will be shown here in 48 hours
+
 checkProgress.link=Gwiriwch gynnydd eich diweddariad
