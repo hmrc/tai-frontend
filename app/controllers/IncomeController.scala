@@ -16,14 +16,11 @@
 
 package controllers
 
-import java.util.NoSuchElementException
-
 import com.google.inject.Inject
 import com.google.inject.name.Named
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
-import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
@@ -46,7 +43,7 @@ import uk.gov.hmrc.tai.util.constants.{AuditConstants, FormValuesConstants, Jour
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 
 import scala.Function.tupled
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class IncomeController @Inject()(personService: PersonService,
                                  @Named("Update Income") journeyCacheService: JourneyCacheService,
