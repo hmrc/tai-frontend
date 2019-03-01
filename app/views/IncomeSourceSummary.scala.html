@@ -109,11 +109,11 @@
 
     <div class="grid-row">
 
-      @if(request.session.get("medBenUpdated")) {
-        <div class="tai-medben-updated">
-          @messages("tai.updated.medical-benefits")
-        </div>
-      }
+        @if(request.session.get("medBenUpdated")) {
+          <div class="tai-medben-updated">
+            @messages("tai.updated.medical-benefits")
+          </div>
+        }
 
         <div class="column-one-half subsection--wide">
                 <h2 class="flush">@messages("tai.income.details.estimatedTaxableIncome")</h2>
