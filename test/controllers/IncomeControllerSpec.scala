@@ -210,7 +210,7 @@ class IncomeControllerSpec extends PlaySpec
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(journeyCacheService.mandatoryValues(any())(any())).
-        thenReturn(Future.successful(Seq("1", "200")))
+        thenReturn(Future.successful(Seq("1", "200", "Employer 1")))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).
@@ -227,7 +227,7 @@ class IncomeControllerSpec extends PlaySpec
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(Nil)
         when(journeyCacheService.mandatoryValues(any())(any())).
-          thenReturn(Future.successful(Seq("1", "200")))
+          thenReturn(Future.successful(Seq("1", "200", "Employer 1")))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).
@@ -529,7 +529,7 @@ class IncomeControllerSpec extends PlaySpec
         val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
         val employment = employmentWithAccounts(List(annualAccount))
         when(journeyCacheService.mandatoryValues(any())(any())).
-          thenReturn(Future.successful(Seq("1", "200")))
+          thenReturn(Future.successful(Seq("1", "200", "Pension 1")))
         when(taxAccountService.taxCodeIncomes(any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).

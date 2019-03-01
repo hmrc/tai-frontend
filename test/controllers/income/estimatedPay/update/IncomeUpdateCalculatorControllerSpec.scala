@@ -929,12 +929,13 @@ class IncomeUpdateCalculatorControllerSpec
     }
 
     "redirect to SameEstimatedPayPage" when {
-      "the same amount of pay has been entered" in {
+      "the same amount of pay has already been entered and is in the cache" in {
         val testController = createTestIncomeUpdateCalculatorController
+        val oldAmount = 100
         val newAmount = 123
-        val confirmednewAmount = 123
+        val confirmedNewAmount = 123
 
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(EmployerName, newAmount.toString), Seq(Some(confirmednewAmount.toString))))
+        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(EmployerName, newAmount.toString, oldAmount.toString), Seq(Some(confirmedNewAmount.toString))))
 
         val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
           RequestBuilder.buildFakeRequestWithOnlySession("GET")

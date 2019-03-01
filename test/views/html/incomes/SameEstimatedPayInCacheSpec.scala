@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 
-class SameEstimatedPaySpec extends TaiViewSpec with MockitoSugar{
+class SameEstimatedPayInCacheSpec extends TaiViewSpec with MockitoSugar{
 
 
   val employerName = "Employer"
@@ -53,7 +53,7 @@ class SameEstimatedPaySpec extends TaiViewSpec with MockitoSugar{
   }
 
 
-  override def view: Html = views.html.incomes.sameEstimatedPay(createViewModel())
+  override def view: Html = views.html.incomes.sameEstimatedPayInCache(createViewModel())
 
   def createViewModel(employmentStartDate:Option[LocalDate] = None) = {
 
