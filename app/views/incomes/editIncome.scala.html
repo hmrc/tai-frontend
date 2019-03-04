@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm],
     hasMultipleIncomes: Boolean,
     employmentId: Int,
@@ -31,7 +32,6 @@
 @import includes.forms.input
 @import includes.compareValueInput
 @import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 @import includes.cancelLink
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
@@ -42,13 +42,13 @@
         formForErrorSummary = Some(income),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.incomes.edit.heading", currentTaxYearRangeHtmlNonBreak),
+        mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange),
         preHeadingText = messages("tai.incomes.edit.preHeading", income("name").value.getOrElse(""))
     )
 }
 
 @main(
-    title = messages("tai.incomes.edit.title", currentTaxYearRangeHtmlNonBreak),
+    title = messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRange),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = Some(""),
@@ -57,12 +57,13 @@
 ){
 
     <div>
-        <p>@messages("tai.incomes.edit.howTo.payslip")</p>
-        <p>@messages("tai.incomes.edit.howTo.grossAmount")</p>
-        <ul class="bullets">
-            <li>@messages("tai.incomes.edit.howTo.contribution")</li>
-            <li>@messages("tai.incomes.edit.howTo.charity")</li>
-            <li>@messages("tai.incomes.edit.howTo.expenses")</li>
+        <p>@messages("tai.incomes.edit.average.hours", TaxYearRangeUtil.currentTaxYearRange)</p>
+    </div>
+        <div class="panel panel-border-narrow">
+            <h2 class="heading-small">@messages("tai.incomes.edit.what.should.you.include")</h2>
+            <p>@messages("tai.incomes.edit.what.should.you.include.payments")</p>
+            <h2 class="heading-small">@messages("tai.incomes.edit.what.should.you.deduct")</h2>
+            <p>@messages("tai.incomes.edit.what.should.you.deduct.payments")</p>
         </ul>
     </div>
 
