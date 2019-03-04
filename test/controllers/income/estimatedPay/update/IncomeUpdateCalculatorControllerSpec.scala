@@ -899,13 +899,13 @@ class IncomeUpdateCalculatorControllerSpec
 
       val employerName = "name"
       val payToDate = 123
-      val newAmount = 123
+      val newAmount = 1235
       val confirmedNewAmount = 1234
 
       when(
         journeyCacheService.collectedValues(any(), any())(any()))
         .thenReturn(Future.successful(
-          Seq(EmployerName, newAmount.toString), Seq(Some(confirmedNewAmount.toString))))
+          Seq(EmployerName, newAmount.toString, payToDate.toString), Seq(Some(confirmedNewAmount.toString))))
 
 
       val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
@@ -934,8 +934,14 @@ class IncomeUpdateCalculatorControllerSpec
         val testController = createTestIncomeUpdateCalculatorController
         val newAmount = 123
         val confirmednewAmount = 123
+        val paymentToDate = 100
 
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(EmployerName, newAmount.toString), Seq(Some(confirmednewAmount.toString))))
+        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+          Future.successful(
+            Seq(EmployerName, newAmount.toString, paymentToDate.toString),
+            Seq(Some(confirmednewAmount.toString))
+          )
+        )
 
         val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
           RequestBuilder.buildFakeRequestWithOnlySession("GET")
@@ -943,6 +949,28 @@ class IncomeUpdateCalculatorControllerSpec
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPay().url)
+      }
+    }
+
+    "redirect to IrregularSameEstimatedPayPage" when {
+      "the same amount of payment to date has been entered" in {
+        val testController = createTestIncomeUpdateCalculatorController
+        val newAmount = 123
+        val paymentToDate = 123
+
+        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+          Future.successful(
+            Seq(EmployerName, newAmount.toString, paymentToDate.toString),
+            Seq(None)
+          )
+        )
+
+        val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
+          RequestBuilder.buildFakeRequestWithOnlySession("GET")
+        )
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.sameIrregularEstimatedPay().url)
       }
     }
   }

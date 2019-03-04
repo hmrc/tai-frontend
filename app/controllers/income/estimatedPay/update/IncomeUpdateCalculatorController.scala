@@ -18,7 +18,7 @@ package controllers.income.estimatedPay.update
 
 import com.google.inject.Inject
 import com.google.inject.name.Named
-import controllers.TaiBaseController
+import controllers.{ServiceCheckLite, TaiBaseController}
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
@@ -47,6 +47,7 @@ import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{CheckYourAnswersViewModel, EstimatedPayViewModel}
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel}
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
+
 import scala.Function.tupled
 import scala.concurrent.Future
 
@@ -255,15 +256,33 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         }
   }
 
+
+  def sameIrregularEstimatedPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+    implicit person =>
+      implicit request =>
+        ServiceCheckLite.personDetailsCheck {
+          for {
+            cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_PayToDateKey)
+          } yield {
+            val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt)
+            Ok(views.html.incomes.sameEstimatedPay(model))
+          }
+        }
+  }
+
+
   def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
         implicit request => {
-          journeyCacheService.collectedValues(Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey), Seq(UpdateIncome_ConfirmedNewAmountKey)) map tupled { (mandatoryCache, optionalCache) =>
-            val name :: newIrregularPay :: Nil = mandatoryCache.toList
+          journeyCacheService.collectedValues(Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_PayToDateKey), Seq(UpdateIncome_ConfirmedNewAmountKey)) map tupled { (mandatoryCache, optionalCache) =>
+            val name :: newIrregularPay :: paymentToDate :: Nil = mandatoryCache.toList
             val confirmedNewAmount = optionalCache.head
+
             if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
               Redirect(controllers.routes.IncomeController.sameEstimatedPay())
+            } else if(FormHelper.areEqual(Some(paymentToDate), Some(newIrregularPay))) {
+              Redirect(routes.IncomeUpdateCalculatorController.sameIrregularEstimatedPay())
             } else {
               val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
               Ok(views.html.incomes.confirmAmountEntered(vm))

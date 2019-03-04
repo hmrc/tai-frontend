@@ -177,6 +177,24 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPay().url)
       }
+
+      "new amount is the same as the current amount" in {
+        val testController = createTestIncomeController()
+
+        when(journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(
+            Seq("1", "2", "employer name"),
+            Seq(None)
+          ))
+
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = 212)
+        val formData = Json.toJson(editIncomeForm)
+
+        val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
+      }
     }
 
     "return Bad request" when {
