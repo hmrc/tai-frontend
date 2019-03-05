@@ -684,21 +684,15 @@ class IncomeControllerSpec extends PlaySpec
     }
 
     "sameAnnualEstimatedPay" must {
-      "render" in {
+      "show the same annual estimated pay page" in {
         val testController = createTestIncomeController()
-        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
-        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
-        val employment = employmentWithAccounts(List(annualAccount))
-        when(journeyCacheService.mandatoryValues(any())(any())).
-          thenReturn(Future.successful(Seq("1", "200")))
-        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
-          thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
-        when(employmentService.employment(any(), any())(any())).
-          thenReturn(Future.successful(Some(employment)))
+        when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("1", "200")))
 
         val result = testController.sameAnnualEstimatedPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messagesApi("tai.updateEmployment.incomeSame.title", ""))
       }
     }
   }
