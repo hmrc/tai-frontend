@@ -50,8 +50,8 @@
     </tr>
     </thead>
     <tbody id="taxCodeComparisonTableBody">
-        <tr role="row">
-            @for(taxCodeDetail <- model.employmentTaxCodes) {
+        @for(taxCodeDetail <- model.employmentTaxCodes) {
+            <tr role="row">
                 <td scope="row" role="gridcell" class="table-title">
                     <span class="table-heading" aria-hidden="true" id="employerName">
                     @messages("tai.incomeTaxComparison.taxCodes.table.employmentsReaderText")
@@ -59,10 +59,10 @@
                     @taxCodeDetail.name
                 </td>
                 @tableRow(taxCodeDetail)
-            }
-        </tr>
-        <tr role="row">
-            @for(taxCodeDetail <- model.pensionTaxCodes) {
+            </tr>
+        }
+        @for(taxCodeDetail <- model.pensionTaxCodes) {
+            <tr role="row">
                 <td scope="row" role="gridcell" class="table-title">
                     <span class="table-heading" aria-hidden="true" id="employerName">
                     @messages("tai.incomeTaxComparison.taxCodes.table.pensionsReaderText")
@@ -70,8 +70,8 @@
                     @taxCodeDetail.name
                 </td>
                 @tableRow(taxCodeDetail)
-            }
-        </tr>
+            </tr>
+        }
     </tbody>
 </table>
 
