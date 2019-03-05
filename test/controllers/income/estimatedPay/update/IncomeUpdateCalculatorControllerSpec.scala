@@ -972,21 +972,8 @@ class IncomeUpdateCalculatorControllerSpec
         )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.IncomeUpdateCalculatorController.sameIrregularEstimatedPay().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
       }
-    }
-  }
-
-  "sameIrregularEstimatedPay" must {
-    "render the same estimated pay view" in {
-      val testController = createTestIncomeUpdateCalculatorController
-      when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(EmployerName, "123")))
-
-      val result: Future[Result] = testController.sameIrregularEstimatedPay()(RequestBuilder.buildFakeRequestWithOnlySession("GET"))
-
-      status(result) mustBe OK
-      val doc = Jsoup.parse(contentAsString(result))
-      doc.title() must include(messages("tai.updateEmployment.incomeSame.title", ""))
     }
   }
 

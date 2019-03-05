@@ -256,20 +256,6 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         }
   }
 
-  def sameIrregularEstimatedPay: Action[AnyContent] = authorisedForTai(personService).async {
-    implicit user =>
-      implicit person =>
-        implicit request =>
-          ServiceCheckLite.personDetailsCheck {
-            for {
-              cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_PayToDateKey)
-            } yield {
-              val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt)
-              Ok(views.html.incomes.sameEstimatedPay(model))
-            }
-          }
-  }
-
   def confirmIncomeIrregularHours(employmentId: Int): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
@@ -280,7 +266,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
               Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache())
             } else if (FormHelper.areEqual(Some(paymentToDate), Some(newIrregularPay))) {
-              Redirect(routes.IncomeUpdateCalculatorController.sameIrregularEstimatedPay())
+              Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
             } else {
               val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
               Ok(views.html.incomes.confirmAmountEntered(vm))
