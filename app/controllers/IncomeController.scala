@@ -107,9 +107,11 @@ class IncomeController @Inject()(personService: PersonService,
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           for {
-            cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_GrossAnnualPayKey)
+            cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NameKey)
+            id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+            income <- incomeService.employmentAmount(Nino(user.getNino), id)
           } yield {
-            val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt)
+            val model = SameEstimatedPayViewModel(cachedData(0), income.oldAmount)
             Ok(views.html.incomes.sameEstimatedPay(model))
           }
         }
@@ -145,7 +147,6 @@ class IncomeController @Inject()(personService: PersonService,
                       Redirect(routes.IncomeController.sameEstimatedPayInCache())
                     }
                     else if (isIncomeTheSame(income)) {
-                      journeyCacheService.cache(Map(UpdateIncome_GrossAnnualPayKey -> income.oldAmount.toString))
                       Redirect(routes.IncomeController.sameAnnualEstimatedPay())
                     } else {
                       journeyCacheService.cache(UpdateIncome_NewAmountKey, newAmount)

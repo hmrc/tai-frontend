@@ -686,7 +686,11 @@ class IncomeControllerSpec extends PlaySpec
     "sameAnnualEstimatedPay" must {
       "show the same annual estimated pay page" in {
         val testController = createTestIncomeController()
-        when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("1", "200")))
+
+        when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+
+        when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("1")))
+        when(journeyCacheService.mandatoryValueAsInt(any())(any())).thenReturn(Future.successful(1))
 
         val result = testController.sameAnnualEstimatedPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
