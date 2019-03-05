@@ -16,19 +16,17 @@
 
 package controllers
 
-import java.util.NoSuchElementException
-
 import com.google.inject.Inject
 import com.google.inject.name.Named
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
-import play.api.Logger
 import play.api.Play.current
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
@@ -49,7 +47,6 @@ import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
 
 import scala.Function.tupled
 import scala.concurrent.Future
-import scala.util.control.NonFatal
 
 class IncomeController @Inject()(personService: PersonService,
                                  @Named("Update Income") journeyCacheService: JourneyCacheService,
@@ -145,7 +142,7 @@ class IncomeController @Inject()(personService: PersonService,
         }
   }
 
-  private def determineEditRedirect(income: EditIncomeForm): Future[Result] = {
+  private def determineEditRedirect(income: EditIncomeForm)(implicit hc: HeaderCarrier): Future[Result] = {
     for {
       currentCache <- journeyCacheService.currentCache
     } yield {
