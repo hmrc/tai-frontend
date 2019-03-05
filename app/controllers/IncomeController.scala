@@ -88,7 +88,7 @@ class IncomeController @Inject()(personService: PersonService,
         }
   }
 
-  def sameEstimatedPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+  def sameEstimatedPayInCache(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
@@ -101,18 +101,20 @@ class IncomeController @Inject()(personService: PersonService,
         }
   }
 
-  def sameAnnualEstimatedPay(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
+  def sameAnnualEstimatedPay(): Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
           for {
-            cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_PayToDateKey)
+            cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NameKey, UpdateIncome_GrossAnnualPayKey)
           } yield {
             val model = SameEstimatedPayViewModel(cachedData(0), cachedData(1).toInt)
             Ok(views.html.incomes.sameEstimatedPay(model))
           }
         }
   }
+
 
   def editRegularIncome(): Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
     implicit person =>
@@ -140,9 +142,10 @@ class IncomeController @Inject()(personService: PersonService,
                     val newAmount = income.newAmount.getOrElse("0")
 
                     if (isCachedIncomeTheSame(currentCache, newAmount)) {
-                      Redirect(routes.IncomeController.sameEstimatedPay())
+                      Redirect(routes.IncomeController.sameEstimatedPayInCache())
                     }
                     else if (isIncomeTheSame(income)) {
+                      journeyCacheService.cache(Map(UpdateIncome_GrossAnnualPayKey -> income.oldAmount.toString))
                       Redirect(routes.IncomeController.sameAnnualEstimatedPay())
                     } else {
                       journeyCacheService.cache(UpdateIncome_NewAmountKey, newAmount)
@@ -156,7 +159,7 @@ class IncomeController @Inject()(personService: PersonService,
         }
   }
 
-  private def isCachedIncomeTheSame(currentCache: Map[String,String], newAmount: String): Boolean = {
+  private def isCachedIncomeTheSame(currentCache: Map[String, String], newAmount: String): Boolean = {
     FormHelper.areEqual(currentCache.get(UpdateIncome_ConfirmedNewAmountKey), Some(newAmount))
   }
 

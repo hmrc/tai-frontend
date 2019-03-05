@@ -52,7 +52,7 @@ import scala.concurrent.Future
 import scala.util.Random
 
 class IncomeUpdateCalculatorControllerSpec
-  extends PlaySpec
+    extends PlaySpec
     with FakeTaiPlayApplication
     with MockitoSugar
     with JourneyCacheConstants
@@ -540,7 +540,7 @@ class IncomeUpdateCalculatorControllerSpec
   }
 
   "estimatedPayPage" must {
-    def createTestController(currentCache: Map[String, String]):  TestIncomeUpdateCalculatorController = {
+    def createTestController(currentCache: Map[String, String]): TestIncomeUpdateCalculatorController = {
       val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
       val payment = Payment(new LocalDate(), 200, 50, 25, 100, 50, 25, Monthly)
 
@@ -600,7 +600,7 @@ class IncomeUpdateCalculatorControllerSpec
         val result = testController.estimatedPayPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPay().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPayInCache().url)
       }
     }
   }
@@ -618,7 +618,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
       }
 
       "journey cache returns employment name, net amount with large decimal value and id" in {
@@ -632,7 +632,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
       }
 
       "journey cache does not returns net amount" in {
@@ -646,7 +646,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
       }
     }
   }
@@ -948,7 +948,7 @@ class IncomeUpdateCalculatorControllerSpec
         )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPay().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPayInCache().url)
       }
     }
 
@@ -975,8 +975,20 @@ class IncomeUpdateCalculatorControllerSpec
     }
   }
 
-  "submitIncomeIrregularHours" must {
+  "sameIrregularEstimatedPay" must {
+    "render the same estimated pay view" in {
+      val testController = createTestIncomeUpdateCalculatorController
+      when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq(EmployerName, "123")))
 
+      val result: Future[Result] = testController.sameIrregularEstimatedPay()(RequestBuilder.buildFakeRequestWithOnlySession("GET"))
+
+      status(result) mustBe OK
+      val doc = Jsoup.parse(contentAsString(result))
+      doc.title() must include(messages("tai.updateEmployment.incomeSame.title", ""))
+    }
+  }
+
+  "submitIncomeIrregularHours" must {
     "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
       val testController = createTestIncomeUpdateCalculatorController
 

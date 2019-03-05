@@ -175,7 +175,7 @@ class IncomeControllerSpec extends PlaySpec
         val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPay().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPayInCache().url)
       }
 
       "new amount is the same as the current amount" in {
@@ -664,7 +664,7 @@ class IncomeControllerSpec extends PlaySpec
 
         when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("Employer Name", "987")))
 
-        val result = testController.sameEstimatedPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.sameEstimatedPayInCache()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -678,8 +678,27 @@ class IncomeControllerSpec extends PlaySpec
 
         when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq.empty))
 
-        val result = testController.sameEstimatedPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.sameEstimatedPayInCache()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "sameAnnualEstimatedPay" must {
+      "render" in {
+        val testController = createTestIncomeController()
+        val payment = paymentOnDate(LocalDate.now().minusWeeks(5)).copy(payFrequency = Irregular)
+        val annualAccount = AnnualAccount("", TaxYear(), Available, List(payment), Nil)
+        val employment = employmentWithAccounts(List(annualAccount))
+        when(journeyCacheService.mandatoryValues(any())(any())).
+          thenReturn(Future.successful(Seq("1", "200")))
+        when(taxAccountService.taxCodeIncomes(any(), any())(any())).
+          thenReturn(Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
+        when(employmentService.employment(any(), any())(any())).
+          thenReturn(Future.successful(Some(employment)))
+
+        val result = testController.sameAnnualEstimatedPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
       }
     }
   }

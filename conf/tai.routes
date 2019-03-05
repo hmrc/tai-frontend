@@ -156,7 +156,7 @@ GET         /update-income/edit-income-irregular-hours/:employmentId            
 POST        /update-income/edit-income-irregular-hours/:employmentId                   @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handleIncomeIrregularHours(employmentId: Int)
 GET         /update-income/edit-income-irregular-hours/:employmentId/confirm           @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.confirmIncomeIrregularHours(employmentId: Int)
 GET         /update-income/edit-income-irregular-hours/:employmentId/submit            @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.submitIncomeIrregularHours(employmentId: Int)
-GET         /update-income/edit-income-irregular-hours/same-estimated-pay              @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.sameIrregularEstimatedPay
+GET         /update-income/same-irregular-estimated-pay                                @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.sameIrregularEstimatedPay
 
 GET         /update-income/pay-period                                                  @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.payPeriodPage
 POST        /update-income/pay-period                                                  @controllers.income.estimatedPay.update.IncomeUpdateCalculatorController.handlePayPeriod
@@ -194,7 +194,7 @@ POST        /update-income/edit-pension                                         
 
 
 GET         /update-income/income/check-save                                           @controllers.IncomeController.confirmRegularIncome
-GET         /update-income/income/same-estimated-pay                                   @controllers.IncomeController.sameEstimatedPay
+GET         /update-income/income/same-estimated-pay                                   @controllers.IncomeController.sameEstimatedPayInCache
 GET         /update-income/income/same-annual-estimated-pay                            @controllers.IncomeController.sameAnnualEstimatedPay
 
 GET         /update-income/pension/check-save                                          @controllers.IncomeController.confirmPensionIncome
