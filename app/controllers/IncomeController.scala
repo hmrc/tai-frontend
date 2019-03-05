@@ -25,6 +25,7 @@ import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
 import play.api.Logger
 import play.api.Play.current
+import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
@@ -130,34 +131,36 @@ class IncomeController @Inject()(personService: PersonService,
               val employerName = mandatorySeq(2)
 
               EditIncomeForm.bind(employerName, BigDecimal(mandatorySeq.head), date).fold(
-                formWithErrors => {
+                (formWithErrors: Form[EditIncomeForm]) => {
                   val webChat = true
                   Future.successful(BadRequest(views.html.incomes.editIncome(formWithErrors,
                     false,
                     mandatorySeq(1).toInt,
                     mandatorySeq.head, webChat = webChat)))
                 },
-                income => {
-                  for {
-                    currentCache <- journeyCacheService.currentCache
-                  } yield {
-                    val newAmount = income.newAmount.getOrElse("0")
-
-                    if (isCachedIncomeTheSame(currentCache, newAmount)) {
-                      Redirect(routes.IncomeController.sameEstimatedPayInCache())
-                    }
-                    else if (isIncomeTheSame(income)) {
-                      Redirect(routes.IncomeController.sameAnnualEstimatedPay())
-                    } else {
-                      journeyCacheService.cache(UpdateIncome_NewAmountKey, newAmount)
-                      Redirect(routes.IncomeController.confirmRegularIncome())
-                    }
-                  }
-                }
+                (income: EditIncomeForm) => determineEditRedirect(income)
               )
             }
           }
         }
+  }
+
+  private def determineEditRedirect(income: EditIncomeForm): Future[Result] = {
+    for {
+      currentCache <- journeyCacheService.currentCache
+    } yield {
+      val newAmount = income.newAmount.getOrElse("0")
+
+      if (isCachedIncomeTheSame(currentCache, newAmount)) {
+        Redirect(routes.IncomeController.sameEstimatedPayInCache())
+      }
+      else if (isIncomeTheSame(income)) {
+        Redirect(routes.IncomeController.sameAnnualEstimatedPay())
+      } else {
+        journeyCacheService.cache(UpdateIncome_NewAmountKey, newAmount)
+        Redirect(routes.IncomeController.confirmRegularIncome())
+      }
+    }
   }
 
   private def isCachedIncomeTheSame(currentCache: Map[String, String], newAmount: String): Boolean = {
