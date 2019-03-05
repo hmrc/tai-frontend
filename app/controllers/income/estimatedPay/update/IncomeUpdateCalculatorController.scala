@@ -639,9 +639,14 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           income <- incomeService.employmentAmount(Nino(user.getNino), id)
           netAmount <- journeyCacheService.currentValue(UpdateIncome_NewAmountKey)
         } yield {
+          val convertedNetAmount = netAmount.map(BigDecimal(_).intValue()).getOrElse(income.oldAmount)
+          val employmentAmount = income.copy(newAmount = convertedNetAmount)
 
-          val newAmount = income.copy(newAmount = netAmount.map(netAmountValue => BigDecimal(netAmountValue).intValue()).getOrElse(income.oldAmount))
-          Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = newAmount).get))
+          if(employmentAmount.newAmount == income.oldAmount) {
+            Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
+          } else {
+            Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = employmentAmount).get))
+          }
         }
   }
 

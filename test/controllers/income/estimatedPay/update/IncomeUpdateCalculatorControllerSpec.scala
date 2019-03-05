@@ -635,15 +635,17 @@ class IncomeUpdateCalculatorControllerSpec
         doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
       }
 
-      "journey cache does not returns net amount" in {
+      "redirects to the same amount entered page" ignore {
         val testController = createTestIncomeUpdateCalculatorController
         val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
 
         when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
-        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NewAmountKey))(any())).thenReturn(Future.successful(None))
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NewAmountKey))(any())).thenReturn(Future.successful(Some("1")))
 
         val result = testController.handleCalculationResult()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe OK
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRange))
