@@ -72,6 +72,10 @@ class TaxCodeChangeReasonsServiceSpec extends PlaySpec with MockitoSugar with Fa
     }
 
     "be true" when {
+      "there are zero reasons" in {
+        service.isAGenericReason(Seq.empty) mustBe true
+      }
+
       "there are more than 4 reasons" in {
         val reasons = Seq("reason 1", "reason 2", "reason 3", "reason 4", "reason 5")
         service.isAGenericReason(reasons) mustBe true
