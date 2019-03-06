@@ -42,13 +42,13 @@
         formForErrorSummary = Some(income),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRange),
+        mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
         preHeadingText = messages("tai.incomes.edit.preHeading", income("name").value.getOrElse(""))
     )
 }
 
 @main(
-    title = messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRange),
+    title = messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = Some(""),
