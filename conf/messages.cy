@@ -768,7 +768,10 @@ tai.incomes.updated.pension.check.link=fwrw golwg ar eich manylion cyflogaeth
 tai.incomes.updated.pension.seeChanges.text=Mae’n bosibl y bydd y incwm amcangyfrifedig hwn yn newid pan fyddwn yn cael eich datganiad pensiwn nesaf oddi wrth {0}.
 tai.incomes.updated.pension.seeChanges.text.old=Mae’n bosibl y bydd y cyfrifiad hwn yn newid pan fyddwn yn cael eich datganiad pensiwn nesaf oddi wrth {0}.
 tai.incomes.workNumber=Rhif y cyflogai:
-tai.irregular.secondaryHeading=Nodwch eich amcangyfrif eich hun ar gyfer  {0}
+
+tai.irregular.heading=Ni allwn amcangyfrif eich incwm blynyddol oherwydd bod gennych oriau gwaith afreolaidd.
+tai.irregular.introduction=Nodwch eich amcangyfrif eich hun ar gyfer {0}
+tai.irregular.introduction.p1=Use your average working hours to estimate your income for {0}.
 tai.irregular.option1=cysylltwch â {0} yn y lle cyntaf
 tai.irregular.option2=diweddaru fy manylion nawr
 tai.irregular.para1=Mae''n ymddangos nad yw {0} yn eich talu''n rheolaidd, neu ei fod yn eich talu bob 6 neu 12 mis.
@@ -782,12 +785,9 @@ tai.irregular.instruction.wholePounds=Nodwch y swm mewn punnoedd cyfan – anwyb
 tai.irregular.newAmount=Swm newydd
 tai.irregular.confirm.estimatedIncome=Eich incwm amcangyfrifedig newydd yw {0}
 tai.irregular.confirm.mainHeading=Cadarnhewch eich incwm trethadwy amcangyfrifedig ar gyfer {0}
-tai.irregular.introduction=Ni allwn amcangyfrif eich incwm blynyddol oherwydd bod gennych oriau gwaith afreolaidd.
-tai.irregular.heading=Diweddarwch eich incwm trethadwy amcangyfrifedig ar gyfer {0} gydag oriau gwaith afreolaidd
-tai.irregular.title=Diweddarwch eich incwm trethadwy amcangyfrifedig gydag oriau gwaith afreolaidd
 tai.irregular.error.error.incorrectTaxableIncome=Rhoddodd eich cyflogwr wybod i ni y talwyd £{0} i chi hyd at {1}. Ni allwch nodi swm incwm blynyddol sy’n is na hwn. Os yw’r swm yn anghywir, rhowch alwad i Wasanaeth Cwsmeriaid Cymraeg CThEM ar 0300 200 1900.
 tai.irregular.error.blankValue=Nodwch amcangyfrif newydd i fynd yn eich blaen
-tai.irregular.estimateAnnualAverage=Defnyddiwch eich oriau cyfartalog i amcangyfrif swm blynyddol o incwm trethadwy.
+
 tai.item=Eitem
 tai.iya.check.your.tax.code.text=Gwiriwch {0} i gael gwybod beth sydd wedi newid.
 tai.iya.paidTooLittle.cy-and-cy-plus-one.text1=Credwn nad ydych wedi talu digon o Dreth Incwm y flwyddyn hon ac mae arnoch £{0}. Byddwn yn dechrau casglu hyn ar unwaith.
@@ -892,12 +892,17 @@ tai.paye.lastTaxYear.incorrectInformation.link=anfon diweddariad atom.
 tai.paye.lastTaxYear.checkIncomeTax.text=Rydych hefyd yn gallu
 tai.paye.lastTaxYear.checkIncomeTax.link=gwirio cyfanswm y Dreth Incwm a dalwyd gennych
 tai.paye.lastTaxYear.checkIncomeTax.for=ar gyfer {0}.
+
 tai.payslip.error.form.totalPay.input.mandatory=Nodwch gyfanswm y cyflog sydd ar eich slip cyflog
 tai.payslip.error.form.totalPay.input.invalid=Rhaid i gyfanswm eich cyflog fod yn swm o arian, megis 1,000 neu 10,000
-tai.payslip.payBeforeTakenOff=Hyn yw eich cyflog gros cyn unrhyw ddidyniadau, ond heb gynnwys bonws neu oramser.
 tai.payslip.preHeading=Diweddarwch eich incwm amcangyfrifedig oddi wrth {0}
-tai.payslip.title=Nodwch gyfanswm y cyflog sydd ar eich slip cyflog
-tai.payslip.heading=Nodwch gyfanswm y cyflog sydd ar eich slip cyflog
+tai.payslip.p1=Mae’n bosibl y dangosir hyn ar eich slip cyflog fel “cyflog gros” neu “cyfanswm cyflog”.
+tai.payslip.p2=Peidiwch â chynnwys unrhyw daliadau ychwanegol megis bonws, comisiwn neu oramser.
+tai.payslip.title.month=Rhowch eich cyflog gros am y mis
+tai.payslip.title.week=Rhowch eich tâl gros am yr wythnos
+tai.payslip.title.2week=Rhowch eich tâl gros am y 2 wythnos
+tai.payslip.title.days=Rhowch eich tâl gros am y {0} diwrnod
+
 tai.payslipDeductions.dontPayTax=Nid ydych yn talu treth ar y rhain felly mae angen i ni eu dileu o gyfanswm eich cyflog.
 tai.payslipDeductions.error.form.incomes.radioButton.mandatory=Dewiswch ''Iawn'' os yw eich slip cyflog yn dangos unrhyw ddidyniadau cyn treth ac Yswiriant Gwladol
 tai.payslipDeductions.legend=A yw eich slip cyflog yn dangos unrhyw ddidyniadau?

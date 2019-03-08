@@ -14,46 +14,50 @@
  * limitations under the License.
  *@
 
-@(payslipForm: Form[uk.gov.hmrc.tai.forms.PayslipForm], payPeriod: String, id: Int, employerName: String)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages,
-templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
-
+@import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.PaySlipAmountViewModel
 @import includes.ptaHeader
 @import includes.cancelLink
 @import includes.forms.input
 @import uk.gov.hmrc.play.views.html.helpers._
 
-@gaEventActionString = @{"Update your annual taxable pay"}
+@(viewModel: PaySlipAmountViewModel)(implicit request: Request[_], user: controllers.auth.TaiUser, messages: Messages,
+        templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+
+@gaEventActionString = @{
+    "Update your annual taxable pay"
+}
 
 @header = @{
     ptaHeader(
-        formForErrorSummary = Some(payslipForm),
+        formForErrorSummary = Some(viewModel.payslipForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.payslip.heading"),
-        preHeadingText = messages("tai.payslip.preHeading", employerName)
+        mainHeadingText = viewModel.payPeriodTitle,
+        preHeadingText = messages("tai.payslip.preHeading", viewModel.employerName)
     )
 }
 
 @main(
-    title = messages("tai.payslip.title"),
+    title = viewModel.payPeriodTitle,
     articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName)
-){
+    employerName = Some(viewModel.employerName)
+) {
+    <p>@messages("tai.payslip.p1")</p>
+    <p>@messages("tai.payslip.p2")</p>
 
-        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handlePayslipAmount){
-            @includes.forms.input(
-              field = payslipForm("totalSalary"),
-              bold = true,
-              classes = Seq("form-control-1-4"),
-              hintText = messages("tai.payslip.payBeforeTakenOff"),
-              isCurrency = true
-            )
+    @form(action = controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handlePayslipAmount) {
+        @includes.forms.input(
+            field = viewModel.payslipForm("totalSalary"),
+            bold = true,
+            classes = Seq("form-control-1-4"),
+            isCurrency = true
+        )
 
-            <input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/>
-        }
+        <input type="submit" class="button" value='@messages("tai.selectIncome.link.text")'/>
+    }
 
-        @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+    @cancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.id).url))
 
 }

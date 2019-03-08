@@ -767,11 +767,10 @@ tai.incomes.updated.pension.check.link=viewing your pension details.
 tai.incomes.updated.pension.seeChanges.text=This estimated pay may change when we get your next pension statement from {0}.
 tai.incomes.updated.pension.seeChanges.text.old=This calculation may change when we get your next pension statement from {0}.
 tai.incomes.workNumber=Employee no:
-tai.irregular.heading=Update your estimated taxable income for {0} with irregular working hours
-tai.irregular.title=Update your estimated taxable income with irregular working hours
-tai.irregular.introduction=We cannot calculate your annual income as you have irregular working hours.
-tai.irregular.secondaryHeading=Enter your own estimate for {0}
-tai.irregular.estimateAnnualAverage=Use your average hours to estimate an annual amount of taxable income.
+
+tai.irregular.heading=We cannot calculate your annual income as you have irregular working hours
+tai.irregular.introduction=You will need to enter your own estimate for {0}
+tai.irregular.introduction.p1=Use your average working hours to estimate your income for {0}.
 tai.irregular.instruction.wholePounds=Enter the amount in whole pounds – ignore the pence.
 tai.irregular.currentAmount=Current amount
 tai.irregular.newAmount=New amount
@@ -787,6 +786,7 @@ tai.irregular.para4=I want to:
 tai.irregular.preHeadingText=End employment
 tai.irregular.error.error.incorrectTaxableIncome=Your employer told us you were paid £{0} up to {1}. You cannot enter an annual income amount lower than this. If the amount is wrong call HM Revenue and Customs on 0300 200 3300.
 tai.irregular.error.blankValue=Enter a new estimate to continue
+
 tai.item=Item
 tai.iya.check.your.tax.code.text=Check {0} to find out what’s changed.
 tai.iya.paidTooLittle.cy-and-cy-plus-one.text1=We think you’ve paid too little Income Tax this year and owe £{0}. We’ll start to collect this straight away.
@@ -891,12 +891,17 @@ tai.paye.lastTaxYear.incorrectInformation.link=send us an update.
 tai.paye.lastTaxYear.checkIncomeTax.text=You can also
 tai.paye.lastTaxYear.checkIncomeTax.link=check how much Income Tax you paid
 tai.paye.lastTaxYear.checkIncomeTax.for=for {0}.
+
 tai.payslip.error.form.totalPay.input.mandatory=Enter the total pay on your payslip
 tai.payslip.error.form.totalPay.input.invalid=Your total pay must be an amount of money, like 1,000 or 10,000
-tai.payslip.payBeforeTakenOff=This is your gross pay before anything is taken off, but not including bonus or overtime.
 tai.payslip.preHeading=Update your estimated income from {0}
-tai.payslip.title=Enter the total pay on your payslip
-tai.payslip.heading=Enter the total pay on your payslip
+tai.payslip.p1=This may be shown as “gross pay” or “total pay” on your payslip.
+tai.payslip.p2=Don’t include any extra payments like bonus, commission or overtime.
+tai.payslip.title.month=Enter your gross pay for the month
+tai.payslip.title.week=Enter your gross pay for the week
+tai.payslip.title.2week=Enter your gross pay for the 2-week period
+tai.payslip.title.days=Enter your gross pay for the {0}-day period
+
 tai.payslipDeductions.dontPayTax= You don’t pay tax on these so we need to remove them from your total pay amount.
 tai.payslipDeductions.error.form.incomes.radioButton.mandatory=Select yes if your payslip shows any deductions before tax and National Insurance
 tai.payslipDeductions.legend=Does your payslip show any deductions?

@@ -24,6 +24,7 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.EditIncomeIrregularHoursViewModel
 import controllers.income.estimatedPay.update.routes
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.ViewModelHelper.withPoundPrefix
 
 class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
@@ -34,7 +35,7 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
 
   "Edit income Irregular Hours view" should {
     behave like pageWithBackLink
-    behave like pageWithTitle(messages("tai.irregular.title"))
+    behave like pageWithTitle(messages("tai.irregular.heading"))
     behave like pageWithCombinedHeader(
       messages("tai.estimatedPay.preHeading", employerName),
       messages("tai.irregular.heading", currentTaxYearRangeHtmlNonBreak))
@@ -42,10 +43,11 @@ class EditIncomeIrregularHoursSpec extends TaiViewSpec with MockitoSugar {
 
 
     "have the correct content" in {
-      doc(view) must haveParagraphWithText(messages("tai.irregular.introduction"))
-      doc(view) must haveHeadingH2WithText(messages("tai.irregular.secondaryHeading", employerName))
-      doc(view) must haveParagraphWithText(messages("tai.irregular.estimateAnnualAverage"))
-      doc(view) must haveParagraphWithText(messages("tai.irregular.instruction.wholePounds"))
+      val document = doc(view)
+      document must haveHeadingH2WithText(messages("tai.irregular.introduction", employerName))
+      document must haveParagraphWithText(messages("tai.irregular.introduction.p1", TaxYearRangeUtil.currentTaxYearRange))
+      document must haveHeadingH2WithText(messages("tai.incomes.edit.what.should.you.include"))
+      document must haveParagraphWithText(messages("tai.irregular.instruction.wholePounds"))
     }
 
     "display the users current estimated income" in {
