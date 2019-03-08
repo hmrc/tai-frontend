@@ -771,7 +771,7 @@ tai.incomes.workNumber=Rhif y cyflogai:
 
 tai.irregular.heading=Ni allwn amcangyfrif eich incwm blynyddol oherwydd bod gennych oriau gwaith afreolaidd.
 tai.irregular.introduction=Nodwch eich amcangyfrif eich hun ar gyfer {0}
-tai.irregular.introduction.p1=Use your average working hours to estimate your income for {0}.
+tai.irregular.introduction.p1=Defnyddiwch eich oriau gwaith cyfartalog i amcangyfrif eich incwm ar gyfer {0}.
 tai.irregular.option1=cysylltwch â {0} yn y lle cyntaf
 tai.irregular.option2=diweddaru fy manylion nawr
 tai.irregular.para1=Mae''n ymddangos nad yw {0} yn eich talu''n rheolaidd, neu ei fod yn eich talu bob 6 neu 12 mis.
