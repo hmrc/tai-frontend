@@ -65,6 +65,23 @@ hr {
   margin-bottom: 30px;
 }
 
+.heading-xlarge.heading-mobile-responsive{
+  $mobile: 768px;
+  $mobile-small: 641px;
+
+  @media(min-width: $mobile-small){
+    margin-top: .125em;
+    font-size: 48px;
+    line-height: 1.04167;
+  }
+
+  @media (max-width: $mobile) {
+    font-size: 36px;
+  }
+  @media (max-width: $mobile-small) {
+    font-size: 25px;
+  }
+}
 .govuk-box-highlight {
   .heading-large {
     font-size: 36px;
