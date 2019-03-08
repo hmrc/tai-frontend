@@ -19,7 +19,7 @@ package uk.gov.hmrc.tai.service
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.HtmlFormatter
+import uk.gov.hmrc.tai.util.{HtmlFormatter, TaxYearRangeUtil}
 
 
 
@@ -28,6 +28,16 @@ object TaxPeriodLabelService {
   def taxPeriodLabel(year: Int)(implicit messages: Messages) : String = {
     s"${HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear(year).start))} ${messages("language.to")} " +
       s"${HtmlFormatter.htmlNonBroken(Dates.formatDate(TaxYear(year).end))}"
+  }
+
+  def taxPeriodLabelSingleLine(year: Int)(implicit messages: Messages) : String = {
+
+    val dateFrom = Dates.formatDate(TaxYear(year).start)
+    val dateTo = Dates.formatDate(TaxYear(year).end)
+    val messageto = messages("language.to")
+    val message = s"$dateFrom $messageto $dateTo"
+
+    s"${HtmlFormatter.htmlNonBroken(message)}"
   }
 
 }

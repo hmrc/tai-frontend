@@ -45,7 +45,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
 
 @header = @{
     ptaHeader(
-        mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
+        mainHeadingText = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabelSingleLine(viewModel.taxYear.year)),
         preHeadingText = messages("tai.paye.lastTaxYear.preHeading"),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
@@ -53,7 +53,7 @@ messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, par
 }
 
 @main(
-    title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabel(viewModel.taxYear.year)),
+    title = messages("tai.paye.heading", TaxPeriodLabelService.taxPeriodLabelSingleLine(viewModel.taxYear.year)),
     articleClasses = Some("full-width"),
     authedUser = Some(user),
     pageHeader = Some(header),
