@@ -193,7 +193,9 @@ object IncomeSourceViewModel extends ViewModelHelper {
         )
     )
 
-    val otherIncomeSources = nonTaxCodeIncome.otherNonTaxCodeIncomes.map(otherNonTaxCodeIncome => {
+    val otherIncomeSources = nonTaxCodeIncome.otherNonTaxCodeIncomes.withFilter(
+      _.incomeComponentType != BankOrBuildingSocietyInterest
+    ).map(otherNonTaxCodeIncome => {
 
       val model = IncomeSourceViewModel(
         messages("tai.typeDecodes." + otherNonTaxCodeIncome.incomeComponentType.toString),
@@ -218,6 +220,6 @@ object IncomeSourceViewModel extends ViewModelHelper {
     }
     )
 
-    untaxedInterest.map(_ +: otherIncomeSources).getOrElse(otherIncomeSources)
+    otherIncomeSources
   }
 }

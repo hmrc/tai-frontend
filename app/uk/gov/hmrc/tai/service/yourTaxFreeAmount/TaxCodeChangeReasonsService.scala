@@ -37,6 +37,8 @@ class TaxCodeChangeReasonsService @Inject()(iabdTaxCodeChangeReasons: IabdTaxCod
 
     val genericReasonsForTaxCodeChange = reasons filter (_ == genericTaxCodeReasonMessage)
     val maxReasonsAllowed = 4
-    genericReasonsForTaxCodeChange.nonEmpty || reasons.size > maxReasonsAllowed
+
+    genericReasonsForTaxCodeChange.nonEmpty ||
+      (reasons.size > maxReasonsAllowed || reasons.isEmpty)
   }
 }
