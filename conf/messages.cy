@@ -903,15 +903,15 @@ tai.payslip.title.week=Rhowch eich tâl gros am yr wythnos
 tai.payslip.title.2week=Rhowch eich tâl gros am y 2 wythnos
 tai.payslip.title.days=Rhowch eich tâl gros am y {0} diwrnod
 
-tai.payslipDeductions.dontPayTax=Nid ydych yn talu treth ar y rhain felly mae angen i ni eu dileu o gyfanswm eich cyflog.
 tai.payslipDeductions.error.form.incomes.radioButton.mandatory=Dewiswch ''Iawn'' os yw eich slip cyflog yn dangos unrhyw ddidyniadau cyn treth ac Yswiriant Gwladol
 tai.payslipDeductions.legend=A yw eich slip cyflog yn dangos unrhyw ddidyniadau?
 tai.payslipDeductions.no=Na
 tai.payslipDeductions.preHeading=Diweddarwch eich incwm amcangyfrifedig oddi wrth {0}
 tai.payslipDeductions.title=A yw eich slip cyflog yn dangos didyniadau cyn treth ac Yswiriant Gwladol?
 tai.payslipDeductions.heading=A yw eich slip cyflog yn dangos didyniadau cyn treth ac Yswiriant Gwladol?
-tai.payslipDeductions.tellUs=Rhowch wybod i ni os oes gennych unrhyw ddidyniadau, megis taliadau ar gyfer pensiwn cwmni, Rhodd Cymorth neu dalebau gofal plant.
+tai.payslipDeductions.tellUs=Rhowch wybod i ni os oes gennych unrhyw ddidyniadau ar gyfer gyfraniadau pensiwn, aberthu cyflog, treuliau caniataol, cyfraniadau elusennol (Rhodd Cymorth neu Roi drwy’r Gyflogres) neu dalebau gofal plant.
 tai.payslipDeductions.yes=Iawn
+
 tai.pension.income.details.mainHeading.gaTitle=Eich pensiwn ar gyfer {0} i {1}
 tai.pension.income.details.mainHeading=Eich pensiwn o {0} {1} i {2}
 tai.pension.income.details.pensionNumber.screenReader=Eich rhif pensiwn yw {0}.
