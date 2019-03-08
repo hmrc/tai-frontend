@@ -104,9 +104,12 @@ class IncomeController @Inject()(personService: PersonService,
     implicit person =>
       implicit request =>
         ServiceCheckLite.personDetailsCheck {
+          val cachedDataFuture = journeyCacheService.mandatoryValues(UpdateIncome_NameKey)
+          val idFuture = journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+
           for {
-            cachedData <- journeyCacheService.mandatoryValues(UpdateIncome_NameKey)
-            id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+            cachedData <- cachedDataFuture
+            id <- idFuture
             income <- incomeService.employmentAmount(Nino(user.getNino), id)
           } yield {
             val model = SameEstimatedPayViewModel(cachedData(0), income.oldAmount)
@@ -126,8 +129,9 @@ class IncomeController @Inject()(personService: PersonService,
             (mandatorySeq, optionalSeq) => {
               val date = optionalSeq.head.map(date => LocalDate.parse(date))
               val employerName = mandatorySeq(2)
+              val payToDate = BigDecimal(mandatorySeq.head)
 
-              EditIncomeForm.bind(employerName, BigDecimal(mandatorySeq.head), date).fold(
+              EditIncomeForm.bind(employerName, payToDate, date).fold(
                 (formWithErrors: Form[EditIncomeForm]) => {
                   val webChat = true
                   Future.successful(BadRequest(views.html.incomes.editIncome(formWithErrors,
@@ -146,22 +150,21 @@ class IncomeController @Inject()(personService: PersonService,
     for {
       currentCache <- journeyCacheService.currentCache
     } yield {
-      val newAmount = income.newAmount.getOrElse("0")
 
-      if (isCachedIncomeTheSame(currentCache, newAmount)) {
+      if (isCachedIncomeTheSame(currentCache, income.newAmount)) {
         Redirect(routes.IncomeController.sameEstimatedPayInCache())
       }
       else if (isIncomeTheSame(income)) {
         Redirect(routes.IncomeController.sameAnnualEstimatedPay())
       } else {
-        journeyCacheService.cache(UpdateIncome_NewAmountKey, newAmount)
+        journeyCacheService.cache(UpdateIncome_NewAmountKey, income.newAmount.getOrElse("0"))
         Redirect(routes.IncomeController.confirmRegularIncome())
       }
     }
   }
 
-  private def isCachedIncomeTheSame(currentCache: Map[String, String], newAmount: String): Boolean = {
-    FormHelper.areEqual(currentCache.get(UpdateIncome_ConfirmedNewAmountKey), Some(newAmount))
+  private def isCachedIncomeTheSame(currentCache: Map[String, String], newAmount: Option[String]): Boolean = {
+    FormHelper.areEqual(currentCache.get(UpdateIncome_ConfirmedNewAmountKey), newAmount)
   }
 
   private def isIncomeTheSame(income: EditIncomeForm): Boolean = {
