@@ -727,6 +727,17 @@ class AddPensionProviderControllerSpec extends PlaySpec
     }
   }
 
+  "cancel" must {
+    "redirect to the the TaxAccountSummaryController" in {
+
+      when(addPensionProviderJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+
+      val result = createSUT.cancel()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+    }
+  }
+
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private def createSUT = new SUT
