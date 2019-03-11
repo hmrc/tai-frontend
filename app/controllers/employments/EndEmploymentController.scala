@@ -76,7 +76,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
     messages("tai.canWeContactByPhone.title"),
     controllers.employments.routes.EndEmploymentController.endEmploymentPage().url,
     controllers.employments.routes.EndEmploymentController.submitTelephoneNumber().url,
-    controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url)
+    controllers.employments.routes.EndEmploymentController.cancel(employmentId).url)
 
   private def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
     Constraint[String]((textContent: String) => textContent match {
@@ -297,7 +297,7 @@ class EndEmploymentController @Inject()(auditService: AuditService,
           mandatorySeq(1), mandatorySeq(2), optionalSeq(0),
           controllers.employments.routes.EndEmploymentController.addTelephoneNumber().url,
           controllers.employments.routes.EndEmploymentController.confirmAndSendEndEmployment().url,
-          controllers.routes.IncomeSourceSummaryController.onPageLoad(mandatorySeq(0).toInt).url)
+          controllers.employments.routes.EndEmploymentController.cancel(mandatorySeq.head.toInt).url)
         Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
       }
   }
