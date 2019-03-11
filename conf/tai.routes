@@ -17,6 +17,7 @@ GET         /income-summary                                                     
 GET         /income-tax                                                                @controllers.TaxAccountSummaryController.onPageLoad
 GET         /income-details/:empId                                                     @controllers.IncomeSourceSummaryController.onPageLoad(empId: Int)
 
+GET         /add-employment/cancel                                                     @controllers.employments.AddEmploymentController.cancel
 GET         /add-employment/employment-name                                            @controllers.employments.AddEmploymentController.addEmploymentName
 POST        /add-employment/employment-name                                            @controllers.employments.AddEmploymentController.submitEmploymentName
 GET         /add-employment/employment-start-date                                      @controllers.employments.AddEmploymentController.addEmploymentStartDate
@@ -35,6 +36,8 @@ GET         /add-employment/employment-success                                  
 
 
 # Add Pension Provider Journey
+
+GET         /add-pension-provider/cancel                                               @controllers.pensions.AddPensionProviderController.cancel
 
 GET         /add-pension-provider/name                                                 @controllers.pensions.AddPensionProviderController.addPensionProviderName
 POST        /add-pension-provider/name                                                 @controllers.pensions.AddPensionProviderController.submitPensionProviderName

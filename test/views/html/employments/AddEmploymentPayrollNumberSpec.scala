@@ -38,7 +38,7 @@ class AddEmploymentPayrollNumberSpec extends TaiViewSpec with FormValuesConstant
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-payroll-number")
     behave like pageWithYesNoRadioButton(AddEmploymentPayrollNumberForm.PayrollNumberChoice+"-yes", AddEmploymentPayrollNumberForm.PayrollNumberChoice+"-no")
-    behave like pageWithCancelLink(routes.TaxAccountSummaryController.onPageLoad())
+    behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel())
 
     "have gone back to firstPayChoice page" in {
       val payrollNumberViewModel = PayrollNumberViewModel(employerName, true)
