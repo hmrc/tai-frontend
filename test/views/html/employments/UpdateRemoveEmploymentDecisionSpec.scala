@@ -50,6 +50,6 @@ class UpdateRemoveEmploymentDecisionSpec extends TaiViewSpec with FormValuesCons
 
     behave like pageWithContinueButtonForm("/check-income-tax/update-remove-employment/decision")
 
-    behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+    behave like pageWithCancelLink(controllers.employments.routes.EndEmploymentController.cancel(empId))
   }
 }

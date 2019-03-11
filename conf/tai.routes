@@ -64,6 +64,7 @@ GET         /add-pension-provider/success                                       
 GET         /update-remove-employment/warning                                          @controllers.employments.EndEmploymentController.duplicateSubmissionWarning
 POST        /update-remove-employment/warning                                          @controllers.employments.EndEmploymentController.submitDuplicateSubmissionWarning
 
+GET         /update-remove-employment/cancel/:empId                                    @controllers.employments.EndEmploymentController.cancel(empId: Int)
 GET         /update-remove-employment/decision-page                                    @controllers.employments.EndEmploymentController.employmentUpdateRemoveDecision
 GET         /update-remove-employment/decision/:empId                                  @controllers.employments.EndEmploymentController.onPageLoad(empId: Int)
 POST        /update-remove-employment/decision                                         @controllers.employments.EndEmploymentController.handleEmploymentUpdateRemove
