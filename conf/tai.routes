@@ -80,6 +80,7 @@ POST        /end-employment/telephone-number                                    
 GET         /end-employment/date                                                       @controllers.employments.EndEmploymentController.endEmploymentPage
 POST        /end-employment/date/:empId                                                @controllers.employments.EndEmploymentController.handleEndEmploymentPage(empId: Int)
 
+GET         /update-employment/cancel/:empId                                           @controllers.employments.UpdateEmploymentController.cancel(empId: Int)
 GET         /update-employment/what-do-you-want-to-tell-us/:empId                      @controllers.employments.UpdateEmploymentController.updateEmploymentDetails(empId: Int)
 POST        /update-employment/what-do-you-want-to-tell-us/:empId                      @controllers.employments.UpdateEmploymentController.submitUpdateEmploymentDetails(empId: Int)
 GET         /update-employment/telephone-number                                        @controllers.employments.UpdateEmploymentController.addTelephoneNumber
