@@ -21,7 +21,7 @@
 @import uk.gov.hmrc.tai.forms.employments.UpdateEmploymentDetailsForm
 
 @import uk.gov.hmrc.tai.forms.pensions.WhatDoYouWantToTellUsForm
-@(name: String, whatDoYouWantToTellUsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
+@(name: String, id:Int, whatDoYouWantToTellUsForm: Form[String])(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{Messages("tai.updatePension.whatDoYouWantToTellUs.heading")}
 
@@ -54,5 +54,5 @@
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.updatePension.preHeading")))
     }
 
-    @cancelLink(url = routes.IncomeSourceSummaryController.onPageLoad(1), gaEventAction = Some(gaEventActionString))
+    @cancelLink(url = routes.IncomeSourceSummaryController.onPageLoad(id), gaEventAction = Some(gaEventActionString))
 }

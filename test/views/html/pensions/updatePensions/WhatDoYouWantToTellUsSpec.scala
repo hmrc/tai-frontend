@@ -27,8 +27,9 @@ import uk.gov.hmrc.tai.viewModels.employments.EmploymentViewModel
 class WhatDoYouWantToTellUsSpec extends TaiViewSpec {
 
   private val pensionName = "testPension"
+  private val pensionId = 1
 
-  override def view: Html = views.html.pensions.update.whatDoYouWantToTellUs(pensionName,WhatDoYouWantToTellUsForm.form)
+  override def view: Html = views.html.pensions.update.whatDoYouWantToTellUs(pensionName, pensionId, WhatDoYouWantToTellUsForm.form)
 
   "whatDoYouWantToTellUs" must {
     behave like pageWithTitle(Messages("tai.updatePension.whatDoYouWantToTellUs.heading", pensionName))
