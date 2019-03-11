@@ -24,7 +24,7 @@ import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.data.Form
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -101,21 +101,21 @@ class IncomeController @Inject()(personService: PersonService,
 
   def sameAnnualEstimatedPay(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
-    implicit person =>
-      implicit request =>
-        ServiceCheckLite.personDetailsCheck {
-          val cachedDataFuture = journeyCacheService.mandatoryValues(UpdateIncome_NameKey)
-          val idFuture = journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+      implicit person =>
+        implicit request =>
+          ServiceCheckLite.personDetailsCheck {
+            val cachedDataFuture = journeyCacheService.mandatoryValues(UpdateIncome_NameKey)
+            val idFuture = journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
 
-          for {
-            cachedData <- cachedDataFuture
-            id <- idFuture
-            income <- incomeService.employmentAmount(Nino(user.getNino), id)
-          } yield {
-            val model = SameEstimatedPayViewModel(cachedData(0), income.oldAmount)
-            Ok(views.html.incomes.sameEstimatedPay(model))
+            for {
+              cachedData <- cachedDataFuture
+              id <- idFuture
+              income <- incomeService.employmentAmount(Nino(user.getNino), id)
+            } yield {
+              val model = SameEstimatedPayViewModel(cachedData(0), income.oldAmount)
+              Ok(views.html.incomes.sameEstimatedPay(model))
+            }
           }
-        }
   }
 
 
@@ -139,28 +139,11 @@ class IncomeController @Inject()(personService: PersonService,
                     mandatorySeq(1).toInt,
                     mandatorySeq.head, webChat = webChat)))
                 },
-                (income: EditIncomeForm) => determineEditRedirect(income)
+                (income: EditIncomeForm) => determineEditRedirect(income, routes.IncomeController.confirmRegularIncome)
               )
             }
           }
         }
-  }
-
-  private def determineEditRedirect(income: EditIncomeForm)(implicit hc: HeaderCarrier): Future[Result] = {
-    for {
-      currentCache <- journeyCacheService.currentCache
-    } yield {
-
-      if (isCachedIncomeTheSame(currentCache, income.newAmount)) {
-        Redirect(routes.IncomeController.sameEstimatedPayInCache())
-      }
-      else if (isIncomeTheSame(income)) {
-        Redirect(routes.IncomeController.sameAnnualEstimatedPay())
-      } else {
-        journeyCacheService.cache(UpdateIncome_NewAmountKey, income.newAmount.getOrElse("0"))
-        Redirect(routes.IncomeController.confirmRegularIncome())
-      }
-    }
   }
 
   private def isCachedIncomeTheSame(currentCache: Map[String, String], newAmount: Option[String]): Boolean = {
@@ -268,6 +251,22 @@ class IncomeController @Inject()(personService: PersonService,
           }
   }
 
+  private def determineEditRedirect(income: EditIncomeForm, confirmationCallback: Call)(implicit hc: HeaderCarrier): Future[Result] = {
+    for {
+      currentCache <- journeyCacheService.currentCache
+    } yield {
+      if (isCachedIncomeTheSame(currentCache, income.newAmount)) {
+        Redirect(routes.IncomeController.sameEstimatedPayInCache())
+      }
+      else if (isIncomeTheSame(income)) {
+        Redirect(routes.IncomeController.sameAnnualEstimatedPay())
+      } else {
+        journeyCacheService.cache(UpdateIncome_NewAmountKey, income.newAmount.getOrElse("0"))
+        Redirect(confirmationCallback)
+      }
+    }
+  }
+
   def editPensionIncome(): Action[AnyContent] = authorisedForTai(personService).async {
     implicit user =>
       implicit person =>
@@ -286,11 +285,7 @@ class IncomeController @Inject()(personService: PersonService,
                       mandatorySeq(1).toInt,
                       mandatorySeq.head, webChat = webChat)))
                   },
-                  income => {
-                    journeyCacheService.cache(UpdateIncome_NewAmountKey, income.newAmount.getOrElse("0")).map {
-                      x => Redirect(routes.IncomeController.confirmPensionIncome())
-                    }
-                  }
+                  income => determineEditRedirect(income, routes.IncomeController.confirmPensionIncome)
                 )
               }
             }

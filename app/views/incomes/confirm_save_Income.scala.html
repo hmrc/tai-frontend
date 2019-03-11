@@ -55,18 +55,10 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                 }else{
 
                     <section class="section flush--bottom soft--ends">
-                        @if(FormHelper.convertCurrencyToInt(income.newAmount) == income.oldAmount){
-                            <p>@messages(s"tai.incomes.confirm.save.messageEquals", income.toEmploymentAmount().newAmount)</p>
-                            <div class="panel panel-border-narrow">
-                                <p>@messages("tai.incomes.confirm.save.messageEquals.details", income.name)</p>
-                            </div>
-
-                        }else{
-                            <p>@messages(s"tai.incomes.confirm.save.message", income.toEmploymentAmount().newAmount)</p>
-                            <div class="panel panel-border-narrow">
-                                <p>@messages("tai.incomes.confirm.save.message.details")</p>
-                            </div>
-                        }
+                        <p>@messages(s"tai.incomes.confirm.save.message", income.toEmploymentAmount().newAmount)</p>
+                        <div class="panel panel-border-narrow">
+                            <p>@messages("tai.incomes.confirm.save.message.details")</p>
+                        </div>
                     </section>
                 @if(FormHelper.convertCurrencyToInt(income.newAmount) != income.oldAmount){
                     <section class="section">
