@@ -54,5 +54,5 @@
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some(Messages("tai.updatePension.preHeading")))
     }
 
-    @cancelLink(url = routes.IncomeSourceSummaryController.onPageLoad(id), gaEventAction = Some(gaEventActionString))
+    @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(id), gaEventAction = Some(gaEventActionString))
 }

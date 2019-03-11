@@ -254,6 +254,7 @@ GET         /language/:lang                                                     
 
 ## Incorrect Pension
 
+GET         /incorrect-pension/cancel/:id                                              @controllers.pensions.UpdatePensionProviderController.cancel(id: Int)
 GET         /incorrect-pension/decision                                                @controllers.pensions.UpdatePensionProviderController.doYouGetThisPension
 POST        /incorrect-pension/decision                                                @controllers.pensions.UpdatePensionProviderController.handleDoYouGetThisPension
 GET         /incorrect-pension/what-do-you-want-to-tell-us                             @controllers.pensions.UpdatePensionProviderController.whatDoYouWantToTellUs
