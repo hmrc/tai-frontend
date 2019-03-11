@@ -64,6 +64,13 @@ class EndEmploymentController @Inject()(auditService: AuditService,
   with IrregularPayConstants
   with AuditConstants {
 
+  def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      journeyCacheService.flush() map { _ =>
+        Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+      }
+  }
+
   private def telephoneNumberViewModel(employmentId: Int)(implicit messages: Messages) = CanWeContactByPhoneViewModel(
     messages("tai.endEmployment.preHeadingText"),
     messages("tai.canWeContactByPhone.title"),
