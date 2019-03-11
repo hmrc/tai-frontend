@@ -26,8 +26,8 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 @header = @{
     ptaHeader(
         displayBackLink = true,
-        mainHeadingText = messages("tai.incomes.landing.Heading", incomeName),
-        preHeadingText = messages("tai.howToUpdate.preHeading", incomeName)
+        mainHeadingText = messages("tai.incomes.landing.Heading",  <span class="carry-over">{incomeName}</span>),
+        preHeadingText = messages("tai.howToUpdate.preHeading", <span class="carry-over">{incomeName}</span>)
     )
 }
 

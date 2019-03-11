@@ -32,7 +32,7 @@
         formForErrorSummary = Some(payrollNumberForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.addEmployment.employmentPayrollNumber.title", payrollNumberViewModel.employmentName),
+        mainHeadingText = Messages("tai.addEmployment.employmentPayrollNumber.title", <span class="carry-over">{payrollNumberViewModel.employmentName}</span>),
         preHeadingText = Messages("add.missing.employment"))}
 
 @main(

@@ -29,17 +29,17 @@
 
 @mainHeading = @{
     if(model.isPension){
-        messages("tai.pension.income.details.mainHeading", model.empOrPensionName, model.htmlNonBroken(model.startOfCurrentYear), model.htmlNonBroken(model.endOfCurrentYear))
+        messages("tai.pension.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, model.htmlNonBroken(model.startOfCurrentYear), model.htmlNonBroken(model.endOfCurrentYear))
     } else {
-        messages("tai.employment.income.details.mainHeading", model.empOrPensionName, model.htmlNonBroken(model.startOfCurrentYear), model.htmlNonBroken(model.endOfCurrentYear))
+        messages("tai.employment.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, model.htmlNonBroken(model.startOfCurrentYear), model.htmlNonBroken(model.endOfCurrentYear))
     }
 }
 
 @mainTitle = @{
     if(model.isPension){
-        messages("tai.pension.income.details.mainHeading", model.empOrPensionName, model.startOfCurrentYear, model.endOfCurrentYear)
+        messages("tai.pension.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, model.startOfCurrentYear, model.endOfCurrentYear)
     } else {
-        messages("tai.employment.income.details.mainHeading", model.empOrPensionName, model.startOfCurrentYear, model.endOfCurrentYear)
+        messages("tai.employment.income.details.mainHeading", <span class="carry-over">{model.empOrPensionName}</span>, model.startOfCurrentYear, model.endOfCurrentYear)
     }
 }
 

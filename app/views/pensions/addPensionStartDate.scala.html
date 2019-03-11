@@ -29,7 +29,7 @@
         formForErrorSummary = Some(dateForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.addPensionProvider.startDateForm.title", pensionProviderName),
+        mainHeadingText = Messages("tai.addPensionProvider.startDateForm.title", <span class="carry-over">{pensionProviderName}</span>),
         preHeadingText = Messages("add.missing.pension")
     )
 }
