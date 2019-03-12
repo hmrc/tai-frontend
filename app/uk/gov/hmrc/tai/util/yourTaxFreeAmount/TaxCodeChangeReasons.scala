@@ -18,10 +18,10 @@ package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import com.google.inject.Inject
 import play.api.i18n.Messages
-import uk.gov.hmrc.tai.model.domain.TaxCodeChange
+import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodePair, TaxCodePairs}
 
-class EmploymentTaxCodeChangeReasons @Inject()() {
+class TaxCodeChangeReasons @Inject()() {
 
   def reasons(taxCodeChange: TaxCodeChange)(implicit messages: Messages): Seq[String] = {
 
@@ -35,16 +35,19 @@ class EmploymentTaxCodeChangeReasons @Inject()() {
                                          (implicit messages: Messages): Seq[String] = {
 
     val previous = unMatchedPreviousCodes.flatMap(_.previous).map(record => record.employerName)
-    val current = unMatchedCurrentCodes.flatMap(_.current).map(record => record.employerName)
+
+    val currentTaxCodeRecords = unMatchedCurrentCodes.flatMap(_.current)
+    val current = currentTaxCodeRecords.map(record => record.employerName)
 
     val uniquePrevious = previous.distinct.sorted
     val uniqueCurrent = current.distinct.sorted
 
     val currentAndPreviousEmployerNamesAreSame: Boolean = (uniquePrevious == uniqueCurrent) && (uniquePrevious ++ uniqueCurrent).nonEmpty
 
-    currentAndPreviousEmployerNamesAreSame match {
-      case true => genericMessage
-      case false => removeEmployerMessage(previous) ++ addEmployerMessage(current)
+    if (currentAndPreviousEmployerNamesAreSame) {
+      genericMessage
+    } else {
+      removeEmployerMessage(previous) ++ addEmployerMessages(currentTaxCodeRecords)
     }
   }
 
@@ -54,7 +57,9 @@ class EmploymentTaxCodeChangeReasons @Inject()() {
       val previous = primaryPair.previous.map(_.employerName)
 
       (current, previous) match {
-        case (Some(current), Some(previous)) if (current != previous) => removeEmployerMessage(Seq(previous)) ++ addEmployerMessage(Seq(current))
+        case (Some(current), Some(previous)) if (current != previous) => {
+          removeEmployerMessage(Seq(previous)) ++ addSingleEmployerMessage(primaryPair.current)
+        }
         case (Some(current), Some(previous)) if isDifferentPayRollWithSameEmployerName(primaryPair) => {
           genericMessage
         }
@@ -86,8 +91,19 @@ class EmploymentTaxCodeChangeReasons @Inject()() {
     employerNames map (name => messages("tai.taxCodeComparison.removeEmployer", name))
   }
 
-  private def addEmployerMessage(employerNames: Seq[String])(implicit messages: Messages): Seq[String] = {
-    employerNames map (name => messages("tai.taxCodeComparison.addEmployer", name))
+  private def addSingleEmployerMessage(taxCodeRecord: Option[TaxCodeRecord])(implicit messages: Messages): Seq[String] = {
+    taxCodeRecord.fold(Seq.empty[String]) {
+      record =>
+        if (record.pensionIndicator) {
+          Seq(messages("tai.taxCodeComparison.add.pension", record.employerName))
+        } else {
+          Seq(messages("tai.taxCodeComparison.add.employer", record.employerName))
+        }
+    }
+  }
+
+  private def addEmployerMessages(taxCodeRecords: Seq[TaxCodeRecord])(implicit messages: Messages): Seq[String] = {
+    taxCodeRecords.flatMap(x => addSingleEmployerMessage(Some(x)))
   }
 
   private def genericMessage(implicit messages: Messages): Seq[String] = {

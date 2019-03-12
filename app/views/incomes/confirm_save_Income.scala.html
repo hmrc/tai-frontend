@@ -14,10 +14,6 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-@(income: uk.gov.hmrc.tai.forms.EditIncomeForm)(implicit
-request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
-
 @import includes.ptaHeader
 @import uk.gov.hmrc.play.views.formatting.Money._
 @import uk.gov.hmrc.urls.Link
@@ -26,7 +22,11 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
 @import org.joda.time.DateTime
 @import uk.gov.hmrc.play.views.html.layouts.loginStatus
 @import uk.gov.hmrc.tai.util.FormHelper
-@import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
+
+@import uk.gov.hmrc.tai.util.MonetaryUtil
+@(income: uk.gov.hmrc.tai.forms.EditIncomeForm)(implicit
+        request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @header = @{
     ptaHeader(
@@ -50,8 +50,8 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
 
                 @if(income.toEmploymentAmount().newAmount == 0){
                 <section class="section flush--bottom soft--ends">
-                    <p  id="result">@messages(s"tai.incomes.confirm.same.result", income.toEmploymentAmount().oldAmount)</p>
-                    <p  id="resultSame">@messages(s"tai.incomes.confirm.same",income.name)</p>
+                    <p  id="result">@messages("tai.incomes.confirm.same.result", income.toEmploymentAmount().oldAmount)</p>
+                    <p  id="resultSame">@messages("tai.incomes.confirm.same",income.name)</p>
                 </section>
                 }else{
 
@@ -63,9 +63,15 @@ request: Request[_], messages: Messages, user: controllers.auth.TaiUser, templat
                             </div>
 
                         }else{
-                            <p>@messages(s"tai.incomes.confirm.save.message", income.toEmploymentAmount().newAmount)</p>
+                            <p>
+                                @messages("tai.incomes.confirm.save.message")
+                                <span class="tai-detail-large">
+                                    @MonetaryUtil.withPoundPrefix(income.toEmploymentAmount().newAmount)
+                                </span>
+                            </p>
                             <div class="panel panel-border-narrow">
-                                <p>@messages("tai.incomes.confirm.save.message.details")</p>
+                                <p>@messages("tai.incomes.confirm.save.message.details.p1")</p>
+                                <p>@messages("tai.incomes.confirm.save.message.details.p2")</p>
                             </div>
                         }
                     </section>

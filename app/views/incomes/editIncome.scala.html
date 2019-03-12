@@ -32,7 +32,6 @@
 @import includes.forms.input
 @import includes.compareValueInput
 @import uk.gov.hmrc.play.views.html.helpers._
-@import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 @import includes.cancelLink
 @import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
@@ -58,12 +57,13 @@
 ){
 
     <div>
-        <p>@messages("tai.incomes.edit.howTo.payslip")</p>
-        <p>@messages("tai.incomes.edit.howTo.grossAmount")</p>
-        <ul class="bullets">
-            <li>@messages("tai.incomes.edit.howTo.contribution")</li>
-            <li>@messages("tai.incomes.edit.howTo.charity")</li>
-            <li>@messages("tai.incomes.edit.howTo.expenses")</li>
+        <p>@messages("tai.incomes.edit.average.hours", TaxYearRangeUtil.currentTaxYearRange)</p>
+    </div>
+        <div class="panel panel-border-narrow">
+            <h2 class="heading-small">@messages("tai.incomes.edit.what.should.you.include")</h2>
+            <p>@messages("tai.incomes.edit.what.should.you.include.payments")</p>
+            <h2 class="heading-small">@messages("tai.incomes.edit.what.should.you.deduct")</h2>
+            <p>@messages("tai.incomes.edit.what.should.you.deduct.payments")</p>
         </ul>
     </div>
 
