@@ -138,6 +138,17 @@ class TrackingServiceSpec extends PlaySpec
         val result = sut.isAnyIFormInProgress(nino)
         Await.result(result, 5 seconds) mustBe NoTimeToProcess
       }
+
+      "An Update Estimated key exists in the success journey cache" in {
+        val controller = sut
+        val incomeId = 1
+        when(trackingConnector.getUserTracking(any())(any())).thenReturn(Future.successful(Seq.empty[TrackedForm]))
+        when(successfulJourneyCacheService.currentCache(any())).
+          thenReturn(Future.successful(Map(s"$TrackSuccessfulJourney_EstimatedPayKey-$incomeId" -> "true")))
+
+        val result = controller.isAnyIFormInProgress(nino)
+        Await.result(result, 5 seconds) mustBe NoTimeToProcess
+      }
     }
   }
 
