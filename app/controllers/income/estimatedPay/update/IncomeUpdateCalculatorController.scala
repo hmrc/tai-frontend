@@ -352,19 +352,30 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         )
   }
 
-  def payslipAmountPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit person =>
-      implicit request =>
-        sendActingAttorneyAuditEvent("getPayslipAmountPage")
-        for {
-          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-          payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
-          payPeriodInDays <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
-        } yield {
-          val viewModel = PaySlipAmountViewModel(PayslipForm.createForm(), payPeriod, payPeriodInDays, id, employerName)
-          Ok(views.html.incomes.payslipAmount(viewModel))
-        }
+  def payslipAmountPage: Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          sendActingAttorneyAuditEvent("getPayslipAmountPage")
+
+          val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
+          val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey)
+
+          journeyCacheService.collectedValues(mandatoryKeys, optionalKeys) map
+            tupled {
+              (mandatorySeq, optionalSeq) => {
+                val viewModel = {
+                  val id = mandatorySeq(0).toInt
+                  val employerName = mandatorySeq(1)
+
+                  val payPeriod = optionalSeq(0)
+                  val payPeriodInDays = optionalSeq(1)
+                  PaySlipAmountViewModel(PayslipForm.createForm(), payPeriod, payPeriodInDays, id, employerName)
+                }
+
+                Ok(views.html.incomes.payslipAmount(viewModel))
+              }
+            }
   }
 
   def handlePayslipAmount: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
