@@ -44,7 +44,6 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
 import views.html.incomes.{bonusPaymentAmount, bonusPayments}
 

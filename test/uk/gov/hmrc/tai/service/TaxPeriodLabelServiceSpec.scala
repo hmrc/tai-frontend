@@ -19,9 +19,14 @@ package uk.gov.hmrc.tai.service
 import controllers.FakeTaiPlayApplication
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
+import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.util.HtmlFormatter
 
 class TaxPeriodLabelServiceSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport{
+
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
 
   "TaxPeriodLabelService " should {
 
@@ -31,8 +36,13 @@ class TaxPeriodLabelServiceSpec extends PlaySpec with FakeTaiPlayApplication wit
       TaxPeriodLabelService.taxPeriodLabel(2016) mustBe s"${HtmlFormatter.htmlNonBroken("6 April 2016")} " +
         s"${messagesApi("language.to")} ${HtmlFormatter.htmlNonBroken("5 April 2017")}"
     }
-  }
 
-  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+    "generate single line tax period label" in {
+      val year = TaxYear()
+      val message= s"${Dates.formatDate(year.start)} to ${Dates.formatDate(year.end)}"
+      val expectedLabel = s"${HtmlFormatter.htmlNonBroken(message)}"
+      TaxPeriodLabelService.taxPeriodLabelSingleLine(TaxYear().year) mustBe expectedLabel
+    }
+  }
 
 }
