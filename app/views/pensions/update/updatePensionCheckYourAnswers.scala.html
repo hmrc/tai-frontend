@@ -50,7 +50,7 @@
         @submit(buttonMessageKey = Some(messages("tai.confirmAndSend")))
     }
 
-    @cancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.id))
+    @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(viewModel.id))
 }
 
 

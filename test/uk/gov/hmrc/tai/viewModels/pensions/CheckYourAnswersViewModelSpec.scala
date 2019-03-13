@@ -53,7 +53,7 @@ class CheckYourAnswersViewModelSpec extends PlaySpec
       val sut = CheckYourAnswersViewModel("pension provider", "2017-06-13", "ref-123", "Yes", Some("123456789"))
       sut.backLinkUrl mustBe controllers.pensions.routes.AddPensionProviderController.addTelephoneNumber().url
       sut.submissionUrl mustBe controllers.pensions.routes.AddPensionProviderController.submitYourAnswers().url
-      sut.cancelUrl mustBe controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      sut.cancelUrl mustBe controllers.pensions.routes.AddPensionProviderController.cancel().url
     }
 
     "generate a view model with cya title and explanatory text" in {
