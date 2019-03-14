@@ -23,7 +23,7 @@ import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 
 case class PaySlipAmountViewModel(payslipForm: Form[PayslipForm], payPeriodTitle: String, id: Int, employerName: String)
 
-object PaySlipAmountViewModel extends EditIncomePayPeriodConstants {
+object PaySlipAmountViewModel extends EditIncomePayPeriodConstants with DynamicPayPeriodTitle {
 
   def apply(payslipForm: Form[PayslipForm],
             payPeriod: Option[String],
@@ -31,22 +31,14 @@ object PaySlipAmountViewModel extends EditIncomePayPeriodConstants {
             id: Int,
             employerName: String)(implicit message: Messages): PaySlipAmountViewModel = {
 
-    val title = payPeriod match {
-      case Some(MONTHLY) => message("tai.payslip.title.month")
-      case Some(WEEKLY) => message("tai.payslip.title.week")
-      case Some(FORTNIGHTLY) => message("tai.payslip.title.2week")
-      case Some(OTHER) => dayPeriodTitle(payPeriodInDays)
-      case _ => throw new RuntimeException("No pay period found")
-    }
+    val messages = Map(MONTHLY -> "tai.payslip.title.month",
+                       WEEKLY -> "tai.payslip.title.week",
+                       FORTNIGHTLY -> "tai.payslip.title.2week",
+                       OTHER -> "tai.payslip.title.days")
+
+    val title = dynamicTitle(payPeriod, payPeriodInDays, messages)
 
     PaySlipAmountViewModel(payslipForm, title, id, employerName)
   }
 
-  private def dayPeriodTitle(payPeriodInDays: Option[String])
-                       (implicit message: Messages): String = {
-    payPeriodInDays match {
-      case Some(days) => message("tai.payslip.title.days", days)
-      case _ => throw new RuntimeException("No days found for pay period")
-    }
-  }
 }
