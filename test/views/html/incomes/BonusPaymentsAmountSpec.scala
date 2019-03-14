@@ -37,13 +37,12 @@ class BonusPaymentsAmountSpec extends TaiViewSpec with MockitoSugar {
     behave like pageWithCancelLink(Call("GET", controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
     behave like pageWithCombinedHeader(
       messages("tai.bonusPaymentsAmount.preHeading", employerName),
-      messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
+      messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited))
     behave like pageWithTitle(messages("tai.bonusPaymentsAmount.title", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited))
     behave like pageWithContinueButtonForm("/check-income-tax/update-income/bonus-overtime-amount")
 
-    "contain hint with static text" in {
-      val hint = doc(view).select("form .form-hint").get(0).text
-      hint mustBe messages("tai.bonusPaymentsAmount.hint")
+    "contain a paragraph with static text" in {
+      doc must haveParagraphWithText(messages("tai.bonusPaymentsAmount.hint"))
     }
 
     "contain an input field with pound symbol appended" in {

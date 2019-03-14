@@ -31,7 +31,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         formForErrorSummary = Some(yesNoForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
+        mainHeadingText = messages("tai.bonusPayments.title", TaxYearRangeUtil.currentTaxYearRangeSingleLineBetweenDelimited),
         preHeadingText = messages("tai.bonusPayments.preHeading", employerName)
     )
 }
