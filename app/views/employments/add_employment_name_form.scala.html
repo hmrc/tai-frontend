@@ -51,5 +51,5 @@
     @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing employment"))
   }
 
-  @cancelLink(url = routes.TaxAccountSummaryController.onPageLoad(), gaEventAction = Some(gaEventActionString))
+  @cancelLink(url = controllers.employments.routes.AddEmploymentController.cancel(), gaEventAction = Some(gaEventActionString))
 }

@@ -22,6 +22,7 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.data.{Field, Form}
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.EditIncomeForm
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 
@@ -34,7 +35,7 @@ class EditIncomeSpec extends TaiViewSpec with MockitoSugar {
     behave like pageWithBackLink
     behave like pageWithCombinedHeader(
       messages("tai.incomes.edit.preHeading", employerName),
-      messages("tai.incomes.edit.heading", currentTaxYearRangeHtmlNonBreak)
+      messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
     )
   }
 

@@ -44,7 +44,6 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
-import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
 import views.html.incomes.{bonusPaymentAmount, bonusPayments}
 
@@ -618,7 +617,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
 
       "journey cache returns employment name, net amount with large decimal value and id" in {
@@ -632,7 +631,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
 
       "journey cache does not returns net amount" in {
@@ -646,7 +645,7 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(messages("tai.incomes.confirm.save.title", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
     }
   }

@@ -26,8 +26,9 @@ import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 class WhatDoYouWantToTellUsSpec extends TaiViewSpec {
 
   private val employerName = "testEmployer"
+  val empId = 1
 
-  override def view: Html = views.html.employments.update.whatDoYouWantToTellUs(EmploymentViewModel(employerName, 1),
+  override def view: Html = views.html.employments.update.whatDoYouWantToTellUs(EmploymentViewModel(employerName, empId),
     UpdateEmploymentDetailsForm.form)
 
   "whatDoYouWantToTellUs" must {
@@ -35,7 +36,7 @@ class WhatDoYouWantToTellUsSpec extends TaiViewSpec {
     behave like pageWithCombinedHeader(Messages("tai.updateEmployment.whatDoYouWantToTellUs.preHeading"),
       Messages("tai.updateEmployment.whatDoYouWantToTellUs.heading", employerName))
     behave like pageWithContinueButtonForm("/check-income-tax/update-employment/what-do-you-want-to-tell-us/1")
-    behave like pageWithCancelLink(routes.IncomeSourceSummaryController.onPageLoad(1))
+    behave like pageWithCancelLink(controllers.employments.routes.UpdateEmploymentController.cancel(empId))
     behave like pageWithBackLink
 
   }
