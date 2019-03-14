@@ -23,9 +23,11 @@ import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
 import play.api.Play.current
+import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.DelegationAwareActions
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
@@ -42,11 +44,12 @@ import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
 import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
-import uk.gov.hmrc.tai.util.constants.{EditIncomeIrregularPayConstants, FormValuesConstants, JourneyCacheConstants, TaiConstants}
+import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
-import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{CheckYourAnswersViewModel, EstimatedPayViewModel}
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{CheckYourAnswersViewModel, EstimatedPayViewModel, PaySlipAmountViewModel}
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel}
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
+
 import scala.Function.tupled
 import scala.concurrent.Future
 
@@ -337,7 +340,6 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
             }
           },
           formData => {
-
             val cacheMap = formData.otherInDays match {
               case Some(days) => Map(UpdateIncome_PayPeriodKey -> formData.payPeriod.getOrElse(""), UpdateIncome_OtherInDaysKey -> days.toString)
               case _ => Map(UpdateIncome_PayPeriodKey -> formData.payPeriod.getOrElse(""))
@@ -350,17 +352,30 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         )
   }
 
-  def payslipAmountPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
-    implicit person =>
-      implicit request =>
-        sendActingAttorneyAuditEvent("getPayslipAmountPage")
-        for {
-          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-          payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
-        } yield {
-          Ok(views.html.incomes.payslipAmount(PayslipForm.createForm(), payPeriod.getOrElse(""), id, employerName))
-        }
+  def payslipAmountPage: Action[AnyContent] = authorisedForTai(personService).async {
+    implicit user =>
+      implicit person =>
+        implicit request =>
+          sendActingAttorneyAuditEvent("getPayslipAmountPage")
+
+          val mandatoryKeys = Seq(UpdateIncome_IdKey, UpdateIncome_NameKey)
+          val optionalKeys = Seq(UpdateIncome_PayPeriodKey, UpdateIncome_OtherInDaysKey)
+
+          journeyCacheService.collectedValues(mandatoryKeys, optionalKeys) map
+            tupled {
+              (mandatorySeq, optionalSeq) => {
+                val viewModel = {
+                  val id = mandatorySeq(0).toInt
+                  val employerName = mandatorySeq(1)
+
+                  val payPeriod = optionalSeq(0)
+                  val payPeriodInDays = optionalSeq(1)
+                  PaySlipAmountViewModel(PayslipForm.createForm(), payPeriod, payPeriodInDays, id, employerName)
+                }
+
+                Ok(views.html.incomes.payslipAmount(viewModel))
+              }
+            }
   }
 
   def handlePayslipAmount: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -373,8 +388,10 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
               id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
               employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
               payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
+              payPeriodInDays <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
             } yield {
-              BadRequest(views.html.incomes.payslipAmount(formWithErrors, payPeriod.getOrElse(""), id, employerName))
+              val viewModel = PaySlipAmountViewModel(formWithErrors, payPeriod, payPeriodInDays, id, employerName)
+              BadRequest(views.html.incomes.payslipAmount(viewModel))
             }
           },
           formData => {
@@ -569,7 +586,9 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         }
   }
 
-  private def isCachedAmountSameAsEnteredAmount(cache: Map[String, String], newAmount: Option[BigDecimal]): Boolean = {
+  private def isCachedAmountSameAsEnteredAmount(cache: Map[String, String], newAmount: Option[BigDecimal]): Boolean
+
+  = {
     FormHelper.areEqual(cache.get(UpdateIncome_ConfirmedNewAmountKey), newAmount map (_.toString()))
   }
 
@@ -628,7 +647,9 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         }
   }
 
-  private def incomeTypeIdentifier(isPension: Boolean): String = {
+  private def incomeTypeIdentifier(isPension: Boolean): String
+
+  = {
     if (isPension) {
       TaiConstants.IncomeTypePension
     } else {

@@ -20,7 +20,7 @@ import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.TaxYear
 
 
-class EstimatedPayViewModelSpec extends PlaySpec{
+class EstimatedPayViewModelSpec extends PlaySpec {
 
   "Estimated Pay View Model " must {
 
