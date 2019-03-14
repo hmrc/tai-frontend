@@ -30,7 +30,7 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
         formForErrorSummary = Some(bonusOvertimeAmountForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
+        mainHeadingText = messages("tai.bonusPaymentsAmount.title",TaxYearRangeUtil.currentTaxYearRangeSingleLine),
         preHeadingText = Messages("tai.bonusPaymentsAmount.preHeading", employerName)
     )
 }
@@ -43,6 +43,8 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
     employerName = Some(employerName),
     gaCustomTitle = None
     ){
+
+    <p>@messages("tai.bonusPaymentsAmount.hint")</p>
     <div class="section flush--bottom soft--top">
         @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleBonusOvertimeAmount){
             @includes.forms.input(
@@ -50,8 +52,6 @@ templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.go
                 labelText = "",
                 bold = true,
                 classes = Seq("form-control-1-4"),
-                hintText = messages("tai.bonusPaymentsAmount.hint"),
-                hintClass = "form-hint",
                 isCurrency = true
             )
 
