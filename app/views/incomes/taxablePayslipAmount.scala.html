@@ -20,6 +20,7 @@
 @import includes.ptaHeader
 @import includes.cancelLink
 @import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePaySlipAmountViewModel
+@import includes.forms.{submit, input}
 
 @(viewModel: TaxablePaySlipAmountViewModel)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
@@ -43,24 +44,23 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
     pageHeader = Some(header),
     employerName = Some(viewModel.employerName)
 ){
+    <div>
+        <p>@messages("tai.taxablePayslip.taxablePay.explanation")</p>
+        <p>@messages("tai.taxablePayslip.shownOnPayslip")</p>
+    </div>
 
-    @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleTaxablePayslipAmount){
+    <div>
+        @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleTaxablePayslipAmount){
+            @input(
+                field = viewModel.form("taxablePay"),
+                bold = true,
+                classes = Seq("form-control-1-4"),
+                isCurrency = true
+            )
 
-        @includes.forms.input(
-            field = viewModel.form("taxablePay"),
-            bold = true,
-            classes = Seq("form-control-1-4"),
-            hintText = Messages("tai.taxablePayslip.shownOnPayslip"),
-            isCurrency = true
-        )
-
-        @includes.details_summary(Messages("tai.taxablePayslip.whatIsTaxablePay.title")){
-            @Messages("tai.taxablePayslip.whatIsTaxablePay.description")
-        }
-        <div class="section">
-            <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
-
+            @submit()
             @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.id).url))
-        </div>
-    }
+
+        }
+    </div>
 }
