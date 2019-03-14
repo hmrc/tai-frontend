@@ -14,39 +14,40 @@
  * limitations under the License.
  *@
 
-@(taxablePayslipForm: Form[uk.gov.hmrc.tai.forms.TaxablePayslipForm], payPeriod: String, id: Int, employerName: String)(implicit request: Request[_],
-messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
-
 @import uk.gov.hmrc.play.views.html.helpers._
 @import includes.forms.input
 @import uk.gov.hmrc.urls.Link
 @import includes.ptaHeader
 @import includes.cancelLink
+@import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.TaxablePaySlipAmountViewModel
+
+@(viewModel: TaxablePaySlipAmountViewModel)(implicit request: Request[_],
+messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Taxable pay from your payslip"}
 
 @header = @{
     ptaHeader(
-        formForErrorSummary = Some(taxablePayslipForm),
+        formForErrorSummary = Some(viewModel.form),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.taxablePayslip.heading"),
-        preHeadingText = Messages("tai.howToUpdate.preHeading", employerName)
+        mainHeadingText = Messages(viewModel.title),
+        preHeadingText = Messages("tai.howToUpdate.preHeading", viewModel.employerName)
     )
 }
 
 @main(
-    title = Messages("tai.taxablePayslip.title"),
+    title = Messages(viewModel.title),
     articleClasses = None,
     user = Some(user),
     pageHeader = Some(header),
-    employerName = Some(employerName)
+    employerName = Some(viewModel.employerName)
 ){
 
     @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handleTaxablePayslipAmount){
 
         @includes.forms.input(
-            field = taxablePayslipForm("taxablePay"),
+            field = viewModel.form("taxablePay"),
             bold = true,
             classes = Seq("form-control-1-4"),
             hintText = Messages("tai.taxablePayslip.shownOnPayslip"),
@@ -59,7 +60,7 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         <div class="section">
             <input type="submit" class="button" value='@Messages("tai.selectIncome.link.text")'/>
 
-            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url))
+            @cancelLink(Call("GET",controllers.routes.IncomeSourceSummaryController.onPageLoad(viewModel.id).url))
         </div>
     }
 }
