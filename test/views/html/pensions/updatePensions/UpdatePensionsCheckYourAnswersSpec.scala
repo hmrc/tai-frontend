@@ -32,7 +32,7 @@ class UpdatePensionsCheckYourAnswersSpec extends TaiViewSpec {
       "/check-income-tax/incorrect-pension/check-your-answers",
       messages("tai.confirmAndSend"))
     behave like pageWithCheckYourAnswersSummary
-    behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(1))
+    behave like pageWithCancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(pensionId))
 
     "display a back button" which {
       "links to the add telephone form page" when {
@@ -68,7 +68,8 @@ class UpdatePensionsCheckYourAnswersSpec extends TaiViewSpec {
     }
   }
 
-  val viewModel = UpdatePensionCheckYourAnswersViewModel(1, "TEST", "Yes", "whatYouToldUs", "Yes", Some("123456789"))
+  lazy val pensionId = 1
+  val viewModel = UpdatePensionCheckYourAnswersViewModel(pensionId, "TEST", "Yes", "whatYouToldUs", "Yes", Some("123456789"))
 
   override def view: Html = views.html.pensions.update.updatePensionCheckYourAnswers(viewModel)
 }

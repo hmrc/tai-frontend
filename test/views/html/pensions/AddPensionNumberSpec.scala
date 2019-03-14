@@ -38,7 +38,7 @@ class AddPensionNumberSpec extends TaiViewSpec with FormValuesConstants {
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/pension-number")
     behave like pageWithYesNoRadioButton(AddPensionProviderNumberForm.PayrollNumberChoice+"-yes", AddPensionProviderNumberForm.PayrollNumberChoice+"-no")
-    behave like pageWithCancelLink(routes.TaxAccountSummaryController.onPageLoad())
+    behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 
     "have gone back to firstPayChoice page" in {
       val payrollNumberViewModel = PensionNumberViewModel(pensionProviderName, true)

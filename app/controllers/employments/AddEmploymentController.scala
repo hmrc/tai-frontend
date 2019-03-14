@@ -59,13 +59,19 @@ class AddEmploymentController @Inject()(auditService: AuditService,
   with FormValuesConstants {
 
 
+  def cancel(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      journeyCacheService.flush() map { _ =>
+        Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      }
+  }
 
   def telephoneNumberViewModel(implicit messages: Messages): CanWeContactByPhoneViewModel = CanWeContactByPhoneViewModel(
     messages("add.missing.employment"),
     messages("tai.canWeContactByPhone.title"),
     controllers.employments.routes.AddEmploymentController.addEmploymentPayrollNumber().url,
     controllers.employments.routes.AddEmploymentController.submitTelephoneNumber().url,
-    controllers.routes.TaxAccountSummaryController.onPageLoad().url
+    controllers.employments.routes.AddEmploymentController.cancel().url
   )
 
   def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
@@ -250,6 +256,7 @@ class AddEmploymentController @Inject()(auditService: AuditService,
         )
   }
 
+
   def addEmploymentCheckYourAnswers: Action[AnyContent] = (authenticate andThen validatePerson).async {
       implicit request =>
         journeyCacheService.collectedValues(
@@ -260,7 +267,7 @@ class AddEmploymentController @Inject()(auditService: AuditService,
             IncomeCheckYourAnswersViewModel(Messages("add.missing.employment"), mandatoryVals.head, mandatoryVals(1), mandatoryVals(2), mandatoryVals(3), optionalVals.head,
               controllers.employments.routes.AddEmploymentController.addTelephoneNumber().url,
               controllers.employments.routes.AddEmploymentController.submitYourAnswers().url,
-              controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+              controllers.employments.routes.AddEmploymentController.cancel().url)
           implicit val user = request.taiUser
           Ok(views.html.incomes.addIncomeCheckYourAnswers(model))
         }

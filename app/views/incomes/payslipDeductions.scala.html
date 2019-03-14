@@ -45,7 +45,6 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
 
     <div>
         <p>@messages("tai.payslipDeductions.tellUs")</p>
-        <p>@messages("tai.payslipDeductions.dontPayTax")</p>
 
         @form(action=controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.handlePayslipDeductions){
 

@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @(income: Form[uk.gov.hmrc.tai.forms.EditIncomeForm], hasMultipleIncomes: Boolean, employmentId: Int, pensionToDate: String = "0", webChat: Boolean = false)(implicit request: Request[_],
 messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
@@ -31,13 +32,13 @@ messages: Messages, user: controllers.auth.TaiUser, templateRenderer: uk.gov.hmr
         formForErrorSummary = Some(income),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.incomes.edit.heading", currentTaxYearRangeHtmlNonBreak),
+        mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
         preHeadingText = messages("tai.howToUpdate.preHeading", income("name").value.getOrElse(""))
     )
 }
 
 @main(
-    title = messages("tai.incomes.edit.title", currentTaxYearRangeHtmlNonBreak),
+    title = messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
     user = Some(user),
     pageHeader = Some(header),
     articleClasses = None,

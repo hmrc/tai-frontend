@@ -378,6 +378,17 @@ class UpdateEmploymentControllerSpec extends PlaySpec
     }
   }
 
+  "cancel" must {
+    "redirect to the the IncomeSourceSummaryController" in {
+      val employmentId = 1
+      when(journeyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+
+      val result = createSUT.cancel(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url
+    }
+  }
+
   private val employment = Employment("company name", Some("123"), new LocalDate("2016-05-26"),
     Some(new LocalDate("2016-05-26")), Nil, "", "", 2, None, false, false)
 

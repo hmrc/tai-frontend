@@ -59,6 +59,13 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
   with JourneyCacheConstants
   with FormValuesConstants {
 
+  def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      journeyCacheService.flush() map { _ =>
+        Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+      }
+  }
+
   def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
     Constraint[String]((textContent: String) => textContent match {
       case txt if txt.length < 8 || txt.length > 30 => Invalid(messages("tai.canWeContactByPhone.telephone.invalid"))
@@ -70,7 +77,7 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
     messages("tai.canWeContactByPhone.title"),
     "/thisBackLinkUrlIsNoLongerUsed",
     controllers.pensions.routes.UpdatePensionProviderController.submitTelephoneNumber().url,
-    controllers.routes.IncomeSourceSummaryController.onPageLoad(pensionId).url
+    controllers.pensions.routes.UpdatePensionProviderController.cancel(pensionId).url
   )
 
   def doYouGetThisPension(): Action[AnyContent] = (authenticate andThen validatePerson).async {
@@ -109,12 +116,13 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
   def whatDoYouWantToTellUs: Action[AnyContent] = (authenticate andThen validatePerson).async {
     implicit request =>
       for {
-        (mandatoryValues, optionalValues) <- journeyCacheService.collectedValues(Seq(UpdatePensionProvider_NameKey), Seq(UpdatePensionProvider_DetailsKey))
+        (mandatoryValues, optionalValues) <- journeyCacheService.collectedValues(Seq(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey),
+          Seq(UpdatePensionProvider_DetailsKey))
       } yield {
         implicit val user = request.taiUser
 
-        Ok(views.html.pensions.update.whatDoYouWantToTellUs(mandatoryValues(0),
-          WhatDoYouWantToTellUsForm.form.fill(optionalValues(0).getOrElse(""))))
+        Ok(views.html.pensions.update.whatDoYouWantToTellUs(mandatoryValues.head, mandatoryValues(1).toInt,
+          WhatDoYouWantToTellUsForm.form.fill(optionalValues.head.getOrElse(""))))
       }
   }
 
@@ -122,10 +130,9 @@ class UpdatePensionProviderController @Inject()(taxAccountService: TaxAccountSer
     implicit request =>
       WhatDoYouWantToTellUsForm.form.bindFromRequest.fold(
         formWithErrors => {
-          journeyCacheService.mandatoryValue(UpdatePensionProvider_NameKey) map { name =>
+          journeyCacheService.mandatoryValues(UpdatePensionProvider_NameKey, UpdatePensionProvider_IdKey) map { mandatoryValues =>
             implicit val user = request.taiUser
-
-            BadRequest(views.html.pensions.update.whatDoYouWantToTellUs(name, formWithErrors))
+            BadRequest(views.html.pensions.update.whatDoYouWantToTellUs(mandatoryValues.head, mandatoryValues(1).toInt, formWithErrors))
           }
         },
         pensionDetails => {

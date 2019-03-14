@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,17 +12,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package uk.gov.hmrc.tai.viewModels.income.previousYears
+@()(
+    implicit request: Request[_],
+    messages: Messages,
+    templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer,
+    partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever
+    )
 
-import play.api.i18n.Messages
-import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.service.TaxPeriodLabelService
-
-case class UpdateHistoricIncomeDetailsViewModel(taxYear: Int) {
-
-  val givenTaxYear: TaxYear = TaxYear(taxYear)
-  def formattedTaxYear(implicit messages: Messages) = TaxPeriodLabelService.taxPeriodLabelSingleLine(taxYear)
-
-}
+<div class="panel panel-border-narrow">
+    <h2 class="heading-small">@messages("tai.incomes.edit.what.should.you.include")</h2>
+    <p>@messages("tai.incomes.edit.what.should.you.include.payments")</p>
+    <h2 class="heading-small">@messages("tai.incomes.edit.what.should.you.deduct")</h2>
+    <p>@messages("tai.incomes.edit.what.should.you.deduct.payments")</p>
+</div>

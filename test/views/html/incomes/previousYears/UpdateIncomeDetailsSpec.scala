@@ -20,14 +20,14 @@ import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.tai.forms.income.previousYears.UpdateIncomeDetailsForm
 import uk.gov.hmrc.tai.model.TaxYear
-import uk.gov.hmrc.tai.util.HtmlFormatter
+import uk.gov.hmrc.tai.service.TaxPeriodLabelService
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.income.previousYears.UpdateHistoricIncomeDetailsViewModel
 
 class UpdateIncomeDetailsSpec extends TaiViewSpec{
 
   private val taxYear: Int = 2016
-  private val formattedTaxYear = HtmlFormatter.htmlNonBroken("6 April 2016") + " to " + HtmlFormatter.htmlNonBroken("5 April 2017")
+  private val formattedTaxYear = TaxPeriodLabelService.taxPeriodLabelSingleLine(taxYear)
   private val givenTaxYear: TaxYear = TaxYear(taxYear)
 
   override def view: Html = views.html.incomes.previousYears.UpdateIncomeDetails(UpdateHistoricIncomeDetailsViewModel(taxYear),

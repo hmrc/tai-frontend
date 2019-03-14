@@ -17,6 +17,7 @@ GET         /income-summary                                                     
 GET         /income-tax                                                                @controllers.TaxAccountSummaryController.onPageLoad
 GET         /income-details/:empId                                                     @controllers.IncomeSourceSummaryController.onPageLoad(empId: Int)
 
+GET         /add-employment/cancel                                                     @controllers.employments.AddEmploymentController.cancel
 GET         /add-employment/employment-name                                            @controllers.employments.AddEmploymentController.addEmploymentName
 POST        /add-employment/employment-name                                            @controllers.employments.AddEmploymentController.submitEmploymentName
 GET         /add-employment/employment-start-date                                      @controllers.employments.AddEmploymentController.addEmploymentStartDate
@@ -35,6 +36,8 @@ GET         /add-employment/employment-success                                  
 
 
 # Add Pension Provider Journey
+
+GET         /add-pension-provider/cancel                                               @controllers.pensions.AddPensionProviderController.cancel
 
 GET         /add-pension-provider/name                                                 @controllers.pensions.AddPensionProviderController.addPensionProviderName
 POST        /add-pension-provider/name                                                 @controllers.pensions.AddPensionProviderController.submitPensionProviderName
@@ -61,6 +64,7 @@ GET         /add-pension-provider/success                                       
 GET         /update-remove-employment/warning                                          @controllers.employments.EndEmploymentController.duplicateSubmissionWarning
 POST        /update-remove-employment/warning                                          @controllers.employments.EndEmploymentController.submitDuplicateSubmissionWarning
 
+GET         /update-remove-employment/cancel/:empId                                    @controllers.employments.EndEmploymentController.cancel(empId: Int)
 GET         /update-remove-employment/decision-page                                    @controllers.employments.EndEmploymentController.employmentUpdateRemoveDecision
 GET         /update-remove-employment/decision/:empId                                  @controllers.employments.EndEmploymentController.onPageLoad(empId: Int)
 POST        /update-remove-employment/decision                                         @controllers.employments.EndEmploymentController.handleEmploymentUpdateRemove
@@ -76,6 +80,7 @@ POST        /end-employment/telephone-number                                    
 GET         /end-employment/date                                                       @controllers.employments.EndEmploymentController.endEmploymentPage
 POST        /end-employment/date/:empId                                                @controllers.employments.EndEmploymentController.handleEndEmploymentPage(empId: Int)
 
+GET         /update-employment/cancel/:empId                                           @controllers.employments.UpdateEmploymentController.cancel(empId: Int)
 GET         /update-employment/what-do-you-want-to-tell-us/:empId                      @controllers.employments.UpdateEmploymentController.updateEmploymentDetails(empId: Int)
 POST        /update-employment/what-do-you-want-to-tell-us/:empId                      @controllers.employments.UpdateEmploymentController.submitUpdateEmploymentDetails(empId: Int)
 GET         /update-employment/telephone-number                                        @controllers.employments.UpdateEmploymentController.addTelephoneNumber
@@ -250,6 +255,7 @@ GET         /language/:lang                                                     
 
 ## Incorrect Pension
 
+GET         /incorrect-pension/cancel/:id                                              @controllers.pensions.UpdatePensionProviderController.cancel(id: Int)
 GET         /incorrect-pension/decision                                                @controllers.pensions.UpdatePensionProviderController.doYouGetThisPension
 POST        /incorrect-pension/decision                                                @controllers.pensions.UpdatePensionProviderController.handleDoYouGetThisPension
 GET         /incorrect-pension/what-do-you-want-to-tell-us                             @controllers.pensions.UpdatePensionProviderController.whatDoYouWantToTellUs
