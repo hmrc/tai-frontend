@@ -17,7 +17,7 @@
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.model.CodingComponentPair
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.util.MonetaryUtil
 
@@ -64,7 +64,7 @@ class IabdTaxCodeChangeReasons {
   }
 
   private def messageWithComponentType(pair: CodingComponentPair)(implicit messages: Messages) = {
-    messages("tai.taxCodeComparison.iabd.updated", CodingComponentTypeDescription.componentTypeToString(pair.componentType))
+    messages("tai.taxCodeComparison.iabd.updated", pair.componentType.toMessage())
   }
 
   private def genericBenefitMessage(implicit messages: Messages): String = {

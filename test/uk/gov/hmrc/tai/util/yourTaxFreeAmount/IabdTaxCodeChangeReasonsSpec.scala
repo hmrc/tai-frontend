@@ -20,6 +20,7 @@ import controllers.FakeTaiPlayApplication
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
+import uk.gov.hmrc.tai.model.CodingComponentPair
 import uk.gov.hmrc.tai.model.domain._
 
 class IabdTaxCodeChangeReasonsSpec extends PlaySpec
