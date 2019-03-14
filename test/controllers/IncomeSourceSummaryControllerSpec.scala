@@ -39,6 +39,7 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCode
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -69,8 +70,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.employment.income.details.mainHeading.gaTitle",
-          TaxYear().start.toString("d MMMM yyyy"),
-          TaxYear().end.toString("d MMMM yyyy")))
+          TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
 
       "asked for pension details" in {
@@ -88,8 +88,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.pension.income.details.mainHeading.gaTitle",
-          TaxYear().start.toString("d MMMM yyyy"),
-          TaxYear().end.toString("d MMMM yyyy")))
+          TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
     }
 

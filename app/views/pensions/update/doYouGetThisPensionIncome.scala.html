@@ -62,5 +62,5 @@
 
         @submit(buttonMessageKey = Some(messages("tai.submit")), gaEventAction = Some(gaEventActionString), gaEventLabel = Some(""))
     }
-    @cancelLink(url = routes.IncomeSourceSummaryController.onPageLoad(model.id), gaEventAction = Some(gaEventActionString))
+    @cancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(model.id), gaEventAction = Some(gaEventActionString))
 }

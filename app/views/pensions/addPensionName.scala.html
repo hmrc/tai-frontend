@@ -51,5 +51,5 @@
     @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing pension provider"))
   }
 
-  @cancelLink(url = routes.TaxAccountSummaryController.onPageLoad(), gaEventAction = Some(gaEventActionString))
+  @cancelLink(url = controllers.pensions.routes.AddPensionProviderController.cancel(), gaEventAction = Some(gaEventActionString))
 }

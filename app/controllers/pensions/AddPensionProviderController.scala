@@ -66,8 +66,15 @@ class AddPensionProviderController @Inject()(pensionProviderService: PensionProv
       messages("tai.canWeContactByPhone.title"),
       controllers.pensions.routes.AddPensionProviderController.addPensionNumber().url,
       controllers.pensions.routes.AddPensionProviderController.submitTelephoneNumber().url,
-      controllers.routes.TaxAccountSummaryController.onPageLoad().url
+      controllers.pensions.routes.AddPensionProviderController.cancel().url
     )
+  }
+
+  def cancel(): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      journeyCacheService.flush() map { _ =>
+          Redirect(controllers.routes.TaxAccountSummaryController.onPageLoad())
+      }
   }
 
   def addPensionProviderName(): Action[AnyContent] = (authenticate andThen validatePerson).async {

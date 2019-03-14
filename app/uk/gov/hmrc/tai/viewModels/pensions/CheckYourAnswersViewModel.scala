@@ -60,6 +60,6 @@ object CheckYourAnswersViewModel {
       journeyConfirmationLines,
       postConfirmationText,
       controllers.pensions.routes.AddPensionProviderController.submitYourAnswers().url,
-      controllers.routes.TaxAccountSummaryController.onPageLoad().url)
+      controllers.pensions.routes.AddPensionProviderController.cancel().url)
   }
 }

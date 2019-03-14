@@ -54,6 +54,13 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
   with AuditConstants
   with FormValuesConstants {
 
+  def cancel(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {
+    implicit request =>
+      journeyCacheService.flush() map { _ =>
+        Redirect(controllers.routes.IncomeSourceSummaryController.onPageLoad(empId))
+      }
+  }
+
   def telephoneNumberSizeConstraint(implicit messages: Messages): Constraint[String] =
     Constraint[String]((textContent: String) => textContent match {
       case txt if txt.length < 8 || txt.length > 30 => Invalid(messages("tai.canWeContactByPhone.telephone.invalid"))
@@ -65,7 +72,7 @@ class UpdateEmploymentController @Inject()(employmentService: EmploymentService,
     messages("tai.canWeContactByPhone.title"),
     controllers.employments.routes.UpdateEmploymentController.updateEmploymentDetails(id).url,
     controllers.employments.routes.UpdateEmploymentController.submitTelephoneNumber().url,
-    controllers.routes.IncomeSourceSummaryController.onPageLoad(id).url
+    controllers.employments.routes.UpdateEmploymentController.cancel(id).url
   )
 
   def updateEmploymentDetails(empId: Int): Action[AnyContent] = (authenticate andThen validatePerson).async {

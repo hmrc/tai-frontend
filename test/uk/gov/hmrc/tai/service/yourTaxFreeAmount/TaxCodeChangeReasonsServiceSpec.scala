@@ -23,14 +23,14 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.tai.model.domain.TaxCodeChange
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, EmploymentTaxCodeChangeReasons, IabdTaxCodeChangeReasons}
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{AllowancesAndDeductionPairs, TaxCodeChangeReasons, IabdTaxCodeChangeReasons}
 
 class TaxCodeChangeReasonsServiceSpec extends PlaySpec with MockitoSugar with FakeTaiPlayApplication with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   val iabdTaxCodeChangeReasons = mock[IabdTaxCodeChangeReasons]
-  val employmentTaxCodeChangeReasons = mock[EmploymentTaxCodeChangeReasons]
+  val employmentTaxCodeChangeReasons = mock[TaxCodeChangeReasons]
 
   class TaxCodeChangeReasonsServiceTest() extends TaxCodeChangeReasonsService(
     iabdTaxCodeChangeReasons,
@@ -72,6 +72,10 @@ class TaxCodeChangeReasonsServiceSpec extends PlaySpec with MockitoSugar with Fa
     }
 
     "be true" when {
+      "there are zero reasons" in {
+        service.isAGenericReason(Seq.empty) mustBe true
+      }
+
       "there are more than 4 reasons" in {
         val reasons = Seq("reason 1", "reason 2", "reason 3", "reason 4", "reason 5")
         service.isAGenericReason(reasons) mustBe true

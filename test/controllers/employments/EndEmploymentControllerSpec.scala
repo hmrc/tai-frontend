@@ -655,6 +655,19 @@ class EndEmploymentControllerSpec
     }
   }
 
+  "cancel" must {
+    "redirect to the the IncomeSourceSummaryController" in {
+      val employmentId = 1
+      when(endEmploymentJourneyCacheService.flush()(any())).thenReturn(Future.successful(TaiSuccessResponse))
+
+      val result = createEndEmploymentTest.cancel(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).get mustBe controllers.routes.IncomeSourceSummaryController.onPageLoad(employmentId).url
+    }
+  }
+
+
+
   def employmentWithAccounts(accounts:List[AnnualAccount]) = Employment("employer", Some("emp123"), new LocalDate(2000, 5, 20),
     None, accounts, "", "", 8, None, false, false)
 
