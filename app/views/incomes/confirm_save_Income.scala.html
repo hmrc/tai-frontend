@@ -56,13 +56,7 @@
                 }else{
 
                     <section class="section flush--bottom soft--ends">
-                        @if(FormHelper.convertCurrencyToInt(income.newAmount) == income.oldAmount){
-                            <p>@messages(s"tai.incomes.confirm.save.messageEquals", income.toEmploymentAmount().newAmount)</p>
-                            <div class="panel panel-border-narrow">
-                                <p>@messages("tai.incomes.confirm.save.messageEquals.details", income.name)</p>
-                            </div>
-
-                        }else{
+                       
                             <p>
                                 @messages("tai.incomes.confirm.save.message")
                                 <span class="tai-detail-large">
@@ -73,7 +67,7 @@
                                 <p>@messages("tai.incomes.confirm.save.message.details.p1")</p>
                                 <p>@messages("tai.incomes.confirm.save.message.details.p2")</p>
                             </div>
-                        }
+                       
                     </section>
                 @if(FormHelper.convertCurrencyToInt(income.newAmount) != income.oldAmount){
                     <section class="section">
