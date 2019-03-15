@@ -26,10 +26,12 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.renderer.TemplateRenderer
 import uk.gov.hmrc.tai.config.FeatureTogglesConfig
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, TaxCodeChangeReasonsService}
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.YourTaxFreeAmount
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{IabdTaxCodeChangeReasons, YourTaxFreeAmount}
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
 
 import scala.concurrent.Future
@@ -50,18 +52,30 @@ class TaxCodeChangeController @Inject()(taxCodeChangeService: TaxCodeChangeServi
     implicit request =>
       val nino: Nino = request.taiUser.nino
 
+      val totalTaxFuture = taxAccountService.totalTax(nino, TaxYear())
+      val yourTaxFreeAmountComparisonFuture = yourTaxFreeAmountService.taxFreeAmountComparison(nino)
+
       for {
+        yourTaxFreeAmountComparison <- yourTaxFreeAmountComparisonFuture
+        totalTax <- totalTaxFuture
         taxCodeChange <- taxCodeChangeService.taxCodeChange(nino)
         scottishTaxRateBands <- taxAccountService.scottishBandRates(nino, TaxYear(), taxCodeChange.uniqueTaxCodes)
-        yourTaxFreeAmountComparison <- yourTaxFreeAmountService.taxFreeAmountComparison(nino)
       } yield {
-        val taxCodeChangeReasons = taxCodeChangeReasonsService.combineTaxCodeChangeReasons(yourTaxFreeAmountComparison.iabdPairs, taxCodeChange)
-        val isAGenericReason = taxCodeChangeReasonsService.isAGenericReason(taxCodeChangeReasons)
+        (totalTax) match {
+          case (TaiSuccessResponseWithPayload(totalTax: TotalTax)) =>
+            val iabdTaxCodeChangeReasons: IabdTaxCodeChangeReasons = new IabdTaxCodeChangeReasons(totalTax)
+            val taxCodeChangeReasons = taxCodeChangeReasonsService.combineTaxCodeChangeReasons(
+              iabdTaxCodeChangeReasons,
+              yourTaxFreeAmountComparison.iabdPairs,
+              taxCodeChange)
+            val isAGenericReason = taxCodeChangeReasonsService.isAGenericReason(taxCodeChangeReasons)
 
-        val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, taxCodeChangeReasons, isAGenericReason)
+            val viewModel = TaxCodeChangeViewModel(taxCodeChange, scottishTaxRateBands, taxCodeChangeReasons, isAGenericReason)
 
-        implicit val user = request.taiUser
-        Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
+            implicit val user = request.taiUser
+            Ok(views.html.taxCodeChange.taxCodeComparison(viewModel))
+          case _ => throw new RuntimeException("Failed to fetch total tax details for tax code comparison")
+        }
       }
   }
 
