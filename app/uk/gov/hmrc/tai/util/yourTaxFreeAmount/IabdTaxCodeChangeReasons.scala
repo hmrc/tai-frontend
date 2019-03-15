@@ -22,7 +22,7 @@ import uk.gov.hmrc.tai.model.domain.tax.{NonSavingsIncomeCategory, TotalTax}
 import uk.gov.hmrc.tai.util.MonetaryUtil
 import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 
-class IabdTaxCodeChangeReasons(totalTax: TotalTax) extends BandTypesConstants {
+class IabdTaxCodeChangeReasons(totalTax: TotalTax) {
 
   def reasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
 
@@ -39,12 +39,7 @@ class IabdTaxCodeChangeReasons(totalTax: TotalTax) extends BandTypesConstants {
     def createYouHaveMessage(text: String): String = {
       pair.current match {
         case Some(value) => {
-
-          val taxRate: BigDecimal = totalTax.incomeCategories.filter(_.incomeCategoryType == NonSavingsIncomeCategory)
-            .flatMap(_.taxBands).find(_.bandType == BasicRate).map(_.rate / 100).get
-
-          val amountDue = value * taxRate
-
+          val amountDue = TaxAmountDueFromUnderpayment.amountDue(value, totalTax)
           messages(text, MonetaryUtil.withPoundPrefix(amountDue.toInt))
         }
         case None => genericBenefitMessage
