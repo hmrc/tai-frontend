@@ -51,7 +51,7 @@ import scala.concurrent.Future
 import scala.util.Random
 
 class IncomeUpdateCalculatorControllerSpec
-  extends PlaySpec
+    extends PlaySpec
     with FakeTaiPlayApplication
     with MockitoSugar
     with JourneyCacheConstants
@@ -633,7 +633,7 @@ class IncomeUpdateCalculatorControllerSpec
         val result = testController.estimatedPayPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe SEE_OTHER
 
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPay().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPayInCache().url)
       }
     }
   }
@@ -668,15 +668,17 @@ class IncomeUpdateCalculatorControllerSpec
         doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
 
-      "journey cache does not returns net amount" in {
+      "redirects to the same amount entered page" ignore {
         val testController = createTestIncomeUpdateCalculatorController
         val employmentAmount = EmploymentAmount("", "", 1, 1, 1)
 
         when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
-        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NewAmountKey))(any())).thenReturn(Future.successful(None))
+        when(journeyCacheService.currentValue(Matchers.eq(UpdateIncome_NewAmountKey))(any())).thenReturn(Future.successful(Some("1")))
 
         val result = testController.handleCalculationResult()(RequestBuilder.buildFakeRequestWithAuth("GET"))
-        status(result) mustBe OK
+        status(result) mustBe SEE_OTHER
+
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(messages("tai.incomes.confirm.save.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
@@ -932,13 +934,13 @@ class IncomeUpdateCalculatorControllerSpec
 
       val employerName = "name"
       val payToDate = 123
-      val newAmount = 123
+      val newAmount = 1235
       val confirmedNewAmount = 1234
 
       when(
         journeyCacheService.collectedValues(any(), any())(any()))
         .thenReturn(Future.successful(
-          Seq(EmployerName, newAmount.toString), Seq(Some(confirmedNewAmount.toString))))
+          Seq(EmployerName, newAmount.toString, payToDate.toString), Seq(Some(confirmedNewAmount.toString))))
 
 
       val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
@@ -967,21 +969,48 @@ class IncomeUpdateCalculatorControllerSpec
         val testController = createTestIncomeUpdateCalculatorController
         val newAmount = 123
         val confirmednewAmount = 123
+        val paymentToDate = 100
 
-        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(Future.successful(Seq(EmployerName, newAmount.toString), Seq(Some(confirmednewAmount.toString))))
+        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+          Future.successful(
+            Seq(EmployerName, newAmount.toString, paymentToDate.toString),
+            Seq(Some(confirmednewAmount.toString))
+          )
+        )
 
         val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
           RequestBuilder.buildFakeRequestWithOnlySession("GET")
         )
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPay().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPayInCache().url)
+      }
+    }
+
+    "redirect to IrregularSameEstimatedPayPage" when {
+      "the same amount of payment to date has been entered" in {
+        val testController = createTestIncomeUpdateCalculatorController
+        val newAmount = 123
+        val paymentToDate = 123
+
+        when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
+          Future.successful(
+            Seq(EmployerName, newAmount.toString, paymentToDate.toString),
+            Seq(None)
+          )
+        )
+
+        val result: Future[Result] = testController.confirmIncomeIrregularHours(1)(
+          RequestBuilder.buildFakeRequestWithOnlySession("GET")
+        )
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
       }
     }
   }
 
   "submitIncomeIrregularHours" must {
-
     "respond with INTERNAL_SERVER_ERROR for failed request to cache" in {
       val testController = createTestIncomeUpdateCalculatorController
 

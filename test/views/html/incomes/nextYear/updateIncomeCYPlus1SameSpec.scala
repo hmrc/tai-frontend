@@ -20,9 +20,8 @@ import play.api.mvc.Call
 import play.twirl.api.Html
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
-import uk.gov.hmrc.tai.util.TaxYearRangeUtil.dynamicDateRange
 import uk.gov.hmrc.tai.util.MonetaryUtil.withPoundPrefixAndSign
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 class updateIncomeCYPlus1SameSpec extends TaiViewSpec {
 
@@ -35,7 +34,7 @@ class updateIncomeCYPlus1SameSpec extends TaiViewSpec {
     behave like pageWithCancelLink(Call("GET",controllers.routes.IncomeTaxComparisonController.onPageLoad.url))
     behave like pageWithCombinedHeader(
       messages("tai.updateIncome.CYPlus1.preheading", employerName),
-      messages("tai.updateIncome.CYPlus1.same.heading", dynamicDateRange(TaxYear().next.start, TaxYear().next.end)))
+      messages("tai.updateIncome.CYPlus1.same.heading", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1)))
 
     "contain the correct content when new estimated pay equals current estimated pay" in {
       doc(view).getElementsByTag("p").text must include(messages("tai.updateIncome.CYPlus1.same.paragraph1", withPoundPrefixAndSign(MoneyPounds(newAmount, 0))))

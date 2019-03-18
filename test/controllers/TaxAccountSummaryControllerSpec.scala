@@ -78,7 +78,7 @@ class TaxAccountSummaryControllerSpec extends PlaySpec
 
       val doc = Jsoup.parse(contentAsString(result))
 
-      val expectedTitle = s"${messagesApi("tai.incomeTaxSummary.heading.part1")} ${TaxYearRangeUtil.currentTaxYearRange}"
+      val expectedTitle = s"${messagesApi("tai.incomeTaxSummary.heading.part1",TaxYearRangeUtil.currentTaxYearRangeSingleLine)}"
       doc.title() must include(expectedTitle)
     }
 

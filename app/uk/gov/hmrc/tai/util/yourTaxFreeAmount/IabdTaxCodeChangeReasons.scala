@@ -17,11 +17,12 @@
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.model.domain._
+import uk.gov.hmrc.tai.model.domain.tax.{NonSavingsIncomeCategory, TotalTax}
 import uk.gov.hmrc.tai.util.MonetaryUtil
+import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 
-class IabdTaxCodeChangeReasons {
+class IabdTaxCodeChangeReasons(totalTax: TotalTax) {
 
   def reasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
 
@@ -37,7 +38,10 @@ class IabdTaxCodeChangeReasons {
   private def translateNewBenefits(pair: CodingComponentPair)(implicit  messages: Messages): String = {
     def createYouHaveMessage(text: String): String = {
       pair.current match {
-        case Some(value) => messages(text, MonetaryUtil.withPoundPrefix(value.toInt))
+        case Some(value) => {
+          val amountDue = TaxAmountDueFromUnderpayment.amountDue(value, totalTax)
+          messages(text, MonetaryUtil.withPoundPrefix(amountDue.toInt))
+        }
         case None => genericBenefitMessage
       }
     }

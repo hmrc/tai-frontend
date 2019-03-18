@@ -53,7 +53,7 @@ class endEmploymentSpec extends TaiViewSpec {
       messages("tai.endEmployment.endDateForm.title", employmentName))
 
     behave like pageWithBackLink
-    behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(viewmodel.empId))
+    behave like pageWithCancelLink(controllers.employments.routes.EndEmploymentController.cancel(viewmodel.empId))
     behave like pageWithContinueButtonForm(s"/check-income-tax/end-employment/date/$employmentId")
 
     "have an error box at the top of the page with a link to the error field" when {

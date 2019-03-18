@@ -34,7 +34,7 @@ class AddPensionReceivedFirstPaySpec extends TaiViewSpec with FormValuesConstant
       behave like pageWithBackLink
       behave like pageWithContinueButtonForm("/check-income-tax/add-pension-provider/received-first-payment")
       behave like pageWithYesNoRadioButton(AddPensionProviderFirstPayForm.FirstPayChoice+"-yes", AddPensionProviderFirstPayForm.FirstPayChoice+"-no")
-      behave like pageWithCancelLink(routes.TaxAccountSummaryController.onPageLoad())
+      behave like pageWithCancelLink(controllers.pensions.routes.AddPensionProviderController.cancel())
 
     "display an error notification" when {
       "no user choice is made" in {

@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.tai.util.MonetaryUtil.withPoundPrefix
 @import uk.gov.hmrc.tai.model.TaxYear
 
+@import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 @(employmentName: String, employmentId: Int, value: Int)(
     implicit request: Request[_],
     messages: Messages,
@@ -33,7 +34,7 @@
     gaEventAction = "Your estimated pay for next year same",
     title = messages("tai.updateIncome.CYPlus1.same.title"),
     cancelText = Some(messages("tai.updateIncome.CYPlus1.same.cancel")),
-    heading = messages("tai.updateIncome.CYPlus1.same.heading", dynamicDateRange(TaxYear().next.start, TaxYear().next.end))
+    heading = messages("tai.updateIncome.CYPlus1.same.heading", TaxYearRangeUtil.futureTaxYearRangeHtmlNonBreak(1))
 ){
     <div>
         <p>@messages("tai.updateIncome.CYPlus1.same.paragraph1", withPoundPrefix(MoneyPounds(value, 0)))</p>

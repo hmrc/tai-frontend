@@ -32,10 +32,7 @@ class TaxCodeChangeReasonsServiceSpec extends PlaySpec with MockitoSugar with Fa
   val iabdTaxCodeChangeReasons = mock[IabdTaxCodeChangeReasons]
   val employmentTaxCodeChangeReasons = mock[TaxCodeChangeReasons]
 
-  class TaxCodeChangeReasonsServiceTest() extends TaxCodeChangeReasonsService(
-    iabdTaxCodeChangeReasons,
-    employmentTaxCodeChangeReasons
-  )
+  class TaxCodeChangeReasonsServiceTest() extends TaxCodeChangeReasonsService(employmentTaxCodeChangeReasons)
 
   val service = new TaxCodeChangeReasonsServiceTest
 
@@ -50,7 +47,7 @@ class TaxCodeChangeReasonsServiceSpec extends PlaySpec with MockitoSugar with Fa
       when(iabdTaxCodeChangeReasons.reasons(any())(any())).thenReturn(iabdReasons)
       when(employmentTaxCodeChangeReasons.reasons(any())(any())).thenReturn(employmentReasons)
 
-      service.combineTaxCodeChangeReasons(iabdPairs, taxCodeChange) mustBe employmentReasons ++ iabdReasons
+      service.combineTaxCodeChangeReasons(iabdTaxCodeChangeReasons, iabdPairs, taxCodeChange) mustBe employmentReasons ++ iabdReasons
     }
 
     "show only unique tax code change reasons" in {
@@ -59,7 +56,7 @@ class TaxCodeChangeReasonsServiceSpec extends PlaySpec with MockitoSugar with Fa
       when(iabdTaxCodeChangeReasons.reasons(any())(any())).thenReturn(someReason)
       when(employmentTaxCodeChangeReasons.reasons(any())(any())).thenReturn(someReason)
 
-      service.combineTaxCodeChangeReasons(iabdPairs, taxCodeChange) mustBe Seq("reason 1")
+      service.combineTaxCodeChangeReasons(iabdTaxCodeChangeReasons, iabdPairs, taxCodeChange) mustBe Seq("reason 1")
     }
   }
 

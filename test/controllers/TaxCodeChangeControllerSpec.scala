@@ -26,12 +26,15 @@ import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.FormPartialRetriever
+import uk.gov.hmrc.tai.connectors.responses.TaiSuccessResponseWithPayload
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
+import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, TaxCodeChangeReasonsService}
@@ -90,28 +93,27 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   }
 
   "taxCodeComparison" must {
-    "show 'Your tax code comparison' page" when {
-      "the request has an authorised session" in {
-        implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
+    "show 'Your tax code comparison' page" in {
+      implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-        val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
-        val scottishRates = Map.empty[String, BigDecimal]
+      val taxCodeChange = TaxCodeChange(Seq(taxCodeRecord1), Seq(taxCodeRecord2))
+      val scottishRates = Map.empty[String, BigDecimal]
 
-        when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
-        when(taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map[String, BigDecimal]()))
-        when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any())).thenReturn(Future.successful(mock[YourTaxFreeAmountComparison]))
+      when(taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map[String, BigDecimal]()))
+      when(taxAccountService.totalTax(Matchers.eq(FakeAuthAction.nino), any())(any())).thenReturn(Future.successful(TaiSuccessResponseWithPayload(TotalTax(0, Seq.empty, None, None, None))))
+      when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
+      when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any())).thenReturn(Future.successful(mock[YourTaxFreeAmountComparison]))
 
-        val reasons = Seq("a reason")
-        when(taxCodeChangeReasonsService.combineTaxCodeChangeReasons(any(), Matchers.eq(taxCodeChange))(any())).thenReturn(reasons)
-        when(taxCodeChangeReasonsService.isAGenericReason(Matchers.eq(reasons))(any())).thenReturn(false)
+      val reasons = Seq("a reason")
+      when(taxCodeChangeReasonsService.combineTaxCodeChangeReasons(any(), any(), Matchers.eq(taxCodeChange))(any())).thenReturn(reasons)
+      when(taxCodeChangeReasonsService.isAGenericReason(Matchers.eq(reasons))(any())).thenReturn(false)
 
-        val result = createController.taxCodeComparison()(request)
+      val result = createController.taxCodeComparison()(request)
 
-        val expectedViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates, reasons, false)
+      val expectedViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates, reasons, false)
 
-        status(result) mustBe OK
-        result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(expectedViewModel)
-      }
+      status(result) mustBe OK
+      result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(expectedViewModel)
     }
   }
 
@@ -148,4 +150,5 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     implicit val hc: HeaderCarrier = HeaderCarrier()
     when(taxCodeChangeService.latestTaxCodeChangeDate(nino)).thenReturn(Future.successful(new LocalDate(2018, 6, 11)))
   }
+
 }

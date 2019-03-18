@@ -29,7 +29,7 @@
         formForErrorSummary = Some(dateForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.addEmployment.startDateForm.title", employmentName),
+        mainHeadingText = Messages("tai.addEmployment.startDateForm.title", <span class="carry-over">{employmentName}</span>),
         preHeadingText = Messages("add.missing.employment")
     )
 }
@@ -53,6 +53,6 @@
         @submit(gaEventAction = Some(gaEventActionString), gaEventLabel = Some("Add a missing employment"))
     }
 
-    @cancelLink(url = routes.TaxAccountSummaryController.onPageLoad(), gaEventAction = Some(gaEventActionString))
+    @cancelLink(controllers.employments.routes.AddEmploymentController.cancel(), gaEventAction = Some(gaEventActionString))
 
 }

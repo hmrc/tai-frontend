@@ -33,7 +33,7 @@ class AddEmploymentFirstPaySpec extends TaiViewSpec with FormValuesConstants {
     behave like pageWithBackLink
     behave like pageWithContinueButtonForm("/check-income-tax/add-employment/employment-first-pay")
     behave like pageWithYesNoRadioButton(AddEmploymentFirstPayForm.FirstPayChoice+"-yes", AddEmploymentFirstPayForm.FirstPayChoice+"-no")
-    behave like pageWithCancelLink(routes.TaxAccountSummaryController.onPageLoad())
+    behave like pageWithCancelLink(controllers.employments.routes.AddEmploymentController.cancel())
 
     "have an error message with the form inputs" when {
       "no first number choice is selected" in {

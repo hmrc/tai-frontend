@@ -42,8 +42,10 @@
         formForErrorSummary = Some(income),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
-        preHeadingText = messages("tai.incomes.edit.preHeading", income("name").value.getOrElse(""))
+ 		mainHeadingText = messages("tai.incomes.edit.heading", TaxYearRangeUtil.currentTaxYearRangeSingleLine),
+        preHeadingText = messages("tai.incomes.edit.preHeading", <span class="carry-over">{income("name").value.getOrElse("")}</span>)
+       
+       
     )
 }
 
