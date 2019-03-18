@@ -50,10 +50,6 @@
     s"- ${Messages("tai.service.navTitle")} - GOV.UK"
 }
 
-@mustacheCheck(str: String) = @{
-    if(str.trim == "") false else str
-}
-
 @isUserResearchBannerHidden = @{request.cookies.exists((x: Cookie) => x.name == "mdtpurr")}
 
 @authProvider = @{
@@ -77,12 +73,14 @@
     authProvider.contains("IDA")
 }
 
+@mustacheCheck(str: String) = @{
+    if(str.trim == "") false else str
+}
+
 @signOutUrl = @{
     mustacheCheck{
-        user.fold("") {
-            user =>
-                routes.ServiceController.serviceSignout().url
-        }
+        val signOutLink = routes.ServiceController.serviceSignout().url
+        user.fold(authedUser.fold("")(_ => signOutLink))(_ => signOutLink)
     }
 }
 
