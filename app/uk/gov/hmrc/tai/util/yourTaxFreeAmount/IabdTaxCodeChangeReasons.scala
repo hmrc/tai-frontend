@@ -18,9 +18,8 @@ package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.tax.{NonSavingsIncomeCategory, TotalTax}
+import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.util.MonetaryUtil
-import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 
 class IabdTaxCodeChangeReasons(totalTax: TotalTax) {
 
@@ -31,26 +30,29 @@ class IabdTaxCodeChangeReasons(totalTax: TotalTax) {
     val whatsChangedPairs = combinedBenefits.filter(pair => pair.previous.isDefined && pair.current.isDefined)
     val whatsNewPairs = combinedBenefits.filter(pair => pair.previous.isEmpty && pair.current.isDefined)
 
-    whatsNewPairs.map(translateNewBenefits(_)) ++
-    whatsChangedPairs.flatMap(translateChangedBenefits(_))
+    whatsNewPairs.flatMap(translateNewBenefits(_)) ++ whatsChangedPairs.flatMap(translateChangedBenefits(_))
   }
 
-  private def translateNewBenefits(pair: CodingComponentPair)(implicit  messages: Messages): String = {
+  private def translateNewBenefits(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
+    pair.current map (currentAmount => createNewBenefitsMessage(pair.componentType, currentAmount))
+  }
+
+  private def createNewBenefitsMessage(taxComponentType: TaxComponentType, currentAmount: BigDecimal)(implicit messages: Messages): String = {
+
     def createYouHaveMessage(text: String): String = {
-      pair.current match {
-        case Some(value) => {
-          val amountDue = TaxAmountDueFromUnderpayment.amountDue(value, totalTax)
-          messages(text, MonetaryUtil.withPoundPrefix(amountDue.toInt))
-        }
-        case None => genericBenefitMessage
-      }
+      val amountDue = TaxAmountDueFromUnderpayment.amountDue(currentAmount, totalTax)
+      messages(text, MonetaryUtil.withPoundPrefix(amountDue.toInt))
     }
 
-    pair.componentType match {
+    taxComponentType match {
       case EarlyYearsAdjustment => messages("tai.taxCodeComparison.iabd.you.have.claimed.expenses")
       case UnderPaymentFromPreviousYear => createYouHaveMessage("tai.taxCodeComparison.iabd.you.have.underpaid")
       case EstimatedTaxYouOweThisYear => createYouHaveMessage("tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid")
-      case _ => messageWithComponentType(pair)
+      case _ => messages(
+        "tai.taxCodeComparison.iabd.added",
+        CodingComponentTypeDescription.componentTypeToString(taxComponentType),
+        MonetaryUtil.withPoundPrefix(currentAmount.toInt)
+      )
     }
   }
 
