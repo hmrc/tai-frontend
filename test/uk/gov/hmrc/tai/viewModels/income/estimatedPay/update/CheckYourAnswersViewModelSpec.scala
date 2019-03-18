@@ -21,7 +21,7 @@ import org.scalatest.prop.PropertyChecks
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.{TaxYearRangeUtil, ViewModelHelper}
 import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
@@ -151,13 +151,13 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
   )
 
   lazy val hasBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
-    messagesApi("tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime", currentTaxYearRangeHtmlNonBreakBetween),
+    messagesApi("tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     hasBonusOrOvertime,
     controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
   )
 
   lazy val totalYearlyBonusOrOvertimeAnswer = CheckYourAnswersConfirmationLine(
-    messagesApi("tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime", currentTaxYearRangeHtmlNonBreak),
+    messagesApi("tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
     withPoundPrefixAndSign(MoneyPounds(BigDecimal(totalBonusOrOvertime),zeroDecimalPlaces)),
     controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url
   )

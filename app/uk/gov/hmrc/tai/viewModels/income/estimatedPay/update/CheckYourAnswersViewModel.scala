@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.{TaxYearRangeUtil, ViewModelHelper}
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 
@@ -74,13 +74,13 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
     )
 
     val hasBonusOrOvertimeConfirmationLine = createCheckYourAnswerConfirmationLine(
-      messages("tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime",currentTaxYearRangeHtmlNonBreakBetween),
+      messages("tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime",TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
       Some(messages(s"tai.label.${hasBonusOrOvertime.toLowerCase}")),
       controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusPaymentsPage().url
     )
 
     val totalBonusOrOvertimeConfirmationLine = createCheckYourAnswerConfirmationLine(
-      messages("tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime", currentTaxYearRangeHtmlNonBreak),
+      messages("tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime", TaxYearRangeUtil.currentTaxYearRangeBetweenDelimited),
       totalBonusOrOvertime,
       controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url,
       isMonetaryValue
