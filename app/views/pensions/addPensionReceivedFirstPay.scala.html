@@ -30,7 +30,7 @@
         formForErrorSummary = Some(firstPayForm),
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("tai.addPensionProvider.firstPay.title", pensionProviderName),
+        mainHeadingText = Messages("tai.addPensionProvider.firstPay.title", <span class="carry-over">{pensionProviderName}</span>),
         preHeadingText = Messages("add.missing.pension"))}
 
 @main(

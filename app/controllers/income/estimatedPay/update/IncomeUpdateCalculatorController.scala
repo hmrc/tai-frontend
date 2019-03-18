@@ -18,7 +18,7 @@ package controllers.income.estimatedPay.update
 
 import com.google.inject.Inject
 import com.google.inject.name.Named
-import controllers.TaiBaseController
+import controllers.{ServiceCheckLite, TaiBaseController}
 import controllers.audit.Auditable
 import controllers.auth.{TaiUser, WithAuthorisedForTaiLite}
 import org.joda.time.LocalDate
@@ -262,11 +262,13 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit user =>
       implicit person =>
         implicit request => {
-          journeyCacheService.collectedValues(Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey), Seq(UpdateIncome_ConfirmedNewAmountKey)) map tupled { (mandatoryCache, optionalCache) =>
-            val name :: newIrregularPay :: Nil = mandatoryCache.toList
+          journeyCacheService.collectedValues(Seq(UpdateIncome_NameKey, UpdateIncome_IrregularAnnualPayKey, UpdateIncome_PayToDateKey), Seq(UpdateIncome_ConfirmedNewAmountKey)) map tupled { (mandatoryCache, optionalCache) =>
+            val name :: newIrregularPay :: paymentToDate :: Nil = mandatoryCache.toList
             val confirmedNewAmount = optionalCache.head
             if (FormHelper.areEqual(confirmedNewAmount, Some(newIrregularPay))) {
-              Redirect(controllers.routes.IncomeController.sameEstimatedPay())
+              Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache())
+            } else if (FormHelper.areEqual(Some(paymentToDate), Some(newIrregularPay))) {
+              Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
             } else {
               val vm = ConfirmAmountEnteredViewModel.irregularPayCurrentYear(employmentId, name, newIrregularPay.toInt)
               Ok(views.html.incomes.confirmAmountEntered(vm))
@@ -611,7 +613,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
           calculatedPay.grossAnnualPay match {
             case newAmount if (isCachedAmountSameAsEnteredAmount(cache, newAmount)) =>
-              Future.successful(Redirect(controllers.routes.IncomeController.sameEstimatedPay()))
+              Future.successful(Redirect(controllers.routes.IncomeController.sameEstimatedPayInCache()))
             case Some(newAmount) if newAmount > payYearToDate =>
               val cache = Map(UpdateIncome_GrossAnnualPayKey -> calculatedPay.grossAnnualPay.map(_.toString).getOrElse(""),
                 UpdateIncome_NewAmountKey -> calculatedPay.netAnnualPay.map(_.toString).getOrElse(""))
@@ -641,9 +643,14 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           income <- incomeService.employmentAmount(Nino(user.getNino), id)
           netAmount <- journeyCacheService.currentValue(UpdateIncome_NewAmountKey)
         } yield {
+          val convertedNetAmount = netAmount.map(BigDecimal(_).intValue()).getOrElse(income.oldAmount)
+          val employmentAmount = income.copy(newAmount = convertedNetAmount)
 
-          val newAmount = income.copy(newAmount = netAmount.map(netAmountValue => BigDecimal(netAmountValue).intValue()).getOrElse(income.oldAmount))
-          Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = newAmount).get))
+          if(employmentAmount.newAmount == income.oldAmount) {
+            Redirect(controllers.routes.IncomeController.sameAnnualEstimatedPay())
+          } else {
+            Ok(views.html.incomes.confirm_save_Income(EditIncomeForm.create(preFillData = employmentAmount).get))
+          }
         }
   }
 

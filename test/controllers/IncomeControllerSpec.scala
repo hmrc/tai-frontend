@@ -176,7 +176,25 @@ class IncomeControllerSpec extends PlaySpec
         val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPay().url)
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameEstimatedPayInCache().url)
+      }
+
+      "new amount is the same as the current amount" in {
+        val testController = createTestIncomeController()
+
+        when(journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(
+            Seq("1", "2", "employer name"),
+            Seq(None)
+          ))
+
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = 212)
+        val formData = Json.toJson(editIncomeForm)
+
+        val result = testController.editRegularIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
       }
     }
 
@@ -501,7 +519,7 @@ class IncomeControllerSpec extends PlaySpec
           thenReturn(Future.successful(Seq("100", "1", "Employer Name"), Seq(Some(new LocalDate(2017, 2, 1).toString))))
         when(journeyCacheService.cache(any(), any())(any())).
           thenReturn(Future.successful(Map.empty[String, String]))
-        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("200"))
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("201"))
         val formData = Json.toJson(editIncomeForm)
 
         val result = testController.editPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
@@ -524,6 +542,43 @@ class IncomeControllerSpec extends PlaySpec
         val result = testController.editPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
 
         status(result) mustBe BAD_REQUEST
+      }
+    }
+
+    "redirect to the same estimated pay page" when {
+      "new input is the same as the cached input" in {
+        val testController = createTestIncomeController()
+
+        val sameAmount = "987"
+
+        when(journeyCacheService.cache(any(), any())(any())).thenReturn(Future.successful(Map.empty[String, String]))
+        when(journeyCacheService.currentCache(any())).thenReturn(Future.successful(Map(UpdateIncome_ConfirmedNewAmountKey -> sameAmount)))
+
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some(sameAmount))
+        val formData = Json.toJson(editIncomeForm)
+
+        val result = testController.editPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.IncomeController.sameEstimatedPayInCache().url
+      }
+
+      "new amount is the same as the current amount" in {
+        val testController = createTestIncomeController()
+
+        when(journeyCacheService.collectedValues(any(), any())(any())).
+          thenReturn(Future.successful(
+            Seq("1", "2", "employer name"),
+            Seq(None)
+          ))
+
+        val editIncomeForm = testController.editIncomeForm.copy(newAmount = Some("212"), oldAmount = 212)
+        val formData = Json.toJson(editIncomeForm)
+
+        val result = testController.editPensionIncome()(RequestBuilder.buildFakeRequestWithAuth("POST").withJsonBody(formData))
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.IncomeController.sameAnnualEstimatedPay().url)
       }
     }
   }
@@ -647,7 +702,7 @@ class IncomeControllerSpec extends PlaySpec
 
         when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("Employer Name", "987")))
 
-        val result = testController.sameEstimatedPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.sameEstimatedPayInCache()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
@@ -661,8 +716,25 @@ class IncomeControllerSpec extends PlaySpec
 
         when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq.empty))
 
-        val result = testController.sameEstimatedPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = testController.sameEstimatedPayInCache()(RequestBuilder.buildFakeRequestWithAuth("GET"))
         status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "sameAnnualEstimatedPay" must {
+      "show the same annual estimated pay page" in {
+        val testController = createTestIncomeController()
+
+        when(incomeService.employmentAmount(any(), any())(any(), any())).thenReturn(Future.successful(employmentAmount))
+
+        when(journeyCacheService.mandatoryValues(any())(any())).thenReturn(Future.successful(Seq("1")))
+        when(journeyCacheService.mandatoryValueAsInt(any())(any())).thenReturn(Future.successful(1))
+
+        val result = testController.sameAnnualEstimatedPay()(RequestBuilder.buildFakeRequestWithAuth("GET"))
+
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.title() must include(messagesApi("tai.updateEmployment.incomeSame.title", ""))
       }
     }
   }

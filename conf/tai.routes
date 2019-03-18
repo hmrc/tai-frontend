@@ -198,7 +198,8 @@ POST        /update-income/edit-pension                                         
 
 
 GET         /update-income/income/check-save                                           @controllers.IncomeController.confirmRegularIncome
-GET         /update-income/income/same-estimated-pay                                   @controllers.IncomeController.sameEstimatedPay
+GET         /update-income/income/same-estimated-pay                                   @controllers.IncomeController.sameEstimatedPayInCache
+GET         /update-income/income/same-annual-estimated-pay                            @controllers.IncomeController.sameAnnualEstimatedPay
 
 GET         /update-income/pension/check-save                                          @controllers.IncomeController.confirmPensionIncome
 
