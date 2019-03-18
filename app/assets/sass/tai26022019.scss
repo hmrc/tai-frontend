@@ -65,11 +65,36 @@ hr {
   margin-bottom: 30px;
 }
 
+.heading-xlarge.heading-mobile-responsive{
+  $mobile: 768px;
+  $mobile-small: 641px;
+
+  @media(min-width: $mobile-small){
+    margin-top: .125em;
+    font-size: 48px;
+    line-height: 1.04167;
+  }
+
+  @media (max-width: $mobile) {
+    font-size: 36px;
+  }
+  @media (max-width: $mobile-small) {
+    font-size: 25px;
+  }
+}
 .govuk-box-highlight {
   .heading-large {
     font-size: 36px;
     margin: 0;
-    word-break: break-word;
+
+    $mobile: 768px;
+    $mobile-small: 641px;
+    @media (max-width: $mobile) {
+      font-size: 22px;
+    }
+    @media (max-width: $mobile-small) {
+      font-size: 19px;
+    }
   }
 }
 
@@ -103,7 +128,7 @@ hr {
   background-color: #005ea5;
   color: #fff;
   margin: 15px 0 20px 0;
-  padding: 15px 15px 20px 15px;
+  padding: 10px 5px 5px 10px;
   clear: both;
 }
 
@@ -117,4 +142,15 @@ hr {
 
 .tai-progress-panel p {
   margin-bottom: 0;
+}
+
+#incomeSummary-banner-heading{
+  margin-bottom: 0;
+}
+
+.tai-detail-large {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 32px;
+  color: #4B5053;
 }

@@ -24,7 +24,7 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.income._
 import uk.gov.hmrc.tai.service.TimeToProcess
-import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.{TaxYearRangeUtil, ViewModelHelper}
 import uk.gov.hmrc.tai.util.constants.TaiConstants.{EmployeePensionIForm, InvestIncomeIform, OtherIncomeIform, StateBenefitsIform}
 
 
@@ -51,8 +51,8 @@ object TaxAccountSummaryViewModel extends ViewModelHelper with TaxAccountFilter 
             ceasedEmploymentIncomeSources: Seq[IncomeSource],
             nonMatchingCeasedEmployments: Seq[Employment])(implicit messages: Messages): TaxAccountSummaryViewModel = {
 
-    val header: String = messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak
-    val title: String = messages("tai.incomeTaxSummary.heading.part1") + " " + currentTaxYearRangeHtmlNonBreak
+    val header = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
+    val title = messages("tai.incomeTaxSummary.heading.part1", TaxYearRangeUtil.currentTaxYearRangeSingleLine)
 
     val taxFreeAmount: String = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.taxFreeAmount, 0))
     val estimatedIncomeTaxAmount: String = withPoundPrefixAndSign(MoneyPounds(taxAccountSummary.totalEstimatedTax, 0))
@@ -209,7 +209,9 @@ object IncomeSourceViewModel extends ViewModelHelper {
       )
     )
 
-    val otherIncomeSources = nonTaxCodeIncome.otherNonTaxCodeIncomes.map(otherNonTaxCodeIncome => {
+    val otherIncomeSources = nonTaxCodeIncome.otherNonTaxCodeIncomes.withFilter(
+      _.incomeComponentType != BankOrBuildingSocietyInterest
+    ).map(otherNonTaxCodeIncome => {
 
       val model = IncomeSourceViewModel(
         messages("tai.typeDecodes." + otherNonTaxCodeIncome.incomeComponentType.toString),
@@ -233,6 +235,6 @@ object IncomeSourceViewModel extends ViewModelHelper {
     }
     )
 
-    untaxedInterest.map(_ +: otherIncomeSources).getOrElse(otherIncomeSources)
+    otherIncomeSources
   }
 }

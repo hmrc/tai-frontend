@@ -31,7 +31,7 @@ class UpdateEmploymentCheckYourAnswersSpec extends TaiViewSpec {
       "/check-income-tax/update-employment/check-your-answers",
       messages("tai.confirmAndSend"))
     behave like pageWithCheckYourAnswersSummary
-    behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(1))
+    behave like pageWithCancelLink(controllers.employments.routes.UpdateEmploymentController.cancel(employmentId))
 
     "display a back button" which {
       "links to the add telephone form page" when {
@@ -67,7 +67,8 @@ class UpdateEmploymentCheckYourAnswersSpec extends TaiViewSpec {
     }
   }
 
-  val viewModel = UpdateEmploymentCheckYourAnswersViewModel(1, "TEST", "whatYouToldUs", "Yes", Some("123456789"))
+  lazy val employmentId = 1
+  val viewModel = UpdateEmploymentCheckYourAnswersViewModel(employmentId, "TEST", "whatYouToldUs", "Yes", Some("123456789"))
 
   override def view: Html = views.html.employments.update.UpdateEmploymentCheckYourAnswers(viewModel)
 }

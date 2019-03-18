@@ -50,9 +50,12 @@ class TrackingService @Inject()(trackingConnector: TrackingConnector,
     for {
       haveAnyLongProcesses <- longTESProcesses map (_.nonEmpty)
       haveAnyShortProcesses <- shortTESProcesses map (_.nonEmpty)
-      successfulJournies <- successfulJourneyCacheService.currentCache
+      successfulJournies: Map[String, String] <- successfulJourneyCacheService.currentCache
     } yield {
-      (haveAnyShortProcesses, haveAnyLongProcesses, successfulJournies.isEmpty, isA3WeeksJourney(successfulJournies)) match {
+
+      val filteredJournies = successfulJournies.keySet.filterNot(_.contains(TrackSuccessfulJourney_EstimatedPayKey))
+
+      (haveAnyShortProcesses, haveAnyLongProcesses, filteredJournies.isEmpty, isA3WeeksJourney(successfulJournies)) match {
         case(true, false, _, _) | (_ , _, false, false) => SevenDays
         case(_, true, _, _ ) | (_ , _, false, true) => ThreeWeeks
         case _ => NoTimeToProcess
@@ -76,4 +79,5 @@ class TrackingService @Inject()(trackingConnector: TrackingConnector,
       }
     }
   }
+
 }

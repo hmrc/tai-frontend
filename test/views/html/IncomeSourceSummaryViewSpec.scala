@@ -19,6 +19,7 @@ package views.html
 import controllers.routes
 import org.jsoup.Jsoup
 import play.twirl.api.Html
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.constants.TaiConstants
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.{CompanyBenefitViewModel, IncomeSourceSummaryViewModel}
@@ -29,16 +30,12 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       model.displayName,
       messages("tai.employment.income.details.mainHeading",
         model.empOrPensionName,
-        model.startOfCurrentYear.replace(" ", "\u00A0"),
-        model.endOfCurrentYear.replace(" ", "\u00A0"
-        )
+        TaxYearRangeUtil.currentTaxYearRangeSingleLine
       )
     )
 
     behave like pageWithTitle(
-      messages("tai.employment.income.details.mainHeading.gaTitle",
-        model.startOfCurrentYear,
-        model.endOfCurrentYear
+      messages("tai.employment.income.details.mainHeading.gaTitle",TaxYearRangeUtil.currentTaxYearRangeSingleLine
       )
     )
 
@@ -46,11 +43,8 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       "income source is pension" in {
         pensionDoc must havePreHeadingWithText(pensionModel.displayName)
 
-        pensionDoc must haveHeadingWithText(messages("tai.pension.income.details.mainHeading", pensionModel.empOrPensionName,
-          pensionModel.startOfCurrentYear.replace(" ", "\u00A0"), pensionModel.endOfCurrentYear.replace(" ", "\u00A0")))
-
-        pensionDoc.title must include( messages("tai.pension.income.details.mainHeading.gaTitle",
-          pensionModel.startOfCurrentYear, pensionModel.endOfCurrentYear) )
+        pensionDoc must haveHeadingWithText(messages("tai.pension.income.details.mainHeading", pensionModel.empOrPensionName,TaxYearRangeUtil.currentTaxYearRangeSingleLine))
+        pensionDoc.title must include( messages("tai.pension.income.details.mainHeading.gaTitle", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
     }
 
@@ -192,16 +186,26 @@ class IncomeSourceSummaryViewSpec extends TaiViewSpec {
       doc must haveLinkWithUrlWithID("taxableIncomeLink", controllers.routes.TaxAccountSummaryController.onPageLoad.url)
     }
 
+    "display an estimated pay update confirmation banner when the journey has been successfully completed and confirmedApi is toggled on" in {
+      doc must haveH2HeadingWithText(messages("tai.estimatedIncome.confirmation.banner.heading"))
+    }
+
+    "don't display an estimated pay update confirmation banner when the confirmedApi is toggled off" in {
+      pensionDoc must not(haveH2HeadingWithText(messages("tai.estimatedIncome.confirmation.banner.heading")))
+    }
+
   }
 
-  private lazy val model = IncomeSourceSummaryViewModel(1, "User Name", "Employer", 100, 400, "1100L", "EMPLOYER-1122", false)
+  private lazy val model = IncomeSourceSummaryViewModel(1, "User Name", "Employer", 100, 400, "1100L", "EMPLOYER-1122", false,
+    estimatedPayJourneyCompleted = true, isConfirmedAPIEnabled = true)
   private lazy val companyBenefits = Seq(
     CompanyBenefitViewModel("ben1", BigDecimal(100.20), "url1"),
     CompanyBenefitViewModel("ben2", BigDecimal(3002.23), "url2"),
     CompanyBenefitViewModel("ben3", BigDecimal(22.44), "url3")
   )
   private lazy val modelWithCompanyBenefits = model.copy(benefits = companyBenefits)
-  private lazy val pensionModel = IncomeSourceSummaryViewModel(1, "User Name", "PENSION", 100, 400, "1100L", "PENSION-1122", true)
+  private lazy val pensionModel = IncomeSourceSummaryViewModel(1, "User Name", "PENSION", 100, 400, "1100L", "PENSION-1122", true,
+    estimatedPayJourneyCompleted = true, isConfirmedAPIEnabled = false)
   private lazy val pensionDoc = Jsoup.parse(pensionView.toString())
 
   override def view: Html = views.html.IncomeSourceSummary(model)

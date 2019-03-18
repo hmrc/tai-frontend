@@ -34,9 +34,10 @@ import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
 import uk.gov.hmrc.tai.service._
-import uk.gov.hmrc.tai.service.yourTaxFreeAmount.DescribedYourTaxFreeAmountService
+import uk.gov.hmrc.tai.service.yourTaxFreeAmount.{DescribedYourTaxFreeAmountService, TaxCodeChangeReasonsService}
 import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxFreeInfo
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.{TaxCodeChangeViewModel, YourTaxFreeAmountViewModel}
+
 import scala.concurrent.Future
 import scala.util.Random
 
@@ -76,8 +77,6 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         implicit val request = RequestBuilder.buildFakeRequestWithAuth("GET")
 
-
-
         when(describedYourTaxFreeAmountService.taxFreeAmountComparison(Matchers.eq(FakeAuthAction.nino))(any(), any()))
           .thenReturn(Future.successful(expectedViewModel))
 
@@ -100,17 +99,21 @@ class TaxCodeChangeControllerSpec extends PlaySpec
 
         when(taxCodeChangeService.taxCodeChange(any())(any())).thenReturn(Future.successful(taxCodeChange))
         when(taxAccountService.scottishBandRates(any(), any(), any())(any())).thenReturn(Future.successful(Map[String, BigDecimal]()))
+        when(yourTaxFreeAmountService.taxFreeAmountComparison(any())(any(), any())).thenReturn(Future.successful(mock[YourTaxFreeAmountComparison]))
+
+        val reasons = Seq("a reason")
+        when(taxCodeChangeReasonsService.combineTaxCodeChangeReasons(any(), Matchers.eq(taxCodeChange))(any())).thenReturn(reasons)
+        when(taxCodeChangeReasonsService.isAGenericReason(Matchers.eq(reasons))(any())).thenReturn(false)
 
         val result = createController.taxCodeComparison()(request)
 
-        val taxCodeChangeViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates)
+        val expectedViewModel = TaxCodeChangeViewModel(taxCodeChange, scottishRates, reasons, false)
 
         status(result) mustBe OK
-        result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(taxCodeChangeViewModel)
+        result rendersTheSameViewAs views.html.taxCodeChange.taxCodeComparison(expectedViewModel)
       }
     }
   }
-
 
   val nino: Nino = new Generator(new Random).nextNino
 
@@ -121,11 +124,12 @@ class TaxCodeChangeControllerSpec extends PlaySpec
   val taxCodeRecord1 = TaxCodeRecord("D0", startDate, startDate.plusDays(1), OtherBasisOfOperation, "Employer 1", false, Some("1234"), true)
   val taxCodeRecord2 = taxCodeRecord1.copy(startDate = startDate.plusDays(1), endDate = TaxYear().end)
 
-  val personService: PersonService = mock[PersonService]
-  val taxCodeChangeService: TaxCodeChangeService = mock[TaxCodeChangeService]
-  val taxAccountService: TaxAccountService = mock[TaxAccountService]
-  val yourTaxFreeAmountService: YourTaxFreeAmountService = mock[YourTaxFreeAmountService]
-  val describedYourTaxFreeAmountService: DescribedYourTaxFreeAmountService = mock[DescribedYourTaxFreeAmountService]
+  val personService = mock[PersonService]
+  val taxCodeChangeService = mock[TaxCodeChangeService]
+  val taxAccountService = mock[TaxAccountService]
+  val describedYourTaxFreeAmountService = mock[DescribedYourTaxFreeAmountService]
+  val yourTaxFreeAmountService = mock[YourTaxFreeAmountService]
+  val taxCodeChangeReasonsService = mock[TaxCodeChangeReasonsService]
 
   private def createController() = new TaxCodeChangeTestController()
 
@@ -135,6 +139,8 @@ class TaxCodeChangeControllerSpec extends PlaySpec
     describedYourTaxFreeAmountService,
     FakeAuthAction,
     FakeValidatePerson,
+    yourTaxFreeAmountService,
+    taxCodeChangeReasonsService,
     mock[FormPartialRetriever],
     MockTemplateRenderer
   ) {

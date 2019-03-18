@@ -51,7 +51,7 @@ object TaxYearRangeUtil {
 
     val year: TaxYear = TaxYear.fromNow(yearsFromNow)
 
-    dateRange(messageRangeKeyFromAndTo, year.start, year.end)
+    HtmlFormatter.htmlNonBroken(dateRange(messageRangeKeyFromAndTo, year.start, year.end))
 
   }
 

@@ -59,7 +59,6 @@ class IncomeTaxComparisonController @Inject()(val auditConnector: AuditConnector
       val taxComponentsCYFuture = codingComponentService.taxFreeAmountComponents(nino, currentTaxYear)
       val taxComponentsCYPlusOneFuture = codingComponentService.taxFreeAmountComponents(nino, nextTaxYear)
       val employmentsCYFuture = employmentService.employments(nino, currentTaxYear)
-      val employmentsCYPlusOneFuture = employmentService.employments(nino, nextTaxYear)
 
       (for {
         taxSummaryCY <- taxSummaryCYFuture
@@ -69,8 +68,6 @@ class IncomeTaxComparisonController @Inject()(val auditConnector: AuditConnector
         codingComponentsCY <- taxComponentsCYFuture
         codingComponentsCYPlusOne <- taxComponentsCYPlusOneFuture
         employmentsCY <- employmentsCYFuture
-        employmentsCYPlusOne <- employmentsCYPlusOneFuture
-
       } yield {
         (taxSummaryCY, taxSummaryCyPlusOne, taxCodeIncomesForCy, taxCodeIncomesForCyPlusOne) match {
           case (TaiSuccessResponseWithPayload(taxAccountSummaryCY: TaxAccountSummary),
@@ -94,7 +91,7 @@ class IncomeTaxComparisonController @Inject()(val auditConnector: AuditConnector
             val taxFreeAmountComparisonModel = TaxFreeAmountComparisonViewModel(Seq(cyCodingComponents, cyPlusOneTaxComponents),
               Seq(cyTaxSummary, cyPlusOneTaxSummary))
 
-            val employmentViewModel = IncomeSourceComparisonViewModel(taxCodeIncomesCY, employmentsCY, taxCodeIncomesCYPlusOne, employmentsCYPlusOne)
+            val employmentViewModel = IncomeSourceComparisonViewModel(taxCodeIncomesCY, employmentsCY, taxCodeIncomesCYPlusOne)
 
             val model = IncomeTaxComparisonViewModel(request.taiUser.getDisplayName, estimatedIncomeTaxComparisonViewModel,
               taxCodeComparisonModel, taxFreeAmountComparisonModel, employmentViewModel)

@@ -20,9 +20,9 @@ import builders.{AuthBuilder, RequestBuilder, UserBuilder}
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.{Matchers, Mockito}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import org.mockito.{Matchers, Mockito}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -35,7 +35,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector, DelegationConnector}
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.partials.FormPartialRetriever
 import uk.gov.hmrc.tai.connectors.responses.{TaiSuccessResponse, TaiSuccessResponseWithPayload, TaiTaxAccountFailureResponse}
 import uk.gov.hmrc.tai.forms.EditIncomeForm
@@ -45,6 +44,7 @@ import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCode
 import uk.gov.hmrc.tai.model.{EmploymentAmount, TaxYear}
 import uk.gov.hmrc.tai.service._
 import uk.gov.hmrc.tai.service.journeyCache.JourneyCacheService
+import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 import uk.gov.hmrc.tai.util.ViewModelHelper.currentTaxYearRangeHtmlNonBreak
 import uk.gov.hmrc.tai.util.constants.{JourneyCacheConstants, TaiConstants}
@@ -80,7 +80,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.edit.title", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(Messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
     }
 
@@ -293,7 +293,7 @@ class IncomeControllerSpec extends PlaySpec
 
   "updateEstimatedIncome" must {
     "return OK" when {
-      "confirmed API is toggled on and" when {
+      "confirmed API is toggled on " when {
         def createTestIncomeControllerwithToggleOn = createTestIncomeController(true)
 
       "income from employment is successfully updated" in {
@@ -312,6 +312,9 @@ class IncomeControllerSpec extends PlaySpec
 
         when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponse))
+
+        when(estimatedPayJourneyCompletionService.journeyCompleted(Matchers.eq(employerId.toString))(any())).
+          thenReturn(Future.successful(Map.empty[String, String]))
 
         val result = testController.updateEstimatedIncome()(fakeRequest)
 
@@ -337,6 +340,9 @@ class IncomeControllerSpec extends PlaySpec
         when(taxAccountService.updateEstimatedIncome(any(), any(), any(), any())(any())).
           thenReturn(Future.successful(TaiSuccessResponse))
 
+        when(estimatedPayJourneyCompletionService.journeyCompleted(Matchers.eq(employerId.toString))(any())).
+          thenReturn(Future.successful(Map.empty[String, String]))
+
         val result = testController.updateEstimatedIncome()(fakeRequest)
 
         status(result) mustBe OK
@@ -345,7 +351,7 @@ class IncomeControllerSpec extends PlaySpec
       }
     }
 
-      "confirmed API is toggled off and" when {
+      "confirmed API is toggled off" when {
 
         "income from employment is successfully updated" in {
           val testController = createTestIncomeController()
@@ -410,6 +416,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
+
   }
 
   "pension" must {
@@ -428,7 +435,7 @@ class IncomeControllerSpec extends PlaySpec
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
-        doc.title() must include(Messages("tai.incomes.edit.title", currentTaxYearRangeHtmlNonBreak))
+        doc.title() must include(Messages("tai.incomes.edit.title", TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
     }
 
@@ -691,6 +698,7 @@ class IncomeControllerSpec extends PlaySpec
   val personService = mock[PersonService]
   val taxAccountService = mock[TaxAccountService]
   val journeyCacheService = mock[JourneyCacheService]
+  val estimatedPayJourneyCompletionService = mock[EstimatedPayJourneyCompletionService]
 
   private def createTestIncomeController(isConfirmedAPIEnabled: Boolean = false) = new TestIncomeController(isConfirmedAPIEnabled: Boolean)
   private class TestIncomeController(isConfirmedAPIEnabled: Boolean) extends IncomeController(
@@ -699,6 +707,7 @@ class IncomeControllerSpec extends PlaySpec
     taxAccountService,
     employmentService,
     incomeService,
+    estimatedPayJourneyCompletionService,
     mock[AuditConnector],
     mock[DelegationConnector],
     mock[AuthConnector],

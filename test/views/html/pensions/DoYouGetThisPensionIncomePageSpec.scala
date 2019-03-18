@@ -38,7 +38,7 @@ class DoYouGetThisPensionIncomePageSpec extends TaiViewSpec with FormValuesConst
       messages("tai.label.no"))
 
     behave like pageWithContinueButtonForm("/check-income-tax/incorrect-pension/decision")
-    behave like pageWithCancelLink(controllers.routes.IncomeSourceSummaryController.onPageLoad(model.id))
+    behave like pageWithCancelLink(controllers.pensions.routes.UpdatePensionProviderController.cancel(model.id))
 
     "show error" when {
       "form contains error" in {

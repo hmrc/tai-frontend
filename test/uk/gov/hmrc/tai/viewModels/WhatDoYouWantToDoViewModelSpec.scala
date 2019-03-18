@@ -18,7 +18,7 @@ package uk.gov.hmrc.tai.viewModels
 
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.tai.model.domain.TaxCodeMismatch
-import uk.gov.hmrc.tai.service.NoTimeToProcess
+import uk.gov.hmrc.tai.service.{NoTimeToProcess, TimeToProcess}
 import uk.gov.hmrc.tai.util.constants.GoogleAnalyticsConstants
 import utils.factories.TaxCodeMismatchFactory
 
@@ -28,13 +28,21 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
     Map(GoogleAnalyticsConstants.taiLandingPageInformation -> result)
   }
 
+  def createViewModel(isAnyIFormInProgress: TimeToProcess,
+                      isCyPlusOneEnabled: Boolean,
+                      hasTaxCodeChanged: Boolean = false,
+                      taxCodeMismatch: Option[TaxCodeMismatch] = None,
+                      isConfirmedAPI: Boolean = false): WhatDoYouWantToDoViewModel = {
+    WhatDoYouWantToDoViewModel(isAnyIFormInProgress, isCyPlusOneEnabled, hasTaxCodeChanged, taxCodeMismatch, isConfirmedAPI)
+  }
+
   val mismatchedTaxCode = TaxCodeMismatchFactory.mismatchedTaxCodeComplex
   val matchedTaxCode = TaxCodeMismatchFactory.matchedTaxCode
 
   "showTaxCodeChangeTile" must {
     "return true" when {
       "there has been a tax code change and no mismatch" in {
-        val viewModel = WhatDoYouWantToDoViewModel(NoTimeToProcess, true, true, Some(matchedTaxCode))
+        val viewModel = createViewModel(NoTimeToProcess, true, true, Some(matchedTaxCode))
 
         viewModel.showTaxCodeChangeTile() mustEqual true
       }
@@ -43,7 +51,7 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
     "return false" when {
 
       "there has been a tax code change and mismatch is None" in {
-        val viewModel = WhatDoYouWantToDoViewModel(NoTimeToProcess, true, true)
+        val viewModel = createViewModel(NoTimeToProcess, true, true)
 
         viewModel.showTaxCodeChangeTile() mustEqual false
       }
@@ -52,7 +60,7 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
 
         val taxCodeMismatchWithNoConfirmedRecords = TaxCodeMismatch(true, Seq("taxCode"), Seq.empty)
 
-        val viewModel = WhatDoYouWantToDoViewModel(NoTimeToProcess, true, true, Some(taxCodeMismatchWithNoConfirmedRecords))
+        val viewModel = createViewModel(NoTimeToProcess, true, true, Some(taxCodeMismatchWithNoConfirmedRecords))
 
         viewModel.showTaxCodeChangeTile() mustEqual false
 
@@ -62,19 +70,19 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
 
         val taxCodeMismatchWithNoRecords = TaxCodeMismatch(false, Seq.empty, Seq.empty)
 
-        val viewModel = WhatDoYouWantToDoViewModel(NoTimeToProcess, true, true, Some(taxCodeMismatchWithNoRecords))
+        val viewModel = createViewModel(NoTimeToProcess, true, true, Some(taxCodeMismatchWithNoRecords))
 
         viewModel.showTaxCodeChangeTile() mustEqual false
 
       }
 
       "there has been a tax code change and there is a mismatch" in {
-        val viewModel = WhatDoYouWantToDoViewModel(NoTimeToProcess, true, true, Some(mismatchedTaxCode))
+        val viewModel = createViewModel(NoTimeToProcess, true, true, Some(mismatchedTaxCode))
 
         viewModel.showTaxCodeChangeTile() mustEqual false
       }
       "there has not been a tax code change" in {
-        val viewModel = WhatDoYouWantToDoViewModel(NoTimeToProcess, true, false)
+        val viewModel = createViewModel(NoTimeToProcess, true, false)
 
         viewModel.showTaxCodeChangeTile() mustEqual false
       }
@@ -85,7 +93,7 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
     "Create a string collection of what the tile view shows" when {
 
       "CY+1=false TCC=false" in {
-        val viewModel = WhatDoYouWantToDoViewModel(NoTimeToProcess, false, false)
+        val viewModel = createViewModel(NoTimeToProcess, false, false)
 
         val expected = "TCC=false;CY=true;PY=true;CY+1=false"
 
@@ -93,7 +101,7 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
       }
 
       "CY+1=true TCC=false" in {
-        val viewModel = WhatDoYouWantToDoViewModel(NoTimeToProcess, true, false)
+        val viewModel = createViewModel(NoTimeToProcess, true, false)
 
         val expected = "TCC=false;CY=true;PY=true;CY+1=true"
 
@@ -101,7 +109,7 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
       }
 
       "CY+1=true TCC=true" in {
-        val viewModel = WhatDoYouWantToDoViewModel(NoTimeToProcess, true, true)
+        val viewModel = createViewModel(NoTimeToProcess, true, true)
 
         val expected = "TCC=true;CY=true;PY=true;CY+1=true"
 
@@ -109,7 +117,7 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
       }
 
       "CY+1=false TCC=true" in {
-        val viewModel = WhatDoYouWantToDoViewModel(NoTimeToProcess, false, true)
+        val viewModel = createViewModel(NoTimeToProcess, false, true)
 
         val expected = "TCC=true;CY=true;PY=true;CY+1=false"
 
@@ -119,14 +127,14 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
 
     "return mismatched tax code code comparision results" when {
       "there has been a tax code change" in {
-        val viewModel = WhatDoYouWantToDoViewModel(NoTimeToProcess, true, true, Some(mismatchedTaxCode))
+        val viewModel = createViewModel(NoTimeToProcess, true, true, Some(mismatchedTaxCode))
 
         val expected = "TCC=true;TCM=true;CONFIRMED=[1180L,0T];UNCONFIRMED=[1185L,0T];CY=true;PY=true;CY+1=true"
 
         viewModel.gaDimensions() mustEqual gaMap(expected)
       }
       "there has not been a tax code change" in {
-        val viewModel = WhatDoYouWantToDoViewModel(NoTimeToProcess, true, false, Some(mismatchedTaxCode))
+        val viewModel = createViewModel(NoTimeToProcess, true, false, Some(mismatchedTaxCode))
 
         val expected = "TCC=false;TCM=true;CONFIRMED=[1180L,0T];UNCONFIRMED=[1185L,0T];CY=true;PY=true;CY+1=true"
 
@@ -136,14 +144,14 @@ class WhatDoYouWantToDoViewModelSpec extends PlaySpec {
 
     "return matched tax code code comparision results" when {
       "there has been a tax code change" in {
-        val viewModel = WhatDoYouWantToDoViewModel(NoTimeToProcess, true, true, Some(matchedTaxCode))
+        val viewModel = createViewModel(NoTimeToProcess, true, true, Some(matchedTaxCode))
 
         val expected = "TCC=true;TCM=false;CONFIRMED=[1185L];UNCONFIRMED=[1185L];CY=true;PY=true;CY+1=true"
 
         viewModel.gaDimensions() mustEqual gaMap(expected)
       }
       "there has not been a tax code change" in {
-        val viewModel = WhatDoYouWantToDoViewModel(NoTimeToProcess, true, false, Some(matchedTaxCode))
+        val viewModel = createViewModel(NoTimeToProcess, true, false, Some(matchedTaxCode))
 
         val expected = "TCC=false;TCM=false;CONFIRMED=[1185L];UNCONFIRMED=[1185L];CY=true;PY=true;CY+1=true"
 

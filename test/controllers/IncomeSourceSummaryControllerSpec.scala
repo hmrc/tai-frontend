@@ -21,6 +21,7 @@ import controllers.actions.FakeValidatePerson
 import mocks.MockTemplateRenderer
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
+import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
@@ -36,7 +37,9 @@ import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.benefits.{Benefits, CompanyCarBenefit, GenericBenefit}
 import uk.gov.hmrc.tai.model.domain.income.{Live, OtherBasisOfOperation, TaxCodeIncome, Week1Month1BasisOfOperation}
 import uk.gov.hmrc.tai.service.benefits.BenefitsService
+import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 import uk.gov.hmrc.tai.service.{EmploymentService, TaxAccountService}
+import uk.gov.hmrc.tai.util.TaxYearRangeUtil
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -47,6 +50,8 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
   with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  val employmentId = 1
+  val pensionId = 2
 
   "onPageLoad" must {
     "display the income details page" when {
@@ -56,15 +61,16 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(employmentId.toString))(any())).
+          thenReturn(Future.successful(true))
 
-        val result = sut.onPageLoad(1)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.employment.income.details.mainHeading.gaTitle",
-          TaxYear().start.toString("d MMMM yyyy"),
-          TaxYear().end.toString("d MMMM yyyy")))
+          TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
 
       "asked for pension details" in {
@@ -73,15 +79,16 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
         when(benefitsService.benefits(any(), any())(any())).thenReturn(Future.successful(benefits))
+        when(estimatedPayJourneyCompletionService.hasJourneyCompleted(Matchers.eq(pensionId.toString))(any())).
+          thenReturn(Future.successful(true))
 
-        val result = sut.onPageLoad(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.onPageLoad(pensionId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe OK
 
         val doc = Jsoup.parse(contentAsString(result))
         doc.title() must include(Messages("tai.pension.income.details.mainHeading.gaTitle",
-          TaxYear().start.toString("d MMMM yyyy"),
-          TaxYear().end.toString("d MMMM yyyy")))
+          TaxYearRangeUtil.currentTaxYearRangeSingleLine))
       }
     }
 
@@ -92,7 +99,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
           Future.successful(TaiTaxAccountFailureResponse("FAILED")))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(Some(employment)))
 
-        val result = sut.onPageLoad(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -103,7 +110,7 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
           Future.successful(TaiSuccessResponseWithPayload[Seq[TaxCodeIncome]](taxCodeIncomes)))
         when(employmentService.employment(any(), any())(any())).thenReturn(Future.successful(None))
 
-        val result = sut.onPageLoad(2)(RequestBuilder.buildFakeRequestWithAuth("GET"))
+        val result = sut.onPageLoad(employmentId)(RequestBuilder.buildFakeRequestWithAuth("GET"))
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -131,12 +138,14 @@ class IncomeSourceSummaryControllerSpec extends PlaySpec
   val benefitsService = mock[BenefitsService]
   val employmentService = mock[EmploymentService]
   val taxAccountService = mock[TaxAccountService]
+  val estimatedPayJourneyCompletionService = mock[EstimatedPayJourneyCompletionService]
 
   class SUT extends IncomeSourceSummaryController(
     mock[AuditConnector],
     taxAccountService,
     employmentService,
     benefitsService,
+    estimatedPayJourneyCompletionService,
     FakeAuthAction,
     FakeValidatePerson,
     mock[FormPartialRetriever],
