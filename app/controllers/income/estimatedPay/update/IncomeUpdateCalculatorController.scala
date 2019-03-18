@@ -589,7 +589,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
         journeyCacheService.collectedValues(
           Seq(UpdateIncome_NameKey, UpdateIncome_PayPeriodKey, UpdateIncome_TotalSalaryKey, UpdateIncome_PayslipDeductionsKey,
             UpdateIncome_BonusPaymentsKey),
-          Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey)
+          Seq(UpdateIncome_TaxablePayKey, UpdateIncome_BonusOvertimeAmountKey, UpdateIncome_OtherInDaysKey)
         ) map tupled { (mandatorySeq, optionalSeq) => {
 
           val incomeId = mandatorySeq(0)
@@ -599,8 +599,9 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
           val taxablePay = optionalSeq(0)
           val hasBonusPayments = mandatorySeq(4)
           val bonusPaymentAmount = optionalSeq(1)
+          val payPeriodInDays = optionalSeq(2)
 
-          val viewModel = CheckYourAnswersViewModel(payPeriodFrequency, totalSalaryAmount, hasPayslipDeductions,
+          val viewModel = CheckYourAnswersViewModel(payPeriodFrequency, payPeriodInDays, totalSalaryAmount, hasPayslipDeductions,
             taxablePay, hasBonusPayments, bonusPaymentAmount)
 
           Ok(views.html.incomes.estimatedPayment.update.checkYourAnswers(viewModel, incomeId))

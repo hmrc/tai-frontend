@@ -557,11 +557,12 @@ class IncomeUpdateCalculatorControllerSpec
       val bonusPayments = "yes"
       val taxablePay = "8000"
       val bonusAmount = "1000"
+      val payPeriodInDays = "3"
 
       when(journeyCacheService.collectedValues(any(), any())(any())).thenReturn(
         Future.successful((
           Seq[String](employerName, payFrequency, totalSalary, payslipDeductions, bonusPayments),
-          Seq[Option[String]](Some(taxablePay), Some(bonusAmount))
+          Seq[Option[String]](Some(taxablePay), Some(bonusAmount), Some(payPeriodInDays))
         ))
       )
       val result = testController.checkYourAnswersPage()(RequestBuilder.buildFakeRequestWithAuth("GET"))

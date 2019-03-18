@@ -1365,17 +1365,11 @@ taxCode.change.yourTaxCodeChanged.currentTaxCodeDetails.screenReader=O {0} ymlae
 taxCode.change.yourTaxCodeChanged.previousTaxCodeDetails.screenReader=O {0} i {1}, eich cod treth ar gyfer {2} oedd {3}
 
 tai.estimatedPay.update.checkYourAnswers.paymentFrequency = Pa mor aml rydych yn cael eich talu
-tai.estimatedPay.update.checkYourAnswers.totalPay = Cyfanswm y cyflog {0}
 tai.estimatedPay.update.checkYourAnswers.hasDeduction = Ydy eich slip cyflog yn dangos didyniadau?
 tai.estimatedPay.update.checkYourAnswers.taxablePay = Cyflog trethadwy {0}
 tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime = A fyddwch yn cael unrhyw daliadau bonws neu daliadau goramser rhwng {0}?
 tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime = Swm y taliadau bonws neu oramser {0}?
 tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime = Cyfanswm y taliadau bonws neu daliadau goramser ar gyfer {0}
-tai.estimatedPay.update.checkYourAnswers.timePeriod.month=y mis hwn
-tai.estimatedPay.update.checkYourAnswers.timePeriod.week=yr wythnos hon
-tai.estimatedPay.update.checkYourAnswers.timePeriod.fortnight=y pythefnos hwn
-tai.estimatedPay.update.checkYourAnswers.timePeriod.period=yn y cyfnod hwn
-
 tai.updateIncome.CYPlus1.preheading=Diweddarwch yr amcangyfrif o’ch incwm oddi wrth {0} ar gyfer y flwyddyn nesaf
 tai.updateIncome.CYPlus1.start.heading=Diweddarwch yr amcangyfrif o’ch incwm oddi wrth {0} ar gyfer y flwyddyn nesaf
 tai.updateIncome.CYPlus1.start.title=Diweddarwch eich incwm amcangyfrifedig

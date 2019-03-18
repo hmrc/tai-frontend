@@ -19,15 +19,15 @@ package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 import controllers.FakeTaiPlayApplication
 import org.scalatest.prop.PropertyChecks
 import org.scalatestplus.play.PlaySpec
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
+import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 import uk.gov.hmrc.tai.util.ViewModelHelper
+import uk.gov.hmrc.tai.util.constants.EditIncomePayPeriodConstants
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 
 class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication with I18nSupport with ViewModelHelper
-  with PropertyChecks {
+  with PropertyChecks with EditIncomePayPeriodConstants {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
@@ -39,7 +39,7 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
 
         viewModel.journeyConfirmationLines.size mustBe 6
         viewModel.journeyConfirmationLines mustEqual
-          Seq(paymentFrequencyAnswer, totalPayAnswer, hasDeductionAnswer, taxablePayAnswer, hasBonusOrOvertimeAnswer,
+          Seq(monthlyPaymentFrequencyAnswer, totalPayAnswer, hasDeductionAnswer, taxablePayAnswer, hasBonusOrOvertimeAnswer,
             totalYearlyBonusOrOvertimeAnswer)
       }
     }
@@ -51,7 +51,7 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
 
         viewModel.journeyConfirmationLines.size mustBe 5
         viewModel.journeyConfirmationLines mustEqual
-          Seq(paymentFrequencyAnswer, totalPayAnswer, hasDeductionAnswer, taxablePayAnswer, hasBonusOrOvertimeAnswer)
+          Seq(monthlyPaymentFrequencyAnswer, totalPayAnswer, hasDeductionAnswer, taxablePayAnswer, hasBonusOrOvertimeAnswer)
       }
 
 
@@ -60,7 +60,7 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
 
         viewModel.journeyConfirmationLines.size mustBe 5
         viewModel.journeyConfirmationLines mustEqual
-          Seq(paymentFrequencyAnswer, totalPayAnswer, hasDeductionAnswer, hasBonusOrOvertimeAnswer,
+          Seq(monthlyPaymentFrequencyAnswer, totalPayAnswer, hasDeductionAnswer, hasBonusOrOvertimeAnswer,
             totalYearlyBonusOrOvertimeAnswer)
       }
 
@@ -75,7 +75,7 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
 
     "return a journey line for a taxable pay monetary amount" in {
 
-      val taxablePayQuestion = messagesApi("tai.estimatedPay.update.checkYourAnswers.taxablePay", "month")
+      val taxablePayQuestion = messagesApi("tai.estimatedPay.update.checkYourAnswers.taxablePay.month")
 
       val validValues =
         Table(
@@ -95,20 +95,45 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
       }
     }
 
+    "return relevant payment frequency answer " when {
+
+      "payment frequency is Weekly" in {
+        val confirmationLine = createPaymentFrequencyConfirmationLine(messagesApi("tai.payPeriod.weekly"))
+
+
+        val viewModel = createViewModel(paymentFrequency = WEEKLY)
+        viewModel.journeyConfirmationLines must contain(confirmationLine)
+      }
+
+      "payment frequency is fortnightly" in {
+        val confirmationLine = createPaymentFrequencyConfirmationLine(messagesApi("tai.payPeriod.fortnightly"))
+
+
+        val viewModel = createViewModel(paymentFrequency = FORTNIGHTLY)
+        viewModel.journeyConfirmationLines must contain(confirmationLine)
+      }
+
+      "payment frequency is OTHER" in {
+
+        val payPeriodInDays = "3"
+
+        val confirmationLine = createPaymentFrequencyConfirmationLine(messagesApi("tai.payPeriod.dayPeriod", payPeriodInDays))
+
+        val viewModel = createViewModel(payPeriodInDays = Some(payPeriodInDays), paymentFrequency = OTHER)
+        viewModel.journeyConfirmationLines must contain(confirmationLine)
+      }
+
+    }
+
 
   }
 
-  val monthlyPaymentFrequency = "Monthly"
   val zeroDecimalPlaces = 0
 
-  lazy val paymentFrequencyAnswer = CheckYourAnswersConfirmationLine(
-    messagesApi("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"),
-    monthlyPaymentFrequency,
-    controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payPeriodPage().url
-  )
+  lazy val monthlyPaymentFrequencyAnswer = createPaymentFrequencyConfirmationLine()
 
   lazy val totalPayAnswer = CheckYourAnswersConfirmationLine(
-    messagesApi("tai.estimatedPay.update.checkYourAnswers.totalPay", "month"),
+    messagesApi("tai.estimatedPay.update.checkYourAnswers.grossPay.month"),
     withPoundPrefixAndSign(MoneyPounds(BigDecimal(totalPay),zeroDecimalPlaces)),
     controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipAmountPage().url
   )
@@ -120,7 +145,7 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
   )
 
   lazy val taxablePayAnswer = CheckYourAnswersConfirmationLine(
-    messagesApi("tai.estimatedPay.update.checkYourAnswers.taxablePay", "month"),
+    messagesApi("tai.estimatedPay.update.checkYourAnswers.taxablePay.month"),
     withPoundPrefixAndSign(MoneyPounds(BigDecimal(taxablePay),zeroDecimalPlaces)),
     controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage().url
   )
@@ -137,10 +162,20 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
     controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.bonusOvertimeAmountPage().url
   )
 
-  def createViewModel(totalBonusOrOvertime: Option[String] = None, taxablePay: Option[String] = None): CheckYourAnswersViewModel = {
+  def createPaymentFrequencyConfirmationLine(answer: String = MONTHLY.capitalize) = {
+    CheckYourAnswersConfirmationLine(
+      messagesApi("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"),
+      answer,
+      controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payPeriodPage().url
+    )
+  }
+
+  def createViewModel(totalBonusOrOvertime: Option[String] = None, taxablePay: Option[String] = None,
+                      payPeriodInDays:Option[String] = None, paymentFrequency: String = MONTHLY): CheckYourAnswersViewModel = {
 
     CheckYourAnswersViewModel(
       paymentFrequency,
+      payPeriodInDays,
       totalPay,
       hasDeductions,
       taxablePay,
@@ -149,7 +184,6 @@ class CheckYourAnswersViewModelSpec extends PlaySpec with FakeTaiPlayApplication
     )
   }
 
-  val paymentFrequency = "monthly"
   val totalPay = "10000"
   val hasDeductions = "Yes"
   val taxablePay = "1800"

@@ -861,6 +861,7 @@ tai.payPeriod.howOften=How many days in between each pay day?
 tai.payPeriod.legend=You get paid
 tai.payPeriod.monthly=Monthly
 tai.payPeriod.other=Days
+tai.payPeriod.dayPeriod={0}-day period
 tai.payPeriod.preHeading=Update your estimated income from {0}
 tai.payPeriod.heading=How often do you get paid?
 tai.payPeriod.title=How often do you get paid?
@@ -1206,6 +1207,24 @@ tai.taxablePayslip.title.month=Enter your taxable pay for the month
 tai.taxablePayslip.title.week=Enter your taxable pay for the week
 tai.taxablePayslip.title.2week=Enter your taxable pay for the 2-week period
 tai.taxablePayslip.title.days=Enter your taxable pay for the {0}-day period
+tai.estimatedPay.update.checkYourAnswers.paymentFrequency = How often you get paid
+
+tai.estimatedPay.update.checkYourAnswers.grossPay.month=Gross pay for the month
+tai.estimatedPay.update.checkYourAnswers.grossPay.week=Gross pay for the week
+tai.estimatedPay.update.checkYourAnswers.grossPay.2week=Gross pay for the 2-week period
+tai.estimatedPay.update.checkYourAnswers.grossPay.days=Gross pay for the {0}-day period
+
+tai.estimatedPay.update.checkYourAnswers.taxablePay.month=Taxable pay for the month
+tai.estimatedPay.update.checkYourAnswers.taxablePay.week=Taxable pay for the week
+tai.estimatedPay.update.checkYourAnswers.taxablePay.2week=Taxable pay for the 2-week period
+tai.estimatedPay.update.checkYourAnswers.taxablePay.days=Taxable pay for the {0}-day period
+
+
+tai.estimatedPay.update.checkYourAnswers.hasDeduction = Does your payslip show deductions?
+tai.estimatedPay.update.checkYourAnswers.taxablePay = Taxable pay this {0}
+tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime = Will you get any bonus or overtime payments between {0}?
+tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime = Amount of bonus or overtime payments this {0}?
+tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime = Total bonus or overtime payments for {0}
 tai.taxcode.deduction.type-45=Estimate of the tax you owe this year
 tai.taxcode.deduction.type-4=Other pension
 tai.taxedIncome.desc=TaxedIncome
@@ -1360,18 +1379,6 @@ taxCode.change.yourTaxCodeChanged.currentTaxCodes=Current tax codes
 taxCode.change.yourTaxCodeChanged.understand=Understand what {0} means
 taxCode.change.yourTaxCodeChanged.currentTaxCodeDetails.screenReader=From {0} your tax code for {2} is {3}
 taxCode.change.yourTaxCodeChanged.previousTaxCodeDetails.screenReader=From {0} to {1} your tax code for {2} was {3}
-tai.estimatedPay.update.checkYourAnswers.paymentFrequency = How often you get paid
-tai.estimatedPay.update.checkYourAnswers.totalPay = Total pay this {0}
-tai.estimatedPay.update.checkYourAnswers.hasDeduction = Does your payslip show deductions?
-tai.estimatedPay.update.checkYourAnswers.taxablePay = Taxable pay this {0}
-tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime = Will you get any bonus or overtime payments between {0}?
-tai.estimatedPay.update.checkYourAnswers.totalBonusOrOvertime = Amount of bonus or overtime payments this {0}?
-tai.estimatedPay.update.checkYourAnswers.totalYearlyBonusOrOvertime = Total bonus or overtime payments for {0}
-tai.estimatedPay.update.checkYourAnswers.timePeriod.month=month
-tai.estimatedPay.update.checkYourAnswers.timePeriod.week=week
-tai.estimatedPay.update.checkYourAnswers.timePeriod.fortnight=fortnight
-tai.estimatedPay.update.checkYourAnswers.timePeriod.period=period
-
 tai.updateIncome.CYPlus1.preheading=Update your estimated income from {0} for next tax year
 tai.updateIncome.CYPlus1.start.heading=Update your estimated income from {0} for next tax year
 tai.updateIncome.CYPlus1.start.title=Update your estimated income

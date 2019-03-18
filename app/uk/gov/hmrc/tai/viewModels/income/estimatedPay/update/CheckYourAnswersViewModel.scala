@@ -17,29 +17,39 @@
 package uk.gov.hmrc.tai.viewModels.income.estimatedPay.update
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-import uk.gov.hmrc.tai.util.{MonetaryUtil, ViewModelHelper}
+import uk.gov.hmrc.tai.util.ViewModelHelper
 import uk.gov.hmrc.tai.viewModels.CheckYourAnswersConfirmationLine
 
 
 case class CheckYourAnswersViewModel(paymentFrequency: String,
+                                     payPeriodInDays: Option[String],
                                      totalPay: String,
                                      hasDeductions: String,
                                      taxablePay: Option[String],
                                      hasBonusOrOvertime: String,
-                                     totalBonusOrOvertime: Option[String]) extends ViewModelHelper {
+                                     totalBonusOrOvertime: Option[String]) extends ViewModelHelper with DynamicPayPeriodTitle {
 
   def journeyConfirmationLines(implicit messages: Messages): Seq[CheckYourAnswersConfirmationLine] = {
     val isMonetaryValue = true
 
+    val paymentFrequencyAnswer = paymentFrequency match {
+      case OTHER => messages("tai.payPeriod.dayPeriod", payPeriodInDays.getOrElse("0"))
+      case  _ => messages(s"tai.payPeriod.$paymentFrequency")
+    }
+
     val paymentFrequencyConfirmationLine = createCheckYourAnswerConfirmationLine(
       messages("tai.estimatedPay.update.checkYourAnswers.paymentFrequency"),
-      Some(messages(s"tai.payPeriod.$paymentFrequency")),
+      Some(paymentFrequencyAnswer),
       controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payPeriodPage().url)
 
+    val grossPayMessages = Map(MONTHLY -> "tai.estimatedPay.update.checkYourAnswers.grossPay.month",
+                                 WEEKLY -> "tai.estimatedPay.update.checkYourAnswers.grossPay.week",
+                                 FORTNIGHTLY -> "tai.estimatedPay.update.checkYourAnswers.grossPay.2week",
+                                 OTHER -> "tai.estimatedPay.update.checkYourAnswers.grossPay.days")
+
     val totalPayConfirmationLine = createCheckYourAnswerConfirmationLine(
-      messages("tai.estimatedPay.update.checkYourAnswers.totalPay", timePeriod(paymentFrequency)),
+      messages(dynamicTitle(Some(paymentFrequency), payPeriodInDays, grossPayMessages)),
       Some(totalPay),
       controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipAmountPage().url,
       isMonetaryValue
@@ -51,8 +61,13 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
       controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.payslipDeductionsPage().url
     )
 
+    val taxablePayMessages = Map(MONTHLY -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.month",
+                                 WEEKLY -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.week",
+                                 FORTNIGHTLY -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.2week",
+                                 OTHER -> "tai.estimatedPay.update.checkYourAnswers.taxablePay.days")
+
     val taxablePayConfirmationLine = createCheckYourAnswerConfirmationLine(
-      messages("tai.estimatedPay.update.checkYourAnswers.taxablePay", timePeriod(paymentFrequency)),
+      messages(dynamicTitle(Some(paymentFrequency), payPeriodInDays, taxablePayMessages)),
       taxablePay,
       controllers.income.estimatedPay.update.routes.IncomeUpdateCalculatorController.taxablePayslipAmountPage().url,
       isMonetaryValue
@@ -91,18 +106,6 @@ case class CheckYourAnswersViewModel(paymentFrequency: String,
       case (Some(answer),false) => Some(CheckYourAnswersConfirmationLine(message, answer, changeUrl))
       case _ => None
     }
-  }
-
-  def timePeriod(paymentFrequency: String)(implicit messages: Messages):String = {
-
-    val timePeriodMessage = paymentFrequency match {
-      case "monthly" => messages("tai.estimatedPay.update.checkYourAnswers.timePeriod.month")
-      case "weekly" => messages("tai.estimatedPay.update.checkYourAnswers.timePeriod.week")
-      case "fortnightly" => messages("tai.estimatedPay.update.checkYourAnswers.timePeriod.fortnight")
-      case "other" => messages("tai.estimatedPay.update.checkYourAnswers.timePeriod.period")
-    }
-
-    timePeriodMessage.toLowerCase()
   }
 
 }
