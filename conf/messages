@@ -1208,18 +1208,14 @@ tai.taxablePayslip.title.week=Enter your taxable pay for the week
 tai.taxablePayslip.title.2week=Enter your taxable pay for the 2-week period
 tai.taxablePayslip.title.days=Enter your taxable pay for the {0}-day period
 tai.estimatedPay.update.checkYourAnswers.paymentFrequency = How often you get paid
-
 tai.estimatedPay.update.checkYourAnswers.grossPay.month=Gross pay for the month
 tai.estimatedPay.update.checkYourAnswers.grossPay.week=Gross pay for the week
 tai.estimatedPay.update.checkYourAnswers.grossPay.2week=Gross pay for the 2-week period
 tai.estimatedPay.update.checkYourAnswers.grossPay.days=Gross pay for the {0}-day period
-
 tai.estimatedPay.update.checkYourAnswers.taxablePay.month=Taxable pay for the month
 tai.estimatedPay.update.checkYourAnswers.taxablePay.week=Taxable pay for the week
 tai.estimatedPay.update.checkYourAnswers.taxablePay.2week=Taxable pay for the 2-week period
 tai.estimatedPay.update.checkYourAnswers.taxablePay.days=Taxable pay for the {0}-day period
-
-
 tai.estimatedPay.update.checkYourAnswers.hasDeduction = Does your payslip show deductions?
 tai.estimatedPay.update.checkYourAnswers.taxablePay = Taxable pay this {0}
 tai.estimatedPay.update.checkYourAnswers.hasBonusOrOvertime = Will you get any bonus or overtime payments between {0}?
