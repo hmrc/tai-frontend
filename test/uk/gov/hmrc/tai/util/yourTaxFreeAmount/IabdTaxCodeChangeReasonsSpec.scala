@@ -32,7 +32,7 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
 
   val taxFreeInfo = TaxFreeInfo("12-12-2015", 2000, 1000)
   val jobExpensesIncrease = CodingComponentPair(JobExpenses, Some(2), Some(50), Some(100))
-  val carBenefitIncrease = CodingComponentPair(CarBenefit, Some(1), Some(1000), Some(2000))
+  val carBenefitDecrease = CodingComponentPair(CarBenefit, Some(1), Some(5555), Some(2345))
   val taxCodeChange = mock[TaxCodeChange]
 
   val taxBand = TaxBand("B", "BR", 16500, 1000, Some(0), Some(16500), 20)
@@ -112,12 +112,12 @@ class IabdTaxCodeChangeReasonsSpec extends PlaySpec
     }
 
     "give multiple reasons for a tax code change" in {
-      val pairs = AllowancesAndDeductionPairs(Seq(jobExpensesIncrease), Seq(carBenefitIncrease))
+      val pairs = AllowancesAndDeductionPairs(Seq(jobExpensesIncrease), Seq(carBenefitDecrease))
       val reasons = iabdTaxCodeChangeReasons.reasons(pairs)
 
       reasons mustBe Seq(
-        "There has been an update to your Job expenses",
-        "There has been an update to your Car benefit"
+        "Your Job expenses has been increased from £50 to £100",
+        "Your Car benefit has been decreased from £5,555 to £2,345"
       )
     }
   }
