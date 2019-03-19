@@ -35,9 +35,8 @@ class IabdTaxCodeChangeReasons(totalTax: TotalTax) {
 
   private def translateNewBenefits(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
 
-    def createNewBenefitsMessage(taxComponentType: TaxComponentType, currentAmount: BigDecimal)(implicit messages: Messages): String = {
-
-      def createYouHaveMessage(text: String): String = {
+    val createNewBenefitsMessage: (TaxComponentType, BigDecimal) => String = (taxComponentType: TaxComponentType, currentAmount: BigDecimal) => {
+      val createYouHaveMessage: String => String = (text: String) => {
         val amountDue = TaxAmountDueFromUnderpayment.amountDue(currentAmount, totalTax)
         messages(text, MonetaryUtil.withPoundPrefix(amountDue.toInt))
       }
@@ -59,7 +58,7 @@ class IabdTaxCodeChangeReasons(totalTax: TotalTax) {
 
   private def translateChangedBenefits(pair: CodingComponentPair)(implicit messages: Messages): Option[String] = {
 
-    def createAmmendmentMessage(previousAmount: BigDecimal, currentAmount: BigDecimal): String = {
+    val createAmmendmentMessage: (BigDecimal, BigDecimal) => String = (previousAmount: BigDecimal, currentAmount: BigDecimal) => {
       val adjustmentMessage: String = {
         if (previousAmount < currentAmount) {
           messages("tai.taxCodeComparison.iabd.increased")
