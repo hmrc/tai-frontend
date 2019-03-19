@@ -894,7 +894,7 @@ tai.paye.lastTaxYear.checkIncomeTax.link=check how much Income Tax you paid
 tai.paye.lastTaxYear.checkIncomeTax.for=for {0}.
 
 tai.payslip.error.form.totalPay.input.mandatory=Enter the total pay on your payslip
-tai.payslip.error.form.totalPay.input.invalid=Your total pay must be an amount of money, like 1,000 or 10,000
+tai.payslip.error.form.totalPay.input.invalid=Your gross pay must be an amount of money, like 1,000 or 10,000
 tai.payslip.preHeading=Update your estimated income from {0}
 tai.payslip.p1=This may be shown as “gross pay” or “total pay” on your payslip.
 tai.payslip.p2=Don’t include any extra payments like bonus, commission or overtime.
