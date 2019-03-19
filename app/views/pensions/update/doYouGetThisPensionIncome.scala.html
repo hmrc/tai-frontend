@@ -30,7 +30,7 @@
     ptaHeader(
         formForErrorSummary = Some(updateOrRemoveForm),
         displayBackLink = true,
-        mainHeadingText = Messages("tai.updatePension.decision.heading", model.pensionName),
+        mainHeadingText = Messages("tai.updatePension.decision.heading", <span class="carry-over">{model.pensionName}</span>),
         preHeadingText = Messages("tai.updatePension.preHeading")
     )
 }
