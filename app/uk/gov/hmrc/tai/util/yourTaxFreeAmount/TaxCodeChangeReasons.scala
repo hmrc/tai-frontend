@@ -26,8 +26,10 @@ class TaxCodeChangeReasons @Inject()() {
   def reasons(taxCodeChange: TaxCodeChange)(implicit messages: Messages): Seq[String] = {
 
     val taxCodePairs = TaxCodePairs(taxCodeChange)
-    primaryEmploymentsChanged(taxCodePairs.primaryPairs) ++
+    val employmentReasons = primaryEmploymentsChanged(taxCodePairs.primaryPairs) ++
       secondaryEmploymentsChanged(taxCodePairs.unMatchedPreviousCodes, taxCodePairs.unMatchedCurrentCodes)
+
+    employmentReasons ++ employmentCountReason(employmentReasons, taxCodeChange)
   }
 
   private def secondaryEmploymentsChanged(unMatchedPreviousCodes: Seq[TaxCodePair],
@@ -108,5 +110,25 @@ class TaxCodeChangeReasons @Inject()() {
 
   private def genericMessage(implicit messages: Messages): Seq[String] = {
     Seq(messages("taxCode.change.yourTaxCodeChanged.paragraph"))
+  }
+
+  private def filterOutGenericMessage(reasons: Seq[String])(implicit messages: Messages): Seq[String] = {
+    reasons.filterNot(_ == genericMessage.head)
+  }
+
+  private def employmentCountReason(reasons: Seq[String], taxCodeChange: TaxCodeChange)(implicit messages: Messages): Seq[String] = {
+    if (filterOutGenericMessage(reasons).nonEmpty) {
+      Seq(employmentCountMessage(taxCodeChange.currentEmploymentCount))
+    } else {
+      Seq.empty[String]
+    }
+  }
+
+  private def employmentCountMessage(employmentCount: Int)(implicit messages: Messages): String = {
+    if (employmentCount > 1) {
+      messages("tai.taxCodeComparison.employments.count", employmentCount)
+    } else {
+      messages("tai.taxCodeComparison.employment.count", employmentCount)
+    }
   }
 }

@@ -60,6 +60,13 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
   def addedPension(employerName: String): String = {
     messages("tai.taxCodeComparison.add.pension", employerName)
   }
+  def addSingleEmploymentCount: String = {
+    messages("tai.taxCodeComparison.employment.count", 1)
+  }
+
+  def addMultipleEmploymentCount(count: Int): String = {
+    messages("tai.taxCodeComparison.employments.count", count)
+  }
 
   "reasons taxCodeReasons" when {
     "employment has changed" must {
@@ -75,7 +82,7 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
         val current = Seq(createTaxRecord(currentEmployer))
         val taxCodeChange = TaxCodeChange(previous, current)
 
-        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(removedEmployer(previousEmployer))
+        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(removedEmployer(previousEmployer), addSingleEmploymentCount)
       }
 
       "return a reason when an employment been added" in {
@@ -84,7 +91,7 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
         val taxCodeChange = TaxCodeChange(previous, current)
 
-        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(addedEmployer(currentEmployer))
+        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(addedEmployer(currentEmployer), addMultipleEmploymentCount(2))
       }
 
       "return multiple reasons when employments have changed" in {
@@ -95,7 +102,8 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
         employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(
           removedEmployer(previousEmployer), removedEmployer(previousEmployer + "1"),
-          addedEmployer(currentEmployer), addedEmployer(currentEmployer + "1")
+          addedEmployer(currentEmployer), addedEmployer(currentEmployer + "1"),
+          addMultipleEmploymentCount(2)
         )
       }
 
@@ -107,7 +115,8 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
         employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(
           removedEmployer(previousEmployer), addedEmployer(currentEmployer),
-          removedEmployer(previousEmployer + "1"), addedEmployer(currentEmployer + "1")
+          removedEmployer(previousEmployer + "1"), addedEmployer(currentEmployer + "1"),
+          addMultipleEmploymentCount(2)
         )
       }
 
@@ -119,7 +128,8 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
         employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(
           removedEmployer(previousEmployer),
-          addedEmployer(currentEmployer)
+          addedEmployer(currentEmployer),
+          addSingleEmploymentCount
         )
       }
 
