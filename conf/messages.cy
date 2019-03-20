@@ -895,7 +895,7 @@ tai.paye.lastTaxYear.checkIncomeTax.link=gwirio cyfanswm y Dreth Incwm a dalwyd 
 tai.paye.lastTaxYear.checkIncomeTax.for=ar gyfer {0}.
 
 tai.payslip.error.form.totalPay.input.mandatory=Nodwch gyfanswm y cyflog sydd ar eich slip cyflog
-tai.payslip.error.form.totalPay.input.invalid=Rhaid i gyfanswm eich cyflog fod yn swm o arian, megis 1,000 neu 10,000
+tai.payslip.error.form.totalPay.input.invalid=Rhaid i’ch cyflog gros fod yn swm o arian, megis 1,000 neu 10,000
 tai.payslip.preHeading=Diweddarwch eich incwm amcangyfrifedig oddi wrth {0}
 tai.payslip.p1=Mae’n bosibl y dangosir hyn ar eich slip cyflog fel “cyflog gros” neu “cyfanswm cyflog”.
 tai.payslip.p2=Peidiwch â chynnwys unrhyw daliadau ychwanegol megis bonws, comisiwn neu oramser.
