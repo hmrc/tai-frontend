@@ -79,7 +79,8 @@ class EstimatedPaySpec extends TaiViewSpec with MockitoSugar{
     }
 
     "display a tax code change explanation statement" in {
-      doc must haveParagraphWithText(messages("tai.estimatedPay.taxCodeChange.explanation"))
+      doc must haveParagraphWithText(messages("tai.estimatedPay.taxCodeChange.explanation.para1"))
+      doc must haveParagraphWithText(messages("tai.estimatedPay.taxCodeChange.explanation.para2"))
     }
 
     "confirm and send" in {
