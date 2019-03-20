@@ -60,6 +60,7 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
   def addedPension(employerName: String): String = {
     messages("tai.taxCodeComparison.add.pension", employerName)
   }
+
   def addSingleEmploymentCount: String = {
     messages("tai.taxCodeComparison.employment.count", 1)
   }
@@ -161,7 +162,8 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
         val taxCodeChange = TaxCodeChange(previous, current)
 
-        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(removedEmployer(previousEmployer), addedPension(currentEmployer))
+        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(removedEmployer(previousEmployer), addedPension(currentEmployer),
+          messages("tai.taxCodeComparison.pension.count", 1))
       }
 
       "return a reason when a secondary pension been added" in {
@@ -170,7 +172,8 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
         val taxCodeChange = TaxCodeChange(previous, current)
 
-        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(addedPension(currentEmployer))
+        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(addedPension(currentEmployer),
+          messages("tai.taxCodeComparison.pensions.count", 2))
       }
     }
   }
