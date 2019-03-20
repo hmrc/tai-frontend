@@ -51,6 +51,14 @@
     pageHeader = Some(header),
     authedUser = Some(user)) {
 
+    @if(true) {
+        @if(incomeTaxComparisonViewModel.isEstimatedCYPlusOneJourneyCompleted){
+            <div class="tai-progress-panel" id="estimatedPayCompletionBanner">
+                <h2 class="heading-medium flush-bottom flush--top" id="incomeSummary-banner-heading">@messages("tai.estimatedIncome.confirmation.banner.heading")</h2>
+            </div>
+        }
+    }
+
     <div class="grid-row">
         <div class="column-two-thirds">
             <section class="section" id="incomeTax" aria-labelledby="incomeTaxHeading">

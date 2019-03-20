@@ -22,4 +22,5 @@ case class IncomeTaxComparisonViewModel(username: String,
                                         estimatedIncomeTaxComparisonViewModel: EstimatedIncomeTaxComparisonViewModel,
                                         taxCodeComparisonViewModel: TaxCodeComparisonViewModel,
                                         taxFreeAmountComparisonViewModel: TaxFreeAmountComparisonViewModel,
-                                        incomeSourceComparisonViewModel:IncomeSourceComparisonViewModel)
+                                        incomeSourceComparisonViewModel:IncomeSourceComparisonViewModel,
+                                        isEstimatedCYPlusOneJourneyCompleted: Boolean)

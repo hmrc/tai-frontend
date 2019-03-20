@@ -85,8 +85,6 @@ class WhatDoYouWantToDoController @Inject()(employmentService: EmploymentService
 
   private def allowWhatDoYouWantToDo(implicit request: Request[AnyContent], user: AuthedUser): Future[Result] = {
 
-    Logger.debug(s"allowWhatDoYouWantToDo called")
-
     val nino = Nino(user.getNino)
 
     auditNumberOfTaxCodesReturned(nino)
@@ -106,11 +104,9 @@ class WhatDoYouWantToDoController @Inject()(employmentService: EmploymentService
             case TaiSuccessResponseWithPayload(_) => {
               val model = WhatDoYouWantToDoViewModel(
                 trackingResponse, cyPlusOneEnabled, taxCodeChanged.changed, taxCodeChanged.mismatch, isConfirmedAPIEnabled = confirmedAPIEnabled)
-              Logger.debug(s"wdywtdViewModelCYEnabled $model")
               Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
             }
             case _ => {
-              Logger.debug(s"allowWDYWTD")
               Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, WhatDoYouWantToDoViewModel(
                 trackingResponse, isCyPlusOneEnabled = false, isConfirmedAPIEnabled = confirmedAPIEnabled)))
 
@@ -122,7 +118,6 @@ class WhatDoYouWantToDoController @Inject()(employmentService: EmploymentService
         taxCodeChangeService.hasTaxCodeChanged(nino).map(hasTaxCodeChanged => {
           val model = WhatDoYouWantToDoViewModel(trackingResponse, cyPlusOneEnabled, hasTaxCodeChanged.changed, hasTaxCodeChanged.mismatch,
             isConfirmedAPIEnabled = confirmedAPIEnabled)
-          Logger.debug(s"wdywtdViewModelCYDisabled $model")
           Ok(views.html.whatDoYouWantToDoTileView(WhatDoYouWantToDoForm.createForm, model))
         }
         )

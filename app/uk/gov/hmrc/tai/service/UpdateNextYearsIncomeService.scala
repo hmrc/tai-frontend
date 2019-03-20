@@ -32,8 +32,17 @@ import uk.gov.hmrc.tai.util.constants.journeyCache.UpdateNextYearsIncomeConstant
 import scala.concurrent.Future
 
 class UpdateNextYearsIncomeService @Inject()(@Named("Update Next Years Income") journeyCacheService: JourneyCacheService,
+                                             @Named("Track Successful Journey") successfulJourneyCacheService: JourneyCacheService,
                                              employmentService: EmploymentService,
                                              taxAccountService: TaxAccountService) {
+
+  def isEstimatedPayJourneyComplete(implicit hc: HeaderCarrier): Future[Boolean] = {
+    for {
+      currentCache <- successfulJourneyCacheService.currentCache
+    } yield {
+      currentCache.get(UpdateNextYearsIncomeConstants.SUCCESSFUL).isDefined
+    }
+  }
 
   def reset(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     journeyCacheService.flush()
@@ -93,7 +102,9 @@ class UpdateNextYearsIncomeService @Inject()(@Named("Update Next Years Income") 
   def submit(employmentId: Int, nino: Nino)(implicit hc: HeaderCarrier): Future[TaiResponse] = {
     get(employmentId, nino) flatMap {
       case UpdateNextYearsIncomeCacheModel(_, _, _, _, Some(newValue)) => {
-        taxAccountService.updateEstimatedIncome(nino, newValue, TaxYear().next, employmentId)
+        val response = taxAccountService.updateEstimatedIncome(nino, newValue, TaxYear().next, employmentId)
+        successfulJourneyCacheService.cache(Map(UpdateNextYearsIncomeConstants.SUCCESSFUL -> "true"))
+        response
       }
       case _ => {
         throw new RuntimeException
