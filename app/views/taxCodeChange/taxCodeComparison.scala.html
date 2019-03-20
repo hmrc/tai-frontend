@@ -25,6 +25,7 @@
 @import uk.gov.hmrc.urls.Link
 @import uk.gov.hmrc.tai.viewModels.GoogleAnalyticsSettings
 
+@import uk.gov.hmrc.tai.util.HtmlFormatter
 @(taxCodeChangeViewModel: TaxCodeChangeViewModel)(implicit request: Request[_], user: controllers.auth.AuthedUser, messages: Messages, templateRenderer: uk.gov.hmrc.renderer.TemplateRenderer, partialRetriever: uk.gov.hmrc.play.partials.FormPartialRetriever)
 
 @gaEventActionString = @{"Your tax code change"}
@@ -35,7 +36,7 @@
         formForErrorSummary = None,
         displayBackLink = true,
         backLinkGaEventAction = Some(gaEventActionString),
-        mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(taxCodeChangeViewModel.changeDate)),
+        mainHeadingText = Messages("taxCode.change.yourTaxCodeChanged.h1", HtmlFormatter.htmlNonBroken(Dates.formatDate(taxCodeChangeViewModel.changeDate))),
         preHeadingText = Messages("taxCode.change.journey.preHeading")
     )
 }
