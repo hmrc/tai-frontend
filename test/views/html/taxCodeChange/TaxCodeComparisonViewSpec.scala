@@ -22,6 +22,7 @@ import uk.gov.hmrc.play.language.LanguageUtils.Dates
 import uk.gov.hmrc.tai.model.TaxYear
 import uk.gov.hmrc.tai.model.domain.income.OtherBasisOfOperation
 import uk.gov.hmrc.tai.model.domain.{TaxCodeChange, TaxCodeRecord}
+import uk.gov.hmrc.tai.util.HtmlFormatter
 import uk.gov.hmrc.tai.util.viewHelpers.TaiViewSpec
 import uk.gov.hmrc.tai.viewModels.taxCodeChange.TaxCodeChangeViewModel
 
@@ -61,7 +62,7 @@ class TaxCodeComparisonViewSpec extends TaiViewSpec {
 
     behave like pageWithCombinedHeader(
       preHeaderText = Messages("taxCode.change.journey.preHeading"),
-      mainHeaderText = Messages("taxCode.change.yourTaxCodeChanged.h1", Dates.formatDate(viewModel.changeDate)))
+      mainHeaderText = Messages("taxCode.change.yourTaxCodeChanged.h1", HtmlFormatter.htmlNonBroken(Dates.formatDate(viewModel.changeDate))))
 
 
     "displays the previous tax code section title" in {
