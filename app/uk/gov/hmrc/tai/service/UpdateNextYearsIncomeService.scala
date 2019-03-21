@@ -37,11 +37,7 @@ class UpdateNextYearsIncomeService @Inject()(@Named("Update Next Years Income") 
                                              taxAccountService: TaxAccountService) {
 
   def isEstimatedPayJourneyComplete(implicit hc: HeaderCarrier): Future[Boolean] = {
-    for {
-      currentCache <- successfulJourneyCacheService.currentCache
-    } yield {
-      currentCache.get(UpdateNextYearsIncomeConstants.SUCCESSFUL).isDefined
-    }
+    successfulJourneyCacheService.currentCache map (_.get(UpdateNextYearsIncomeConstants.SUCCESSFUL).isDefined)
   }
 
   def reset(implicit hc: HeaderCarrier): Future[TaiResponse] = {
