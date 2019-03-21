@@ -103,7 +103,7 @@ class IncomeTaxComparisonController @Inject()(val auditConnector: AuditConnector
             val employmentViewModel = IncomeSourceComparisonViewModel(taxCodeIncomesCY, employmentsCY, taxCodeIncomesCYPlusOne)
 
             val model = IncomeTaxComparisonViewModel(request.taiUser.getDisplayName, estimatedIncomeTaxComparisonViewModel,
-              taxCodeComparisonModel, taxFreeAmountComparisonModel, employmentViewModel, isEstimatedPayJourneyComplete)
+              taxCodeComparisonModel, taxFreeAmountComparisonModel, employmentViewModel, confirmedAPIEnabled, isEstimatedPayJourneyComplete)
 
             implicit val user = request.taiUser
             Ok(views.html.incomeTaxComparison.Main(model, cyPlus1EstimatedPayEnabled))
