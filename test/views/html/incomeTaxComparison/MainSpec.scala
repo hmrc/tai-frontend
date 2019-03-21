@@ -104,7 +104,7 @@ class MainSpec extends TaiViewSpec {
     }
 
     "does not show the hypothetical banner" in {
-      doc(view) must not(haveH2HeadingWithText(messages("tai.estimatedIncome.confirmation.banner.heading")))
+      doc(view) must not(haveH2HeadingWithText(messages("tai.incomeTaxComparison.taxCodes.banner")))
     }
 
     "show the hypothetical banner" in {
@@ -113,7 +113,7 @@ class MainSpec extends TaiViewSpec {
 
       def journeyCompletedView: Html = views.html.incomeTaxComparison.Main(estimatedJourneyCompleted, true)
 
-      doc(journeyCompletedView) must haveH2HeadingWithText(messages("tai.estimatedIncome.confirmation.banner.heading"))
+      doc(journeyCompletedView) must haveH2HeadingWithText(messages("tai.incomeTaxComparison.taxCodes.banner"))
     }
   }
 

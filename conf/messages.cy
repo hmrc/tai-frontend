@@ -647,6 +647,7 @@ tai.incomeTaxComparison.sidebar.subHeading=Ewch i''r flwyddyn dreth bresennol
 tai.incomeTaxComparison.taxCodes.description=Defnyddir eich codau treth i gyfrifo faint o Dreth Incwm i''w chymryd o''ch cyflog neu''ch pensiwn.
 tai.incomeTaxComparison.taxCodes.scottishInfo=Bydd eich cod treth ar gyfer y flwyddyn nesaf yn dechrau gydag ''S'' oherwydd y byddwch yn drethdalwr yn yr Alban. {0}
 tai.incomeTaxComparison.taxCodes.subHeading=Codau treth
+tai.incomeTaxComparison.taxCodes.banner=Your updated estimated income and tax details for next tax year will be shown here in 48 hourst
 
 tai.incomeTaxComparison.taxCodes.table.employmentsReaderText=Enw''r cyflogwr
 tai.incomeTaxComparison.taxCodes.table.pensionsReaderText = Enw''r pensiwn
