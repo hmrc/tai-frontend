@@ -1413,7 +1413,11 @@ tai.taxCodeComparison.iabd.updated=There has been an update to your {0}
 tai.taxCodeComparison.iabd.you.have.claimed.expenses=You have claimed expenses for previous years
 tai.taxCodeComparison.iabd.you.have.underpaid=You have underpaid {0} from a previous year
 tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid=We estimate you have underpaid {0} tax this year
-
+tai.taxCodeComparison.employment.count=You now have {0} employment
+tai.taxCodeComparison.employments.count=You now have {0} employments
+tai.taxCodeComparison.pension.count=You now have {0} pension
+tai.taxCodeComparison.pensions.count=You now have {0} pensions
+tai.taxCodeComparison.incomeSources.count=You now have {0} income sources
 tai.urbanner.title=Help improve HMRC letters
 tai.urbanner.text=Please take part in our short survey (opens in a new window or tab)
 tai.urbanner.reject=No thanks
