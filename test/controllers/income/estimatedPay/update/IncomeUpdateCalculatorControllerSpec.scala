@@ -324,7 +324,7 @@ class IncomeUpdateCalculatorControllerSpec
       }
     }
 
-    "redirect user back to how to payslip page" when {
+    "redirect user back to how to payslip page with an error form" when {
       "user input has error" in {
         val testController = createTestIncomeUpdateCalculatorController
 
@@ -335,6 +335,8 @@ class IncomeUpdateCalculatorControllerSpec
         status(result) mustBe BAD_REQUEST
 
         val doc = Jsoup.parse(contentAsString(result))
+        doc.body().text must include(messages("tai.income.error.form.summary"))
+        doc.body().text must include(messages("tai.payslip.title.month"))
         doc.title() must include(messages("tai.payslip.title.month"))
       }
     }
