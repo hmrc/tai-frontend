@@ -30,8 +30,40 @@ object PaySlipAmountViewModel extends EditIncomePayPeriodConstants with DynamicP
             payPeriodInDays: Option[String],
             id: Int,
             employerName: String)(implicit message: Messages): PaySlipAmountViewModel = {
-    val title = CommonPayPeriodTitle.title(payPeriod, payPeriodInDays)
+
+<<<<<<< Updated upstream
+    val messages = Map(MONTHLY -> "tai.payslip.title.month",
+                       WEEKLY -> "tai.payslip.title.week",
+                       FORTNIGHTLY -> "tai.payslip.title.2week",
+                       OTHER -> "tai.payslip.title.days")
+
+    val title = dynamicTitle(payPeriod, payPeriodInDays, messages)
+=======
+    val title = payPeriodToString(payPeriod, payPeriodInDays)
+>>>>>>> Stashed changes
+
     PaySlipAmountViewModel(payslipForm, title, id, employerName)
   }
 
+<<<<<<< Updated upstream
+=======
+  private def dayPeriodTitle(payPeriodInDays: Option[String])
+                       (implicit message: Messages): String = {
+    payPeriodInDays match {
+      case Some(days) => message("tai.payslip.title.days", days)
+      case _ => throw new RuntimeException("No days found for pay period")
+    }
+  }
+
+  def payPeriodToString( payPeriod: Option[String],
+                         payPeriodInDays: Option[String])(implicit message: Messages): String = {
+    payPeriod match {
+      case Some(MONTHLY) => message("tai.payslip.title.month")
+      case Some(WEEKLY) => message("tai.payslip.title.week")
+      case Some(FORTNIGHTLY) => message("tai.payslip.title.2week")
+      case Some(OTHER) => dayPeriodTitle(payPeriodInDays)
+      case _ => throw new RuntimeException("No pay period found")
+    }
+  }
+>>>>>>> Stashed changes
 }

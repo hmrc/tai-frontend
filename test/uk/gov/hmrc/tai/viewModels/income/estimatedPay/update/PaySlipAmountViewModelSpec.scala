@@ -29,7 +29,7 @@ class PaySlipAmountViewModelSpec extends PlaySpec
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  val form = PayslipForm.createForm()
+  val form = PayslipForm.createForm("tai.payslip.error.form.totalPay.input.mandatory")
   val employerId = 1
   val employerName = "employer name"
 

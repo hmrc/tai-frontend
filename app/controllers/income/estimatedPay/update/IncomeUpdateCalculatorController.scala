@@ -25,7 +25,7 @@ import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -46,7 +46,7 @@ import uk.gov.hmrc.tai.util.FormHelper
 import uk.gov.hmrc.tai.util.constants.TaiConstants.MONTH_AND_YEAR
 import uk.gov.hmrc.tai.util.constants._
 import uk.gov.hmrc.tai.viewModels.SameEstimatedPayViewModel
-import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update.{CheckYourAnswersViewModel, EstimatedPayViewModel, PaySlipAmountViewModel, TaxablePaySlipAmountViewModel}
+import uk.gov.hmrc.tai.viewModels.income.estimatedPay.update._
 import uk.gov.hmrc.tai.viewModels.income.{ConfirmAmountEnteredViewModel, EditIncomeIrregularHoursViewModel}
 import uk.gov.hmrc.tai.service.journeyCompletion.EstimatedPayJourneyCompletionService
 
@@ -372,7 +372,8 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
 
                   val payPeriod = optionalSeq(0)
                   val payPeriodInDays = optionalSeq(1)
-                  PaySlipAmountViewModel(PayslipForm.createForm(), payPeriod, payPeriodInDays, id, employerName)
+                  val errorMessage = "tai.payslip.error.form.totalPay.input.mandatory"
+                  PaySlipAmountViewModel(PayslipForm.createForm(errorMessage), payPeriod, payPeriodInDays, id, employerName)
                 }
 
                 Ok(views.html.incomes.payslipAmount(viewModel))
@@ -384,27 +385,32 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
     implicit person =>
       implicit request =>
         sendActingAttorneyAuditEvent("processPayslipAmount")
-        PayslipForm.createForm().bindFromRequest().fold(
-          formWithErrors => {
-            for {
-              id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
-              employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
-              payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
-              payPeriodInDays <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
-            } yield {
+
+        val result: Future[Future[Result]] = for {
+          id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
+          employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
+          payPeriod <- journeyCacheService.currentValue(UpdateIncome_PayPeriodKey)
+          payPeriodInDays <- journeyCacheService.currentValue(UpdateIncome_OtherInDaysKey)
+        } yield {
+          val errorMessage = CommonPayPeriodTitle.title(payPeriod, payPeriodInDays)
+          PayslipForm.createForm(errorMessage).bindFromRequest().fold(
+            formWithErrors => {
               val viewModel = PaySlipAmountViewModel(formWithErrors, payPeriod, payPeriodInDays, id, employerName)
-              BadRequest(views.html.incomes.payslipAmount(viewModel))
-            }
-          },
-          formData => {
-            formData match {
-              case PayslipForm(Some(value)) => journeyCache(UpdateIncome_TotalSalaryKey, Map(UpdateIncome_TotalSalaryKey -> value)) map { _ =>
-                Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage())
+              Future.successful(BadRequest(views.html.incomes.payslipAmount(viewModel)))
+            },
+            formData => {
+              formData match {
+                case PayslipForm(Some(value)) =>
+                   journeyCache(UpdateIncome_TotalSalaryKey, Map(UpdateIncome_TotalSalaryKey -> value)) map { _ =>
+                     Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage())
+                   }
+                case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage()))
               }
-              case _ => Future.successful(Redirect(routes.IncomeUpdateCalculatorController.payslipDeductionsPage()))
             }
-          }
-        )
+          )
+        }
+
+    result.flatMap(identity)
   }
 
   def taxablePayslipAmountPage: Action[AnyContent] = authorisedForTai(personService).async { implicit user =>
@@ -622,7 +628,7 @@ class IncomeUpdateCalculatorController @Inject()(incomeService: IncomeService,
       implicit request =>
         sendActingAttorneyAuditEvent("getEstimatedPayPage")
 
-        val result = for {
+        val result: Future[Future[Result]] = for {
           id <- journeyCacheService.mandatoryValueAsInt(UpdateIncome_IdKey)
           employerName <- journeyCacheService.mandatoryValue(UpdateIncome_NameKey)
           income <- incomeService.employmentAmount(Nino(user.getNino), id)

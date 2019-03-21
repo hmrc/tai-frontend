@@ -112,9 +112,9 @@ case class PayslipForm(totalSalary: Option[String] = None)
 object PayslipForm{
   implicit val formats = Json.format[PayslipForm]
 
-  def createForm()(implicit messages: Messages): Form[PayslipForm] = {
+  def createForm(errorText: String)(implicit messages: Messages): Form[PayslipForm] = {
     Form[PayslipForm](
-      mapping("totalSalary" -> TaiValidator.validateNewAmounts(messages("tai.payslip.error.form.totalPay.input.mandatory"),
+      mapping("totalSalary" -> TaiValidator.validateNewAmounts(messages(errorText),
                                                                messages("tai.payslip.error.form.totalPay.input.invalid"),
                                                                messages("error.tai.updateDataEmployment.maxLength")))(PayslipForm.apply)(PayslipForm.unapply)
     )
