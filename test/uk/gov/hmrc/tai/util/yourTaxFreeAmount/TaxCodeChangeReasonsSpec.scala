@@ -176,5 +176,20 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
           messages("tai.taxCodeComparison.pensions.count", 2))
       }
     }
+
+    "current employment(s) and pension(s) exist" must {
+      "return how many current income sources there are" in {
+        val previous = Seq(createPrimaryTaxRecord(previousEmployer))
+        val current = Seq(createPrimaryPensionTaxRecord(currentEmployer), createTaxRecord(currentEmployer + "1"))
+
+        val taxCodeChange = TaxCodeChange(previous, current)
+
+        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(
+          removedEmployer(previousEmployer),
+          addedPension(currentEmployer),
+          addedEmployer(currentEmployer + "1"),
+          messages("tai.taxCodeComparison.incomeSources.count", 2))
+      }
+    }
   }
 }

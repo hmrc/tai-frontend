@@ -1411,7 +1411,11 @@ tai.taxCodeComparison.iabd.updated=Bu ddiweddaraf am eich {0}
 tai.taxCodeComparison.iabd.you.have.claimed.expenses=Rydych wedi hawlio treuliau ar gyfer blynyddoedd blaenorol
 tai.taxCodeComparison.iabd.you.have.underpaid=Rydych wedi tandalu {0} o flwyddyn flaenorol
 tai.taxCodeComparison.iabd.we.estimated.you.have.underpaid=Rydym yn amcangyfrif eich bod wedi tandalu {0} o dreth y flwyddyn hon
-
+tai.taxCodeComparison.employment.count=mae gennych {0} gyflogaeth nawr
+tai.taxCodeComparison.employments.count=mae gennych {0} o gyflogaethau nawr
+tai.taxCodeComparison.pension.count=
+tai.taxCodeComparison.pensions.count=
+tai.taxCodeComparison.incomeSources.count=
 tai.urbanner.title=Helpwch i wella llythyrau CThEM
 tai.urbanner.text=Cymerwch ran yn ein harolwg byr (yn agor ffenestr neu dab newydd)
 tai.urbanner.reject=Dim diolch
