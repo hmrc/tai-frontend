@@ -15,7 +15,7 @@ earlier=Gwirio blynyddoedd treth blaenorol
 error.invalid.date.format=Fformat dyddiad annilys
 error.invalid.date.future=Ni ddylai''r dyddiad fod yn y dyfodol
 error.invalid.date.past=Nodwch ddyddiad yn y flwyddyn dreth bresennol
-error.tai.updateDataEmployment.blankValue=Rhaid i’r amcangyfrif o’ch incwm fod yn swm o arian, megis 1,000 neu 10,000
+error.tai.updateDataEmployment.blankValue=Nodwch amcangyfrif newydd i fynd yn eich blaen
 error.tai.update.estimatedTaxableIncome.input.invalid=Rhaid i’r amcangyfrif o’ch incwm trethadwy fod yn swm o arian, megis 1,000 neu 10,000
 error.tai.updateDataEmployment.enterLargerValue=Rhoddodd eich cyflogwr wybod i ni y talwyd £{0} i chi hyd at fis {1}. Ni allwch nodi swm incwm blynyddol sy’n is na hwnnw. I ddiweddaru manylion eich incwm o {2}, cysylltwch â Chyllid a Thollau EM ar 0300 200 1900.
 error.tai.updateDataEmployment.maxLength=Yr uchafswm y gallwch ei nodi yw £999,999,999
@@ -788,7 +788,7 @@ tai.irregular.newAmount=Swm newydd
 tai.irregular.confirm.estimatedIncome=Eich incwm amcangyfrifedig newydd yw {0}
 tai.irregular.confirm.mainHeading=Cadarnhewch eich incwm trethadwy amcangyfrifedig ar gyfer {0}
 tai.irregular.error.error.incorrectTaxableIncome=Rhoddodd eich cyflogwr wybod i ni y talwyd £{0} i chi hyd at {1}. Ni allwch nodi swm incwm blynyddol sy’n is na hwn. Os yw’r swm yn anghywir, rhowch alwad i Wasanaeth Cwsmeriaid Cymraeg CThEM ar 0300 200 1900.
-tai.irregular.error.blankValue=Rhaid i’r amcangyfrif o’ch incwm fod yn swm o arian, megis 1,000 neu 10,000
+tai.irregular.error.blankValue=Nodwch amcangyfrif newydd i fynd yn eich blaen
 
 tai.item=Eitem
 tai.iya.check.your.tax.code.text=Gwiriwch {0} i gael gwybod beth sydd wedi newid.
