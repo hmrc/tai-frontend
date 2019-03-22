@@ -17,12 +17,12 @@
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.tai.model.CodingComponentPair
 import uk.gov.hmrc.tai.model.domain._
-import uk.gov.hmrc.tai.model.domain.tax.{NonSavingsIncomeCategory, TotalTax}
+import uk.gov.hmrc.tai.model.domain.tax.TotalTax
 import uk.gov.hmrc.tai.util.MonetaryUtil
-import uk.gov.hmrc.tai.util.constants.BandTypesConstants
 
-class IabdTaxCodeChangeReasons(totalTax: TotalTax) {
+class IabdTaxCodeChangeReasons(totalTax: TotalTax)  {
 
   def reasons(iabdPairs: AllowancesAndDeductionPairs)(implicit messages: Messages): Seq[String] = {
 
@@ -68,7 +68,7 @@ class IabdTaxCodeChangeReasons(totalTax: TotalTax) {
   }
 
   private def messageWithComponentType(pair: CodingComponentPair)(implicit messages: Messages) = {
-    messages("tai.taxCodeComparison.iabd.updated", CodingComponentTypeDescription.componentTypeToString(pair.componentType))
+    messages("tai.taxCodeComparison.iabd.updated", pair.componentType.toMessage())
   }
 
   private def genericBenefitMessage(implicit messages: Messages): String = {

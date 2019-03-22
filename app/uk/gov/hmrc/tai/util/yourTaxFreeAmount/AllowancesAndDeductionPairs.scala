@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.tai.util.yourTaxFreeAmount
 
+import uk.gov.hmrc.tai.model.CodingComponentPair
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.model.domain.calculation.CodingComponent
 

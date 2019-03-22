@@ -20,7 +20,7 @@ import com.google.inject.Inject
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.{CodingComponentPairModel, TaxYear}
 import uk.gov.hmrc.tai.model.domain.benefits.CompanyCarBenefit
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{EmploymentService, YourTaxFreeAmountComparison, YourTaxFreeAmountService}
@@ -61,7 +61,7 @@ class DescribedYourTaxFreeAmountService @Inject()(yourTaxFreeAmountService: Your
     }
   }
 
-  case class describedIabdPairs(allowances: Seq[CodingComponentPairDescription], deductions: Seq[CodingComponentPairDescription])
+  case class describedIabdPairs(allowances: Seq[CodingComponentPairModel], deductions: Seq[CodingComponentPairModel])
 
   private def describeIabdPairs(allowancesAndDeductions: AllowancesAndDeductionPairs,
                                 companyCarBenefit: Seq[CompanyCarBenefit],
@@ -70,11 +70,11 @@ class DescribedYourTaxFreeAmountService @Inject()(yourTaxFreeAmountService: Your
 
     val allowancesDescription = for (
       allowance <- allowancesAndDeductions.allowances
-    ) yield CodingComponentPairDescription(allowance, employmentIds, companyCarBenefit)
+    ) yield CodingComponentPairModel(allowance, employmentIds, companyCarBenefit)
 
     val deductionsDescription = for (
       deduction <- allowancesAndDeductions.deductions
-    ) yield CodingComponentPairDescription(deduction, employmentIds, companyCarBenefit)
+    ) yield CodingComponentPairModel(deduction, employmentIds, companyCarBenefit)
 
     describedIabdPairs(allowancesDescription, deductionsDescription)
   }

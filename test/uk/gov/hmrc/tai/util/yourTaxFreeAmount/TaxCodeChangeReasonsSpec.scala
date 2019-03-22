@@ -61,6 +61,14 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
     messages("tai.taxCodeComparison.add.pension", employerName)
   }
 
+  def addSingleEmploymentCount: String = {
+    messages("tai.taxCodeComparison.employment.count", 1)
+  }
+
+  def addMultipleEmploymentCount(count: Int): String = {
+    messages("tai.taxCodeComparison.employments.count", count)
+  }
+
   "reasons taxCodeReasons" when {
     "employment has changed" must {
       "return empty when nothing has changed" in {
@@ -75,7 +83,7 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
         val current = Seq(createTaxRecord(currentEmployer))
         val taxCodeChange = TaxCodeChange(previous, current)
 
-        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(removedEmployer(previousEmployer))
+        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(removedEmployer(previousEmployer), addSingleEmploymentCount)
       }
 
       "return a reason when an employment been added" in {
@@ -84,7 +92,7 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
         val taxCodeChange = TaxCodeChange(previous, current)
 
-        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(addedEmployer(currentEmployer))
+        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(addedEmployer(currentEmployer), addMultipleEmploymentCount(2))
       }
 
       "return multiple reasons when employments have changed" in {
@@ -95,7 +103,8 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
         employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(
           removedEmployer(previousEmployer), removedEmployer(previousEmployer + "1"),
-          addedEmployer(currentEmployer), addedEmployer(currentEmployer + "1")
+          addedEmployer(currentEmployer), addedEmployer(currentEmployer + "1"),
+          addMultipleEmploymentCount(2)
         )
       }
 
@@ -107,7 +116,8 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
         employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(
           removedEmployer(previousEmployer), addedEmployer(currentEmployer),
-          removedEmployer(previousEmployer + "1"), addedEmployer(currentEmployer + "1")
+          removedEmployer(previousEmployer + "1"), addedEmployer(currentEmployer + "1"),
+          addMultipleEmploymentCount(2)
         )
       }
 
@@ -119,7 +129,8 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
         employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(
           removedEmployer(previousEmployer),
-          addedEmployer(currentEmployer)
+          addedEmployer(currentEmployer),
+          addSingleEmploymentCount
         )
       }
 
@@ -151,7 +162,8 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
         val taxCodeChange = TaxCodeChange(previous, current)
 
-        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(removedEmployer(previousEmployer), addedPension(currentEmployer))
+        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(removedEmployer(previousEmployer), addedPension(currentEmployer),
+          messages("tai.taxCodeComparison.pension.count", 1))
       }
 
       "return a reason when a secondary pension been added" in {
@@ -160,7 +172,23 @@ class TaxCodeChangeReasonsSpec extends PlaySpec with MockitoSugar with FakeTaiPl
 
         val taxCodeChange = TaxCodeChange(previous, current)
 
-        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(addedPension(currentEmployer))
+        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(addedPension(currentEmployer),
+          messages("tai.taxCodeComparison.pensions.count", 2))
+      }
+    }
+
+    "current employment(s) and pension(s) exist" must {
+      "return how many current income sources there are" in {
+        val previous = Seq(createPrimaryTaxRecord(previousEmployer))
+        val current = Seq(createPrimaryPensionTaxRecord(currentEmployer), createTaxRecord(currentEmployer + "1"))
+
+        val taxCodeChange = TaxCodeChange(previous, current)
+
+        employmentTaxCodeChangeReasons.reasons(taxCodeChange) mustBe Seq(
+          removedEmployer(previousEmployer),
+          addedPension(currentEmployer),
+          addedEmployer(currentEmployer + "1"),
+          messages("tai.taxCodeComparison.incomeSources.count", 2))
       }
     }
   }

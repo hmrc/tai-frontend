@@ -18,13 +18,15 @@ package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
+import uk.gov.hmrc.tai.model.CodingComponentPairModel
 import uk.gov.hmrc.tai.util.ViewModelHelper
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentPairDescription, TaxFreeInfo}
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxFreeInfo
+
 
 case class YourTaxFreeAmountViewModel(previousTaxFreeInfo: Option[TaxFreeInfo],
                                       currentTaxFreeInfo: TaxFreeInfo,
-                                      allowances: Seq[CodingComponentPairDescription],
-                                      deductions: Seq[CodingComponentPairDescription]) {
+                                      allowances: Seq[CodingComponentPairModel],
+                                      deductions: Seq[CodingComponentPairModel]) {
 
   val showPreviousColumn: Boolean = previousTaxFreeInfo.isDefined
   val columns: Int = {
@@ -41,12 +43,12 @@ object YourTaxFreeAmountViewModel extends ViewModelHelper {
     withPoundPrefixAndSign(MoneyPounds(value, 0))
   }
 
-  def totalPrevious(sequence: Seq[CodingComponentPairDescription]): String = {
+  def totalPrevious(sequence: Seq[CodingComponentPairModel]): String = {
     val total = sequence.map(_.previous).sum
     prettyPrint(total)
   }
 
-  def totalCurrent(sequence: Seq[CodingComponentPairDescription]): String = {
+  def totalCurrent(sequence: Seq[CodingComponentPairModel]): String = {
     val total = sequence.map(_.current).sum
     prettyPrint(total)
   }

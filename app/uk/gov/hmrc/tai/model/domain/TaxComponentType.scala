@@ -16,9 +16,14 @@
 
 package uk.gov.hmrc.tai.model.domain
 
+import play.api.i18n.Messages
 import play.api.libs.json._
 
-sealed trait TaxComponentType
+sealed trait TaxComponentType {
+  def toMessage()(implicit messages: Messages): String = {
+    s"${messages(s"tai.taxFreeAmount.table.taxComponent.${this.toString}")}"
+  }
+}
 
 sealed trait AllowanceComponentType extends TaxComponentType
 sealed trait BenefitComponentType  extends TaxComponentType
