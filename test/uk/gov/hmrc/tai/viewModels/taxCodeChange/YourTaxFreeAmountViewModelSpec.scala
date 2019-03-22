@@ -17,19 +17,19 @@
 package uk.gov.hmrc.tai.viewModels.taxCodeChange
 
 import controllers.FakeTaiPlayApplication
-import org.joda.time.LocalDate
 import org.scalatestplus.play.PlaySpec
 import play.api.i18n.{I18nSupport, MessagesApi}
+import uk.gov.hmrc.tai.model.CodingComponentPairModel
 import uk.gov.hmrc.tai.util.ViewModelHelper
-import uk.gov.hmrc.tai.util.yourTaxFreeAmount.{CodingComponentPairDescription, TaxFreeInfo}
+import uk.gov.hmrc.tai.util.yourTaxFreeAmount.TaxFreeInfo
 
 class YourTaxFreeAmountViewModelSpec extends PlaySpec with FakeTaiPlayApplication with ViewModelHelper with I18nSupport {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   private val pairs = Seq(
-    CodingComponentPairDescription("Thing", 1000, 2000),
-    CodingComponentPairDescription("Thing", 3000, 3000)
+    CodingComponentPairModel("Thing", 1000, 2000),
+    CodingComponentPairModel("Thing", 3000, 3000)
   )
 
   private val taxFreeInfo = TaxFreeInfo("12-12-2015", 2000, 1000)

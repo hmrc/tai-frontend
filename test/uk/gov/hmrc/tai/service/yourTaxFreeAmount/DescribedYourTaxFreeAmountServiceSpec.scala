@@ -26,7 +26,7 @@ import org.scalatestplus.play.PlaySpec
 import play.api.i18n.Messages
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.tai.model.TaxYear
+import uk.gov.hmrc.tai.model.{CodingComponentPair, CodingComponentPairModel, TaxYear}
 import uk.gov.hmrc.tai.model.domain._
 import uk.gov.hmrc.tai.service.benefits.CompanyCarService
 import uk.gov.hmrc.tai.service.{EmploymentService, YourTaxFreeAmountComparison, YourTaxFreeAmountService}
@@ -110,9 +110,9 @@ class DescribedYourTaxFreeAmountServiceSpec extends PlaySpec with MockitoSugar w
   private val employmentService: EmploymentService = mock[EmploymentService]
 
   private val deductionPair = CodingComponentPair(CarBenefit, Some(1), Some(1000), Some(1000))
-  private val describedDeductionPair = CodingComponentPairDescription("Car benefit", 1000, 1000)
+  private val describedDeductionPair = CodingComponentPairModel("Car benefit", 1000, 1000)
   private val allowancePair = CodingComponentPair(GiftAidPayments, None, None, Some(3000))
-  private val describedAllowancePair = CodingComponentPairDescription("Gift Aid Payments", 0, 3000)
+  private val describedAllowancePair = CodingComponentPairModel("Gift Aid Payments", 0, 3000)
 
   private val previousTaxFreeInfo = Some(TaxFreeInfo("Previous", 1000, 1000))
   private val currentTaxFreeInfo = TaxFreeInfo("Current", 100, 100)

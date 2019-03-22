@@ -113,7 +113,7 @@ class TaxFreeAmountViewSpec extends TaiViewSpec {
     }
 
     "display navigational link to 'Estimated tax you owe' page if EstimatedTaxYouOweThisYear is present" in {
-      val labelVm = Label("labelText", Some(HelpLink("testValue", "testHref", "estimatedTaxOwedLink")))
+      val labelVm = TaxSummaryLabel("labelText", Some(HelpLink("testValue", "testHref", "estimatedTaxOwedLink")))
       val vm: Seq[TaxFreeAmountSummaryRowViewModel] = Seq(
         TaxFreeAmountSummaryRowViewModel(labelVm, "£11,500", ChangeLinkViewModel(false)))
       val svm: TaxFreeAmountSummaryViewModel = TaxFreeAmountSummaryViewModel(Seq(
